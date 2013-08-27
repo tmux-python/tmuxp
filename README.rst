@@ -26,16 +26,18 @@ level applies to all panes. a pane may specify its own cmd.
 advanced sorcery
 ----------------
 
-    before_cmd / after_cmd:
+before_cmd / after_cmd
+""""""""""""""""""""""
 
-    tbd, but commands will be able to be go before/after commands on any
-    level also. for instance, session may run before_cmd: and all windows
-    and panes within will run accordingly
+tbd, but commands will be able to be go before/after commands on any
+level also. for instance, session may run before_cmd: and all windows
+and panes within will run accordingly
 
-    aliases:
+aliases
+"""""""
 
-    a common command may be aliased as a shortcut to prevent duplication.
-    syntax for this is still subject to change
+a common command may be aliased as a shortcut to prevent duplication.
+syntax for this is still subject to change
 
 under the hood
 --------------
@@ -48,6 +50,8 @@ mywindow: my_cmd
 
 which is expanded to:
 
+::
+
 {
     name: 'mywindow',
     panes: [
@@ -58,16 +62,16 @@ which is expanded to:
 Session, Window, Pane are all python classes which accept options and
 print out as a __dict__ and __cmd__.
 
-__dict__ : dict : a fully expanded python dictionary configuration for
+`__dict__`: dict : a fully expanded python dictionary configuration for
 the object.
-to_json(): str : export the object to JSON config format
-to_yaml(): str : export the object to YAML config
-to_ini(): str : export object to INI config
+`to_json()`: str : export the object to JSON config format
+`to_yaml()`: str : export the object to YAML config
+`to_ini()`: str : export object to INI config
 
 How a session is built:
 
-    A Session object holds Window(s)
-    A Window holds Panes
+* A `Session` object holds `Window`(s)
+* A `Window` holds `Panes`
 
 They are meant to provide a clear abstraction of tmux's api.
 
