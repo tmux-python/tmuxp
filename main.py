@@ -36,16 +36,16 @@ pprint(config.__dict__)
 
     cmd, cwd can be added at the session, window and pane level.
 
-    the deepest will have precedence. a command or cwd at the session level will
-    apply to all windows, panes within it. a command or cwd at window level applies
-    to all panes. a pane may specify its own cmd.
+    the deepest will have precedence. a command or cwd at the session level
+    will apply to all windows, panes within it. a command or cwd at window
+    level applies to all panes. a pane may specify its own cmd.
 
     advanced sorcery:
         before_cmd / after_cmd:
 
-        tbd, but commands will be able to be go before/after commands on any level
-        also. for instance, session may run before_cmd: and all windows and panes
-        within will run accordingly
+        tbd, but commands will be able to be go before/after commands on any
+        level also. for instance, session may run before_cmd: and all windows
+        and panes within will run accordingly
 
         aliases:
 
@@ -84,27 +84,30 @@ pprint(config.__dict__)
 
         They are meant to provide a clear abstraction of tmux's api.
 
-        How do the panes / windows accept configuration from windows / sessions?
+        How do the panes / windows accept configuration from windows and
+        sessions?
 
-        A Session() object may be created by itself, but the __init__ will check
-        for a Window object and Session object. This assures that Windows and
-        Panes can inherit the cmd's, root dirs and before_cmd and after_cmd.
+        A Session() object may be created by itself, but the __init__ will
+        check for a Window object and Session object. This assures that Windows
+        and Panes can inherit the cmd's, root dirs and before_cmd and
+        after_cmd.
 
     Roadmap:
 
-        To a degree, be able to pull running tmux sessions, windows and panes into
-        Session, Window, and Pane objects and therefore be exportable into configs.
+        To a degree, be able to pull running tmux sessions, windows and panes
+        into Session, Window, and Pane objects and therefore be exportable
+        into configs.
 
         A la, many attempts before, a pip freeze.
 
-        The biggest difficulty is keeping the abstraction of tmux pure and pythonic.
+        The biggest difficulty is keeping the abstraction of tmux pure and
+        pythonic.
 
 """
 
 windows = list()
+"""expand inline configuration """
 for window in config.get('windows'):
-    #pprint(window)
-
     """expand
         dict({'session_name': { dict })
 
@@ -112,8 +115,9 @@ for window in config.get('windows'):
 
         dict({ name='session_name', **dict})
     """
+
     if len(window) == 1:
-        name = window.iterkeys().next() # get window name
+        name = window.iterkeys().next()  # get window name
 
         """expand
             window[name] = 'command'
@@ -137,7 +141,23 @@ for window in config.get('windows'):
 
     windows.append(window)
 
+
+class Session(object):
+    __FORMATS__ = [
+        'session_attached', 'session_created', 'session_created_string',
+        'session_group', 'session_grouped', 'session_height', 'session_id',
+        'session_name', 'session_width', 'session_windows']
+
+    pass
+
+
+class Window(object):
+    pass
+
+
+class Pane(object):
+    pass
+
+
 pprint(tmux('list-windows'))
 pprint(windows)
-
-
