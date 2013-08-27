@@ -62,15 +62,15 @@ which is expanded to:
 Session, Window, Pane are all python classes which accept options and
 print out as a __dict__ and __cmd__.
 
-`__dict__`: dict : a fully expanded python dictionary configuration for
-the object.
-`to_json()`: str : export the object to JSON config format
-`to_yaml()`: str : export the object to YAML config
-`to_ini()`: str : export object to INI config
+* `__dict__`: dict : a fully expanded python dictionary configuration for
+    the object.
+* `to_json()`: str : export the object to JSON config format
+* `to_yaml()`: str : export the object to YAML config
+* `to_ini()`: str : export object to INI config
 
 How a session is built:
 
-* A `Session` object holds `Window`(s)
+* A `Session` object holds `Window` (s)
 * A `Window` holds `Panes`
 
 They are meant to provide a clear abstraction of tmux's api.
