@@ -52,12 +52,12 @@ which is expanded to:
 
 ::
 
-{
-    name: 'mywindow',
-    panes: [
-        cmds: ['my_cmd']
-    ]
-}
+    {
+        name: 'mywindow',
+        panes: [
+            cmds: ['my_cmd']
+        ]
+    }
 
 Session, Window, Pane are all python classes which accept options and
 print out as a __dict__ and __cmd__.
