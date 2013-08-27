@@ -19,20 +19,22 @@ print config
 pprint(config.__dict__)
 
 """
-    tmux wrapper was invented to solve the panes / pains of managing workspaces
+    `tmuxwrapper` was invented to solve the panes / pains of managing
+    workspaces
 
-    hierarchy:
+    hierarchy
+    ---------
 
-    session(s)
-        - cmds (str like 'htop' or list ['pwd', 'htop'])
-        - root (str dir path, like '/var/www')
-        - window(s)
-            - cmd(s)
-            - root
-            - panes(s)
-                - dimensions
-                - cmd(s)
-                - root
+    |   session(s)
+    |       - cmds (str like 'htop' or list ['pwd', 'htop'])
+    |       - root (str dir path, like '/var/www')
+    |       - window(s)
+    |           - cmd(s)
+    |           - root
+    |           - panes(s)
+    |               - dimensions
+    |               - cmd(s)
+    |               - root
 
     cmd, cwd can be added at the session, window and pane level.
 
@@ -40,7 +42,9 @@ pprint(config.__dict__)
     will apply to all windows, panes within it. a command or cwd at window
     level applies to all panes. a pane may specify its own cmd.
 
-    advanced sorcery:
+    advanced sorcery
+    ----------------
+
         before_cmd / after_cmd:
 
         tbd, but commands will be able to be go before/after commands on any
@@ -52,61 +56,70 @@ pprint(config.__dict__)
         a common command may be aliased as a shortcut to prevent duplication.
         syntax for this is still subject to change
 
-    behind the hood:
-        the code is very simple. kaplan will read any type of config file and
-        turn it into a python dictionary. for brevity, tmuxwrapper offers a
-        few short forms, such as (in YAML):
+    under the hood
+    --------------
 
-        mywindow: my_cmd
+    the code is very simple. kaplan will read any type of config file and
+    turn it into a python dictionary. for brevity, tmuxwrapper offers a
+    few short forms, such as (in YAML):
 
-        which is expanded to:
+    mywindow: my_cmd
 
-        {
-            name: 'mywindow',
-            panes: [
-                cmds: ['my_cmd']
-            ]
-        }
+    which is expanded to:
 
-        Session, Window, Pane are all python classes which accept options and
-        print out as a __dict__ and __cmd__.
+    {
+        name: 'mywindow',
+        panes: [
+            cmds: ['my_cmd']
+        ]
+    }
 
-        __dict__ : dict : a fully expanded python dictionary configuration for
-        the object.
-        to_json(): str : export the object to JSON config format
-        to_yaml(): str : export the object to YAML config
-        to_ini(): str : export object to INI config
+    Session, Window, Pane are all python classes which accept options and
+    print out as a __dict__ and __cmd__.
 
-        How a session is built:
+    __dict__ : dict : a fully expanded python dictionary configuration for
+    the object.
+    to_json(): str : export the object to JSON config format
+    to_yaml(): str : export the object to YAML config
+    to_ini(): str : export object to INI config
 
-            A Session object holds Window(s)
-            A Window holds Panes
+    How a session is built:
 
-        They are meant to provide a clear abstraction of tmux's api.
+        A Session object holds Window(s)
+        A Window holds Panes
 
-        How do the panes / windows accept configuration from windows and
-        sessions?
+    They are meant to provide a clear abstraction of tmux's api.
 
-        A Session() object may be created by itself, but the __init__ will
-        check for a Window object and Session object. This assures that Windows
-        and Panes can inherit the cmd's, root dirs and before_cmd and
-        after_cmd.
+    How do the panes / windows accept configuration from windows and
+    sessions?
 
-    Roadmap:
+    A Session() object may be created by itself, but the __init__ will
+    check for a Window object and Session object. This assures that Windows
+    and Panes can inherit the cmd's, root dirs and before_cmd and
+    after_cmd.
 
-        To a degree, be able to pull running tmux sessions, windows and panes
-        into Session, Window, and Pane objects and therefore be exportable
-        into configs.
+    Roadmap
+    -------
 
-        A la, many attempts before, a pip freeze.
+    To a degree, be able to pull running tmux sessions, windows and panes
+    into Session, Window, and Pane objects and therefore be exportable
+    into configs.
 
-        The biggest difficulty is keeping the abstraction of tmux pure and
-        pythonic.
+    A la, many attempts before, a pip freeze.
+
+    The biggest difficulty is keeping the abstraction of tmux pure and
+    pythonic.
+
+    Reference
+    ---------
+
+    - tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
+
 
 """
 
 windows = list()
-"""expand inline configuration """
+"""expand inline window configuration """
 for window in config.get('windows'):
     """expand
         dict({'session_name': { dict })
