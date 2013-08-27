@@ -70,8 +70,8 @@ print out as a __dict__ and __cmd__.
 
 How a session is built:
 
-* A `Session` object holds `Window` (s)
-* A `Window` holds `Panes`
+* A ``Session`` object holds `Window` (s)
+* A ``Window`` holds `Panes`
 
 They are meant to provide a clear abstraction of tmux's api.
 
