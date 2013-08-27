@@ -44,9 +44,9 @@ under the hood
 
 the code is very simple. kaplan will read any type of config file and
 turn it into a python dictionary. for brevity, tmuxwrapper offers a
-few short forms, such as (in YAML):
+few inline expressions, such as (in YAML):
 
-mywindow: my_cmd
+``mywindow: my_cmd``
 
 which is expanded to:
 
