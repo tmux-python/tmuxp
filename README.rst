@@ -4,16 +4,18 @@ workspaces
 hierarchy
 ---------
 
-|   session(s)
-|       - cmds (str like 'htop' or list ['pwd', 'htop'])
-|       - root (str dir path, like '/var/www')
-|       - window(s)
-|           - cmd(s)
-|           - root
-|           - panes(s)
-|               - dimensions
-|               - cmd(s)
-|               - root
+::
+
+   session(s)
+       - cmds (str like 'htop' or list ['pwd', 'htop'])
+       - root (str dir path, like '/var/www')
+       - window(s)
+           - cmd(s)
+           - root
+           - panes(s)
+               - dimensions
+               - cmd(s)
+               - root
 
 cmd, cwd can be added at the session, window and pane level.
 
