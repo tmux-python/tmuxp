@@ -1,58 +1,6 @@
 import kaptan
 from sh import tmux, cut
 from pprint import pprint
-config = kaptan.Kaptan(handler="yaml")
-
-config.import_config("""
-    windows:
-        - editor:
-            layout: main-vertical
-            panes:
-                - vim
-                - guard
-        - server: bundle exec rails s
-        - logs: tail -f logs/development.log
-    """)
-
-print config
-pprint(config.__dict__)
-
-windows = list()
-# expand inline window configuration
-""" expand
-    dict({'session_name': { dict })
-
-    to
-
-    dict({ name='session_name', **dict})
-"""
-
-for window in config.get('windows'):
-
-    if len(window) == 1:
-        name = window.iterkeys().next()  # get window name
-
-        """expand
-            window[name] = 'command'
-
-            to
-
-            window[name] = {
-                panes=['command']
-            }
-        """
-        if isinstance(window[name], basestring):
-            windowoptions = dict(
-                panes=[window[name]]
-            )
-        else:
-            windowoptions = window[name]
-
-        window = dict(name=name, **windowoptions)
-        if len(window['panes']) > 1:
-            pprint('omg multiple panes')
-
-    windows.append(window)
 
 
 class Session(object):
@@ -93,8 +41,9 @@ class Session(object):
 
             windows = cut(
                 tmux(
-                    'list-windows', '-t%s' % self.session_name,
-                    '-F%s' % ''.join(tmux_formats)
+                    'list-windows',                 # ``tmux list-windows``
+                    '-t%s' % self.session_name,     # target (session name)
+                    '-F%s' % ''.join(tmux_formats)  # output
                 ), '-f1', '-d:'
             )
 
@@ -167,9 +116,9 @@ class Window(object):
             panes = cut(
                 tmux(
                     'list-panes',
-                    '-s',  # for sessions
-                    '-t%s' % self.session.session_name,  # target session_name
-                    '-F%s' % ''.join(tmux_formats)
+                    '-s',                                # for sessions
+                    '-t%s' % self.session.session_name,  # target (name of session)
+                    '-F%s' % ''.join(tmux_formats)       # output
                 ), '-f1', '-d:'
             )
 
@@ -190,7 +139,7 @@ class Window(object):
             return panes
         else:
             return None  # session is not bound to a current session, the user
-                         # is using Session imported config file to launch a
+                         # is using ``Session`` imported config file to launch a
                          # new session
 
 
@@ -306,6 +255,56 @@ PANE_FORMATS = [
     'mouse_any_flag',
     'mouse_utf8_flag',
 ]
+
+
+config = kaptan.Kaptan(handler="yaml")
+config.import_config("""
+    windows:
+        - editor:
+            layout: main-vertical
+            panes:
+                - vim
+                - cowsay "hey"
+        - server: htop
+        - logs: tail -f logs/development.log
+    """)
+
+print config
+pprint(config.__dict__)
+""" expand inline config
+    dict({'session_name': { dict })
+
+    to
+
+    dict({ name='session_name', **dict})
+"""
+windows = list()
+for window in config.get('windows'):
+
+    if len(window) == 1:
+        name = window.iterkeys().next()  # get window name
+
+        """expand
+            window[name] = 'command'
+
+            to
+
+            window[name] = {
+                panes=['command']
+            }
+        """
+        if isinstance(window[name], basestring):
+            windowoptions = dict(
+                panes=[window[name]]
+            )
+        else:
+            windowoptions = window[name]
+
+        window = dict(name=name, **windowoptions)
+        if len(window['panes']) > int(1):
+            pprint('omg multiple panes')
+
+    windows.append(window)
 
 for session in get_sessions():
     pprint(session)
