@@ -91,8 +91,12 @@ class Session(object):
             ]
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
-            windows = cut(tmux('list-windows', '-t%s' % self.session_name, \
-                            '-F%s' % ''.join(tmux_formats)), '-f1', '-d:')
+            windows = cut(
+                tmux(
+                    'list-windows', '-t%s' % self.session_name,
+                    '-F%s' % ''.join(tmux_formats)
+                ), '-f1', '-d:'
+            )
 
             windows = dict(zip(formats, windows.split('\t')))
             windows = [Window(session=self, **windows)]
@@ -137,7 +141,6 @@ class Window(object):
             object and ``Window`` (``self``) object.
         """
 
-
         if hasattr(self.session, '_session_name'):
             formats = [
                 'session_name', 'window_index', 'pane_index', 'window_width',
@@ -146,11 +149,14 @@ class Window(object):
             ]
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
-
-            panes = cut(tmux('list-panes',
-                               '-s', # for sessions
-                               '-t%s' % self.session.session_name,  # target session_name
-                            '-F%s' % ''.join(tmux_formats)), '-f1', '-d:')
+            panes = cut(
+                tmux(
+                    'list-panes',
+                    '-s',  # for sessions
+                    '-t%s' % self.session.session_name,  # target session_name
+                    '-F%s' % ''.join(tmux_formats)
+                ), '-f1', '-d:'
+            )
 
             # `tmux list-panes` outputs a session per-line,
             # separate every line from `tmux list-panes` into a pane
@@ -180,6 +186,7 @@ class Pane(object):
 pprint(tmux('list-windows'))
 pprint(windows)
 
+
 def list_sessions():
     for session in cut(tmux('list-sessions'), '-f1', '-d:'):
         yield Session(session.strip('\n'))
@@ -190,4 +197,4 @@ for session in sessions:
     pprint(session)
     for window in session.windows:
         pprint(window.panes)
-        pprint(window.panes[-1].__dict__)
+        pprint(window.panes[-2].__dict__)
