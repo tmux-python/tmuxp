@@ -109,6 +109,14 @@ A la, many attempts before, a ``pip freeze``.
 The biggest difficulty is keeping the abstraction of tmux pure and
 pythonic.
 
+A workflow to test a configuration file, launch tmux session/windows/panes
+with a ctrl-a ``tbd`` to ``kill-session`` and monitor config file for changes,
+lint it, create a new session, switch to it, and ``kill-session`` the old
+one.
+
+Check for `.hg` and `.git` in `$HOME/.tmuxwrapper`, set a notification if
+it is out of date.
+
 Reference
 ---------
 
