@@ -147,6 +147,7 @@ class Window(object):
                 'window_height', 'pane_width', 'pane_height', 'pane_pid',
                 'pane_current_path'
             ]
+            formats = PANE_FORMATS
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
             panes = cut(
@@ -164,6 +165,12 @@ class Window(object):
 
             # zip and map the results into the dict of formats used above
             panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
+
+            # clear up empty dict
+            panes = [
+                dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
+            ]
+
             panes = [Pane(**pane) for pane in panes]
 
             return panes
@@ -290,4 +297,4 @@ for session in get_sessions():
     pprint(session)
     for window in session.windows:
         for pane in window.panes:
-            pprint(pane)
+            pprint(pane.__dict__)
