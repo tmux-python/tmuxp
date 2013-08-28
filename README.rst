@@ -1,6 +1,18 @@
 `tmuxwrapper` was invented to solve the panes / pains of managing
 workspaces
 
+Goals
+-----
+
+- high-level python abstraction of tmux to automate session, window and
+  pane management
+- support multiple configuration formats (json, yaml)
+- freeze current tmux session, window, and panes into rough configs, perhaps
+  to ~/.tmuxwrapper/snapshots/(year-month-day-(optionalname))/session.yaml
+- bash / zsh autocomplete
+- resume to normal workflow, or last snapshot of sessions
+
+
 hierarchy
 ---------
 
@@ -41,6 +53,9 @@ syntax for this is still subject to change
 
 under the hood
 --------------
+
+the internals of tmux is a tool kit, a high level abstraction of Sessions,
+Windows and Panes.
 
 the code is very simple. kaplan will read any type of config file and
 turn it into a python dictionary. for brevity, tmuxwrapper offers a
