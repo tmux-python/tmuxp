@@ -33,10 +33,7 @@ class Session(object):
         """
 
         if hasattr(self, '_session_name'):
-            formats = [
-                'session_name', 'window_index', 'pane_index', 'window_width',
-                'window_height'
-            ]
+            formats = WINDOW_FORMATS
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
             windows = cut(
@@ -69,6 +66,13 @@ class Session(object):
 
 
 class Window(object):
+    """
+        todo
+            - @has_session property, or throw an Error
+            - Pane
+            - __cmd__
+    """
+
     def __init__(self, **kwargs):
 
         if 'session' in kwargs:
@@ -85,9 +89,6 @@ class Window(object):
     def session(self):
         return self._session if self._session else None
 
-    # todo, @has_session property, or throw an Error
-    # todo, Pane
-    # todo, __cmd__
 
     @property
     def panes(self):
@@ -105,11 +106,6 @@ class Window(object):
         """
 
         if hasattr(self.session, '_session_name'):
-            formats = [
-                'session_name', 'window_index', 'pane_index', 'window_width',
-                'window_height', 'pane_width', 'pane_height', 'pane_pid',
-                'pane_current_path'
-            ]
             formats = PANE_FORMATS
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
@@ -281,7 +277,7 @@ pprint(config.__dict__)
 windows = list()
 for window in config.get('windows'):
 
-    if len(window) == 1:
+    if len(window) == int(1):
         name = window.iterkeys().next()  # get window name
 
         """expand
