@@ -121,9 +121,16 @@ class Session(object):
 
 class Window(object):
     def __init__(self, **kwargs):
+
         if 'session' in kwargs:
             if isinstance(kwargs['session'], Session):
                 self._session = kwargs['session']
+
+        [setattr(self, k, v) for (k, v) in kwargs.items() if k is not 'session']
+
+    def __repr__(self):
+        # todo test without session_name
+        return "%s(%s)" % (self.__class__, self.__dict__)
 
     @property
     def session(self):
@@ -303,5 +310,7 @@ PANE_FORMATS = [
 for session in get_sessions():
     pprint(session)
     for window in session.windows:
+        pprint(window)
         for pane in window.panes:
-            pprint(pane.__dict__)
+            #pprint(pane.__dict__)
+            pass
