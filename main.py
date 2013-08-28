@@ -180,7 +180,7 @@ class Pane(object):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__, self.session_name)
+        return "%s(%s)" % (self.__class__, self.__dict__)
 
 
 pprint(tmux('list-windows'))
@@ -196,5 +196,5 @@ sessions = list(list_sessions())
 for session in sessions:
     pprint(session)
     for window in session.windows:
-        pprint(window.panes)
-        pprint(window.panes[-2].__dict__)
+        for pane in window.panes:
+            pprint(pane)
