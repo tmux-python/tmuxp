@@ -98,8 +98,15 @@ class Session(object):
                 ), '-f1', '-d:'
             )
 
-            windows = dict(zip(formats, windows.split('\t')))
-            windows = [Window(session=self, **windows)]
+            # combine format keys with values returned from ``tmux list-windows``
+            windows = [dict(zip(formats, window.split('\t'))) for window in windows]
+
+            # clear up empty dict
+            windows = [
+                dict((k, v) for k, v in window.iteritems() if v) for window in windows
+            ]
+
+            windows = [Window(session=self, **window) for window in windows]
 
             return windows
         else:
