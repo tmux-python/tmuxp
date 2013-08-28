@@ -106,6 +106,10 @@ class Window(object):
     def session(self):
         return self._session if self._session else None
 
+    # todo, @has_session property, or throw an Error
+    # todo, Pane
+    # todo, __cmd__
+
     @property
     def panes(self):
 
