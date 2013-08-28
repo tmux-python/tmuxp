@@ -56,6 +56,7 @@ for window in config.get('windows'):
 
 
 class Session(object):
+
     __FORMATS__ = [
         'session_attached', 'session_created', 'session_created_string',
         'session_group', 'session_grouped', 'session_height', 'session_id',
@@ -70,6 +71,18 @@ class Session(object):
 
     @property
     def windows(self):
+        """
+            ``tmux list-windows`` outputs 1 session per line ``\n``.
+
+            -F (FORMATS) allows returning custom sessings, we delimit with
+            a tab ``\t``.
+
+            we then use dict+zip to align the format variable with the
+            output.
+
+            the ``Window`` object accepts the returned properties  and
+            ``Session`` (``self``) object.
+        """
 
         if hasattr(self, '_session_name'):
             formats = [
@@ -83,6 +96,7 @@ class Session(object):
 
             windows = dict(zip(formats, windows.split('\t')))
             windows = [Window(session=self, **windows)]
+
             return windows
         else:
             return None  # session is not bound to a current session, the user
@@ -92,8 +106,6 @@ class Session(object):
     def __repr__(self):
         # todo test without session_name
         return "%s(%s)" % (self.__class__, self.session_name)
-
-    pass
 
 
 class Window(object):
@@ -112,6 +124,19 @@ class Window(object):
 
     @property
     def panes(self):
+        """
+            ``tmux list-panes`` outputs 1 session per line ``\n``.
+
+            -F (FORMATS) allows returning custom sessings, we delimit with
+            a tab ``\t``.
+
+            we then use dict+zip to align the format variable with the
+            output.
+
+            the ``Pane`` object accepts the returned properties, ``Session``
+            object and ``Window`` (``self``) object.
+        """
+
 
         if hasattr(self.session, '_session_name'):
             formats = [
@@ -121,24 +146,35 @@ class Window(object):
             ]
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
+
             panes = cut(tmux('list-panes',
                                '-s', # for sessions
                                '-t%s' % self.session.session_name,  # target session_name
                             '-F%s' % ''.join(tmux_formats)), '-f1', '-d:')
 
+            # `tmux list-panes` outputs a session per-line,
+            # separate every line from `tmux list-panes` into a pane
             panes = str(panes).split('\n')
 
-            return [dict(zip(formats, pane.split('\t'))) for pane in panes]
+            # zip and map the results into the dict of formats used above
+            panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
+            panes = [Pane(**pane) for pane in panes]
+
+            return panes
         else:
             return None  # session is not bound to a current session, the user
                          # is using Session imported config file to launch a
                          # new session
 
-    pass
-
 
 class Pane(object):
-    pass
+    def __init__(self, **kwargs):
+        for (k, v) in kwargs.items():
+            setattr(self, k, v)
+
+    def __repr__(self):
+        # todo test without session_name
+        return "%s(%s)" % (self.__class__, self.session_name)
 
 
 pprint(tmux('list-windows'))
@@ -154,3 +190,4 @@ for session in sessions:
     pprint(session)
     for window in session.windows:
         pprint(window.panes)
+        pprint(window.panes[-1].__dict__)
