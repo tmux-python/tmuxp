@@ -1,5 +1,5 @@
 import kaptan
-from sh import tmux
+from sh import tmux, cut
 from pprint import pprint
 config = kaptan.Kaptan(handler="yaml")
 
@@ -61,6 +61,16 @@ class Session(object):
         'session_group', 'session_grouped', 'session_height', 'session_id',
         'session_name', 'session_width', 'session_windows']
 
+    def __init__(self, session_name):
+        self._session_name = session_name
+
+    @property
+    def session_name(self):
+        return self._session_name
+
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__, self.session_name)
+
     pass
 
 
@@ -74,3 +84,9 @@ class Pane(object):
 
 pprint(tmux('list-windows'))
 pprint(windows)
+
+def list_sessions():
+    for session in cut(tmux('list-sessions'), '-f1', '-d:'):
+        yield Session(session.strip('\n'))
+
+pprint(list(list_sessions()))
