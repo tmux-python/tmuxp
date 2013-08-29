@@ -12,9 +12,16 @@ class Session(object):
             for (k, v) in kwargs.items():
                 setattr(self, k, v)
 
+    @classmethod
+    def from_tmux(cls, **kwargs):
+        if 'session_name' not in kwargs:
+            raise ValueError('Session requires session_name')
 
-    @property
-    def windows(self):
+        session = cls(session_name=kwargs['session_name'])
+        session.__TMUX__ = dict()
+        for (k, v) in kwargs.items():
+            session.__TMUX__[k] = v
+
         """
             ``tmux list-windows`` outputs 1 session per line ``\n``.
 
@@ -28,33 +35,35 @@ class Session(object):
             ``Session`` (``self``) object.
         """
 
-        if hasattr(self, 'session_name'):
-            formats = WINDOW_FORMATS
-            tmux_formats = ['#{%s}\t' % format for format in formats]
+        formats = WINDOW_FORMATS
+        tmux_formats = ['#{%s}\t' % format for format in formats]
 
-            windows = cut(
-                tmux(
-                    'list-windows',                 # ``tmux list-windows``
-                    '-t%s' % self.session_name,     # target (session name)
-                    '-F%s' % ''.join(tmux_formats)  # output
-                ), '-f1', '-d:'
-            )
+        windows = cut(
+            tmux(
+                'list-windows',                 # ``tmux list-windows``
+                '-t%s' % session.session_name,     # target (session name)
+                '-F%s' % ''.join(tmux_formats)  # output
+            ), '-f1', '-d:'
+        )
 
-            # combine format keys with values returned from ``tmux list-windows``
-            windows = [dict(zip(formats, window.split('\t'))) for window in windows]
+        # combine format keys with values returned from ``tmux list-windows``
+        windows = [dict(zip(formats, window.split('\t'))) for window in windows]
 
-            # clear up empty dict
-            windows = [
-                dict((k, v) for k, v in window.iteritems() if v) for window in windows
-            ]
+        # clear up empty dict
+        windows = [
+            dict((k, v) for k, v in window.iteritems() if v) for window in windows
+        ]
 
-            windows = [Window(session=self, **window) for window in windows]
+        session._windows = [Window(session=session, **window) for window in windows]
 
-            return windows
-        else:
-            return None  # session is not bound to a current session, the user
-                         # is using Session imported config file to launch a
-                         # new session
+        return session
+
+    @property
+    def windows(self):
+        return self._windows
+
+    def windows_from_tmux(self):
+            return self._windows
 
     def __repr__(self):
         # todo test without session_name
@@ -155,6 +164,11 @@ class Window(object):
 
     @property
     def panes(self):
+        if self.session:
+            return self.panes_from_tmux
+
+    @property
+    def panes_from_tmux(self):
         """
             ``tmux list-panes`` outputs 1 session per line ``\n``.
 
@@ -225,10 +239,8 @@ class Pane(object):
 
         return pane
 
-
     def __init__(self, **kwargs):
         pass
-
 
     def __repr__(self):
         # todo test without session_name
@@ -254,7 +266,7 @@ def get_sessions():
         dict((k, v) for k, v in session.iteritems() if v) for session in sessions
     ]
 
-    sessions = [Session(**session) for session in sessions]
+    sessions = [Session.from_tmux(**session) for session in sessions]
 
     for session in sessions:
         yield session
