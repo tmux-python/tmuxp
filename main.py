@@ -18,9 +18,9 @@ class Session(object):
             raise ValueError('Session requires session_name')
 
         session = cls(session_name=kwargs['session_name'])
-        session.__TMUX__ = dict()
+        session._TMUX = dict()
         for (k, v) in kwargs.items():
-            session.__TMUX__[k] = v
+            session._TMUX[k] = v
 
         """
             ``tmux list-windows`` outputs 1 session per line ``\n``.
@@ -54,16 +54,13 @@ class Session(object):
             dict((k, v) for k, v in window.iteritems() if v) for window in windows
         ]
 
-        session._windows = [Window(session=session, **window) for window in windows]
+        session._windows = [Window.from_tmux(session=session, **window) for window in windows]
 
         return session
 
     @property
     def windows(self):
         return self._windows
-
-    def windows_from_tmux(self):
-            return self._windows
 
     def __repr__(self):
         # todo test without session_name
@@ -123,6 +120,7 @@ class Window(object):
     def __init__(self, **kwargs):
 
         if 'session' in kwargs:
+            self._panes = None
             if isinstance(kwargs['session'], Session):
                 self._session = kwargs['session']
             else:
@@ -132,7 +130,7 @@ class Window(object):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__, self.__dict__)
+        return "%s(%s)" % (self.__class__, self._session)
 
     __LAYOUTS__ = [
         'even-horizontal',  # Panes are spread out evenly from left to right across the window.
@@ -142,33 +140,9 @@ class Window(object):
         'tiled'
     ]
 
-    def from_tmux(self):
+    @classmethod
+    def from_tmux(cls, session=None, **kwargs):
         """ parse into normal properties """
-        pass
-
-    def to_cmd(self):
-        """ parse into tmux cmd to recreate workspace panes """
-        pass
-
-    # __dict__ should return properties that would export into a config
-
-    @property
-    def __cmd__(self):
-        for pane in self.panes:
-            pprint(pane.__dict__)
-
-    @property
-    def session(self):
-        # remove this?
-        return self._session if self._session else None
-
-    @property
-    def panes(self):
-        if self.session:
-            return self.panes_from_tmux
-
-    @property
-    def panes_from_tmux(self):
         """
             ``tmux list-panes`` outputs 1 session per line ``\n``.
 
@@ -181,61 +155,77 @@ class Window(object):
             object and ``Window`` (``self``) object.
         """
 
-        if hasattr(self.session, 'session_name'):
-            formats = PANE_FORMATS
-            tmux_formats = ['#{%s}\t' % format for format in formats]
+        if not session:
+            raise ValueError('``session`` requires valid ``Session`` object')
 
-            panes = cut(
-                tmux(
-                    'list-panes',
-                    '-s',                                # for sessions
-                    '-t%s' % self.session.session_name,  # target (name of session)
-                    '-F%s' % ''.join(tmux_formats)       # output
-                ), '-f1', '-d:'
-            )
+        window = cls(session=session)
 
-            # `tmux list-panes` outputs a session per-line,
-            # separate every line from `tmux list-panes` into a pane
-            panes = str(panes).split('\n')
+        window._TMUX = dict()
+        for (k, v) in kwargs.items():
+            window._TMUX[k] = v
 
-            # zip and map the results into the dict of formats used above
-            panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
+        formats = PANE_FORMATS
+        tmux_formats = ['#{%s}\t' % format for format in formats]
 
-            # clear up empty dict
-            panes = [
-                dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
-            ]
+        panes = cut(
+            tmux(
+                'list-panes',
+                '-s',                                # for sessions
+                '-t%s' % session.session_name,  # target (name of session)
+                '-F%s' % ''.join(tmux_formats)       # output
+            ), '-f1', '-d:'
+        )
 
-            panes = [Pane.from_tmux(session=self.session, window=self, **pane) for pane in panes]
+        # `tmux list-panes` outputs a session per-line,
+        # separate every line from `tmux list-panes` into a pane
+        panes = str(panes).split('\n')
 
-            return panes
+        # zip and map the results into the dict of formats used above
+        panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
 
+        # clear up empty dict
+        panes = [
+            dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
+        ]
+
+        window._panes = [Pane.from_tmux(session=session, window=window, **pane) for pane in panes]
+
+        return window
+
+
+    # __dict__ should return properties that would export into a config
+
+    @property
+    def panes(self):
+        return self._panes
 
 class Pane(object):
 
     @classmethod
-    def from_tmux(cls, **kwargs):
+    def from_tmux(cls, session=None, window=None, **kwargs):
         """ return a Pane object
             arguments are results passed from tmux
         """
-        pane = cls()
-
-        for (k, v) in kwargs.items():
-            setattr(pane, k, v)
-
-        # verify Session object
-        if 'session' in kwargs:
-            if isinstance(kwargs['session'], Session):
-                pane._session = kwargs['session']
-            else:
+        if not session:
+            raise ValueError('Pane generated using ``.from_tmux`` must have \
+                             ``Session`` object')
+            if not isinstance(session, Session):
                 raise TypeError('session must be a Session object')
 
-        # verify Window object
-        if 'window' in kwargs:
-            if isinstance(kwargs['window'], Window):
-                pane._window = kwargs['window']
-            else:
+        if not window:
+            raise ValueError('Pane generated using ``.from_tmux`` must have \
+                             ``Window`` object')
+            if not isinstance(window, Window):
                 raise TypeError('window must be a Window object')
+
+        pane = cls()
+
+        pane._TMUX = dict()
+        for (k, v) in kwargs.items():
+            pane._TMUX[k] = v
+
+        pane._session = session
+        pane._window = window
 
         return pane
 
@@ -244,7 +234,7 @@ class Pane(object):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__, self.__dict__)
+        return "%s(window=%s)" % (self.__class__, self._window)
 
 
 def get_sessions():
@@ -425,8 +415,9 @@ for session in get_sessions():
     #pprint(session)
     for window in session.windows:
         #pprint(window)
-        pprint(window.__cmd__)
+        pprint(window)
 
         for pane in window.panes:
+            pprint(pane)
             #pprint(pane.__dict__)
             pass
