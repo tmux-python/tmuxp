@@ -102,9 +102,7 @@ Roadmap
 
 To a degree, be able to pull running tmux sessions, windows and panes
 into Session, Window, and Pane objects and therefore be exportable
-into configs.
-
-A la, many attempts before, a ``pip freeze``.
+into configs. A la, many attempts before, a ``pip freeze``.
 
 The biggest difficulty is keeping the abstraction of tmux pure and
 pythonic.
@@ -116,6 +114,9 @@ one.
 
 Check for ``.hg`` and ``.git`` in ``$HOME/.tmuxwrapper``, set a
 notification if it is out of date.
+
+Have ``freeze`` check for ``virtualenv``, ``rvm``, ``perlbrew`` and add
+it to the ``before_cmd``.
 
 Reference
 ---------
