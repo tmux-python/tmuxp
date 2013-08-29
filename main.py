@@ -17,6 +17,8 @@ class Session(object):
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
 
+        pprint(kwargs)
+
         session = cls(session_name=kwargs['session_name'])
         session._TMUX = dict()
         for (k, v) in kwargs.items():
@@ -36,13 +38,13 @@ class Session(object):
         """
 
         formats = WINDOW_FORMATS
-        tmux_formats = ['#{%s}\t' % format for format in formats]
+        tmux_formats = ['#{%s}' % format for format in formats]
 
         windows = cut(
             tmux(
                 'list-windows',                 # ``tmux list-windows``
-                '-t%s' % session.session_name,     # target (session name)
-                '-F%s' % ''.join(tmux_formats)  # output
+                '-t%s' % kwargs['session_name'],     # target (session name)
+                '-F%s' % '\t'.join(tmux_formats)  # output
             ), '-f1', '-d:'
         )
 
@@ -220,6 +222,7 @@ class Pane(object):
 
         pane = cls()
 
+        # keep tmux variables into _TMUX
         pane._TMUX = dict()
         for (k, v) in kwargs.items():
             pane._TMUX[k] = v
@@ -239,20 +242,29 @@ class Pane(object):
 
 def get_sessions():
     formats = SESSION_FORMATS
-    tmux_formats = ['#{%s}\t' % format for format in formats]
+    tmux_formats = ['#{%s}' % format for format in formats]
 
     sessions = cut(
         tmux(
             'list-sessions',                 # ``tmux list-windows``
-            '-F%s' % ''.join(tmux_formats)  # output
+            '-F%s' % '\t'.join(tmux_formats)  # output
         ), '-f1', '-d:'
     )
+    pprint('-F%s' % '\t'.join(tmux_formats))
+
+    pprint(sessions)
+    pprint(str(sessions))
+    sessions = str(sessions).strip()
+    sessions = [session.strip() for session in str(sessions).split('\n')]
+
+    pprint(sessions)
+    pprint(sessions.__len__())
 
     # combine format keys with values returned from ``tmux list-windows``
     sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
 
     # clear up empty dict
-    sessions = [
+    nsessions = [
         dict((k, v) for k, v in session.iteritems() if v) for session in sessions
     ]
 
@@ -270,7 +282,6 @@ def get_sessions():
 """
 
 SESSION_FORMATS = [
-    'session_group',
     'session_name',
     'session_windows',
     'session_width',
@@ -281,6 +292,7 @@ SESSION_FORMATS = [
     'session_created',
     'session_created_string',
     'session_attached',
+    'session_group',
 ]
 
 CLIENT_FORMATS = [
@@ -373,8 +385,8 @@ config.import_config("""
         - logs: tail -f logs/development.log
     """)
 
-print config
-pprint(config.__dict__)
+#print config
+#pprint(config.__dict__)
 """ expand inline config
     dict({'session_name': { dict })
 
@@ -406,7 +418,8 @@ for window in config.get('windows'):
 
         window = dict(name=name, **windowoptions)
         if len(window['panes']) > int(1):
-            pprint('omg multiple panes')
+            #pprint('omg multiple panes')
+            pass
 
     windows.append(window)
 
@@ -414,10 +427,10 @@ for window in config.get('windows'):
 for session in get_sessions():
     #pprint(session)
     for window in session.windows:
-        #pprint(window)
         pprint(window)
+        #pprint(window)
 
         for pane in window.panes:
-            pprint(pane)
+            #pprint(pane)
             #pprint(pane.__dict__)
             pass
