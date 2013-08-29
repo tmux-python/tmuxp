@@ -17,8 +17,6 @@ class Session(object):
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
 
-        pprint(kwargs)
-
         session = cls(session_name=kwargs['session_name'])
         session._TMUX = dict()
         for (k, v) in kwargs.items():
@@ -40,14 +38,15 @@ class Session(object):
         formats = WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
-        windows = cut(
-            tmux(
-                'list-windows',                 # ``tmux list-windows``
-                '-t%s' % kwargs['session_name'],     # target (session name)
-                '-F%s' % '\t'.join(tmux_formats)  # output
-            ), '-f1', '-d:'
+        windows = tmux(
+            'list-windows',                 # ``tmux list-windows``
+            '-t%s' % kwargs['session_name'],     # target (session name)
+            '-F%s' % '\t'.join(tmux_formats)  # output
         )
 
+        # todo: try _iter here now
+        windows = str(windows).strip().split('\n')
+        pprint(windows)
         # combine format keys with values returned from ``tmux list-windows``
         windows = [dict(zip(formats, window.split('\t'))) for window in windows]
 
@@ -178,6 +177,7 @@ class Window(object):
             ), '-f1', '-d:'
         )
 
+        # todo : cut may not be necessary here, we're using -F
         # `tmux list-panes` outputs a session per-line,
         # separate every line from `tmux list-panes` into a pane
         panes = str(panes).split('\n')
@@ -250,21 +250,16 @@ def get_sessions():
             '-F%s' % '\t'.join(tmux_formats)  # output
         ), '-f1', '-d:'
     )
-    pprint('-F%s' % '\t'.join(tmux_formats))
 
-    pprint(sessions)
-    pprint(str(sessions))
+    # todo : cut may not be necessary here, we're using -F
     sessions = str(sessions).strip()
     sessions = [session.strip() for session in str(sessions).split('\n')]
-
-    pprint(sessions)
-    pprint(sessions.__len__())
 
     # combine format keys with values returned from ``tmux list-windows``
     sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
 
     # clear up empty dict
-    nsessions = [
+    sessions = [
         dict((k, v) for k, v in session.iteritems() if v) for session in sessions
     ]
 
@@ -287,11 +282,10 @@ SESSION_FORMATS = [
     'session_width',
     'session_height',
     'session_id',
-    'session_grouped',
-    'session_group',
     'session_created',
     'session_created_string',
     'session_attached',
+    'session_grouped',
     'session_group',
 ]
 
