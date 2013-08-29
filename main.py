@@ -46,7 +46,7 @@ class Session(object):
 
         # todo: try _iter here now
         windows = str(windows).strip().split('\n')
-        pprint(windows)
+
         # combine format keys with values returned from ``tmux list-windows``
         windows = [dict(zip(formats, window.split('\t'))) for window in windows]
 
@@ -57,6 +57,12 @@ class Session(object):
 
         session._windows = [Window.from_tmux(session=session, **window) for window in windows]
 
+        pprint('%s, windows for %s' % (
+            len(session._windows),
+            kwargs['session_name']
+        ))
+        pprint(session._windows)
+
         return session
 
     @property
@@ -65,7 +71,7 @@ class Session(object):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__, self.session_name)
+        return "%s(%s)" % (self.__class__.__name__, self.session_name)
 
 
 class Window(object):
@@ -131,7 +137,12 @@ class Window(object):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__, self._session)
+        return "%s(%s %s, %s)" % (
+            self.__class__.__name__,
+            self._TMUX['window_index'],
+            self._TMUX['window_name'],
+            self._session
+        )
 
     __LAYOUTS__ = [
         'even-horizontal',  # Panes are spread out evenly from left to right across the window.
@@ -165,22 +176,21 @@ class Window(object):
         for (k, v) in kwargs.items():
             window._TMUX[k] = v
 
-        formats = PANE_FORMATS
+        formats = PANE_FORMATS + WINDOW_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
-        panes = cut(
-            tmux(
-                'list-panes',
-                '-s',                                # for sessions
-                '-t%s' % session.session_name,  # target (name of session)
-                '-F%s' % ''.join(tmux_formats)       # output
-            ), '-f1', '-d:'
+        panes = tmux(
+            'list-panes',
+            '-s',                                # for sessions
+            '-t%s' % session.session_name,  # target (name of session)
+            '-F%s' % ''.join(tmux_formats)       # output
         )
-
         # todo : cut may not be necessary here, we're using -F
         # `tmux list-panes` outputs a session per-line,
         # separate every line from `tmux list-panes` into a pane
-        panes = str(panes).split('\n')
+        panes = str(panes).strip()
+        panes = [pane.strip() for pane in str(panes).split('\n')]
+        #panes = str(panes).split('\n')
 
         # zip and map the results into the dict of formats used above
         panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
@@ -190,16 +200,27 @@ class Window(object):
             dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
         ]
 
+        # filter by window_index
+        panes = [
+            pane  for pane in panes if pane['window_index'] == window._TMUX['window_index']
+        ]
+
+        #pprint(panes)
+
         window._panes = [Pane.from_tmux(session=session, window=window, **pane) for pane in panes]
 
+        pprint('%s, panes for %s' % (
+            len(window._panes),
+            kwargs['window_index']
+        ))
+        pprint(window._panes)
+
         return window
-
-
-    # __dict__ should return properties that would export into a config
 
     @property
     def panes(self):
         return self._panes
+
 
 class Pane(object):
 
@@ -237,7 +258,7 @@ class Pane(object):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(window=%s)" % (self.__class__, self._window)
+        return "%s(%s)" % (self.__class__.__name__, self._window)
 
 
 def get_sessions():
@@ -379,8 +400,6 @@ config.import_config("""
         - logs: tail -f logs/development.log
     """)
 
-#print config
-#pprint(config.__dict__)
 """ expand inline config
     dict({'session_name': { dict })
 
@@ -412,19 +431,13 @@ for window in config.get('windows'):
 
         window = dict(name=name, **windowoptions)
         if len(window['panes']) > int(1):
-            #pprint('omg multiple panes')
             pass
 
     windows.append(window)
 
 
 for session in get_sessions():
-    #pprint(session)
     for window in session.windows:
-        pprint(window)
-        #pprint(window)
 
         for pane in window.panes:
-            #pprint(pane)
-            #pprint(pane.__dict__)
             pass
