@@ -6,15 +6,11 @@ from pprint import pprint
 class Session(object):
 
     def __init__(self, **kwargs):
-        for (k, v) in kwargs.items():
-            if k is 'session_name':
-                self._session_name = v
-            else:
+        if 'session_name' not in kwargs:
+            raise ValueError('Session requires session_name')
+        else:
+            for (k, v) in kwargs.items():
                 setattr(self, k, v)
-
-    @property
-    def session_name(self):
-        return self._session_name
 
     @property
     def windows(self):
@@ -31,7 +27,7 @@ class Session(object):
             ``Session`` (``self``) object.
         """
 
-        if hasattr(self, '_session_name'):
+        if hasattr(self, 'session_name'):
             formats = WINDOW_FORMATS
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
@@ -77,6 +73,8 @@ class Window(object):
         if 'session' in kwargs:
             if isinstance(kwargs['session'], Session):
                 self._session = kwargs['session']
+            else:
+                raise TypeError('session must be a Session object')
 
         [setattr(self, k, v) for (k, v) in kwargs.items() if k is not 'session']
 
@@ -87,7 +85,6 @@ class Window(object):
     @property
     def session(self):
         return self._session if self._session else None
-
 
     @property
     def panes(self):
@@ -104,7 +101,7 @@ class Window(object):
             object and ``Window`` (``self``) object.
         """
 
-        if hasattr(self.session, '_session_name'):
+        if hasattr(self.session, 'session_name'):
             formats = PANE_FORMATS
             tmux_formats = ['#{%s}\t' % format for format in formats]
 
@@ -129,7 +126,7 @@ class Window(object):
                 dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
             ]
 
-            panes = [Pane(**pane) for pane in panes]
+            panes = [Pane(session=self.session, window=self, **pane) for pane in panes]
 
             return panes
         else:
@@ -142,6 +139,18 @@ class Pane(object):
     def __init__(self, **kwargs):
         for (k, v) in kwargs.items():
             setattr(self, k, v)
+
+        if 'session' in kwargs:
+            if isinstance(kwargs['session'], Session):
+                self._session = kwargs['session']
+            else:
+                raise TypeError('session must be a Session object')
+
+        if 'window' in kwargs:
+            if isinstance(kwargs['window'], Window):
+                self._window = kwargs['window']
+            else:
+                raise TypeError('window must be a Window object')
 
     def __repr__(self):
         # todo test without session_name
@@ -320,6 +329,7 @@ for window in config.get('windows'):
             pprint('omg multiple panes')
 
     windows.append(window)
+
 
 for session in get_sessions():
 
