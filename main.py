@@ -5,13 +5,12 @@ from pprint import pprint
 
 class Session(object):
 
-    __FORMATS__ = [
-        'session_attached', 'session_created', 'session_created_string',
-        'session_group', 'session_grouped', 'session_height', 'session_id',
-        'session_name', 'session_width', 'session_windows']
-
-    def __init__(self, session_name):
-        self._session_name = session_name
+    def __init__(self, **kwargs):
+        for (k, v) in kwargs.items():
+            if k is 'session_name':
+                self._session_name = v
+            else:
+                setattr(self, k, v)
 
     @property
     def session_name(self):
@@ -150,8 +149,28 @@ class Pane(object):
 
 
 def get_sessions():
-    for session in cut(tmux('list-sessions'), '-f1', '-d:'):
-        yield Session(session.strip('\n'))
+    formats = SESSION_FORMATS
+    tmux_formats = ['#{%s}\t' % format for format in formats]
+
+    sessions = cut(
+        tmux(
+            'list-sessions',                 # ``tmux list-windows``
+            '-F%s' % ''.join(tmux_formats)  # output
+        ), '-f1', '-d:'
+    )
+
+    # combine format keys with values returned from ``tmux list-windows``
+    sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
+
+    # clear up empty dict
+    sessions = [
+        dict((k, v) for k, v in session.iteritems() if v) for session in sessions
+    ]
+
+    sessions = [Session(**session) for session in sessions]
+
+    for session in sessions:
+        yield session
 
 
 """
@@ -303,6 +322,7 @@ for window in config.get('windows'):
     windows.append(window)
 
 for session in get_sessions():
+
     pprint(session)
     for window in session.windows:
         pprint(window)
