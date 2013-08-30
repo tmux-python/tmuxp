@@ -194,7 +194,7 @@ class Window(object):
 
         # filter by window_index
         panes = [
-            pane  for pane in panes if pane['window_index'] == window._TMUX['window_index']
+            pane for pane in panes if pane['window_index'] == window._TMUX['window_index']
         ]
 
         #pprint(panes)
@@ -425,6 +425,17 @@ for window in config.get('windows'):
 
 for session in get_sessions():
     for window in session.windows:
-
         for pane in window.panes:
             pass
+
+tmux('switch-client', '-t0')
+tmux('switch-client', '-ttony')
+
+TEST_SESSION_NAME = 'tmuxwrapper_dev'
+if len(tmux('has-session', '-t', TEST_SESSION_NAME)) == 0:
+    tmux('kill-session', '-t', TEST_SESSION_NAME)
+    pprint('session exists. killed it.')
+
+pprint('creating session')
+tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
+tmux('switch-client', '-t', TEST_SESSION_NAME)
