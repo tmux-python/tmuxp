@@ -22,7 +22,11 @@ class Session(object):
     tmux session
     '''
 
+    session_name = None
+
     def __init__(self, **kwargs):
+
+        # do we need this?
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
         else:
@@ -77,7 +81,69 @@ class Session(object):
         for (k, v) in session_info.items():
             session._TMUX[k] = v
 
+        # need to be able to get first windows
+
         return session
+
+    @classmethod
+    def list_sessions(cls):
+        '''
+        Return a list of :class:`.Session`. from tmux server.
+
+        Uses ``tmux list-sessions``.
+        '''
+        formats = SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+
+        sessions = tmux(
+            'list-sessions',                    # ``tmux list-windows``
+            '-F%s' % '\t'.join(tmux_formats),   # output
+            _iter=True                          # iterate line by line
+        )
+
+        # combine format keys with values returned from ``tmux list-windows``
+        sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
+
+        # clear up empty dict
+        sessions = [
+            dict((k, v) for k, v in session.iteritems() if v) for session in sessions
+        ]
+
+        sessions = [cls.from_tmux(**session) for session in sessions]
+
+        for session in sessions:
+            yield session
+
+    def list_windows(self):
+        '''
+        Return a list of :class:`.Window` inside the tmux session
+        '''
+        formats = WINDOW_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+
+        windows = tmux(
+            'list-windows',                     # ``tmux list-windows``
+            '-t%s' % self.session_name,    # target (session name)
+            '-F%s' % '\t'.join(tmux_formats),   # output
+            _iter=True                          # iterate line by line
+        )
+
+        # combine format keys with values returned from ``tmux list-windows``
+        windows = [dict(zip(formats, window.split('\t'))) for window in windows]
+
+        # clear up empty dict
+        windows = [
+            dict((k, v) for k, v in window.iteritems() if v) for window in windows
+        ]
+
+        pprint('%s, windows for %s' % (
+            len(windows),
+            self.session_name
+        ))
+        # pprint(windows)
+
+        windows = [Window.from_tmux(session=self, **window) for window in windows]
+        return windows
 
     @classmethod
     def from_tmux(cls, **kwargs):
@@ -97,31 +163,7 @@ class Session(object):
         for (k, v) in kwargs.items():
             session._TMUX[k] = v
 
-        formats = WINDOW_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
-
-        windows = tmux(
-            'list-windows',                     # ``tmux list-windows``
-            '-t%s' % kwargs['session_name'],    # target (session name)
-            '-F%s' % '\t'.join(tmux_formats),   # output
-            _iter=True                          # iterate line by line
-        )
-
-        # combine format keys with values returned from ``tmux list-windows``
-        windows = [dict(zip(formats, window.split('\t'))) for window in windows]
-
-        # clear up empty dict
-        windows = [
-            dict((k, v) for k, v in window.iteritems() if v) for window in windows
-        ]
-
-        session._windows = [Window.from_tmux(session=session, **window) for window in windows]
-
-        pprint('%s, windows for %s' % (
-            len(session._windows),
-            kwargs['session_name']
-        ))
-        pprint(session._windows)
+        session._windows = session.list_windows()
 
         return session
 
@@ -341,30 +383,6 @@ class Pane(object):
         return "%s(%s)" % (self.__class__.__name__, self._window)
 
 
-def get_sessions():
-    formats = SESSION_FORMATS
-    tmux_formats = ['#{%s}' % format for format in formats]
-
-    sessions = tmux(
-        'list-sessions',                    # ``tmux list-windows``
-        '-F%s' % '\t'.join(tmux_formats),   # output
-        _iter=True                          # iterate line by line
-    )
-
-    # combine format keys with values returned from ``tmux list-windows``
-    sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
-
-    # clear up empty dict
-    sessions = [
-        dict((k, v) for k, v in session.iteritems() if v) for session in sessions
-    ]
-
-    sessions = [Session.from_tmux(**session) for session in sessions]
-
-    for session in sessions:
-        yield session
-
-
 config = kaptan.Kaptan(handler="yaml")
 config.import_config("""
     windows:
@@ -413,7 +431,7 @@ for window in config.get('windows'):
     windows.append(window)
 
 
-for session in get_sessions():
+for session in Session.list_sessions():
     for window in session.windows:
         for pane in window.panes:
             pass
