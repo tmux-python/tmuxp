@@ -121,9 +121,11 @@ it to the ``before_cmd``.
 - session.to_yaml() export config to yaml
 - session.to_yaml().save('filename')
 - session.from_yaml().load('filename')
-- cli: allow loading session   tmw `filename.{yaml, json, ..}, load,
-  -.   catch has-session, prompt to rename
-  -   possibility: open to ``-t`` group session to target?
+- cli: allow loading session   tmw filename.{yaml, json, ..} to load,
+  - catch has-session, prompt to rename
+  - possibility: open to ``-t`` group session to target?
+- cli: and definitely bashcomplete json/yaml/ini files + commands
+- cli: replicate tmux commands too
 - window.split_pane to split-pane
 - experiment: have windows with 1 pane have access to pane objects?
 - experiment: using .send-keys can be done on session, window and pane
