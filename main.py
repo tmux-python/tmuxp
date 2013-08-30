@@ -262,11 +262,9 @@ def get_sessions():
     formats = SESSION_FORMATS
     tmux_formats = ['#{%s}' % format for format in formats]
 
-    sessions = cut(
-        tmux(
-            'list-sessions',                 # ``tmux list-windows``
-            '-F%s' % '\t'.join(tmux_formats)  # output
-        ), '-f1', '-d:'
+    sessions = tmux(
+        'list-sessions',                 # ``tmux list-windows``
+        '-F%s' % '\t'.join(tmux_formats)  # output
     )
 
     # todo : cut may not be necessary here, we're using -F
