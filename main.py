@@ -1,3 +1,12 @@
+"""
+    tmuxwrapper
+    ~~~~~~~~~~~
+
+    tmuxwrapper helps you manage tmux workspaces.
+
+    :copyright: Copyright 2013 Tony Narlock.
+    :license: BSD, see LICENSE for details
+"""
 import kaptan
 from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint

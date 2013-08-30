@@ -1,3 +1,17 @@
+# -*- coding: utf8 - *-
+
+"""
+    formats
+    ~~~~~~~
+
+    .. _For reference:
+       http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
+
+    :copyright: Copyright 2013 Tony Narlock
+    :license: BSD, see LICENSE for details
+"""
+
+
 SESSION_FORMATS = [
     'session_name',
     'session_windows',
