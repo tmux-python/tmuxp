@@ -6,7 +6,11 @@ from pprint import pprint
 class SessionExists(Exception):
     pass
 
+
 class Session(object):
+    '''
+    tmux session
+    '''
 
     def __init__(self, **kwargs):
         if 'session_name' not in kwargs:
@@ -16,20 +20,29 @@ class Session(object):
                 setattr(self, k, v)
 
     @classmethod
-    def new_session(cls, session_name=None, kill_session=False):
-        """equivalent to ``tmux new-session``
-            returns Session object
-        """
+    def new_session(cls,
+                    session_name=None,
+                    kill_session=False):
+        '''
+        Equivalent to ``tmux new-session`` Returns :class:`.Session`.
 
-        try:
-            if len(tmux('has-session', '-t', TEST_SESSION_NAME)) == 0:
+        Uses ``-P`` flag to print session info, ``-F`` for return formatting
+        returns new Session object
+
+        kill_session
+            Kill current session if ``tmux has-session``. Useful for testing
+            workspaces.
+        '''
+        if not len(tmux('has-session', '-t', session_name)):
+            try:
+
                 if kill_session:
-                    tmux('kill-session', '-t', TEST_SESSION_NAME)
-                    pprint('session %s exists. killed it.' % TEST_SESSION_NAME)
+                    tmux('kill-session', '-t', session_name)
+                    pprint('session %s exists. killed it.' % session_name)
                 else:
                     raise SessionExists('Session named %s exists' % session_name)
-        except ErrorReturnCode_1:
-            pass
+            except ErrorReturnCode_1:
+                pass
 
         pprint('creating session')
 
@@ -41,7 +54,7 @@ class Session(object):
             '-d',
             '-s', TEST_SESSION_NAME,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
-            )
+        )
 
         # combine format keys with values returned from ``tmux list-windows``
         session_info = dict(zip(formats, session_info.split('\t')))
@@ -58,6 +71,14 @@ class Session(object):
 
     @classmethod
     def from_tmux(cls, **kwargs):
+        '''
+        Freeze of the current tmux session directly from the server. Returns
+        :class:`.Session`.
+
+        session_name
+            name of the tmux session
+
+        '''
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
 
@@ -65,19 +86,6 @@ class Session(object):
         session._TMUX = dict()
         for (k, v) in kwargs.items():
             session._TMUX[k] = v
-
-        """
-            ``tmux list-windows`` outputs 1 session per line ``\n``.
-
-            -F (FORMATS) allows returning custom sessings, we delimit with
-            a tab ``\t``.
-
-            we then use dict+zip to align the format variable with the
-            output.
-
-            the ``Window`` object accepts the returned properties  and
-            ``Session`` (``self``) object.
-        """
 
         formats = WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -117,55 +125,48 @@ class Session(object):
 
 
 class Window(object):
-    """
-        todo
-            - @has_session property, or throw an Error
-            - Pane
-            - __cmd__
-    """
+    '''
+    tmux window.
 
-    """
-     Each window displayed by tmux may be split into one or more panes; each pane takes up a certain area of the
-     display and is a separate terminal.  A window may be split into panes using the split-window command.  Windows
-     may be split horizontally (with the -h flag) or vertically.  Panes may be resized with the resize-pane command
-     (bound to 'C-up', 'C-down' 'C-left' and 'C-right' by default), the current pane may be changed with the
-     select-pane command and the rotate-window and swap-pane commands may be used to swap panes without changing
-     their position.  Panes are numbered beginning from zero in the order they are created.
+    Each window displayed by tmux may be split into one or more panes; each pane takes up a certain area of the
+    display and is a separate terminal.  A window may be split into panes using the split-window command.  Windows
+    may be split horizontally (with the -h flag) or vertically.  Panes may be resized with the resize-pane command
+    (bound to 'C-up', 'C-down' 'C-left' and 'C-right' by default), the current pane may be changed with the
+    select-pane command and the rotate-window and swap-pane commands may be used to swap panes without changing
+    their position.  Panes are numbered beginning from zero in the order they are created.
 
-     A number of preset layouts are available.  These may be selected with the select-layout command or cycled with
-     next-layout (bound to 'Space' by default); once a layout is chosen, panes within it may be moved and resized as
-     normal.
+    A number of preset layouts are available.  These may be selected with the select-layout command or cycled with
+    next-layout (bound to 'Space' by default); once a layout is chosen, panes within it may be moved and resized as
+    normal.
 
-     The following layouts are supported:
+    The following layouts are supported::
 
-     even-horizontal
-             Panes are spread out evenly from left to right across the window.
+    even-horizontal
+        Panes are spread out evenly from left to right across the window.
 
-     even-vertical
-             Panes are spread evenly from top to bottom.
+    even-vertical
+        Panes are spread evenly from top to bottom.
 
-     main-horizontal
-             A large (main) pane is shown at the top of the window and the remaining panes are spread from left to
-             right in the leftover space at the bottom.  Use the main-pane-height window option to specify the
-             height of the top pane.
+    main-horizontal
+        A large (main) pane is shown at the top of the window and the remaining panes are spread from left to
+        right in the leftover space at the bottom.  Use the main-pane-height window option to specify the
+        height of the top pane.
 
-     main-vertical
-             Similar to main-horizontal but the large pane is placed on the left and the others spread from top to
-             bottom along the right.  See the main-pane-width window option.
+    main-vertical
+        Similar to main-horizontal but the large pane is placed on the left and the others spread from top to
+        bottom along the right.  See the main-pane-width window option.
 
-     tiled   Panes are spread out as evenly as possible over the window in both rows and columns.
+    tiled   Panes are spread out as evenly as possible over the window in both rows and columns.
 
-     In addition, select-layout may be used to apply a previously used layout - the list-windows command displays
-     the layout of each window in a form suitable for use with select-layout.  For example:
+    In addition, select-layout may be used to apply a previously used layout - the list-windows command displays
+    the layout of each window in a form suitable for use with select-layout.  For example::
 
-           $ tmux list-windows
-           0: ksh [159x48]
-               layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
-           $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+        $ tmux list-windows
+        0: ksh [159x48]
+            layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+        $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+    '''
 
-
-
-    """
     def __init__(self, **kwargs):
 
         if 'session' in kwargs:
@@ -188,7 +189,7 @@ class Window(object):
 
     __LAYOUTS__ = [
         'even-horizontal',  # Panes are spread out evenly from left to right across the window.
-        'even-vertical',  # Panes are spread evenly from top to bottom.
+        'even-vertical',    # Panes are spread evenly from top to bottom.
         'main-horizontal',
         'main-vertical',
         'tiled'
@@ -196,20 +197,24 @@ class Window(object):
 
     @classmethod
     def from_tmux(cls, session=None, **kwargs):
-        """
-            ``tmux list-panes`` outputs 1 session per line ``\n``.
+        '''
+        Retrieve a tmux window from server. Returns :class:`.Window`.
 
-            -F (FORMATS) picks settings return, we delimit with tab ``\t``.
+        The attributes `_panes` contains a list of :class:`.Pane`
 
-            we then use dict+zip to align the format variable with the
-            output.
+        Iterates ``tmux list-panes``, ``-F`` for return formatting.
 
-            the ``Pane`` object accepts the returned properties, ``Session``
-            object and ``Window`` (``self``) object.
-        """
+        session
+            :class:`.Session` object
+        '''
 
         if not session:
-            raise ValueError('``session`` requires valid ``Session`` object')
+            raise ValueError(
+                "Window requires a Session object by "
+                "specifying session=Session"
+            )
+            if not isinstance(session, Session):
+                raise TypeError('session must be a Session object')
 
         window = cls(session=session)
 
@@ -262,16 +267,36 @@ class Pane(object):
 
     @classmethod
     def split_window(cls, session=None, window=None, **kwargs):
-        """ return a Pane object from ``tmux split-window``
-            arguments are results passed from tmux
-        """
-        pass
+        '''
+        Create a new pane by splitting the window. Returns :class:`.Pane`.
+
+        Used for splitting window and holding in a python object.
+
+        Iterates ``tmux split-window``, ``-P`` to return data and
+        ``-F`` for return formatting.
+
+        session
+            :class:`.Session` object
+        window
+            :class:`.Window` object
+        '''
+        raise NotImplemented
 
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
-        """ return a Pane object
-            for freezing current sessions from tmux
-        """
+        '''
+        Retrieve a tmux pane from server. Returns :class:`.Pane`.
+
+        Used for freezing live sessions.
+
+        Iterates ``tmux list-panes``, ``-F`` for return formatting.
+
+        session
+            :class:`.Session` object
+        window
+            :class:`.Window` object
+        '''
+
         if not session:
             raise ValueError('Pane generated using ``.from_tmux`` must have \
                              ``Session`` object')
@@ -329,13 +354,6 @@ def get_sessions():
     for session in sessions:
         yield session
 
-
-"""
-    experiment, ALL_FORMATS parsing for session, window, pane object and
-    remove blank values
-
-    http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
-"""
 
 SESSION_FORMATS = [
     'session_name',
