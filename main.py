@@ -82,6 +82,29 @@ class Session(object):
             session._TMUX[k] = v
 
         # need to be able to get first windows
+        session._windows = session.list_windows()
+
+        return session
+
+    @classmethod
+    def from_tmux(cls, **kwargs):
+        '''
+        Freeze of the current tmux session directly from the server. Returns
+        :class:`.Session`.
+
+        session_name
+            name of the tmux session
+
+        '''
+        if 'session_name' not in kwargs:
+            raise ValueError('Session requires session_name')
+
+        session = cls(session_name=kwargs['session_name'])
+        session._TMUX = dict()
+        for (k, v) in kwargs.items():
+            session._TMUX[k] = v
+
+        session._windows = session.list_windows()
 
         return session
 
@@ -144,28 +167,6 @@ class Session(object):
 
         windows = [Window.from_tmux(session=self, **window) for window in windows]
         return windows
-
-    @classmethod
-    def from_tmux(cls, **kwargs):
-        '''
-        Freeze of the current tmux session directly from the server. Returns
-        :class:`.Session`.
-
-        session_name
-            name of the tmux session
-
-        '''
-        if 'session_name' not in kwargs:
-            raise ValueError('Session requires session_name')
-
-        session = cls(session_name=kwargs['session_name'])
-        session._TMUX = dict()
-        for (k, v) in kwargs.items():
-            session._TMUX[k] = v
-
-        session._windows = session.list_windows()
-
-        return session
 
     @property
     def windows(self):
@@ -235,7 +236,7 @@ class Window(object):
         return "%s(%s %s, %s)" % (
             self.__class__.__name__,
             self._TMUX['window_index'],
-            self._TMUX['window_name'],
+            self._TMUX['window_name'], # @todo, bug when window name blank
             self._session
         )
 
@@ -446,14 +447,19 @@ session = Session.new_session(
     kill_session=True
 )
 tmux('next-layout', '-t', TEST_SESSION_NAME)
-
+pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
+tmux('next-layout', '-t', TEST_SESSION_NAME)
+pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
+pprint(session._windows)
+pprint(session._windows[0]._TMUX)
+pprint(session._windows[0]._panes)
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
 #tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
 tmux('switch-client', '-t', TEST_SESSION_NAME)
 
-tmux('split-window', '-h', '-p30')
+tmux('split-window')
 #tmux('send-keys', '-t', 'cd /srv/www/flaskr')
-tmux('split-window', '-v', '-p50')
-tmux('split-window', '-v', '-p50')
+#tmux('split-window', '-v')
+#tmux('split-window', '-v', '-p50')
 tmux('display-panes')
