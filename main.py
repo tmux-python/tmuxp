@@ -4,7 +4,7 @@
 
     tmuxwrapper helps you manage tmux workspaces.
 
-    :copyright: Copyright 2013 Tony Narlock.
+    :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 """
 import kaptan
