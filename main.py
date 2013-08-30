@@ -39,10 +39,10 @@ class Session(object):
         tmux_formats = ['#{%s}' % format for format in formats]
 
         windows = tmux(
-            'list-windows',                 # ``tmux list-windows``
-            '-t%s' % kwargs['session_name'],     # target (session name)
-            '-F%s' % '\t'.join(tmux_formats),  # output
-            _iter=True
+            'list-windows',                     # ``tmux list-windows``
+            '-t%s' % kwargs['session_name'],    # target (session name)
+            '-F%s' % '\t'.join(tmux_formats),   # output
+            _iter=True                          # iterate line by line
         )
 
         # combine format keys with values returned from ``tmux list-windows``
@@ -181,7 +181,7 @@ class Window(object):
             '-s',                               # for sessions
             '-t%s' % session.session_name,      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
-            _iter=True
+            _iter=True                          # iterate line by line
         )
 
         # zip and map the results into the dict of formats used above
@@ -258,9 +258,9 @@ def get_sessions():
     tmux_formats = ['#{%s}' % format for format in formats]
 
     sessions = tmux(
-        'list-sessions',                 # ``tmux list-windows``
-        '-F%s' % '\t'.join(tmux_formats),  # output
-        _iter=True
+        'list-sessions',                    # ``tmux list-windows``
+        '-F%s' % '\t'.join(tmux_formats),   # output
+        _iter=True                          # iterate line by line
     )
 
     # combine format keys with values returned from ``tmux list-windows``
