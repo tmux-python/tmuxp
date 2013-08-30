@@ -445,6 +445,7 @@ session = Session.new_session(
     session_name=TEST_SESSION_NAME,
     kill_session=True
 )
+tmux('next-layout', '-t', TEST_SESSION_NAME)
 
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
