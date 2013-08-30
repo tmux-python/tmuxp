@@ -41,11 +41,9 @@ class Session(object):
         windows = tmux(
             'list-windows',                 # ``tmux list-windows``
             '-t%s' % kwargs['session_name'],     # target (session name)
-            '-F%s' % '\t'.join(tmux_formats)  # output
+            '-F%s' % '\t'.join(tmux_formats),  # output
+            _iter=True
         )
-
-        # todo: try _iter here now
-        windows = str(windows).strip().split('\n')
 
         # combine format keys with values returned from ``tmux list-windows``
         windows = [dict(zip(formats, window.split('\t'))) for window in windows]
@@ -180,14 +178,11 @@ class Window(object):
 
         panes = tmux(
             'list-panes',
-            '-s',                                # for sessions
-            '-t%s' % session.session_name,  # target (name of session)
-            '-F%s' % ''.join(tmux_formats)       # output
+            '-s',                               # for sessions
+            '-t%s' % session.session_name,      # target (name of session)
+            '-F%s' % ''.join(tmux_formats),     # output
+            _iter=True
         )
-
-        # `tmux list-panes` outputs a session per-line,
-        # separate every line from `tmux list-panes` into a pane
-        panes = [pane.strip() for pane in str(panes).strip().split('\n')]
 
         # zip and map the results into the dict of formats used above
         panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
@@ -264,11 +259,9 @@ def get_sessions():
 
     sessions = tmux(
         'list-sessions',                 # ``tmux list-windows``
-        '-F%s' % '\t'.join(tmux_formats)  # output
+        '-F%s' % '\t'.join(tmux_formats),  # output
+        _iter=True
     )
-
-    # todo : cut may not be necessary here, we're using -F
-    sessions = [session.strip() for session in str(sessions).strip().split('\n')]
 
     # combine format keys with values returned from ``tmux list-windows``
     sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
