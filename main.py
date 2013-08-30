@@ -154,7 +154,6 @@ class Window(object):
 
     @classmethod
     def from_tmux(cls, session=None, **kwargs):
-        """ parse into normal properties """
         """
             ``tmux list-panes`` outputs 1 session per line ``\n``.
 
@@ -185,12 +184,10 @@ class Window(object):
             '-t%s' % session.session_name,  # target (name of session)
             '-F%s' % ''.join(tmux_formats)       # output
         )
-        # todo : cut may not be necessary here, we're using -F
+
         # `tmux list-panes` outputs a session per-line,
         # separate every line from `tmux list-panes` into a pane
-        panes = str(panes).strip()
-        panes = [pane.strip() for pane in str(panes).split('\n')]
-        #panes = str(panes).split('\n')
+        panes = [pane.strip() for pane in str(panes).strip().split('\n')]
 
         # zip and map the results into the dict of formats used above
         panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
@@ -273,8 +270,7 @@ def get_sessions():
     )
 
     # todo : cut may not be necessary here, we're using -F
-    sessions = str(sessions).strip()
-    sessions = [session.strip() for session in str(sessions).split('\n')]
+    sessions = [session.strip() for session in str(sessions).strip().split('\n')]
 
     # combine format keys with values returned from ``tmux list-windows``
     sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
