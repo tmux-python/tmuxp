@@ -1,7 +1,10 @@
 import kaptan
-from sh import tmux, cut
+from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint
 
+
+class SessionExists(Exception):
+    pass
 
 class Session(object):
 
@@ -11,6 +14,47 @@ class Session(object):
         else:
             for (k, v) in kwargs.items():
                 setattr(self, k, v)
+
+    @classmethod
+    def new_session(cls, session_name=None, kill_session=False):
+        """equivalent to ``tmux new-session``
+            returns Session object
+        """
+
+        try:
+            if len(tmux('has-session', '-t', TEST_SESSION_NAME)) == 0:
+                if kill_session:
+                    tmux('kill-session', '-t', TEST_SESSION_NAME)
+                    pprint('session %s exists. killed it.' % TEST_SESSION_NAME)
+                else:
+                    raise SessionExists('Session named %s exists' % session_name)
+        except ErrorReturnCode_1:
+            pass
+
+        pprint('creating session')
+
+        formats = SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+
+        session_info = tmux(
+            'new-session',
+            '-d',
+            '-s', TEST_SESSION_NAME,
+            '-P', '-F%s' % '\t'.join(tmux_formats),   # output
+            )
+
+        # combine format keys with values returned from ``tmux list-windows``
+        session_info = dict(zip(formats, session_info.split('\t')))
+
+        # clear up empty dict
+        session_info = dict((k, v) for k, v in session_info.iteritems() if v)
+
+        session = cls(session_name=session_name)
+        session._TMUX = dict()
+        for (k, v) in session_info.items():
+            session._TMUX[k] = v
+
+        return session
 
     @classmethod
     def from_tmux(cls, **kwargs):
@@ -217,19 +261,28 @@ class Window(object):
 class Pane(object):
 
     @classmethod
+    def split_window(cls, session=None, window=None, **kwargs):
+        """ return a Pane object from ``tmux split-window``
+            arguments are results passed from tmux
+        """
+        pass
+
+    @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
         """ return a Pane object
-            arguments are results passed from tmux
+            for freezing current sessions from tmux
         """
         if not session:
             raise ValueError('Pane generated using ``.from_tmux`` must have \
                              ``Session`` object')
+        else:
             if not isinstance(session, Session):
                 raise TypeError('session must be a Session object')
 
         if not window:
             raise ValueError('Pane generated using ``.from_tmux`` must have \
                              ``Window`` object')
+        else:
             if not isinstance(window, Window):
                 raise TypeError('window must be a Window object')
 
@@ -432,10 +485,16 @@ tmux('switch-client', '-t0')
 tmux('switch-client', '-ttony')
 
 TEST_SESSION_NAME = 'tmuxwrapper_dev'
-if len(tmux('has-session', '-t', TEST_SESSION_NAME)) == 0:
-    tmux('kill-session', '-t', TEST_SESSION_NAME)
-    pprint('session exists. killed it.')
 
-pprint('creating session')
-tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
+session = Session.new_session(
+    session_name=TEST_SESSION_NAME,
+    kill_session=True
+)
+#tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
 tmux('switch-client', '-t', TEST_SESSION_NAME)
+
+tmux('split-window', '-h', '-p30')
+#tmux('send-keys', '-t', 'cd /srv/www/flaskr')
+tmux('split-window', '-v', '-p50')
+tmux('split-window', '-v', '-p50')
+tmux('display-panes')
