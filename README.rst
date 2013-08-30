@@ -1,6 +1,8 @@
 `tmuxwrapper` was invented to solve the panes / pains of managing
 workspaces
 
+under development, not ready for public use
+
 Goals
 -----
 
@@ -100,23 +102,34 @@ after_cmd.
 Roadmap
 -------
 
-To a degree, be able to pull running tmux sessions, windows and panes
+- To a degree, be able to pull running tmux sessions, windows and panes
 into Session, Window, and Pane objects and therefore be exportable
 into configs. A la, many attempts before, a ``pip freeze``.
-
-The biggest difficulty is keeping the abstraction of tmux pure and
+- The biggest difficulty is keeping the abstraction of tmux pure and
 pythonic.
-
-A workflow to test a configuration file, launch tmux session/windows/panes
+- A workflow to test a configuration file, launch tmux session/windows/panes
 with a ctrl-a ``tbd`` to ``kill-session`` and monitor config file for changes,
 lint it, create a new session, switch to it, and ``kill-session`` the old
 one.
-
-Check for ``.hg`` and ``.git`` in ``$HOME/.tmuxwrapper``, set a
+- Check for ``.hg`` and ``.git`` in ``$HOME/.tmuxwrapper``, set a
 notification if it is out of date.
-
-Have ``freeze`` check for ``virtualenv``, ``rvm``, ``perlbrew`` and add
+- Have ``freeze`` check for ``virtualenv``, ``rvm``, ``perlbrew`` and add
 it to the ``before_cmd``.
+- grab pane when new_session created
+- session.new_window
+- create session.[windowindex] = Window or session.w.[window index] = Window ?
+- session.to_yaml() export config to yaml
+- session.to_yaml().save('filename')
+- session.from_yaml().load('filename')
+- cli: allow loading session   tmw `filename.{yaml, json, ..}, load,
+  -.   catch has-session, prompt to rename
+  -   possibility: open to ``-t`` group session to target?
+- window.split_pane to split-pane
+- experiment: have windows with 1 pane have access to pane objects?
+- experiment: using .send-keys can be done on session, window and pane
+  level for power?
+- experiment: Server object for managing / orchestrating across sessions?
+- pane.send_keys for send-keys
 
 Reference
 ---------
