@@ -130,7 +130,7 @@ Roadmap
 - experiment: have windows with 1 pane have access to pane objects?
 - have session inherit  window methods of the current active window
   such as session.next_layout is now available
-- have window inherit some pane methods of current pane? only if just 2?
+- have window inherit some pane methods of current pane? only if just 1?
 - experiment: using .send-keys can be done on session, window and pane
   level for power?
 - experiment: Server object for managing / orchestrating across sessions?
