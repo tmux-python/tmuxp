@@ -25,13 +25,11 @@ class Session(object):
     session_name = None
 
     def __init__(self, **kwargs):
-
         # do we need this?
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
         else:
-            for (k, v) in kwargs.items():
-                setattr(self, k, v)
+            self.session_name = kwargs['session_name']
 
     @classmethod
     def new_session(cls,
@@ -168,9 +166,28 @@ class Session(object):
         windows = [Window.from_tmux(session=self, **window) for window in windows]
         return windows
 
+    def active_window(self):
+        windows = self.list_windows()
+
+        for window in windows:
+            pprint(window._TMUX)
+            if 'window_active' in window._TMUX:
+                # for now window_active is a unicode
+                if window._TMUX['window_active'] == '1':
+                    return window
+                else:
+                    continue
+
+        return False
+
     @property
     def windows(self):
-        return self._windows
+        # check if this object is based off an active session, use _TMUX for
+        # now.
+        if self._TMUX:
+            return self.list_windows()
+        else:
+            return self._windows
 
     def __repr__(self):
         # todo test without session_name
@@ -220,23 +237,25 @@ class Window(object):
         $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
     '''
 
-    def __init__(self, **kwargs):
+    _panes = None
 
-        if 'session' in kwargs:
-            self._panes = None
-            if isinstance(kwargs['session'], Session):
-                self._session = kwargs['session']
-            else:
-                raise TypeError('session must be a Session object')
+    def __init__(self, session=None):
+        if not session:
+            raise ValueError(
+                "Window requires a Session object by "
+                "specifying session=Session"
+            )
+        if not isinstance(session, Session):
+            raise TypeError('session must be a Session object')
 
-        [setattr(self, k, v) for (k, v) in kwargs.items() if k is not 'session']
+        self._session = session
 
     def __repr__(self):
         # todo test without session_name
         return "%s(%s %s, %s)" % (
             self.__class__.__name__,
             self._TMUX['window_index'],
-            self._TMUX['window_name'], # @todo, bug when window name blank
+            self._TMUX['window_name'],  # @todo, bug when window name blank
             self._session
         )
 
@@ -266,8 +285,8 @@ class Window(object):
                 "Window requires a Session object by "
                 "specifying session=Session"
             )
-            if not isinstance(session, Session):
-                raise TypeError('session must be a Session object')
+        if not isinstance(session, Session):
+            raise TypeError('session must be a Session object')
 
         window = cls(session=session)
 
@@ -453,6 +472,7 @@ pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
 pprint(session._windows)
 pprint(session._windows[0]._TMUX)
 pprint(session._windows[0]._panes)
+pprint(session.active_window())
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
 #tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
