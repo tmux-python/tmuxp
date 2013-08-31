@@ -39,6 +39,11 @@
         from a global object. :attrib:`._session` and :attrib:`._window`
         in ``Window`` and ``Pane`` are properties that forward to that.
 
+    Which tmux client is used?
+        tmux allows for multiple clients and sessions. ``tmuxwrapper`` will
+        interact with the most recently attached client you attached. When
+        testing, just run a ``tmux`` in shell and do what you have to do.
+
 """
 import kaptan
 from sh import tmux, cut, ErrorReturnCode_1
@@ -135,16 +140,15 @@ class Session(object):
             Kill current session if ``tmux has-session``. Useful for testing
             workspaces.
         '''
-        if not len(tmux('has-session', '-t', session_name)):
-            try:
-
+        try:
+            if not len(tmux('has-session', '-t', session_name)):
                 if kill_session:
                     tmux('kill-session', '-t', session_name)
                     pprint('session %s exists. killed it.' % session_name)
                 else:
                     raise SessionExists('Session named %s exists' % session_name)
-            except ErrorReturnCode_1:
-                pass
+        except ErrorReturnCode_1:
+            pass
 
         pprint('creating session')
 
@@ -619,13 +623,37 @@ for window in config.get('windows'):
     windows.append(window)
 
 
+class Server(object):
+    def list_sessions(self):
+        pass
+
+    @property
+    def sessions(self):
+        pass
+
 for session in Session.list_sessions():
     for window in session.windows:
         for pane in window.panes:
             pass
 
-tmux('switch-client', '-t0')
-tmux('switch-client', '-ttony')
+
+class NoClientException(object):
+    pass
+
+
+try:
+    tmux('switch-client', '-t0')
+except ErrorReturnCode_1 as wat:
+    pprint(wat)
+    pass
+
+
+try:
+
+    tmux('switch-client', '-ttony')
+except ErrorReturnCode_1 as wat:
+    pprint(wat)
+    pass
 
 TEST_SESSION_NAME = 'tmuxwrapper_dev'
 
