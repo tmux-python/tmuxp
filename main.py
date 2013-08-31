@@ -38,9 +38,8 @@ import kaptan
 from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
-
-
 from functools import wraps
+
 
 def live_tmux(f):
     '''
@@ -89,14 +88,17 @@ def live_tmux(f):
         return f(self)
     return live_tmux
 
+
 class SessionExists(Exception):
     pass
+
 
 class NotRunning(Exception):
     '''
         class for when ._TMUX doesn't exist, this will cause an issue with
         building the workspace and running commands
     '''
+    pass
 
 
 class Session(object):
@@ -436,8 +438,6 @@ class Window(object):
 
         return window
 
-
-
     @live_tmux
     def list_panes(self):
         '''
@@ -470,7 +470,6 @@ class Window(object):
         self._panes = [Pane.from_tmux(session=self._session, window=self, **pane) for pane in panes]
 
         return self._panes
-
 
     @property
     def panes(self):
@@ -625,20 +624,10 @@ session = Session.new_session(
     session_name=TEST_SESSION_NAME,
     kill_session=True
 )
-#tmux('next-layout', '-t', TEST_SESSION_NAME)
-#pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
 tmux('switch-client', '-t', TEST_SESSION_NAME)
 
-#tmux('next-layout', '-t', TEST_SESSION_NAME)
-#pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
-#pprint(session._windows)
-#pprint(session._windows[0]._TMUX)
-#pprint(session._windows[0]._panes)
-#pprint(session.active_window())
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
-#tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
-
 
 tmux('split-window')
 session.active_window().select_layout('even-horizontal')
@@ -657,14 +646,5 @@ session.active_window().select_pane(0)
 
 
 #session.send_keys()   send to all? or active pane?
-
 #session.send_keys(all=True) send to all windows + panes?
-#tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'cd /srv/www/flaskr')
-#tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'Enter')
-#tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'clear')
-
-#.send_keys.enter()
-# return self, and allow send_keys(cmd, enter=True)
-#tmux('split-window', '-v')
-#tmux('split-window', '-v', '-p50')
 tmux('display-panes')
