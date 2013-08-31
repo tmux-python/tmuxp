@@ -135,6 +135,16 @@ Roadmap
   level for power?
 - experiment: Server object for managing / orchestrating across sessions?
 - pane.send_keys for send-keys
+- tmux session config generator
+  - log god: scan /var/log /opt/etc/var/log/ for apache2, nginx, Xorg and
+    create a session with windows reading logs of common 90% cases.
+  - web warrior: check for apache2/nginx/php/supervisor/upstart etc dirs
+    and make a session for that.
+  - dot config: check for .vim .config/awesome .tmux.conf and make a
+    session with windows for those config files
+- feature like `z` to attach search session name / windows name / pane
+  directory, pane apps, and finally buffers to attach directly to that
+  session
 
 Reference
 ---------
