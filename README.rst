@@ -145,6 +145,32 @@ Roadmap
 - feature like `z` to attach search session name / windows name / pane
   directory, pane apps, and finally buffers to attach directly to that
   session.  note `find-window` does this.
+- docs in this style?
+  http://docs.python-guide.org/en/latest/notes/styleguide/
+
+Roadmap
+-------
+
+0.1
+"""
+
+- verbose config structure
+- yaml support
+- docs
+  - for install from github
+  - code docs
+  - ipython notebook overview of internals
+  - example config files
+  - before_cmd, after_cmd
+
+-dev
+""""
+
+- python package
+- python version compatability (tested in 2.7 now)
+- tmux version compatibility (using git version now)
+- unit testing
+- video overview
 
 Reference
 ---------
