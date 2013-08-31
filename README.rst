@@ -144,7 +144,7 @@ Roadmap
     session with windows for those config files
 - feature like `z` to attach search session name / windows name / pane
   directory, pane apps, and finally buffers to attach directly to that
-  session
+  session.  note `find-window` does this.
 
 Reference
 ---------
