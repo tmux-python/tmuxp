@@ -46,10 +46,21 @@
 
 """
 import kaptan
-from sh import tmux, cut, ErrorReturnCode_1
+from sh import tmux as tmx, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 from functools import wraps
+
+
+def tmux(*args, **kwargs):
+    '''
+    wrap tmux from ``sh`` library in a try catch
+    '''
+    try:
+        return tmx(*args, **kwargs)
+    except ErrorReturnCode_1 as e:
+        pprint(e)
+        pass
 
 
 def live_tmux(f):
@@ -98,6 +109,10 @@ def live_tmux(f):
             )
         return f(self)
     return live_tmux
+
+
+class NoClientException(object):
+    pass
 
 
 class SessionExists(Exception):
@@ -637,23 +652,9 @@ for session in Session.list_sessions():
             pass
 
 
-class NoClientException(object):
-    pass
-
-
-try:
-    tmux('switch-client', '-t0')
-except ErrorReturnCode_1 as wat:
-    pprint(wat)
-    pass
-
-
-try:
-
-    tmux('switch-client', '-ttony')
-except ErrorReturnCode_1 as wat:
-    pprint(wat)
-    pass
+tmux('switch-client', '-t0')
+tmux('switch-client', '-ttony')
+tmux('switch-client', '-ttonsy')
 
 TEST_SESSION_NAME = 'tmuxwrapper_dev'
 
@@ -674,14 +675,14 @@ tmux('new-window')
 session.select_window(1)
 
 #session.active_window().select_layout('even-vertical')
-pprint(session.active_window()._panes[0]._TMUX['pane_index'])
-pprint(session.active_window().active_pane())
+#pprint(session.active_window()._panes[0]._TMUX['pane_index'])
+#pprint(session.active_window().active_pane())
 
 session.active_window().select_pane(1)
 session.active_pane().send_keys('cd /srv/www/flaskr')
 session.active_window().select_pane(0)
 
-
+#pprint(dir(tmux))
 #session.send_keys()   send to all? or active pane?
 #session.send_keys(all=True) send to all windows + panes?
 tmux('display-panes')
