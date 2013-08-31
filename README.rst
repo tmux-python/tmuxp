@@ -154,6 +154,10 @@ Roadmap
   window_name, etc)
 - global for server, contains sessions, attribute _session and
   _window object references global / thread local
+- ipython notebook try using fbcat + imagemagick convert to see results
+  of tmux changes.  fbgrab + tty works well for demonstration
+- also look into scrot, x11 solutions and
+  https://github.com/KittyKatt/screenFetch
 
 Roadmap
 -------
