@@ -6,12 +6,88 @@
 
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
+
+    Terminology I use in documentation:
+
+    ``tmux(1)``
+        the actual tmux application, a la unix manpages, see
+        http://superuser.com/a/297705.
+
+    ``MetaData`` or the ``._TMUX`` attribute in objects
+        information ``tmux(1)`` returns on certain commands listing or creating
+        sessions, windows nad panes.
+
+    session
+        used by ``tmux(1)`` to hold windows, panes. its' counterpart is
+        :class:`Session` object.
+
+    window
+        used by ``tmux(1) to hold panes. a freshly created window only has one
+        pane. ``tmux(1)``'s ``split-window`` can create panes horizontally
+        or vertically. represented by :class:`Window`
+
+    pane
+        an individual pseudo terminal / shell prompt. represented by the
+        :class:`Pane` object.
+
+    :meth:`from_tmux`
+        pulls information from a live tmux server.
+
 """
 import kaptan
 from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 
+
+from functools import wraps
+
+def live_tmux(f):
+    '''
+    decorator that checks for :attrib:`._TMUX` inside :class:`.Session`,
+    :class:`.Window` and :class:`.Pane` objects.
+
+    :attrib:`._TMUX` stores valuable information for an tmux object's life
+    cycle. Hereinafter, I will call this ``MetaData``.
+
+    ``tmux( returns information
+
+    @todo: in the future, :class:`Pane` will have ``PANE_FORMATS``,
+    ``WINDOW_FORMATS`` and ``SESSION_FORMATS`` metadata, and :class:`Window`
+    will have ``WINDOW_FORMATS`` and ``SESSION_FORMATS``. If a :attrib:`._TMUX
+    exists, it should be possible to do a lookup for its parent :class:`Window`
+    or :class:`Pane` object.
+
+    Because this data is live in the system, caching strategy isn't a priority.
+
+    If a session is imported directly from a configuration or is otherwise
+    being built manually via CLI or scripting, :attrib:`._TMUX` is populated
+    when:
+
+    A tmux session is created with:
+
+    :meth:`Session.create_session` aka ``tmux create-session``
+
+    :meth:`Session.list_sessions` aka ``tmux list-sessions``
+    :meth:`Session.new_window` aka ``tmux new-window``
+    :meth:`Window.split_window` aka ``tmux split-window``
+        returns a :class:`Pane` with pane metadata
+
+        - its first :class:`Window`, in :attrib:`._windows`, and subsequently,
+          and the :class:`Window`'s first :class:`.Pane` in :attrib:`._panes`
+          is populated with :attrib:`._TMUX`. This is returned because the
+
+            attributes.
+        - a window is created with :meth:`Session.create_session`.
+    '''
+    def live_tmux(self):
+        if not self._TMUX:
+            raise NotRunning(
+                "self._TMUX not found, this object is not part of an active"
+                "tmux session. If you need help please post an issue on github"
+            )
+        return f(self)
+    return live_tmux
 
 class SessionExists(Exception):
     pass
@@ -332,7 +408,7 @@ class Window(object):
 
         window._panes = window.list_panes()
 
-
+        pprint(type(window._panes))
         pprint('%s, panes for %s' % (
             len(window._panes),
             kwargs['window_index']
@@ -341,7 +417,13 @@ class Window(object):
 
         return window
 
+
+
+    @live_tmux
     def list_panes(self):
+        '''
+            Returns a list of :class:`.Pane` for the window.
+        '''
         formats = PANE_FORMATS + WINDOW_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
@@ -365,8 +447,6 @@ class Window(object):
         panes = [
             pane for pane in panes if pane['window_index'] == self._TMUX['window_index']
         ]
-
-        #pprint(panes)
 
         self._panes = [Pane.from_tmux(session=self._session, window=self, **pane) for pane in panes]
 
@@ -439,12 +519,21 @@ class Pane(object):
         return pane
 
     def send_keys(self, cmd, enter=True):
+        '''
+            ```tmux send-keys``` to the pane
+
+            enter
+                boolean. send enter after sending the key
+        '''
         tmux('send-keys', '-t', int(self._TMUX['pane_index']), cmd)
 
         if enter:
             self.enter()
 
     def enter(self):
+        '''
+            ```tmux send-keys``` send Enter to the pane
+        '''
         tmux('send-keys', '-t', int(self._TMUX['pane_index']), 'Enter')
 
     def __init__(self, **kwargs):
