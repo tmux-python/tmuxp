@@ -267,6 +267,15 @@ class Window(object):
         'tiled'
     ]
 
+    def select_layout(self, layout=None):
+
+        tmux(
+            'select-layout',
+            '-t%s' % self._TMUX['window_name'],      # target (name of session)
+            layout
+        )
+
+
     @classmethod
     def from_tmux(cls, session=None, **kwargs):
         '''
@@ -465,21 +474,29 @@ session = Session.new_session(
     session_name=TEST_SESSION_NAME,
     kill_session=True
 )
-tmux('next-layout', '-t', TEST_SESSION_NAME)
-pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
-tmux('next-layout', '-t', TEST_SESSION_NAME)
-pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
-pprint(session._windows)
-pprint(session._windows[0]._TMUX)
-pprint(session._windows[0]._panes)
-pprint(session.active_window())
+#tmux('next-layout', '-t', TEST_SESSION_NAME)
+#pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
+tmux('switch-client', '-t', TEST_SESSION_NAME)
+
+#tmux('next-layout', '-t', TEST_SESSION_NAME)
+#pprint(tmux('select-layout', '-t', TEST_SESSION_NAME))
+#pprint(session._windows)
+#pprint(session._windows[0]._TMUX)
+#pprint(session._windows[0]._panes)
+#pprint(session.active_window())
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
 #tmux('new-session', '-d', '-s', TEST_SESSION_NAME)
-tmux('switch-client', '-t', TEST_SESSION_NAME)
+
 
 tmux('split-window')
-#tmux('send-keys', '-t', 'cd /srv/www/flaskr')
+session.active_window().select_layout('even-horizontal')
+tmux('split-window')
+#session.active_window().select_layout('even-vertical')
+pprint(session.active_window()._panes[0]._TMUX['pane_index'])
+tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'cd /srv/www/flaskr')
+tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'Enter')
+tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'clear')
 #tmux('split-window', '-v')
 #tmux('split-window', '-v', '-p50')
 tmux('display-panes')
