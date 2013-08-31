@@ -147,6 +147,13 @@ Roadmap
   session.  note `find-window` does this.
 - docs in this style?
   http://docs.python-guide.org/en/latest/notes/styleguide/
+- should ._TMUX metadata make passing Session and Window objects into new
+  Window and Pane objects obsolete? look at thread locals
+- contextmanager's and with to iterate over a server, session, window
+- contextmanager iterate for all panes that have an attribute (directory,
+  window_name, etc)
+- thread local for server, contains sessions, attribute _session and
+  _window object references thread local
 
 Roadmap
 -------
