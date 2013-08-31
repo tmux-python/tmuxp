@@ -33,6 +33,12 @@
     :meth:`from_tmux`
         pulls information from a live tmux server.
 
+    Magic
+        the ``MetaData`` in ``._TMUX`` attributes on :class:`Session`,
+        :class:`Window` and :class:`Pane` objects is used to pull a reference
+        from a global object. :attrib:`._session` and :attrib:`._window`
+        in ``Window`` and ``Pane`` are properties that forward to that.
+
 """
 import kaptan
 from sh import tmux, cut, ErrorReturnCode_1
@@ -477,6 +483,9 @@ class Window(object):
 
 
 class Pane(object):
+    '''
+        ``tmux(1)`` pane
+    '''
 
     @classmethod
     def split_window(cls, session=None, window=None, **kwargs):
