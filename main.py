@@ -265,6 +265,16 @@ class Session(object):
 
         return False
 
+    def select_window(self, window):
+        '''
+            ``tmux(1) select-window``
+
+            window
+                integer of the window index, also can be 'last-window' (-l),
+                'next-window' (-n), or 'previous-window' (-p).
+        '''
+        tmux('select-window', '-t', window)
+
     def active_pane(self):
         '''
             Returns active :class:`.Pane` object
@@ -364,6 +374,15 @@ class Window(object):
             '-t%s' % self._TMUX['window_name'],      # target (name of session)
             layout
         )
+
+    def select_pane(self, pane):
+        '''
+            ``tmux(1) select-pane``
+
+            pane
+                integer of the pane index, or -U, -D, -L, -R. put a konami code
+        '''
+        tmux('select-pane', '-t', pane)
 
     def active_pane(self):
         panes = self.list_panes()
@@ -624,10 +643,17 @@ tmux('switch-client', '-t', TEST_SESSION_NAME)
 tmux('split-window')
 session.active_window().select_layout('even-horizontal')
 tmux('split-window')
+
+tmux('new-window')
+session.select_window(1)
+
 #session.active_window().select_layout('even-vertical')
 pprint(session.active_window()._panes[0]._TMUX['pane_index'])
 pprint(session.active_window().active_pane())
+
+session.active_window().select_pane(1)
 session.active_pane().send_keys('cd /srv/www/flaskr')
+session.active_window().select_pane(0)
 
 
 #session.send_keys()   send to all? or active pane?
