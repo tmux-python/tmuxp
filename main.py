@@ -16,6 +16,12 @@ from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 class SessionExists(Exception):
     pass
 
+class NotRunning(Exception):
+    '''
+        class for when ._TMUX doesn't exist, this will cause an issue with
+        building the workspace and running commands
+    '''
+
 
 class Session(object):
     '''
@@ -167,6 +173,9 @@ class Session(object):
         return windows
 
     def active_window(self):
+        '''
+            Returns active :class:`.Window` object
+        '''
         windows = self.list_windows()
 
         for window in windows:
@@ -179,6 +188,12 @@ class Session(object):
                     continue
 
         return False
+
+    def active_pane(self):
+        '''
+            Returns active :class:`.Pane` object
+        '''
+        return self.active_window().active_pane()
 
     @property
     def windows(self):
@@ -268,13 +283,25 @@ class Window(object):
     ]
 
     def select_layout(self, layout=None):
-
         tmux(
             'select-layout',
             '-t%s' % self._TMUX['window_name'],      # target (name of session)
             layout
         )
 
+    def active_pane(self):
+        panes = self.list_panes()
+
+        for pane in panes:
+            pprint(pane._TMUX)
+            if 'pane_active' in pane._TMUX:
+                # for now pane_active is a unicode
+                if pane._TMUX['pane_active'] == '1':
+                    return pane
+                else:
+                    continue
+
+        return False
 
     @classmethod
     def from_tmux(cls, session=None, **kwargs):
@@ -303,13 +330,25 @@ class Window(object):
         for (k, v) in kwargs.items():
             window._TMUX[k] = v
 
+        window._panes = window.list_panes()
+
+
+        pprint('%s, panes for %s' % (
+            len(window._panes),
+            kwargs['window_index']
+        ))
+        pprint(window._panes)
+
+        return window
+
+    def list_panes(self):
         formats = PANE_FORMATS + WINDOW_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
         panes = tmux(
             'list-panes',
             '-s',                               # for sessions
-            '-t%s' % session.session_name,      # target (name of session)
+            '-t%s' % self._session.session_name,      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
             _iter=True                          # iterate line by line
         )
@@ -324,20 +363,15 @@ class Window(object):
 
         # filter by window_index
         panes = [
-            pane for pane in panes if pane['window_index'] == window._TMUX['window_index']
+            pane for pane in panes if pane['window_index'] == self._TMUX['window_index']
         ]
 
         #pprint(panes)
 
-        window._panes = [Pane.from_tmux(session=session, window=window, **pane) for pane in panes]
+        self._panes = [Pane.from_tmux(session=self._session, window=self, **pane) for pane in panes]
 
-        pprint('%s, panes for %s' % (
-            len(window._panes),
-            kwargs['window_index']
-        ))
-        pprint(window._panes)
+        return self._panes
 
-        return window
 
     @property
     def panes(self):
@@ -403,6 +437,15 @@ class Pane(object):
         pane._window = window
 
         return pane
+
+    def send_keys(self, cmd, enter=True):
+        tmux('send-keys', '-t', int(self._TMUX['pane_index']), cmd)
+
+        if enter:
+            self.enter()
+
+    def enter(self):
+        tmux('send-keys', '-t', int(self._TMUX['pane_index']), 'Enter')
 
     def __init__(self, **kwargs):
         pass
@@ -494,9 +537,19 @@ session.active_window().select_layout('even-horizontal')
 tmux('split-window')
 #session.active_window().select_layout('even-vertical')
 pprint(session.active_window()._panes[0]._TMUX['pane_index'])
-tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'cd /srv/www/flaskr')
-tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'Enter')
-tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'clear')
+pprint(session.active_window().active_pane())
+session.active_pane().send_keys('cd /srv/www/flaskr')
+
+
+#session.send_keys()   send to all? or active pane?
+
+#session.send_keys(all=True) send to all windows + panes?
+#tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'cd /srv/www/flaskr')
+#tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'Enter')
+#tmux('send-keys', '-t', int(session.active_window()._panes[0]._TMUX['pane_index']), 'clear')
+
+#.send_keys.enter()
+# return self, and allow send_keys(cmd, enter=True)
 #tmux('split-window', '-v')
 #tmux('split-window', '-v', '-p50')
 tmux('display-panes')
