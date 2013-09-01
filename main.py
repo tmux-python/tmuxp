@@ -44,6 +44,15 @@
         interact with the most recently attached client you attached. When
         testing, just run a ``tmux`` in shell and do what you have to do.
 
+    fnmatch
+        tmuxwrapper is intended to work with fnmatch compatible functions. If
+        an fnmatch isn't working at the API level, please file an issue.
+
+    Limitations
+        The client that is picked is most recently attached. For normal usage,
+        this isn't an issue, but more much more advanced used cases, <0.5% of
+        people may not be covered.
+
 """
 import kaptan
 from sh import tmux as tmx, cut, ErrorReturnCode_1
@@ -640,12 +649,38 @@ for window in config.get('windows'):
 
 class Server(object):
     '''
-    holds information on live, running tmux server
+    ``t`` global. stores information on live, running tmux server
 
     Server.sessions [<Session>, ..]
         Session.windows [<Window>, ..]
             Window.panes [<Pane>, ..]
                 Pane
+
+    Panes, Windows and Sessions which are populated with _TMUX MetaData.
+
+    This is an experimental design choice to just leave `-F` commands to give
+    _TMUX information, decorate methods to throw an exception if it requires
+    interaction with tmux
+
+    This way, with ._TMUX, session and window can be accessed as a property,
+    and the session and window may be looked up dynamically.
+
+    The children inside a ``t`` object are created live. We should look into
+    giving them context managers so::
+
+        with Server.select_session(fnmatch):
+            # have access to session object
+            # note at this level fnmatch may have to be done via python
+            # and list-sessions to retrieve object correctly
+            session.la()
+            with session.active_window() as window:
+                # access to current window
+                pass
+            with session.find_window(fnmatch) as window:
+                # access to tmux matches window
+                with window.active_path() as pane:
+                    # access to pane
+                    pass
 
     '''
     def list_sessions(self):
