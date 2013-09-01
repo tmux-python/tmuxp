@@ -639,12 +639,28 @@ for window in config.get('windows'):
 
 
 class Server(object):
+    '''
+    holds information on live, running tmux server
+
+    Server.sessions [<Session>, ..]
+        Session.windows [<Window>, ..]
+            Window.panes [<Pane>, ..]
+                Pane
+
+    '''
     def list_sessions(self):
         pass
 
     @property
     def sessions(self):
-        pass
+        raise NotImplemented
+
+    def list_clients(self):
+        raise NotImplemented
+
+
+t = Server()
+
 
 for session in Session.list_sessions():
     for window in session.windows:
