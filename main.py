@@ -99,7 +99,19 @@ from sh import tmux as tmx, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 from functools import wraps
+import logging, sys
+from logxtreme import RainbowLoggingHandler
+#LOG_FORMAT = "(%(levelname)s) %(filename)s:%(lineno)s.%(funcName)s : %(asctime)-15s:\n\t%(message)s"
+#logging.basicConfig(format=LOG_FORMAT, level='DEBUG')
 
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+
+handler = RainbowLoggingHandler(sys.stdout)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler.setFormatter(formatter)
+root_logger.addHandler(handler)
+logger = logging.getLogger("test")
 
 def tmux(*args, **kwargs):
     '''
@@ -108,13 +120,11 @@ def tmux(*args, **kwargs):
     try:
         return tmx(*args, **kwargs)
     except ErrorReturnCode_1 as e:
-        print(
-            "\tcmd:\t%s\n"
+        logging.error(
+            "\n\tcmd:\t%s\n"
             "\terror:\t%s"
             % (e.full_cmd, e.stderr)
         )
-        pass
-
 
 def live_tmux(f):
     '''
@@ -217,13 +227,13 @@ class Session(object):
             if not len(tmux('has-session', '-t', session_name)):
                 if kill_session:
                     tmux('kill-session', '-t', session_name)
-                    pprint('session %s exists. killed it.' % session_name)
+                    logging.debug('session %s exists. killed it.' % session_name)
                 else:
                     raise SessionExists('Session named %s exists' % session_name)
         except ErrorReturnCode_1:
             pass
 
-        pprint('creating session')
+        logging.debug('creating session %s' % session_name)
 
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -340,11 +350,6 @@ class Session(object):
             dict((k, v) for k, v in window.iteritems() if v) for window in windows
         ]
 
-        #pprint('%s, windows for %s' % (
-        #    len(windows),
-        #    self.session_name
-        #))
-
         return windows
 
     def sync_windows(self):
@@ -356,50 +361,37 @@ class Session(object):
 
         new_windows = self._list_windows()
 
-        pprint([w._TMUX['window_id'] for w in self._windows])
-        pprint([w['window_id'] for w in self._list_windows()])
-
         new = {window['window_id']: window for window in new_windows}
         old = {window._TMUX['window_id']: window for window in self._windows}
+
         created = set(new.keys()) - set(old.keys())
         deleted = set(old.keys()) - set(new.keys())
         intersect = set(new.keys()).intersection(set(old.keys()))
-        print(
-            "\tcreated: %s\n"
-            "\tdeleted: %s\n"
-            "\tintersect: %s" % (created, deleted, intersect)
-        )
 
         diff = {id: dict(set(new[id].items())-set(old[id]._TMUX.items())) for id in intersect}
-        print "diff: "
-        pprint(diff)
 
-        print "created: "
-        for o in created:
-            pprint(o)
-
-        print "deleted: "
-        for o in deleted:
-            pprint(o)
-
-        print "intersect:"
-        for o in intersect:
-            pprint(o)
+        logging.debug(
+            "syncing windows"
+            "\n\tdiff: %s\n"
+            "\tcreated: %s\n"
+            "\tdeleted: %s\n"
+            "\tintersect: %s" % (diff, created, deleted, intersect)
+        )
 
         for w in self._windows:
-            # remove window objects if deleted or out of sesion
+            # remove window objects if deleted or out of session
             if w._TMUX['window_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
-                pprint(w)
+                logging.debug("removing %s" % w)
                 self._windows.remove(w)
 
             if w._TMUX['window_id'] in intersect:
-                pprint('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
+                logging.debug('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
                 w._TMUX.update(diff[w._TMUX['window_id']])
 
         # create window objects for non-existant window_id's
         for window in [new[window_id] for window_id in created]:
-            pprint('new window %s' % w._TMUX['window_id'])
-            pprint('adding %s %s / %s' % (window['window_name'], window['window_id'], w._TMUX['window_id']))
+            logging.debug('new window %s' % w._TMUX['window_id'])
+            logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
             self._windows.append(Window.from_tmux(session=self, **window))
 
     def list_windows(self):
@@ -570,7 +562,6 @@ class Window(object):
         panes = self.list_panes()
 
         for pane in panes:
-            #pprint(pane._TMUX)
             if 'pane_active' in pane._TMUX:
                 # for now pane_active is a unicode
                 if pane._TMUX['pane_active'] == '1':
@@ -608,13 +599,6 @@ class Window(object):
             window._TMUX[k] = v
 
         window._panes = window.list_panes()
-
-        #pprint(type(window._panes))
-        #pprint('%s, panes for %s' % (
-        #    len(window._panes),
-        #    kwargs['window_index']
-        #))
-        #pprint(window._panes)
 
         return window
 
@@ -871,7 +855,7 @@ class Server(object):
             if 'session_attached' in session._TMUX:
                 # for now session_active is a unicode
                 if session._TMUX['session_attached'] == '1':
-                    pprint('session attached')
+                    logging.info('session %s attached', session.session_name)
                     attached_sessions.append(session)
                 else:
                     continue
@@ -915,81 +899,25 @@ session = Session.new_session(
 )
 
 t.switch_client(TEST_SESSION_NAME)
-#tmux('switch-client', '-t', TEST_SESSION_NAME)
 
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
 
-#tmux('split-window')
 session.attached_window().split_window()
 session.attached_window().select_layout('even-horizontal')
-#tmux('split-window')
 session.attached_window().split_window()
 session.attached_window().split_window('-h')
-#tmux('new-window')
 
 session.select_window(1)
-
-#session.attached_window().select_layout('even-vertical')
-#pprint(session.attached_window()._panes[0]._TMUX['pane_index'])
-#pprint(session.attached_window().attached_pane())
 
 session.attached_window().select_pane(1)
 session.attached_pane().send_keys('cd /srv/www/flaskr')
 session.attached_window().select_pane(0)
 session.attached_pane().send_keys('source .env/bin/activate')
-
 session.new_window('second')
 session.new_window('testing 3')
-pprint(
-    len(session._windows)
-)
 session.select_window(1)
-pprint(
-    len(session._windows),
-)
-
 session.sync_windows()
-pprint(
-    len(session._list_windows()),
-)
-pprint(
-    len(session._windows),
-)
-pprint(
-    len(session.list_windows())
-)
-
 session.kill_window(target_window='3')
-
-
-
 session.sync_windows()
-
-pprint(
-    len(session._list_windows()),
-)
-pprint(
-    len(session._windows),
-)
-pprint(
-    len(session.list_windows())
-)
-#pprint(session.attached_pane()._TMUX)
-#pprint(session.attached_pane()._window._TMUX)
-#pprint(session.attached_pane()._window._session._TMUX)
-
-#pprint(session.attached_pane().get_session())
-#pprint(t.sessions[0])
-
-#tmux('switch-client', '-ttony')
-#t.switch_client('tony')
-
-#pprint(session.attached_pane().get_session())
-#pprint(session.attached_pane().get_session().__dict__)
-#pprint(t.attached_sessions())
-
-#pprint(dir(tmux))
-#session.send_keys()   send to all? or active pane?
-#session.send_keys(all=True) send to all windows + panes?
 tmux('display-panes')
