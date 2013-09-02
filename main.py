@@ -49,9 +49,10 @@
         an fnmatch isn't working at the API level, please file an issue.
 
     Limitations
-        The client that is picked is most recently attached. For normal usage,
-        this isn't an issue, but more much more advanced used cases, <0.5% of
-        people may not be covered.
+        You may only have one client attached to use certain functions
+
+        Defaults to current client for ``target-client``
+        :meth:`Server.attached_session()` can return anything that's attached
 
 """
 import kaptan
@@ -68,7 +69,11 @@ def tmux(*args, **kwargs):
     try:
         return tmx(*args, **kwargs)
     except ErrorReturnCode_1 as e:
-        pprint(e)
+        print(
+            "\tcmd:\t%s\n"
+            "\terror:\t%s"
+            % (e.full_cmd, e.stderr)
+        )
         pass
 
 
@@ -98,7 +103,7 @@ def live_tmux(f):
 
     :meth:`Session.create_session` aka ``tmux create-session``
 
-    :meth:`Session.list_sessions` aka ``tmux list-sessions``
+    :meth:`Server.list_sessions` aka ``tmux list-sessions``
     :meth:`Session.new_window` aka ``tmux new-window``
     :meth:`Window.split_window` aka ``tmux split-window``
         returns a :class:`Pane` with pane metadata
@@ -224,40 +229,11 @@ class Session(object):
 
         return session
 
-    @classmethod
-    def list_sessions(cls):
-        '''
-        Return a list of :class:`.Session`. from tmux server.
-
-        Uses ``tmux list-sessions``.
-        '''
-        formats = SESSION_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
-
-        sessions = tmux(
-            'list-sessions',                    # ``tmux list-windows``
-            '-F%s' % '\t'.join(tmux_formats),   # output
-            _iter=True                          # iterate line by line
-        )
-
-        # combine format keys with values returned from ``tmux list-windows``
-        sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
-
-        # clear up empty dict
-        sessions = [
-            dict((k, v) for k, v in session.iteritems() if v) for session in sessions
-        ]
-
-        sessions = [cls.from_tmux(**session) for session in sessions]
-
-        for session in sessions:
-            yield session
-
     def list_windows(self):
         '''
         Return a list of :class:`.Window` inside the tmux session
         '''
-        formats = WINDOW_FORMATS
+        formats = ['session_name'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
         windows = tmux(
@@ -275,23 +251,21 @@ class Session(object):
             dict((k, v) for k, v in window.iteritems() if v) for window in windows
         ]
 
-        pprint('%s, windows for %s' % (
-            len(windows),
-            self.session_name
-        ))
-        # pprint(windows)
+        #pprint('%s, windows for %s' % (
+        #    len(windows),
+        #    self.session_name
+        #))
 
         windows = [Window.from_tmux(session=self, **window) for window in windows]
         return windows
 
-    def active_window(self):
+    def attached_window(self):
         '''
             Returns active :class:`.Window` object
         '''
         windows = self.list_windows()
 
         for window in windows:
-            pprint(window._TMUX)
             if 'window_active' in window._TMUX:
                 # for now window_active is a unicode
                 if window._TMUX['window_active'] == '1':
@@ -311,16 +285,15 @@ class Session(object):
         '''
         tmux('select-window', '-t', window)
 
-    def active_pane(self):
+    def attached_pane(self):
         '''
             Returns active :class:`.Pane` object
         '''
-        return self.active_window().active_pane()
+        return self.attached_window().attached_pane()
 
     @property
     def windows(self):
-        # check if this object is based off an active session, use _TMUX for
-        # now.
+        # check if session is based off an active tmux(1) session.
         if self._TMUX:
             return self.list_windows()
         else:
@@ -420,11 +393,28 @@ class Window(object):
         '''
         tmux('select-pane', '-t', pane)
 
-    def active_pane(self):
+    @classmethod
+    def split_window(cls, session=None, window=None, **kwargs):
+        '''
+        Create a new pane by splitting the window. Returns :class:`.Pane`.
+
+        Used for splitting window and holding in a python object.
+
+        Iterates ``tmux split-window``, ``-P`` to return data and
+        ``-F`` for return formatting.
+
+        session
+            :class:`.Session` object
+        window
+            :class:`.Window` object
+        '''
+        raise NotImplemented
+
+    def attached_pane(self):
         panes = self.list_panes()
 
         for pane in panes:
-            pprint(pane._TMUX)
+            #pprint(pane._TMUX)
             if 'pane_active' in pane._TMUX:
                 # for now pane_active is a unicode
                 if pane._TMUX['pane_active'] == '1':
@@ -463,12 +453,12 @@ class Window(object):
 
         window._panes = window.list_panes()
 
-        pprint(type(window._panes))
-        pprint('%s, panes for %s' % (
-            len(window._panes),
-            kwargs['window_index']
-        ))
-        pprint(window._panes)
+        #pprint(type(window._panes))
+        #pprint('%s, panes for %s' % (
+        #    len(window._panes),
+        #    kwargs['window_index']
+        #))
+        #pprint(window._panes)
 
         return window
 
@@ -477,7 +467,7 @@ class Window(object):
         '''
             Returns a list of :class:`.Pane` for the window.
         '''
-        formats = PANE_FORMATS + WINDOW_FORMATS
+        formats = ['session_name', 'window_index'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
         panes = tmux(
@@ -515,22 +505,9 @@ class Pane(object):
         ``tmux(1)`` pane
     '''
 
-    @classmethod
-    def split_window(cls, session=None, window=None, **kwargs):
-        '''
-        Create a new pane by splitting the window. Returns :class:`.Pane`.
-
-        Used for splitting window and holding in a python object.
-
-        Iterates ``tmux split-window``, ``-P`` to return data and
-        ``-F`` for return formatting.
-
-        session
-            :class:`.Session` object
-        window
-            :class:`.Window` object
-        '''
-        raise NotImplemented
+    @live_tmux
+    def get_session(self):
+        return next((session for session in Server.list_sessions() if session._TMUX['session_name'] == self._TMUX['session_name']), None)
 
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
@@ -673,39 +650,95 @@ class Server(object):
             # note at this level fnmatch may have to be done via python
             # and list-sessions to retrieve object correctly
             session.la()
-            with session.active_window() as window:
+            with session.attached_window() as window:
                 # access to current window
                 pass
             with session.find_window(fnmatch) as window:
                 # access to tmux matches window
-                with window.active_path() as pane:
+                with window.attached_path() as pane:
                     # access to pane
                     pass
 
     '''
-    def list_sessions(self):
-        pass
+
+    @staticmethod
+    def list_sessions():
+        '''
+        Return a list of :class:`.Session`. from tmux server.
+
+        Uses ``tmux list-sessions``.
+        '''
+        formats = SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+
+        sessions = tmux(
+            'list-sessions',                    # ``tmux list-windows``
+            '-F%s' % '\t'.join(tmux_formats),   # output
+            _iter=True                          # iterate line by line
+        )
+
+        # combine format keys with values returned from ``tmux list-windows``
+        sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
+
+        # clear up empty dict
+        sessions = [
+            dict((k, v) for k, v in session.iteritems() if v) for session in sessions
+        ]
+
+        sessions = [Session.from_tmux(**session) for session in sessions]
+
+        return sessions
+
+    def attached_sessions(self):
+        '''
+            Returns active :class:`.session` object
+
+            This will not work where multiple tmux sessions are attached.
+        '''
+        sessions = self.list_sessions()
+        pprint(sessions)
+        pprint([s._TMUX['session_attached'] for s in sessions])
+        attached_sessions = list()
+
+        for session in sessions:
+            if 'session_attached' in session._TMUX:
+                # for now session_active is a unicode
+                if session._TMUX['session_attached'] == '1':
+                    pprint('session attached')
+                    attached_sessions.append(session)
+                else:
+                    continue
+
+        return attached_sessions or None
 
     @property
     def sessions(self):
-        raise NotImplemented
+        return self.list_sessions()
 
     def list_clients(self):
         raise NotImplemented
 
+    def switch_client(self, target_session):
+        '''
+        ``tmux(1) ``switch-client``
+
+        target_session
+            string. name of the session. fnmatch(3) works
+        '''
+        tmux('switch-client', '-t', target_session)
 
 t = Server()
 
 
-for session in Session.list_sessions():
+for session in Server.list_sessions():
     for window in session.windows:
         for pane in window.panes:
             pass
 
 
-tmux('switch-client', '-t0')
-tmux('switch-client', '-ttony')
-tmux('switch-client', '-ttonsy')
+t.switch_client(0)
+t.switch_client('tony')
+t.switch_client('tonsy')
 
 TEST_SESSION_NAME = 'tmuxwrapper_dev'
 
@@ -713,25 +746,38 @@ session = Session.new_session(
     session_name=TEST_SESSION_NAME,
     kill_session=True
 )
-tmux('switch-client', '-t', TEST_SESSION_NAME)
+
+t.switch_client(TEST_SESSION_NAME)
+#tmux('switch-client', '-t', TEST_SESSION_NAME)
 
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
 
 tmux('split-window')
-session.active_window().select_layout('even-horizontal')
+session.attached_window().select_layout('even-horizontal')
 tmux('split-window')
 
 tmux('new-window')
 session.select_window(1)
 
-#session.active_window().select_layout('even-vertical')
-#pprint(session.active_window()._panes[0]._TMUX['pane_index'])
-#pprint(session.active_window().active_pane())
+#session.attached_window().select_layout('even-vertical')
+#pprint(session.attached_window()._panes[0]._TMUX['pane_index'])
+#pprint(session.attached_window().attached_pane())
 
-session.active_window().select_pane(1)
-session.active_pane().send_keys('cd /srv/www/flaskr')
-session.active_window().select_pane(0)
+session.attached_window().select_pane(1)
+session.attached_pane().send_keys('cd /srv/www/flaskr')
+session.attached_window().select_pane(0)
+session.attached_pane().send_keys('source .env/bin/activate')
+
+pprint(session.attached_pane().get_session())
+pprint(t.sessions[0])
+
+#tmux('switch-client', '-ttony')
+#t.switch_client('tony')
+
+pprint(session.attached_pane().get_session())
+pprint(session.attached_pane().get_session().__dict__)
+pprint(t.attached_sessions())
 
 #pprint(dir(tmux))
 #session.send_keys()   send to all? or active pane?
