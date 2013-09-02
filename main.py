@@ -168,6 +168,7 @@ class Session(object):
     '''
 
     session_name = None
+    _windows = None
 
     def __init__(self, **kwargs):
         # do we need this?
@@ -371,6 +372,7 @@ class Window(object):
     '''
 
     _panes = None
+    _session = None
 
     def __init__(self, session=None):
         if not session:
@@ -527,6 +529,9 @@ class Pane(object):
     '''
         ``tmux(1)`` pane
     '''
+
+    _session = None
+    _window = None
 
     @live_tmux
     def get_session(self):
@@ -727,7 +732,8 @@ class Server(object):
             This will not work where multiple tmux sessions are attached.
         '''
 
-        if not self._sessions: return None
+        if not self._sessions:
+            return None
 
         sessions = self._sessions
         attached_sessions = list()
@@ -745,7 +751,7 @@ class Server(object):
 
     @property
     def sessions(self):
-        return self.list_sessions()
+        return self._sessions
 
     def list_clients(self):
         raise NotImplemented
