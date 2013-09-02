@@ -530,6 +530,9 @@ class Pane(object):
 
     @live_tmux
     def get_session(self):
+        '''
+        sucks
+        '''
         return next((session for session in Server.list_sessions() if session._TMUX['session_name'] == self._TMUX['session_name']), None)
 
     @classmethod
@@ -662,8 +665,8 @@ class Server(object):
     _TMUX information, decorate methods to throw an exception if it requires
     interaction with tmux
 
-    This way, with ._TMUX, session and window can be accessed as a property,
-    and the session and window may be looked up dynamically.
+    With :attrib:`._TMUX` :class:`Session` and :class:`Window` can be accessed
+    as a property, and the session and window may be looked up dynamically.
 
     The children inside a ``t`` object are created live. We should look into
     giving them context managers so::
@@ -683,6 +686,11 @@ class Server(object):
                     pass
 
     '''
+
+    _sessions = None
+
+    def __init__(self):
+        self._sessions = self.list_sessions()
 
     @staticmethod
     def list_sessions():
@@ -718,9 +726,10 @@ class Server(object):
 
             This will not work where multiple tmux sessions are attached.
         '''
-        sessions = self.list_sessions()
-        pprint(sessions)
-        pprint([s._TMUX['session_attached'] for s in sessions])
+
+        if not self._sessions: return None
+
+        sessions = self._sessions
         attached_sessions = list()
 
         for session in sessions:
@@ -753,10 +762,10 @@ class Server(object):
 t = Server()
 
 
-for session in Server.list_sessions():
-    for window in session.windows:
-        for pane in window.panes:
-            pass
+#for session in Server.list_sessions():
+#    for window in session.windows:
+#        for pane in window.panes:
+#            pass
 
 
 t.switch_client(0)
@@ -792,14 +801,14 @@ session.attached_pane().send_keys('cd /srv/www/flaskr')
 session.attached_window().select_pane(0)
 session.attached_pane().send_keys('source .env/bin/activate')
 
-pprint(session.attached_pane().get_session())
+#pprint(session.attached_pane().get_session())
 pprint(t.sessions[0])
 
 #tmux('switch-client', '-ttony')
 #t.switch_client('tony')
 
-pprint(session.attached_pane().get_session())
-pprint(session.attached_pane().get_session().__dict__)
+#pprint(session.attached_pane().get_session())
+#pprint(session.attached_pane().get_session().__dict__)
 pprint(t.attached_sessions())
 
 #pprint(dir(tmux))
