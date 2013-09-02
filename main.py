@@ -167,10 +167,11 @@ class Session(object):
     tmux session
     '''
 
-    session_name = None
-    _windows = None
-
     def __init__(self, **kwargs):
+
+        self.session_name = None
+        self._windows = None
+
         # do we need this?
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
@@ -371,10 +372,10 @@ class Window(object):
         $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
     '''
 
-    _panes = None
-    _session = None
-
     def __init__(self, session=None):
+        self._panes = None  # list of panes
+        self._session = None
+
         if not session:
             raise ValueError(
                 "Window requires a Session object by "
@@ -393,14 +394,6 @@ class Window(object):
             self._TMUX['window_name'],  # @todo, bug when window name blank
             self._session
         )
-
-    __LAYOUTS__ = [
-        'even-horizontal',  # Panes are spread out evenly from left to right across the window.
-        'even-vertical',    # Panes are spread evenly from top to bottom.
-        'main-horizontal',
-        'main-vertical',
-        'tiled'
-    ]
 
     def select_layout(self, layout=None):
         tmux(
@@ -528,10 +521,13 @@ class Window(object):
 class Pane(object):
     '''
         ``tmux(1)`` pane
+
+        ``tmux(1)`` holds a psuedoterm and linked to tmux windows.
     '''
 
-    _session = None
-    _window = None
+    def __init__(self, **kwargs):
+        self._session = None
+        self._window = None
 
     @live_tmux
     def get_session(self):
@@ -598,9 +594,6 @@ class Pane(object):
             ```tmux send-keys``` send Enter to the pane
         '''
         tmux('send-keys', '-t', int(self._TMUX['pane_index']), 'Enter')
-
-    def __init__(self, **kwargs):
-        pass
 
     def __repr__(self):
         # todo test without session_name
@@ -691,8 +684,6 @@ class Server(object):
                     pass
 
     '''
-
-    _sessions = None
 
     def __init__(self):
         self._sessions = self.list_sessions()
