@@ -75,6 +75,15 @@
         Defaults to current client for ``target-client``
         :meth:`Server.attached_session()` can return anything that's attached
 
+        References to _windows and _panes are weak and easily flushed. In the
+        future versions we will be able to hold onto _windows and _panes by
+        unique identifier window_id/pane_id and if a window or pane is closed,
+        we can give call the pane or window a phantom / dead.
+
+        The above will bring tmuxwrapper closer to being able to handle a tmux
+        server by objects over where a client may be interacted with while
+        Session, Window and Pane objects are active.
+
 """
 import kaptan
 from sh import tmux as tmx, cut, ErrorReturnCode_1
@@ -136,13 +145,14 @@ def live_tmux(f):
             attributes.
         - a window is created with :meth:`Session.create_session`
     '''
-    def live_tmux(self):
+    @wraps(f)
+    def live_tmux(self, *args, **kwargs):
         if not self._TMUX:
             raise NotRunning(
                 "self._TMUX not found, this object is not part of an active"
                 "tmux session. If you need help please post an issue on github"
             )
-        return f(self)
+        return f(self, *args, **kwargs)
     return live_tmux
 
 
@@ -411,8 +421,8 @@ class Window(object):
         '''
         tmux('select-pane', '-t', pane)
 
-    @classmethod
-    def split_window(cls, session=None, window=None, **kwargs):
+    @live_tmux
+    def split_window(self, *args, **kwargs):
         '''
         Create a new pane by splitting the window. Returns :class:`Pane`
 
@@ -421,12 +431,22 @@ class Window(object):
         Iterates ``tmux split-window``, ``-P`` to return data and
         ``-F`` for return formatting.
 
-        session
-            :class:`Session` object
-        window
-            :class:`Window` object
+        @todo this could add append to the window._panes or we could
+        refresh the window.list_panes() after this is ran.
+
+        Arguments may be passed through same as ``tmux(1))`` ``split-window``.
+
+        -h
+            horizontal
+        -v
+            vertical
+
+        todo:
+            return :class:`Pane` object
         '''
-        raise NotImplemented
+        tmux('split-window', *args, **kwargs)
+
+        self.list_panes()  # refresh all panes in :class:`Window`
 
     def attached_pane(self):
         panes = self.list_panes()
@@ -782,11 +802,14 @@ t.switch_client(TEST_SESSION_NAME)
 # bash completion
 # allow  tmuxwrapper to export split-pane,  key bindings
 
-tmux('split-window')
+#tmux('split-window')
+session.attached_window().split_window()
 session.attached_window().select_layout('even-horizontal')
-tmux('split-window')
-
+#tmux('split-window')
+session.attached_window().split_window()
+session.attached_window().split_window('-h')
 tmux('new-window')
+
 session.select_window(1)
 
 #session.attached_window().select_layout('even-vertical')
