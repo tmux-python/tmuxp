@@ -34,6 +34,9 @@
             attach-session command. Each session has one of more windows linked
             into it.
 
+        Identifier:
+            ``session id``, i.e. $390
+
     window
         used by ``tmux(1). holds panes. new window only has one pane.
         ``tmux(1)``'s ``split-window`` can create panes horizontally or
@@ -44,9 +47,15 @@
             Windows may be linked to multiple sessions and are made up of one
             or more panes, each of which contains a pseudo terminal.
 
+        Identifier:
+            ``window_id``,  i.e.  @566
+
     pane
         an individual pseudo terminal / shell prompt. represented by the
         :class:`Pane` object.
+
+        Identifier:
+            ``pane_id``, i.e. %1334
 
     :meth:`from_tmux`
         pulls information from a live tmux server.
@@ -556,6 +565,7 @@ class Pane(object):
         '''
         return next((session for session in Server.list_sessions() if session._TMUX['session_name'] == self._TMUX['session_name']), None)
 
+
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
         '''
@@ -820,6 +830,9 @@ session.attached_window().select_pane(1)
 session.attached_pane().send_keys('cd /srv/www/flaskr')
 session.attached_window().select_pane(0)
 session.attached_pane().send_keys('source .env/bin/activate')
+pprint(session.attached_pane()._TMUX)
+pprint(session.attached_pane()._window._TMUX)
+pprint(session.attached_pane()._window._session._TMUX)
 
 #pprint(session.attached_pane().get_session())
 pprint(t.sessions[0])
