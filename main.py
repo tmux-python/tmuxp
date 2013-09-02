@@ -13,18 +13,36 @@
         the actual tmux application, a la unix manpages, see
         http://superuser.com/a/297705.
 
-    ``MetaData`` or the ``._TMUX`` attribute in objects
+    ``MetaData`` or the ``_TMUX`` attribute in objects
         information ``tmux(1)`` returns on certain commands listing or creating
         sessions, windows nad panes.
+
+    server
+
+        ``man tmux(1)``::
+
+            The tmux server manages clients, sessions, windows and panes.
 
     session
         used by ``tmux(1)`` to hold windows, panes. its' counterpart is
         :class:`Session` object.
 
+        ``man tmux(1)``::
+
+            Clients are attached to sessions to interact with them, either when
+            they are created with the new-session command, or later with the
+            attach-session command. Each session has one of more windows linked
+            into it.
+
     window
-        used by ``tmux(1) to hold panes. a freshly created window only has one
-        pane. ``tmux(1)``'s ``split-window`` can create panes horizontally
-        or vertically. represented by :class:`Window`
+        used by ``tmux(1). holds panes. new window only has one pane.
+        ``tmux(1)``'s ``split-window`` can create panes horizontally or
+        vertically. represented by :class:`Window`
+
+        ``man tmux(1)``::
+
+            Windows may be linked to multiple sessions and are made up of one
+            or more panes, each of which contains a pseudo terminal.
 
     pane
         an individual pseudo terminal / shell prompt. represented by the
@@ -33,10 +51,13 @@
     :meth:`from_tmux`
         pulls information from a live tmux server.
 
+    target and -t
+        from ``tmux(1)``.
+
     Magic
-        the ``MetaData`` in ``._TMUX`` attributes on :class:`Session`,
+        the ``MetaData`` in ``_TMUX`` attributes on :class:`Session`,
         :class:`Window` and :class:`Pane` objects is used to pull a reference
-        from a global object. :attrib:`._session` and :attrib:`._window`
+        from a global object. :attrib:`_session` and :attrib:`_window`
         in ``Window`` and ``Pane`` are properties that forward to that.
 
     Which tmux client is used?
@@ -79,24 +100,24 @@ def tmux(*args, **kwargs):
 
 def live_tmux(f):
     '''
-    decorator that checks for :attrib:`._TMUX` inside :class:`.Session`,
-    :class:`.Window` and :class:`.Pane` objects.
+    decorator that checks for :attrib:`_TMUX` inside :class:`Session`,
+    :class:`Window` and :class:`Pane` objects.
 
-    :attrib:`._TMUX` stores valuable information for an tmux object's life
-    cycle. Hereinafter, I will call this ``MetaData``.
+    :attrib:`_TMUX` stores valuable information for an tmux object's life
+    cycle. Hereinafter, I will call this ``MetaData``
 
     ``tmux( returns information
 
     @todo: in the future, :class:`Pane` will have ``PANE_FORMATS``,
-    ``WINDOW_FORMATS`` and ``SESSION_FORMATS`` metadata, and :class:`Window`
-    will have ``WINDOW_FORMATS`` and ``SESSION_FORMATS``. If a :attrib:`._TMUX
+    ``WINDOW_FORMATS`` and ``Session_FORMATS`` metadata, and :class:`Window`
+    will have ``WINDOW_FORMATS`` and ``Session_FORMATS`` If a :attrib:`_TMUX
     exists, it should be possible to do a lookup for its parent :class:`Window`
     or :class:`Pane` object.
 
     Because this data is live in the system, caching strategy isn't a priority.
 
     If a session is imported directly from a configuration or is otherwise
-    being built manually via CLI or scripting, :attrib:`._TMUX` is populated
+    being built manually via CLI or scripting, :attrib:`_TMUX` is populated
     when:
 
     A tmux session is created with:
@@ -108,12 +129,12 @@ def live_tmux(f):
     :meth:`Window.split_window` aka ``tmux split-window``
         returns a :class:`Pane` with pane metadata
 
-        - its first :class:`Window`, in :attrib:`._windows`, and subsequently,
-          and the :class:`Window`'s first :class:`.Pane` in :attrib:`._panes`
-          is populated with :attrib:`._TMUX`. This is returned because the
+        - its first :class:`Window`, in :attrib:`_windows`, and subsequently,
+          and the :class:`Window`'s first :class:`Pane` in :attrib:`_panes`
+          is populated with :attrib:`_TMUX` This is returned because the
 
             attributes.
-        - a window is created with :meth:`Session.create_session`.
+        - a window is created with :meth:`Session.create_session`
     '''
     def live_tmux(self):
         if not self._TMUX:
@@ -160,13 +181,15 @@ class Session(object):
                     session_name=None,
                     kill_session=False):
         '''
-        Equivalent to ``tmux new-session`` Returns :class:`.Session`.
+        ``tmux(1)`` ``new-session``
+
+        Returns :class:`Session`
 
         Uses ``-P`` flag to print session info, ``-F`` for return formatting
         returns new Session object
 
         kill_session
-            Kill current session if ``tmux has-session``. Useful for testing
+            Kill current session if ``tmux has-session`` Useful for testing
             workspaces.
         '''
         try:
@@ -211,7 +234,7 @@ class Session(object):
     def from_tmux(cls, **kwargs):
         '''
         Freeze of the current tmux session directly from the server. Returns
-        :class:`.Session`.
+        :class:`Session`
 
         session_name
             name of the tmux session
@@ -231,7 +254,7 @@ class Session(object):
 
     def list_windows(self):
         '''
-        Return a list of :class:`.Window` inside the tmux session
+        Return a list of :class:`Window` inside the tmux session
         '''
         formats = ['session_name'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -261,7 +284,7 @@ class Session(object):
 
     def attached_window(self):
         '''
-            Returns active :class:`.Window` object
+            Returns active :class:`Window` object
         '''
         windows = self.list_windows()
 
@@ -287,7 +310,7 @@ class Session(object):
 
     def attached_pane(self):
         '''
-            Returns active :class:`.Pane` object
+            Returns active :class:`Pane` object
         '''
         return self.attached_window().attached_pane()
 
@@ -396,7 +419,7 @@ class Window(object):
     @classmethod
     def split_window(cls, session=None, window=None, **kwargs):
         '''
-        Create a new pane by splitting the window. Returns :class:`.Pane`.
+        Create a new pane by splitting the window. Returns :class:`Pane`
 
         Used for splitting window and holding in a python object.
 
@@ -404,9 +427,9 @@ class Window(object):
         ``-F`` for return formatting.
 
         session
-            :class:`.Session` object
+            :class:`Session` object
         window
-            :class:`.Window` object
+            :class:`Window` object
         '''
         raise NotImplemented
 
@@ -427,14 +450,14 @@ class Window(object):
     @classmethod
     def from_tmux(cls, session=None, **kwargs):
         '''
-        Retrieve a tmux window from server. Returns :class:`.Window`.
+        Retrieve a tmux window from server. Returns :class:`Window`
 
-        The attributes `_panes` contains a list of :class:`.Pane`
+        The attributes `_panes` contains a list of :class:`Pane`
 
         Iterates ``tmux list-panes``, ``-F`` for return formatting.
 
         session
-            :class:`.Session` object
+            :class:`Session` object
         '''
 
         if not session:
@@ -465,7 +488,7 @@ class Window(object):
     @live_tmux
     def list_panes(self):
         '''
-            Returns a list of :class:`.Pane` for the window.
+            Returns a list of :class:`Pane` for the window.
         '''
         formats = ['session_name', 'window_index'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
@@ -512,27 +535,27 @@ class Pane(object):
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
         '''
-        Retrieve a tmux pane from server. Returns :class:`.Pane`.
+        Retrieve a tmux pane from server. Returns :class:`Pane`
 
         Used for freezing live sessions.
 
         Iterates ``tmux list-panes``, ``-F`` for return formatting.
 
         session
-            :class:`.Session` object
+            :class:`Session` object
         window
-            :class:`.Window` object
+            :class:`Window` object
         '''
 
         if not session:
-            raise ValueError('Pane generated using ``.from_tmux`` must have \
+            raise ValueError('Pane generated using ``from_tmux`` must have \
                              ``Session`` object')
         else:
             if not isinstance(session, Session):
                 raise TypeError('session must be a Session object')
 
         if not window:
-            raise ValueError('Pane generated using ``.from_tmux`` must have \
+            raise ValueError('Pane generated using ``from_tmux`` must have \
                              ``Window`` object')
         else:
             if not isinstance(window, Window):
@@ -664,9 +687,9 @@ class Server(object):
     @staticmethod
     def list_sessions():
         '''
-        Return a list of :class:`.Session`. from tmux server.
+        Return a list of :class:`Session` from tmux server.
 
-        Uses ``tmux list-sessions``.
+        ``tmux(1)`` ``list-sessions``
         '''
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -691,7 +714,7 @@ class Server(object):
 
     def attached_sessions(self):
         '''
-            Returns active :class:`.session` object
+            Returns active :class:`Session` object
 
             This will not work where multiple tmux sessions are attached.
         '''
