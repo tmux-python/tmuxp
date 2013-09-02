@@ -286,14 +286,12 @@ class Session(object):
         '''
 
         tmux_args = list()
-        pprint(args)
+
         if '-a' in args:
             tmux_args.append('-a')
 
         if 'target_window' in kwargs:
             tmux_args.append(['-t', kwargs['target_window']])
-
-        pprint(tmux_args)
 
         tmux('kill-window', *tmux_args)
 
@@ -396,13 +394,13 @@ class Session(object):
 
             if w._TMUX['window_id'] in intersect:
                 pprint('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
-                w._TMUX.update(new[w._TMUX['window_id']])
+                w._TMUX.update(diff[w._TMUX['window_id']])
 
         # create window objects for non-existant window_id's
         for window in [new[window_id] for window_id in created]:
             pprint('new window %s' % w._TMUX['window_id'])
             pprint('adding %s %s / %s' % (window['window_name'], window['window_id'], w._TMUX['window_id']))
-            #self._windows.append(Window.from_tmux(session=self, **window))
+            self._windows.append(Window.from_tmux(session=self, **window))
 
     def list_windows(self):
         '''
@@ -964,7 +962,19 @@ pprint(
 
 session.kill_window(target_window='3')
 
+
+
 session.sync_windows()
+
+pprint(
+    len(session._list_windows()),
+)
+pprint(
+    len(session._windows),
+)
+pprint(
+    len(session.list_windows())
+)
 #pprint(session.attached_pane()._TMUX)
 #pprint(session.attached_pane()._window._TMUX)
 #pprint(session.attached_pane()._window._session._TMUX)
