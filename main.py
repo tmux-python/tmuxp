@@ -251,6 +251,52 @@ class Session(object):
 
         return session
 
+    @live_tmux
+    def new_window(self, window_name=None):
+        '''
+        tmux(1) new-window
+
+        window_name
+            string. window name (-n)
+        '''
+
+        if window_name:
+            tmux(
+                'new-window',
+                '-t', self.session_name,
+                '-n', window_name
+            )
+        else:
+            tmux(
+                'new-window',
+                '-t', self.session_name
+            )
+
+    @live_tmux
+    def kill_window(self, *args, **kwargs):
+        '''
+        tmux(1) kill-window
+
+        Kill the current window or the window at ``target-window``. removing it
+        from any sessions to which it is linked. The ``-a`` option kills all
+        but the window given to ``-t``.
+
+        -a
+            string arg.
+        '''
+
+        tmux_args = list()
+        pprint(args)
+        if '-a' in args:
+            tmux_args.append('-a')
+
+        if 'target_window' in kwargs:
+            tmux_args.append(['-t', kwargs['target_window']])
+
+        pprint(tmux_args)
+
+        tmux('kill-window', *tmux_args)
+
     @classmethod
     def from_tmux(cls, **kwargs):
         '''
@@ -273,11 +319,12 @@ class Session(object):
 
         return session
 
-    def list_windows(self):
+    def _list_windows(self):
         '''
-        Return a list of :class:`Window` inside the tmux session
+        Return dict of ``tmux(1) list-windows`` values.
         '''
-        formats = ['session_name'] + WINDOW_FORMATS
+
+        formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
         windows = tmux(
@@ -300,7 +347,71 @@ class Session(object):
         #    self.session_name
         #))
 
-        windows = [Window.from_tmux(session=self, **window) for window in windows]
+        return windows
+
+    def sync_windows(self):
+        '''
+        Updates :class:`Window`'s in :attrib:`._windows` with new values.
+
+        ``Window``'s which already exist have their window names refreshed.
+        '''
+
+        new_windows = self._list_windows()
+
+        pprint([w._TMUX['window_id'] for w in self._windows])
+        pprint([w['window_id'] for w in self._list_windows()])
+
+        new = {window['window_id']: window for window in new_windows}
+        old = {window._TMUX['window_id']: window for window in self._windows}
+        created = set(new.keys()) - set(old.keys())
+        deleted = set(old.keys()) - set(new.keys())
+        intersect = set(new.keys()).intersection(set(old.keys()))
+        print(
+            "\tcreated: %s\n"
+            "\tdeleted: %s\n"
+            "\tintersect: %s" % (created, deleted, intersect)
+        )
+
+        diff = {id: dict(set(new[id].items())-set(old[id]._TMUX.items())) for id in intersect}
+        print "diff: "
+        pprint(diff)
+
+        print "created: "
+        for o in created:
+            pprint(o)
+
+        print "deleted: "
+        for o in deleted:
+            pprint(o)
+
+        print "intersect:"
+        for o in intersect:
+            pprint(o)
+
+        for w in self._windows:
+            # remove window objects if deleted or out of sesion
+            if w._TMUX['window_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
+                pprint(w)
+                self._windows.remove(w)
+
+            if w._TMUX['window_id'] in intersect:
+                pprint('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
+                w._TMUX.update(new[w._TMUX['window_id']])
+
+        # create window objects for non-existant window_id's
+        for window in [new[window_id] for window_id in created]:
+            pprint('new window %s' % w._TMUX['window_id'])
+            pprint('adding %s %s / %s' % (window['window_name'], window['window_id'], w._TMUX['window_id']))
+            #self._windows.append(Window.from_tmux(session=self, **window))
+
+    def list_windows(self):
+        '''
+        Return a list of :class:`Window` from the ``tmux(1)`` session.
+        '''
+
+        windows = [Window.from_tmux(session=self, **window) for window in self._list_windows()]
+
+        self._windows = windows
         return windows
 
     def attached_window(self):
@@ -514,7 +625,7 @@ class Window(object):
         '''
             Returns a list of :class:`Pane` for the window.
         '''
-        formats = ['session_name', 'window_index'] + PANE_FORMATS
+        formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
         panes = tmux(
@@ -564,7 +675,6 @@ class Pane(object):
         sucks
         '''
         return next((session for session in Server.list_sessions() if session._TMUX['session_name'] == self._TMUX['session_name']), None)
-
 
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
@@ -818,7 +928,7 @@ session.attached_window().select_layout('even-horizontal')
 #tmux('split-window')
 session.attached_window().split_window()
 session.attached_window().split_window('-h')
-tmux('new-window')
+#tmux('new-window')
 
 session.select_window(1)
 
@@ -830,19 +940,44 @@ session.attached_window().select_pane(1)
 session.attached_pane().send_keys('cd /srv/www/flaskr')
 session.attached_window().select_pane(0)
 session.attached_pane().send_keys('source .env/bin/activate')
-pprint(session.attached_pane()._TMUX)
-pprint(session.attached_pane()._window._TMUX)
-pprint(session.attached_pane()._window._session._TMUX)
+
+session.new_window('second')
+session.new_window('testing 3')
+pprint(
+    len(session._windows)
+)
+session.select_window(1)
+pprint(
+    len(session._windows),
+)
+
+session.sync_windows()
+pprint(
+    len(session._list_windows()),
+)
+pprint(
+    len(session._windows),
+)
+pprint(
+    len(session.list_windows())
+)
+
+session.kill_window(target_window='3')
+
+session.sync_windows()
+#pprint(session.attached_pane()._TMUX)
+#pprint(session.attached_pane()._window._TMUX)
+#pprint(session.attached_pane()._window._session._TMUX)
 
 #pprint(session.attached_pane().get_session())
-pprint(t.sessions[0])
+#pprint(t.sessions[0])
 
 #tmux('switch-client', '-ttony')
 #t.switch_client('tony')
 
 #pprint(session.attached_pane().get_session())
 #pprint(session.attached_pane().get_session().__dict__)
-pprint(t.attached_sessions())
+#pprint(t.attached_sessions())
 
 #pprint(dir(tmux))
 #session.send_keys()   send to all? or active pane?
