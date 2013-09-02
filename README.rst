@@ -158,6 +158,10 @@ Roadmap
   of tmux changes.  fbgrab + tty works well for demonstration
 - also look into scrot, x11 solutions and
   https://github.com/KittyKatt/screenFetch
+- control mode, for longer tmuxwrapper sessions where references to
+  objects are needed to be updated and shown they've gone stale (a pane
+  object that has been closed needs to be changed to being stale, a window
+  object that has been renamed needs to have its window_name updated)
 
 Roadmap
 -------
