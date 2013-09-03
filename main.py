@@ -38,7 +38,7 @@
             ``session id``, i.e. $390
 
     window
-        used by ``tmux(1). holds panes. new window only has one pane.
+        used by ``tmux(1)``. holds panes. new window only has one pane.
         ``tmux(1)``'s ``split-window`` can create panes horizontally or
         vertically. represented by :class:`Window`
 
