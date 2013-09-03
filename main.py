@@ -241,7 +241,7 @@ class Session(object):
             if not len(tmux('has-session', '-t', session_name)):
                 if kill_session:
                     tmux('kill-session', '-t', session_name)
-                    logging.debug('session %s exists. killed it.' % session_name)
+                    logging.error('session %s exists. killed it.' % session_name)
                 else:
                     raise SessionExists('Session named %s exists' % session_name)
         except ErrorReturnCode_1:
@@ -319,7 +319,7 @@ class Session(object):
         if 'target_window' in kwargs:
             tmux_args.append(['-t', kwargs['target_window']])
 
-        tmux('kill-window', *tmux_args)
+        tmux('kill-window', '-t', kwargs['target_window'])
 
         self.list_windows()
 
@@ -513,7 +513,7 @@ class Window(object):
     '''
 
     def __init__(self, session=None):
-        self._panes = None  # list of panes
+        self._panes = list()  # list of panes
         self._session = None
 
         if not session:
@@ -651,7 +651,52 @@ class Window(object):
             pane for pane in panes if pane['window_index'] == self._TMUX['window_index']
         ]
 
-        self._panes = [Pane.from_tmux(session=self._session, window=self, **pane) for pane in panes]
+        #windows = [Window.from_tmux(session=self, **window) for window in self._list_windows()]
+        new_panes = panes
+
+        if not self._panes:
+            for pane in new_panes:
+                logging.debug('new pane %s' % pane['pane_id'])
+                logging.debug('adding pane_id %s for window_id %s' % (pane['pane_id'], pane['window_id']))
+                self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
+            return self._panes
+
+        new = {pane['pane_id']: pane for pane in new_panes}
+        old = {pane._TMUX['pane_id']: pane for pane in self._panes}
+        print old
+        print old.keys()
+
+        created = set(new.keys()) - set(old.keys())
+        deleted = set(old.keys()) - set(new.keys())
+        intersect = set(new.keys()).intersection(set(old.keys()))
+
+        diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
+
+        logging.info(
+            "syncing panes"
+            "\n\tdiff: %s\n"
+            "\tcreated: %s\n"
+            "\tdeleted: %s\n"
+            "\tintersect: %s" % (diff, created, deleted, intersect)
+        )
+
+        for w in self._panes:
+            # remove pane objects if deleted or out of session
+            if w._TMUX['pane_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
+                logging.debug("removing %s" % w)
+                self._panes.remove(w)
+
+            if w._TMUX['pane_id'] in intersect:
+                logging.debug('updating pane_id %s window_id %s' % (w._TMUX['pane_id'], w._TMUX['window_id']))
+                w._TMUX.update(diff[w._TMUX['pane_id']])
+
+        # create pane objects for non-existant pane_id's
+        for pane in [new[pane_id] for pane_id in created]:
+            logging.debug('new pane %s' % pane['pane_id'])
+            logging.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
+            self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
+
+        #self._panes = [Pane.from_tmux(session=self._session, window=self, **pane) for pane in panes]
 
         return self._panes
 
@@ -828,10 +873,9 @@ class Server(object):
     '''
 
     def __init__(self):
-        self._sessions = self.list_sessions()
+        self._sessions = list()
 
-    @staticmethod
-    def list_sessions():
+    def list_sessions(self):
         '''
         Return a list of :class:`Session` from tmux server.
 
@@ -854,9 +898,53 @@ class Server(object):
             dict((k, v) for k, v in session.iteritems() if v) for session in sessions
         ]
 
-        sessions = [Session.from_tmux(**session) for session in sessions]
+        #sessions = [Session.from_tmux(**session) for session in sessions]
 
-        return sessions
+        new_sessions = sessions
+
+        if not self._sessions:
+            for session in new_sessions:
+                logging.debug('adding session_id %s' % (session['session_id']))
+                self._sessions.append(Session.from_tmux(**session))
+            return self._sessions
+
+        new = {session['session_id']: session for session in new_sessions}
+        old = {session._TMUX['session_id']: session for session in self._sessions}
+        print old
+        print old.keys()
+
+        created = set(new.keys()) - set(old.keys())
+        deleted = set(old.keys()) - set(new.keys())
+        intersect = set(new.keys()).intersection(set(old.keys()))
+
+        diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
+
+        logging.info(
+            "syncing sessions"
+            "\n\tdiff: %s\n"
+            "\tcreated: %s\n"
+            "\tdeleted: %s\n"
+            "\tintersect: %s" % (diff, created, deleted, intersect)
+        )
+
+        for s in self._sessions:
+            # remove session objects if deleted or out of session
+            if s._TMUX['session_id'] in deleted:
+                logging.info("removing %s" % s)
+                self._sessions.remove(s)
+
+            if s._TMUX['session_id'] in intersect:
+                logging.debug('updating session_id %s' % (s._TMUX['session_id']))
+                s._TMUX.update(diff[s._TMUX['session_id']])
+
+        # create session objects for non-existant session_id's
+        for session in [new[session_id] for session_id in created]:
+            logging.debug('new session %s' % session['session_id'])
+            self._sessions.append(Session.from_tmux(**session))
+
+        #self._sessions = [session.from_tmux(session=self._session, window=self, **session) for session in sessions]
+
+        return self._sessions
 
     def has_clients(self):
         # are any clients connected to tmux
@@ -901,15 +989,17 @@ class Server(object):
         except ErrorReturnCode_1 as e:
             return False
 
-    def kill_session(self, session_name):
+    def kill_session(self, session_name=None):
         '''
         ``tmux(1)`` ``kill-session``
 
         session_name
             string. note this accepts fnmatch(3).  'asdf' will kill asdfasd
         '''
+        logging.error(session_name)
         try:
             tmux('kill-session', '-t', session_name)
+            self.list_sessions()
         except ErrorReturnCode_1 as e:
             logging.error(
                 "\n\tcmd:\t%s\n"

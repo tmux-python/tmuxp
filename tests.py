@@ -68,20 +68,21 @@ def bootstrap():
             # create a test session so client won't close when other windows
             # cleaned up
             Session.new_session(session_name='test_' + str(randint(0, 1337)))
-            Session.attached_pane().send_keys('created by tmuxwrapper tests.'
-                                              ' you may delete this.',
-                                              enter=False)
+            #Session.attached_pane().send_keys('created by tmuxwrapper tests.'
+            #                                  ' you may delete this.',
+            #                                  enter=False)
         else:
             t.switch_client(other_sessions[0])
 
         for session in previous_sessions:
-            t.kill_session(previous_sessions)
+            logging.error(session)
+            t.kill_session(session)
 
         TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 1337))
 
         session = Session.new_session(
             session_name=TEST_SESSION_NAME,
-            kill_session=True
+            #kill_session=True
         )
 
         t.switch_client(TEST_SESSION_NAME)
@@ -97,14 +98,24 @@ class TmuxTest(unittest.TestCase):
             string. name of the test case session.
     '''
 
+    def setup(self):
+        pass
+        #t.list_sessions()
+
     @classmethod
     def setUpClass(cls):
         try:
             # bootstrap() retyrns a tuple  of session and the session object
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
-        except:
-            cls.fail()
+        except Exception as e:
+            cls.tearDownClass()
+            logging.error(e)
+            raise e
         return
+
+    @classmethod
+    def tearDownClass(cls):
+        t.list_sessions()
 
 
 class TestSessions(TmuxTest):
@@ -125,11 +136,13 @@ class TestSessions(TmuxTest):
 class WindowCreation(TmuxTest):
 
     def test_sync_windows(self):
+        self.session.list_windows()
+
         self.session.attached_window().select_layout('even-horizontal')
         self.session.attached_window().split_window()
         self.session.attached_window().split_window('-h')
 
-        self.session.select_window(1)
+        #self.session.select_window(1)
 
         self.session.attached_window().select_pane(1)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
@@ -137,15 +150,15 @@ class WindowCreation(TmuxTest):
         self.session.attached_pane().send_keys('source .env/bin/activate')
         self.session.new_window('second')
         self.assertEqual(2, len(self.session._windows))
-        self.session.new_window('testing 3')
+        self.session.new_window(3)
         self.assertEqual(3, len(self.session._windows))
         self.session.select_window(1)
-        self.session.kill_window(target_window='3')
+        self.session.kill_window(target_window=3)
         self.assertEqual(2, len(self.session._windows))
         #tmux('display-panes')
 
 
-class WindowSelect(TmuxTest):
+class WindowASelect(TmuxTest):
     def test_select_window(self):
         self.session.new_window('testing 3')
         self.session.select_window(2)
@@ -155,5 +168,6 @@ if __name__ == '__main__':
 
     if t.has_clients():
         unittest.main()
+        #bootstrap()
     else:
         print('must have a tmux client running')
