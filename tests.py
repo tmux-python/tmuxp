@@ -78,9 +78,9 @@ class TestSessions(TmuxTest):
         pass
 
 
-class windowCreation(TmuxTest):
+class WindowCreation(TmuxTest):
 
-    def test_6_next(self):
+    def test_sync_windows(self):
         self.session.attached_window().select_layout('even-horizontal')
         self.session.attached_window().split_window()
         #session.sync_windows()
@@ -104,6 +104,15 @@ class windowCreation(TmuxTest):
         self.assertEqual(2, len(self.session._windows))
         #tmux('display-panes')
 
+
+class WindowSelect(TmuxTest):
+    def test_select_window(self):
+        print self.session
+        print self.session._windows
+        self.session.new_window('testing 3')
+        self.session.sync_windows()
+        self.session.select_window(2)
+        self.assertEqual(2, int(self.session.attached_window()._TMUX['window_index']))
 
 if __name__ == '__main__':
 
