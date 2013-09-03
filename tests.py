@@ -1,13 +1,56 @@
+"""
+    tmuxwrapper.tests
+    ~~~~~~~~~~~~~~~~~
+
+    :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
+    :license: BSD, see LICENSE for details
+
+    this can be ran like::
+
+        nosetests tests.py
+
+    or::
+
+        python tests.py
+
+    also, if you have ``node`` and ``npm`` you may (sudo)::
+
+        ``npm install -g nodemon``
+        ``nodemon --watch tests.py --watch main.py --exec "nosetests" tests.py
+
+    or::
+
+        ``nodemon --watch tests.py --watch main.py --exec "python" tests.py
+
+    These tests require an active tmux client open while it runs. It is best to
+    have a second terminal with tmux running alongside the terminal running the
+    tests.
+"""
+
+
 from main import t, SessionNotFound, Session, root_logger
 from nose.tools import raises
 import unittest
 import logging
 from random import randint
 
+# set logging to INFO level
 root_logger.setLevel(logging.INFO)
 
-
 def bootstrap():
+    '''
+        Returns a tuple of the session_name (generated) and a :class:`Session`
+
+        Checks to verify if the user has a tmux client open.
+
+        It will clean up and delete other sessions starting with the
+        TEST_SESSION_PREFIX ``tmxwrap``.
+
+        Since tmux closes when all sessions are deleted, the bootstrap will see
+        if there is no other client open aside from a tmuxwrp_ prefixed session
+        a dumby session will be made to prevent tmux from closing.
+
+    '''
     if t.has_clients():
         TEST_SESSION_PREFIX = 'tmxwrp_'
 
@@ -56,7 +99,7 @@ class TmuxTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         try:
-            # atm bootstrap() retyrns name of session and the session object
+            # bootstrap() retyrns a tuple  of session and the session object
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except:
             cls.fail()
