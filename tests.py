@@ -119,31 +119,15 @@ class TmuxTest(unittest.TestCase):
 
 
 class TestSessions(TmuxTest):
-    def tearDown(self):
-        pass
-
     def test_has_session(self):
         assert t.has_session(self.TEST_SESSION_NAME) is True
         assert t.has_session('asdf2314324321') is False
-
-    def test_3_switch_client_returns_session(self):
-        '''
-        switch_client should return reference to Session object
-        '''
-        pass
 
 
 class WindowCreation(TmuxTest):
 
     def test_sync_windows(self):
-        self.session.list_windows()
-
-        self.session.attached_window().select_layout('even-horizontal')
-        self.session.attached_window().split_window()
-        self.session.attached_window().split_window('-h')
-
         #self.session.select_window(1)
-
         self.session.attached_window().select_pane(1)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(0)
@@ -156,6 +140,15 @@ class WindowCreation(TmuxTest):
         self.session.kill_window(target_window=3)
         self.assertEqual(2, len(self.session._windows))
         #tmux('display-panes')
+
+    def test_sync_panes(self):
+        self.assertEqual(1, len(self.session.attached_window()._panes))
+        self.session.attached_window().select_layout('even-horizontal')
+
+        self.session.attached_window().split_window()
+        self.assertEqual(2, len(self.session.attached_window()._panes))
+        self.session.attached_window().split_window('-h')
+        self.assertEqual(3, len(self.session.attached_window()._panes))
 
 
 class WindowASelect(TmuxTest):
