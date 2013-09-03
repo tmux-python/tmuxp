@@ -162,6 +162,9 @@ Roadmap
   objects are needed to be updated and shown they've gone stale (a pane
   object that has been closed needs to be changed to being stale, a window
   object that has been renamed needs to have its window_name updated)
+- and one more thing
+- vim: may be used inside of a pane object with a filename (relative to
+  the pane dir, also accepts /) and vim windows may be split and opened
 
 Roadmap
 -------
