@@ -95,7 +95,7 @@
 
 """
 import kaptan
-from sh import tmux as tmx, cut, ErrorReturnCode_1
+from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 from functools import wraps
@@ -115,18 +115,28 @@ root_logger.addHandler(handler)
 logger = logging.getLogger("test")
 
 
-def tmux(*args, **kwargs):
+def tmuxa(*args, **kwargs):
     '''
     wrap tmux from ``sh`` library in a try catch
     '''
     try:
-        return tmx(*args, **kwargs)
+        #return tmx(*args, **kwargs)
+        pass
     except ErrorReturnCode_1 as e:
+
+        if e.stderr.startswith('session not found'):
+            raise SessionNotFound('session not found')
+
         logging.error(
             "\n\tcmd:\t%s\n"
             "\terror:\t%s"
             % (e.full_cmd, e.stderr)
         )
+        return e.stderr
+
+
+class SessionNotFound(Exception):
+    pass
 
 
 def live_tmux(f):
@@ -227,6 +237,7 @@ class Session(object):
             workspaces.
         '''
         try:
+            # test this, returning NoneType
             if not len(tmux('has-session', '-t', session_name)):
                 if kill_session:
                     tmux('kill-session', '-t', session_name)
@@ -244,7 +255,7 @@ class Session(object):
         session_info = tmux(
             'new-session',
             '-d',
-            '-s', TEST_SESSION_NAME,
+            '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
         )
 
@@ -841,6 +852,13 @@ class Server(object):
 
         return sessions
 
+    def has_clients(self):
+        # are any clients connected to tmux
+        if len(tmux('list-clients')) > 1:
+            return True
+        else:
+            return False
+
     def attached_sessions(self):
         '''
             Returns active :class:`Session` object
@@ -865,6 +883,35 @@ class Server(object):
 
         return attached_sessions or None
 
+    def has_session(self, session_name):
+        '''
+        ``tmux(1)`` ``has-session``
+        '''
+
+        # has-session returns nothing if session exists
+        try:
+            tmux('has-session', '-t', session_name)
+            return True
+        except ErrorReturnCode_1 as e:
+            return False
+
+    def kill_session(self, session_name):
+        '''
+        ``tmux(1)`` ``kill-session``
+
+        session_name
+            string. note this accepts fnmatch(3).  'asdf' will kill asdfasd
+        '''
+        try:
+            tmux('kill-session', '-t', session_name)
+        except ErrorReturnCode_1 as e:
+            logging.error(
+                "\n\tcmd:\t%s\n"
+                "\terror:\t%s"
+                % (e.full_cmd, e.stderr)
+            )
+            return False
+
     @property
     def sessions(self):
         return self._sessions
@@ -881,46 +928,9 @@ class Server(object):
         '''
         tmux('switch-client', '-t', target_session)
 
-t = Server()
-
-
 #for session in Server.list_sessions():
 #    for window in session.windows:
 #        for pane in window.panes:
 #            pass
 
-
-t.switch_client(0)
-t.switch_client('tony')
-t.switch_client('tonsy')
-
-TEST_SESSION_NAME = 'tmuxwrapper_dev'
-
-session = Session.new_session(
-    session_name=TEST_SESSION_NAME,
-    kill_session=True
-)
-
-t.switch_client(TEST_SESSION_NAME)
-
-# bash completion
-# allow  tmuxwrapper to export split-pane,  key bindings
-
-session.attached_window().split_window()
-session.attached_window().select_layout('even-horizontal')
-session.attached_window().split_window()
-session.attached_window().split_window('-h')
-
-session.select_window(1)
-
-session.attached_window().select_pane(1)
-session.attached_pane().send_keys('cd /srv/www/flaskr')
-session.attached_window().select_pane(0)
-session.attached_pane().send_keys('source .env/bin/activate')
-session.new_window('second')
-session.new_window('testing 3')
-session.select_window(1)
-session.sync_windows()
-session.kill_window(target_window='3')
-session.sync_windows()
-tmux('display-panes')
+t = Server()
