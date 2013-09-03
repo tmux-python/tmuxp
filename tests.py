@@ -7,76 +7,6 @@ from random import randint
 root_logger.setLevel(logging.INFO)
 
 
-
-
-class TestClass(unittest.TestCase):
-    '''
-        self.session
-            Session object
-        self.TEST_SESSION_NAME
-            string. name of the test case session.
-    '''
-    @classmethod
-    def setUpClass(cls):
-        try:
-            # atm bootstrap() retyrns name of session and the session object
-            cls.TEST_SESSION_NAME, cls.session = bootstrap()
-        except:
-            self.fail()
-        return
-
-    def tearDown(self):
-        pass
-
-    def test_has_session(self):
-        assert t.has_session(self.TEST_SESSION_NAME) is True
-        assert t.has_session('asdf2314324321') is False
-
-    def test_3_switch_client_returns_session(self):
-        '''
-        switch_client should return reference to Session object
-        '''
-        pass
-
-    def test_4_new_session_has_one_window(self):
-        self.assertEqual(1, len(self.session._windows))
-
-    def test_5_session_split_window(self):
-        self.session.attached_window().split_window()
-        self.assertEqual(1, len(self.session._windows))
-
-
-    def test_6_next(self):
-        self.session.attached_window().select_layout('even-horizontal')
-        self.session.attached_window().split_window()
-        #session.sync_windows()
-        self.session.attached_window().split_window('-h')
-
-        self.session.select_window(1)
-
-        self.session.attached_window().select_pane(1)
-        self.session.attached_pane().send_keys('cd /srv/www/flaskr')
-        self.session.attached_window().select_pane(0)
-        self.session.attached_pane().send_keys('source .env/bin/activate')
-        self.session.new_window('second')
-        self.session.sync_windows()
-        self.assertEqual(2, len(self.session._windows))
-        self.session.new_window('testing 3')
-        self.session.sync_windows()
-        self.assertEqual(3, len(self.session._windows))
-        self.session.select_window(1)
-        self.session.kill_window(target_window='3')
-        self.session.sync_windows()
-        self.assertEqual(2, len(self.session._windows))
-        #tmux('display-panes')
-
-    def test_case_2(self):
-        pass
-
-    def test_case_3(self):
-        pass
-
-
 def bootstrap():
     if t.has_clients():
         TEST_SESSION_PREFIX = 'tmxwrp_'
@@ -111,9 +41,69 @@ def bootstrap():
         )
 
         t.switch_client(TEST_SESSION_NAME)
-        print TEST_SESSION_NAME
 
         return (TEST_SESSION_NAME, session)
+
+
+class TmuxTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        try:
+            # atm bootstrap() retyrns name of session and the session object
+            cls.TEST_SESSION_NAME, cls.session = bootstrap()
+        except:
+            cls.fail()
+        return
+
+
+class TestSessions(TmuxTest):
+    '''
+        self.session
+            Session object
+        self.TEST_SESSION_NAME
+            string. name of the test case session.
+    '''
+
+    def tearDown(self):
+        pass
+
+    def test_has_session(self):
+        assert t.has_session(self.TEST_SESSION_NAME) is True
+        assert t.has_session('asdf2314324321') is False
+
+    def test_3_switch_client_returns_session(self):
+        '''
+        switch_client should return reference to Session object
+        '''
+        pass
+
+
+class windowCreation(TmuxTest):
+
+    def test_6_next(self):
+        self.session.attached_window().select_layout('even-horizontal')
+        self.session.attached_window().split_window()
+        #session.sync_windows()
+        self.session.attached_window().split_window('-h')
+
+        self.session.select_window(1)
+
+        self.session.attached_window().select_pane(1)
+        self.session.attached_pane().send_keys('cd /srv/www/flaskr')
+        self.session.attached_window().select_pane(0)
+        self.session.attached_pane().send_keys('source .env/bin/activate')
+        self.session.new_window('second')
+        self.session.sync_windows()
+        self.assertEqual(2, len(self.session._windows))
+        self.session.new_window('testing 3')
+        self.session.sync_windows()
+        self.assertEqual(3, len(self.session._windows))
+        self.session.select_window(1)
+        self.session.kill_window(target_window='3')
+        self.session.sync_windows()
+        self.assertEqual(2, len(self.session._windows))
+        #tmux('display-panes')
+
 
 if __name__ == '__main__':
 
