@@ -93,14 +93,17 @@ class WindowCreation(TmuxTest):
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('source .env/bin/activate')
         self.session.new_window('second')
-        self.session.sync_windows()
+        self.session.list_windows()
+        #self.session.sync_windows()
         self.assertEqual(2, len(self.session._windows))
         self.session.new_window('testing 3')
-        self.session.sync_windows()
+        #self.session.sync_windows()
+        self.session.list_windows()
         self.assertEqual(3, len(self.session._windows))
         self.session.select_window(1)
         self.session.kill_window(target_window='3')
-        self.session.sync_windows()
+        self.session.list_windows()
+        #self.session.sync_windows()
         self.assertEqual(2, len(self.session._windows))
         #tmux('display-panes')
 
@@ -110,8 +113,10 @@ class WindowSelect(TmuxTest):
         print self.session
         print self.session._windows
         self.session.new_window('testing 3')
-        self.session.sync_windows()
+        #self.session.sync_windows()
+        self.session.list_windows()
         self.session.select_window(2)
+        self.session.list_windows()
         self.assertEqual(2, int(self.session.attached_window()._TMUX['window_index']))
 
 if __name__ == '__main__':

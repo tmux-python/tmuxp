@@ -212,7 +212,7 @@ class Session(object):
     def __init__(self, **kwargs):
 
         self.session_name = None
-        self._windows = None
+        self._windows = list()
 
         # do we need this?
         if 'session_name' not in kwargs:
@@ -413,10 +413,52 @@ class Session(object):
         Return a list of :class:`Window` from the ``tmux(1)`` session.
         '''
 
-        windows = [Window.from_tmux(session=self, **window) for window in self._list_windows()]
+        #windows = [Window.from_tmux(session=self, **window) for window in self._list_windows()]
+        new_windows = self._list_windows()
 
-        self._windows = windows
-        return windows
+        if not self._windows:
+            for window in new_windows:
+                logging.debug('new window %s' % window['window_id'])
+                logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+                self._windows.append(Window.from_tmux(session=self, **window))
+            return self._windows
+
+        new = {window['window_id']: window for window in new_windows}
+        old = {window._TMUX['window_id']: window for window in self._windows}
+        print old
+        print old.keys()
+
+        created = set(new.keys()) - set(old.keys())
+        deleted = set(old.keys()) - set(new.keys())
+        intersect = set(new.keys()).intersection(set(old.keys()))
+
+        diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
+
+        logging.info(
+            "syncing windows"
+            "\n\tdiff: %s\n"
+            "\tcreated: %s\n"
+            "\tdeleted: %s\n"
+            "\tintersect: %s" % (diff, created, deleted, intersect)
+        )
+
+        for w in self._windows:
+            # remove window objects if deleted or out of session
+            if w._TMUX['window_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
+                logging.debug("removing %s" % w)
+                self._windows.remove(w)
+
+            if w._TMUX['window_id'] in intersect:
+                logging.debug('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
+                w._TMUX.update(diff[w._TMUX['window_id']])
+
+        # create window objects for non-existant window_id's
+        for window in [new[window_id] for window_id in created]:
+            logging.debug('new window %s' % window['window_id'])
+            logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+            self._windows.append(Window.from_tmux(session=self, **window))
+
+        return self._windows
 
     def attached_window(self):
         '''
