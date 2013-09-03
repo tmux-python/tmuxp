@@ -16,7 +16,7 @@ class TestClass(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_session_creation(self):
+    def test_1_session_creation(self):
 
         t.switch_client('tony')
 
@@ -24,25 +24,25 @@ class TestClass(unittest.TestCase):
 
         assert t.has_session(TEST_SESSION_NAME) is True
 
-    def test_has_session_not_found(self):
+    def test_2_has_session_not_found(self):
         assert t.has_session('asdf2314324321') is False
 
-    def test_switch_client_returns_session(self):
+    def test_3_switch_client_returns_session(self):
         '''
         switch_client should return reference to Session object
         '''
         pass
 
-    def test_new_session_has_one_window(self):
+    def test_4_new_session_has_one_window(self):
         self.assertEqual(1, len(session._windows))
 
-    def test_session_split_window(self):
+    def test_5_session_split_window(self):
         session.attached_window().split_window()
-        self.assertEqual(2, len(session._windows))
 
-    def test_next(self):
+    def test_6_next(self):
         session.attached_window().select_layout('even-horizontal')
         session.attached_window().split_window()
+        #session.sync_windows()
         session.attached_window().split_window('-h')
 
         session.select_window(1)
@@ -52,11 +52,15 @@ class TestClass(unittest.TestCase):
         session.attached_window().select_pane(0)
         session.attached_pane().send_keys('source .env/bin/activate')
         session.new_window('second')
-        session.new_window('testing 3')
-        session.select_window(1)
         session.sync_windows()
+        self.assertEqual(2, len(session._windows))
+        session.new_window('testing 3')
+        session.sync_windows()
+        self.assertEqual(3, len(session._windows))
+        session.select_window(1)
         session.kill_window(target_window='3')
         session.sync_windows()
+        self.assertEqual(2, len(session._windows))
         #tmux('display-panes')
 
     def test_case_2(self):
