@@ -99,7 +99,8 @@ from sh import tmux as tmx, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 from functools import wraps
-import logging, sys
+import logging
+import sys
 from logxtreme import RainbowLoggingHandler
 #LOG_FORMAT = "(%(levelname)s) %(filename)s:%(lineno)s.%(funcName)s : %(asctime)-15s:\n\t%(message)s"
 #logging.basicConfig(format=LOG_FORMAT, level='DEBUG')
@@ -113,6 +114,7 @@ handler.setFormatter(formatter)
 root_logger.addHandler(handler)
 logger = logging.getLogger("test")
 
+
 def tmux(*args, **kwargs):
     '''
     wrap tmux from ``sh`` library in a try catch
@@ -125,6 +127,7 @@ def tmux(*args, **kwargs):
             "\terror:\t%s"
             % (e.full_cmd, e.stderr)
         )
+
 
 def live_tmux(f):
     '''
@@ -368,7 +371,7 @@ class Session(object):
         deleted = set(old.keys()) - set(new.keys())
         intersect = set(new.keys()).intersection(set(old.keys()))
 
-        diff = {id: dict(set(new[id].items())-set(old[id]._TMUX.items())) for id in intersect}
+        diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
 
         logging.debug(
             "syncing windows"
