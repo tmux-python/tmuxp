@@ -37,6 +37,7 @@ from random import randint
 # set logging to INFO level
 root_logger.setLevel(logging.INFO)
 
+
 def bootstrap():
     '''
         Returns a tuple of the session_name (generated) and a :class:`Session`
