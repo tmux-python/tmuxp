@@ -11,6 +11,7 @@
 from .util import live_tmux
 from .window import Window
 from .formats import WINDOW_FORMATS, SESSION_FORMATS
+from .exc import SessionExists
 from sh import tmux, ErrorReturnCode_1
 from logxtreme import logging
 
