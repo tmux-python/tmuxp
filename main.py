@@ -188,10 +188,6 @@ def live_tmux(f):
     return live_tmux
 
 
-class NoClientException(object):
-    pass
-
-
 class SessionExists(Exception):
     pass
 
@@ -319,7 +315,7 @@ class Session(object):
         if 'target_window' in kwargs:
             tmux_args.append(['-t', kwargs['target_window']])
 
-        tmux('kill-window', '-t', kwargs['target_window'])
+        tmux('kill-window', *tmux_args)
 
         self.list_windows()
 
@@ -382,45 +378,42 @@ class Session(object):
 
         if not self._windows:
             for window in new_windows:
-                logging.debug('new window %s' % window['window_id'])
                 logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
                 self._windows.append(Window.from_tmux(session=self, **window))
-            return self._windows
+        else:
+            new = {window['window_id']: window for window in new_windows}
+            old = {window._TMUX['window_id']: window for window in self._windows}
+            print old
+            print old.keys()
 
-        new = {window['window_id']: window for window in new_windows}
-        old = {window._TMUX['window_id']: window for window in self._windows}
-        print old
-        print old.keys()
+            created = set(new.keys()) - set(old.keys())
+            deleted = set(old.keys()) - set(new.keys())
+            intersect = set(new.keys()).intersection(set(old.keys()))
 
-        created = set(new.keys()) - set(old.keys())
-        deleted = set(old.keys()) - set(new.keys())
-        intersect = set(new.keys()).intersection(set(old.keys()))
+            diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
 
-        diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
+            logging.info(
+                "syncing windows"
+                "\n\tdiff: %s\n"
+                "\tcreated: %s\n"
+                "\tdeleted: %s\n"
+                "\tintersect: %s" % (diff, created, deleted, intersect)
+            )
 
-        logging.info(
-            "syncing windows"
-            "\n\tdiff: %s\n"
-            "\tcreated: %s\n"
-            "\tdeleted: %s\n"
-            "\tintersect: %s" % (diff, created, deleted, intersect)
-        )
+            for w in self._windows:
+                # remove window objects if deleted or out of session
+                if w._TMUX['window_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
+                    logging.debug("removing %s" % w)
+                    self._windows.remove(w)
 
-        for w in self._windows:
-            # remove window objects if deleted or out of session
-            if w._TMUX['window_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
-                logging.debug("removing %s" % w)
-                self._windows.remove(w)
+                if w._TMUX['window_id'] in intersect:
+                    logging.debug('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
+                    w._TMUX.update(diff[w._TMUX['window_id']])
 
-            if w._TMUX['window_id'] in intersect:
-                logging.debug('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
-                w._TMUX.update(diff[w._TMUX['window_id']])
-
-        # create window objects for non-existant window_id's
-        for window in [new[window_id] for window_id in created]:
-            logging.debug('new window %s' % window['window_id'])
-            logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
-            self._windows.append(Window.from_tmux(session=self, **window))
+            # create window objects for non-existant window_id's
+            for window in [new[window_id] for window_id in created]:
+                logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+                self._windows.append(Window.from_tmux(session=self, **window))
 
         return self._windows
 
@@ -656,7 +649,6 @@ class Window(object):
 
         if not self._panes:
             for pane in new_panes:
-                logging.debug('new pane %s' % pane['pane_id'])
                 logging.debug('adding pane_id %s for window_id %s' % (pane['pane_id'], pane['window_id']))
                 self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
             return self._panes
@@ -692,7 +684,6 @@ class Window(object):
 
         # create pane objects for non-existant pane_id's
         for pane in [new[pane_id] for pane_id in created]:
-            logging.debug('new pane %s' % pane['pane_id'])
             logging.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
             self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
 
@@ -715,13 +706,6 @@ class Pane(object):
     def __init__(self, **kwargs):
         self._session = None
         self._window = None
-
-    @live_tmux
-    def get_session(self):
-        '''
-        sucks
-        '''
-        return next((session for session in Server.list_sessions() if session._TMUX['session_name'] == self._TMUX['session_name']), None)
 
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):

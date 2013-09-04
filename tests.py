@@ -90,7 +90,7 @@ def bootstrap():
         return (TEST_SESSION_NAME, session)
 
 
-class TmuxTest(unittest.TestCase):
+class TestTmux(unittest.TestCase):
     '''
         self.session
             Session object
@@ -118,13 +118,13 @@ class TmuxTest(unittest.TestCase):
         t.list_sessions()
 
 
-class TestSessions(TmuxTest):
+class TestSessions(TestTmux):
     def test_has_session(self):
         assert t.has_session(self.TEST_SESSION_NAME) is True
         assert t.has_session('asdf2314324321') is False
 
 
-class WindowCreation(TmuxTest):
+class TestWindowCreation(TestTmux):
 
     def test_sync_windows(self):
         #self.session.select_window(1)
@@ -151,7 +151,7 @@ class WindowCreation(TmuxTest):
         self.assertEqual(3, len(self.session.attached_window()._panes))
 
 
-class WindowASelect(TmuxTest):
+class TestWindowSelect(TestTmux):
     def test_select_window(self):
         self.session.new_window('testing 3')
         self.session.select_window(2)
@@ -160,7 +160,15 @@ class WindowASelect(TmuxTest):
 if __name__ == '__main__':
 
     if t.has_clients():
-        unittest.main()
-        #bootstrap()
+        #unittest.main()
+        def suite():
+            suite = unittest.TestSuite()
+            suite.addTest(unittest.makeSuite(TestSessions))
+            suite.addTest(unittest.makeSuite(TestWindowSelect))
+            suite.addTest(unittest.makeSuite(TestWindowCreation))
+
+            return suite
+
+        unittest.TextTestRunner().run(suite())
     else:
         print('must have a tmux client running')
