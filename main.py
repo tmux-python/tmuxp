@@ -99,6 +99,7 @@ from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint
 from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 import sys
+import os
 #LOG_FORMAT = "(%(levelname)s) %(filename)s:%(lineno)s.%(funcName)s : %(asctime)-15s:\n\t%(message)s"
 #logging.basicConfig(format=LOG_FORMAT, level='DEBUG')
 
@@ -108,9 +109,24 @@ import sys
 #        for pane in window.panes:
 #            pass
 
+TMUXWRAPPER_DIR = os.path.expanduser('~/.tmuxwrapper')
+
+if os.path.exists(TMUXWRAPPER_DIR):
+    for r, d, f in os.walk(TMUXWRAPPER_DIR):
+        for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
+            print("%s %s" % (filela, type(filela)))
+            thefile = os.path.join(TMUXWRAPPER_DIR, filela)
+            print("%s" % thefile)
+            print("%s" % type(thefile))
+            c = kaptan.Kaptan()
+            c.import_config(thefile)
+
+            pprint(c.get("windows"))
 
 config = kaptan.Kaptan(handler="yaml")
-config.import_config("""windows:
+config.import_config("""
+    name: hi
+    windows:
         - editor:
             layout: main-vertical
             panes:
@@ -120,6 +136,7 @@ config.import_config("""windows:
         - logs: tail -f logs/development.log
     """)
 
+print(config.get('windows'))
 """ expand inline config
     dict({'session_name': { dict })
 
@@ -154,4 +171,3 @@ for window in config.get('windows'):
             pass
 
     windows.append(window)
-
