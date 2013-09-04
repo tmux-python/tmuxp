@@ -158,3 +158,15 @@ class RainbowLoggingHandler(ColorizingStreamHandler):
             message = logging.StreamHandler.format(self, record)
 
         return message
+
+import sys
+import logging
+from logxtreme import RainbowLoggingHandler
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+
+handler = RainbowLoggingHandler(sys.stdout)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+handler.setFormatter(formatter)
+root_logger.addHandler(handler)
+logger = logging.getLogger("test")

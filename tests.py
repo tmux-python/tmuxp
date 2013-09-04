@@ -27,12 +27,15 @@
     tests.
 """
 
-
-from main import t, SessionNotFound, Session, root_logger
 from nose.tools import raises
 import unittest
 import logging
 from random import randint
+from sh import ErrorReturnCode_1
+from tmux import Session, t
+from tmux.logxtreme import root_logger, logging
+from tmux.exc import SessionNotFound
+
 
 # set logging to INFO level
 root_logger.setLevel(logging.INFO)
