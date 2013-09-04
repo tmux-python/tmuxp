@@ -1,8 +1,7 @@
 # -*- coding: utf8 - *-
-
 """
-    formats
-    ~~~~~~~
+    tmuxwrapper.formats
+    ~~~~~~~~~~~~~~~~~~~
 
     .. _For reference:
        http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
@@ -10,7 +9,6 @@
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 """
-
 
 SESSION_FORMATS = [
     'session_name',
