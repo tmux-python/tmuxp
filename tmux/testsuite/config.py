@@ -1,6 +1,6 @@
 from . import TestTmux
 import os
-import sh
+import shutil
 import kaptan
 
 
@@ -91,8 +91,5 @@ class ConfigTest(TestTmux):
 
     @classmethod
     def tearDownClass(cls):
-        # remove .tmuxwrapper dir
-        if sh.rmtree(TMUXWRAPPER_DIR):
+        if shutil.rmtree(TMUXWRAPPER_DIR):
             os.makedirs(TMUXWRAPPER_DIR)
-
-
