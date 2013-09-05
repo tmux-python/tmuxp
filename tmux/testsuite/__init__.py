@@ -39,6 +39,7 @@ from tmux.exc import SessionNotFound
 
 # set logging to INFO level
 root_logger.setLevel(logging.ERROR)
+TEST_SESSION_PREFIX = 'tmxwrp_'
 
 
 def bootstrap():
@@ -56,7 +57,6 @@ def bootstrap():
 
     '''
     if t.has_clients():
-        TEST_SESSION_PREFIX = 'tmxwrp_'
 
         # find current sessions prefixed with tmxwrp
         previous_sessions = [s.session_name for s in t.list_sessions()
