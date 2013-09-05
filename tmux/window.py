@@ -122,9 +122,29 @@ class Window(object):
         todo:
             return :class:`Pane` object
         '''
-        tmux('split-window', *args, **kwargs)
 
+        formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
+        tmux_formats = ['#{%s}\t' % format for format in formats]
+
+        pane = tmux(
+            'split-window',
+            '-P', '-F%s' % ''.join(tmux_formats),     # output
+        )
+
+        print(pane)
+
+        # zip and map the results into the dict of formats used above
+        pane = dict(zip(formats, pane.split('\t')))
+
+        print(pane)
+        # clear up empty dict
+        pane = dict((k, v) for k, v in pane.iteritems() if v)
+        print(pane)
+        pane = Pane.from_tmux(session=self._session, window=self, **pane)
+        self._panes.append(pane)
         self.list_panes()  # refresh all panes in :class:`Window`
+
+        return pane
 
     def attached_pane(self):
         panes = self.list_panes()

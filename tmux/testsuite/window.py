@@ -13,17 +13,21 @@ class TestWindowCreation(TestTmux):
 
     def test_sync_windows(self):
         #self.session.select_window(1)
+        current_windows = len(self.session._windows)
         self.session.attached_window().select_pane(1)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('source .env/bin/activate')
         self.session.new_window('second')
-        self.assertEqual(2, len(self.session._windows))
+        current_windows += 1
+        self.assertEqual(current_windows, len(self.session._windows))
         self.session.new_window(3)
-        self.assertEqual(3, len(self.session._windows))
+        current_windows += 1
+        self.assertEqual(current_windows, len(self.session._windows))
         self.session.select_window(1)
         self.session.kill_window(target_window=3)
-        self.assertEqual(2, len(self.session._windows))
+        current_windows -= 1
+        self.assertEqual(current_windows, len(self.session._windows))
         #tmux('display-panes')
 
     def test_sync_panes(self):

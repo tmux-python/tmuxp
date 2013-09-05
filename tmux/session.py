@@ -88,27 +88,42 @@ class Session(object):
         return session
 
     @live_tmux
-    def new_window(self, window_name=None):
+    def new_window(self, *args, **kwargs):
         '''
         tmux(1) new-window
 
         window_name
             string. window name (-n)
         '''
+        formats = ['session_name', 'session_id'] + WINDOW_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
 
-        if window_name:
-            tmux(
+        if 'window_name' in kwargs:
+            window_name = kwargs['window_name']
+        elif len(args) == 1 and isinstance(args[0], basestring):
+            window_name = args[0]
+
+        if 'window_name' in locals():
+            window = tmux(
                 'new-window',
-                '-t', self.session_name,
+                '-P', '-F%s' % '\t'.join(tmux_formats),  # output
                 '-n', window_name
             )
         else:
-            tmux(
+            window = tmux(
                 'new-window',
-                '-t', self.session_name
+                '-P', '-F%s' % '\t'.join(tmux_formats),  # output
             )
 
+        window = dict(zip(formats, window.split('\t')))
+
+        # clear up empty dict
+        window = dict((k, v) for k, v in window.iteritems() if v)
+        window = Window.from_tmux(session=self, **window)
+        self._windows.append(window)
+
         self.list_windows()
+        return window
 
     @live_tmux
     def kill_window(self, *args, **kwargs):
