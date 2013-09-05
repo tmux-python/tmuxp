@@ -190,6 +190,36 @@ Roadmap
 - unit testing
 - video overview
 
+Differences from tmux
+---------------------
+
+Because this is a python abstraction, They keys formats, such as
+``window-name``, and flags like ``start-directory`` have dashes (-)
+replaced with underscores (_).
+
+tmuxwrapper MetaData for a Pane, Window, Server or Session, the data
+for ``session-id`` as returned by ``tmux(1)`` will be ``session_id``.
+
+
+interesting observations
+------------------------
+
+How is tmuxwrapper able to keep references to panes, windows and sessions?
+
+    Tmux has unique ID's for sessions, windows and panes.
+
+    panes use ``%``, such as ``%1234``
+
+    windows use ``@``, such as ``@2345``
+
+    sessions use ``$``, for money, such as ``$``
+
+
+
+How is tmuxwrapper able to handle windows with no names?
+
+    Tmux provides ``window_id`` as a unique identifier.
+
 Reference
 ---------
 
