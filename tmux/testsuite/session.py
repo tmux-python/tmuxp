@@ -1,5 +1,5 @@
-from . import TestTmux
 from tmux import t
+from . import TestTmux
 
 
 class TestSessions(TestTmux):

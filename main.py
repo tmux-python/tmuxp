@@ -97,7 +97,7 @@
 import kaptan
 from sh import tmux, cut, ErrorReturnCode_1
 from pprint import pprint
-from formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
+from tmux.formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 import sys
 import os
 #LOG_FORMAT = "(%(levelname)s) %(filename)s:%(lineno)s.%(funcName)s : %(asctime)-15s:\n\t%(message)s"
