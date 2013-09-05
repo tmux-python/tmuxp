@@ -32,24 +32,6 @@ sampleconfigdict = {
         }]
 }
 
-sampleconfigexpanded = {
-    'name':
-    'sampleconfig',
-    'windows':
-    {
-        'editor': {
-            'panes': [
-                {
-                    'cmd': ['vim', 'cowsay "hey"']
-                }
-            ],
-            'layout': 'main-verticle'
-        },
-        'logs': 'tail -F /var/log/syslog',
-        'server': 'htop'
-    }
-}
-
 
 class ConfigTest(unittest.TestCase):
 
