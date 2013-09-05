@@ -166,6 +166,12 @@ Roadmap
 - vim: may be used inside of a pane object with a filename (relative to
   the pane dir, also accepts /) and vim windows may be split and opened
 - support for importing teamocil and tmuxinator configs
+- creating a pane / window should return the new object, then refresh the
+  parent (list_sessions for server, list_windows for session, list_panes
+  for window).
+- renaming or moving a pane should always return the object session,
+  window or pane object and flush/refresh the contents of the tmux server
+  objects (sessions, windows, panes).
 
 Roadmap
 -------
