@@ -165,6 +165,7 @@ Roadmap
 - and one more thing
 - vim: may be used inside of a pane object with a filename (relative to
   the pane dir, also accepts /) and vim windows may be split and opened
+- support for importing teamocil and tmuxinator configs
 
 Roadmap
 -------
