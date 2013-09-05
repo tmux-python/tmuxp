@@ -220,6 +220,12 @@ How is tmuxwrapper able to handle windows with no names?
 
     Tmux provides ``window_id`` as a unique identifier.
 
+What is a {pane,window}_index vs a {pane,window,session}_id?
+
+    Pane index refers to the order of a pane on the screen.
+
+    Window index refers to the # of the pane in the session.
+
 Reference
 ---------
 
