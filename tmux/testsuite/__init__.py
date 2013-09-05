@@ -129,7 +129,6 @@ def main():
 
         def suite():
             suite = unittest.TestSuite()
-
             for other_suite in suites:
                 suite.addTest(other_suite)
 

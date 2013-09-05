@@ -109,34 +109,35 @@ import os
 #        for pane in window.panes:
 #            pass
 
+
 TMUXWRAPPER_DIR = os.path.expanduser('~/.tmuxwrapper')
 
 if os.path.exists(TMUXWRAPPER_DIR):
     for r, d, f in os.walk(TMUXWRAPPER_DIR):
         for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
-            print("%s %s" % (filela, type(filela)))
             thefile = os.path.join(TMUXWRAPPER_DIR, filela)
-            print("%s" % thefile)
-            print("%s" % type(thefile))
+            print('filename: %s\t \tfullfile: %s\t' % (filela, thefile))
             c = kaptan.Kaptan()
             c.import_config(thefile)
 
-            pprint(c.get("windows"))
+            #pprint(c.get("windows"))
+            #pprint(c.export('dict'))
+            pprint(c.get())
 
-config = kaptan.Kaptan(handler="yaml")
-config.import_config("""
-    name: hi
-    windows:
-        - editor:
-            layout: main-vertical
-            panes:
-                - vim
-                - cowsay "hey"
-        - server: htop
-        - logs: tail -f logs/development.log
-    """)
+#config = kaptan.Kaptan(handler="yaml")
+#config.import_config("""
+#    name: hi
+#    windows:
+#        - editor:
+#            layout: main-vertical
+#            panes:
+#                - vim
+#                - cowsay "hey"
+#        - server: htop
+#        - logs: tail -f logs/development.log
+#    """)
 
-print(config.get('windows'))
+#print(config.get('windows'))
 """ expand inline config
     dict({'session_name': { dict })
 
@@ -145,7 +146,7 @@ print(config.get('windows'))
     dict({ name='session_name', **dict})
 """
 windows = list()
-for window in config.get('windows'):
+for window in c.get('windows'):
 
     if len(window) == int(1):
         name = window.iterkeys().next()  # get window name
