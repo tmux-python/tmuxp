@@ -90,8 +90,6 @@ class Server(object):
 
         new = {session['session_id']: session for session in new_sessions}
         old = {session._TMUX['session_id']: session for session in self._sessions}
-        print old
-        print old.keys()
 
         created = set(new.keys()) - set(old.keys())
         deleted = set(old.keys()) - set(new.keys())

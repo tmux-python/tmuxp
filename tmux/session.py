@@ -256,6 +256,7 @@ class Session(object):
         '''
         tmux('select-window', '-t', window)
         self.list_windows()
+        return self.attached_window()
 
     def attached_pane(self):
         '''
