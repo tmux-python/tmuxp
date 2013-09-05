@@ -1,4 +1,5 @@
 from . import TestTmux
+from tmux import Pane
 
 
 class TestWindowSelect(TestTmux):
@@ -26,6 +27,8 @@ class TestWindowCreation(TestTmux):
         #tmux('display-panes')
 
     def test_sync_panes(self):
+        self.session.select_window(1)
+
         self.assertEqual(1, len(self.session.attached_window()._panes))
         self.session.attached_window().select_layout('even-horizontal')
 
@@ -33,3 +36,17 @@ class TestWindowCreation(TestTmux):
         self.assertEqual(2, len(self.session.attached_window()._panes))
         self.session.attached_window().split_window('-h')
         self.assertEqual(3, len(self.session.attached_window()._panes))
+
+    def test_attached_pane(self):
+        self.assertIsInstance(self.session.attached_window().attached_pane(), Pane)
+
+    def test_split_window(self):
+        window_name = 'test split window'
+        window = self.session.new_window(window_name=window_name)
+        pane = window.split_window()
+        self.assertEqual(2, len(self.session.attached_window()._panes))
+        self.assertIsInstance(
+            pane, Pane
+        )
+
+        self.assertEqual(2, len(window._panes))

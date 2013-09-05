@@ -96,6 +96,8 @@ class Window(object):
                 integer of the pane index, or -U, -D, -L, -R. put a konami code
         '''
         tmux('select-pane', '-t', pane)
+        self.list_panes()
+        return self.attached_pane()
 
     @live_tmux
     def split_window(self, *args, **kwargs):
