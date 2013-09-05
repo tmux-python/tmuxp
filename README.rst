@@ -172,6 +172,10 @@ Roadmap
 - renaming or moving a pane should always return the object session,
   window or pane object and flush/refresh the contents of the tmux server
   objects (sessions, windows, panes).
+- if an object is removed from the list, any reference to it should be
+  changed. since python doesn't use pointers/references like other
+  languages, a pubsub like blinker http://pythonhosted.org/blinker/ or ee
+  https://github.com/jesusabdullah/pyee.
 
 Roadmap
 -------
