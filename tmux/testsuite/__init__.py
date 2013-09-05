@@ -30,7 +30,6 @@
 
 from nose.tools import raises
 import unittest
-import logging
 from random import randint
 from sh import ErrorReturnCode_1
 from tmux import Session, t
@@ -39,7 +38,7 @@ from tmux.exc import SessionNotFound
 
 
 # set logging to INFO level
-root_logger.setLevel(logging.INFO)
+root_logger.setLevel(logging.ERROR)
 
 
 def bootstrap():
@@ -79,7 +78,7 @@ def bootstrap():
             t.switch_client(other_sessions[0])
 
         for session in previous_sessions:
-            logging.error(session)
+            logging.debug(session)
             t.kill_session(session)
 
         TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 1337))

@@ -199,8 +199,6 @@ class Session(object):
         else:
             new = {window['window_id']: window for window in new_windows}
             old = {window._TMUX['window_id']: window for window in self._windows}
-            print old
-            print old.keys()
 
             created = set(new.keys()) - set(old.keys())
             deleted = set(old.keys()) - set(new.keys())

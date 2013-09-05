@@ -8,7 +8,7 @@ import unittest
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
 
 sampleconfigdict = {
-    'name': 'sampleconfig',
+    'session_name': 'sampleconfig',
     'windows': [{
         'window_name': 'editor',
         'panes': [
@@ -110,7 +110,5 @@ class ConfigTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        return
-    if shutil.rmtree(TMUXWRAPPER_DIR):
-        os.makedirs(
-            TMUXWRAPPER_DIR)
+        if os.path.isdir(TMUXWRAPPER_DIR):
+            shutil.rmtree(TMUXWRAPPER_DIR)

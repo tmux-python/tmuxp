@@ -176,12 +176,11 @@ class Server(object):
         session_name
             string. note this accepts fnmatch(3).  'asdf' will kill asdfasd
         '''
-        logging.error(session_name)
         try:
             tmux('kill-session', '-t', session_name)
             self.list_sessions()
         except ErrorReturnCode_1 as e:
-            logging.error(
+            logging.debug(
                 "\n\tcmd:\t%s\n"
                 "\terror:\t%s"
                 % (e.full_cmd, e.stderr)
