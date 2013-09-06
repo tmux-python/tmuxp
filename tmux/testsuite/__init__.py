@@ -6,40 +6,47 @@
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 
-    this can be ran like::
+    To test, first make a virtual environment, to learn more see:
 
-        nosetests tests.py
+    http://docs.python-guide.org/en/latest/dev/virtualenvs/
+
+    A quick setup, if ``virtualenv`` is installed (inside of project):
+
+        $ virtualenv .env
+        $ pip install -r requirements.pip
+
+    this can be ran like:
+
+        $ python run_tests.py
+
+
+    with ``pip install ipython``:
+
+        ipython tmux/testsuite/*.py
+
+    with ``pip install bpython``:
+
+        bpython tmux/testsuite/*.py
+
+    with ``pip install nosetests``:
+
+        nosetests tmux/testsuite/*.py
+
+    or with ``pip install pytest``:
+
+        $ py.test tmux/testsuite/*.py
+
+    If you use install node (http://www.nodejs.org) on your system, you can use
+    nodemon::
+
+        $ sudo npm install -g nodemon
+        $ nodemon -e py --exec "python" run_tests.py
 
     or::
 
-        python tests.py
-
-    also, if you have ``node`` and ``npm`` you may (sudo)::
-
-        ``npm install -g nodemon``
-        ``nodemon --watch tests.py --watch main.py --exec "nosetests" tests.py
-
-    or::
-
-        ``nodemon --watch tests.py --watch main.py --exec "python" tests.py
+        $ nodemon -e py --exec "py.test" tmux/testsuite/*.py
 
     These tests require an active tmux client open while it runs. It is best to
     have a second terminal with tmux running alongside the terminal running the
     tests.
 """
-
-import unittest
-from tmux import t
-
-
-def main():
-    if t.has_clients():
-        #unittest.main()
-        suites = unittest.TestLoader().discover(".", pattern="*.py")
-
-        unittest.TextTestRunner().run(suites)
-    else:
-        print('must have a tmux client running')
-
-#if __name__ == '__main__':
-#    main()
