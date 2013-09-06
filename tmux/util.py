@@ -55,12 +55,13 @@ def live_tmux(f):
     '''
     @wraps(f)
     def live_tmux(self, *args, **kwargs):
-        if not self._TMUX:
+        if any(key in self for key in ('pane_id', 'window_id', 'session_id')):
+            return f(self, *args, **kwargs)
+        else:
             raise NotRunning(
                 "self._TMUX not found, this object is not part of an active"
                 "tmux session. If you need help please post an issue on github"
             )
-        return f(self, *args, **kwargs)
     return live_tmux
 
 

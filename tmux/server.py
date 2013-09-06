@@ -107,13 +107,13 @@ class Server(object):
 
         for s in self._sessions:
             # remove session objects if deleted or out of session
-            if s._TMUX['session_id'] in deleted:
+            if s.get('session_id') in deleted:
                 logging.info("removing %s" % s)
                 self._sessions.remove(s)
 
-            if s._TMUX['session_id'] in intersect:
-                logging.debug('updating session_id %s' % (s._TMUX['session_id']))
-                s._TMUX.update(diff[s._TMUX['session_id']])
+            if s.get('session_id') in intersect:
+                logging.debug('updating session_id %s' % (s.get('session_id')))
+                s.update(diff[s.get('session_id')])
 
         # create session objects for non-existant session_id's
         for session in [new[session_id] for session_id in created]:
@@ -145,9 +145,9 @@ class Server(object):
         attached_sessions = list()
 
         for session in sessions:
-            if 'session_attached' in session._TMUX:
+            if 'session_attached' in session:
                 # for now session_active is a unicode
-                if session._TMUX['session_attached'] == '1':
+                if session.get('session_attached') == '1':
                     logging.info('session %s attached', session.session_name)
                     attached_sessions.append(session)
                 else:

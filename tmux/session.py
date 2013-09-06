@@ -14,9 +14,10 @@ from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import SessionExists
 from sh import tmux, ErrorReturnCode_1
 from logxtreme import logging
+import collections
 
 
-class Session(object):
+class Session(collections.MutableMapping):
     '''
     tmux session
     '''
@@ -30,7 +31,30 @@ class Session(object):
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
         else:
-            self.session_name = kwargs['session_name']
+            self.session_name = kwargs.pop('session_name')
+
+        self._TMUX = {}
+        self.update(**kwargs)
+
+    def __getitem__(self, key):
+        return self._TMUX[key]
+
+    def __setitem__(self, key, value):
+        self._TMUX[key] = value
+        self.dirty = True
+
+    def __delitem__(self, key):
+        del self._TMUX[key]
+        self.dirty = True
+
+    def keys(self):
+        return self._TMUX.keys()
+
+    def __iter__(self):
+        return self._TMUX.__iter__()
+
+    def __len__(self):
+        return len(self._TMUX.keys())
 
     @classmethod
     def new_session(cls,
@@ -78,9 +102,7 @@ class Session(object):
         session_info = dict((k, v) for k, v in session_info.iteritems() if v)
 
         session = cls(session_name=session_name)
-        session._TMUX = dict()
-        for (k, v) in session_info.items():
-            session._TMUX[k] = v
+        session.update(session_info)
 
         # need to be able to get first windows
         session._windows = session.list_windows()
@@ -164,9 +186,7 @@ class Session(object):
             raise ValueError('Session requires session_name')
 
         session = cls(session_name=kwargs['session_name'])
-        session._TMUX = dict()
-        for (k, v) in kwargs.items():
-            session._TMUX[k] = v
+        session.update(**kwargs)
 
         session._windows = session.list_windows()
 
@@ -213,13 +233,13 @@ class Session(object):
                 self._windows.append(Window.from_tmux(session=self, **window))
         else:
             new = {window['window_id']: window for window in new_windows}
-            old = {window._TMUX['window_id']: window for window in self._windows}
+            old = {window.get('window_id'): window for window in self._windows}
 
             created = set(new.keys()) - set(old.keys())
             deleted = set(old.keys()) - set(new.keys())
             intersect = set(new.keys()).intersection(set(old.keys()))
 
-            diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
+            diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
             logging.info(
                 "syncing windows"
@@ -231,13 +251,13 @@ class Session(object):
 
             for w in self._windows:
                 # remove window objects if deleted or out of session
-                if w._TMUX['window_id'] in deleted or self._TMUX['session_id'] != w._TMUX['session_id']:
+                if w.get('window_id') in deleted or self.get('session_id') != w.get('session_id'):
                     logging.debug("removing %s" % w)
                     self._windows.remove(w)
 
-                if w._TMUX['window_id'] in intersect:
-                    logging.debug('updating %s %s' % (w._TMUX['window_name'], w._TMUX['window_id']))
-                    w._TMUX.update(diff[w._TMUX['window_id']])
+                if w.get('window_id') in intersect:
+                    logging.debug('updating %s %s' % (w.get('window_name'), w.get('window_id')))
+                    w.update(diff[w.get('window_id')])
 
             # create window objects for non-existant window_id's
             for window in [new[window_id] for window_id in created]:
@@ -252,9 +272,9 @@ class Session(object):
         '''
 
         for window in self.list_windows():
-            if 'window_active' in window._TMUX:
+            if 'window_active' in window:
                 # for now window_active is a unicode
-                if window._TMUX['window_active'] == '1':
+                if window.get('window_active') == '1':
                     return window
                 else:
                     continue
@@ -278,14 +298,6 @@ class Session(object):
             Returns active :class:`Pane` object
         '''
         return self.attached_window().attached_pane()
-
-    @property
-    def windows(self):
-        # check if session is based off an active tmux(1) session.
-        if self._TMUX:
-            return self.list_windows()
-        else:
-            return self._windows
 
     def __repr__(self):
         # todo test without session_name

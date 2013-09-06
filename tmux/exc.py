@@ -14,7 +14,7 @@ class SessionExists(Exception):
 
 class NotRunning(Exception):
     '''
-        class for when ._TMUX doesn't exist, this will cause an issue with
-        building the workspace and running commands
+        class for when {pane,window,session}_id doesn't exist, this will cause
+        an issue with building the workspace and running commands.
     '''
     pass

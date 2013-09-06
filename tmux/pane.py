@@ -12,9 +12,10 @@ from .util import live_tmux
 from .formats import PANE_FORMATS
 from sh import tmux
 from logxtreme import logging
+import collections
 
 
-class Pane(object):
+class Pane(collections.MutableMapping):
     '''
         ``tmux(1)`` pane
 
@@ -24,6 +25,30 @@ class Pane(object):
     def __init__(self, **kwargs):
         self._session = None
         self._window = None
+
+        #self._TMUX(**kwargs)
+        self._TMUX = {}
+        self.update(**kwargs)
+
+    def __getitem__(self, key):
+        return self._TMUX[key]
+
+    def __setitem__(self, key, value):
+        self._TMUX[key] = value
+        self.dirty = True
+
+    def __delitem__(self, key):
+        del self._TMUX[key]
+        self.dirty = True
+
+    def keys(self):
+        return self._TMUX.keys()
+
+    def __iter__(self):
+        return self._TMUX.__iter__()
+
+    def __len__(self):
+        return len(self._TMUX.keys())
 
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
@@ -56,10 +81,7 @@ class Pane(object):
 
         pane = cls()
 
-        # keep tmux variables into _TMUX
-        pane._TMUX = dict()
-        for (k, v) in kwargs.items():
-            pane._TMUX[k] = v
+        pane.update(**kwargs)
 
         pane._session = session
         pane._window = window
@@ -73,7 +95,7 @@ class Pane(object):
             enter
                 boolean. send enter after sending the key
         '''
-        tmux('send-keys', '-t', int(self._TMUX['pane_index']), cmd)
+        tmux('send-keys', '-t', int(self.get('pane_index')), cmd)
 
         if enter:
             self.enter()
@@ -82,7 +104,7 @@ class Pane(object):
         '''
             ```tmux send-keys``` send Enter to the pane
         '''
-        tmux('send-keys', '-t', int(self._TMUX['pane_index']), 'Enter')
+        tmux('send-keys', '-t', int(self.get('pane_index')), 'Enter')
 
     def __repr__(self):
         # todo test without session_name
