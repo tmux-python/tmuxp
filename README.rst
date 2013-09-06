@@ -37,6 +37,29 @@ the deepest will have precedence. a command or cwd at the session level
 will apply to all windows, panes within it. a command or cwd at window
 level applies to all panes. a pane may specify its own cmd.
 
+
+How tmuxwrapper works
+---------------------
+
+Note that ``tmux(1)`` is the real app, hereinafter 'tmux'. ``tmuxwrapper``
+is this script.
+
+tmux returns data with its commands. tmux allows a custom response with
+the use of ``formatters``. tmuxwrapper uses these commands to keep a fresh
+list of act sessions, windows and panes.
+
+If you want to play with the internals of tmux, I highly recommend
+wrapping your brain around (Not reading, but understanding) the manpage
+for tmux.
+
+Session, Window and Pane informations are all stored in python object's
+which hold the raw data returned from tmux. The objects are a subclass of
+``TmuxObject``, which is a ``collections.MutableMapping``. More simply,
+the object stores dict data in the background as ``._TMUX`` but you just
+need to do (say ``p`` is an instance of ``Pane``) ``p.get('session_id')``
+and you will get the session_id. This is similar to the way a Backbone
+model uses ``attributes`` to store information in a model.
+
 advanced sorcery
 ----------------
 
