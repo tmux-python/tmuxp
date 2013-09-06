@@ -7,7 +7,7 @@ class TestWindowSelect(TestTmux):
     def test_select_window(self):
         self.session.new_window('testing 3')
         self.session.select_window(2)
-        self.assertEqual(2, int(self.session.attached_window()._TMUX['window_index']))
+        self.assertEqual(2, int(self.session.attached_window().get('window_index')))
 
 
 class TestWindowCreation(TestTmux):

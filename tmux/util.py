@@ -101,19 +101,19 @@ class TmuxObject(collections.MutableMapping):
     The children inside a ``t`` object are created live. We should look into
     giving them context managers so::
 
-        with Server.select_session(fnmatch):
-            # have access to session object
-            # note at this level fnmatch may have to be done via python
-            # and list-sessions to retrieve object correctly
-            session.la()
-            with session.attached_window() as window:
-                # access to current window
-                pass
-            with session.find_window(fnmatch) as window:
-                # access to tmux matches window
-                with window.attached_pane() as pane:
-                    # access to pane
-                    pass
+        >>>     with Server.select_session(fnmatch):
+        >>>     # have access to session object
+        >>>         # note at this level fnmatch may have to be done via python
+        >>>         # and list-sessions to retrieve object correctly
+        >>>         session.la()
+        >>>     with session.attached_window() as window:
+        >>>         # access to current window
+        >>>         pass
+        >>>     with session.find_window(fnmatch) as window:
+        >>>         # access to tmux matches window
+        >>>         with window.attached_pane() as pane:
+        >>>             # access to pane
+        >>>             pass
     '''
     def __getitem__(self, key):
         return self._TMUX[key]

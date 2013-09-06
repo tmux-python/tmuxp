@@ -5,6 +5,7 @@ import unittest
 from sh import tmux, ErrorReturnCode_1
 from .helpers import TestTmux
 from .config import sampleconfigdict
+from tmux import Window
 
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
@@ -37,7 +38,7 @@ class BuilderTest(TestTmux):
         tmux_config = sampleconfigdict
 
         if 'session_name' in tmux_config:
-            window_count = 1
+            window_count = len(self.session._windows)  # current window count
             self.assertEqual(len(s.list_windows()), window_count)
             for w in tmux_config['windows']:
                 if 'window_name' not in w:
@@ -45,7 +46,14 @@ class BuilderTest(TestTmux):
                 else:
                     window_name = w['window_name']
 
-                s.new_window(window_name=window_name)
+                winObject = s.new_window(window_name=window_name)
+                # current pane count, of course 1 since we just made it
+                window_pane_count = len(winObject._panes)
+                for pane in w['panes']:
+                    winObject.split_window()
+                    window_pane_count += 1
+                    self.assertEqual(window_pane_count, len(winObject._panes))
+                self.assertIsInstance(winObject, Window)
                 window_count += 1
                 self.assertEqual(len(s.list_windows()), window_count)
 

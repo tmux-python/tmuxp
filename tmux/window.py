@@ -54,10 +54,10 @@ class Window(TmuxObject):
     In addition, select-layout may be used to apply a previously used layout - the list-windows command displays
     the layout of each window in a form suitable for use with select-layout.  For example::
 
-        $ tmux list-windows
-        0: ksh [159x48]
-            layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
-        $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+        >>> $ tmux list-windows
+        >>> 0: ksh [159x48]
+        >>>    layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+        >>> $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
     '''
 
     def __init__(self, **kwargs):
