@@ -14,6 +14,10 @@ Goals
 - bash / zsh autocomplete
 - resume to normal workflow, or last snapshot of sessions
 
+testing
+-------
+
+See documentation in [./tmux/testsuite/__init__.py](https://github.com/tony/tmuxwrapper/blob/master/tmux/testsuite/__init__.py).
 
 hierarchy
 ---------
@@ -58,7 +62,7 @@ which hold the raw data returned from tmux. The objects are a subclass of
 the object stores dict data in the background as ``._TMUX`` but you just
 need to do (say ``p`` is an instance of ``Pane``) ``p.get('session_id')``
 and you will get the session_id. This is similar to the way a Backbone
-model uses ``attributes`` to store information in a model.
+model uses ``attributes`` object literal holds model data.
 
 advanced sorcery
 ----------------
@@ -70,17 +74,10 @@ tbd, but commands will be able to be go before/after commands on any
 level also. for instance, session may run before_cmd: and all windows
 and panes within will run accordingly
 
-aliases
-"""""""
-
-a common command may be aliased as a shortcut to prevent duplication.
-syntax for this is still subject to change
-
 under the hood
 --------------
 
-the internals of tmux is a tool kit, a high level abstraction of Sessions,
-Windows and Panes.
+This is subject to change.
 
 the code is very simple. kaplan will read any type of config file and
 turn it into a python dictionary. for brevity, tmuxwrapper offers a
@@ -203,6 +200,8 @@ Roadmap
   window,pane}_id to see if its a live tmux object. use kwargs.pop() for
   session, window, pane.
 - create and test a compact / inline config format.
+- a C-type of binding to pull server/session/window/pane information
+  directly from tmux.
 
 Roadmap
 -------
@@ -226,18 +225,32 @@ Roadmap
 - python version compatability (tested in 2.7 now)
 - tmux version compatibility (using git version now)
 - unit testing
+- packages for ubuntu, debian, redhat, fedora, arch, BSD's, etc.
 - video overview
+
+Similarities to Tmux and Pythonics
+----------------------------------
+
+tmuxwrapper is was built in the spirit of understanding how tmux operates
+and how python objects and tools can abstract the API's in a pleasant way.
+
+tmuxwrapper uses the identify ``FORMATTERS`` used by tmux, you can see
+them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
+
+In this, I will also begin documenting the API.
+
+the use of:
+
+Session
+Session.new_window() - returns a new Window object bound to the session,
+also uses ``tmux new-window``.
+Session.new_session() - class method - returns a new Session object.
 
 Differences from tmux
 ---------------------
 
-Because this is a python abstraction, They keys formats, such as
-``window-name``, and flags like ``start-directory`` have dashes (-)
-replaced with underscores (_).
-
-tmuxwrapper MetaData for a Pane, Window, Server or Session, the data
-for ``session-id`` as returned by ``tmux(1)`` will be ``session_id``.
-
+Because this is a python abstraction and flags like ``start-directory``
+have dashes (-) replaced with underscores (_).
 
 interesting observations
 ------------------------
@@ -268,3 +281,4 @@ Reference
 ---------
 
 * tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
+* tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
