@@ -8,7 +8,7 @@
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 """
-from .util import live_tmux
+from .util import live_tmux, TmuxObject
 from .window import Window
 from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import SessionExists
@@ -17,13 +17,13 @@ from logxtreme import logging
 import collections
 
 
-class Session(collections.MutableMapping):
+class Session(TmuxObject):
     '''
     tmux session
+
     '''
 
     def __init__(self, **kwargs):
-
         self.session_name = None
         self._windows = list()
 
@@ -31,30 +31,10 @@ class Session(collections.MutableMapping):
         if 'session_name' not in kwargs:
             raise ValueError('Session requires session_name')
         else:
-            self.session_name = kwargs.pop('session_name')
+            self.session_name = kwargs.get('session_name')
 
         self._TMUX = {}
         self.update(**kwargs)
-
-    def __getitem__(self, key):
-        return self._TMUX[key]
-
-    def __setitem__(self, key, value):
-        self._TMUX[key] = value
-        self.dirty = True
-
-    def __delitem__(self, key):
-        del self._TMUX[key]
-        self.dirty = True
-
-    def keys(self):
-        return self._TMUX.keys()
-
-    def __iter__(self):
-        return self._TMUX.__iter__()
-
-    def __len__(self):
-        return len(self._TMUX.keys())
 
     @classmethod
     def new_session(cls,
@@ -223,8 +203,6 @@ class Session(collections.MutableMapping):
         '''
         Return a list of :class:`Window` from the ``tmux(1)`` session.
         '''
-
-        #windows = [Window.from_tmux(session=self, **window) for window in self._list_windows()]
         new_windows = self._list_windows()
 
         if not self._windows:
@@ -300,5 +278,4 @@ class Session(collections.MutableMapping):
         return self.attached_window().attached_pane()
 
     def __repr__(self):
-        # todo test without session_name
         return "%s(%s)" % (self.__class__.__name__, self.session_name)

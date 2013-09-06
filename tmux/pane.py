@@ -8,14 +8,13 @@
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 """
-from .util import live_tmux
+from .util import live_tmux, TmuxObject
 from .formats import PANE_FORMATS
 from sh import tmux
 from logxtreme import logging
-import collections
 
 
-class Pane(collections.MutableMapping):
+class Pane(TmuxObject):
     '''
         ``tmux(1)`` pane
 
@@ -29,26 +28,6 @@ class Pane(collections.MutableMapping):
         #self._TMUX(**kwargs)
         self._TMUX = {}
         self.update(**kwargs)
-
-    def __getitem__(self, key):
-        return self._TMUX[key]
-
-    def __setitem__(self, key, value):
-        self._TMUX[key] = value
-        self.dirty = True
-
-    def __delitem__(self, key):
-        del self._TMUX[key]
-        self.dirty = True
-
-    def keys(self):
-        return self._TMUX.keys()
-
-    def __iter__(self):
-        return self._TMUX.__iter__()
-
-    def __len__(self):
-        return len(self._TMUX.keys())
 
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):

@@ -6,11 +6,15 @@
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 """
+
+
 class SessionNotFound(Exception):
     pass
 
+
 class SessionExists(Exception):
     pass
+
 
 class NotRunning(Exception):
     '''

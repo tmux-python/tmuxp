@@ -8,17 +8,18 @@
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details
 """
-from .util import live_tmux
+from .util import live_tmux, TmuxObject
 from .pane import Pane
 from .formats import PANE_FORMATS
 from sh import tmux, ErrorReturnCode_1
 from logxtreme import logging
-import collections
 
 
-class Window(collections.MutableMapping):
+class Window(TmuxObject):
     '''
     tmux window.
+
+    subclasses TmuxObject in util, a MutableMapping, read the documentation.
 
     Each window displayed by tmux may be split into one or more panes; each pane takes up a certain area of the
     display and is a separate terminal.  A window may be split into panes using the split-window command.  Windows
@@ -61,40 +62,17 @@ class Window(collections.MutableMapping):
 
     def __init__(self, **kwargs):
         self._panes = list()  # list of panes
-        self._session = None
 
-        if not 'session' in kwargs:
+        if 'session' in kwargs:
+            self._session = kwargs.pop('session')
+        else:
             raise ValueError(
                 "Window requires a Session object by "
                 "specifying session=Session"
             )
-        #if not isinstance(session, Session):
-        #    raise TypeError('session must be a Session object')
-        if 'session' in kwargs:
-            self._session = kwargs.pop('session')
 
         self._TMUX = {}
         self.update(**kwargs)
-
-    def __getitem__(self, key):
-        return self._TMUX[key]
-
-    def __setitem__(self, key, value):
-        self._TMUX[key] = value
-        self.dirty = True
-
-    def __delitem__(self, key):
-        del self._TMUX[key]
-        self.dirty = True
-
-    def keys(self):
-        return self._TMUX.keys()
-
-    def __iter__(self):
-        return self._TMUX.__iter__()
-
-    def __len__(self):
-        return len(self._TMUX.keys())
 
     def __repr__(self):
         # todo test without session_name
@@ -155,15 +133,11 @@ class Window(collections.MutableMapping):
             '-P', '-F%s' % ''.join(tmux_formats),     # output
         )
 
-        print(pane)
-
         # zip and map the results into the dict of formats used above
         pane = dict(zip(formats, pane.split('\t')))
 
-        print(pane)
         # clear up empty dict
         pane = dict((k, v) for k, v in pane.iteritems() if v)
-        print(pane)
         pane = Pane.from_tmux(session=self._session, window=self, **pane)
         self._panes.append(pane)
         self.list_panes()  # refresh all panes in :class:`Window`
@@ -174,7 +148,7 @@ class Window(collections.MutableMapping):
         panes = self.list_panes()
 
         for pane in panes:
-            if 'pane_active' in pane._TMUX:
+            if 'pane_active' in pane:
                 # for now pane_active is a unicode
                 if pane.get('pane_active') == '1':
                     return pane
@@ -205,10 +179,6 @@ class Window(collections.MutableMapping):
         #    raise TypeError('session must be a Session object')
 
         window = cls(session=session)
-
-        #window._TMUX = dict()
-        #for (k, v) in kwargs.items():
-        #    window._TMUX[k] = v
         window.update(**kwargs)
 
         window._panes = window.list_panes()

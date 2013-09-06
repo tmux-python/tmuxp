@@ -23,33 +23,6 @@ class Server(object):
         Session.windows [<Window>, ..]
             Window.panes [<Pane>, ..]
                 Pane
-
-    Panes, Windows and Sessions which are populated with _TMUX MetaData.
-
-    This is an experimental design choice to just leave `-F` commands to give
-    _TMUX information, decorate methods to throw an exception if it requires
-    interaction with tmux
-
-    With :attrib:`._TMUX` :class:`Session` and :class:`Window` can be accessed
-    as a property, and the session and window may be looked up dynamically.
-
-    The children inside a ``t`` object are created live. We should look into
-    giving them context managers so::
-
-        with Server.select_session(fnmatch):
-            # have access to session object
-            # note at this level fnmatch may have to be done via python
-            # and list-sessions to retrieve object correctly
-            session.la()
-            with session.attached_window() as window:
-                # access to current window
-                pass
-            with session.find_window(fnmatch) as window:
-                # access to tmux matches window
-                with window.attached_path() as pane:
-                    # access to pane
-                    pass
-
     '''
 
     def __init__(self):
@@ -74,13 +47,9 @@ class Server(object):
         sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
 
         # clear up empty dict
-        sessions = [
+        new_sessions = [
             dict((k, v) for k, v in session.iteritems() if v) for session in sessions
         ]
-
-        #sessions = [Session.from_tmux(**session) for session in sessions]
-
-        new_sessions = sessions
 
         if not self._sessions:
             for session in new_sessions:
@@ -89,13 +58,13 @@ class Server(object):
             return self._sessions
 
         new = {session['session_id']: session for session in new_sessions}
-        old = {session._TMUX['session_id']: session for session in self._sessions}
+        old = {session.get('session_id'): session for session in self._sessions}
 
         created = set(new.keys()) - set(old.keys())
         deleted = set(old.keys()) - set(new.keys())
         intersect = set(new.keys()).intersection(set(old.keys()))
 
-        diff = {id: dict(set(new[id].items()) - set(old[id]._TMUX.items())) for id in intersect}
+        diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
         logging.info(
             "syncing sessions"
@@ -160,8 +129,7 @@ class Server(object):
         ``tmux(1)`` ``has-session``
         '''
 
-        # has-session returns nothing if session exists
-        try:
+        try:  # has-session returns nothing if session exists
             tmux('has-session', '-t', session_name)
             return True
         except ErrorReturnCode_1 as e:
