@@ -176,6 +176,9 @@ Roadmap
   changed. since python doesn't use pointers/references like other
   languages, a pubsub like blinker http://pythonhosted.org/blinker/ or ee
   https://github.com/jesusabdullah/pyee.
+- remove ._TMUX, use collections.MutableMapping. check for {session,
+  window,pane}_id to see if its a live tmux object. use kwargs.pop() for
+  session, window, pane.
 
 Roadmap
 -------
