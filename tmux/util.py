@@ -12,6 +12,7 @@ from functools import wraps
 from sh import ErrorReturnCode_1
 from .exc import NotRunning, SessionNotFound
 from .logxtreme import logging
+import unittest
 
 
 def live_tmux(f):

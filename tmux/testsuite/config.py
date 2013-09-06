@@ -1,4 +1,4 @@
-from . import TestTmux
+from helpers import TestTmux
 import os
 import shutil
 import kaptan
@@ -112,3 +112,7 @@ class ConfigTest(unittest.TestCase):
     def tearDownClass(cls):
         if os.path.isdir(TMUXWRAPPER_DIR):
             shutil.rmtree(TMUXWRAPPER_DIR)
+
+
+if __name__ == '__main__':
+    unittest.main()

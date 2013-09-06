@@ -1,6 +1,7 @@
 from tmux import t, Session, Window, Pane
-from . import TestTmux, TEST_SESSION_PREFIX
+from .helpers import TestTmux, TEST_SESSION_PREFIX
 from random import randint
+import unittest
 
 
 class TestSessions(TestTmux):
@@ -31,3 +32,7 @@ class TestSessions(TestTmux):
             self.session.attached_pane(),
             Pane
         )
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -3,11 +3,12 @@ import shutil
 import kaptan
 import unittest
 from sh import tmux, ErrorReturnCode_1
-from . import TestTmux
-from config import sampleconfigdict
+from .helpers import TestTmux
+from .config import sampleconfigdict
 
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
+
 
 def build_windows(window):
     '''
@@ -16,6 +17,8 @@ def build_windows(window):
     window
         :class:`Window` object.
     '''
+    pass
+
 
 class BuilderTest(TestTmux):
 
@@ -34,6 +37,8 @@ class BuilderTest(TestTmux):
         tmux_config = sampleconfigdict
 
         if 'session_name' in tmux_config:
+            window_count = 1
+            self.assertEqual(len(s.list_windows()), window_count)
             for w in tmux_config['windows']:
                 if 'window_name' not in w:
                     window_name = None
@@ -41,6 +46,9 @@ class BuilderTest(TestTmux):
                     window_name = w['window_name']
 
                 s.new_window(window_name=window_name)
+                window_count += 1
+                self.assertEqual(len(s.list_windows()), window_count)
+
         else:
             raise ValueError('config requires session_name')
 
@@ -54,3 +62,7 @@ class BuilderTest(TestTmux):
         their corresponding pane_index.
         """
         pass
+
+
+if __name__ == '__main__':
+    unittest.main()

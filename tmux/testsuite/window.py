@@ -1,5 +1,6 @@
-from . import TestTmux
+from .helpers import TestTmux
 from tmux import Pane
+import unittest
 
 
 class TestWindowSelect(TestTmux):
@@ -54,3 +55,7 @@ class TestWindowCreation(TestTmux):
         )
 
         self.assertEqual(2, len(window._panes))
+
+
+if __name__ == '__main__':
+    unittest.main()
