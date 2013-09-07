@@ -36,22 +36,58 @@ class Session(TmuxObject):
         self._TMUX = {}
         self.update(**kwargs)
 
+    def rename_session(self, new_name):
+        '''rename session and return new Session object'''
+        try:
+            tmux(
+                'rename-session',
+                '-t', self.get('session_name'),
+                new_name
+            )
+            self['session_name'] = new_name
+        except:
+            pass
+
+        return self
+
     @classmethod
     def new_session(cls,
                     session_name=None,
-                    kill_session=False):
+                    kill_session=False,
+                    *args,
+                    **kwargs):
         '''
         ``tmux(1)`` ``new-session``
 
         Returns :class:`Session`
 
         Uses ``-P`` flag to print session info, ``-F`` for return formatting
-        returns new Session object
+        returns new Session object.
+
+        ``tmux new-session -d`` will create the session in the background
+        ``tmux new-session -Ad`` will move to the session name if it already
+        exists. todo: make an option to handle this.
+
+        session_name
+            string. session name
+
+            >>> tmux new-session -s <session_name>
+
+        detach
+            bool. create the new_session in the background, this is the same as
+
+            >>> tmux new-session -d
+
+        attach_if_exists
+            bool. if the session_name exists, attach it. if False, this method
+            will raise a SessionExists exception
 
         kill_session
             Kill current session if ``tmux has-session`` Useful for testing
             workspaces.
         '''
+
+        ### ToDo: Update below to work with attach_if_exists
         try:
             # test this, returning NoneType
             if not len(tmux('has-session', '-t', session_name)):
@@ -70,9 +106,10 @@ class Session(TmuxObject):
 
         session_info = tmux(
             'new-session',
-            '-d',
+            '-d', # assume detach = True for now, todo: fix
             '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
+            *args
         )
 
         # combine format keys with values returned from ``tmux list-windows``

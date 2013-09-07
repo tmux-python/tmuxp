@@ -11,7 +11,7 @@ class TestSessions(TestTmux):
 
     def test_new_session(self):
         new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
-        new_session = Session.new_session(session_name=new_session_name)
+        new_session = Session.new_session(session_name=new_session_name, detach=True)
 
         self.assertIsInstance(new_session, Session)
 
@@ -32,6 +32,13 @@ class TestSessions(TestTmux):
             self.session.attached_pane(),
             Pane
         )
+
+    def test_session_rename(self):
+        test_name = 'testingdis_sessname'
+        self.session.rename_session(test_name)
+        self.assertEqual(self.session.get('session_name'), test_name)
+        self.session.rename_session(self.TEST_SESSION_NAME)
+        self.assertEqual(self.session.get('session_name'), self.TEST_SESSION_NAME)
 
 
 if __name__ == '__main__':

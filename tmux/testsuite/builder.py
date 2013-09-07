@@ -25,8 +25,6 @@ class BuilderTest(TestTmux):
 
     @classmethod
     def setUpClass(cls):
-        # run parent
-        # setUpClass
         if not os.path.exists(TMUXWRAPPER_DIR):
             os.makedirs(
                 TMUXWRAPPER_DIR)
@@ -40,21 +38,25 @@ class BuilderTest(TestTmux):
         if 'session_name' in tmux_config:
             window_count = len(self.session._windows)  # current window count
             self.assertEqual(len(s.list_windows()), window_count)
-            for w in tmux_config['windows']:
-                if 'window_name' not in w:
+            for i, wconf in enumerate(tmux_config['windows'], start=1):
+                if 'window_name' not in wconf:
                     window_name = None
                 else:
-                    window_name = w['window_name']
+                    window_name = wconf['window_name']
 
-                winObject = s.new_window(window_name=window_name)
+                if i == 1:  # if first window, use window 1
+                    w = s.select_window(1)
+                else:
+                    w = s.new_window(window_name=window_name)
+                    window_count += 1
+
                 # current pane count, of course 1 since we just made it
-                window_pane_count = len(winObject._panes)
-                for pane in w['panes']:
-                    winObject.split_window()
+                window_pane_count = len(w._panes)
+                for pane in wconf['panes']:
+                    w.split_window()
                     window_pane_count += 1
-                    self.assertEqual(window_pane_count, len(winObject._panes))
-                self.assertIsInstance(winObject, Window)
-                window_count += 1
+                    self.assertEqual(window_pane_count, len(w._panes))
+                self.assertIsInstance(w, Window)
                 self.assertEqual(len(s.list_windows()), window_count)
 
         else:
