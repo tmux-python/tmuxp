@@ -14,8 +14,7 @@ from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import SessionExists
 from sh import tmux, ErrorReturnCode_1
 from logxtreme import logging
-import collections
-
+import pipes
 
 class Session(TmuxObject):
     '''
@@ -38,10 +37,11 @@ class Session(TmuxObject):
 
     def rename_session(self, new_name):
         '''rename session and return new Session object'''
+        new_name = pipes.quote(new_name)
         try:
             tmux(
                 'rename-session',
-                '-t', self.get('session_name'),
+                '-t', pipes.quote(self.get('session_name')),
                 new_name
             )
             self['session_name'] = new_name

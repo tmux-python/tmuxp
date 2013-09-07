@@ -1,6 +1,7 @@
 from .helpers import TestTmux
 from tmux import Pane
 import unittest
+import pipes
 
 
 class TestWindowSelect(TestTmux):
@@ -55,6 +56,15 @@ class TestWindowCreation(TestTmux):
         )
 
         self.assertEqual(2, len(window._panes))
+
+    def test_window_rename(self):
+        window_name_before = pipes.quote('test split window')
+        window_name_after = pipes.quote('testingdis_winname')
+        window = self.session.new_window(window_name=window_name_before)
+        self.assertEqual(window.get('window_name'), window_name_before)
+        window = window.rename_window(window_name_after)
+        print self.session.attached_window().get('window_name')
+        self.assertEqual(window.get('window_name'), window_name_after)
 
 
 if __name__ == '__main__':

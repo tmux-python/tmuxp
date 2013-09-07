@@ -90,6 +90,23 @@ class Window(TmuxObject):
             layout
         )
 
+    def rename_window(self, new_name):
+        '''rename window and return new window object'''
+        try:
+            tmux(
+                'rename-window',
+                '-t', self.get('window_name'),
+                new_name
+            )
+            self['window_name'] = new_name
+        except Exception, e:
+            logging.error(e)
+
+        print "new_name: %s  self['window_name']: %s" % (new_name, self['window_name'])
+        self._session.list_windows()
+
+        return self
+
     def select_pane(self, pane):
         '''
             ``tmux(1) select-pane``
