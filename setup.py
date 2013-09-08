@@ -2,7 +2,7 @@
 tmuxp
 -----
 
-a python ORM for tmux.
+a python ORM for tmux(1).
 
 
 """
@@ -16,7 +16,7 @@ setup(
     author='Tony Narlock',
     author_email='tony@git-pull.com',
     description='An object mapper and workspace manager for tmux',
-    packages=['tmux', 'tmux.testsuite'],
+    packages=['tmuxp', 'tmuxp.testsuite'],
     include_package_data=True,
     install_requires=[
         'logutils',
