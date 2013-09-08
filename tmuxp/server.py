@@ -126,26 +126,30 @@ class Server(object):
 
         return attached_sessions or None
 
-    def has_session(self, session_name):
+    def has_session(self, target_session):
         '''
         ``$ tmux has-session``
+
+        :param: target_session: str of session name.
+
+        returns True if session exists.
         '''
 
         try:  # has-session returns nothing if session exists
-            tmux('has-session', '-t', session_name)
+            tmux('has-session', '-t', target_session)
             return True
         except ErrorReturnCode_1 as e:
             return False
 
-    def kill_session(self, session_name=None):
+    def kill_session(self, target_session=None):
         '''
         ``$ tmux kill-session``
 
-        session_name
-            string. note this accepts fnmatch(3).  'asdf' will kill asdfasd
+        :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
+                                kill asdfasd
         '''
         try:
-            tmux('kill-session', '-t', session_name)
+            tmux('kill-session', '-t', target_session)
             self.list_sessions()
         except ErrorReturnCode_1 as e:
             logging.debug(
@@ -163,7 +167,6 @@ class Server(object):
         '''
         ``$ tmux switch-client``
 
-        target_session
-            string. name of the session. fnmatch(3) works
+        :param: target_session: str. name of the session. fnmatch(3) works.
         '''
         tmux('switch-client', '-t', target_session)

@@ -26,6 +26,9 @@ def live_tmux(f):
     ``pane_id``, ``window_id`` and ``session_id``, found in :class:`Pane`,
     :class:`Window` and :class:`Session` respectively.
 
+    :class:`TmuxObject`, the base class of :class:`Pane`, :class:`Window` and
+    :class:`Session` will utilize the :attr:`TmuxObject._TMUX` to store data.
+
     If a session is imported directly from a configuration or is otherwise
     being built manually via CLI or scripting, :attr:`_TMUX` is populated upon:
 
@@ -37,12 +40,6 @@ def live_tmux(f):
 
     :meth:`Window.split_window` .. ``$ tmux split-window``
         returns a :class:`Pane` with pane metadata
-
-        - its first :class:`Window`, in :attr:`_windows`, and subsequently,
-          and the :class:`Window`'s first :class:`Pane` in :attr:`_panes`
-          is populated with :attr:`_TMUX` This is returned because the
-          attributes.
-        - a window is created with :meth:`Session.create_session`
     '''
     @wraps(f)
     def live_tmux(self, *args, **kwargs):

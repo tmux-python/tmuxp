@@ -85,6 +85,8 @@ class Window(TmuxObject):
                 0: ksh [159x48]
                     layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
                 $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+
+        :param: layout: string of the layout, 'even-horizontal', 'tiled', etc.
         '''
         tmux(
             'select-layout',
@@ -98,7 +100,8 @@ class Window(TmuxObject):
 
             $ tmux set-window-option <option> <value>
 
-        :param option: the window option
+        :param option: the window option. such as 'automatic_rename'.
+        :param value: window value. True/False will turn in 'on' and 'off'.
         '''
 
         if value:
@@ -133,9 +136,9 @@ class Window(TmuxObject):
         '''
             ``$ tmux select-pane``
 
-            Returns :class:`Pane`.
+        Returns :class:`Pane`.
 
-            :param target_pane: integer of the pane index, or ``-U``,
+        :param target_pane: integer of the pane index, or ``-U``,
                                 ``-D``, ``-L``, ``-R``. put a konami code.
         '''
         tmux('select-pane', '-t', target_pane)
@@ -152,7 +155,7 @@ class Window(TmuxObject):
         Iterates ``$ tmux split-window``, ``-P`` to return data and
         ``-F`` for return formatting.
 
-        Arguments may be passed through same as ``tmux(1))`` ``split-window``.
+        Arguments may be passed through same as ``$ tmux split-window``.
 
         -h
             horizontal
@@ -180,6 +183,9 @@ class Window(TmuxObject):
         return pane
 
     def attached_pane(self):
+        '''
+        returns the attached :class:`Pane`.
+        '''
         panes = self.list_panes()
 
         for pane in panes:
@@ -201,8 +207,7 @@ class Window(TmuxObject):
 
         Iterates ``tmux list-panes``, ``-F`` for return formatting.
 
-        session
-            :class:`Session` object
+        :param: session: :class:`Session` object
         '''
 
         if not session:
