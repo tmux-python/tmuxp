@@ -189,7 +189,8 @@ class ConfigExpandTestCase(unittest.TestCase):
         self.assertDictEqual(config, self.after_config)
 
 
-class ConfigInheritance(unittest.TestCase):
+class ConfigInheritanceStartCommand(unittest.TestCase):
+
     '''
     test inheritence casses
 
@@ -243,7 +244,7 @@ class ConfigInheritance(unittest.TestCase):
                 {
                     'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                        'shell_command': ['cowsay "hey"'], 'start_directory': '~'
+                    'shell_command': ['cowsay "hey"'], 'start_directory': '~',
                 },
             ],
             'layout': 'main-verticle'},
@@ -268,10 +269,7 @@ class ConfigInheritance(unittest.TestCase):
             }]
     }
 
-    def test_session_start_directory(self):
-        pass
-
-    def test_window_start_directory(self):
+    def test_start_directory(self):
         config = self.config_before
 
         if 'start_directory' in config:
@@ -296,13 +294,6 @@ class ConfigInheritance(unittest.TestCase):
 
         self.maxDiff = None
         self.assertDictEqual(config, self.config_after)
-
-    def test_session_window_pane_start_directory(self):
-        '''
-        test a complex case where there is a top session 'start_directory',
-        with 3 windows, 1-3 panes, but one of the panes overrides.
-        '''
-        pass
 
 if __name__ == '__main__':
     unittest.main()
