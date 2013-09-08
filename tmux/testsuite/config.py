@@ -190,11 +190,20 @@ class ConfigExpandTestCase(unittest.TestCase):
 
 
 class ConfigInheritance(unittest.TestCase):
-    sampleconfigdict = {
+    '''
+    test inheritence casses
+
+    format for tests will be
+
+    test_{session/window/pane}_{config_option}_subject
+    '''
+
+    config_before = {
         'session_name': 'sampleconfig',
-        'start_directory': '~',
+        'start_directory': '/',
         'windows': [{
             'window_name': 'editor',
+            'start_directory': '~',
             'panes': [
                 {
                     'start_directory': '~', 'shell_command': ['vim'],
@@ -211,6 +220,12 @@ class ConfigInheritance(unittest.TestCase):
                 ]
             },
             {
+                'window_name': 'shufu',
+                'panes': [
+                    {'shell_command': ['htop'], 'start_directory': '/etc/'}
+                ]
+            },
+            {
                 'automatic_rename': True,
                 'panes': [
                     {'shell_command': ['htop']}
@@ -218,35 +233,69 @@ class ConfigInheritance(unittest.TestCase):
             }]
     }
 
+    config_after = {
+        'session_name': 'sampleconfig',
+        'start_directory': '/',
+        'windows': [{
+            'window_name': 'editor',
+            'start_directory': '~',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                        'shell_command': ['cowsay "hey"'], 'start_directory': '~'
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'}
+                ]
+            },
+            {
+                'window_name': 'shufu',
+                'panes': [
+                    {'shell_command': ['htop'], 'start_directory': '/etc/'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop'], 'start_directory':'/'}
+                ]
+            }]
+    }
 
-    '''
-    test inheritence casses
-
-    format for tests will be
-
-    test_{session/window/pane}_{config_option}_subject
-    '''
     def test_session_start_directory(self):
-
         pass
 
     def test_window_start_directory(self):
-        config = self.sampleconfigdict
+        config = self.config_before
 
         if 'start_directory' in config:
             session_start_directory = config['start_directory']
+        else:
+            session_start_directory = None
 
         for windowconfitem in config['windows']:
             window_start_directory = None
             if 'start_directory' in windowconfitem:
                 window_start_directory = windowconfitem['start_directory']
+            elif session_start_directory:
+                window_start_directory = session_start_directory
 
             for paneconfitem in windowconfitem['panes']:
                 if 'start_directory' in paneconfitem:
                     pane_start_directory = paneconfitem['start_directory']
+                elif window_start_directory:
+                    paneconfitem['start_directory'] = window_start_directory
+                elif session_start_directory:
+                    paneconfitem['start_directory'] = session_start_directory
 
-
-        pass
+        self.maxDiff = None
+        self.assertDictEqual(config, self.config_after)
 
     def test_session_window_pane_start_directory(self):
         '''
