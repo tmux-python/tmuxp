@@ -190,6 +190,34 @@ class ConfigExpandTestCase(unittest.TestCase):
 
 
 class ConfigInheritance(unittest.TestCase):
+    sampleconfigdict = {
+        'session_name': 'sampleconfig',
+        'start_directory': '~',
+        'windows': [{
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                    'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop']}
+                ]
+            }]
+    }
+
 
     '''
     test inheritence casses
@@ -199,37 +227,25 @@ class ConfigInheritance(unittest.TestCase):
     test_{session/window/pane}_{config_option}_subject
     '''
     def test_session_start_directory(self):
-        sampleconfigdict = {
-            'session_name': 'sampleconfig',
-            'start_directory': '~',
-            'windows': [{
-                'window_name': 'editor',
-                'panes': [
-                    {
-                        'start_directory': '~', 'shell_command': ['vim'],
-                        },  {
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'},
-                {
-                    'window_name': 'logging',
-                    'panes': [
-                        {'shell_command': ['tail -F /var/log/syslog'],
-                         'start_directory':'/var/log'}
-                    ]
-                },
-                {
-                    'automatic_rename': True,
-                    'panes': [
-                        {'shell_command': ['htop']}
-                    ]
-                }]
-        }
 
         pass
 
     def test_window_start_directory(self):
+        config = self.sampleconfigdict
+
+        if 'start_directory' in config:
+            session_start_directory = config['start_directory']
+
+        for windowconfitem in config['windows']:
+            window_start_directory = None
+            if 'start_directory' in windowconfitem:
+                window_start_directory = windowconfitem['start_directory']
+
+            for paneconfitem in windowconfitem['panes']:
+                if 'start_directory' in paneconfitem:
+                    pane_start_directory = paneconfitem['start_directory']
+
+
         pass
 
     def test_session_window_pane_start_directory(self):
