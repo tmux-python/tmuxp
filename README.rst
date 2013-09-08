@@ -19,27 +19,47 @@ testing
 
 See documentation in [./tmux/testsuite/__init__.py](https://github.com/tony/tmuxwrapper/blob/master/tmux/testsuite/__init__.py).
 
-hierarchy
----------
+what's done
+-----------
 
-::
+- config reading from/to JSON, yaml with kaplan
+- foundation for unit tests
+- basic creation of sessions, windows, panes
+- pythonic abstraction / ORM of all tmux sessions, windows, panes
+- ``Server`` can create ``.new_session``, ``.list_sessions``
+- more...
 
-   session(s)
-       - cmds (str like 'htop' or list ['pwd', 'htop'])
-       - root (str dir path, like '/var/www')
-       - window(s)
-           - cmd(s)
-           - root
-           - panes(s)
-               - dimensions
-               - cmd(s)
-               - root
+What is happening
+-----------------
 
-cmd, cwd can be added at the session, window and pane level.
+- unit testing
+- docs
 
-the deepest will have precedence. a command or cwd at the session level
-will apply to all windows, panes within it. a command or cwd at window
-level applies to all panes. a pane may specify its own cmd.
+Roadmap
+-------
+
+0.1
+"""
+
+- verbose config structure
+- yaml support (done) + JSON (done)
+- docs
+  - for install from github
+  - code docs
+  - ipython notebook overview of internals
+  - example config files
+  - before_cmd, after_cmd
+
+-dev
+""""
+
+- python package
+- python version compatability (tested in 2.7 now)
+- tmux version compatibility (using git version now)
+- unit testing
+- packages for ubuntu, debian, redhat, fedora, arch, BSD's, etc.
+- video overview
+
 
 
 How tmuxwrapper works
@@ -70,9 +90,6 @@ advanced sorcery
 before_cmd / after_cmd
 """"""""""""""""""""""
 
-tbd, but commands will be able to be go before/after commands on any
-level also. for instance, session may run before_cmd: and all windows
-and panes within will run accordingly
 
 under the hood
 --------------
@@ -222,31 +239,32 @@ Roadmap
 - remove unnecessary kwargs, use optional kwargs in params to keep it
   clean.
 - sphinx docs
+- before_cmd, after_cmd:
+  tbd, but commands will be able to be go before/after commands on any
+  level also. for instance, session may run before_cmd: and all windows
+  and panes within will run accordingly
+- config precedence
 
-Roadmap
--------
+    ::
 
-0.1
-"""
+       session(s)
+           1. cmds (str like 'htop' or list ['pwd', 'htop'])
+           2. root (str dir path, like '/var/www')
+           3. window(s)
+                1. cmd(s)
+                2. root
+                3. panes(s)
+                     1. dimensions
+                     2. cmd(s)
+                     3. root
 
-- verbose config structure
-- yaml support
-- docs
-  - for install from github
-  - code docs
-  - ipython notebook overview of internals
-  - example config files
-  - before_cmd, after_cmd
+    cmd, cwd can be added at the session, window and pane level.
 
--dev
-""""
+    the deepest will have precedence. a command or cwd at the session level
+    will apply to all windows, panes within it. a command or cwd at window
+    level applies to all panes. a pane may specify its own cmd.
 
-- python package
-- python version compatability (tested in 2.7 now)
-- tmux version compatibility (using git version now)
-- unit testing
-- packages for ubuntu, debian, redhat, fedora, arch, BSD's, etc.
-- video overview
+
 
 Similarities to Tmux and Pythonics
 ----------------------------------
