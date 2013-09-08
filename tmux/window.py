@@ -20,7 +20,8 @@ class Window(TmuxObject):
     '''
     tmux window.
 
-    subclasses TmuxObject in util, a MutableMapping, read the documentation.
+    subclasses :class:`TmuxObject` in util, a MutableMapping, read the
+    documentation.
 
     Each window displayed by tmux may be split into one or more panes; each pane takes up a certain area of the
     display and is a separate terminal.  A window may be split into panes using the split-window command.  Windows

@@ -14,7 +14,7 @@ from .server import Server
 from .window import Window
 from .pane import Pane
 
-from .util import live_tmux
+from .util import live_tmux, TmuxObject
 
 from tmux import Server
 

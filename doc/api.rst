@@ -14,6 +14,7 @@ Session Object
 .. autoclass:: Session
    :members:
    :inherited-members:
+   :show-inheritance:
 
 Window Object
 -------------
@@ -21,6 +22,7 @@ Window Object
 .. autoclass:: Window
    :members:
    :inherited-members:
+   :show-inheritance:
 
 
 Pane Object
@@ -29,4 +31,10 @@ Pane Object
 .. autoclass:: Pane
    :members:
    :inherited-members:
+   :show-inheritance:
 
+Util
+----
+
+.. autoclass:: TmuxObject
+   :show-inheritance:

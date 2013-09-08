@@ -58,33 +58,33 @@ class Session(TmuxObject):
                     *args,
                     **kwargs):
         '''
-        ``tmux(1)`` ``new-session``
+        ``$ tmux new-session``
 
         Returns :class:`Session`
 
         Uses ``-P`` flag to print session info, ``-F`` for return formatting
         returns new Session object.
 
-        ``tmux new-session -d`` will create the session in the background
-        ``tmux new-session -Ad`` will move to the session name if it already
+        ``$ tmux new-session -d`` will create the session in the background
+        ``$ tmux new-session -Ad`` will move to the session name if it already
         exists. todo: make an option to handle this.
 
         session_name
-            string. session name
+            string. session name::
 
-            >>> tmux new-session -s <session_name>
+                $ tmux new-session -s <session_name>
 
         detach
-            bool. create the new_session in the background, this is the same as
+            bool. create new_session in the background::
 
-            >>> tmux new-session -d
+                $ tmux new-session -d
 
         attach_if_exists
             bool. if the session_name exists, attach it. if False, this method
             will raise a SessionExists exception
 
         kill_session
-            Kill current session if ``tmux has-session`` Useful for testing
+            Kill current session if ``$ tmux has-session`` Useful for testing
             workspaces.
         '''
 
@@ -130,13 +130,13 @@ class Session(TmuxObject):
     @live_tmux
     def new_window(self, window_name=None, automatic_rename=False):
         '''
-        tmux(1) new-window
+        ``$ tmux new-window``
 
         window_name
-            string. window name (-n)
+            string. window name ``tmux new-window -n <window_name>``
 
         automatic_rename
-            bool. assume automatic_rename if no window_name
+            bool. assume automatic_rename if no window_name.
         '''
         formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -170,7 +170,7 @@ class Session(TmuxObject):
     @live_tmux
     def kill_window(self, target_window=None):
         '''
-        tmux(1) kill-window
+        ``$ tmux kill-window``
 
         Kill the current window or the window at ``target-window``. removing it
         from any sessions to which it is linked.
