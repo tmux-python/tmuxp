@@ -219,6 +219,9 @@ Roadmap
     linking or moving windows via Session.
 - remember that new-window without ``shell-command`` with run option
   ``default-command`` if used.
+- remove unnecessary kwargs, use optional kwargs in params to keep it
+  clean.
+- sphinx docs
 
 Roadmap
 -------
