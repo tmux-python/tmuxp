@@ -56,9 +56,16 @@ class BuilderTest(TestTmux):
 
                 # current pane count, of course 1 since we just made it
                 window_pane_count = len(w._panes)
-                for pane in wconf['panes']:
-                    w.split_window()
-                    window_pane_count += 1
+                for pindex, pconf in enumerate(wconf['panes'], start=1):
+                    if pindex != int(1):
+                        p = w.split_window()
+                        window_pane_count += 1
+                    else:
+                        p = w.attached_pane()
+                    if isinstance(pconf['shell_command'], basestring):
+                        pconf['shell_command'] = [pconf['shell_command']]
+                    for cmd in pconf['shell_command']:
+                        p.send_keys(cmd)
                     self.assertEqual(window_pane_count, len(w._panes))
                 self.assertIsInstance(w, Window)
                 self.assertEqual(len(s.list_windows()), window_count)
