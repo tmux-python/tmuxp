@@ -161,6 +161,7 @@ class Session(TmuxObject):
 
         if 'automatic_rename' in kwargs and kwargs['automatic_rename']:
             window.set_window_option('automatic-rename', True)
+
         self._windows.append(window)
 
         self.list_windows()

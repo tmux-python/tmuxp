@@ -202,6 +202,11 @@ Roadmap
 - create and test a compact / inline config format.
 - a C-type of binding to pull server/session/window/pane information
   directly from tmux.
+- support for show-options and setting options via ``.options`` on session
+  and window.
+- automatically handle rename-window when the value of the window-name is
+  set. this gives an abstraction of tmux that is then 'model-driven' like
+  backbone js, but also a pythonic abstraction.
 
 Roadmap
 -------
