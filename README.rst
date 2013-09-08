@@ -217,6 +217,8 @@ Roadmap
   - data driven tmux, handle options, renames
   - swapping windows using objects, swapping panes using Pane objects,
     linking or moving windows via Session.
+- remember that new-window without ``shell-command`` with run option
+  ``default-command`` if used.
 
 Roadmap
 -------
