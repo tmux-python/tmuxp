@@ -18,33 +18,20 @@ import collections
 
 def live_tmux(f):
     '''
-    decorator that checks for :attr:`_TMUX` inside :class:`Session`,
-    :class:`Window` and :class:`Pane` objects.
-
-    :attr:`_TMUX` stores valuable information for an tmux object's life
-    cycle. Hereinafter, I will call this ``MetaData``
-
-    ``tmux( returns information
-
-    @todo: in the future, :class:`Pane` will have ``PANE_FORMATS``,
-    ``WINDOW_FORMATS`` and ``Session_FORMATS`` metadata, and :class:`Window`
-    will have ``WINDOW_FORMATS`` and ``Session_FORMATS`` If a :attr:`_TMUX
-    exists, it should be possible to do a lookup for its parent :class:`Window`
-    or :class:`Pane` object.
-
-    Because this data is live in the system, caching strategy isn't a priority.
+    decorator that checks for one of the 3 unique identifiers in tmux:
+    ``pane_id``, ``window_id`` and ``session_id``, found in :class:`Pane`,
+    :class:`Window` and :class:`Session` respectively.
 
     If a session is imported directly from a configuration or is otherwise
-    being built manually via CLI or scripting, :attr:`_TMUX` is populated
-    when:
+    being built manually via CLI or scripting, :attr:`_TMUX` is populated upon:
 
-    A tmux session is created with:
+    :meth:`Session.create_session` .. ``$ tmux create-session``
 
-    :meth:`Session.create_session` aka ``tmux create-session``
+    :meth:`Server.list_sessions` .. ``$ tmux list-sessions``
 
-    :meth:`Server.list_sessions` aka ``tmux list-sessions``
-    :meth:`Session.new_window` aka ``tmux new-window``
-    :meth:`Window.split_window` aka ``tmux split-window``
+    :meth:`Session.new_window` .. ``$ tmux new-window``
+
+    :meth:`Window.split_window` .. ``$ tmux split-window``
         returns a :class:`Pane` with pane metadata
 
         - its first :class:`Window`, in :attr:`_windows`, and subsequently,
@@ -67,7 +54,7 @@ def live_tmux(f):
 
 def tmuxa(*args, **kwargs):
     '''
-    wrap tmux from ``sh`` library in a try catch
+    wraps ``tmux(1) from ``sh`` library in a try-catch.
     '''
     try:
         #return tmx(*args, **kwargs)
@@ -87,8 +74,8 @@ def tmuxa(*args, **kwargs):
 
 class TmuxObject(collections.MutableMapping):
     '''
-    Panes, Windows and Sessions which are populated with return data from
-    ``tmux (1)`` in the :attr:`._TMUX` dict.
+    :class:`Pane`, :class:`Window` and :class:`Session` which are populated
+    with return data from ``tmux (1)`` in the :attr:`._TMUX` dict.
 
     This is an experimental design choice to just leave ``-F`` commands to give
     _TMUX information, decorate methods to throw an exception if it requires

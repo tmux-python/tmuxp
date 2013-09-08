@@ -7,6 +7,14 @@ API
 
 this part lala
 
+Server Object
+-------------
+
+.. autoclass:: Server
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 
 Session Object
 --------------
@@ -33,8 +41,21 @@ Pane Object
    :inherited-members:
    :show-inheritance:
 
-Util
-----
 
-.. autoclass:: TmuxObject
+Internals
+---------
+
+.. autoclass:: tmux.util.TmuxObject
    :show-inheritance:
+
+.. automethod:: tmux.util.tmux
+
+.. automethod:: tmux.util.live_tmux
+
+Configuration
+-------------
+
+.. autoclass:: tmux.util.ConfigExpand
+
+.. autoclass:: tmux.util.ConfigTrickleDown
+
