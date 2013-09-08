@@ -134,3 +134,36 @@ class TmuxObject(collections.MutableMapping):
 
     def __len__(self):
         return len(self._TMUX.keys())
+
+
+class ConfigExpand(object):
+
+    def __init__(self, config):
+        self.config = config
+
+    def expand(self):
+        return self.expand_shell_command()
+
+    def expand_shell_command(self):
+        '''
+        iterate through session, windows, and panes for ``shell_command``, if
+        it is a string, turn to list.
+        '''
+        config = self.config
+
+        def _expand(c):
+            '''any config section, session, window, pane that can
+            contain the 'shell_command' value
+            '''
+            if ('shell_command' in c and
+                    isinstance(c['shell_command'], basestring)):
+                    c['shell_command'] = [c['shell_command']]
+
+            return c
+
+        config = _expand(config)
+        for window in config['windows']:
+            window = _expand(window)
+            window['panes'] = [_expand(pane) for pane in window['panes']]
+
+        return config

@@ -1,4 +1,5 @@
-from helpers import TestTmux
+from .helpers import TestTmux
+from tmux.util import ConfigExpand
 import os
 import shutil
 import kaptan
@@ -115,6 +116,128 @@ class ConfigTest(unittest.TestCase):
         if os.path.isdir(TMUXWRAPPER_DIR):
             shutil.rmtree(TMUXWRAPPER_DIR)
 
+
+class ConfigExpandTestCase(unittest.TestCase):
+
+    '''
+    assumes the configuration has been imported into a python dict correctly.
+    '''
+
+    before_config = {
+        'session_name': 'sampleconfig',
+        'start_directory': '~',
+        'windows': [{
+            'shell_command': 'top',
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                    'shell_command': 'cowsay "hey"'
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                     'start_directory':'/var/log'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': 'htop'}
+                ]
+            }]
+    }
+
+    after_config = {
+        'session_name': 'sampleconfig',
+        'start_directory': '~',
+        'windows': [{
+            'shell_command': ['top'],
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                    'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                     'start_directory':'/var/log'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop']}
+                ]
+            }]
+    }
+
+    def test_expand_shell_commands(self):
+        '''
+        expands shell commands from string to list
+        '''
+        config = ConfigExpand(self.before_config).expand()
+        self.assertDictEqual(config, self.after_config)
+
+
+class ConfigInheritance(unittest.TestCase):
+
+    '''
+    test inheritence casses
+
+    format for tests will be
+
+    test_{session/window/pane}_{config_option}_subject
+    '''
+    def test_session_start_directory(self):
+        sampleconfigdict = {
+            'session_name': 'sampleconfig',
+            'start_directory': '~',
+            'windows': [{
+                'window_name': 'editor',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
+                        },  {
+                        'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'},
+                {
+                    'window_name': 'logging',
+                    'panes': [
+                        {'shell_command': ['tail -F /var/log/syslog'],
+                         'start_directory':'/var/log'}
+                    ]
+                },
+                {
+                    'automatic_rename': True,
+                    'panes': [
+                        {'shell_command': ['htop']}
+                    ]
+                }]
+        }
+
+        pass
+
+    def test_window_start_directory(self):
+        pass
+
+    def test_session_window_pane_start_directory(self):
+        '''
+        test a complex case where there is a top session 'start_directory',
+        with 3 windows, 1-3 panes, but one of the panes overrides.
+        '''
+        pass
 
 if __name__ == '__main__':
     unittest.main()

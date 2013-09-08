@@ -6,6 +6,7 @@ from sh import tmux, ErrorReturnCode_1
 from .helpers import TestTmux
 from .config import sampleconfigdict
 from tmux import Window
+from tmux.util import ConfigExpand
 
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
@@ -33,7 +34,7 @@ class BuilderTest(TestTmux):
     def test_split_windows(self):
         session_name = self.TEST_SESSION_NAME
         s = self.session
-        tmux_config = sampleconfigdict
+        tmux_config = ConfigExpand(sampleconfigdict).expand()
 
         if 'session_name' in tmux_config:
             window_count = len(self.session._windows)  # current window count
@@ -62,9 +63,6 @@ class BuilderTest(TestTmux):
                         window_pane_count += 1
                     else:
                         p = w.attached_pane()
-                    if isinstance(pconf['shell_command'], basestring):
-                        # not being used at this point
-                        pconf['shell_command'] = [pconf['shell_command']]
                     for cmd in pconf['shell_command']:
                         p.send_keys(cmd)
                     self.assertEqual(window_pane_count, len(w._panes))
