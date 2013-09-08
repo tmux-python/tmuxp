@@ -1,4 +1,3 @@
 sh
-git+https://github.com/tony/kaptan.git@more#egg=kaptan
-#git+https://github.com/tony/kaptan.git@import-file#egg=kaptan
+kaptan
 logutils
