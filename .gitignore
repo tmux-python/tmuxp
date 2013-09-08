@@ -1,4 +1,8 @@
 *.pyc
+*.pyo
 .env
+dist
+*.egg
+*.egg-info
 doc/_build
-tmux/testsuite/.tmuxwrapper
+tmux/testsuite/.tmuxp
