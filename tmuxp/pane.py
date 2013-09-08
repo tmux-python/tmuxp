@@ -35,14 +35,14 @@ class Pane(TmuxObject):
     @classmethod
     def from_tmux(cls, session=None, window=None, **kwargs):
         '''
-        Retrieve a tmux pane from server. Returns :class:`Pane`
+        Retrieve a tmux pane from server. Returns :class:`Pane`.
 
         Used for freezing live sessions.
 
         Iterates ``$ tmux list-panes``, ``-F`` for return formatting.
 
-        :param session: :class:`Session` object
-        :param window :class:`Window` object
+        :param session: :class:`Session` object.
+        :param window: :class:`Window` object.
         '''
 
         if not session:
