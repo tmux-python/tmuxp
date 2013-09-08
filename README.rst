@@ -207,6 +207,16 @@ Roadmap
 - automatically handle rename-window when the value of the window-name is
   set. this gives an abstraction of tmux that is then 'model-driven' like
   backbone js, but also a pythonic abstraction.
+- unit test roadmap.
+  - test schema, types of objects
+  - parsing of config types. export of config types
+  - config expand
+  - config inliner script
+  - config passthru / hierarchy
+  - export a current tmux session to tmux objects, then config
+  - data driven tmux, handle options, renames
+  - swapping windows using objects, swapping panes using Pane objects,
+    linking or moving windows via Session.
 
 Roadmap
 -------
