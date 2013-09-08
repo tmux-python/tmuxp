@@ -5,7 +5,7 @@ import kaptan
 import unittest
 
 
-TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
+TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 sampleconfigdict = {
     'session_name': 'sampleconfig',

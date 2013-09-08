@@ -7,7 +7,7 @@ from random import randint
 import unittest
 
 
-TEST_SESSION_PREFIX = 'tmxwrp_'
+TEST_SESSION_PREFIX = 'tmuxp_'
 root_logger.setLevel(logging.ERROR)
 
 
@@ -18,16 +18,16 @@ def bootstrap():
         Checks to verify if the user has a tmux client open.
 
         It will clean up and delete other sessions starting with the
-        TEST_SESSION_PREFIX ``tmxwrap``.
+        :attr:`TEST_SESSION_PREFIX` ``tmuxp``.
 
         Since tmux closes when all sessions are deleted, the bootstrap will see
-        if there is no other client open aside from a tmuxwrp_ prefixed session
+        if there is no other client open aside from a tmuxp_ prefixed session
         a dumby session will be made to prevent tmux from closing.
 
     '''
     if t.has_clients():
 
-        # find current sessions prefixed with tmxwrp
+        # find current sessions prefixed with tmuxp
         previous_sessions = [s.session_name for s in t.list_sessions()
                              if s.session_name.startswith(TEST_SESSION_PREFIX)]
 
@@ -40,7 +40,7 @@ def bootstrap():
             # create a test session so client won't close when other windows
             # cleaned up
             Session.new_session(session_name='test_' + str(randint(0, 1337)))
-            #Session.attached_pane().send_keys('created by tmuxwrapper tests.'
+            #Session.attached_pane().send_keys('created by tmuxp tests.'
             #                                  ' you may delete this.',
             #                                  enter=False)
         else:

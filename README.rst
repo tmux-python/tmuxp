@@ -1,7 +1,7 @@
-`tmuxwrapper` was invented to solve the panes / pains of managing
+`tmuxp` was invented to solve the panes / pains of managing
 workspaces
 
-tmuxwrapper was written from the ground up as an ORM layer on top of tmux.
+tmuxp was written from the ground up as an ORM layer on top of tmux.
 
 under development, not ready for public use.
 
@@ -12,7 +12,7 @@ Goals
   pane management
 - support multiple configuration formats (json, yaml)
 - freeze current tmux session, window, and panes into rough configs, perhaps
-  to ~/.tmuxwrapper/snapshots/(year-month-day-(optionalname))/session.yaml
+  to ~/.tmuxp/snapshots/(year-month-day-(optionalname))/session.yaml
 - bash / zsh autocomplete
 - resume to normal workflow, or last snapshot of sessions
 - strives for purity to tmux and python
@@ -20,7 +20,7 @@ Goals
 testing
 -------
 
-See documentation in [./tmux/testsuite/__init__.py](https://github.com/tony/tmuxwrapper/blob/master/tmux/testsuite/__init__.py).
+See documentation in [./tmux/testsuite/__init__.py](https://github.com/tony/tmuxp/blob/master/tmux/testsuite/__init__.py).
 
 what's done
 -----------
@@ -65,14 +65,14 @@ Roadmap
 
 
 
-How tmuxwrapper works
+How tmuxp works
 ---------------------
 
-Note that ``tmux(1)`` is the real app, hereinafter 'tmux'. ``tmuxwrapper``
+Note that ``tmux(1)`` is the real app, hereinafter 'tmux'. ``tmuxp``
 is this script.
 
 tmux returns data with its commands. tmux allows a custom response with
-the use of ``formatters``. tmuxwrapper uses these commands to keep a fresh
+the use of ``formatters``. tmuxp uses these commands to keep a fresh
 list of act sessions, windows and panes.
 
 If you want to play with the internals of tmux, I highly recommend
@@ -100,7 +100,7 @@ under the hood
 This is subject to change.
 
 the code is very simple. kaplan will read any type of config file and
-turn it into a python dictionary. for brevity, tmuxwrapper offers a
+turn it into a python dictionary. for brevity, tmuxp offers a
 few inline expressions, such as (in YAML):
 
 ``mywindow: my_cmd``
@@ -151,7 +151,7 @@ Roadmap
   with a ctrl-a ``tbd`` to ``kill-session`` and monitor config file for changes,
   lint it, create a new session, switch to it, and ``kill-session`` the old
   one.
-- Check for ``.hg`` and ``.git`` in ``$HOME/.tmuxwrapper``, set a
+- Check for ``.hg`` and ``.git`` in ``$HOME/.tmuxp``, set a
   notification if it is out of date.
 - Have ``freeze`` check for ``virtualenv``, ``rvm``, ``perlbrew`` and add
   it to the ``before_cmd``.
@@ -198,7 +198,7 @@ Roadmap
   of tmux changes.  fbgrab + tty works well for demonstration
 - also look into scrot, x11 solutions and
   https://github.com/KittyKatt/screenFetch
-- control mode, for longer tmuxwrapper sessions where references to
+- control mode, for longer tmuxp sessions where references to
   objects are needed to be updated and shown they've gone stale (a pane
   object that has been closed needs to be changed to being stale, a window
   object that has been renamed needs to have its window_name updated)
@@ -273,10 +273,10 @@ Roadmap
 Similarities to Tmux and Pythonics
 ----------------------------------
 
-tmuxwrapper is was built in the spirit of understanding how tmux operates
+tmuxp is was built in the spirit of understanding how tmux operates
 and how python objects and tools can abstract the API's in a pleasant way.
 
-tmuxwrapper uses the identify ``FORMATTERS`` used by tmux, you can see
+tmuxp uses the identify ``FORMATTERS`` used by tmux, you can see
 them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
 
 In this, I will also begin documenting the API.
@@ -297,7 +297,7 @@ have dashes (-) replaced with underscores (_).
 interesting observations
 ------------------------
 
-How is tmuxwrapper able to keep references to panes, windows and sessions?
+How is tmuxp able to keep references to panes, windows and sessions?
 
     Tmux has unique ID's for sessions, windows and panes.
 
@@ -307,9 +307,7 @@ How is tmuxwrapper able to keep references to panes, windows and sessions?
 
     sessions use ``$``, for money, such as ``$``
 
-
-
-How is tmuxwrapper able to handle windows with no names?
+How is tmuxp able to handle windows with no names?
 
     Tmux provides ``window_id`` as a unique identifier.
 

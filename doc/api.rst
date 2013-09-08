@@ -15,6 +15,9 @@ Server Object
    :inherited-members:
    :show-inheritance:
 
+   .. attribute:: _sessions
+
+      A :py:class:`list` of all the :class:`Session` objects in the server.
 
 Session Object
 --------------
@@ -24,6 +27,11 @@ Session Object
    :inherited-members:
    :show-inheritance:
 
+   .. attribute:: _windows
+
+      A :python:`list` of all the :class:`Window` objects in the server.
+
+
 Window Object
 -------------
 
@@ -32,6 +40,13 @@ Window Object
    :inherited-members:
    :show-inheritance:
 
+   .. attribute:: _session
+
+      The :class:`Session` of the window.
+
+   .. attribute:: _windows
+
+      A :py:class:`list` of all the :class:`Pane` objects in the server.
 
 Pane Object
 -----------
@@ -41,6 +56,13 @@ Pane Object
    :inherited-members:
    :show-inheritance:
 
+   .. attribute:: _session
+
+      The :class:`Session` of the pane.
+
+   .. attribute:: _window
+
+      The :class:`Window` of the pane.
 
 Internals
 ---------

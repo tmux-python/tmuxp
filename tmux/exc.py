@@ -1,9 +1,8 @@
 # -*- coding: utf8 - *-
 """
-    tmuxwrapper.exc
-    ~~~~~~~~~~~~~~~
-
-    :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
+    tmuxp.exc
+    ~~~~~~~~~
+    :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
 

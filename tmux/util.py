@@ -1,11 +1,11 @@
 # -*- coding: utf8 - *-
 """
-    tmuxwrapper.util
-    ~~~~~~~~~~~~~~~~
+    tmuxp.util
+    ~~~~~~~~~~
 
-    tmuxwrapper helps you manage tmux workspaces.
+    tmuxp helps you manage tmux workspaces.
 
-    :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
+    :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
 from functools import wraps
@@ -220,7 +220,7 @@ class ConfigTrickleDown(object):
 
     This will only work if config has been expand with ConfigExpand()
 
-    tmuxwrapper allows certain commands to be default at the session, window
+    tmuxp allows certain commands to be default at the session, window
     level. Also, shell_command_before trickles down and prepends the
     shell_command's for the pane.
     '''

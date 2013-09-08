@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    tmuxwrapper.tests
-    ~~~~~~~~~~~~~~~~~
+    tmuxp.tests
+    ~~~~~~~~~~~
 
     :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
     :license: BSD, see LICENSE for details

@@ -1,11 +1,11 @@
 # -*- coding: utf8 - *-
 """
-    tmuxwrapper.session
-    ~~~~~~~~~~~~~~~~~~~
+    tmuxp.session
+    ~~~~~~~~~~~~~
 
-    tmuxwrapper helps you manage tmux workspaces.
+    tmuxp helps you manage tmux workspaces.
 
-    :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
+    :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
 from .util import live_tmux, TmuxObject

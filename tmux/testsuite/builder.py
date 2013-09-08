@@ -9,7 +9,7 @@ from tmux import Window
 from tmux.util import ConfigExpand
 
 
-TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
+TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
 class BuilderTestCase(TmuxTestCase):
