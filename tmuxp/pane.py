@@ -20,16 +20,15 @@ except ImportError:
 
 class Pane(TmuxObject):
     '''
-        ``tmux(1)`` pane
+        ``tmux(1)`` pane.
 
-        ``tmux(1)`` holds a psuedoterm and linked to tmux windows.
+        pane holds a psuedoterm and linked to tmux windows.
     '''
 
     def __init__(self, **kwargs):
         self._session = None
         self._window = None
 
-        #self._TMUX(**kwargs)
         self._TMUX = {}
         self.update(**kwargs)
 
@@ -40,12 +39,10 @@ class Pane(TmuxObject):
 
         Used for freezing live sessions.
 
-        Iterates ``tmux list-panes``, ``-F`` for return formatting.
+        Iterates ``$ tmux list-panes``, ``-F`` for return formatting.
 
-        session
-            :class:`Session` object
-        window
-            :class:`Window` object
+        :param session: :class:`Session` object
+        :param window :class:`Window` object
         '''
 
         if not session:
@@ -69,8 +66,7 @@ class Pane(TmuxObject):
         '''
             ```tmux send-keys``` to the pane
 
-            enter
-                boolean. send enter after sending the key
+            :param enter: bool. send enter after sending the key.
         '''
         tmux('send-keys', '-t', int(self.get('pane_index')), cmd)
 
@@ -79,7 +75,7 @@ class Pane(TmuxObject):
 
     def enter(self):
         '''
-            ```tmux send-keys``` send Enter to the pane
+            ``$ tmux send-keys`` send Enter to the pane.
         '''
         tmux('send-keys', '-t', int(self.get('pane_index')), 'Enter')
 

@@ -111,7 +111,11 @@ class Window(TmuxObject):
         )
 
     def rename_window(self, new_name):
-        '''rename window and return new window object'''
+        '''rename window and return new window object::
+
+            $ tmux rename-window <new_name>
+
+        :param new_name: name of the window'''
         try:
             tmux(
                 'rename-window',
@@ -125,14 +129,16 @@ class Window(TmuxObject):
 
         return self
 
-    def select_pane(self, pane):
+    def select_pane(self, target_pane):
         '''
-            ``tmux(1) select-pane``
+            ``$ tmux select-pane``
 
-            pane
-                integer of the pane index, or -U, -D, -L, -R. put a konami code
+            Returns :class:`Pane`.
+
+            :param target_pane: integer of the pane index, or ``-U``,
+                                ``-D``, ``-L``, ``-R``. put a konami code.
         '''
-        tmux('select-pane', '-t', pane)
+        tmux('select-pane', '-t', target_pane)
         self.list_panes()
         return self.attached_pane()
 
