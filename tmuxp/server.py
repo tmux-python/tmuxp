@@ -24,9 +24,9 @@ class Server(object):
     ``t`` global. stores information on live, running tmux server
 
     :attr:`Server._sessions` [:class:`Session`, ..]
-        Session._windows [<Window>, ..]
-            Window._panes [<Pane>, ..]
-                Pane
+        :attr:`Session._windows` [:class:`Window`, ..]
+            :attr:`Window._panes` [:class:`Pane`, ..]
+                :class:`Pane`
     '''
 
     def __init__(self):

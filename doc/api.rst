@@ -13,7 +13,6 @@ Server Object
 .. autoclass:: Server
    :members:
    :inherited-members:
-   :show-inheritance:
 
    .. attribute:: _sessions
 
@@ -29,7 +28,7 @@ Session Object
 
    .. attribute:: _windows
 
-      A :python:`list` of all the :class:`Window` objects in the server.
+      A :python:`list` of all the :class:`Window` objects in the session.
 
 
 Window Object
@@ -47,6 +46,10 @@ Window Object
    .. attribute:: _windows
 
       A :py:class:`list` of all the :class:`Pane` objects in the server.
+
+   .. attribute:: _panes
+
+      A :class:`list` of all the :class:`Pane` objects in the window.
 
 Pane Object
 -----------
@@ -78,6 +81,8 @@ Configuration
 -------------
 
 .. autoclass:: tmuxp.util.ConfigExpand
+   :members:
 
 .. autoclass:: tmuxp.util.ConfigTrickleDown
+   :members:
 
