@@ -6,7 +6,7 @@ import pipes
 
 class TestWindowSelect(TestTmux):
     def test_select_window(self):
-        self.session.new_window('testing 3')
+        self.session.new_window(window_name='testing 3')
         self.session.select_window(2)
         self.assertEqual(2, int(self.session.attached_window().get('window_index')))
 
@@ -20,10 +20,10 @@ class TestWindowCreation(TestTmux):
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('source .env/bin/activate')
-        self.session.new_window('second')
+        self.session.new_window(window_name='second')
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
-        self.session.new_window(3)
+        self.session.new_window(window_name=3)
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
         self.session.select_window(1)
@@ -51,19 +51,15 @@ class TestWindowCreation(TestTmux):
         window = self.session.new_window(window_name=window_name)
         pane = window.split_window()
         self.assertEqual(2, len(self.session.attached_window()._panes))
-        self.assertIsInstance(
-            pane, Pane
-        )
-
+        self.assertIsInstance(pane, Pane)
         self.assertEqual(2, len(window._panes))
 
     def test_window_rename(self):
-        window_name_before = pipes.quote('test split window')
-        window_name_after = pipes.quote('testingdis_winname')
+        window_name_before = 'test split window'
+        window_name_after = 'testingdis_winname'
         window = self.session.new_window(window_name=window_name_before)
         self.assertEqual(window.get('window_name'), window_name_before)
         window = window.rename_window(window_name_after)
-        print self.session.attached_window().get('window_name')
         self.assertEqual(window.get('window_name'), window_name_after)
 
 

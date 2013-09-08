@@ -16,6 +16,7 @@ from sh import tmux, ErrorReturnCode_1
 from logxtreme import logging
 import pipes
 
+
 class Session(TmuxObject):
     '''
     tmux session
@@ -127,26 +128,24 @@ class Session(TmuxObject):
         return session
 
     @live_tmux
-    def new_window(self, *args, **kwargs):
+    def new_window(self, **kwargs):
         '''
         tmux(1) new-window
 
         window_name
             string. window name (-n)
+
+        automatic_rename
+            bool. assume automatic_rename if no window_name
         '''
         formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
         if 'window_name' in kwargs:
-            window_name = kwargs['window_name']
-        elif len(args) == 1 and isinstance(args[0], basestring):
-            window_name = args[0]
-
-        if 'window_name' in locals():
             window = tmux(
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
-                '-n', window_name
+                '-n', kwargs['window_name']
             )
         else:
             window = tmux(

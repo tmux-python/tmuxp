@@ -39,15 +39,19 @@ class BuilderTest(TestTmux):
             window_count = len(self.session._windows)  # current window count
             self.assertEqual(len(s.list_windows()), window_count)
             for i, wconf in enumerate(tmux_config['windows'], start=1):
+                automatic_rename = False
                 if 'window_name' not in wconf:
                     window_name = None
+                    automatic_rename = True
                 else:
                     window_name = wconf['window_name']
 
-                if i == 1:  # if first window, use window 1
+                if i == int(1):  # if first window, use window 1
                     w = s.select_window(1)
+                    w = w.rename_window(window_name)
                 else:
-                    w = s.new_window(window_name=window_name)
+                    w = s.new_window(window_name=window_name,
+                                     automatic_rename=automatic_rename)
                     window_count += 1
 
                 # current pane count, of course 1 since we just made it

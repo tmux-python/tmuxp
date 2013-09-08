@@ -9,6 +9,7 @@ TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
 
 sampleconfigdict = {
     'session_name': 'sampleconfig',
+    'start_directory': '~',
     'windows': [{
         'window_name': 'editor',
         'panes': [
@@ -22,7 +23,8 @@ sampleconfigdict = {
         {
             'window_name': 'logging',
             'panes': [
-                {'shell_command': ['tail -F /var/log/syslog']}
+                {'shell_command': ['tail -F /var/log/syslog'],
+                 'start_directory':'/var/log'}
             ]
         },
         {

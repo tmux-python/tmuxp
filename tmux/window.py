@@ -13,6 +13,7 @@ from .pane import Pane
 from .formats import PANE_FORMATS
 from sh import tmux, ErrorReturnCode_1
 from logxtreme import logging
+import pipes
 
 
 class Window(TmuxObject):
@@ -95,14 +96,12 @@ class Window(TmuxObject):
         try:
             tmux(
                 'rename-window',
-                '-t', self.get('window_name'),
-                new_name
+                pipes.quote(new_name)
             )
             self['window_name'] = new_name
         except Exception, e:
             logging.error(e)
 
-        print "new_name: %s  self['window_name']: %s" % (new_name, self['window_name'])
         self._session.list_windows()
 
         return self
