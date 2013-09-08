@@ -230,7 +230,13 @@ class ConfigExpand(object):
 
 
 class ConfigTrickleDown(object):
-    '''Trickle down config values
+    '''Trickle down / inherit config values
+
+    This will only work if config has been expand with ConfigExpand()
+
+    tmuxwrapper allows certain commands to be default at the session, window
+    level. Also, shell_command_before trickles down and prepends the
+    shell_command's for the pane.
     '''
     def __init__(self, config):
         self.config = config
