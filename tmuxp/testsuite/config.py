@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 import kaptan
-from tmux.util import ConfigExpand, ConfigTrickleDown
+from ..util import ConfigExpand, ConfigTrickleDown
 
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')

@@ -2,8 +2,8 @@
 import unittest
 import sys
 import os
-from tmux import t
-import tmux.testsuite
+from tmuxp import t
+import tmuxp.testsuite
 
 tmux_path = sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 if tmux_path not in sys.path:
@@ -13,7 +13,7 @@ if tmux_path not in sys.path:
 def main():
     if t.has_clients():
         #unittest.main()
-        suites = unittest.TestLoader().discover('tmux.testsuite', pattern="*.py")
+        suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
 
         unittest.TextTestRunner().run(suites)
     else:

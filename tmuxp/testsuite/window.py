@@ -1,7 +1,7 @@
 import unittest
 import pipes
 from .helpers import TmuxTestCase
-from tmux import Pane
+from .. import Pane
 
 
 class WindowSelectTestCase(TmuxTestCase):

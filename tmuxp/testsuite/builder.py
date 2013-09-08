@@ -5,8 +5,8 @@ import unittest
 from sh import tmux, ErrorReturnCode_1
 from .helpers import TmuxTestCase
 from .config import sampleconfigdict
-from tmux import Window
-from tmux.util import ConfigExpand
+from .. import Window
+from ..util import ConfigExpand
 
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')

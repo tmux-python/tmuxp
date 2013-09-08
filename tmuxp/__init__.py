@@ -16,8 +16,6 @@ from .pane import Pane
 
 from .util import live_tmux, TmuxObject
 
-from tmux import Server
-
 from sh import tmux, cut, ErrorReturnCode_1
 
 

@@ -9,11 +9,15 @@
     :license: BSD, see LICENSE for details
 """
 from functools import wraps
-from sh import ErrorReturnCode_1
 from .exc import NotRunning, SessionNotFound
 from .logxtreme import logging
 import unittest
 import collections
+
+try:
+    from sh import tmux as tmux, cut, ErrorReturnCode_1
+except ImportError:
+    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
 
 def live_tmux(f):
