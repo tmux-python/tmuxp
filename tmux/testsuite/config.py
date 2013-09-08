@@ -1,4 +1,3 @@
-from .helpers import TestTmux
 from tmux.util import ConfigExpand
 import os
 import shutil
@@ -37,7 +36,7 @@ sampleconfigdict = {
 }
 
 
-class ConfigTest(unittest.TestCase):
+class ConfigImportExportTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -189,14 +188,12 @@ class ConfigExpandTestCase(unittest.TestCase):
         self.assertDictEqual(config, self.after_config)
 
 
-class ConfigInheritanceStartCommand(unittest.TestCase):
+class ConfigInheritanceStartCommandTestCase(unittest.TestCase):
 
     '''
-    test inheritence casses
+    test config inheritance for the nested 'start_command'
 
     format for tests will be
-
-    test_{session/window/pane}_{config_option}_subject
     '''
 
     config_before = {

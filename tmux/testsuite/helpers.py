@@ -62,7 +62,7 @@ def bootstrap():
         return (TEST_SESSION_NAME, session)
 
 
-class TestTmux(unittest.TestCase):
+class TmuxTestCase(unittest.TestCase):
     '''
         self.session
             Session object

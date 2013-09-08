@@ -1,17 +1,18 @@
-from .helpers import TestTmux
+from .helpers import TmuxTestCase
 from tmux import Pane
 import unittest
 import pipes
 
 
-class TestWindowSelect(TestTmux):
+class WindowSelectTestCase(TmuxTestCase):
+
     def test_select_window(self):
         self.session.new_window(window_name='testing 3')
         self.session.select_window(2)
         self.assertEqual(2, int(self.session.attached_window().get('window_index')))
 
 
-class TestWindowCreation(TestTmux):
+class WindowNewTestCase(TmuxTestCase):
 
     def test_sync_windows(self):
         #self.session.select_window(1)

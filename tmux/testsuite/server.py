@@ -1,10 +1,10 @@
 from tmux import t, Session, Window, Pane
-from helpers import TestTmux, TEST_SESSION_PREFIX
+from helpers import TmuxTestCase, TEST_SESSION_PREFIX
 from random import randint
 import unittest
 
 
-class TestSessions(TestTmux):
+class SessionTestCase(TmuxTestCase):
     def test_has_session(self):
         self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
         self.assertFalse(t.has_session('asdf2314324321'))

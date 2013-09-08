@@ -3,7 +3,7 @@ import shutil
 import kaptan
 import unittest
 from sh import tmux, ErrorReturnCode_1
-from .helpers import TestTmux
+from .helpers import TmuxTestCase
 from .config import sampleconfigdict
 from tmux import Window
 from tmux.util import ConfigExpand
@@ -12,24 +12,14 @@ from tmux.util import ConfigExpand
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxwrapper')
 
 
-def build_windows(window):
-    '''
-    builds the window object.
-
-    window
-        :class:`Window` object.
-    '''
-    pass
-
-
-class BuilderTest(TestTmux):
+class BuilderTestCase(TmuxTestCase):
 
     @classmethod
     def setUpClass(cls):
         if not os.path.exists(TMUXWRAPPER_DIR):
             os.makedirs(
                 TMUXWRAPPER_DIR)
-        super(BuilderTest, cls).setUpClass()
+        super(BuilderTestCase, cls).setUpClass()
 
     def test_split_windows(self):
         session_name = self.TEST_SESSION_NAME
