@@ -158,6 +158,9 @@ class Session(TmuxObject):
         # clear up empty dict
         window = dict((k, v) for k, v in window.iteritems() if v)
         window = Window.from_tmux(session=self, **window)
+
+        if 'automatic_rename' in kwargs and kwargs['automatic_rename']:
+            window.set_window_option('automatic-rename', True)
         self._windows.append(window)
 
         self.list_windows()

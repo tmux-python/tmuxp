@@ -85,10 +85,31 @@ class Window(TmuxObject):
         )
 
     def select_layout(self, layout=None):
+        '''
+        wrapper for tmux(1)
+
+            >>> tmux select-layout <layout>
+        '''
         tmux(
             'select-layout',
             '-t%s' % self.get('window_name'),      # target (name of session)
             layout
+        )
+
+    def set_window_option(self, option, value):
+        '''
+        wrapper for tmux(1)
+
+            >>> tmux set-window option
+        '''
+
+        if value:
+            value = 'on'
+        else:
+            value = 'off'
+
+        tmux(
+            'set-window-option', option, value
         )
 
     def rename_window(self, new_name):
