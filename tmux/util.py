@@ -227,3 +227,40 @@ class ConfigExpand(object):
         self.config = config
 
         return self
+
+
+class ConfigTrickleDown(object):
+    '''Trickle down config values
+    '''
+    def __init__(self, config):
+        self.config = config
+
+    def trickle(self):
+        self.trickle_shell_command_before()
+        return self
+
+    def trickle_shell_command_before(self):
+        config = self.config
+
+        if 'shell_command_before' in config:
+            self.assertIsInstance(config['shell_command_before'], list)
+            session_shell_command_before = config['shell_command_before']
+        else:
+            session_shell_command_before = []
+
+        for windowconfitem in config['windows']:
+            window_shell_command_before = []
+            if 'shell_command_before' in windowconfitem:
+                window_shell_command_before = windowconfitem['shell_command_before']
+
+            for paneconfitem in windowconfitem['panes']:
+                pane_shell_command_before = []
+                if 'shell_command_before' in paneconfitem:
+                    pane_shell_command_before += paneconfitem['shell_command_before']
+
+                if 'shell_command' not in paneconfitem:
+                    paneconfitem['shell_command'] = list()
+
+                paneconfitem['shell_command'] = session_shell_command_before + window_shell_command_before + pane_shell_command_before + paneconfitem['shell_command']
+
+        self.config = config

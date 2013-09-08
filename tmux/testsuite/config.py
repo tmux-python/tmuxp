@@ -1,4 +1,4 @@
-from tmux.util import ConfigExpand
+from tmux.util import ConfigExpand, ConfigTrickleDown
 import os
 import shutil
 import kaptan
@@ -401,7 +401,7 @@ class ConfigShellCommandBefore(unittest.TestCase):
                     {'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
                         'start_directory':'/var/log'},
                     {
-                        'start_directory': '/var/log', 'shell_command':['rbenv local 2.0.0-p0']}
+                        'start_directory': '/var/log', 'shell_command': ['rbenv local 2.0.0-p0']}
                 ]
             },
             {
@@ -426,30 +426,7 @@ class ConfigShellCommandBefore(unittest.TestCase):
 
         self.assertDictEqual(config, self.config_expanded)
 
-        if 'shell_command_before' in config:
-            self.assertIsInstance(config['shell_command_before'], list)
-            session_shell_command_before = config['shell_command_before']
-        else:
-            session_shell_command_before = []
-
-        for windowconfitem in config['windows']:
-            window_shell_command_before = []
-            if 'shell_command_before' in windowconfitem:
-                window_shell_command_before = windowconfitem['shell_command_before']
-
-            for paneconfitem in windowconfitem['panes']:
-                pane_shell_command_before = []
-                if 'shell_command_before' in paneconfitem:
-                    pane_shell_command_before += paneconfitem['shell_command_before']
-
-                if 'shell_command' not in paneconfitem:
-                    paneconfitem['shell_command'] = list()
-
-                print(paneconfitem['shell_command'])
-                paneconfitem['shell_command'] = session_shell_command_before + window_shell_command_before + pane_shell_command_before + paneconfitem['shell_command']
-                #elif session_shell_command_before:
-                #    paneconfitem['shell_command_before'] = session_shell_command_before
-
+        config = ConfigTrickleDown(config).trickle().config
         self.maxDiff = None
         self.assertDictEqual(config, self.config_after)
 
