@@ -107,7 +107,7 @@ class Session(TmuxObject):
 
         session_info = tmux(
             'new-session',
-            '-d', # assume detach = True for now, todo: fix
+            '-d',  # assume detach = True for now, todo: fix
             '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
             *args
@@ -128,7 +128,7 @@ class Session(TmuxObject):
         return session
 
     @live_tmux
-    def new_window(self, **kwargs):
+    def new_window(self, window_name=None, automatic_rename=False):
         '''
         tmux(1) new-window
 
@@ -141,11 +141,11 @@ class Session(TmuxObject):
         formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
-        if 'window_name' in kwargs:
+        if window_name:
             window = tmux(
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
-                '-n', kwargs['window_name']
+                '-n', window_name
             )
         else:
             window = tmux(
@@ -159,7 +159,7 @@ class Session(TmuxObject):
         window = dict((k, v) for k, v in window.iteritems() if v)
         window = Window.from_tmux(session=self, **window)
 
-        if 'automatic_rename' in kwargs and kwargs['automatic_rename']:
+        if automatic_rename:
             window.set_window_option('automatic-rename', True)
 
         self._windows.append(window)
@@ -168,25 +168,21 @@ class Session(TmuxObject):
         return window
 
     @live_tmux
-    def kill_window(self, *args, **kwargs):
+    def kill_window(self, target_window=None):
         '''
         tmux(1) kill-window
 
         Kill the current window or the window at ``target-window``. removing it
-        from any sessions to which it is linked. The ``-a`` option kills all
-        but the window given to ``-t``.
-
-        -a
-            string arg.
+        from any sessions to which it is linked.
         '''
 
         tmux_args = list()
 
-        if '-a' in args:
-            tmux_args.append('-a')
+        #if '-a' in args:
+        #    tmux_args.append('-a')
 
-        if 'target_window' in kwargs:
-            tmux_args.append(['-t', kwargs['target_window']])
+        if target_window:
+            tmux_args.append(['-t', target_window])
 
         tmux('kill-window', *tmux_args)
 
