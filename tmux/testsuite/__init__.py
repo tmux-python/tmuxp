@@ -3,7 +3,7 @@
     tmuxp.tests
     ~~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock <tony@git-pull.com>.
+    :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 
     To test, first make a virtual environment, to learn more see:

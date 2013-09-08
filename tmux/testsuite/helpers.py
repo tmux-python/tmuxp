@@ -1,10 +1,9 @@
 import unittest
-from tmux import t, Session
+from random import randint
 from sh import ErrorReturnCode_1
+from tmux import t, Session
 from tmux.logxtreme import root_logger, logging
 from tmux.exc import SessionNotFound
-from random import randint
-import unittest
 
 
 TEST_SESSION_PREFIX = 'tmuxp_'
