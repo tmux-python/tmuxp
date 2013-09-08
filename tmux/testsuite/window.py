@@ -62,6 +62,14 @@ class TestWindowCreation(TestTmux):
         window = window.rename_window(window_name_after)
         self.assertEqual(window.get('window_name'), window_name_after)
 
+    def test_new_window_automatic_rename(self):
+        '''@todo'''
+        pass
+
+    def test_new_window_start_directory(self):
+        '''@todo'''
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

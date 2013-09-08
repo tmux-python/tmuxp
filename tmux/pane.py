@@ -47,16 +47,10 @@ class Pane(TmuxObject):
         if not session:
             raise ValueError('Pane generated using ``from_tmux`` must have \
                              ``Session`` object')
-        #else:
-        #    if not isinstance(session, Session):
-        #        raise TypeError('session must be a Session object')
 
         if not window:
             raise ValueError('Pane generated using ``from_tmux`` must have \
                              ``Window`` object')
-        #else:
-        #    if not isinstance(window, Window):
-        #        raise TypeError('window must be a Window object')
 
         pane = cls()
 
