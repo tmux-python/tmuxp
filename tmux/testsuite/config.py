@@ -379,19 +379,18 @@ class ConfigShellCommandBefore(unittest.TestCase):
             }]
     }
 
-
     config_after = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
         'start_directory': '/',
         'windows': [{
             'window_name': 'editor',
             'start_directory': '~',
-            'shell_command_before': 'source .env/bin/activate',
+            'shell_command_before': ['source .env/bin/activate'],
             'panes': [
                 {
                     'start_directory': '~', 'shell_command': ['source .env/bin/activate', 'vim'],
                     },  {
-                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['source .env/bin/active', 'rbenv local 2.0.0-p0', 'cowsay "hey"']
+                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['source .env/bin/activate', 'rbenv local 2.0.0-p0', 'cowsay "hey"']
                 },
             ],
             'layout': 'main-verticle'},
@@ -402,7 +401,7 @@ class ConfigShellCommandBefore(unittest.TestCase):
                     {'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
                         'start_directory':'/var/log'},
                     {
-                        'start_directory': '/var/log'}
+                        'start_directory': '/var/log', 'shell_command':['rbenv local 2.0.0-p0']}
                 ]
             },
             {
@@ -436,20 +435,18 @@ class ConfigShellCommandBefore(unittest.TestCase):
         for windowconfitem in config['windows']:
             window_shell_command_before = []
             if 'shell_command_before' in windowconfitem:
-                window_shell_command_before.append(session_shell_command_before + windowconfitem['shell_command_before'])
-            elif session_shell_command_before:
-                window_shell_command_before = session_shell_command_before
+                window_shell_command_before = windowconfitem['shell_command_before']
 
             for paneconfitem in windowconfitem['panes']:
                 pane_shell_command_before = []
                 if 'shell_command_before' in paneconfitem:
-                    pane_shell_command_before.append(paneconfitem['shell_command_before'])
-                if window_shell_command_before:
-                    paneconfitem['shell_command_before'] = window_shell_command_before
+                    pane_shell_command_before += paneconfitem['shell_command_before']
+
                 if 'shell_command' not in paneconfitem:
                     paneconfitem['shell_command'] = list()
-                if len(pane_shell_command_before) > 0:
-                    paneconfitem['shell_command'].insert(0, pane_shell_command_before)
+
+                print(paneconfitem['shell_command'])
+                paneconfitem['shell_command'] = session_shell_command_before + window_shell_command_before + pane_shell_command_before + paneconfitem['shell_command']
                 #elif session_shell_command_before:
                 #    paneconfitem['shell_command_before'] = session_shell_command_before
 
