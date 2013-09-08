@@ -1,3 +1,4 @@
 *.pyc
 .env
+doc/_build
 tmux/testsuite/.tmuxwrapper
