@@ -246,6 +246,7 @@ Roadmap
   tbd, but commands will be able to be go before/after commands on any
   level also. for instance, session may run before_cmd: and all windows
   and panes within will run accordingly
+- make session, window, pane chainable by returning self
 - config precedence
 
     ::

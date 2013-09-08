@@ -19,9 +19,9 @@ class Server(object):
     '''
     ``t`` global. stores information on live, running tmux server
 
-    Server.sessions [<Session>, ..]
-        Session.windows [<Window>, ..]
-            Window.panes [<Pane>, ..]
+    :attr:`Server._sessions` [:class:`Session`, ..]
+        Session._windows [<Window>, ..]
+            Window._panes [<Pane>, ..]
                 Pane
     '''
 
@@ -32,7 +32,7 @@ class Server(object):
         '''
         Return a list of :class:`Session` from tmux server.
 
-        ``tmux(1)`` ``list-sessions``
+        ``$ tmux list-sessions``
         '''
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -89,13 +89,11 @@ class Server(object):
             logging.debug('new session %s' % session['session_id'])
             self._sessions.append(Session.from_tmux(**session))
 
-        #self._sessions = [session.from_tmux(session=self._session, window=self, **session) for session in sessions]
-
         return self._sessions
 
     def has_clients(self):
         # are any clients connected to tmux
-        if len(tmux('list-clients')) > 1:
+        if len(tmux('list-clients')) > int(1):
             return True
         else:
             return False
@@ -126,7 +124,7 @@ class Server(object):
 
     def has_session(self, session_name):
         '''
-        ``tmux(1)`` ``has-session``
+        ``$ tmux has-session``
         '''
 
         try:  # has-session returns nothing if session exists
@@ -137,7 +135,7 @@ class Server(object):
 
     def kill_session(self, session_name=None):
         '''
-        ``tmux(1)`` ``kill-session``
+        ``$ tmux kill-session``
 
         session_name
             string. note this accepts fnmatch(3).  'asdf' will kill asdfasd
@@ -157,12 +155,9 @@ class Server(object):
     def sessions(self):
         return self._sessions
 
-    def list_clients(self):
-        raise NotImplemented
-
     def switch_client(self, target_session):
         '''
-        ``tmux(1) ``switch-client``
+        ``$ tmux switch-client``
 
         target_session
             string. name of the session. fnmatch(3) works

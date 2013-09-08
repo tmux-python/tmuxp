@@ -25,7 +25,7 @@ def live_tmux(f):
     If a session is imported directly from a configuration or is otherwise
     being built manually via CLI or scripting, :attr:`_TMUX` is populated upon:
 
-    :meth:`Session.create_session` .. ``$ tmux create-session``
+    :meth:`Server.create_session` .. ``$ tmux create-session``
 
     :meth:`Server.list_sessions` .. ``$ tmux list-sessions``
 

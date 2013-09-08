@@ -36,7 +36,6 @@ class Window(TmuxObject):
         self.update(**kwargs)
 
     def __repr__(self):
-        # todo test without session_name
         return "%s(%s %s, %s)" % (
             self.__class__.__name__,
             self.get('window_index'),
@@ -136,15 +135,12 @@ class Window(TmuxObject):
     @live_tmux
     def split_window(self, *args, **kwargs):
         '''
-        Create a new pane by splitting the window. Returns :class:`Pane`
+        Splits window. Returns the created :class:`Pane`.
 
         Used for splitting window and holding in a python object.
 
-        Iterates ``tmux split-window``, ``-P`` to return data and
+        Iterates ``$ tmux split-window``, ``-P`` to return data and
         ``-F`` for return formatting.
-
-        @todo this could add append to the window._panes or we could
-        refresh the window.list_panes() after this is ran.
 
         Arguments may be passed through same as ``tmux(1))`` ``split-window``.
 
@@ -152,9 +148,6 @@ class Window(TmuxObject):
             horizontal
         -v
             vertical
-
-        todo:
-            return :class:`Pane` object
         '''
 
         formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
@@ -285,7 +278,5 @@ class Window(TmuxObject):
         for pane in [new[pane_id] for pane_id in created]:
             logging.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
             self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
-
-        #self._panes = [Pane.from_tmux(session=self._session, window=self, **pane) for pane in panes]
 
         return self._panes
