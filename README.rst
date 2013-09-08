@@ -1,7 +1,9 @@
 `tmuxwrapper` was invented to solve the panes / pains of managing
 workspaces
 
-under development, not ready for public use
+tmuxwrapper was written from the ground up as an ORM layer on top of tmux.
+
+under development, not ready for public use.
 
 Goals
 -----
@@ -13,6 +15,7 @@ Goals
   to ~/.tmuxwrapper/snapshots/(year-month-day-(optionalname))/session.yaml
 - bash / zsh autocomplete
 - resume to normal workflow, or last snapshot of sessions
+- strives for purity to tmux and python
 
 testing
 -------

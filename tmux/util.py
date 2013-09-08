@@ -137,12 +137,44 @@ class TmuxObject(collections.MutableMapping):
 
 
 class ConfigExpand(object):
+    '''Expand configuration into full form. Enables shorthand forms for
+    tmuxinator config.
+
+    config
+        dict. the configuration for the session.
+
+    This is necessary to keep the code in the :class:`Builder` clean and also
+    allow for neat, short-hand configurations.
+
+    As a simple example, internally, tmuxinator expects that config options
+    like ``shell_command`` are a list (array).
+
+        >>> 'shell_command': ['htop']
+
+    Tmuxinator configs allow for it to be simply a string.
+
+        >>> 'shell_command': 'htop'
+
+    Kaptan will load JSON/YAML/INI files into python dicts for you.
+
+    For testability all expansion / shorthands are in methods here, each will
+    check for any expandable config properties in the session, windows and
+    their panes and apply the full form to self.config accordingly.
+
+    self.expand will automatically expand all shortened config options. Adding
+    ``.config`` will return the expanded config.
+
+        >>> ConfigExpand(config).expand().config
+
+    They also return the context of self, so they are
+    chainable.
+    '''
 
     def __init__(self, config):
         self.config = config
 
     def expand(self):
-        return self.expand_shell_command()
+        return self.expand_shell_command().expand_shell_command_before()
 
     def expand_shell_command(self):
         '''
@@ -166,4 +198,32 @@ class ConfigExpand(object):
             window = _expand(window)
             window['panes'] = [_expand(pane) for pane in window['panes']]
 
-        return config
+        self.config = config
+
+        return self
+
+    def expand_shell_command_before(self):
+        '''
+        iterate through session, windows, and panes for
+        ``shell_command_before``, if it is a string, turn to list.
+        '''
+        config = self.config
+
+        def _expand(c):
+            '''any config section, session, window, pane that can
+            contain the 'shell_command' value
+            '''
+            if ('shell_command_before' in c and
+                    isinstance(c['shell_command_before'], basestring)):
+                    c['shell_command_before'] = [c['shell_command_before']]
+
+            return c
+
+        config = _expand(config)
+        for window in config['windows']:
+            window = _expand(window)
+            window['panes'] = [_expand(pane) for pane in window['panes']]
+
+        self.config = config
+
+        return self

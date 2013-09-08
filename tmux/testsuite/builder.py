@@ -24,7 +24,7 @@ class BuilderTestCase(TmuxTestCase):
     def test_split_windows(self):
         session_name = self.TEST_SESSION_NAME
         s = self.session
-        tmux_config = ConfigExpand(sampleconfigdict).expand()
+        tmux_config = ConfigExpand(sampleconfigdict).expand().config
 
         if 'session_name' in tmux_config:
             window_count = len(self.session._windows)  # current window count

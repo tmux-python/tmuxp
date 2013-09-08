@@ -20,14 +20,10 @@ sampleconfigdict = {
             },
         ],
         'layout': 'main-verticle'},
-        {
-            'window_name': 'logging',
-            'panes': [
-                {'shell_command': ['tail -F /var/log/syslog'],
-                 'start_directory':'/var/log'}
-            ]
-        },
-        {
+        {'window_name': 'logging', 'panes': [
+         {'shell_command': ['tail -F /var/log/syslog'],
+          'start_directory':'/var/log'}
+         ]}, {
             'automatic_rename': True,
             'panes': [
                 {'shell_command': ['htop']}
@@ -184,7 +180,7 @@ class ConfigExpandTestCase(unittest.TestCase):
         '''
         expands shell commands from string to list
         '''
-        config = ConfigExpand(self.before_config).expand()
+        config = ConfigExpand(self.before_config).expand().config
         self.assertDictEqual(config, self.after_config)
 
 
@@ -288,6 +284,174 @@ class ConfigInheritanceStartCommandTestCase(unittest.TestCase):
                     paneconfitem['start_directory'] = window_start_directory
                 elif session_start_directory:
                     paneconfitem['start_directory'] = session_start_directory
+
+        self.maxDiff = None
+        self.assertDictEqual(config, self.config_after)
+
+
+class ConfigShellCommandBefore(unittest.TestCase):
+
+    '''
+    test config inheritance for the nested 'start_command'
+
+    format for tests will be pre
+    '''
+
+    config_unexpanded = {  # shell_command_before is string in some areas
+        'session_name': 'sampleconfig',
+        'start_directory': '/',
+        'windows': [{
+            'window_name': 'editor',
+            'start_directory': '~',
+            'shell_command_before': 'source .env/bin/activate',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'shell_command_before': 'rbenv local 2.0.0-p0',
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'},
+                    {
+                        'start_directory': '/var/log'}
+                ]
+            },
+            {
+                'window_name': 'shufu',
+                'panes': [
+                    {
+                        'shell_command_before': ['rbenv local 2.0.0-p0'],
+                        'shell_command': ['htop'], 'start_directory': '/etc/'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop']}
+                ]
+            }]
+    }
+
+    config_expanded = {  # shell_command_before is string in some areas
+        'session_name': 'sampleconfig',
+        'start_directory': '/',
+        'windows': [{
+            'window_name': 'editor',
+            'start_directory': '~',
+            'shell_command_before': ['source .env/bin/activate'],
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'shell_command_before': ['rbenv local 2.0.0-p0'],
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'},
+                    {
+                        'start_directory': '/var/log'}
+                ]
+            },
+            {
+                'window_name': 'shufu',
+                'panes': [
+                    {
+                        'shell_command_before': ['rbenv local 2.0.0-p0'],
+                        'shell_command': ['htop'], 'start_directory': '/etc/'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop']}
+                ]
+            }]
+    }
+
+
+    config_after = {  # shell_command_before is string in some areas
+        'session_name': 'sampleconfig',
+        'start_directory': '/',
+        'windows': [{
+            'window_name': 'editor',
+            'start_directory': '~',
+            'shell_command_before': 'source .env/bin/activate',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['source .env/bin/activate', 'vim'],
+                    },  {
+                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['source .env/bin/active', 'rbenv local 2.0.0-p0', 'cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'shell_command_before': ['rbenv local 2.0.0-p0'],
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'},
+                    {
+                        'start_directory': '/var/log'}
+                ]
+            },
+            {
+                'window_name': 'shufu',
+                'panes': [
+                    {
+                        'shell_command_before': ['rbenv local 2.0.0-p0'],
+                        'shell_command': ['rbenv local 2.0.0-p0', 'htop'], 'start_directory': '/etc/'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop']}
+                ]
+            }]
+    }
+
+    def test_shell_command_before(self):
+        config = self.config_unexpanded
+        config = ConfigExpand(config).expand().config
+
+        self.assertDictEqual(config, self.config_expanded)
+
+        if 'shell_command_before' in config:
+            self.assertIsInstance(config['shell_command_before'], list)
+            session_shell_command_before = config['shell_command_before']
+        else:
+            session_shell_command_before = []
+
+        for windowconfitem in config['windows']:
+            window_shell_command_before = []
+            if 'shell_command_before' in windowconfitem:
+                window_shell_command_before.append(session_shell_command_before + windowconfitem['shell_command_before'])
+            elif session_shell_command_before:
+                window_shell_command_before = session_shell_command_before
+
+            for paneconfitem in windowconfitem['panes']:
+                pane_shell_command_before = []
+                if 'shell_command_before' in paneconfitem:
+                    pane_shell_command_before.append(paneconfitem['shell_command_before'])
+                if window_shell_command_before:
+                    paneconfitem['shell_command_before'] = window_shell_command_before
+                if 'shell_command' not in paneconfitem:
+                    paneconfitem['shell_command'] = list()
+                if len(pane_shell_command_before) > 0:
+                    paneconfitem['shell_command'].insert(0, pane_shell_command_before)
+                #elif session_shell_command_before:
+                #    paneconfitem['shell_command_before'] = session_shell_command_before
 
         self.maxDiff = None
         self.assertDictEqual(config, self.config_after)
