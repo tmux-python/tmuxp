@@ -3,9 +3,9 @@
 API
 ===
 
-.. module:: tmux
+.. module:: tmuxp
 
-this part lala
+tmuxp api
 
 Server Object
 -------------
@@ -67,17 +67,17 @@ Pane Object
 Internals
 ---------
 
-.. autoclass:: tmux.util.TmuxObject
+.. autoclass:: tmuxp.util.TmuxObject
    :show-inheritance:
 
-.. automethod:: tmux.util.tmux
+.. automethod:: tmuxp.util.tmux
 
-.. automethod:: tmux.util.live_tmux
+.. automethod:: tmuxp.util.live_tmux
 
 Configuration
 -------------
 
-.. autoclass:: tmux.util.ConfigExpand
+.. autoclass:: tmuxp.util.ConfigExpand
 
-.. autoclass:: tmux.util.ConfigTrickleDown
+.. autoclass:: tmuxp.util.ConfigTrickleDown
 
