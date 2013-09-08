@@ -15,7 +15,7 @@ import unittest
 import collections
 
 try:
-    from sh import tmux as tmux, cut, ErrorReturnCode_1
+    from sh import tmux as tmux, ErrorReturnCode_1
 except ImportError:
     logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
@@ -56,7 +56,7 @@ def live_tmux(f):
     return live_tmux
 
 
-def tmuxa(*args, **kwargs):
+def tmux(*args, **kwargs):
     '''
     wraps ``tmux(1) from ``sh`` library in a try-catch.
     '''

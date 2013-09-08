@@ -8,11 +8,15 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
-from util import live_tmux
+from .util import live_tmux
 from .session import Session
-from sh import tmux, ErrorReturnCode_1
 from .formats import SESSION_FORMATS
-from logxtreme import logging
+from .logxtreme import logging
+
+try:
+    from sh import tmux as tmux, ErrorReturnCode_1
+except ImportError:
+    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
 
 class Server(object):

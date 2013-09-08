@@ -2,11 +2,16 @@ import os
 import shutil
 import kaptan
 import unittest
-from sh import tmux, ErrorReturnCode_1
 from .helpers import TmuxTestCase
 from .config import sampleconfigdict
 from .. import Window
 from ..util import ConfigExpand
+from ..logxtreme import logging
+
+try:
+    from sh import tmux as tmux, ErrorReturnCode_1
+except ImportError:
+    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
