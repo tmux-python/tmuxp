@@ -63,6 +63,7 @@ class BuilderTest(TestTmux):
                     else:
                         p = w.attached_pane()
                     if isinstance(pconf['shell_command'], basestring):
+                        # not being used at this point
                         pconf['shell_command'] = [pconf['shell_command']]
                     for cmd in pconf['shell_command']:
                         p.send_keys(cmd)
