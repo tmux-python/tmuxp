@@ -17,8 +17,9 @@ second.
 This is about the text dimension. This is about fixed-width fonts and that
 old fashioned black terminal.
 
-tmux is like... launching a window manager like KDE, gnome, inside the
-text dimension. Tmux let's a terminal:
+tmux is to the consle what a graphical environment like your desktop in
+os x, windows or linux, but inside the text dimension. Inside tmux you
+can:
 
 - multitask inside of a terminal, run multiple applications
 - have multiple command lines in the same window
