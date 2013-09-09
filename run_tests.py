@@ -17,7 +17,7 @@ def main():
 
         unittest.TextTestRunner().run(suites)
     else:
-        print('must have a tmux client running')
+        raise Exception('must have a tmux client running')
 
 
 if __name__ == '__main__':
