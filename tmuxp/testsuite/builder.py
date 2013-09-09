@@ -2,12 +2,12 @@ import os
 import shutil
 import kaptan
 import unittest
-from .helpers import TmuxTestCase
-from .config import sampleconfigdict
 from .. import Window
-from ..util import ConfigExpand
+from ..config import ConfigExpand
 from ..logxtreme import logging
 from ..builder import Builder
+from .helpers import TmuxTestCase
+from .config import sampleconfigdict
 
 try:
     from sh import tmux as tmux, ErrorReturnCode_1

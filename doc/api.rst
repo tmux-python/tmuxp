@@ -16,7 +16,7 @@ Server Object
 
    .. attribute:: _sessions
 
-      A :py:class:`list` of all the :class:`Session` objects in the server.
+      A :py:obj:`list` of the server's :class:`Session` objects.
 
 Session Object
 --------------
@@ -28,7 +28,7 @@ Session Object
 
    .. attribute:: _windows
 
-      A :python:`list` of all the :class:`Window` objects in the session.
+      A :py:obj:`list` of session's :class:`Window` objects.
 
 
 Window Object
@@ -43,13 +43,9 @@ Window Object
 
       The :class:`Session` of the window.
 
-   .. attribute:: _windows
-
-      A :py:class:`list` of all the :class:`Pane` objects in the server.
-
    .. attribute:: _panes
 
-      A :class:`list` of all the :class:`Pane` objects in the window.
+      A :py:obj:`list` of the window's :class:`Pane` objects.
 
 Pane Object
 -----------
@@ -80,11 +76,10 @@ Internals
 Configuration
 -------------
 
-.. autoclass:: tmuxp.util.ConfigExpand
+.. autoclass:: tmuxp.ConfigExpand
    :members:
-   :inherited-members:
 
-.. autoclass:: tmuxp.util.ConfigTrickleDown
+.. autoclass:: tmuxp.ConfigTrickleDown
    :members:
 
 Builder

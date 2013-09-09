@@ -1,7 +1,7 @@
 import unittest
 from random import randint
-from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 from .. import t, Session, Window, Pane
+from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 
 
 class SessionTestCase(TmuxTestCase):
