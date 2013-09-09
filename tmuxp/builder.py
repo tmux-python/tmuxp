@@ -51,12 +51,12 @@ class Builder(object):
 
     def build_window(self):
         '''
-        returns :class:`window` object.
+        returns :class:`Window` object.
         '''
         pass
 
     def build_pane(self):
         '''
-        returns :class:`pane` object.
+        returns :class:`Pane` object.
         '''
 
