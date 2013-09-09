@@ -16,10 +16,7 @@ class SessionTestCase(TmuxTestCase):
         self.assertIsInstance(new_session, Session)
 
     def test_select_window(self):
-        self.assertIsInstance(
-            self.session.select_window(1),
-            Window
-        )
+        self.assertIsInstance(self.session.select_window(1), Window)
 
     def test_attached_window(self):
         self.assertIsInstance(
@@ -40,6 +37,13 @@ class SessionTestCase(TmuxTestCase):
         self.session.rename_session(self.TEST_SESSION_NAME)
         self.assertEqual(self.session.get('session_name'), self.TEST_SESSION_NAME)
 
+
+class SessionCleanTestCase(TmuxTestCase):
+    def test_is_session_clean(self):
+        self.assertEqual(self.session.is_clean(), True)
+        self.session.attached_window().attached_pane().send_keys('top')
+        self.assertEqual(self.session.is_clean(), False)
+        pass
 
 if __name__ == '__main__':
     unittest.main()

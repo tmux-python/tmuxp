@@ -112,9 +112,6 @@ class Server(object):
             This will not work where multiple tmux sessions are attached.
         '''
 
-        if not self._sessions:
-            return None
-
         sessions = self._sessions
         attached_sessions = list()
 

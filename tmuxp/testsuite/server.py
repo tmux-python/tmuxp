@@ -16,23 +16,13 @@ class SessionTestCase(TmuxTestCase):
         self.assertIsInstance(new_session, Session)
 
     def test_select_window(self):
-        self.assertIsInstance(
-            self.session.select_window(1),
-            Window
-        )
+        self.assertIsInstance(self.session.select_window(1), Window)
 
     def test_attached_window(self):
-        self.assertIsInstance(
-            self.session.attached_window(),
-            Window
-        )
+        self.assertIsInstance(self.session.attached_window(), Window)
 
     def test_attached_pane(self):
-        self.assertIsInstance(
-            self.session.attached_pane(),
-            Pane
-        )
-
+        self.assertIsInstance(self.session.attached_pane(), Pane)
 
 if __name__ == '__main__':
     unittest.main()
