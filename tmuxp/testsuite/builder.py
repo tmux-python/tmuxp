@@ -44,7 +44,8 @@ class BuilderTestCase(TmuxTestCase):
                     window_name = wconf['window_name']
 
                 if i == int(1):  # if first window, use window 1
-                    w = s.select_window(1)
+                    #w = s.select_window(1)
+                    w = s.attached_window()
                     w = w.rename_window(window_name)
                 else:
                     w = s.new_window(window_name=window_name,

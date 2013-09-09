@@ -32,7 +32,7 @@ class WindowNewTestCase(TmuxTestCase):
         self.assertEqual(current_windows, len(self.session._windows))
         #tmux('display-panes')
 
-    def test_sync_panes(self):
+    def test_newest_pane_data(self):
         self.session.select_window(1)
 
         self.assertEqual(1, len(self.session.attached_window()._panes))

@@ -16,7 +16,8 @@ if tmux_path not in sys.path:
 
 
 def interact(line, stdin, process):
-    print line
+#    print line
+    pass
 
 tmux('-C', _out=interact)
 

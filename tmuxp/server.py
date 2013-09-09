@@ -103,7 +103,6 @@ class Server(object):
         # are any clients connected to tmux
         try:
             if len(tmux('list-clients')) > int(1):
-                print tmux('list-clients')
                 return True
             else:
                 return False
