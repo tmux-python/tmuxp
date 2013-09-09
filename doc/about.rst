@@ -3,21 +3,21 @@
 About tmuxp
 ===========
 
-For a current tmux user
------------------------
+For current tmux user
+---------------------
 
 tmuxp helps you manage your text-based workspaces. Its BSD licensed,
 modelled after tmux's ``commands`` and ``formats``.
 
-For a current teamocil / tmuxinator / etc. user
------------------------------------------------
+For current teamocil / tmuxinator / etc. user
+---------------------------------------------
 
 - tmuxp requires python 2.7 on your system.
 - the configuration format is slightly different.
 - tmuxp allows configs in YAML, JSON, INI and :py:class:`dict` format.
 
-For a pythonista
-----------------
+For pythonistas
+---------------
 
 tmuxp is an abstraction of :term:`tmux(1)` into python objects.
 
