@@ -4,6 +4,6 @@ python:
 # command to install dependencies
 install:
   - "pip install . --use-mirrors"
-  - "pip install -r requirements.txt --use-mirrors"
+  - "pip install -r requirements.pip --use-mirrors"
 # command to run tests
 script: nosetests tmuxp/testsuite/*.py
