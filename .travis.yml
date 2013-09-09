@@ -4,9 +4,13 @@ python:
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq tmux
+before_script:
+  - tmux -C &
 # command to install dependencies
 install:
   - "pip install . --use-mirrors"
   - "pip install -r requirements.pip --use-mirrors"
 # command to run tests
 script: nosetests tmuxp/testsuite/*.py
+after_script:
+  - killall tmux
