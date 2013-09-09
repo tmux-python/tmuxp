@@ -1,5 +1,6 @@
 import unittest
 from random import randint
+from time import sleep
 from .. import t, Session, Window, Pane
 from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 
@@ -36,6 +37,8 @@ class SessionCleanTestCase(TmuxTestCase):
     def test_is_session_clean(self):
         self.assertEqual(self.session.is_clean(), True)
         self.session.attached_window().attached_pane().send_keys('top')
+        sleep(.4)
+        self.session.attached_window().attached_pane().send_keys('C-c', enter=False)
         self.assertEqual(self.session.is_clean(), False)
         pass
 

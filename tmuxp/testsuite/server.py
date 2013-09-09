@@ -24,5 +24,7 @@ class SessionTestCase(TmuxTestCase):
     def test_attached_pane(self):
         self.assertIsInstance(self.session.attached_pane(), Pane)
 
+        print t.sessions[0]
+
 if __name__ == '__main__':
     unittest.main()

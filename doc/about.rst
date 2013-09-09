@@ -37,63 +37,64 @@ http://github.com/tony/tmuxp.
 .. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
 
 
-Sort this:
-==========
+.. todo::
+    Sort this:
+    ==========
 
-Similarities to Tmux and Pythonics
-----------------------------------
+    Similarities to Tmux and Pythonics
+    ----------------------------------
 
-tmuxp is was built in the spirit of understanding how tmux operates
-and how python objects and tools can abstract the API's in a pleasant way.
+    tmuxp is was built in the spirit of understanding how tmux operates
+    and how python objects and tools can abstract the API's in a pleasant way.
 
-tmuxp uses the identify ``FORMATTERS`` used by tmux, you can see
-them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
+    tmuxp uses the identify ``FORMATTERS`` used by tmux, you can see
+    them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
 
-In this, I will also begin documenting the API.
+    In this, I will also begin documenting the API.
 
-the use of:
+    the use of:
 
-Session
-Session.new_window() - returns a new Window object bound to the session,
-also uses ``tmux new-window``.
-Session.new_session() - class method - returns a new Session object.
+    Session
+    Session.new_window() - returns a new Window object bound to the session,
+    also uses ``tmux new-window``.
+    Session.new_session() - class method - returns a new Session object.
 
-Differences from tmux
----------------------
+    Differences from tmux
+    ---------------------
 
-Because this is a python abstraction and flags like ``start-directory``
-have dashes (-) replaced with underscores (_).
+    Because this is a python abstraction and flags like ``start-directory``
+    have dashes (-) replaced with underscores (_).
 
-interesting observations
-------------------------
+    interesting observations
+    ------------------------
 
-How is tmuxp able to keep references to panes, windows and sessions?
+    How is tmuxp able to keep references to panes, windows and sessions?
 
-    Tmux has unique ID's for sessions, windows and panes.
+        Tmux has unique ID's for sessions, windows and panes.
 
-    panes use ``%``, such as ``%1234``
+        panes use ``%``, such as ``%1234``
 
-    windows use ``@``, such as ``@2345``
+        windows use ``@``, such as ``@2345``
 
-    sessions use ``$``, for money, such as ``$``
+        sessions use ``$``, for money, such as ``$``
 
-How is tmuxp able to handle windows with no names?
+    How is tmuxp able to handle windows with no names?
 
-    Tmux provides ``window_id`` as a unique identifier.
+        Tmux provides ``window_id`` as a unique identifier.
 
-What is a {pane,window}_index vs a {pane,window,session}_id?
+    What is a {pane,window}_index vs a {pane,window,session}_id?
 
-    Pane index refers to the order of a pane on the screen.
+        Pane index refers to the order of a pane on the screen.
 
-    Window index refers to the # of the pane in the session.
+        Window index refers to the # of the pane in the session.
 
-Design decisions in tmuxp
--------------------------
+    Design decisions in tmuxp
+    -------------------------
 
-placeholder
+    placeholder
 
-Reference
----------
+    Reference
+    ---------
 
-* tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
-* tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
+    + tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
+    + tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
