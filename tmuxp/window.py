@@ -22,7 +22,7 @@ except ImportError:
 
 class Window(TmuxObject):
     '''
-    a ``$ tmux(1) window``.
+    ``tmux(1) window``.
     '''
 
     def __init__(self, **kwargs):

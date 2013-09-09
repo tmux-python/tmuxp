@@ -10,7 +10,7 @@
 """
 from .util import live_tmux, TmuxObject
 from .formats import PANE_FORMATS
-from logxtreme import logging
+from .logxtreme import logging
 
 try:
     from sh import tmux as tmux, ErrorReturnCode_1

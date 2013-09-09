@@ -7,6 +7,7 @@ from .config import sampleconfigdict
 from .. import Window
 from ..util import ConfigExpand
 from ..logxtreme import logging
+from ..builder import Builder
 
 try:
     from sh import tmux as tmux, ErrorReturnCode_1

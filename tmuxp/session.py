@@ -23,7 +23,9 @@ except ImportError:
 
 class Session(TmuxObject):
     '''
-    tmux session
+    ``tmux(1) session``.
+
+    Holds :class:`Window` objects.
 
     '''
 
