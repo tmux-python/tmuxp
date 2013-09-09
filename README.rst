@@ -247,6 +247,10 @@ Roadmap
   level also. for instance, session may run before_cmd: and all windows
   and panes within will run accordingly
 - make session, window, pane chainable by returning self
+- make Server.sessions, Session.windows, Windows.panes return a list, let
+  Server.refresh().sessions be chainable to return sessions object.
+- Create a list of chainable items. .rename_window, .rename_session are
+  chainable.
 - config precedence
 
     ::
