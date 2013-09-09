@@ -86,7 +86,8 @@ class Window(TmuxObject):
                     layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
                 $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
 
-        :param: layout: string of the layout, 'even-horizontal', 'tiled', etc.
+        :param layout: string of the layout, 'even-horizontal', 'tiled', etc.
+        :type layout: string
         '''
         tmux(
             'select-layout',
@@ -101,7 +102,10 @@ class Window(TmuxObject):
             $ tmux set-window-option <option> <value>
 
         :param option: the window option. such as 'automatic_rename'.
+        :type option: string
+
         :param value: window value. True/False will turn in 'on' and 'off'.
+        :type value: string or bool
         '''
 
         if value:
@@ -118,7 +122,9 @@ class Window(TmuxObject):
 
             $ tmux rename-window <new_name>
 
-        :param new_name: name of the window'''
+        :param new_name: name of the window
+        :type new_name: string
+        '''
         try:
             tmux(
                 'rename-window',
@@ -138,8 +144,10 @@ class Window(TmuxObject):
 
         Returns :class:`Pane`.
 
-        :param target_pane: integer of the pane index, or ``-U``,
-                                ``-D``, ``-L``, ``-R``. put a konami code.
+        :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``.
+        :type target_pane: string
+
+        Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
         tmux('select-pane', '-t', target_pane)
         self.list_panes()
@@ -207,7 +215,8 @@ class Window(TmuxObject):
 
         Iterates ``tmux list-panes``, ``-F`` for return formatting.
 
-        :param: session: :class:`Session` object
+        :param session: the session the window is linked to.
+        :type session: :class:`Session`
         '''
 
         if not session:

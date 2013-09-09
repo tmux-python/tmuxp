@@ -222,10 +222,14 @@ class ConfigTrickleDown(object):
     This will only work if config has been expand with ConfigExpand()
 
     tmuxp allows certain commands to be default at the session, window
-    level. Also, shell_command_before trickles down and prepends the
-    shell_command's for the pane.
+    level. shell_command_before trickles down and prepends the
+    ``shell_command`` for the pane.
     '''
     def __init__(self, config):
+        '''
+        :param config: the session configuration
+        :type config: dict
+        '''
         self.config = config
 
     def trickle(self):
@@ -233,6 +237,10 @@ class ConfigTrickleDown(object):
         return self
 
     def trickle_shell_command_before(self):
+        '''
+        prepends a pane's ``shell_command`` list with the window and sessions'
+        ``shell_command_before``.
+        '''
         config = self.config
 
         if 'shell_command_before' in config:

@@ -45,7 +45,8 @@ class Session(TmuxObject):
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
 
-        :param: rename_session: string. new session name
+        :param rename_session: new session name
+        :type rename_session: string
         '''
         new_name = pipes.quote(new_name)
         try:
@@ -78,25 +79,28 @@ class Session(TmuxObject):
         ``$ tmux new-session -Ad`` will move to the session name if it already
         exists. todo: make an option to handle this.
 
-        :param session_name: string. session name::
+        :param session_name: session name::
 
             $ tmux new-session -s <session_name>
+        :type session_name: string
 
-        :param detach: bool. create new_session in the background::
+        :param detach: create session background::
 
             $ tmux new-session -d
+        :type detach: bool
 
-        :param attach_if_exists: bool. if the session_name exists, attach it.
+        :param attach_if_exists: if the session_name exists, attach it.
                                  if False, this method will raise a
                                  SessionExists exception
+        :type attach_if_exists: bool
 
         :param kill_session: Kill current session if ``$ tmux has-session``
                              Useful for testing workspaces.
+        :type kill_session: bool
         '''
 
         ### ToDo: Update below to work with attach_if_exists
         try:
-            # test this, returning NoneType
             if not len(tmux('has-session', '-t', session_name)):
                 if kill_session:
                     tmux('kill-session', '-t', session_name)
@@ -138,12 +142,13 @@ class Session(TmuxObject):
         '''
         ``$ tmux new-window``
 
-        :param: window_name: str. window name::
+        :param window_name: window name::
 
-            $tmux new-window -n <window_name>
+            $ tmux new-window -n <window_name>
+        :type window_name: string
 
-        :param: automatic_rename: bool. assume automatic_rename if no
-                                  window_name.
+        :param automatic_rename: assume automatic_rename if no window_name.
+        :type automatic_rename: bool
         '''
         formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
@@ -182,7 +187,8 @@ class Session(TmuxObject):
         Kill the current window or the window at ``target-window``. removing it
         from any sessions to which it is linked.
 
-        :param: target_window: str. the target window.
+        :param target_window: the ``target window``.
+        :type target_window: string
         '''
 
         tmux_args = list()
@@ -288,7 +294,7 @@ class Session(TmuxObject):
 
     def attached_window(self):
         '''
-            Returns active :class:`Window` object
+            Returns active :class:`Window` object.
         '''
 
         for window in self.list_windows():
@@ -301,14 +307,19 @@ class Session(TmuxObject):
 
         return False
 
-    def select_window(self, window):
+    def select_window(self, target_window):
         '''
-            ``tmux(1) select-window``
+            ``$ tmux select-window``
 
-            :param: window: integer of the window index, also can be
-                            'last-window' (-l), 'next-window' (-n), or 'previous-window' (-p)
+            :param: window: ``target_window`` also 'last-window' (``-l``),
+                            'next-window' (``-n``), or 'previous-window' (``-p``)
+            :type window: integer
+
+            Returns the attached :class:`Window`.
+
+            Todo: assure ``-l``, ``-n``, ``-p`` work.
         '''
-        tmux('select-window', '-t', window)
+        tmux('select-window', '-t', target_window)
         self.list_windows()
         return self.attached_window()
 

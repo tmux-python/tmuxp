@@ -82,7 +82,13 @@ Configuration
 
 .. autoclass:: tmuxp.util.ConfigExpand
    :members:
+   :inherited-members:
 
 .. autoclass:: tmuxp.util.ConfigTrickleDown
    :members:
 
+Builder
+-------
+
+.. autoclass:: tmuxp.Builder
+   :members:

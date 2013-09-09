@@ -13,6 +13,7 @@ from .session import Session
 from .server import Server
 from .window import Window
 from .pane import Pane
+from .builder import Builder
 
 from .util import live_tmux, TmuxObject
 
