@@ -11,8 +11,9 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    foreward
+    about
     api
-    what_is_tmux
 
 
 
