@@ -19,6 +19,6 @@ install:
   - "pip install . --use-mirrors"
   - "pip install -r requirements.pip --use-mirrors"
 # command to run tests
-script: nosetests tmuxp/testsuite/*.py
+script: python run_tests.py
 after_script:
   - killall tmux
