@@ -19,16 +19,10 @@ class SessionTestCase(TmuxTestCase):
         self.assertIsInstance(self.session.select_window(1), Window)
 
     def test_attached_window(self):
-        self.assertIsInstance(
-            self.session.attached_window(),
-            Window
-        )
+        self.assertIsInstance(self.session.attached_window(), Window)
 
     def test_attached_pane(self):
-        self.assertIsInstance(
-            self.session.attached_pane(),
-            Pane
-        )
+        self.assertIsInstance(self.session.attached_pane(), Pane)
 
     def test_session_rename(self):
         test_name = 'testingdis_sessname'

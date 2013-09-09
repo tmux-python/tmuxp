@@ -6,8 +6,8 @@
 tmuxp
 =====
 
-Welcome to tmuxp's documentation. tmuxp is a tool for loading and saving
-tmux workspaces.
+Welcome to tmuxp's documentation. tmuxp is a tool for managing
+:term:`tmux(1)` workspaces.
 
 Contents:
 
@@ -17,6 +17,8 @@ Contents:
     foreward
     about
     api
+    glossary
+    changes
 
 
 

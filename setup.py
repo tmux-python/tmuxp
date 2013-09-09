@@ -2,7 +2,7 @@
 tmuxp
 -----
 
-a python ORM for tmux(1).
+A Pythonic ORM Toolkit for managing tmux(1) workspaces.
 
 
 """
@@ -15,7 +15,7 @@ setup(
     license='BSD',
     author='Tony Narlock',
     author_email='tony@git-pull.com',
-    description='An object mapper and workspace manager for tmux',
+    description='Manage and build tmux workspaces.',
     packages=['tmuxp', 'tmuxp.testsuite'],
     include_package_data=True,
     install_requires=[

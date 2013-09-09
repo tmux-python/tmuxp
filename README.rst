@@ -17,11 +17,6 @@ Goals
 - resume to normal workflow, or last snapshot of sessions
 - strives for purity to tmux and python
 
-testing
--------
-
-See documentation in [./tmux/testsuite/__init__.py](https://github.com/tony/tmuxp/blob/master/tmux/testsuite/__init__.py).
-
 what's done
 -----------
 
@@ -271,58 +266,3 @@ Roadmap
     the deepest will have precedence. a command or cwd at the session level
     will apply to all windows, panes within it. a command or cwd at window
     level applies to all panes. a pane may specify its own cmd.
-
-
-
-Similarities to Tmux and Pythonics
-----------------------------------
-
-tmuxp is was built in the spirit of understanding how tmux operates
-and how python objects and tools can abstract the API's in a pleasant way.
-
-tmuxp uses the identify ``FORMATTERS`` used by tmux, you can see
-them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
-
-In this, I will also begin documenting the API.
-
-the use of:
-
-Session
-Session.new_window() - returns a new Window object bound to the session,
-also uses ``tmux new-window``.
-Session.new_session() - class method - returns a new Session object.
-
-Differences from tmux
----------------------
-
-Because this is a python abstraction and flags like ``start-directory``
-have dashes (-) replaced with underscores (_).
-
-interesting observations
-------------------------
-
-How is tmuxp able to keep references to panes, windows and sessions?
-
-    Tmux has unique ID's for sessions, windows and panes.
-
-    panes use ``%``, such as ``%1234``
-
-    windows use ``@``, such as ``@2345``
-
-    sessions use ``$``, for money, such as ``$``
-
-How is tmuxp able to handle windows with no names?
-
-    Tmux provides ``window_id`` as a unique identifier.
-
-What is a {pane,window}_index vs a {pane,window,session}_id?
-
-    Pane index refers to the order of a pane on the screen.
-
-    Window index refers to the # of the pane in the session.
-
-Reference
----------
-
-* tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
-* tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
