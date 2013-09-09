@@ -16,6 +16,8 @@ Contents:
 
     foreward
     about
+    quickstart
+    developing
     api
     glossary
     changes

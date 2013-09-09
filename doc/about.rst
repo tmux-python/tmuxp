@@ -1,4 +1,4 @@
-.. _about
+.. _about:
 
 About tmuxp
 ===========
@@ -86,6 +86,11 @@ What is a {pane,window}_index vs a {pane,window,session}_id?
     Pane index refers to the order of a pane on the screen.
 
     Window index refers to the # of the pane in the session.
+
+Design decisions in tmuxp
+-------------------------
+
+placeholder
 
 Reference
 ---------
