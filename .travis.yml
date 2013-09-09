@@ -16,9 +16,9 @@ before_script:
   - sh autogen.sh
   - ./configure && make && sudo make install
   - tmux -V
-  - tmux -C &
+  - /sbin/start-stop-daemon --start --quote --exec /usr/local/bin/tmux -- -C
   - cd ..
 # command to run tests
 script: python run_tests.py
 after_script:
-  - killall tmux
+  - /sbin/start-stop-daemon --stop --quote --exec /usr/local/bin/tmux -- -C
