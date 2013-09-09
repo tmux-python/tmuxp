@@ -47,7 +47,6 @@ class Builder(object):
         '''
         returns :class:`Session` object.
         '''
-        print self.session
         pass
 
     def build_window(self):
