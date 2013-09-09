@@ -5,6 +5,7 @@ before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq tmux
 before_script:
+  - tmux -v
   - tmux -C &
 # command to install dependencies
 install:
