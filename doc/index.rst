@@ -6,6 +6,9 @@
 tmuxp
 =====
 
+Welcome to tmuxp's documentation. tmuxp is a tool for loading and saving
+tmux workspaces.
+
 Contents:
 
 .. toctree::
