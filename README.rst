@@ -266,3 +266,4 @@ Roadmap
     the deepest will have precedence. a command or cwd at the session level
     will apply to all windows, panes within it. a command or cwd at window
     level applies to all panes. a pane may specify its own cmd.
+- create sliderepl quickstart
