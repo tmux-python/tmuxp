@@ -21,7 +21,7 @@ For a pythonista
 
 tmuxp is an abstraction of :term:`tmux(1)` into python objects.
 
-Uses `sh`_ for a clean :py:mod:`subprocess` interface, `kaplan`_ for
+Uses `sh`_ for a clean :py:mod:`subprocess` interface, `kaptan`_ for
 configuration.
 
 `unittest`_ for tests. Tested in python 2.7.  You can read our :ref:`api`
@@ -31,7 +31,7 @@ tmuxp is `BSD-licensed`_. Its code can be found at VCS
 http://github.com/tony/tmuxp.
 
 
-.. _kaplan: https://github.com/emre/kaptan
+.. _kaptan: https://github.com/emre/kaptan
 .. _sh: https://github.com/amoffat/sh
 .. _unittest: http://docs.python.org/2/library/unittest.html
 .. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
