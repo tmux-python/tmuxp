@@ -109,7 +109,9 @@ class Server(object):
                 return False
         except ErrorReturnCode_1 as e:
             if e.stderr == 'failed to connect to server':
-                raise TmuxNotRunning('tmux session not running')
+                raise TmuxNotRunning('tmux session not running. please start'
+                                     'a tmux session in another terminal '
+                                     'window and continue.')
 
     def attached_sessions(self):
         '''

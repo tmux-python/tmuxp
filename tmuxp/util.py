@@ -49,7 +49,7 @@ def live_tmux(f):
             raise TmuxNotRunning(
                 "{pane,window,server}_id not found, this object is not linked "
                 "to atmux session. If you need help please post an issue on "
-                "github"
+                "github."
             )
     return live_tmux
 
