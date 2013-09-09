@@ -15,11 +15,11 @@ before_script:
   - cd tmux
   - sh autogen.sh
   - ./configure && make && sudo make install
+  - cd ..
   - tmux -V
 #  - /sbin/start-stop-daemon --start --quiet --background --exec /usr/local/bin/tmux -- -C
-  - cd ..
 # command to run tests
 script: python run_tests.py
 #script: nosetests tmuxp/testsuite
 after_script:
-  - /sbin/start-stop-daemon --stop --quote --exec /usr/local/bin/tmux -- -C
+  - killall tmux
