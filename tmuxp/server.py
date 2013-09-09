@@ -12,6 +12,7 @@ from .util import live_tmux
 from .session import Session
 from .formats import SESSION_FORMATS
 from .logxtreme import logging
+from .exc import TmuxNotRunning
 
 try:
     from sh import tmux as tmux, ErrorReturnCode_1
@@ -100,10 +101,15 @@ class Server(object):
 
     def has_clients(self):
         # are any clients connected to tmux
-        if len(tmux('list-clients')) > int(1):
-            return True
-        else:
-            return False
+        try:
+            if len(tmux('list-clients')) > int(1):
+                print tmux('list-clients')
+                return True
+            else:
+                return False
+        except ErrorReturnCode_1 as e:
+            if e.stderr == 'failed to connect to server':
+                raise TmuxNotRunning('tmux session not running')
 
     def attached_sessions(self):
         '''

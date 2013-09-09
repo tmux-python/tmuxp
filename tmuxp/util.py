@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 from functools import wraps
-from .exc import NotRunning, SessionNotFound
+from .exc import TmuxNotRunning, SessionNotFound
 from .logxtreme import logging
 import unittest
 import collections
@@ -46,9 +46,10 @@ def live_tmux(f):
         if any(key in self for key in ('pane_id', 'window_id', 'session_id')):
             return f(self, *args, **kwargs)
         else:
-            raise NotRunning(
-                "self._TMUX not found, this object is not part of an active"
-                "tmux session. If you need help please post an issue on github"
+            raise TmuxNotRunning(
+                "{pane,window,server}_id not found, this object is not linked "
+                "to atmux session. If you need help please post an issue on "
+                "github"
             )
     return live_tmux
 

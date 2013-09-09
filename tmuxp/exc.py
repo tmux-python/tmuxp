@@ -15,7 +15,7 @@ class SessionExists(Exception):
     pass
 
 
-class NotRunning(Exception):
+class TmuxNotRunning(Exception):
     '''
         class for when {pane,window,session}_id doesn't exist, this will cause
         an issue with building the workspace and running commands.
