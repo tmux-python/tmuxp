@@ -267,3 +267,9 @@ Roadmap
     will apply to all windows, panes within it. a command or cwd at window
     level applies to all panes. a pane may specify its own cmd.
 - create sliderepl quickstart
+- bug in tmux as of 09/10/2013 - control mode will resize an
+  'attach-session' and switching `aggressive_resize` and using
+  `force_width`, `force_height` doesn't seem to work.
+- if no tmux session is live for tests, perhaps context managers can
+  async wrap tmux -C.
+- use pane_id, window_id, session_id in targets.
