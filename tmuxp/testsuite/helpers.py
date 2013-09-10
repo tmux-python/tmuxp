@@ -10,6 +10,8 @@ from ..exc import TmuxNoClientsRunning
 TEST_SESSION_PREFIX = 'tmuxp_'
 root_logger.setLevel(logging.ERROR)
 
+def ho(line, stdin, process):
+    pass
 
 def bootstrap():
     '''
@@ -25,7 +27,8 @@ def bootstrap():
         a dumby session will be made to prevent tmux from closing.
 
     '''
-    if t.has_clients():
+    if not t.has_clients():
+        t.client = tmux('-C', _out=ho)
 
         # find current sessions prefixed with tmuxp
         previous_sessions = [s.session_name for s in t.list_sessions()
@@ -60,8 +63,8 @@ def bootstrap():
         t.switch_client(TEST_SESSION_NAME)
 
         return (TEST_SESSION_NAME, session)
-    else:
-        raise TmuxNoClientsRunning
+
+
 
 
 class TmuxTestCase(unittest.TestCase):
@@ -89,9 +92,9 @@ class TmuxTestCase(unittest.TestCase):
             # bootstrap() retyrns a tuple  of session and the session object
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except TmuxNoClientsRunning:
-            def ho(line, stdin, process):
-                return cls.hi(cls, line, stdin, process)
-            cls.client = tmux('-C', _out=ho)
+            #def ho(line, stdin, process):
+            #    return cls.hi(cls, line, stdin, process)
+            #cls.client = tmux('-C', _out=ho)
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
             cls.tearDownClass()
@@ -101,7 +104,8 @@ class TmuxTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.done = True
-        #if cls.client:
-        #    cls.client.terminate()
+        #cls.done = True
+        t.client.terminate()
+        #if t.client:
+        #   cls.client.terminate()
         t.list_sessions()
