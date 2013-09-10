@@ -73,6 +73,7 @@ class TmuxTestCase(unittest.TestCase):
     '''
 
     done = False
+    client = None
 
     def hi(self, line, stdin, process):
         if self.done:
@@ -88,7 +89,9 @@ class TmuxTestCase(unittest.TestCase):
             # bootstrap() retyrns a tuple  of session and the session object
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except TmuxNoClientsRunning:
-            tmux('-C', _out=cls.hi)
+            def ho(line, stdin, process):
+                return cls.hi(cls, line, stdin, process)
+            cls.client = tmux('-C', _out=ho)
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
             cls.tearDownClass()
@@ -99,4 +102,6 @@ class TmuxTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.done = True
+        #if cls.client:
+        #    cls.client.terminate()
         t.list_sessions()
