@@ -94,12 +94,12 @@
         Session, Window and Pane objects are active.
 
 """
-import kaptan
-from sh import tmux, cut, ErrorReturnCode_1
-from pprint import pprint
-from tmuxp.formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
-import sys
 import os
+import sys
+import kaptan
+from pprint import pprint
+from tmuxp.util import tmux
+from tmuxp.formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 #LOG_FORMAT = "(%(levelname)s) %(filename)s:%(lineno)s.%(funcName)s : %(asctime)-15s:\n\t%(message)s"
 #logging.basicConfig(format=LOG_FORMAT, level='DEBUG')
 

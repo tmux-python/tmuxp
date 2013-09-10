@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 from functools import wraps
-from .exc import TmuxNotRunning, TmuxSessionNotFound
+from .exc import TmuxNoClientsRunning, TmuxSessionNotFound, ErrorReturnCode_1
 from .logxtreme import logging
 import unittest
 import collections
@@ -55,19 +55,25 @@ def tmux(*args, **kwargs):
     '''
 
     try:
-        from sh import tmux as tmuxcmd, ErrorReturnCode_1
+        from sh import tmux as tmuxcmd
     except ImportError:
         logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
+
+    print args
 
     try:
         return tmuxcmd(*args, **kwargs)
     except ErrorReturnCode_1 as e:
-
         if e.stderr.startswith('session not found'):
             if 'has-session' in e.full_cmd:
                 raise e
             else:
                 raise TmuxSessionNotFound(e)
+
+        logging.error(e.stderr)
+        logging.error(e.stderr.strip())
+        if e.stderr.startswith('failed to connect to server'):
+            raise TmuxNoClientsRunning(e.stderr)
 
         logging.error(
             "\n\tcmd:\t%s\n"

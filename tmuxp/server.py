@@ -28,8 +28,12 @@ class Server(object):
     running tmux server.
     '''
 
+    client = None
+
     def __init__(self):
         self._sessions = list()
+
+        self.list_sessions()
 
     def list_sessions(self):
         '''
@@ -39,11 +43,12 @@ class Server(object):
         '''
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
-
+        #import ipdb
+        #ipdb.set_trace()
         sessions = tmux(
-            'list-sessions',                    # ``tmux list-windows``
+            'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
-            _iter=True                          # iterate line by line
+            _iter=False                          # iterate line by line
         )
 
         # combine format keys with values returned from ``tmux list-windows``

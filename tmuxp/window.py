@@ -9,15 +9,10 @@
     :license: BSD, see LICENSE for details
 """
 import pipes
-from .util import live_tmux, TmuxObject
+from .util import live_tmux, TmuxObject, tmux
 from .pane import Pane
 from .formats import PANE_FORMATS
 from .logxtreme import logging
-
-try:
-    from sh import tmux as tmux, ErrorReturnCode_1
-except ImportError:
-    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
 
 class Window(TmuxObject):

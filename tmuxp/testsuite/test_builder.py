@@ -10,12 +10,6 @@ from ..builder import Builder
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
 
-try:
-    from sh import ErrorReturnCode_1
-except ImportError:
-    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
-
-
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 

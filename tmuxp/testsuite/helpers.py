@@ -1,10 +1,9 @@
 import unittest
 from random import randint
-from sh import ErrorReturnCode_1
 from ..util import tmux
 from .. import t, Server
 from ..logxtreme import root_logger, logging
-from ..exc import TmuxNoClientsRunning
+from ..exc import TmuxNoClientsRunning, ErrorReturnCode_1
 
 
 TEST_SESSION_PREFIX = 'tmuxp_'
@@ -30,11 +29,12 @@ def bootstrap():
     if not t.has_clients():
         t.client = tmux('-C', _out=ho)
 
+    session_list = t.list_sessions()
     # find current sessions prefixed with tmuxp
-    previous_sessions = [s.session_name for s in t.list_sessions()
+    previous_sessions = [s.session_name for s in session_list
                             if s.session_name.startswith(TEST_SESSION_PREFIX)]
 
-    other_sessions = [s.session_name for s in t.list_sessions()
+    other_sessions = [s.session_name for s in session_list
                         if not s.session_name.startswith(
                             TEST_SESSION_PREFIX
                         )]
@@ -94,18 +94,22 @@ class TmuxTestCase(unittest.TestCase):
         except TmuxNoClientsRunning:
             #def ho(line, stdin, process):
             #    return cls.hi(cls, line, stdin, process)
-            t.client = tmux('-C', _out=ho)
+            cls.client = tmux('-C', _out=ho)
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
-            cls.tearDownClass()
+            #cls.tearDownClass()
             logging.error(e)
+            #cls.fail()
+            #import ipdb
+            #ipdb.set_trace()
             raise e
         return
 
     @classmethod
     def tearDownClass(cls):
         #cls.done = True
-        t.client.terminate()
+        if cls.client:
+            cls.client.terminate()
         #if t.client:
         #   cls.client.terminate()
-        t.list_sessions()
+        #t.list_sessions()
