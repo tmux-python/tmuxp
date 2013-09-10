@@ -7,7 +7,8 @@ before_install:
 # - sudo apt-get install -qq tmux
 # command to install dependencies
 install:
-  - "pip install . --use-mirrors"
+  #  - "pip install . --use-mirrors"
+  - "pip install -e ."
   - "pip install -r requirements.pip --use-mirrors"
 before_script:
   - sudo apt-get install -qq libevent-dev libncurses-dev
