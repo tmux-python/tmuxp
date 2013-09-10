@@ -33,8 +33,6 @@ class Server(object):
     def __init__(self):
         self._sessions = list()
 
-        self.list_sessions()
-
     def list_sessions(self):
         '''
         Return a list of :class:`Session` from tmux server.
