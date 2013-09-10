@@ -273,3 +273,10 @@ Roadmap
 - if no tmux session is live for tests, perhaps context managers can
   async wrap tmux -C.
 - use pane_id, window_id, session_id in targets.
+- need to fix two use cases:
+  1. no client but, list-sessions has results - but no client. raise
+     exception? use tmux -C wrapper for unit tests? prompt user to make a
+     tmux session?
+  2. no client, no sessions
+- check for list_clients
+- check for list_sessions

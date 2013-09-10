@@ -15,6 +15,8 @@ class TmuxSessionNotFound(Exception):
 class TmuxSessionExists(Exception):
     pass
 
+class TmuxNoClientsRunning(Exception):
+    pass
 
 class TmuxNotRunning(Exception):
     '''

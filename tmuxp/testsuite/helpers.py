@@ -4,7 +4,7 @@ from sh import ErrorReturnCode_1
 from ..util import tmux
 from .. import t, Server
 from ..logxtreme import root_logger, logging
-from ..exc import TmuxSessionNotFound
+from ..exc import TmuxNoClientsRunning
 
 
 TEST_SESSION_PREFIX = 'tmuxp_'
@@ -60,6 +60,8 @@ def bootstrap():
         t.switch_client(TEST_SESSION_NAME)
 
         return (TEST_SESSION_NAME, session)
+    else:
+        raise TmuxNoClientsRunning
 
 
 class TmuxTestCase(unittest.TestCase):
@@ -70,6 +72,13 @@ class TmuxTestCase(unittest.TestCase):
             string. name of the test case session.
     '''
 
+    done = False
+
+    def hi(self, line, stdin, process):
+        if self.done:
+            process.kill()
+            return True
+
     def setup(self):
         pass
 
@@ -77,6 +86,9 @@ class TmuxTestCase(unittest.TestCase):
     def setUpClass(cls):
         try:
             # bootstrap() retyrns a tuple  of session and the session object
+            cls.TEST_SESSION_NAME, cls.session = bootstrap()
+        except TmuxNoClientsRunning:
+            tmux('-C', _out=cls.hi)
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
             cls.tearDownClass()
@@ -86,4 +98,5 @@ class TmuxTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.done = True
         t.list_sessions()

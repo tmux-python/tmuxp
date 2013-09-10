@@ -10,7 +10,7 @@ try:
 except ImportError:
     logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
-tmux('-C', _out=interact)
+#tmux('-C', _out=interact)
 
 
 import unittest
@@ -22,7 +22,6 @@ import tmuxp.testsuite
 tmux_path = sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 if tmux_path not in sys.path:
     sys.path.insert(0, tmux_path)
-
 
 
 def main():
