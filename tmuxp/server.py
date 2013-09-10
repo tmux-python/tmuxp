@@ -12,7 +12,8 @@ from .util import live_tmux, tmux
 from .session import Session
 from .formats import SESSION_FORMATS
 from .logxtreme import logging
-from .exc import TmuxNotRunning, ErrorReturnCode_1
+from .exc import TmuxNotRunning, TmuxSessionExists, ErrorReturnCode_1
+
 
 class Server(object):
     '''
