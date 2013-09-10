@@ -280,3 +280,9 @@ Roadmap
   2. no client, no sessions
 - check for list_clients
 - check for list_sessions
+- Check if tmux 1.8 (has control mode)
+- Unit tests for tmux < 1.7, unit tests require a tmux open in another
+  terminal.
+- tmux -C commands pass-thru if version is > 1.8
+- Server check if 'connect' exists.
+- Server socket option
