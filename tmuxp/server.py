@@ -8,17 +8,11 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
-from .util import live_tmux
+from .util import live_tmux, tmux
 from .session import Session
 from .formats import SESSION_FORMATS
 from .logxtreme import logging
-from .exc import TmuxNotRunning
-
-try:
-    from sh import tmux as tmux, ErrorReturnCode_1
-except ImportError:
-    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
-
+from .exc import TmuxNotRunning, ErrorReturnCode_1
 
 class Server(object):
     '''
@@ -101,16 +95,14 @@ class Server(object):
 
     def has_clients(self):
         # are any clients connected to tmux
-        try:
-            if len(tmux('list-clients')) > int(1):
-                return True
-            else:
-                return False
-        except ErrorReturnCode_1 as e:
-            if e.stderr == 'failed to connect to server':
-                raise TmuxNotRunning('tmux session not running. please start'
-                                     'a tmux session in another terminal '
-                                     'window and continue.')
+        if len(tmux('list-clients')) > int(1):
+            return True
+        else:
+            return False
+        #if e.stderr == 'failed to connect to server':
+        #    raise TmuxNotRunning('tmux session not running. please start'
+        #                            'a tmux session in another terminal '
+        #                            'window and continue.')
 
     def attached_sessions(self):
         '''
@@ -133,7 +125,8 @@ class Server(object):
 
         return attached_sessions or None
 
-    def has_session(self, target_session):
+    @staticmethod
+    def has_session(target_session):
         '''
         ``$ tmux has-session``
 
@@ -177,3 +170,77 @@ class Server(object):
         :param: target_session: str. name of the session. fnmatch(3) works.
         '''
         tmux('switch-client', '-t', target_session)
+
+    def new_session(self,
+                    session_name=None,
+                    kill_session=False,
+                    *args,
+                    **kwargs):
+        '''
+        ``$ tmux new-session``
+
+        Returns :class:`Session`
+
+        Uses ``-P`` flag to print session info, ``-F`` for return formatting
+        returns new Session object.
+
+        ``$ tmux new-session -d`` will create the session in the background
+        ``$ tmux new-session -Ad`` will move to the session name if it already
+        exists. todo: make an option to handle this.
+
+        :param session_name: session name::
+
+            $ tmux new-session -s <session_name>
+        :type session_name: string
+
+        :param detach: create session background::
+
+            $ tmux new-session -d
+        :type detach: bool
+
+        :param attach_if_exists: if the session_name exists, attach it.
+                                 if False, this method will raise a
+                                 :exc:`tmuxp.exc.TmuxSessionExists` exception
+        :type attach_if_exists: bool
+
+        :param kill_session: Kill current session if ``$ tmux has-session``
+                             Useful for testing workspaces.
+        :type kill_session: bool
+        '''
+
+        ### ToDo: Update below to work with attach_if_exists
+        if self.has_session(session_name):
+            if kill_session:
+                tmux('kill-session', '-t', session_name)
+                logging.error('session %s exists. killed it.' % session_name)
+            else:
+                raise TmuxSessionExists('Session named %s exists' % session_name)
+
+        logging.debug('creating session %s' % session_name)
+
+        formats = SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+
+        session_info = tmux(
+            'new-session',
+            '-d',  # assume detach = True for now, todo: fix
+            '-s', session_name,
+            '-P', '-F%s' % '\t'.join(tmux_formats),   # output
+            *args
+        )
+
+        # combine format keys with values returned from ``tmux list-windows``
+        session_info = dict(zip(formats, session_info.split('\t')))
+
+        # clear up empty dict
+        session_info = dict((k, v) for k, v in session_info.iteritems() if v)
+
+        session = Session(session_name=session_name)
+        session.update(session_info)
+
+        # need to be able to get first windows
+        session._windows = session.list_windows()
+
+        self.list_sessions()  # get fresh data for sessions on Server object
+
+        return session

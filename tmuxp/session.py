@@ -9,16 +9,11 @@
     :license: BSD, see LICENSE for details
 """
 import pipes
-from .util import live_tmux, TmuxObject
+from .util import live_tmux, TmuxObject, tmux
 from .window import Window
 from .formats import WINDOW_FORMATS, SESSION_FORMATS
-from .exc import SessionExists
+from .exc import TmuxSessionExists
 from .logxtreme import logging
-
-try:
-    from sh import tmux as tmux, ErrorReturnCode_1
-except ImportError:
-    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
 
 class Session(TmuxObject):
@@ -60,82 +55,6 @@ class Session(TmuxObject):
             pass
 
         return self
-
-    @classmethod
-    def new_session(cls,
-                    session_name=None,
-                    kill_session=False,
-                    *args,
-                    **kwargs):
-        '''
-        ``$ tmux new-session``
-
-        Returns :class:`Session`
-
-        Uses ``-P`` flag to print session info, ``-F`` for return formatting
-        returns new Session object.
-
-        ``$ tmux new-session -d`` will create the session in the background
-        ``$ tmux new-session -Ad`` will move to the session name if it already
-        exists. todo: make an option to handle this.
-
-        :param session_name: session name::
-
-            $ tmux new-session -s <session_name>
-        :type session_name: string
-
-        :param detach: create session background::
-
-            $ tmux new-session -d
-        :type detach: bool
-
-        :param attach_if_exists: if the session_name exists, attach it.
-                                 if False, this method will raise a
-                                 SessionExists exception
-        :type attach_if_exists: bool
-
-        :param kill_session: Kill current session if ``$ tmux has-session``
-                             Useful for testing workspaces.
-        :type kill_session: bool
-        '''
-
-        ### ToDo: Update below to work with attach_if_exists
-        try:
-            if not len(tmux('has-session', '-t', session_name)):
-                if kill_session:
-                    tmux('kill-session', '-t', session_name)
-                    logging.error('session %s exists. killed it.' % session_name)
-                else:
-                    raise SessionExists('Session named %s exists' % session_name)
-        except ErrorReturnCode_1:
-            pass
-
-        logging.debug('creating session %s' % session_name)
-
-        formats = SESSION_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
-
-        session_info = tmux(
-            'new-session',
-            '-d',  # assume detach = True for now, todo: fix
-            '-s', session_name,
-            '-P', '-F%s' % '\t'.join(tmux_formats),   # output
-            *args
-        )
-
-        # combine format keys with values returned from ``tmux list-windows``
-        session_info = dict(zip(formats, session_info.split('\t')))
-
-        # clear up empty dict
-        session_info = dict((k, v) for k, v in session_info.iteritems() if v)
-
-        session = cls(session_name=session_name)
-        session.update(session_info)
-
-        # need to be able to get first windows
-        session._windows = session.list_windows()
-
-        return session
 
     @live_tmux
     def new_window(self, window_name=None, automatic_rename=False):

@@ -9,15 +9,10 @@
     :license: BSD, see LICENSE for details
 """
 from functools import wraps
-from .exc import TmuxNotRunning, SessionNotFound
+from .exc import TmuxNotRunning, TmuxSessionNotFound
 from .logxtreme import logging
 import unittest
 import collections
-
-try:
-    from sh import tmux as tmux, ErrorReturnCode_1
-except ImportError:
-    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
 
 def live_tmux(f):
@@ -58,13 +53,21 @@ def tmux(*args, **kwargs):
     '''
     wraps ``tmux(1) from ``sh`` library in a try-catch.
     '''
+
     try:
-        #return tmx(*args, **kwargs)
-        pass
+        from sh import tmux as tmuxcmd, ErrorReturnCode_1
+    except ImportError:
+        logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
+
+    try:
+        return tmuxcmd(*args, **kwargs)
     except ErrorReturnCode_1 as e:
 
         if e.stderr.startswith('session not found'):
-            raise SessionNotFound('session not found')
+            if 'has-session' in e.full_cmd:
+                raise e
+            else:
+                raise TmuxSessionNotFound(e)
 
         logging.error(
             "\n\tcmd:\t%s\n"

@@ -1,5 +1,6 @@
 import unittest
 from .. import Pane
+from ..util import tmux
 from .helpers import TmuxTestCase
 
 

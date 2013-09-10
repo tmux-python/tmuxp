@@ -3,14 +3,15 @@ import shutil
 import kaptan
 import unittest
 from .. import Window
-from ..config import ConfigExpand
 from ..logxtreme import logging
+from ..config import ConfigExpand
+from ..util import tmux
 from ..builder import Builder
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
 
 try:
-    from sh import tmux as tmux, ErrorReturnCode_1
+    from sh import ErrorReturnCode_1
 except ImportError:
     logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 

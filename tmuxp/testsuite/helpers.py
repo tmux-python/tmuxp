@@ -1,9 +1,10 @@
 import unittest
 from random import randint
 from sh import ErrorReturnCode_1
-from .. import t, Session
+from ..util import tmux
+from .. import t, Server
 from ..logxtreme import root_logger, logging
-from ..exc import SessionNotFound
+from ..exc import TmuxSessionNotFound
 
 
 TEST_SESSION_PREFIX = 'tmuxp_'
@@ -38,7 +39,7 @@ def bootstrap():
         if not other_sessions:
             # create a test session so client won't close when other windows
             # cleaned up
-            Session.new_session(session_name='test_' + str(randint(0, 1337)))
+            t.new_session(session_name='test_' + str(randint(0, 1337)))
             #Session.attached_pane().send_keys('created by tmuxp tests.'
             #                                  ' you may delete this.',
             #                                  enter=False)
@@ -51,7 +52,7 @@ def bootstrap():
 
         TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 1337))
 
-        session = Session.new_session(
+        session = t.new_session(
             session_name=TEST_SESSION_NAME,
             #kill_session=True
         )

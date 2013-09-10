@@ -5,13 +5,14 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
+from sh import ErrorReturnCode_1
 
 
-class SessionNotFound(Exception):
+class TmuxSessionNotFound(Exception):
     pass
 
 
-class SessionExists(Exception):
+class TmuxSessionExists(Exception):
     pass
 
 

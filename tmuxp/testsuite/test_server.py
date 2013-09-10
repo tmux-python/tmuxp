@@ -1,6 +1,7 @@
 import unittest
 from random import randint
 from .. import t, Session, Window, Pane
+from ..util import tmux
 from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 
 
@@ -11,7 +12,7 @@ class SessionTestCase(TmuxTestCase):
 
     def test_new_session(self):
         new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
-        new_session = Session.new_session(session_name=new_session_name)
+        new_session = t.new_session(session_name=new_session_name)
 
         self.assertIsInstance(new_session, Session)
 

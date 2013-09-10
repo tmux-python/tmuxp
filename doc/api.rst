@@ -87,3 +87,10 @@ Builder
 
 .. autoclass:: tmuxp.Builder
    :members:
+
+Exceptions
+----------
+
+.. autoexception:: tmuxp.exc.TmuxSessionNotFound
+.. autoexception:: tmuxp.exc.TmuxSessionExists
+.. autoexception:: tmuxp.exc.TmuxNotRunning
