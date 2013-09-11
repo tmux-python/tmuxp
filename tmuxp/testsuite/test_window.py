@@ -16,7 +16,7 @@ class WindowSelectTestCase(TmuxTestCase):
 
         try:
             self.session.select_window(1)
-        except:
+        except TmuxSessionNotFound:
             logging.error(self.session.list_windows())
 
         self.assertEqual(1, int(self.session.attached_window().get('window_index')))
