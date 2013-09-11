@@ -9,14 +9,14 @@ from ..logxtreme import logging
 class WindowSelectTestCase(TmuxTestCase):
 
     def test_select_window(self):
-        logging.info(self.session.list_windows())
-        logging.info(self.session.list_windows())
-        logging.info(t.list_sessions())
+        logging.error(self.session.list_windows())
+        logging.error(self.session.list_windows())
+        logging.error(t.list_sessions())
         try:
-            logging.info(tmux('list_clients'))
+            logging.error(tmux('list-clients'))
         except Exeption:
             pass
-        logging.info(self.session._TMUX)
+        logging.error(self.session._TMUX)
         window_count = len(self.session.list_windows())
         self.assertEqual(window_count, 1)
 
