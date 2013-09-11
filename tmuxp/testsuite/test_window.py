@@ -1,5 +1,5 @@
 import unittest
-from .. import Pane
+from .. import Pane, t
 from ..util import tmux
 from ..exc import TmuxSessionNotFound
 from .helpers import TmuxTestCase
@@ -10,8 +10,13 @@ class WindowSelectTestCase(TmuxTestCase):
 
     def test_select_window(self):
         logging.info(self.session.list_windows())
-        print self.session.list_windows()
-        print self.session._TMUX
+        logging.info(self.session.list_windows())
+        logging.info(t.list_sessions())
+        try:
+            logging.info(tmux('list_clients'))
+        except Exeption:
+            pass
+        logging.info(self.session._TMUX)
         window_count = len(self.session.list_windows())
         self.assertEqual(window_count, 1)
 
