@@ -7,14 +7,24 @@ from .helpers import TmuxTestCase
 class WindowSelectTestCase(TmuxTestCase):
 
     def test_select_window(self):
+        window_count = len(self.session.list_windows())
+        self.assertEqual(window_count, 1)
+
         self.session.new_window(window_name='testing 3')
-        self.session.select_window(2)
         self.assertEqual(2, int(self.session.attached_window().get('window_index')))
+
+        self.session.select_window(1)
+        self.assertEqual(1, int(self.session.attached_window().get('window_index')))
+
+        self.session.select_window('testing 3')
+        self.assertEqual(2, int(self.session.attached_window().get('window_index')))
+
+        self.assertEqual(len(self.session.list_windows()), 2)
 
 
 class WindowNewTestCase(TmuxTestCase):
 
-    def test_sync_windows(self):
+    def test_fresh_window_data(self):
         #self.session.select_window(1)
         current_windows = len(self.session._windows)
         self.session.attached_window().select_pane(1)

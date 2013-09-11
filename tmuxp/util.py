@@ -31,7 +31,6 @@ def tmux(*args, **kwargs):
     except ErrorReturnCode_1 as e:
         if e.stderr.startswith('session not found'):
             if 'has-session' in e.full_cmd:
-                #raise e
                 return e
             else:
                 raise TmuxSessionNotFound(e)
@@ -40,7 +39,6 @@ def tmux(*args, **kwargs):
         logging.error(e.stderr.strip())
         if e.stderr.startswith('failed to connect to server'):
             raise TmuxNotRunning(e.stderr)
-            #raise TmuxNoClientsRunning(e.stderr)
 
         logging.error(
             "\n\tcmd:\t%s\n"
