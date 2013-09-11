@@ -33,7 +33,7 @@ def bootstrap():
 
     session_list = t.list_sessions()
     # find current sessions prefixed with tmuxp
-    previous_sessions = [s.session_name for s in session_list
+    old_test_sessions = [s.session_name for s in session_list
                             if s.session_name.startswith(TEST_SESSION_PREFIX)]
 
     other_sessions = [s.session_name for s in session_list
@@ -44,22 +44,25 @@ def bootstrap():
     if not other_sessions:
         # create a test session so client won't close when other windows
         # cleaned up
-        t.new_session(session_name='test_' + str(randint(0, 1337)))
+        #session = t.new_session(session_name='test_' + str(randint(0, 1337)))
         #Session.attached_pane().send_keys('created by tmuxp tests.'
         #                                  ' you may delete this.',
         #                                  enter=False)
+        #
+        pass
     else:
         t.switch_client(other_sessions[0])
 
-    for session in previous_sessions:
-        logging.debug('Old test test session %s found. Killing it.' % session)
-        t.kill_session(session)
 
     TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 13370))
-
     session = t.new_session(
         session_name=TEST_SESSION_NAME,
     )
+
+
+    for old_test_session in old_test_sessions:
+        logging.debug('Old test test session %s found. Killing it.' % old_test_session)
+        t.kill_session(old_test_session)
 
     t.switch_client(TEST_SESSION_NAME)
 
