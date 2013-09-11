@@ -12,6 +12,8 @@ class SessionTestCase(TmuxTestCase):
         self.assertFalse(t.has_session('asdf2314324321'))
 
     def test_select_window(self):
+        self.assertEqual(len(self.session._windows), 1)
+        self.assertEqual(len(self.session.list_windows()), 1)
         self.assertIsInstance(self.session.select_window(1), Window)
 
     def test_attached_window(self):
@@ -36,7 +38,6 @@ class SessionCleanTestCase(TmuxTestCase):
         self.session.attached_window().attached_pane().send_keys('C-c', enter=False)
         self.assertEqual(self.session.is_clean(), False)
         pass
-
 
 class SessionNewTestCase(TmuxTestCase):
     def test_new_session(self):

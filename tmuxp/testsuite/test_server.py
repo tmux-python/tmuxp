@@ -5,25 +5,32 @@ from ..util import tmux
 from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 
 
-class SessionTestCase(TmuxTestCase):
+class ServerTestCase(TmuxTestCase):
     def test_has_session(self):
         self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
         self.assertFalse(t.has_session('asdf2314324321'))
 
-    def test_new_session(self):
-        new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
-        new_session = t.new_session(session_name=new_session_name)
+    def test_has_clients(self):
+        pass
 
-        self.assertIsInstance(new_session, Session)
+    def test_has_sessions(self):
+        pass
 
-    def test_select_window(self):
-        self.assertIsInstance(self.session.select_window(1), Window)
+    def test_socket(self):
+        ''' tmux allows the following configuration options for the server
 
-    def test_attached_window(self):
-        self.assertIsInstance(self.session.attached_window(), Window)
+        ``-L`` socket_name  file name of socket. which will be stored in
+               env TMUX_TMPDIR or /tmp if unset.)
 
-    def test_attached_pane(self):
-        self.assertIsInstance(self.session.attached_pane(), Pane)
+        ``-S`` socket_path  (alternative path for server socket)
+
+        '''
+        pass
+
+    def test_config(self):
+        ''' test whether passing a ``file`` into Server will alter the tmux
+            options for server, session and windows '''
+        pass
 
 if __name__ == '__main__':
     unittest.main()
