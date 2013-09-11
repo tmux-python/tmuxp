@@ -20,7 +20,8 @@ Slated for 0.2
   workaround: have a tmux client open in another terminal to run unit
   tests.
 - (`#2`_) support for support multiple Tmux servers and custom config
-``Server`` object:
+  ``Server`` object:
+
   - tmux config ``file``, aka ``[-f file]``
   - tmux server ``socket_name``, aka ``[-L socket-name]``
   - tmux server ``socket_path``, aka ``[-S socket-path]``
