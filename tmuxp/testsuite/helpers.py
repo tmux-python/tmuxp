@@ -9,8 +9,10 @@ from ..exc import TmuxNoClientsRunning, ErrorReturnCode_1
 TEST_SESSION_PREFIX = 'tmuxp_'
 root_logger.setLevel(logging.ERROR)
 
+
 def ho(line, stdin, process):
     pass
+
 
 def bootstrap():
     '''
@@ -34,34 +36,21 @@ def bootstrap():
     session_list = t.list_sessions()
     # find current sessions prefixed with tmuxp
     old_test_sessions = [s.session_name for s in session_list
-                            if s.session_name.startswith(TEST_SESSION_PREFIX)]
+                         if s.session_name.startswith(TEST_SESSION_PREFIX)]
 
     other_sessions = [s.session_name for s in session_list
-                        if not s.session_name.startswith(
-                            TEST_SESSION_PREFIX
-                        )]
-
-    if not other_sessions:
-        # create a test session so client won't close when other windows
-        # cleaned up
-        #session = t.new_session(session_name='test_' + str(randint(0, 1337)))
-        #Session.attached_pane().send_keys('created by tmuxp tests.'
-        #                                  ' you may delete this.',
-        #                                  enter=False)
-        #
-        pass
-    else:
-        t.switch_client(other_sessions[0])
-
+                      if not s.session_name.startswith(
+                          TEST_SESSION_PREFIX
+                      )]
 
     TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 13370))
     session = t.new_session(
         session_name=TEST_SESSION_NAME,
     )
 
-
     for old_test_session in old_test_sessions:
-        logging.debug('Old test test session %s found. Killing it.' % old_test_session)
+        logging.debug('Old test test session %s found. Killing it.' %
+                      old_test_session)
         t.kill_session(old_test_session)
 
     t.switch_client(TEST_SESSION_NAME)
@@ -70,6 +59,7 @@ def bootstrap():
 
 
 class TmuxTestCase(unittest.TestCase):
+
     '''
         self.session
             Session object
@@ -94,17 +84,17 @@ class TmuxTestCase(unittest.TestCase):
             # bootstrap() retyrns a tuple  of session and the session object
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except TmuxNoClientsRunning:
-            #def ho(line, stdin, process):
+            # def ho(line, stdin, process):
             #    return cls.hi(cls, line, stdin, process)
             logging.error('test: TmuxNoClientsRunning')
-            #cls.client = tmux('-C', _out=ho)
+            # cls.client = tmux('-C', _out=ho)
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
-            #cls.tearDownClass()
+            # cls.tearDownClass()
             logging.error(e)
-            #cls.fail()
-            #import ipdb
-            #ipdb.set_trace()
+            # cls.fail()
+            # import ipdb
+            # ipdb.set_trace()
             import traceback
 
             logging.error(traceback.print_exc())
@@ -113,9 +103,9 @@ class TmuxTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        #cls.done = True
+        # cls.done = True
         if cls.client:
             cls.client.terminate()
-        #if t.client:
+        # if t.client:
         #   cls.client.terminate()
-        #t.list_sessions()
+        # t.list_sessions()

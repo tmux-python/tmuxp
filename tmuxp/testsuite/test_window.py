@@ -1,6 +1,7 @@
 import unittest
 from .. import Pane
 from ..util import tmux
+from ..exc import TmuxSessionNotFound
 from .helpers import TmuxTestCase
 
 
@@ -13,7 +14,11 @@ class WindowSelectTestCase(TmuxTestCase):
         self.session.new_window(window_name='testing 3')
         self.assertEqual(2, int(self.session.attached_window().get('window_index')))
 
-        self.session.select_window(1)
+        try:
+            self.session.select_window(1)
+        except:
+            logging.error(self.session.list_windows())
+
         self.assertEqual(1, int(self.session.attached_window().get('window_index')))
 
         self.session.select_window('testing 3')
