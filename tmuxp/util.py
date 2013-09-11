@@ -10,43 +10,10 @@
 """
 from functools import wraps
 from .exc import TmuxNoClientsRunning, TmuxSessionNotFound, ErrorReturnCode_1
+from .exc import TmuxNotRunning
 from .logxtreme import logging
 import unittest
 import collections
-
-
-def live_tmux(f):
-    '''
-    decorator that checks for one of the 3 unique identifiers in tmux:
-    ``pane_id``, ``window_id`` and ``session_id``, found in :class:`Pane`,
-    :class:`Window` and :class:`Session` respectively.
-
-    :class:`TmuxObject`, the base class of :class:`Pane`, :class:`Window` and
-    :class:`Session` will utilize the :attr:`TmuxObject._TMUX` to store data.
-
-    If a session is imported directly from a configuration or is otherwise
-    being built manually via CLI or scripting, :attr:`_TMUX` is populated upon:
-
-    :meth:`Session.new_session` .. ``$ tmux create-session``
-
-    :meth:`Server.list_sessions` .. ``$ tmux list-sessions``
-
-    :meth:`Session.new_window` .. ``$ tmux new-window``
-
-    :meth:`Window.split_window` .. ``$ tmux split-window``
-        returns a :class:`Pane` with pane metadata
-    '''
-    @wraps(f)
-    def live_tmux(self, *args, **kwargs):
-        if any(key in self for key in ('pane_id', 'window_id', 'session_id')):
-            return f(self, *args, **kwargs)
-        else:
-            raise TmuxNotRunning(
-                "{pane,window,server}_id not found, this object is not linked "
-                "to atmux session. If you need help please post an issue on "
-                "github."
-            )
-    return live_tmux
 
 
 def tmux(*args, **kwargs):
@@ -59,21 +26,21 @@ def tmux(*args, **kwargs):
     except ImportError:
         logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
-    print args
-
     try:
         return tmuxcmd(*args, **kwargs)
     except ErrorReturnCode_1 as e:
         if e.stderr.startswith('session not found'):
             if 'has-session' in e.full_cmd:
-                raise e
+                #raise e
+                return e
             else:
                 raise TmuxSessionNotFound(e)
 
         logging.error(e.stderr)
         logging.error(e.stderr.strip())
         if e.stderr.startswith('failed to connect to server'):
-            raise TmuxNoClientsRunning(e.stderr)
+            raise TmuxNotRunning(e.stderr)
+            #raise TmuxNoClientsRunning(e.stderr)
 
         logging.error(
             "\n\tcmd:\t%s\n"

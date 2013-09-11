@@ -5,14 +5,6 @@ def interact(line, stdin, process):
     pass
 
 
-try:
-    from sh import tmux as tmux, ErrorReturnCode_1
-except ImportError:
-    logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
-
-#tmux('-C', _out=interact)
-
-
 import unittest
 import sys
 import os
@@ -25,13 +17,9 @@ if tmux_path not in sys.path:
 
 
 def main():
-    if t.has_clients():
-        #unittest.main()
-        suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
+    suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
 
-        unittest.TextTestRunner().run(suites)
-    else:
-        raise Exception('must have a tmux client running')
+    unittest.TextTestRunner().run(suites)
 
 
 if __name__ == '__main__':

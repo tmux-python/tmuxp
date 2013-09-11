@@ -26,6 +26,8 @@ def bootstrap():
         a dumby session will be made to prevent tmux from closing.
 
     '''
+    if not t.server_exists():
+        t.client = tmux('-C', _out=ho)
     if not t.has_clients():
         t.client = tmux('-C', _out=ho)
 
@@ -50,21 +52,18 @@ def bootstrap():
         t.switch_client(other_sessions[0])
 
     for session in previous_sessions:
-        logging.debug(session)
+        logging.debug('Old test test session %s found. Killing it.' % session)
         t.kill_session(session)
 
-    TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 1337))
+    TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 13370))
 
     session = t.new_session(
         session_name=TEST_SESSION_NAME,
-        #kill_session=True
     )
 
     t.switch_client(TEST_SESSION_NAME)
 
     return (TEST_SESSION_NAME, session)
-
-
 
 
 class TmuxTestCase(unittest.TestCase):
@@ -94,7 +93,8 @@ class TmuxTestCase(unittest.TestCase):
         except TmuxNoClientsRunning:
             #def ho(line, stdin, process):
             #    return cls.hi(cls, line, stdin, process)
-            cls.client = tmux('-C', _out=ho)
+            logging.error('test: TmuxNoClientsRunning')
+            #cls.client = tmux('-C', _out=ho)
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
             #cls.tearDownClass()
@@ -102,7 +102,10 @@ class TmuxTestCase(unittest.TestCase):
             #cls.fail()
             #import ipdb
             #ipdb.set_trace()
-            raise e
+            import traceback
+
+            logging.error(traceback.print_exc())
+            raise Exception(e)
         return
 
     @classmethod

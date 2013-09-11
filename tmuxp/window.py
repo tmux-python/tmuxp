@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 import pipes
-from .util import live_tmux, TmuxObject, tmux
+from .util import TmuxObject, tmux
 from .pane import Pane
 from .formats import PANE_FORMATS
 from .logxtreme import logging
@@ -148,7 +148,6 @@ class Window(TmuxObject):
         self.list_panes()
         return self.attached_pane()
 
-    @live_tmux
     def split_window(self, *args, **kwargs):
         '''
         Splits window. Returns the created :class:`Pane`.
@@ -229,7 +228,6 @@ class Window(TmuxObject):
 
         return window
 
-    @live_tmux
     def list_panes(self):
         '''
             Returns a list of :class:`Pane` for the window.

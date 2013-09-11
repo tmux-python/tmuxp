@@ -8,11 +8,11 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
-from .util import live_tmux, tmux
+from .util import tmux
 from .session import Session
 from .formats import SESSION_FORMATS
 from .logxtreme import logging
-from .exc import TmuxNotRunning, TmuxSessionExists, ErrorReturnCode_1
+from .exc import TmuxNotRunning, TmuxSessionExists
 
 
 class Server(object):
@@ -97,6 +97,18 @@ class Server(object):
 
         return self._sessions
 
+    def server_exists(self):
+        '''server is on and exists
+
+        '''
+
+        try:
+            tmux('list-clients')
+            tmux('list-sessions')
+            return True
+        except TmuxNotRunning:
+            return False
+
     def has_clients(self):
         # are any clients connected to tmux
         if len(tmux('list-clients')) > int(1):
@@ -140,9 +152,12 @@ class Server(object):
         '''
 
         try:  # has-session returns nothing if session exists
-            tmux('has-session', '-t', target_session)
-            return True
-        except ErrorReturnCode_1 as e:
+            if 'session not found' in tmux('has-session', '-t', target_session).stderr:
+                return False
+            else:
+                return True
+        except Exception as e:
+            logging.error('160 %s' % e)
             return False
 
     def kill_session(self, target_session=None):

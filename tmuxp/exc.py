@@ -11,7 +11,6 @@ from sh import ErrorReturnCode_1
 class TmuxSessionNotFound(Exception):
     pass
 
-
 class TmuxSessionExists(Exception):
     pass
 
@@ -20,7 +19,6 @@ class TmuxNoClientsRunning(Exception):
 
 class TmuxNotRunning(Exception):
     '''
-        class for when {pane,window,session}_id doesn't exist, this will cause
-        an issue with building the workspace and running commands.
+    tmux server not running.
     '''
     pass

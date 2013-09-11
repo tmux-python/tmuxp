@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 import pipes
-from .util import live_tmux, TmuxObject, tmux
+from .util import TmuxObject, tmux
 from .window import Window
 from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import TmuxSessionExists
@@ -56,7 +56,6 @@ class Session(TmuxObject):
 
         return self
 
-    @live_tmux
     def new_window(self, window_name=None, automatic_rename=False):
         '''
         ``$ tmux new-window``
@@ -98,7 +97,6 @@ class Session(TmuxObject):
         self.list_windows()
         return window
 
-    @live_tmux
     def kill_window(self, target_window=None):
         '''
         ``$ tmux kill-window``
@@ -139,7 +137,6 @@ class Session(TmuxObject):
 
         return session
 
-    @live_tmux
     def _list_windows(self):
         '''
         Return dict of ``tmux(1) list-windows`` values.
@@ -165,7 +162,6 @@ class Session(TmuxObject):
 
         return windows
 
-    @live_tmux
     def list_windows(self):
         '''
         Return a list of :class:`Window` from the ``tmux(1)`` session.

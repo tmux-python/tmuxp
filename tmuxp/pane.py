@@ -8,7 +8,7 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
-from .util import live_tmux, TmuxObject, tmux
+from .util import TmuxObject, tmux
 from .formats import PANE_FORMATS
 from .logxtreme import logging
 
@@ -31,8 +31,6 @@ class Pane(TmuxObject):
     def from_tmux(cls, session=None, window=None, **kwargs):
         '''
         Retrieve a tmux pane from server. Returns :class:`Pane`.
-
-        Used for freezing live sessions.
 
         Iterates ``$ tmux list-panes``, ``-F`` for return formatting.
 

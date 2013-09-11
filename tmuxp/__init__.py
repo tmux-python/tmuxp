@@ -16,6 +16,6 @@ from .pane import Pane
 from .builder import Builder
 from .config import ConfigExpand, ConfigTrickleDown
 
-from .util import live_tmux, TmuxObject
+from .util import TmuxObject
 
 t = Server()
