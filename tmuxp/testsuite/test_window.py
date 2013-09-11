@@ -9,18 +9,21 @@ from ..logxtreme import logging
 class WindowSelectTestCase(TmuxTestCase):
 
     def test_select_window(self):
+        logging.info(self.session.list_windows())
+        print self.session.list_windows()
+        print self.session._TMUX
         window_count = len(self.session.list_windows())
         self.assertEqual(window_count, 1)
 
         self.session.new_window(window_name='testing 3')
         self.assertEqual(2, int(self.session.attached_window().get('window_index')))
 
-        logging.error(self.session.list_windows())
+        logging.info(self.session.list_windows())
         print self.session.list_windows()
         try:
             self.session.select_window(1)
         except TmuxSessionNotFound:
-            logging.error(self.session.list_windows())
+            logging.info(self.session.list_windows())
             print self.session.list_windows()
 
         self.assertEqual(1, int(self.session.attached_window().get('window_index')))
@@ -47,12 +50,12 @@ class WindowNewTestCase(TmuxTestCase):
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
 
-        logging.error(self.session.list_windows())
+        logging.info(self.session.list_windows())
         print self.session.list_windows()
         try:
             self.session.select_window(1)
         except TmuxSessionNotFound:
-            logging.error(self.session.list_windows())
+            logging.info(self.session.list_windows())
             print self.session.list_windows()
 
 
