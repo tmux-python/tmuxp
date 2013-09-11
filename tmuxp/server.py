@@ -17,7 +17,7 @@ from .exc import TmuxNotRunning, TmuxSessionExists
 
 class Server(object):
     '''
-    The ``tmux(1)`` server. Container for:
+    The :term:`tmux(1)` server. Container for:
 
     :attr:`Server._sessions` [:class:`Session`, ..]
         :attr:`Session._windows` [:class:`Window`, ..]

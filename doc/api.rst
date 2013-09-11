@@ -71,8 +71,6 @@ Internals
 
 .. automethod:: tmuxp.util.tmux
 
-.. automethod:: tmuxp.util.live_tmux
-
 Configuration
 -------------
 
