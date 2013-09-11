@@ -7,6 +7,11 @@ under development, not ready for public use.
 Current issues
 --------------
 
+- build tmuxp dict into tmux session, via tests + open session
+- load tmux from CLI gracefully. investigate strategies for this.
+- bash / zsh autocomplete
+- command line ``--help``
+- export / freeze config
 
 Slated for 0.2
 --------------
@@ -16,9 +21,10 @@ Slated for 0.2
   tests.
 - (`#2`_) support for support multiple Tmux servers and custom config
   ``Server`` object:
-  - tmux config ``file``, aka ``[-f file]``
-  - tmux server ``socket_name``, aka ``[-L socket-name]``
-  - tmux server ``socket_path``, aka ``[-S socket-path]``
+    - tmux config ``file``, aka ``[-f file]``
+    - tmux server ``socket_name``, aka ``[-L socket-name]``
+    - tmux server ``socket_path``, aka ``[-S socket-path]``
+- Optimize areas like list_{sessions,windows,panes,clients}
 
 .. _#1: https://github.com/tony/tmuxp/issues/1
 .. _#2: https://github.com/tony/tmuxp/issues/2
