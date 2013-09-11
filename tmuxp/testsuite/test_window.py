@@ -14,7 +14,9 @@ class WindowSelectTestCase(TmuxTestCase):
         logging.error(t.list_sessions())
         try:
             logging.error(tmux('list-clients'))
-        except Exeption:
+            logging.error(t.list_clients())
+        except Exception as e:
+            logging.error(e)
             pass
         logging.error(self.session._TMUX)
         window_count = len(self.session.list_windows())

@@ -10,7 +10,7 @@
 """
 from .util import tmux
 from .session import Session
-from .formats import SESSION_FORMATS
+from .formats import SESSION_FORMATS, CLIENT_FORMATS
 from .logxtreme import logging
 from .exc import TmuxNotRunning, TmuxSessionExists
 
@@ -96,6 +96,70 @@ class Server(object):
             self._sessions.append(Session.from_tmux(**session))
 
         return self._sessions
+
+    def list_clients(self):
+        '''
+        Return a list of :class:`client` from tmux server.
+
+        ``$ tmux list-clients``
+        '''
+        formats = CLIENT_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+        #import ipdb
+        #ipdb.set_trace()
+        clients = tmux(
+            'list-clients',
+            '-F%s' % '\t'.join(tmux_formats),   # output
+            _iter=False                          # iterate line by line
+        )
+
+        # combine format keys with values returned from ``tmux list-windows``
+        clients = [dict(zip(formats, client.split('\t'))) for client in clients]
+
+        # clear up empty dict
+        new_clients = [
+            dict((k, v) for k, v in client.iteritems() if v) for client in clients
+        ]
+
+        if not self._clients:
+            for client in new_clients:
+                logging.debug('adding client_tty %s' % (client['client_tty']))
+                self._clients.append(client)
+            return self._clients
+
+        new = {client['client_tty']: client for client in new_clients}
+        old = {client.get('client_tty'): client for client in self._clients}
+
+        created = set(new.keys()) - set(old.keys())
+        deleted = set(old.keys()) - set(new.keys())
+        intersect = set(new.keys()).intersection(set(old.keys()))
+
+        diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
+
+        logging.info(
+            "syncing clients"
+            "\n\tdiff: %s\n"
+            "\tcreated: %s\n"
+            "\tdeleted: %s\n"
+            "\tintersect: %s" % (diff, created, deleted, intersect)
+        )
+
+        for s in self._clients:
+            # remove client objects if deleted or out of client
+            if s.get('client_tty') in deleted:
+                logging.info("removing %s" % s)
+                self._clients.remove(s)
+
+            if s.get('client_tty') in intersect:
+                logging.debug('updating client_tty %s' % (s.get('client_tty')))
+                s.update(diff[s.get('client_tty')])
+
+        # create client objects for non-existant client_tty's
+        for client in [new[client_tty] for client_tty in created]:
+            logging.debug('new client %s' % client['client_tty'])
+            self._clients.append(client)
+
+        return self._clients
 
     def server_exists(self):
         '''server is on and exists
