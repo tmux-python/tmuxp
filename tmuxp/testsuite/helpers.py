@@ -29,9 +29,9 @@ def bootstrap():
 
     '''
     if not t.server_exists():
-        t.client = tmux('-C', _out=ho)
+        t.client = tmux('-C', _out=ho, _bg=True)
     if not t.has_clients():
-        t.client = tmux('-C', _out=ho)
+        t.client = tmux('-C', _out=ho, _bg=True)
 
     session_list = t.list_sessions()
     # find current sessions prefixed with tmuxp
@@ -106,6 +106,7 @@ class TmuxTestCase(unittest.TestCase):
         # cls.done = True
         if cls.client:
             cls.client.terminate()
+
         # if t.client:
         #   cls.client.terminate()
         # t.list_sessions()
