@@ -172,3 +172,8 @@ for window in c.get('windows'):
             pass
 
     windows.append(window)
+
+import os
+import subprocess
+
+subprocess.Popen(['vim'])

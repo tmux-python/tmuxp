@@ -9,30 +9,13 @@ from ..logxtreme import logging
 class WindowSelectTestCase(TmuxTestCase):
 
     def test_select_window(self):
-        logging.error(self.session.list_windows())
-        logging.error(self.session.list_windows())
-        logging.error(t.list_sessions())
-        try:
-            logging.error(tmux('list-clients'))
-            logging.error(t.list_clients())
-        except Exception as e:
-            logging.error(e)
-            pass
-        logging.error(self.session._TMUX)
         window_count = len(self.session.list_windows())
         self.assertEqual(window_count, 1)
 
         self.session.new_window(window_name='testing 3')
         self.assertEqual(2, int(self.session.attached_window().get('window_index')))
 
-        logging.info(self.session.list_windows())
-        print self.session.list_windows()
-        try:
-            self.session.select_window(1)
-        except TmuxSessionNotFound:
-            logging.info(self.session.list_windows())
-            print self.session.list_windows()
-
+        self.session.select_window(1)
         self.assertEqual(1, int(self.session.attached_window().get('window_index')))
 
         self.session.select_window('testing 3')
@@ -57,16 +40,7 @@ class WindowNewTestCase(TmuxTestCase):
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
 
-        logging.info(self.session.list_windows())
-        print self.session.list_windows()
-        try:
-            self.session.select_window(1)
-        except TmuxSessionNotFound:
-            logging.info(self.session.list_windows())
-            print self.session.list_windows()
-
-
-
+        self.session.select_window(1)
         self.session.kill_window(target_window=3)
         current_windows -= 1
         self.assertEqual(current_windows, len(self.session._windows))
