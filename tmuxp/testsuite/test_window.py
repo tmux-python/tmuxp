@@ -19,6 +19,7 @@ class WindowSelectTestCase(TmuxTestCase):
             self.session.select_window(1)
         except TmuxSessionNotFound:
             logging.error(self.session.list_windows())
+            print self.session.list_windows()
 
         self.assertEqual(1, int(self.session.attached_window().get('window_index')))
 
@@ -43,7 +44,16 @@ class WindowNewTestCase(TmuxTestCase):
         self.session.new_window(window_name=3)
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
-        self.session.select_window(1)
+
+
+        try:
+            self.session.select_window(1)
+        except TmuxSessionNotFound:
+            logging.error(self.session.list_windows())
+            print self.session.list_windows()
+
+
+
         self.session.kill_window(target_window=3)
         current_windows -= 1
         self.assertEqual(current_windows, len(self.session._windows))
