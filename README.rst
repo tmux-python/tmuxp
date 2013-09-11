@@ -11,14 +11,17 @@ Current issues
 Slated for 0.2
 --------------
 
-- (#1) travis compatible unittests (this requires attention to client.
+- (`#1`_) travis compatible unittests (this requires attention to client.
   workaround: have a tmux client open in another terminal to run unit
   tests.
-- (#2) support for support multiple Tmux servers and custom config
+- (`#2`_) support for support multiple Tmux servers and custom config
   ``Server`` object:
   - tmux config ``file``, aka ``[-f file]``
   - tmux server ``socket_name``, aka ``[-L socket-name]``
   - tmux server ``socket_path``, aka ``[-S socket-path]``
+
+.. _#1: https://github.com/tony/tmuxp/issues/1
+.. _#2: https://github.com/tony/tmuxp/issues/2
 
 Goals
 -----
