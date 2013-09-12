@@ -67,6 +67,7 @@ def main():
         print in_tmux()
         suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
         unittest.TextTestRunner(verbosity=2).run(suites)
+        tmux('detach')
 
 
 
