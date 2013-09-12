@@ -61,7 +61,7 @@ def main():
 
         tmux('send-keys', '-R', '-t', session_name, 'python run_tests.py', '^M')
 
-        #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
+        os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
         #subprocess.Popen(['tmux', 'attach-session', '-t', session_name])
     else:
         print has_virtualenv()
