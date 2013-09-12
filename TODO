@@ -1,6 +1,18 @@
 Roadmap
 -------
 
+Top
+"""
+
+- socket-name, socket-path support for .server instance and tmux commands
+- tmux command should be from server, since it will rely on the contexxt of the
+  socket-name, socket-path
+- move tests to use socket-name and socket-path
+- allow run_tests.py and main.py to accept a CLI arg of a PID, or pass it in via
+  adding an os.environ['TMUXP_CLIENT_PID'], which can be used to SIGINT the
+  process http://stackoverflow.com/a/1112350
+- or detach see if detaching works (on tests, new server is created)
+
 - To a degree, be able to pull running tmux sessions, windows and panes
   into Session, Window, and Pane objects and therefore be exportable
   into configs. A la, many attempts before, a ``pip freeze``.
