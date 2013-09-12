@@ -26,12 +26,13 @@ class WindowSelectTestCase(TmuxTestCase):
 
 class WindowNewTestCase(TmuxTestCase):
 
-    def test_fresh_window_data(self):
+    def test_zfresh_window_data(self):
         #self.session.select_window(1)
         current_windows = len(self.session._windows)
-        self.session.attached_window().select_pane(1)
-        self.session.attached_pane().send_keys('cd /srv/www/flaskr')
+        logging.error("current panes: %s" % len(self.session.attached_window()._panes))
         self.session.attached_window().select_pane(0)
+        self.session.attached_pane().send_keys('cd /srv/www/flaskr')
+        self.session.attached_window().select_pane(1)
         self.session.attached_pane().send_keys('source .env/bin/activate')
         self.session.new_window(window_name='second')
         current_windows += 1
@@ -69,7 +70,7 @@ class WindowNewTestCase(TmuxTestCase):
         self.assertIsInstance(pane, Pane)
         self.assertEqual(2, len(window._panes))
 
-    def test_window_rename(self):
+    def test_awindow_rename(self):
         window_name_before = 'test split window'
         window_name_after = 'testingdis_winname'
         window = self.session.new_window(window_name=window_name_before)

@@ -149,9 +149,13 @@ class Window(TmuxObject):
 
         Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
-        if isinstance(target_pane, basestring) and not ':' not in target_pane:
-            target_pane = "%s:%s" % (self.target, target_pane)
-        tmux('select-pane', '-t', target_pane)
+        if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
+            target_pane = "%s.%s" % (self.target, target_pane)
+
+        try:
+            tmux('select-pane', '-t', target_pane)
+        except Exception:
+            logging.error('pane not found %s %s' % (target_pane, self.list_panes()))
         self.list_panes()
         return self.attached_pane()
 
@@ -242,10 +246,14 @@ class Window(TmuxObject):
         formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
+        #if isinstance(self.get('window_id'), basestring):
+        #    window_id =
+
         panes = tmux(
             'list-panes',
-            '-s',                               # for sessions
-            '-t%s' % self._session.session_name,      # target (name of session)
+            #'-s',                               # for sessions
+            #'-t%s' % self._session.session_name,      # target (name of session)
+            '-t%s' % self.get('window_index'),      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
             _iter=True                          # iterate line by line
         )
