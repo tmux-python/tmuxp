@@ -12,8 +12,11 @@ class WindowSelectTestCase(TmuxTestCase):
         window_count = len(self.session.list_windows())
         self.assertEqual(window_count, 1)
 
-        self.session.new_window(window_name='testing 3')
-        self.assertEqual(2, int(self.session.attached_window().get('window_index')))
+        window = self.session.new_window(window_name='testing 3')
+
+        logging.error([window._TMUX for window in self.session.list_windows()])
+        #self.assertEqual(2, int(self.session.attached_window().get('window_index')))
+        self.assertEqual(2, int(window.get('window_index')))
 
         self.session.select_window(1)
         self.assertEqual(1, int(self.session.attached_window().get('window_index')))
