@@ -232,3 +232,10 @@ else:
     print "welcome to tmuxp"
 
 exit()
+
+"""
+Have a bootstrap.py to determine environment variables, like tmux location,
+if inside tmux, is tmux server running, current config files, current
+sessions. An outer wrapper that can be used to run tmux within created,
+uncreated and remotely.
+"""
