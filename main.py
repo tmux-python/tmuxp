@@ -221,13 +221,14 @@ if not in_tmux():
     print shell_commands
     #os.execl('/usr/local/bin/tmux', 'new-session -d', *shell_commands)
     session_name = 'tmuxp'
-    subprocess.call(['/usr/local/bin/tmux', 'new-session', '-d', '-s %s' % session_name])
+    tmux('new-session', '-d', '-s', session_name)
     for shell_command in shell_commands:
-        subprocess.call(['/usr/local/bin/tmux', 'send-keys', '-t %s' % session_name, shell_command, '^M'])
+        #subprocess.call(['/usr/local/bin/tmux', 'send-keys', '-t %s' % session_name, shell_command, '^M'])
+        tmux('send-keys', '-t', session_name, shell_command, '^M')
 
-    subprocess.call(['/usr/local/bin/tmux', 'send-keys', '-R', '-t %s' % session_name, 'python main.py', '^M'])
+    tmux('send-keys', '-R', '-t', session_name, 'python main.py', '^M')
 
-    os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t %s'% session_name)
+    os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
 else:
     print "welcome to tmuxp"
 
@@ -238,4 +239,13 @@ Have a bootstrap.py to determine environment variables, like tmux location,
 if inside tmux, is tmux server running, current config files, current
 sessions. An outer wrapper that can be used to run tmux within created,
 uncreated and remotely.
+"""
+
+
+"""
+
+scenario
+
+
+
 """
