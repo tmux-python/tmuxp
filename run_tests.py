@@ -9,7 +9,6 @@ import unittest
 import sys
 import os
 import subprocess
-from tmuxp import t
 import tmuxp.testsuite
 from tmuxp.util import tmux
 
@@ -35,8 +34,6 @@ import itertools
 def main():
     #subprocess.Popen(['tmux'])
     #sleep(1)
-    suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-    unittest.TextTestRunner(verbosity=2).run(suites)
     #tmuxprocess.kill()
 
     def has_virtualenv():
@@ -68,6 +65,8 @@ def main():
     else:
         print has_virtualenv()
         print in_tmux()
+        suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
+        unittest.TextTestRunner(verbosity=2).run(suites)
 
 
 
