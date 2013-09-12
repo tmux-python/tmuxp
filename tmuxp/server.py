@@ -223,7 +223,6 @@ class Server(object):
             else:
                 return True
         except Exception as e:
-            logging.error('160 %s' % e)
             return False
 
     def kill_session(self, target_session=None):

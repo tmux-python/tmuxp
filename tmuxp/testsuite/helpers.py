@@ -53,9 +53,9 @@ def bootstrap():
                       old_test_session)
         t.kill_session(old_test_session)
 
-    logging.error(t.list_sessions())
-    logging.error(session)
-    logging.error(session._TMUX)
+    #logging.error(t.list_sessions())
+    #logging.error(session)
+    #logging.error(session._TMUX)
     #t.switch_client(TEST_SESSION_NAME)
     #t.switch_client(session.get('session_id'))
 
