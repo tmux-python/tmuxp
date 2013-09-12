@@ -67,6 +67,8 @@ def main():
         print in_tmux()
         suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
         unittest.TextTestRunner(verbosity=2).run(suites)
+        # todo create a hook to run after suite / loader to detach
+        # and killall tmuxp + tmuxp_-prefixed sessions.
         tmux('detach')
 
 

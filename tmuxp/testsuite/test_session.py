@@ -13,8 +13,10 @@ class SessionTestCase(TmuxTestCase):
 
     def test_select_window(self):
         self.assertEqual(len(self.session._windows), 1)
+        window_base_index = int(self.session.attached_window().get('window_index'))
+
         self.assertEqual(len(self.session.list_windows()), 1)
-        self.assertIsInstance(self.session.select_window(1), Window)
+        self.assertIsInstance(self.session.select_window(window_base_index), Window)
 
     def test_attached_window(self):
         self.assertIsInstance(self.session.attached_window(), Window)
