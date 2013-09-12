@@ -104,9 +104,10 @@ class TmuxTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         # cls.done = True
-        if cls.client:
-            cls.client.terminate()
+        #if cls.client:
+        #    cls.client.terminate()
 
         # if t.client:
         #   cls.client.terminate()
         # t.list_sessions()
+        pass

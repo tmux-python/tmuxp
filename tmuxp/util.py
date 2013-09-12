@@ -37,6 +37,8 @@ def tmux(*args, **kwargs):
 
         logging.error(e.stderr)
         logging.error(e.stderr.strip())
+        import traceback
+        logging.error(traceback.print_exc())
         if e.stderr.startswith('failed to connect to server'):
             raise TmuxNotRunning(e.stderr)
 

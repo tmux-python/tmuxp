@@ -174,6 +174,61 @@ for window in c.get('windows'):
     windows.append(window)
 
 import os
+import gevent
+import gevent.subprocess
 import subprocess
+from gevent.subprocess import PIPE
+import pexpect
 
-subprocess.Popen(['vim'])
+
+
+def shell(args, input):
+    #p = pexpect.spawn('tmux')
+    #p.interact()
+    p = gevent.subprocess.call(args, shell=True)
+
+#print shell(['vim'], '')
+
+
+
+def has_virtualenv():
+    if os.environ.get('VIRTUAL_ENV'):
+        return os.environ.get('VIRTUAL_ENV')
+    else:
+        False
+
+def in_tmux():
+    if os.environ.get('TMUX'):
+        return True
+    else:
+        return False
+
+print has_virtualenv()
+print in_tmux()
+
+import itertools
+#subprocess.Popen(['vim']).pid
+if not in_tmux():
+    shell_commands = []
+    if has_virtualenv():
+        shell_commands.append('source %s/bin/activate' % has_virtualenv())
+
+    shell_commands.append('echo wat lol %s' % has_virtualenv())
+    #shell_commands = ['send-keys ' + shell_command + '\;' for shell_command in shell_commands]
+    #shell_commands.append('attach')
+    #sep = ['\;'] * (len(shell_commands) - 1)
+    #shell_commands = list(it.next() for it in itertools.cycle((iter(shell_commands), iter(sep))))
+    print shell_commands
+    #os.execl('/usr/local/bin/tmux', 'new-session -d', *shell_commands)
+    session_name = 'tmuxp'
+    subprocess.call(['/usr/local/bin/tmux', 'new-session', '-d', '-s %s' % session_name])
+    for shell_command in shell_commands:
+        subprocess.call(['/usr/local/bin/tmux', 'send-keys', '-t %s' % session_name, shell_command, '^M'])
+
+    subprocess.call(['/usr/local/bin/tmux', 'send-keys', '-R', '-t %s' % session_name, 'python main.py', '^M'])
+
+    os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t %s'% session_name)
+else:
+    print "welcome to tmuxp"
+
+exit()
