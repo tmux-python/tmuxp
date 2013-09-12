@@ -8,6 +8,7 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
+import os
 from .util import tmux
 from .session import Session
 from .formats import SESSION_FORMATS, CLIENT_FORMATS
@@ -306,6 +307,11 @@ class Server(object):
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
+        env = os.environ.get('TMUX')
+
+        if env:
+            del os.environ['TMUX']
+
         session_info = tmux(
             'new-session',
             '-d',  # assume detach = True for now, todo: fix
@@ -313,6 +319,8 @@ class Server(object):
             '-s', session_name,
             *args
         )
+
+        os.environ['TMUX'] = env
 
         # combine format keys with values returned from ``tmux list-windows``
         session_info = dict(zip(formats, session_info.split('\t')))
