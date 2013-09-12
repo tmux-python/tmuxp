@@ -22,7 +22,7 @@ class WindowSelectTestCase(TmuxTestCase):
         #self.assertEqual(2, int(self.session.attached_window().get('window_index')))
         self.assertEqual(int(window_base_index) + 1, int(window.get('window_index')))
 
-        self.session.select_window(1)
+        self.session.select_window(window_base_index)
         self.assertEqual(window_base_index, int(self.session.attached_window().get('window_index')))
 
         self.session.select_window('testing 3')
