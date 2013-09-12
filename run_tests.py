@@ -18,11 +18,11 @@ if tmux_path not in sys.path:
     sys.path.insert(0, tmux_path)
 
 
-import os
-import gevent
-import gevent.subprocess
-from gevent.subprocess import PIPE
-import pexpect
+# import os
+# import gevent
+# import gevent.subprocess
+# from gevent.subprocess import PIPE
+# import pexpect
 
 
 
