@@ -61,7 +61,7 @@ class Pane(TmuxObject):
 
             :param enter: bool. send enter after sending the key.
         '''
-        tmux('send-keys', '-t', int(self.get('pane_index')), cmd)
+        tmux('send-keys', '-t', self.target, cmd)
 
         if enter:
             self.enter()
@@ -70,7 +70,11 @@ class Pane(TmuxObject):
         '''
             ``$ tmux send-keys`` send Enter to the pane.
         '''
-        tmux('send-keys', '-t', int(self.get('pane_index')), 'Enter')
+        tmux('send-keys', '-t', self.target, 'Enter')
+
+    @property
+    def target(self):
+        return "%s:%s.%s" % (self._session.get('session_id'), self.get('window_id'), int(self.get('pane_index')))
 
     def __repr__(self):
         # todo test without session_name

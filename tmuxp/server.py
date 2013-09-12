@@ -253,7 +253,8 @@ class Server(object):
 
         :param: target_session: str. name of the session. fnmatch(3) works.
         '''
-        tmux('switch-client', '-t', target_session)
+        #tmux('switch-client', '-t', target_session)
+        tmux('switch-client', '-t%s' %target_session)
 
     def new_session(self,
                     session_name=None,
@@ -308,8 +309,8 @@ class Server(object):
         session_info = tmux(
             'new-session',
             '-d',  # assume detach = True for now, todo: fix
-            '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
+            '-s', session_name,
             *args
         )
 

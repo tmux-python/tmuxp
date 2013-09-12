@@ -86,9 +86,13 @@ class Window(TmuxObject):
         '''
         tmux(
             'select-layout',
-            '-t%s' % self.get('window_name'),      # target (name of session)
+            '-t%s' % self.target,      # target (name of session)
             layout
         )
+
+    @property
+    def target(self):
+        return "%s:%s" % (self._session.get('session_id'), self.get('window_id'))
 
     def set_window_option(self, option, value):
         '''
@@ -123,6 +127,7 @@ class Window(TmuxObject):
         try:
             tmux(
                 'rename-window',
+                '-t%s' % self.target,
                 pipes.quote(new_name)
             )
             self['window_name'] = new_name
@@ -144,6 +149,8 @@ class Window(TmuxObject):
 
         Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
+        if isinstance(target_pane, basestring) and not ':' not in target_pane:
+            target_pane = "%s:%s" % (self.target, target_pane)
         tmux('select-pane', '-t', target_pane)
         self.list_panes()
         return self.attached_pane()

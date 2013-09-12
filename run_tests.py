@@ -32,8 +32,8 @@ import pexpect
 from time import sleep
 
 def main():
-    subprocess.Popen(['tmux'])
-    sleep(1)
+    #subprocess.Popen(['tmux'])
+    #sleep(1)
     suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
     unittest.TextTestRunner(verbosity=2).run(suites)
     #tmuxprocess.kill()

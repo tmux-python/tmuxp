@@ -35,10 +35,9 @@ def tmux(*args, **kwargs):
             else:
                 raise TmuxSessionNotFound(e)
 
-        logging.error(e.stderr)
-        logging.error(e.stderr.strip())
+        logging.info(e.stderr)
         import traceback
-        logging.error(traceback.print_exc())
+        logging.info(traceback.print_exc())
         if e.stderr.startswith('failed to connect to server'):
             raise TmuxNotRunning(e.stderr)
 
