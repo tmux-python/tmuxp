@@ -55,9 +55,10 @@ class WindowNewTestCase(TmuxTestCase):
         #tmux('display-panes')
 
     def test_newest_pane_data(self):
-        self.session.attached_window()
         #self.session.select_window(1)
-
+        logging.error("attached_window: %s" %self.session.attached_window())
+        print("attached_window: %s" %self.session.attached_window())
+        self.session.attached_window().list_panes()
         self.assertEqual(1, len(self.session.attached_window()._panes))
         self.session.attached_window().select_layout('even-horizontal')
 

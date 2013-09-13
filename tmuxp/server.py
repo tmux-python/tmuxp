@@ -30,10 +30,19 @@ class Server(object):
     running tmux server.
     '''
 
-    client = None
+    socket_name = None
+    socket_path = None
+    config_file = None
 
     def __init__(self):
         self._sessions = list()
+
+    def tmux(self, *args, **kwargs):
+        if self.socket_name:
+            kwargs['socket-name'] = self.socket_name
+            kwargs['socket-path'] = self.socket_path
+            kwargs['file'] = self.config_file
+        return tmux(*args, **kwargs)
 
     def list_sessions(self):
         '''
@@ -62,25 +71,34 @@ class Server(object):
         if not self._sessions:
             for session in new_sessions:
                 logging.debug('adding session_id %s' % (session['session_id']))
-                self._sessions.append(Session.from_tmux(**session))
+                new_session = Session(server=self, **session)
+                self._sessions.append(new_session)
             return self._sessions
 
         new = {session['session_id']: session for session in new_sessions}
         old = {session.get('session_id'): session for session in self._sessions}
 
-        created = set(new.keys()) - set(old.keys())
-        deleted = set(old.keys()) - set(new.keys())
+        created = set(new.keys()) - set(old.keys()) or ()
+        deleted = set(old.keys()) - set(new.keys()) or ()
         intersect = set(new.keys()).intersection(set(old.keys()))
 
         diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
-        logging.info(
-            "syncing sessions"
-            "\n\tdiff: %s\n"
-            "\tcreated: %s\n"
-            "\tdeleted: %s\n"
-            "\tintersect: %s" % (diff, created, deleted, intersect)
-        )
+        intersect = set(k for k, v in diff.iteritems() if v) or ()
+        diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
+
+        if diff or created or deleted:
+            log_diff = "sync sessions for server:\n"
+        else:
+            log_diff = None
+        if diff and intersect:
+            log_diff += "diff %s for %s" % (diff, intersect)
+        if created:
+            log_diff += "created %s" % created
+        if deleted:
+            log_diff += "deleted %s" % deleted
+        if log_diff:
+            logging.info(log_diff)
 
         for s in self._sessions:
             # remove session objects if deleted or out of session
@@ -88,14 +106,15 @@ class Server(object):
                 logging.info("removing %s" % s)
                 self._sessions.remove(s)
 
-            if s.get('session_id') in intersect:
-                logging.debug('updating session_id %s' % (s.get('session_id')))
+            if s.get('session_id') in intersect and s.get('session_id') in diff:
+                logging.debug('updating session_id %s session_name %s' % (s.get('session_id'), s.get('session_name')))
                 s.update(diff[s.get('session_id')])
 
         # create session objects for non-existant session_id's
         for session in [new[session_id] for session_id in created]:
             logging.debug('new session %s' % session['session_id'])
-            self._sessions.append(Session.from_tmux(**session))
+            new_session = Session(server=self, **session)
+            self._sessions.append(new_session)
 
         return self._sessions
 
@@ -200,7 +219,7 @@ class Server(object):
             if 'session_attached' in session:
                 # for now session_active is a unicode
                 if session.get('session_attached') == '1':
-                    logging.info('session %s attached', session.session_name)
+                    logging.info('session %s attached', session.get('session_name'))
                     attached_sessions.append(session)
                 else:
                     continue
@@ -319,7 +338,8 @@ class Server(object):
             *args
         )
 
-        os.environ['TMUX'] = env
+        if env:
+            os.environ['TMUX'] = env
 
         # combine format keys with values returned from ``tmux list-windows``
         session_info = dict(zip(formats, session_info.split('\t')))
@@ -327,8 +347,8 @@ class Server(object):
         # clear up empty dict
         session_info = dict((k, v) for k, v in session_info.iteritems() if v)
 
-        session = Session(session_name=session_name)
-        session.update(session_info)
+        logging.error(session_info)
+        session = Session(server=self, **session_info)
 
         # need to be able to get first windows
         session._windows = session.list_windows()

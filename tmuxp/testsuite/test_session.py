@@ -37,9 +37,10 @@ class SessionCleanTestCase(TmuxTestCase):
         self.assertEqual(self.session.is_clean(), True)
         self.session.attached_window().attached_pane().send_keys('top')
         sleep(.4)
+        self.session.attached_window().list_panes()
         self.session.attached_window().attached_pane().send_keys('C-c', enter=False)
         self.assertEqual(self.session.is_clean(), False)
-        pass
+
 
 class SessionNewTestCase(TmuxTestCase):
     def test_new_session(self):

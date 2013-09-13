@@ -42,6 +42,7 @@ class BuilderTestCase(TmuxTestCase):
                     #w = s.select_window(1)
                     w = s.attached_window()
                     w = w.rename_window(window_name)
+                    w.list_panes()
                 else:
                     w = s.new_window(window_name=window_name,
                                      automatic_rename=automatic_rename)
@@ -57,6 +58,7 @@ class BuilderTestCase(TmuxTestCase):
                         p = w.attached_pane()
                     for cmd in pconf['shell_command']:
                         p.send_keys(cmd)
+                    w.list_panes()
                     self.assertEqual(window_pane_count, len(w._panes))
                 self.assertIsInstance(w, Window)
                 self.assertEqual(len(s.list_windows()), window_count)

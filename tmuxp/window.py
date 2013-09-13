@@ -20,16 +20,16 @@ class Window(TmuxObject):
     ``tmux(1) window``.
     '''
 
-    def __init__(self, **kwargs):
+    def __init__(self, session=None, **kwargs):
         self._panes = list()  # list of panes
 
-        if 'session' in kwargs:
-            self._session = kwargs.pop('session')
-        else:
+        if not session:
             raise ValueError(
                 "Window requires a Session object by "
                 "specifying session=Session"
             )
+        self.session = session
+        self.server = self.session.server
 
         self._TMUX = {}
         self.update(**kwargs)
@@ -39,7 +39,7 @@ class Window(TmuxObject):
             self.__class__.__name__,
             self.get('window_index'),
             self.get('window_name'),  # @todo, bug when window name blank
-            self._session
+            self.session
         )
 
     def select_layout(self, layout=None):
@@ -92,7 +92,7 @@ class Window(TmuxObject):
 
     @property
     def target(self):
-        return "%s:%s" % (self._session.get('session_id'), self.get('window_id'))
+        return "%s:%s" % (self.session.get('session_id'), self.get('window_id'))
 
     def set_window_option(self, option, value):
         '''
@@ -134,7 +134,7 @@ class Window(TmuxObject):
         except Exception, e:
             logging.error(e)
 
-        self._session.list_windows()
+        self.session.list_windows()
 
         return self
 
@@ -189,7 +189,7 @@ class Window(TmuxObject):
 
         # clear up empty dict
         pane = dict((k, v) for k, v in pane.iteritems() if v)
-        pane = Pane.from_tmux(session=self._session, window=self, **pane)
+        pane = Pane(window=self, **pane)
         self._panes.append(pane)
         self.list_panes()  # refresh all panes in :class:`Window`
 
@@ -210,34 +210,6 @@ class Window(TmuxObject):
                     continue
 
         return False
-
-    @classmethod
-    def from_tmux(cls, session=None, **kwargs):
-        '''
-        Retrieve a tmux window from server. Returns :class:`Window`
-
-        The attributes `_panes` contains a list of :class:`Pane`
-
-        Iterates ``tmux list-panes``, ``-F`` for return formatting.
-
-        :param session: the session the window is linked to.
-        :type session: :class:`Session`
-        '''
-
-        if not session:
-            raise ValueError(
-                "Window requires a Session object by "
-                "specifying session=Session"
-            )
-        #if not isinstance(session, Session):
-        #    raise TypeError('session must be a Session object')
-
-        window = cls(session=session)
-        window.update(**kwargs)
-
-        window._panes = window.list_panes()
-
-        return window
 
     def list_panes(self):
         '''
@@ -276,39 +248,47 @@ class Window(TmuxObject):
         if not self._panes:
             for pane in new_panes:
                 logging.debug('adding pane_id %s for window_id %s' % (pane['pane_id'], pane['window_id']))
-                self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
+                self._panes.append(Pane(window=self, **pane))
             return self._panes
 
         new = {pane['pane_id']: pane for pane in new_panes}
         old = {pane.get('pane_id'): pane for pane in self._panes}
 
-        created = set(new.keys()) - set(old.keys())
-        deleted = set(old.keys()) - set(new.keys())
+        created = set(new.keys()) - set(old.keys()) or ()
+        deleted = set(old.keys()) - set(new.keys()) or ()
         intersect = set(new.keys()).intersection(set(old.keys()))
 
         diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
-        logging.info(
-            "syncing panes"
-            "\n\tdiff: %s\n"
-            "\tcreated: %s\n"
-            "\tdeleted: %s\n"
-            "\tintersect: %s" % (diff, created, deleted, intersect)
-        )
+        intersect = set(k for k, v in diff.iteritems() if v) or ()
+        diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
 
-        for w in self._panes:
+        if diff or created or deleted:
+            log_diff = "sync sessions for server:\n"
+        else:
+            log_diff = None
+        if diff and intersect:
+            log_diff += "diff %s for %s" % (diff, intersect)
+        if created:
+            log_diff += "created %s" % created
+        if deleted:
+            log_diff += "deleted %s" % deleted
+        if log_diff:
+            logging.info(log_diff)
+
+        for p in self._panes:
             # remove pane objects if deleted or out of session
-            if w.get('pane_id') in deleted or self.get('session_id') != w.get('session_id'):
-                logging.debug("removing %s" % w)
-                self._panes.remove(w)
+            if p.get('pane_id') in deleted or self.get('session_id') != p.get('session_id'):
+                logging.debug("removing %s" % p)
+                self._panes.remove(p)
 
-            if w.get('pane_id') in intersect:
-                logging.debug('updating pane_id %s window_id %s' % (w.get('pane_id'), w.get('window_id')))
-                w.update(diff[w.get('pane_id')])
+            if p.get('pane_id') in intersect and p.get('p_id') in diff:
+                logging.debug('updating pane_id %s window_id %s' % (p.get('pane_id'), p.get('window_id')))
+                p.update(diff[p.get('pane_id')])
 
         # create pane objects for non-existant pane_id's
         for pane in [new[pane_id] for pane_id in created]:
             logging.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
-            self._panes.append(Pane.from_tmux(session=self._session, window=self, **pane))
+            self._panes.append(Pane(window=self, **pane))
 
         return self._panes

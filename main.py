@@ -109,20 +109,20 @@ from tmuxp.formats import SESSION_FORMATS, WINDOW_FORMATS, PANE_FORMATS
 #        for pane in window.panes:
 #            pass
 
+def readconfigs():
+    TMUXWRAPPER_DIR = os.path.expanduser('~/.tmuxwrapper')
 
-TMUXWRAPPER_DIR = os.path.expanduser('~/.tmuxwrapper')
+    if os.path.exists(TMUXWRAPPER_DIR):
+        for r, d, f in os.walk(TMUXWRAPPER_DIR):
+            for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
+                thefile = os.path.join(TMUXWRAPPER_DIR, filela)
+                print('filename: %s\t \tfullfile: %s\t' % (filela, thefile))
+                c = kaptan.Kaptan()
+                c.import_config(thefile)
 
-if os.path.exists(TMUXWRAPPER_DIR):
-    for r, d, f in os.walk(TMUXWRAPPER_DIR):
-        for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
-            thefile = os.path.join(TMUXWRAPPER_DIR, filela)
-            print('filename: %s\t \tfullfile: %s\t' % (filela, thefile))
-            c = kaptan.Kaptan()
-            c.import_config(thefile)
-
-            #pprint(c.get("windows"))
-            #pprint(c.export('dict'))
-            pprint(c.get())
+                #pprint(c.get("windows"))
+                #pprint(c.export('dict'))
+                pprint(c.get())
 
 #config = kaptan.Kaptan(handler="yaml")
 #config.import_config("""
@@ -145,33 +145,34 @@ if os.path.exists(TMUXWRAPPER_DIR):
 
     dict({ name='session_name', **dict})
 """
-windows = list()
-for window in c.get('windows'):
+def oldexpand():
+    windows = list()
+    for window in c.get('windows'):
 
-    if len(window) == int(1):
-        name = window.iterkeys().next()  # get window name
+        if len(window) == int(1):
+            name = window.iterkeys().next()  # get window name
 
-        """expand
-            window[name] = 'command'
+            """expand
+                window[name] = 'command'
 
-            to
+                to
 
-            window[name] = {
-                panes=['command']
-            }
-        """
-        if isinstance(window[name], basestring):
-            windowoptions = dict(
-                panes=[window[name]]
-            )
-        else:
-            windowoptions = window[name]
+                window[name] = {
+                    panes=['command']
+                }
+            """
+            if isinstance(window[name], basestring):
+                windowoptions = dict(
+                    panes=[window[name]]
+                )
+            else:
+                windowoptions = window[name]
 
-        window = dict(name=name, **windowoptions)
-        if len(window['panes']) > int(1):
-            pass
+            window = dict(name=name, **windowoptions)
+            if len(window['panes']) > int(1):
+                pass
 
-    windows.append(window)
+        windows.append(window)
 
 import os
 import gevent
@@ -203,8 +204,6 @@ def in_tmux():
     else:
         return False
 
-print has_virtualenv()
-print in_tmux()
 
 import itertools
 #subprocess.Popen(['vim']).pid
@@ -214,25 +213,22 @@ if not in_tmux():
         shell_commands.append('source %s/bin/activate' % has_virtualenv())
 
     shell_commands.append('echo wat lol %s' % has_virtualenv())
-    #shell_commands = ['send-keys ' + shell_command + '\;' for shell_command in shell_commands]
-    #shell_commands.append('attach')
-    #sep = ['\;'] * (len(shell_commands) - 1)
-    #shell_commands = list(it.next() for it in itertools.cycle((iter(shell_commands), iter(sep))))
-    print shell_commands
-    #os.execl('/usr/local/bin/tmux', 'new-session -d', *shell_commands)
     session_name = 'tmuxp'
     tmux('new-session', '-d', '-s', session_name)
     for shell_command in shell_commands:
-        #subprocess.call(['/usr/local/bin/tmux', 'send-keys', '-t %s' % session_name, shell_command, '^M'])
         tmux('send-keys', '-t', session_name, shell_command, '^M')
 
-    tmux('send-keys', '-R', '-t', session_name, 'python main.py', '^M')
+    os.environ['pypid'] = str(os.getpid())
+    tmux('send-keys', '-R', '-t', session_name, 'python main.py', '^M', )
 
-    os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
+    os.execle('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name, os.environ)
 else:
+    print has_virtualenv()
+    print in_tmux()
+    print os.environ.get('pypid')
+    print os.environ.get('PYPID')
+    print os.getpid()
     print "welcome to tmuxp"
-
-exit()
 
 """
 Have a bootstrap.py to determine environment variables, like tmux location,
@@ -241,7 +237,7 @@ sessions. An outer wrapper that can be used to run tmux within created,
 uncreated and remotely.
 """
 
-
+'^M',
 """
 
 scenario

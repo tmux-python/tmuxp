@@ -24,18 +24,22 @@ class Session(TmuxObject):
 
     '''
 
-    def __init__(self, **kwargs):
-        self.session_name = None
+    def __init__(self, server=None, **kwargs):
+        if not server:
+            raise ValueError('Session requires server')
+
+        self.server = server
+
         self._windows = list()
-
-        # do we need this?
-        if 'session_name' not in kwargs:
-            raise ValueError('Session requires session_name')
-        else:
-            self.session_name = kwargs.get('session_name')
-
         self._TMUX = {}
         self.update(**kwargs)
+
+        self.list_windows()
+
+    def tmux(self, *args, **kwargs):
+        #if '-t' not in kwargs:
+        #    kwargs['-t'] = self.get['session_id']
+        return self.server.tmux(*args, **kwargs)
 
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
@@ -45,9 +49,9 @@ class Session(TmuxObject):
         '''
         new_name = pipes.quote(new_name)
         try:
-            tmux(
+            self.tmux(
                 'rename-session',
-                '-t', pipes.quote(self.get('session_name')),
+                #'-t', pipes.quote(self.get('session_name')),
                 new_name
             )
             self['session_name'] = new_name
@@ -72,13 +76,13 @@ class Session(TmuxObject):
         tmux_formats = ['#{%s}' % format for format in formats]
 
         if window_name:
-            window = tmux(
+            window = self.tmux(
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
                 '-n', window_name
             )
         else:
-            window = tmux(
+            window = self.tmux(
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
             )
@@ -87,7 +91,8 @@ class Session(TmuxObject):
 
         # clear up empty dict
         window = dict((k, v) for k, v in window.iteritems() if v)
-        window = Window.from_tmux(session=self, **window)
+        window = Window(session=self, **window)
+        window.list_panes()
 
         if automatic_rename:
             window.set_window_option('automatic-rename', True)
@@ -116,26 +121,9 @@ class Session(TmuxObject):
         if target_window:
             tmux_args.append(['-t', target_window])
 
-        tmux('kill-window', *tmux_args)
+        self.tmux('kill-window', *tmux_args)
 
         self.list_windows()
-
-    @classmethod
-    def from_tmux(cls, **kwargs):
-        '''
-        Freeze of the current tmux session directly from the server. Returns
-        :class:`Session`. Accepts a :class:`dict` of properties for a session.
-
-        '''
-        if 'session_name' not in kwargs:
-            raise ValueError('Session requires session_name')
-
-        session = cls(session_name=kwargs['session_name'])
-        session.update(**kwargs)
-
-        session._windows = session.list_windows()
-
-        return session
 
     def _list_windows(self):
         '''
@@ -145,9 +133,9 @@ class Session(TmuxObject):
         formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
-        windows = tmux(
+        windows = self.tmux(
             'list-windows',                     # ``tmux list-windows``
-            '-t%s' % self.session_name,    # target (session name)
+            '-t%s' % self.get('session_id'),    # target (session name)
             '-F%s' % '\t'.join(tmux_formats),   # output
             _iter=True                          # iterate line by line
         )
@@ -171,24 +159,32 @@ class Session(TmuxObject):
         if not self._windows:
             for window in new_windows:
                 logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
-                self._windows.append(Window.from_tmux(session=self, **window))
+                self._windows.append(Window(session=self, **window))
         else:
             new = {window['window_id']: window for window in new_windows}
             old = {window.get('window_id'): window for window in self._windows}
 
-            created = set(new.keys()) - set(old.keys())
-            deleted = set(old.keys()) - set(new.keys())
+            created = set(new.keys()) - set(old.keys()) or ()
+            deleted = set(old.keys()) - set(new.keys()) or ()
             intersect = set(new.keys()).intersection(set(old.keys()))
 
             diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
-            logging.info(
-                "syncing windows"
-                "\n\tdiff: %s\n"
-                "\tcreated: %s\n"
-                "\tdeleted: %s\n"
-                "\tintersect: %s" % (diff, created, deleted, intersect)
-            )
+            intersect = set(k for k, v in diff.iteritems() if v) or ()
+            diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
+
+            if diff or created or deleted:
+                log_diff = "sync sessions for server:\n"
+            else:
+                log_diff = None
+            if diff and intersect:
+                log_diff += "diff %s for %s" % (diff, intersect)
+            if created:
+                log_diff += "created %s" % created
+            if deleted:
+                log_diff += "deleted %s" % deleted
+            if log_diff:
+                logging.info(log_diff)
 
             for w in self._windows:
                 # remove window objects if deleted or out of session
@@ -196,14 +192,14 @@ class Session(TmuxObject):
                     logging.debug("removing %s" % w)
                     self._windows.remove(w)
 
-                if w.get('window_id') in intersect:
+                if w.get('window_id') in intersect and w.get('window_id') in diff:
                     logging.debug('updating %s %s' % (w.get('window_name'), w.get('window_id')))
                     w.update(diff[w.get('window_id')])
 
             # create window objects for non-existant window_id's
             for window in [new[window_id] for window_id in created]:
                 logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
-                self._windows.append(Window.from_tmux(session=self, **window))
+                self._windows.append(Window(session=self, **window))
 
         return self._windows
 
@@ -234,7 +230,7 @@ class Session(TmuxObject):
 
             Todo: assure ``-l``, ``-n``, ``-p`` work.
         '''
-        tmux('select-window', '-t', target_window)
+        self.tmux('select-window', '-t', target_window)
         self.list_windows()
         return self.attached_window()
 
@@ -269,4 +265,4 @@ class Session(TmuxObject):
         return True
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.session_name)
+        return "%s(%s)" % (self.__class__.__name__, self.get('session_name'))

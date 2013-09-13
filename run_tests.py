@@ -16,25 +16,10 @@ tmux_path = sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 if tmux_path not in sys.path:
     sys.path.insert(0, tmux_path)
 
-
-# import os
-# import gevent
-# import gevent.subprocess
-# from gevent.subprocess import PIPE
-# import pexpect
-
-
-
-
-#print shell(['tmux'], '')
-#tmux('set-option', '-g', 'detach-on-destroy', 'off')
 from time import sleep
 import itertools
 
 def main():
-    #subprocess.Popen(['tmux'])
-    #sleep(1)
-    #tmuxprocess.kill()
 
     def has_virtualenv():
         if os.environ.get('VIRTUAL_ENV'):
@@ -48,7 +33,6 @@ def main():
         else:
             return False
 
-    #subprocess.Popen(['vim']).pid
     if not in_tmux():
         shell_commands = []
         if has_virtualenv():
@@ -61,26 +45,19 @@ def main():
 
         tmux('send-keys', '-R', '-t', session_name, 'python run_tests.py', '^M')
 
+        os.environ['pypid'] = str(os.getpid())
+
         os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
         #subprocess.Popen(['tmux', 'attach-session', '-t', session_name])
     else:
         print has_virtualenv()
         print in_tmux()
+        print os.environ.get('pypid')
         suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
         unittest.TextTestRunner(verbosity=2).run(suites)
         # todo create a hook to run after suite / loader to detach
         # and killall tmuxp + tmuxp_-prefixed sessions.
         tmux('detach')
 
-
-
-#subprocess.Popen(['vim']).pid
-
-
-
 if __name__ == '__main__':
-    #p = gevent.subprocess.Popen(['tmux'], shell=True)
-    #g = gevent.spawn(main)
-    #out, err = p.communicate()
-    #g.kill()
     main()

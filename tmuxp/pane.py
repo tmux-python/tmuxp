@@ -18,42 +18,27 @@ class Pane(TmuxObject):
         ``tmux(1)`` pane.
 
         pane holds a psuedoterm and linked to tmux windows.
-    '''
 
-    def __init__(self, **kwargs):
-        self._session = None
-        self._window = None
-
-        self._TMUX = {}
-        self.update(**kwargs)
-
-    @classmethod
-    def from_tmux(cls, session=None, window=None, **kwargs):
-        '''
         Retrieve a tmux pane from server. Returns :class:`Pane`.
 
         Iterates ``$ tmux list-panes``, ``-F`` for return formatting.
 
         :param session: :class:`Session` object.
         :param window: :class:`Window` object.
-        '''
 
-        if not session:
-            raise ValueError('Pane generated using ``from_tmux`` must have \
-                             ``Session`` object')
+    '''
 
+    def __init__(self, window=None, **kwargs):
         if not window:
-            raise ValueError('Pane generated using ``from_tmux`` must have \
+            raise ValueError('Pane must have \
                              ``Window`` object')
 
-        pane = cls()
+        self.window = window
+        self.session = self.window.session
+        self.server = self.session.server
 
-        pane.update(**kwargs)
-
-        pane._session = session
-        pane._window = window
-
-        return pane
+        self._TMUX = {}
+        self.update(**kwargs)
 
     def send_keys(self, cmd, enter=True):
         '''
@@ -74,8 +59,8 @@ class Pane(TmuxObject):
 
     @property
     def target(self):
-        return "%s:%s.%s" % (self._session.get('session_id'), self.get('window_id'), int(self.get('pane_index')))
+        return "%s:%s.%s" % (self.session.get('session_id'), self.get('window_id'), int(self.get('pane_index')))
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__.__name__, self._window)
+        return "%s(%s)" % (self.__class__.__name__, self.window)
