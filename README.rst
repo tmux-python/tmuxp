@@ -13,6 +13,7 @@ Docs            http://tmuxp.rtfd.org
 API             http://tmuxp.readthedocs.org/en/latest/api.html
 Issues          https://github.com/tony/tmuxp/issues
 Source          https://github.com/tony/tmuxp
+License         `BSD<http://opensource.org/licenses/BSD-3-Clause>`_
 git repo        .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git
@@ -23,7 +24,7 @@ install dev     .. code-block:: bash
                     $ virtualenv .env
                     $ source .env/bin/activate
                     $ pip install -e .
-run tests       .. code-block:: bash
+tests           .. code-block:: bash
 
                     $ python ./run_tests.py
 ===========     ==========================================================
