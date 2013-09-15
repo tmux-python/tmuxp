@@ -20,7 +20,6 @@ before_script:
   - tmux -V
 #  - /sbin/start-stop-daemon --start --quiet --background --exec /usr/local/bin/tmux -- -C
 # command to run tests
-  - tmux
 script: python run_tests.py
 #script: nosetests tmuxp
 after_script:
