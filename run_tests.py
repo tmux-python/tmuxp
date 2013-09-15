@@ -79,11 +79,19 @@ def main():
             #os.kill(args['pypid'], 9)
             #t.kill_server()
             suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-            return unittest.TextTestRunner(verbosity=2).run(suites)
+            result = unittest.TextTestRunner(verbosity=2).run(suites)
+            if result.wasSuccessful():
+                sys.exit(0)
+            else:
+                sys.exit(1)
     session_name = 'tmuxp'
     t.tmux('new-session', '-d', '-s', session_name)
     suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-    return unittest.TextTestRunner(verbosity=2).run(suites)
+    result = unittest.TextTestRunner(verbosity=2).run(suites)
+    if result.wasSuccessful():
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 if __name__ == '__main__':
-    return main()
+    main()
