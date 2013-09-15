@@ -48,7 +48,7 @@ class Server(object):
         return tmux(*args, **kwargs)
 
     def hotswap(self, session_name=None):
-        args = ['/usr/local/bin/tmux', 'tmux']
+        args = ['/usr/local/bin/tmux', 'tmux', '-C']
         if self.socket_name:
             args.append('-L{}'.format(self.socket_name))
         if self.socket_path:
