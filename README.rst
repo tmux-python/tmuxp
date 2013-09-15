@@ -13,5 +13,7 @@ Docs          http://tmuxp.rtfd.org
 API           http://tmuxp.readthedocs.org/en/latest/api.html
 Issues        https://github.com/tony/tmuxp/issues
 Source        https://github.com/tony/tmuxp
-git repo      https://github.com/tony/tmuxp.git
+git repo      .. code-block::
+
+                $ git clone https://github.com/tony/tmuxp.git
 ==========    ========================================
