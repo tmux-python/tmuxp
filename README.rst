@@ -13,7 +13,7 @@ Docs            http://tmuxp.rtfd.org
 API             http://tmuxp.readthedocs.org/en/latest/api.html
 Issues          https://github.com/tony/tmuxp/issues
 Source          https://github.com/tony/tmuxp
-License         `BSD<http://opensource.org/licenses/BSD-3-Clause>`_
+License         `BSD`_.
 git repo        .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git
@@ -28,3 +28,5 @@ tests           .. code-block:: bash
 
                     $ python ./run_tests.py
 ===========     ==========================================================
+
+.. _BSD: http://opensource.org/licenses/BSD-3-Clause
