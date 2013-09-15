@@ -86,4 +86,4 @@ def main():
     return unittest.TextTestRunner(verbosity=2).run(suites)
 
 if __name__ == '__main__':
-    main()
+    return main()
