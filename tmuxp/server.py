@@ -48,7 +48,7 @@ class Server(object):
         return tmux(*args, **kwargs)
 
     def hotswap(self, session_name=None):
-        args = ['/usr/local/bin/tmux', 'tmux', '-C']
+        args = ['/usr/local/bin/tmux', 'tmux']
         if self.socket_name:
             args.append('-L{}'.format(self.socket_name))
         if self.socket_path:
@@ -360,13 +360,11 @@ class Server(object):
         # clear up empty dict
         session_info = dict((k, v) for k, v in session_info.iteritems() if v)
 
-        logging.error(session_info)
         session = Session(server=self, **session_info)
 
         # need to be able to get first windows
         session._windows = session.list_windows()
 
-        #self.list_sessions()  # get fresh data for sessions on Server object
         self._sessions.append(session)
 
         return session
