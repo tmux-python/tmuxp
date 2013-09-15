@@ -41,6 +41,7 @@ def main():
         else:
             return False
 
+    tmuxclient = None
     if not in_tmux():
         shell_commands = []
         if has_virtualenv():
@@ -57,7 +58,11 @@ def main():
 
         #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
         t.hotswap(session_name=session_name)
-        #subprocess.Popen(['tmux', 'attach-session', '-t', session_name])
+        def output(line):
+            #print(line)
+            pass
+        #tmuxclient = t.tmux('-C')
+        #tmuxclient = subprocess.Popen(['tmux', '-C', '-Lhi', 'attach'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     else:
         print has_virtualenv()
         print in_tmux()
@@ -66,12 +71,13 @@ def main():
         if 'pypid' in args:
             print args['pypid']
         suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-        unittest.TextTestRunner(verbosity=2).run(suites)
+
         # todo create a hook to run after suite / loader to detach
         # and killall tmuxp + tmuxp_-prefixed sessions.
         #tmux('detach')
         #os.kill(args['pypid'], 9)
         #t.kill_server()
+        return unittest.TextTestRunner(verbosity=2).run(suites)
 
 if __name__ == '__main__':
     main()

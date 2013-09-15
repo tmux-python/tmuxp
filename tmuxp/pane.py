@@ -8,7 +8,7 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
-from .util import TmuxObject, tmux
+from .util import TmuxObject
 from .formats import PANE_FORMATS
 from .logxtreme import logging
 
@@ -40,13 +40,18 @@ class Pane(TmuxObject):
         self._TMUX = {}
         self.update(**kwargs)
 
+    def tmux(self, *args, **kwargs):
+        #if '-t' not in kwargs:
+        #    kwargs['-t'] = self.get['session_id']
+        return self.server.tmux(*args, **kwargs)
+
     def send_keys(self, cmd, enter=True):
         '''
             ```tmux send-keys``` to the pane
 
             :param enter: bool. send enter after sending the key.
         '''
-        tmux('send-keys', '-t', self.target, cmd)
+        self.tmux('send-keys', '-t', self.target, cmd)
 
         if enter:
             self.enter()
@@ -55,7 +60,7 @@ class Pane(TmuxObject):
         '''
             ``$ tmux send-keys`` send Enter to the pane.
         '''
-        tmux('send-keys', '-t', self.target, 'Enter')
+        self.tmux('send-keys', '-t', self.target, 'Enter')
 
     @property
     def target(self):
@@ -63,4 +68,4 @@ class Pane(TmuxObject):
 
     def __repr__(self):
         # todo test without session_name
-        return "%s(%s)" % (self.__class__.__name__, self.window)
+        return "%s(%s %s)" % (self.__class__.__name__, self.get('pane_id'), self.window)

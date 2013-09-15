@@ -52,6 +52,7 @@ class Session(TmuxObject):
             self.tmux(
                 'rename-session',
                 #'-t', pipes.quote(self.get('session_name')),
+                '-t', self.get('session_id'),
                 new_name
             )
             self['session_name'] = new_name
@@ -265,4 +266,4 @@ class Session(TmuxObject):
         return True
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.get('session_name'))
+        return "%s(%s %s)" % (self.__class__.__name__, self.get('session_id'), self.get('session_name'))

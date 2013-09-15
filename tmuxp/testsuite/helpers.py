@@ -1,4 +1,5 @@
 import unittest
+import time
 from random import randint
 from .. import t, Server
 from ..logxtreme import root_logger, logging
@@ -24,6 +25,8 @@ def bootstrap():
 
     session_list = t.list_sessions()
 
+    assert session_list == t.list_sessions()
+
     # find current sessions prefixed with tmuxp
     old_test_sessions = [s.get('session_name') for s in session_list
                         if s.get('session_name').startswith(TEST_SESSION_PREFIX)]
@@ -32,6 +35,8 @@ def bootstrap():
                       if not s.get('session_name').startswith(
                           TEST_SESSION_PREFIX
                       )]
+
+    assert session_list == t.list_sessions()
 
     TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 13370))
     session = t.new_session(
@@ -42,6 +47,8 @@ def bootstrap():
         logging.debug('Old test test session %s found. Killing it.' %
                       old_test_session)
         t.kill_session(old_test_session)
+
+    assert TEST_SESSION_NAME == session.get('session_name')
 
     return (TEST_SESSION_NAME, session)
 

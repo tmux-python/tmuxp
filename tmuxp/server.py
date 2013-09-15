@@ -45,7 +45,6 @@ class Server(object):
             args.insert(0, '-S{}'.format(self.socket_path))
         if self.config_file:
             args.insert(0, '-f{}'.format(self.config_file))
-        print(args, kwargs)
         return tmux(*args, **kwargs)
 
     def hotswap(self, session_name=None):
@@ -60,8 +59,7 @@ class Server(object):
         if session_name:
             args.append('-t{}'.format(session_name))
 
-        logging.error(args)
-        logging.error(tuple(args))
+        #logging.info(args)
         os.execl(*args)
         #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
 
@@ -349,9 +347,8 @@ class Server(object):
         session_info = self.tmux(
             'new-session',
             '-d',  # assume detach = True for now, todo: fix
-            '-P', '-F%s' % '\t'.join(tmux_formats),   # output
             '-s', session_name,
-            *args
+            '-P', '-F%s' % '\t'.join(tmux_formats),   # output
         )
 
         if env:
@@ -369,6 +366,7 @@ class Server(object):
         # need to be able to get first windows
         session._windows = session.list_windows()
 
-        self.list_sessions()  # get fresh data for sessions on Server object
+        #self.list_sessions()  # get fresh data for sessions on Server object
+        self._sessions.append(session)
 
         return session

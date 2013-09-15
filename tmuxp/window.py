@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 import pipes
-from .util import TmuxObject, tmux
+from .util import TmuxObject
 from .pane import Pane
 from .formats import PANE_FORMATS
 from .logxtreme import logging
@@ -35,12 +35,18 @@ class Window(TmuxObject):
         self.update(**kwargs)
 
     def __repr__(self):
-        return "%s(%s %s, %s)" % (
+        return "%s(%s %s:%s, %s)" % (
             self.__class__.__name__,
+            self.get('window_id'),
             self.get('window_index'),
             self.get('window_name'),  # @todo, bug when window name blank
             self.session
         )
+
+    def tmux(self, *args, **kwargs):
+        #if '-t' not in kwargs:
+        #    kwargs['-t'] = self.get['session_id']
+        return self.server.tmux(*args, **kwargs)
 
     def select_layout(self, layout=None):
         '''
@@ -84,7 +90,7 @@ class Window(TmuxObject):
         :param layout: string of the layout, 'even-horizontal', 'tiled', etc.
         :type layout: string
         '''
-        tmux(
+        self.tmux(
             'select-layout',
             '-t%s' % self.target,      # target (name of session)
             layout
@@ -112,7 +118,7 @@ class Window(TmuxObject):
         else:
             value = 'off'
 
-        tmux(
+        self.tmux(
             'set-window-option', option, value
         )
 
@@ -125,7 +131,7 @@ class Window(TmuxObject):
         :type new_name: string
         '''
         try:
-            tmux(
+            self.tmux(
                 'rename-window',
                 '-t%s' % self.target,
                 pipes.quote(new_name)
@@ -153,7 +159,7 @@ class Window(TmuxObject):
             target_pane = "%s.%s" % (self.target, target_pane)
 
         try:
-            tmux('select-pane', '-t', target_pane)
+            self.tmux('select-pane', '-t', target_pane)
         except Exception:
             logging.error('pane not found %s %s' % (target_pane, self.list_panes()))
         self.list_panes()
@@ -179,7 +185,7 @@ class Window(TmuxObject):
         formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
-        pane = tmux(
+        pane = self.tmux(
             'split-window',
             '-P', '-F%s' % ''.join(tmux_formats),     # output
         )
@@ -221,7 +227,7 @@ class Window(TmuxObject):
         #if isinstance(self.get('window_id'), basestring):
         #    window_id =
 
-        panes = tmux(
+        panes = self.tmux(
             'list-panes',
             #'-s',                               # for sessions
             #'-t%s' % self._session.session_name,      # target (name of session)

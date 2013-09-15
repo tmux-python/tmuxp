@@ -5,7 +5,6 @@ import unittest
 from .. import Window
 from ..logxtreme import logging
 from ..config import ConfigExpand
-from ..util import tmux
 from ..builder import Builder
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
@@ -23,7 +22,6 @@ class BuilderTestCase(TmuxTestCase):
         super(BuilderTestCase, cls).setUpClass()
 
     def test_split_windows(self):
-        session_name = self.TEST_SESSION_NAME
         s = self.session
         tmux_config = ConfigExpand(sampleconfigdict).expand().config
 
