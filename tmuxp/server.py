@@ -38,11 +38,32 @@ class Server(object):
         self._sessions = list()
 
     def tmux(self, *args, **kwargs):
+        args = list(args)
         if self.socket_name:
-            kwargs['socket-name'] = self.socket_name
-            kwargs['socket-path'] = self.socket_path
-            kwargs['file'] = self.config_file
+            args.insert(0, '-L{}'.format(self.socket_name))
+        if self.socket_path:
+            args.insert(0, '-S{}'.format(self.socket_path))
+        if self.config_file:
+            args.insert(0, '-f{}'.format(self.config_file))
+        print(args, kwargs)
         return tmux(*args, **kwargs)
+
+    def hotswap(self, session_name=None):
+        args = ['/usr/local/bin/tmux', 'tmux']
+        if self.socket_name:
+            args.append('-L{}'.format(self.socket_name))
+        if self.socket_path:
+            args.append('-S{}'.format(self.socket_path))
+        if self.config_file:
+            args.append('-f{}'.format(self.config_file))
+        args.append('attach-session')
+        if session_name:
+            args.append('-t{}'.format(session_name))
+
+        logging.error(args)
+        logging.error(tuple(args))
+        os.execl(*args)
+        #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
 
     def list_sessions(self):
         '''
@@ -52,9 +73,7 @@ class Server(object):
         '''
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
-        #import ipdb
-        #ipdb.set_trace()
-        sessions = tmux(
+        sessions = self.tmux(
             'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
             _iter=False                          # iterate line by line
@@ -128,7 +147,7 @@ class Server(object):
         tmux_formats = ['#{%s}' % format for format in formats]
         #import ipdb
         #ipdb.set_trace()
-        clients = tmux(
+        clients = self.tmux(
             'list-clients',
             '-F%s' % '\t'.join(tmux_formats),   # output
             _iter=False                          # iterate line by line
@@ -188,15 +207,15 @@ class Server(object):
         '''
 
         try:
-            tmux('list-clients')
-            tmux('list-sessions')
+            self.tmux('list-clients')
+            self.tmux('list-sessions')
             return True
         except TmuxNotRunning:
             return False
 
     def has_clients(self):
         # are any clients connected to tmux
-        if len(tmux('list-clients')) > int(1):
+        if len(self.tmux('list-clients')) > int(1):
             return True
         else:
             return False
@@ -226,8 +245,7 @@ class Server(object):
 
         return attached_sessions or None
 
-    @staticmethod
-    def has_session(target_session):
+    def has_session(self, target_session):
         '''
         ``$ tmux has-session``
 
@@ -237,12 +255,18 @@ class Server(object):
         '''
 
         try:  # has-session returns nothing if session exists
-            if 'session not found' in tmux('has-session', '-t', target_session).stderr:
+            if 'session not found' in self.tmux('has-session', '-t', target_session).stderr:
                 return False
             else:
                 return True
         except Exception as e:
             return False
+
+    def kill_server(self):
+        '''
+        ``$ tmux kill-server``
+        '''
+        self.tmux('kill-server')
 
     def kill_session(self, target_session=None):
         '''
@@ -251,16 +275,8 @@ class Server(object):
         :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
                                 kill asdfasd
         '''
-        try:
-            tmux('kill-session', '-t', target_session)
-            self.list_sessions()
-        except ErrorReturnCode_1 as e:
-            logging.debug(
-                "\n\tcmd:\t%s\n"
-                "\terror:\t%s"
-                % (e.full_cmd, e.stderr)
-            )
-            return False
+        self.tmux('kill-session', '-t', target_session)
+        self.list_sessions()
 
     @property
     def sessions(self):
@@ -273,7 +289,7 @@ class Server(object):
         :param: target_session: str. name of the session. fnmatch(3) works.
         '''
         #tmux('switch-client', '-t', target_session)
-        tmux('switch-client', '-t%s' %target_session)
+        self.tmux('switch-client', '-t%s' %target_session)
 
     def new_session(self,
                     session_name=None,
@@ -315,7 +331,7 @@ class Server(object):
         ### ToDo: Update below to work with attach_if_exists
         if self.has_session(session_name):
             if kill_session:
-                tmux('kill-session', '-t', session_name)
+                self.tmux('kill-session', '-t', session_name)
                 logging.error('session %s exists. killed it.' % session_name)
             else:
                 raise TmuxSessionExists('Session named %s exists' % session_name)
@@ -330,7 +346,7 @@ class Server(object):
         if env:
             del os.environ['TMUX']
 
-        session_info = tmux(
+        session_info = self.tmux(
             'new-session',
             '-d',  # assume detach = True for now, todo: fix
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output

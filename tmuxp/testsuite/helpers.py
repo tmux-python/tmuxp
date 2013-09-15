@@ -1,6 +1,5 @@
 import unittest
 from random import randint
-from ..util import tmux
 from .. import t, Server
 from ..logxtreme import root_logger, logging
 from ..exc import TmuxNoClientsRunning, ErrorReturnCode_1
