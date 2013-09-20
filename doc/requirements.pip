@@ -1,2 +1,3 @@
 -r ../requirements.pip
 sphinxcontrib-aafig
+reportlab
