@@ -70,11 +70,25 @@ Organize apps based on your needs
 You can categorize and keep many terminals / applications separated into
 multiple windows
 
-In addition to being able to split the terminal into multiple windows, you
-can create new spaces as much as you want.
+In addition to being able to split the terminal into multiple panes, you
+can create new windows as much as you want.
 
-You can leave the window, and return later, and your applications will
-still be there.
+.. aafig::
+   :textual:
+
+   +---------+---------+  +--------------------+
+   | $ bash  | $ bash  |  | $ vim              |
+   |         |         |  |                    |
+   |         |         |  |                    |
+   +---------+---------+  |                    |
+   | $ vim   | $ bash  |  |                    |
+   |         |         |  |                    |
+   |         |         |  |                    |
+   +---------+---------+--+--------------------+
+   | '1:sys*  2:vim'                           |
+   +-------------------------------------------+
+
+You can switch between the windows you create.
 
 Resume everything later
 -----------------------
