@@ -79,29 +79,30 @@ You can leave tmux and all applications running (detach), log out, make a
 sandwich, and re-(attach), all applications are still running!
 
 .. aafig::
+   :textual:
 
    +--------+--------+                        +-----------------------+
-   | $ bash | $ bash |                        | '$ [screen detached]' |
+   | $ bash | $ bash |                        | $ [screen detached]   |
    |        |        |                        |                       |
    |        |        |     /------------\     |                       |
-   +--------+--------+ --> | 'detach'   | --> |                       |
-   | $ vim  | $ bash |     | 'ctrl-b b' |     |                       |
+   +--------+--------+ --> |   detach   | --> |                       |
+   | $ vim  | $ bash |     | 'Ctrl-b b' |     |                       |
    |        |        |     \------------/     |                       |
    |        |        |                        |                       |
    +--------+--------+                        +-----------------------+
                                                            |
-            +----------------------------------------------+
-            |
-            v
+               +-------------------------------------------+
+               |
+               v
    +-----------------------+                        +--------+--------+
-   | '$ [screen detached]' |                        | $ bash | $ bash |
-   | '$ tmux attach'       |                        |        |        |
+   | $ [screen detached]   |                        | $ bash | $ bash |
+   | $ tmux attach         |                        |        |        |
    |                       |     /------------\     |        |        |
-   |                       | --> | 'attaching'| --> +--------+--------|                       |
+   |                       | --> | attaching  | --> +--------+--------+
    |                       |     \------------/     | $ vim  | $ bash |
    |                       |                        |        |        |
    |                       |                        |        |        |
-   +-----------------------+                        +-----------------+
+   +-----------------------+                        +--------+--------+
 
 The take-away
 -------------
