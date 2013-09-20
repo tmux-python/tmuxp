@@ -252,3 +252,6 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+# aafig format, try to get working with pdf
+aafig_format = dict(latex='pdf', html='svg')

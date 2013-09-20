@@ -142,8 +142,9 @@ tmux workspaces.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
 
-Getting more technical
-======================
+=============
+What is what?
+=============
 
 tmux is not the only multiplexer. there is also screen.
 
