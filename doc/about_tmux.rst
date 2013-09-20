@@ -40,7 +40,7 @@ windows, you can create new spaces as much as you want.
 You can leave the window, and return later, and your applications will
 still be there.
 
-4. You can leave tmux and all applications inside (detach), log out, make
+4. You can leave tmux and all applications running (detach), log out, make
    a sandwich, and re-(attach), all applications are still running!
 
 So you can keep tmux on a server with your latest work, come back and
@@ -55,3 +55,92 @@ If you do a task commonly, it may help to use an application which manages
 tmux workspaces.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
+
+
+Getting more technical
+----------------------
+
+tmux is not the only multiplexer. there is also screen.
+
+tmux runs as a server.
+
+a server can hold sessions.
+
+a session can hold windows.
+
+a window can hold panes.
+
+a pane is a PTY - a pseudoterminal.
+
+tmux can run multiple servers by specifying ``[-L socket-name]`` and 
+``[-S socket-path]``.
+
+The tao of tmux
+===============
+
+tmux is comprised of these objects:
+
+here is the format I will use:
+
+    ==========  ==========================================================
+    object      most important detail
+
+                contains anything?
+    
+                ======= ==================================================
+                options most to least important options la
+
+                formats most to least important options hi
+                ======= ==================================================
+    ==========  ==========================================================
+
+    ==========  ==========================================================
+    server      multiple can be run by specific ``[-L socket-name]`` and
+                ``[-S socket-path]``.
+
+                holds sessions.
+    
+                ======= ==================================================
+                options most to least important options la
+
+                formats most to least important options hi
+                ======= ==================================================
+    session     inside a server.
+    
+                holds windows.
+
+                windows can have a name.
+
+                ======= ==================================================
+                options most to least important options la
+
+                formats most to least important options hi
+                ======= ==================================================
+    window      inside a session.
+
+                holds panes.
+
+                panes can be organized with a layouts.
+
+                windows can have names.
+
+                ======= ==================================================
+                options most to least important options la
+
+                formats most to least important options hi
+                ======= ==================================================
+    pane
+                inside / Linked to a window.
+
+                a pty (pseudoterminal).
+
+                ======= ==================================================
+                options most to least important options la
+
+                formats most to least important options hi
+                ======= ==================================================
+    ==========  ==========================================================
+
+which are described by:
+    options - settings for the pane, window, session or server
+    formats - variables describing the current "state" of the object
