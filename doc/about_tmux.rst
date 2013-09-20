@@ -75,11 +75,14 @@ still be there.
 Resume everything later
 -----------------------
 
+You can leave tmux and all applications running (detach), log out, make a
+sandwich, and re-(attach), all applications are still running!
+
 .. aafig::
 
    +--------+--------+                        +-----------------------+
    | $ bash | $ bash |                        | '$ [screen detached]' |
-   |        |        |                        | '$ tmux attach'       |
+   |        |        |                        |                       |
    |        |        |     /------------\     |                       |
    +--------+--------+ --> | 'detach'   | --> |                       |
    | $ vim  | $ bash |     | 'ctrl-b b' |     |                       |
@@ -90,10 +93,15 @@ Resume everything later
             +----------------------------------------------+
             |
             v
-
-
-
-You can leave tmux and all applications running (detach), log out, make a sandwich, and re-(attach), all applications are still running!
+   +-----------------------+                        +--------+--------+
+   | '$ [screen detached]' |                        | $ bash | $ bash |
+   | '$ tmux attach'       |                        |        |        |
+   |                       |     /------------\     |        |        |
+   |                       | --> | 'attaching'| --> +--------+--------|                       |
+   |                       |     \------------/     | $ vim  | $ bash |
+   |                       |                        |        |        |
+   |                       |                        |        |        |
+   +-----------------------+                        +-----------------+
 
 The take-away
 -------------
