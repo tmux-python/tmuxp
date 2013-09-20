@@ -23,6 +23,7 @@ Contents:
 
     foreward
     about
+    about_tmux
     quickstart
     developing
     api
