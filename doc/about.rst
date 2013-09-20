@@ -39,8 +39,10 @@ http://github.com/tony/tmuxp.
 
 
 .. todo::
-    Sort this:
-    ==========
+
+    =========
+    Sort this
+    =========
 
     Similarities to Tmux and Pythonics
     ----------------------------------
