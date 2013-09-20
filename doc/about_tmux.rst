@@ -4,9 +4,15 @@
 The Tao of tmux
 ===============
 
-BSD-licensed terminal multiplexer.
+.. figure:: _static/tao-tmux-screenshot.png
+    :scale: 100%
+    :width: 100%
+    :align: center
 
-It's for terminals only. No graphics.
+    BSD-licensed terminal multiplexer.
+
+For terminals only. No graphics.
+--------------------------------
 
 - a window-manager for text-based applications
 - a to keep applications in a background process
@@ -76,17 +82,17 @@ can create new windows as much as you want.
 .. aafig::
    :textual:
 
-   +---------+---------+  +--------------------+
-   | $ bash  | $ bash  |  | $ vim              |
-   |         |         |  |                    |
-   |         |         |  |                    |
-   +---------+---------+  |                    |
-   | $ vim   | $ bash  |  |                    |
-   |         |         |  |                    |
-   |         |         |  |                    |
-   +---------+---------+--+--------------------+
-   | '1:sys*  2:vim'                           |
-   +-------------------------------------------+
+   +---------+---------+                            +--------------------+
+   | $ bash  | $ bash  |                            | $ vim              |
+   |         |         |                            |                    |
+   |         |         |    /-----------------\     |                    |
+   +---------+---------+ -> |'switch-window 2'| ->  |                    |
+   | $ vim   | $ bash  |    \-----------------/     |                    |
+   |         |         |                            |                    |
+   |         |         |                            |                    |
+   +---------+---------+                            +--------------------+
+   | '1:sys*  2:vim'   |                            | '1:sys  2:vim*'    |
+   +-------------------+                            +--------------------+
 
 You can switch between the windows you create.
 
