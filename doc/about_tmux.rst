@@ -6,19 +6,23 @@ The Tao of tmux
 
 BSD-licensed terminal multiplexer.
 
+It's for terminals only. No graphics.
+
+- a window-manager for text-based applications
+- a to keep applications in a background process
+
+A text-based window manager
+---------------------------
+
 =================== ====================== ===============================
-tmux Speak              Desktop Speak           English
+**tmux**            **"Desktop"-Speak**    **Plain English**
 ------------------- ---------------------- -------------------------------
-Multiplexer         Multitasking           Do more than one thing at the
-                                           same time.
+Multiplexer         Multitasking           Do more than one thing at once
 Session             Desktop                Where stuff gets done
-Window              Virtual Desktop or     Where my windows are at
+Window              Virtual Desktop or     Has windows inside
                     screen
-Pane                Application            Does things
+Pane                Application            Performs operations
 =================== ====================== ===============================
-
-
-The usability benefits of tmux build upon themselves below:
 
 Multiple terminals to one screen
 --------------------------------
@@ -106,18 +110,17 @@ sandwich, and re-(attach), all applications are still running!
 
 The take-away
 -------------
-So you can keep tmux on a server with your latest work, come back and
-resume your `"train of thought"`_ and work.
+You can keep tmux on a server with your latest work, come back and resume
+your `"train of thought"`_ and work.
 
-More than anything - the take-away from tmux is multitasking. More than
-any technical jargon - it's preserving the thought you have, whether you
-were in the midst of a one-off task, or a common task.
+Multitasking. More important than any technical jargon - it's preserving
+the thinking you have, whether you were in the midst of a one-off task, or
+a common task.
 
 If you do a task commonly, it may help to use an application which manages
 tmux workspaces.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
-
 
 Getting more technical
 ======================
@@ -126,13 +129,13 @@ tmux is not the only multiplexer. there is also screen.
 
 tmux is comprised of these objects:
 
-server
+Server
 ------
 multiple can be run by specific ``[-L socket-name]`` and ``[-S socket-path]``.
 
 holds sessions.
     
-session
+Session
 -------
 
 inside a server.
@@ -147,7 +150,7 @@ options most to least important options la
 formats most to least important options hi
 ======= ==================================================
 
-window
+Window
 ------
 inside a session.
 
@@ -163,7 +166,7 @@ options most to least important options la
 formats most to least important options hi
 ======= ==================================================
 
-pane
+Pane
 ----
 inside / Linked to a window.
 
