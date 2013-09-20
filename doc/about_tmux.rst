@@ -1,8 +1,8 @@
 .. _about_tmux:
 
-
-About tmux
-==========
+===============
+The Tao of tmux
+===============
 
 Tmux is a terminal multiplexer.
 
@@ -58,89 +58,61 @@ tmux workspaces.
 
 
 Getting more technical
-----------------------
+======================
 
 tmux is not the only multiplexer. there is also screen.
 
-tmux runs as a server.
-
-a server can hold sessions.
-
-a session can hold windows.
-
-a window can hold panes.
-
-a pane is a PTY - a pseudoterminal.
-
-tmux can run multiple servers by specifying ``[-L socket-name]`` and 
-``[-S socket-path]``.
-
-The tao of tmux
-===============
-
 tmux is comprised of these objects:
 
-here is the format I will use:
+server
+------
+multiple can be run by specific ``[-L socket-name]`` and ``[-S socket-path]``.
 
-    ==========  ==========================================================
-    object      most important detail
-
-                contains anything?
+holds sessions.
     
-                ======= ==================================================
-                options most to least important options la
+session
+-------
 
-                formats most to least important options hi
-                ======= ==================================================
-    ==========  ==========================================================
-
-    ==========  ==========================================================
-    server      multiple can be run by specific ``[-L socket-name]`` and
-                ``[-S socket-path]``.
-
-                holds sessions.
+inside a server.
     
-                ======= ==================================================
-                options most to least important options la
+holds windows.
 
-                formats most to least important options hi
-                ======= ==================================================
-    session     inside a server.
-    
-                holds windows.
+windows can have a name.
 
-                windows can have a name.
+======= ==================================================
+options most to least important options la
 
-                ======= ==================================================
-                options most to least important options la
+formats most to least important options hi
+======= ==================================================
 
-                formats most to least important options hi
-                ======= ==================================================
-    window      inside a session.
+window
+------
+inside a session.
 
-                holds panes.
+holds panes.
 
-                panes can be organized with a layouts.
+panes can be organized with a layouts.
 
-                windows can have names.
+windows can have names.
 
-                ======= ==================================================
-                options most to least important options la
+======= ==================================================
+options most to least important options la
 
-                formats most to least important options hi
-                ======= ==================================================
-    pane
-                inside / Linked to a window.
+formats most to least important options hi
+======= ==================================================
 
-                a pty (pseudoterminal).
+pane
+----
+inside / Linked to a window.
 
-                ======= ==================================================
-                options most to least important options la
+a pty (pseudoterminal).
 
-                formats most to least important options hi
-                ======= ==================================================
-    ==========  ==========================================================
+======= ==================================================
+options most to least important options la
+
+formats most to least important options hi
+======= ==================================================
 
 which are described by:
-    options - settings for the pane, window, session or server
-    formats - variables describing the current "state" of the object
+options - settings for the pane, window, session or server
+formats - variables describing the current "state" of the object
