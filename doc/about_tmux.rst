@@ -4,7 +4,7 @@
 The Tao of tmux
 ===============
 
-Tmux is a terminal multiplexer.
+BSD-licensed terminal multiplexer.
 
 =================== ====================== ===============================
 tmux Speak              Desktop Speak           English
@@ -17,6 +17,7 @@ Window              Virtual Desktop or     Where my windows are at
 Pane                Application            Does things
 =================== ====================== ===============================
 
+
 The usability benefits of tmux build upon themselves below:
 
 Multiple terminals to one screen
@@ -26,6 +27,30 @@ It allows multiple applications or terminals to run at once.
 Being able to run 2 or more terminals on one screen is convenient. This
 way one screen can be used to edit a file, and another may be used to
 ``$ tail -F`` a logfile.
+
+.. aafig::
+
+   +--------+--------+
+   | $ bash | $ bash |
+   |        |        |
+   |        |        |
+   |        |        |
+   |        |        |
+   |        |        |
+   |        |        |
+   +--------+--------+
+
+.. aafig::
+
+   +--------+--------+
+   | $ bash | $ bash |
+   |        |        |
+   |        |        |
+   +--------+--------+
+   | $ vim  | $ bash |
+   |        |        |
+   |        |        |
+   +--------+--------+
 
 You can create and remove as many terminal as you want.
 
@@ -49,6 +74,24 @@ still be there.
 
 Resume everything later
 -----------------------
+
+.. aafig::
+
+   +--------+--------+                        +-----------------------+
+   | $ bash | $ bash |                        | '$ [screen detached]' |
+   |        |        |                        | '$ tmux attach'       |
+   |        |        |     /------------\     |                       |
+   +--------+--------+ --> | 'detach'   | --> |                       |
+   | $ vim  | $ bash |     | 'ctrl-b b' |     |                       |
+   |        |        |     \------------/     |                       |
+   |        |        |                        |                       |
+   +--------+--------+                        +-----------------------+
+                                                           |
+            +----------------------------------------------+
+            |
+            v
+
+
 
 You can leave tmux and all applications running (detach), log out, make a sandwich, and re-(attach), all applications are still running!
 
