@@ -14,8 +14,10 @@ The Tao of tmux
 For terminals only. No graphics.
 --------------------------------
 
-- a window-manager for text-based applications
-- a to keep applications in a background process
+uses:
+
+- window-manager for text-based applications
+- keep applications in a background process
 
 A text-based window manager
 ---------------------------
@@ -170,6 +172,25 @@ attaches to a tmux :ref:`server`.
 
 Session
 -------
+
+.. aafig::
+    :textual:
+
+    +----------------------------------------------------------------+
+    |  +--------+--------+ +-----------------+ +-----------------+   |
+    |  | pane   | pane   | | pane            | | pane            |   |
+    |  |        |        | |                 | |                 |   |
+    |  |        |        | |                 | |                 |   |
+    |  +--------+--------+ |                 | +-----------------+   |
+    |  | pane   | pane   | |                 | | pane            |   |
+    |  |        |        | |                 | |                 |   |
+    |  |        |        | |                 | |                 |   |
+    |  +--------+--------+ +-----------------+ +-----------------+   |
+    |  | window          | | window          | | window          |   |
+    |  +--------+--------+ +-----------------+ +-----------------+   |
+    +----------------------------------------------------------------+
+    | session                                                        |
+    \----------------------------------------------------------------/
 
 inside a tmux :ref:`server`.
     
