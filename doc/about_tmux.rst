@@ -150,30 +150,60 @@ tmux is not the only multiplexer. there is also screen.
 
 tmux is comprised of these objects:
 
+.. _server:
+
 Server
 ------
-multiple can be run by specific ``[-L socket-name]`` and ``[-S socket-path]``.
-
+multiple can be run by specific ``[-L socket-name]`` and ``[-S socket-path]``.  
 holds sessions.
-    
+
+tmux starts the server automatically if it's not running.
+
+.. _client:
+
+Client
+------
+
+attaches to a tmux :ref:`server`.
+
+.. _session:
+
 Session
 -------
 
-inside a server.
+inside a tmux :ref:`server`.
     
-holds windows.
+holds :ref:`window`.
 
 windows can have a name.
 
-======= ==================================================
-options most to least important options la
+uniquely identified by:
 
-formats most to least important options hi
-======= ==================================================
+important attributes:
+
+========================= ================================================
+session_name
+session_id
+========================= ================================================
+
+other attributes:
+
+========================= ================================================
+session_windows
+session_width
+session_height
+session_created
+session_created_string
+session_attached
+session_grouped
+session_group
+========================= ================================================
+
+.. _window:
 
 Window
 ------
-inside a session.
+inside a :ref:`session`.
 
 holds panes.
 
@@ -181,24 +211,18 @@ panes can be organized with a layouts.
 
 windows can have names.
 
-======= ==================================================
-options most to least important options la
-
-formats most to least important options hi
-======= ==================================================
+.. _pane:
 
 Pane
 ----
-inside / Linked to a window.
+inside / Linked to a :ref:`window`.
 
 a pty (pseudoterminal).
 
-======= ==================================================
-options most to least important options la
+.. _target:
 
-formats most to least important options hi
-======= ==================================================
+Target
+------
 
-which are described by:
-options - settings for the pane, window, session or server
-formats - variables describing the current "state" of the object
+a target, cited in the manual as ``[-t target]`` can be a session, window
+or pane.
