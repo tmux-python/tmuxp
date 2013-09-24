@@ -173,6 +173,10 @@ attaches to a tmux :ref:`server`.
 Session
 -------
 
+inside a tmux :ref:`server`.
+    
+holds :ref:`window`.
+
 .. aafig::
     :textual:
 
@@ -192,11 +196,7 @@ Session
     | session                                                        |
     \----------------------------------------------------------------/
 
-inside a tmux :ref:`server`.
-    
-holds :ref:`window`.
-
-windows can have a name.
+sessions can have a name.
 
 uniquely identified by:
 
