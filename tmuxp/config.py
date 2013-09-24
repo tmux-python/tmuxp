@@ -56,6 +56,8 @@ class ConfigExpand(object):
         '''
         iterate through session, windows, and panes for ``shell_command``, if
         it is a string, turn to list.
+
+        shell_command: 'string' => shell_command: list('string')
         '''
         config = self.config
 
@@ -82,6 +84,8 @@ class ConfigExpand(object):
         '''
         iterate through session, windows, and panes for
         ``shell_command_before``, if it is a string, turn to list.
+
+        shell_command_before: 'string' => shell_command_before: list('string')
         '''
         config = self.config
 
