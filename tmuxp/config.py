@@ -11,18 +11,18 @@
 
 
 def expand_config(config):
-    '''Expand configuration into full form. Enables shorthand forms for
-    tmuxinator config.
+    '''Expand configuration into full form. Enables shorthand forms for tmuxp
+    config.
 
     This is necessary to keep the code in the :class:`Builder` clean and also
     allow for neat, short-hand configurations.
 
-    As a simple example, internally, tmuxinator expects that config options
+    As a simple example, internally, tmuxp expects that config options
     like ``shell_command`` are a list (array)::
 
         'shell_command': ['htop']
 
-    Tmuxinator configs allow for it to be simply a string::
+    tmuxp configs allow for it to be simply a string::
 
         'shell_command': 'htop'
 
@@ -34,6 +34,9 @@ def expand_config(config):
     it is a string, turn to list.
 
     shell_command: 'string' => shell_command: list('string')
+
+    :param config: the session configuration
+    :type config: dict
     '''
 
     def _expand(c):
@@ -85,7 +88,7 @@ def trickledown_config(config):
     '''
 
     if 'shell_command_before' in config:
-        self.assertIsInstance(config['shell_command_before'], list)
+        assert isinstance(config['shell_command_before'], list)
         session_shell_command_before = config['shell_command_before']
     else:
         session_shell_command_before = []
