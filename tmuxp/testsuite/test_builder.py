@@ -4,7 +4,7 @@ import kaptan
 import unittest
 from .. import Window
 from ..logxtreme import logging
-from ..config import ConfigExpand
+from ..config import expand_config
 from ..builder import Builder
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
@@ -23,7 +23,7 @@ class BuilderTestCase(TmuxTestCase):
 
     def test_split_windows(self):
         s = self.session
-        tmux_config = ConfigExpand(sampleconfigdict).expand().config
+        tmux_config = expand_config(sampleconfigdict)
 
         if 'session_name' in tmux_config:
             window_count = len(self.session._windows)  # current window count

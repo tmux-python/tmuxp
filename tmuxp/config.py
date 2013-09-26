@@ -10,7 +10,7 @@
 """
 
 
-class ConfigExpand(object):
+def expand_config(config):
     '''Expand configuration into full form. Enables shorthand forms for
     tmuxinator config.
 
@@ -27,89 +27,46 @@ class ConfigExpand(object):
         'shell_command': 'htop'
 
     Kaptan will load JSON/YAML/INI files into python dicts for you.
+    :param config: the configuration for the session
+    :type config: dict
 
-    For testability all expansion / shorthands are in methods here, each will
-    check for any expandable config properties in the session, windows and
-    their panes and apply the full form to self.config accordingly.
+    iterate through session, windows, and panes for ``shell_command``, if
+    it is a string, turn to list.
 
-    self.expand will automatically expand all shortened config options. Adding
-    ``.config`` will return the expanded config::
-
-        ConfigExpand(config).expand().config
-
-    They also return the context of self, so they are
-    chainable.
+    shell_command: 'string' => shell_command: list('string')
     '''
 
-    def __init__(self, config):
+    def _expand(c):
+        '''any config section, session, window, pane that can
+        contain the 'shell_command' value
         '''
-        :param config: the configuration for the session
-        :type config: dict
+        if ('shell_command' in c and
+                isinstance(c['shell_command'], basestring)):
+                c['shell_command'] = [c['shell_command']]
+
+        return c
+
+    def _expand_shell_command_before(c):
+        '''any config section, session, window, pane that can
+        contain the 'shell_command_before' value
         '''
+        if ('shell_command_before' in c and
+                isinstance(c['shell_command_before'], basestring)):
+                c['shell_command_before'] = [c['shell_command_before']]
 
-        self.config = config
+        return c
 
-    def expand(self):
-        return self.expand_shell_command().expand_shell_command_before()
+    config = _expand(config)
+    for window in config['windows']:
+        window = _expand(window)
+        window['panes'] = [_expand(pane) for pane in window['panes']]
+        window = _expand_shell_command_before(window)
+        window['panes'] = [_expand_shell_command_before(pane) for pane in window['panes']]
 
-    def expand_shell_command(self):
-        '''
-        iterate through session, windows, and panes for ``shell_command``, if
-        it is a string, turn to list.
-
-        shell_command: 'string' => shell_command: list('string')
-        '''
-        config = self.config
-
-        def _expand(c):
-            '''any config section, session, window, pane that can
-            contain the 'shell_command' value
-            '''
-            if ('shell_command' in c and
-                    isinstance(c['shell_command'], basestring)):
-                    c['shell_command'] = [c['shell_command']]
-
-            return c
-
-        config = _expand(config)
-        for window in config['windows']:
-            window = _expand(window)
-            window['panes'] = [_expand(pane) for pane in window['panes']]
-
-        self.config = config
-
-        return self
-
-    def expand_shell_command_before(self):
-        '''
-        iterate through session, windows, and panes for
-        ``shell_command_before``, if it is a string, turn to list.
-
-        shell_command_before: 'string' => shell_command_before: list('string')
-        '''
-        config = self.config
-
-        def _expand(c):
-            '''any config section, session, window, pane that can
-            contain the 'shell_command' value
-            '''
-            if ('shell_command_before' in c and
-                    isinstance(c['shell_command_before'], basestring)):
-                    c['shell_command_before'] = [c['shell_command_before']]
-
-            return c
-
-        config = _expand(config)
-        for window in config['windows']:
-            window = _expand(window)
-            window['panes'] = [_expand(pane) for pane in window['panes']]
-
-        self.config = config
-
-        return self
+    return config
 
 
-class ConfigTrickleDown(object):
+def trickledown_config(config):
     '''Trickle down / inherit config values
 
     This will only work if config has been expand with ConfigExpand()
@@ -117,44 +74,35 @@ class ConfigTrickleDown(object):
     tmuxp allows certain commands to be default at the session, window
     level. shell_command_before trickles down and prepends the
     ``shell_command`` for the pane.
+
+    :param config: the session configuration
+    :type config: dict
     '''
-    def __init__(self, config):
-        '''
-        :param config: the session configuration
-        :type config: dict
-        '''
-        self.config = config
 
-    def trickle(self):
-        self.trickle_shell_command_before()
-        return self
+    '''
+    prepends a pane's ``shell_command`` list with the window and sessions'
+    ``shell_command_before``.
+    '''
 
-    def trickle_shell_command_before(self):
-        '''
-        prepends a pane's ``shell_command`` list with the window and sessions'
-        ``shell_command_before``.
-        '''
-        config = self.config
+    if 'shell_command_before' in config:
+        self.assertIsInstance(config['shell_command_before'], list)
+        session_shell_command_before = config['shell_command_before']
+    else:
+        session_shell_command_before = []
 
-        if 'shell_command_before' in config:
-            self.assertIsInstance(config['shell_command_before'], list)
-            session_shell_command_before = config['shell_command_before']
-        else:
-            session_shell_command_before = []
+    for windowconfitem in config['windows']:
+        window_shell_command_before = []
+        if 'shell_command_before' in windowconfitem:
+            window_shell_command_before = windowconfitem['shell_command_before']
 
-        for windowconfitem in config['windows']:
-            window_shell_command_before = []
-            if 'shell_command_before' in windowconfitem:
-                window_shell_command_before = windowconfitem['shell_command_before']
+        for paneconfitem in windowconfitem['panes']:
+            pane_shell_command_before = []
+            if 'shell_command_before' in paneconfitem:
+                pane_shell_command_before += paneconfitem['shell_command_before']
 
-            for paneconfitem in windowconfitem['panes']:
-                pane_shell_command_before = []
-                if 'shell_command_before' in paneconfitem:
-                    pane_shell_command_before += paneconfitem['shell_command_before']
+            if 'shell_command' not in paneconfitem:
+                paneconfitem['shell_command'] = list()
 
-                if 'shell_command' not in paneconfitem:
-                    paneconfitem['shell_command'] = list()
+            paneconfitem['shell_command'] = session_shell_command_before + window_shell_command_before + pane_shell_command_before + paneconfitem['shell_command']
 
-                paneconfitem['shell_command'] = session_shell_command_before + window_shell_command_before + pane_shell_command_before + paneconfitem['shell_command']
-
-        self.config = config
+    return config

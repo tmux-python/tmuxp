@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 import kaptan
-from ..config import ConfigExpand, ConfigTrickleDown
+from ..config import expand_config, trickledown_config
 from ..util import tmux
 
 
@@ -177,11 +177,11 @@ class ConfigExpandTestCase(unittest.TestCase):
             }]
     }
 
-    def test_expand_shell_commands(self):
+    def test_expand_config(self):
         '''
         expands shell commands from string to list
         '''
-        config = ConfigExpand(self.before_config).expand().config
+        config = expand_config(self.before_config)
         self.assertDictEqual(config, self.after_config)
 
 
@@ -423,11 +423,11 @@ class ConfigShellCommandBefore(unittest.TestCase):
 
     def test_shell_command_before(self):
         config = self.config_unexpanded
-        config = ConfigExpand(config).expand().config
+        config = expand_config(config)
 
         self.assertDictEqual(config, self.config_expanded)
 
-        config = ConfigTrickleDown(config).trickle().config
+        config = trickledown_config(config)
         self.maxDiff = None
         self.assertDictEqual(config, self.config_after)
 
