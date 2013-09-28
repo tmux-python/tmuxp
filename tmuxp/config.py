@@ -81,31 +81,16 @@ def trickledown_config(config):
     ``shell_command_before``.
     '''
 
-    if 'shell_command_before' in config:
-        assert isinstance(config['shell_command_before'], list)
-        session_shell_command_before = config['shell_command_before']
-    else:
-        session_shell_command_before = []
-
     for windowconfig in config['windows']:
-
-        if 'shell_command_before' in windowconfig:
-            window_shell_command_before = windowconfig['shell_command_before']
-        else:
-            window_shell_command_before = []
-
         for paneconfig in windowconfig['panes']:
-
-            if 'shell_command_before' in paneconfig:
-                pane_shell_command_before += paneconfig['shell_command_before']
-            else:
-                pane_shell_command_before = []
+            commands_before = config['shell_command_before'] if 'shell_command_before' in config else []
+            commands_before.extend(windowconfig['shell_command_before']) if 'shell_command_before' in windowconfig else None
+            commands_before.extend(paneconfig['shell_command_before']) if 'shell_command_before' in paneconfig else None
 
             if 'shell_command' not in paneconfig:
                 paneconfig['shell_command'] = list()
 
-            paneconfig['shell_command'] = session_shell_command_before + \
-                window_shell_command_before + \
-                pane_shell_command_before + paneconfig['shell_command']
+            commands_before.extend(paneconfig['shell_command']) if paneconfig['shell_command'] else None
+            paneconfig['shell_command'] = commands_before
 
     return config
