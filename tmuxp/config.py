@@ -10,21 +10,6 @@
 """
 
 
-def _expand_shell_command(c):
-    '''any config section, session, window, pane that can
-    contain the 'shell_command' value
-    '''
-    if ('shell_command' in c and
-            isinstance(c['shell_command'], basestring)):
-            c['shell_command'] = [c['shell_command']]
-
-    if ('shell_command_before' in c and
-            isinstance(c['shell_command_before'], basestring)):
-            c['shell_command_before'] = [c['shell_command_before']]
-
-    return c
-
-
 def expand_config(config):
     '''Expand configuration into full form. Enables shorthand forms for tmuxp
     config.
@@ -54,11 +39,21 @@ def expand_config(config):
     :type config: dict
     '''
 
-    config = _expand_shell_command(config)
-    for window in config['windows']:
-        window = _expand_shell_command(window)
-        window['panes'] = [_expand_shell_command(
-            pane) for pane in window['panes']]
+    '''any config section, session, window, pane that can
+    contain the 'shell_command' value
+    '''
+    if ('shell_command' in config and isinstance(config['shell_command'], basestring)):
+        config['shell_command'] = [config['shell_command']]
+
+    if ('shell_command_before' in config and isinstance(config['shell_command_before'], basestring)):
+        config['shell_command_before'] = [config['shell_command_before']]
+
+    # recurse into window and pane config items
+    if 'windows' in config:
+        config['windows'] = [expand_config(window)
+                             for window in config['windows']]
+    if 'panes' in config:
+        config['panes'] = [expand_config(pane) for pane in config['panes']]
 
     return config
 
@@ -83,14 +78,18 @@ def trickledown_config(config):
 
     for windowconfig in config['windows']:
         for paneconfig in windowconfig['panes']:
-            commands_before = config['shell_command_before'] if 'shell_command_before' in config else []
-            commands_before.extend(windowconfig['shell_command_before']) if 'shell_command_before' in windowconfig else None
-            commands_before.extend(paneconfig['shell_command_before']) if 'shell_command_before' in paneconfig else None
+            commands_before = config[
+                'shell_command_before'] if 'shell_command_before' in config else []
+            commands_before.extend(windowconfig[
+                                   'shell_command_before']) if 'shell_command_before' in windowconfig else None
+            commands_before.extend(paneconfig[
+                                   'shell_command_before']) if 'shell_command_before' in paneconfig else None
 
             if 'shell_command' not in paneconfig:
                 paneconfig['shell_command'] = list()
 
-            commands_before.extend(paneconfig['shell_command']) if paneconfig['shell_command'] else None
+            commands_before.extend(paneconfig[
+                                   'shell_command']) if paneconfig['shell_command'] else None
             paneconfig['shell_command'] = commands_before
 
     return config
