@@ -19,3 +19,7 @@ from .config import expand_config, trickledown_config
 from .util import TmuxObject
 
 t = Server()
+
+
+def main():
+    print t.list_sessions()
