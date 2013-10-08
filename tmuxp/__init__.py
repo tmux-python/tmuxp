@@ -7,7 +7,7 @@
     :license: BSD, see LICENSE for details
 """
 
-__version__ = '0.1-dev'
+__version__ = '0.0.1-dev'
 
 from .session import Session
 from .server import Server

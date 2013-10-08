@@ -3,8 +3,13 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
--dev
-----
+2013-10-08
+----------
+
+- switch to semver
+
+initial
+-------
 
 (initial release)
 

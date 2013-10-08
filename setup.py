@@ -23,7 +23,7 @@ else:
 
 setup(
     name='tmuxp',
-    version='0.1-dev',
+    version='0.0.1-dev',
     url='http://github.com/tony/tmuxp/',
     license='BSD',
     author='Tony Narlock',
