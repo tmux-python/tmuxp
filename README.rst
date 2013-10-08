@@ -13,6 +13,7 @@ Docs            http://tmuxp.rtfd.org
 API             http://tmuxp.readthedocs.org/en/latest/api.html
 Issues          https://github.com/tony/tmuxp/issues
 Source          https://github.com/tony/tmuxp
+pypi            https://pypi.python.org/pypi/tmuxp
 License         `BSD`_.
 git repo        .. code-block:: bash
 
