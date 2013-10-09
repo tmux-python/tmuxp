@@ -5,8 +5,6 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
-from sh import ErrorReturnCode_1
-
 
 class TmuxSessionNotFound(Exception):
     pass

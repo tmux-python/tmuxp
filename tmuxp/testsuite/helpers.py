@@ -3,8 +3,7 @@ import time
 from random import randint
 from .. import t, Server
 from .. import log
-from ..exc import TmuxNoClientsRunning, ErrorReturnCode_1
-
+from ..exc import TmuxNoClientsRunning
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)

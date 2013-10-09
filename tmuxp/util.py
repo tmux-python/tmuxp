@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 from functools import wraps
-from .exc import TmuxNoClientsRunning, TmuxSessionNotFound, ErrorReturnCode_1
+from .exc import TmuxNoClientsRunning, TmuxSessionNotFound
 from .exc import TmuxNotRunning
 import unittest
 import collections
@@ -109,27 +109,7 @@ def tmux(*args, **kwargs):
     except ImportError:
         logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 
-    try:
-        return tmuxcall(*args, **kwargs)
-    except ErrorReturnCode_1 as e:
-        if e.stderr.startswith('session not found'):
-            if 'has-session' in e.full_cmd:
-                return e
-            else:
-                raise TmuxSessionNotFound(e)
-
-        logging.info(e.stderr)
-        import traceback
-        logging.info(traceback.print_exc())
-        if e.stderr.startswith('failed to connect to server'):
-            raise TmuxNotRunning(e.stderr)
-
-        logging.error(
-            "\n\tcmd:\t%s\n"
-            "\terror:\t%s"
-            % (e.full_cmd, e.stderr)
-        )
-        return e.stderr
+    return tmuxcall(*args, **kwargs)
 
 
 class TmuxObject(collections.MutableMapping):

@@ -16,9 +16,7 @@ from .exc import TmuxSessionExists
 
 from . import log
 import logging
-
 logger = logging.getLogger(__name__)
-
 
 
 class Session(TmuxObject):
@@ -121,16 +119,13 @@ class Session(TmuxObject):
 
         tmux_args = list()
 
-        #if '-a' in args:
-        #    tmux_args.append('-a')
-
         if target_window:
             if isinstance(target_window, int):
                 target = '-t%s:%d' % (self.get('session_name'), target_window)
             else:
                 target ='-t%s' % target_window
 
-        logging.info('%s ..... %s' % (tmux_args, self.tmux('kill-window', target)))
+        self.tmux('kill-window', target)
 
         self.list_windows()
 
