@@ -19,8 +19,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class Window(TmuxObject):
+
     '''
     ``tmux(1) window``.
     '''
@@ -49,7 +49,7 @@ class Window(TmuxObject):
         )
 
     def tmux(self, *args, **kwargs):
-        #if '-t' not in kwargs:
+        # if '-t' not in kwargs:
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
@@ -142,7 +142,7 @@ class Window(TmuxObject):
                 pipes.quote(new_name)
             )
             self['window_name'] = new_name
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
 
         self.session.list_windows()
@@ -164,9 +164,10 @@ class Window(TmuxObject):
             target_pane = "%s.%s" % (self.target, target_pane)
 
         try:
-            self.tmux('select-pane', '-t%s'% target_pane)
+            self.tmux('select-pane', '-t%s' % target_pane)
         except Exception:
-            logger.error('pane not found %s %s' % (target_pane, self.list_panes()))
+            logger.error('pane not found %s %s' % (
+                target_pane, self.list_panes()))
         self.list_panes()
         return self.attached_pane()
 
@@ -187,7 +188,8 @@ class Window(TmuxObject):
             vertical
         '''
 
-        formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
+        formats = ['session_name', 'session_id',
+                   'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
         pane = self.tmux(
@@ -226,16 +228,17 @@ class Window(TmuxObject):
         '''
             Returns a list of :class:`Pane` for the window.
         '''
-        formats = ['session_name', 'session_id', 'window_index', 'window_id'] + PANE_FORMATS
+        formats = ['session_name', 'session_id',
+                   'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
-        #if isinstance(self.get('window_id'), basestring):
+        # if isinstance(self.get('window_id'), basestring):
         #    window_id =
 
         panes = self.tmux(
             'list-panes',
-            #'-s',                               # for sessions
-            #'-t%s' % self._session.session_name,      # target (name of session)
+            # '-s',                               # for sessions
+            # '-t%s' % self._session.session_name,      # target (name of session)
             '-t%s' % self.get('window_index'),      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
         ).stdout
@@ -257,7 +260,8 @@ class Window(TmuxObject):
 
         if not self._panes:
             for pane in new_panes:
-                logger.debug('adding pane_id %s for window_id %s' % (pane['pane_id'], pane['window_id']))
+                logger.debug('adding pane_id %s for window_id %s' % (
+                    pane['pane_id'], pane['window_id']))
                 self._panes.append(Pane(window=self, **pane))
             return self._panes
 
@@ -268,7 +272,8 @@ class Window(TmuxObject):
         deleted = set(old.keys()) - set(new.keys()) or ()
         intersect = set(new.keys()).intersection(set(old.keys()))
 
-        diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
+        diff = {id: dict(set(new[id].items()) - set(old[id].items()))
+                for id in intersect}
 
         intersect = set(k for k, v in diff.iteritems() if v) or ()
         diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
@@ -293,12 +298,14 @@ class Window(TmuxObject):
                 self._panes.remove(p)
 
             if p.get('pane_id') in intersect and p.get('p_id') in diff:
-                logger.debug('updating pane_id %s window_id %s' % (p.get('pane_id'), p.get('window_id')))
+                logger.debug('updating pane_id %s window_id %s' % (
+                    p.get('pane_id'), p.get('window_id')))
                 p.update(diff[p.get('pane_id')])
 
         # create pane objects for non-existant pane_id's
         for pane in [new[pane_id] for pane_id in created]:
-            logger.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
+            logger.debug('adding pane_id %s window_id %s' % (
+                pane['pane_id'], pane['window_id']))
             self._panes.append(Pane(window=self, **pane))
 
         return self._panes

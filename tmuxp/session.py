@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class Session(TmuxObject):
+
     '''
     ``tmux(1) session``.
 
@@ -40,7 +41,7 @@ class Session(TmuxObject):
         self.list_windows()
 
     def tmux(self, *args, **kwargs):
-        #if '-t' not in kwargs:
+        # if '-t' not in kwargs:
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
@@ -54,8 +55,7 @@ class Session(TmuxObject):
         try:
             self.tmux(
                 'rename-session',
-                #'-t', pipes.quote(self.get('session_name')),
-                '-t%s'% self.get('session_id'),
+                '-t%s' % self.get('session_id'),
                 new_name
             )
             self['session_name'] = new_name
@@ -125,7 +125,7 @@ class Session(TmuxObject):
             if isinstance(target_window, int):
                 target = '-t%s:%d' % (self.get('session_name'), target_window)
             else:
-                target ='-t%s' % target_window
+                target = '-t%s' % target_window
 
         self.tmux('kill-window', target)
 
@@ -146,7 +146,8 @@ class Session(TmuxObject):
         ).stdout
 
         # combine format keys with values returned from ``tmux list-windows``
-        windows = [dict(zip(formats, window.split('\t'))) for window in windows]
+        windows = [dict(zip(
+            formats, window.split('\t'))) for window in windows]
 
         # clear up empty dict
         windows = [
@@ -163,17 +164,19 @@ class Session(TmuxObject):
 
         if not self._windows:
             for window in new_windows:
-                logger.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+                logger.debug('adding window_name %s window_id %s' % (
+                    window['window_name'], window['window_id']))
                 self._windows.append(Window(session=self, **window))
         else:
-            new = {window['window_id']: window for window in new_windows}
+            new = {window.get('window_id'): window for window in new_windows}
             old = {window.get('window_id'): window for window in self._windows}
 
             created = set(new.keys()) - set(old.keys()) or ()
             deleted = set(old.keys()) - set(new.keys()) or ()
             intersect = set(new.keys()).intersection(set(old.keys()))
 
-            diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
+            diff = {id: dict(set(new[id].items()) - set(
+                old[id].items())) for id in intersect}
 
             intersect = set(k for k, v in diff.iteritems() if v) or ()
             diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
@@ -198,12 +201,15 @@ class Session(TmuxObject):
                     self._windows.remove(w)
 
                 if w.get('window_id') in intersect and w.get('window_id') in diff:
-                    logger.debug('updating %s %s' % (w.get('window_name'), w.get('window_id')))
+                    logger.debug('updating %s %s' % (
+                        w.get('window_name'), w.get('window_id'))
+                    )
                     w.update(diff[w.get('window_id')])
 
             # create window objects for non-existant window_id's
             for window in [new[window_id] for window_id in created]:
-                logger.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+                logger.debug('adding window_name %s window_id %s' % (
+                    window['window_name'], window['window_id']))
                 self._windows.append(Window(session=self, **window))
 
         return self._windows
@@ -268,11 +274,13 @@ class Session(TmuxObject):
         self.attached_window().list_panes()  # get the newest pane data
 
         if (len(self.attached_window()._panes) > 1):
-            logger.info('%s not clean, multiple panes (%s)' % (self, len(self.attached_window()._panes)))
+            logger.info('%s not clean, multiple panes (%s)' % (
+                self, len(self.attached_window()._panes)))
             return False
 
         if (int(self.attached_window().attached_pane().get('history_size')) > 0):
-            logger.info('%s history_size (%s), greater than 0' % (self, self.attached_window().attached_pane().get('history_size')))
+            logger.info('%s history_size (%s), greater than 0' % (
+                self, self.attached_window().attached_pane().get('history_size')))
             return False
 
         return True

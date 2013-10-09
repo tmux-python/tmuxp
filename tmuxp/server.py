@@ -63,9 +63,10 @@ class Server(object):
         if session_name:
             args.append('-t{}'.format(session_name))
 
-        #logger.info(args)
+        # logger.info(args)
         os.execl(*args)
-        #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
+        # os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t',
+        # session_name)
 
     def list_sessions(self):
         '''
@@ -81,7 +82,8 @@ class Server(object):
         ).stdout
 
         # combine format keys with values returned from ``tmux list-windows``
-        sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
+        sessions = [dict(zip(
+            formats, session.split('\t'))) for session in sessions]
 
         # clear up empty dict
         new_sessions = [
@@ -96,13 +98,15 @@ class Server(object):
             return self._sessions
 
         new = {session['session_id']: session for session in new_sessions}
-        old = {session.get('session_id'): session for session in self._sessions}
+        old = {session.get(
+            'session_id'): session for session in self._sessions}
 
         created = set(new.keys()) - set(old.keys()) or ()
         deleted = set(old.keys()) - set(new.keys()) or ()
         intersect = set(new.keys()).intersection(set(old.keys()))
 
-        diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
+        diff = {id: dict(set(new[id].items()) - set(old[id].items()))
+                for id in intersect}
 
         intersect = set(k for k, v in diff.iteritems() if v) or ()
         diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
@@ -127,7 +131,8 @@ class Server(object):
                 self._sessions.remove(s)
 
             if s.get('session_id') in intersect and s.get('session_id') in diff:
-                logger.debug('updating session_id %s session_name %s' % (s.get('session_id'), s.get('session_name')))
+                logger.debug('updating session_id %s session_name %s' % (
+                    s.get('session_id'), s.get('session_name')))
                 s.update(diff[s.get('session_id')])
 
         # create session objects for non-existant session_id's
@@ -146,15 +151,16 @@ class Server(object):
         '''
         formats = CLIENT_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
-        #import ipdb
-        #ipdb.set_trace()
+        # import ipdb
+        # ipdb.set_trace()
         clients = self.tmux(
             'list-clients',
             '-F%s' % '\t'.join(tmux_formats),   # output
         ).stdout
 
         # combine format keys with values returned from ``tmux list-windows``
-        clients = [dict(zip(formats, client.split('\t'))) for client in clients]
+        clients = [dict(zip(
+            formats, client.split('\t'))) for client in clients]
 
         # clear up empty dict
         new_clients = [
@@ -174,7 +180,8 @@ class Server(object):
         deleted = set(old.keys()) - set(new.keys())
         intersect = set(new.keys()).intersection(set(old.keys()))
 
-        diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
+        diff = {id: dict(set(new[id].items()) - set(old[id].items()))
+                for id in intersect}
 
         logger.debug(
             "syncing clients"
@@ -219,7 +226,7 @@ class Server(object):
             return True
         else:
             return False
-        #if e.stderr == 'failed to connect to server':
+        # if e.stderr == 'failed to connect to server':
         #    raise TmuxNotRunning('tmux session not running. please start'
         #                            'a tmux session in another terminal '
         #                            'window and continue.')
@@ -238,7 +245,8 @@ class Server(object):
             if 'session_attached' in session:
                 # for now session_active is a unicode
                 if session.get('session_attached') == '1':
-                    logger.debug('session %s attached', session.get('session_name'))
+                    logger.debug('session %s attached', session.get(
+                        'session_name'))
                     attached_sessions.append(session)
                 else:
                     continue
@@ -285,8 +293,8 @@ class Server(object):
 
         :param: target_session: str. name of the session. fnmatch(3) works.
         '''
-        #tmux('switch-client', '-t', target_session)
-        self.tmux('switch-client', '-t%s' %target_session)
+        # tmux('switch-client', '-t', target_session)
+        self.tmux('switch-client', '-t%s' % target_session)
 
     def new_session(self,
                     session_name=None,
@@ -325,13 +333,14 @@ class Server(object):
         :type kill_session: bool
         '''
 
-        ### ToDo: Update below to work with attach_if_exists
+        # ToDo: Update below to work with attach_if_exists
         if self.has_session(session_name):
             if kill_session:
                 self.tmux('kill-session', '-t%s' % session_name)
                 logger.error('session %s exists. killed it.' % session_name)
             else:
-                raise TmuxSessionExists('Session named %s exists' % session_name)
+                raise TmuxSessionExists(
+                    'Session named %s exists' % session_name)
 
         logger.debug('creating session %s' % session_name)
 
