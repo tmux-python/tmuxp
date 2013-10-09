@@ -84,12 +84,12 @@ class Session(TmuxObject):
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
                 '-n', window_name
-            )[0]
+            ).stdout[0]
         else:
             window = self.tmux(
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
-            )[0]
+            ).stdout[0]
 
         window = dict(zip(formats, window.split('\t')))
 
@@ -141,7 +141,7 @@ class Session(TmuxObject):
             'list-windows',                     # ``tmux list-windows``
             '-t%s' % self.get('session_id'),    # target (session name)
             '-F%s' % '\t'.join(tmux_formats),   # output
-        )
+        ).stdout
 
         # combine format keys with values returned from ``tmux list-windows``
         windows = [dict(zip(formats, window.split('\t'))) for window in windows]

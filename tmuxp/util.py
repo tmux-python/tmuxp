@@ -21,8 +21,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class TmuxCmd(object):
+
     """tmux commands can be issued in a variety of ways
 
     1. outside client: :term:`sh(1)`, targetting last attached client
@@ -56,44 +56,46 @@ class TmuxCmd(object):
     pass
 
 
-def tmux(*args, **kwargs):
-    '''
-        :py:mod:`subprocess` for :ref:`tmux(1)`.
-    '''
+class tmux(object):
 
-    cmd = ['tmux']
-    cmd += args  # add the command arguments to cmd
-    cmd = [str(c) for c in cmd]
-    #logger.info(cmd)
-    try:
-        process = subprocess.Popen(cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        process.wait()
-        stdout, stderr = process.stdout.read(), process.stderr.read()
-    except Exception as e:
-        logging.error('Exception for %s: \n%s' % (
-            cmd,
-            #' '.join([str(c) for c in cmd]),
-            e.message)
-        )
-    response = stdout.split('\n')
-    response = filter(None, response)  # filter empty values
+    def __init__(self, *args, **kwargs):
+        '''
+            :py:mod:`subprocess` for :ref:`tmux(1)`.
+        '''
 
-    response_err = stderr.split('\n')
-    response_err = filter(None, response_err)  # filter empty values
+        cmd = ['tmux']
+        cmd += args  # add the command arguments to cmd
+        cmd = [str(c) for c in cmd]
+        # logger.info(cmd)
+        try:
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            process.wait()
+            stdout, stderr = process.stdout.read(), process.stderr.read()
+        except Exception as e:
+            logging.error('Exception for %s: \n%s' % (
+                cmd,
+                #' '.join([str(c) for c in cmd]),
+                e.message)
+            )
+        self.stdout = stdout.split('\n')
+        self.stdout = filter(None, self.stdout)  # filter empty values
 
-    if 'has-session' in cmd and len(response_err):
-        if not response:
-            response = response_err[0]
+        self.stderr = stderr.split('\n')
+        self.stderr = filter(None, self.stderr)  # filter empty values
 
-    logging.debug('Response for %s: \n%s' % (' '.join(cmd), response))
+        if 'has-session' in cmd and len(self.stderr):
+            if not self.stdout:
+                self.stdout = self.stderr[0]
 
-    return response
+        logging.debug('self.stdout for %s: \n%s' % (' '.join(cmd), self.stdout))
 
 
 class TmuxObject(collections.MutableMapping):
+
     '''
     :class:`Pane`, :class:`Window` and :class:`Session` which are populated
     with return data from ``tmux (1)`` in the :attr:`._TMUX` dict.

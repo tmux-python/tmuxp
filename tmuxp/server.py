@@ -78,7 +78,7 @@ class Server(object):
         sessions = self.tmux(
             'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
-        )
+        ).stdout
 
         # combine format keys with values returned from ``tmux list-windows``
         sessions = [dict(zip(formats, session.split('\t'))) for session in sessions]
@@ -151,7 +151,7 @@ class Server(object):
         clients = self.tmux(
             'list-clients',
             '-F%s' % '\t'.join(tmux_formats),   # output
-        )
+        ).stdout
 
         # combine format keys with values returned from ``tmux list-windows``
         clients = [dict(zip(formats, client.split('\t'))) for client in clients]
@@ -254,7 +254,7 @@ class Server(object):
         returns True if session exists.
         '''
 
-        if 'session not found' in self.tmux('has-session', '-t%s' % target_session):
+        if 'session not found' in self.tmux('has-session', '-t%s' % target_session).stdout:
             return False
         else:
             return True
@@ -348,7 +348,7 @@ class Server(object):
             '-d',  # assume detach = True for now, todo: fix
             '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
-        )[0]
+        ).stdout[0]
 
         if env:
             os.environ['TMUX'] = env

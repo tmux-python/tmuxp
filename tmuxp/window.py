@@ -193,7 +193,7 @@ class Window(TmuxObject):
         pane = self.tmux(
             'split-window',
             '-P', '-F%s' % ''.join(tmux_formats),     # output
-        )[0]
+        ).stdout[0]
 
         # zip and map the results into the dict of formats used above
         pane = dict(zip(formats, pane.split('\t')))
@@ -238,7 +238,7 @@ class Window(TmuxObject):
             #'-t%s' % self._session.session_name,      # target (name of session)
             '-t%s' % self.get('window_index'),      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
-        )
+        ).stdout
 
         # zip and map the results into the dict of formats used above
         panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
