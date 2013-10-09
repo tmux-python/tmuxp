@@ -3,6 +3,13 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-09
+----------
+
+- New logging module
+- Removed dependency logutils
+- Removed dependency sh
+
 2013-10-08
 ----------
 
