@@ -13,6 +13,7 @@ from .exc import TmuxNoClientsRunning, TmuxSessionNotFound, ErrorReturnCode_1
 from .exc import TmuxNotRunning
 import unittest
 import collections
+import subprocess
 
 from . import log
 import logging
@@ -61,7 +62,50 @@ def tmux(*args, **kwargs):
     '''
 
     try:
-        from sh import tmux as tmuxcall
+        #from sh import tmux as tmuxcall
+        def tmuxcall(*args, **kwargs):
+            #logger.info(args)
+            #logger.info(kwargs)
+            cmd = ['tmux']
+            cmd += args  # add the command arguments to cmd
+            cmd = [str(c) for c in cmd]
+            #logger.info(cmd)
+            try:
+                process = subprocess.Popen(cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                process.wait()
+                stdout, stderr = process.stdout.read(), process.stderr.read()
+            except Exception as e:
+                logging.error('Exception for %s: \n%s' % (
+                    cmd,
+                    #' '.join([str(c) for c in cmd]),
+                    e.message)
+                )
+            response = stdout.split('\n')
+            response = filter(None, response)  # filter empty values
+
+            response_err = stderr.split('\n')
+            response_err = filter(None, response_err)  # filter empty values
+
+            if 'has-session' in cmd and len(response_err):
+                logging.error('stderr for %s:\n %s' %(
+                    cmd,
+                    response_err
+                ))
+                if not response:
+                    response = response_err[0]
+
+            if len(response_err):
+                logging.error('stderr for %s:\n %s' %(
+                    cmd,
+                    response_err
+                ))
+
+            #logging.info('Response for %s: \n%s' % (' '.join(cmd), response))
+
+            return response
     except ImportError:
         logging.warning('tmux must be installed and in PATH\'s to use tmuxp')
 

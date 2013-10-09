@@ -164,7 +164,7 @@ class Window(TmuxObject):
             target_pane = "%s.%s" % (self.target, target_pane)
 
         try:
-            self.tmux('select-pane', '-t', target_pane)
+            self.tmux('select-pane', '-t%s'% target_pane)
         except Exception:
             logger.error('pane not found %s %s' % (target_pane, self.list_panes()))
         self.list_panes()
@@ -193,7 +193,7 @@ class Window(TmuxObject):
         pane = self.tmux(
             'split-window',
             '-P', '-F%s' % ''.join(tmux_formats),     # output
-        )
+        )[0]
 
         # zip and map the results into the dict of formats used above
         pane = dict(zip(formats, pane.split('\t')))
@@ -238,7 +238,6 @@ class Window(TmuxObject):
             #'-t%s' % self._session.session_name,      # target (name of session)
             '-t%s' % self.get('window_index'),      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
-            _iter=True                          # iterate line by line
         )
 
         # zip and map the results into the dict of formats used above

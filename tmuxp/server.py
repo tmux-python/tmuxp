@@ -79,7 +79,6 @@ class Server(object):
         sessions = self.tmux(
             'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
-            _iter=False                          # iterate line by line
         )
 
         # combine format keys with values returned from ``tmux list-windows``
@@ -153,7 +152,6 @@ class Server(object):
         clients = self.tmux(
             'list-clients',
             '-F%s' % '\t'.join(tmux_formats),   # output
-            _iter=False                          # iterate line by line
         )
 
         # combine format keys with values returned from ``tmux list-windows``
@@ -257,8 +255,9 @@ class Server(object):
         returns True if session exists.
         '''
 
+        logging.debug(self.tmux('has-session', '-t%s' % target_session))
         try:  # has-session returns nothing if session exists
-            if 'session not found' in self.tmux('has-session', '-t', target_session).stderr:
+            if 'session not found' in self.tmux('has-session', '-t%s' % target_session):
                 return False
             else:
                 return True
@@ -278,7 +277,7 @@ class Server(object):
         :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
                                 kill asdfasd
         '''
-        self.tmux('kill-session', '-t', target_session)
+        self.tmux('kill-session', '-t%s' % target_session)
         self.list_sessions()
 
     @property
@@ -334,7 +333,7 @@ class Server(object):
         ### ToDo: Update below to work with attach_if_exists
         if self.has_session(session_name):
             if kill_session:
-                self.tmux('kill-session', '-t', session_name)
+                self.tmux('kill-session', '-t%s' % session_name)
                 logger.error('session %s exists. killed it.' % session_name)
             else:
                 raise TmuxSessionExists('Session named %s exists' % session_name)
@@ -354,7 +353,7 @@ class Server(object):
             '-d',  # assume detach = True for now, todo: fix
             '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
-        )
+        )[0]
 
         if env:
             os.environ['TMUX'] = env

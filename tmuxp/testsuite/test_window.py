@@ -1,6 +1,5 @@
 import unittest
 from .. import Pane, t
-from ..util import tmux
 from ..exc import TmuxSessionNotFound
 from .helpers import TmuxTestCase
 
@@ -48,12 +47,12 @@ class WindowNewTestCase(TmuxTestCase):
         self.session.new_window(window_name='second')
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
-        self.session.new_window(window_name=3)
+        self.session.new_window(window_name='hey')
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
 
         self.session.select_window(1)
-        self.session.kill_window(target_window=3)
+        self.session.kill_window(target_window='hey')
         current_windows -= 1
         self.assertEqual(current_windows, len(self.session._windows))
         #tmux('display-panes')

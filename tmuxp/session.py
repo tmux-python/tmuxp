@@ -57,7 +57,7 @@ class Session(TmuxObject):
             self.tmux(
                 'rename-session',
                 #'-t', pipes.quote(self.get('session_name')),
-                '-t', self.get('session_id'),
+                '-t%s'% self.get('session_id'),
                 new_name
             )
             self['session_name'] = new_name
@@ -86,12 +86,12 @@ class Session(TmuxObject):
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
                 '-n', window_name
-            )
+            )[0]
         else:
             window = self.tmux(
                 'new-window',
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
-            )
+            )[0]
 
         window = dict(zip(formats, window.split('\t')))
 
@@ -125,9 +125,12 @@ class Session(TmuxObject):
         #    tmux_args.append('-a')
 
         if target_window:
-            tmux_args.append(['-t', target_window])
+            if isinstance(target_window, int):
+                target = '-t%s:%d' % (self.get('session_name'), target_window)
+            else:
+                target ='-t%s' % target_window
 
-        self.tmux('kill-window', *tmux_args)
+        logging.info('%s ..... %s' % (tmux_args, self.tmux('kill-window', target)))
 
         self.list_windows()
 
@@ -143,7 +146,6 @@ class Session(TmuxObject):
             'list-windows',                     # ``tmux list-windows``
             '-t%s' % self.get('session_id'),    # target (session name)
             '-F%s' % '\t'.join(tmux_formats),   # output
-            _iter=True                          # iterate line by line
         )
 
         # combine format keys with values returned from ``tmux list-windows``
@@ -236,7 +238,16 @@ class Session(TmuxObject):
 
             Todo: assure ``-l``, ``-n``, ``-p`` work.
         '''
-        self.tmux('select-window', '-t', target_window)
+        import pipes
+        if isinstance(target_window, int):
+            target = '-t%s:%s' % (self.get('session_name'), target_window)
+            logger.error('integer omg %s' % target)
+        if isinstance(target_window, basestring):
+            target = '-t%s:%s' % (self.get('session_name'), target_window)
+            logger.error('string omg %s' % target)
+        else:
+            target = '-t%s'% target_window
+        self.tmux('select-window', target)
         self.list_windows()
         return self.attached_window()
 

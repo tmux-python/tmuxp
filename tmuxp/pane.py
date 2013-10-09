@@ -55,7 +55,7 @@ class Pane(TmuxObject):
 
             :param enter: bool. send enter after sending the key.
         '''
-        self.tmux('send-keys', '-t', self.target, cmd)
+        self.tmux('send-keys', '-t%s' % self.target, cmd)
 
         if enter:
             self.enter()
@@ -64,7 +64,7 @@ class Pane(TmuxObject):
         '''
             ``$ tmux send-keys`` send Enter to the pane.
         '''
-        self.tmux('send-keys', '-t', self.target, 'Enter')
+        self.tmux('send-keys', '-t%s' % self.target, 'Enter')
 
     @property
     def target(self):
