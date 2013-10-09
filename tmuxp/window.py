@@ -284,7 +284,7 @@ class Window(TmuxObject):
         if deleted:
             log_diff += "deleted %s" % deleted
         if log_diff:
-            logger.info(log_diff)
+            logger.debug(log_diff)
 
         for p in self._panes:
             # remove pane objects if deleted or out of session

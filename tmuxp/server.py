@@ -118,12 +118,12 @@ class Server(object):
         if deleted:
             log_diff += "deleted %s" % deleted
         if log_diff:
-            logger.info(log_diff)
+            logger.debug(log_diff)
 
         for s in self._sessions:
             # remove session objects if deleted or out of session
             if s.get('session_id') in deleted:
-                logger.info("removing %s" % s)
+                logger.debug("removing %s" % s)
                 self._sessions.remove(s)
 
             if s.get('session_id') in intersect and s.get('session_id') in diff:
@@ -176,7 +176,7 @@ class Server(object):
 
         diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
-        logger.info(
+        logger.debug(
             "syncing clients"
             "\n\tdiff: %s\n"
             "\tcreated: %s\n"
@@ -187,7 +187,7 @@ class Server(object):
         for s in self._clients:
             # remove client objects if deleted or out of client
             if s.get('client_tty') in deleted:
-                logger.info("removing %s" % s)
+                logger.debug("removing %s" % s)
                 self._clients.remove(s)
 
             if s.get('client_tty') in intersect:
@@ -238,7 +238,7 @@ class Server(object):
             if 'session_attached' in session:
                 # for now session_active is a unicode
                 if session.get('session_attached') == '1':
-                    logger.info('session %s attached', session.get('session_name'))
+                    logger.debug('session %s attached', session.get('session_name'))
                     attached_sessions.append(session)
                 else:
                     continue

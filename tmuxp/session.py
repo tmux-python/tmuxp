@@ -91,8 +91,6 @@ class Session(TmuxObject):
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
             )
 
-        logger.error(window.__dict__)
-
         window = window.stdout[0]
 
         window = dict(zip(formats, window.split('\t')))
@@ -191,7 +189,7 @@ class Session(TmuxObject):
             if deleted:
                 log_diff += "deleted %s" % deleted
             if log_diff:
-                logger.info(log_diff)
+                logger.debug(log_diff)
 
             for w in self._windows:
                 # remove window objects if deleted or out of session
