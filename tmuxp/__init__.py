@@ -20,6 +20,15 @@ from .util import TmuxObject
 
 t = Server()
 
+from . import log
+import logging
+
+logger = logging.getLogger()
+channel = logging.StreamHandler()
+channel.setFormatter(log.LogFormatter())
+logger.setLevel('INFO')
+logger.addHandler(channel)
+
 
 def main():
     print t.list_sessions()

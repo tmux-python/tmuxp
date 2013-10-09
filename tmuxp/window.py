@@ -12,7 +12,12 @@ import pipes
 from .util import TmuxObject
 from .pane import Pane
 from .formats import PANE_FORMATS
-from .logxtreme import logging
+
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class Window(TmuxObject):

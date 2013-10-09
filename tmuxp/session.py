@@ -13,7 +13,12 @@ from .util import TmuxObject, tmux
 from .window import Window
 from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import TmuxSessionExists
-from .logxtreme import logging
+
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class Session(TmuxObject):

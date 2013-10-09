@@ -3,7 +3,11 @@ from .. import Pane, t
 from ..util import tmux
 from ..exc import TmuxSessionNotFound
 from .helpers import TmuxTestCase
-from ..logxtreme import logging
+
+from .. import log
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class WindowSelectTestCase(TmuxTestCase):

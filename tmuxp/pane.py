@@ -10,7 +10,11 @@
 """
 from .util import TmuxObject
 from .formats import PANE_FORMATS
-from .logxtreme import logging
+
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Pane(TmuxObject):

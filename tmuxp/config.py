@@ -9,6 +9,11 @@
     :license: BSD, see LICENSE for details
 """
 
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def expand_config(config):
     '''Expand configuration into full form. Enables shorthand forms for tmuxp

@@ -2,11 +2,14 @@ import unittest
 import time
 from random import randint
 from .. import t, Server
-from ..logxtreme import root_logger, logging
+from .. import log
 from ..exc import TmuxNoClientsRunning, ErrorReturnCode_1
 
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+
 TEST_SESSION_PREFIX = 'tmuxp_'
-root_logger.setLevel(logging.ERROR)
 
 def bootstrap():
     '''

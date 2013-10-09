@@ -5,6 +5,12 @@ from .. import t, Session, Window, Pane
 from ..util import tmux
 from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 
+from .. import log
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 
 class SessionTestCase(TmuxTestCase):
     def test_has_session(self):

@@ -9,6 +9,11 @@
     :license: BSD, see LICENSE for details
 """
 
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 class Builder(object):
     '''
     used to build a configuration into a tmux real tmux workspace. creates and

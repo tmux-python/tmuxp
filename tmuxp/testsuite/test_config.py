@@ -5,6 +5,12 @@ import kaptan
 from ..config import expand_config, trickledown_config
 from ..util import tmux
 
+from .. import log
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 

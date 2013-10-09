@@ -11,9 +11,14 @@
 from functools import wraps
 from .exc import TmuxNoClientsRunning, TmuxSessionNotFound, ErrorReturnCode_1
 from .exc import TmuxNotRunning
-from .logxtreme import logging
 import unittest
 import collections
+
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class TmuxCmd(object):

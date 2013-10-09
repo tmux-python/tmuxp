@@ -12,8 +12,13 @@ import os
 from .util import tmux
 from .session import Session
 from .formats import SESSION_FORMATS, CLIENT_FORMATS
-from .logxtreme import logging
 from .exc import TmuxNotRunning, TmuxSessionExists
+
+from . import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 class Server(object):
@@ -115,7 +120,7 @@ class Server(object):
         if deleted:
             log_diff += "deleted %s" % deleted
         if log_diff:
-            logging.info(log_diff)
+            logger.info(log_diff)
 
         for s in self._sessions:
             # remove session objects if deleted or out of session

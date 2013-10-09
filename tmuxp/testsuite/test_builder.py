@@ -3,11 +3,16 @@ import shutil
 import kaptan
 import unittest
 from .. import Window
-from ..logxtreme import logging
 from ..config import expand_config
 from ..builder import Builder
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
+
+from .. import log
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
