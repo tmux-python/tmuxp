@@ -66,17 +66,19 @@ class tmux(object):
         cmd = ['tmux']
         cmd += args  # add the command arguments to cmd
         cmd = [str(c) for c in cmd]
-        # logger.info(cmd)
+
+        self.cmd = cmd
+
         try:
-            process = subprocess.Popen(
+            self.process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
-            process.wait()
-            stdout, stderr = process.stdout.read(), process.stderr.read()
+            self.process.wait()
+            stdout, stderr = self.process.stdout.read(), self.process.stderr.read()
         except Exception as e:
-            logging.error('Exception for %s: \n%s' % (
+            logger.error('Exception for %s: \n%s' % (
                 cmd,
                 #' '.join([str(c) for c in cmd]),
                 e.message)
