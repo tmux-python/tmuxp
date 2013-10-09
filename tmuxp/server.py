@@ -20,7 +20,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class Server(object):
 
     '''
@@ -255,14 +254,10 @@ class Server(object):
         returns True if session exists.
         '''
 
-        logging.debug(self.tmux('has-session', '-t%s' % target_session))
-        try:  # has-session returns nothing if session exists
-            if 'session not found' in self.tmux('has-session', '-t%s' % target_session):
-                return False
-            else:
-                return True
-        except Exception as e:
+        if 'session not found' in self.tmux('has-session', '-t%s' % target_session):
             return False
+        else:
+            return True
 
     def kill_server(self):
         '''

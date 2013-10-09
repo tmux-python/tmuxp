@@ -233,16 +233,15 @@ class Session(TmuxObject):
 
             Todo: assure ``-l``, ``-n``, ``-p`` work.
         '''
-        import pipes
         if isinstance(target_window, int):
             target = '-t%s:%s' % (self.get('session_name'), target_window)
-            logger.error('integer omg %s' % target)
-        if isinstance(target_window, basestring):
+        elif isinstance(target_window, basestring):
             target = '-t%s:%s' % (self.get('session_name'), target_window)
-            logger.error('string omg %s' % target)
         else:
-            target = '-t%s'% target_window
+            target = '-t%s' % target_window
+
         self.tmux('select-window', target)
+
         self.list_windows()
         return self.attached_window()
 
