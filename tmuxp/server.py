@@ -64,7 +64,7 @@ class Server(object):
         if session_name:
             args.append('-t{}'.format(session_name))
 
-        #logging.info(args)
+        #logger.info(args)
         os.execl(*args)
         #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
 
@@ -92,7 +92,7 @@ class Server(object):
 
         if not self._sessions:
             for session in new_sessions:
-                logging.debug('adding session_id %s' % (session['session_id']))
+                logger.debug('adding session_id %s' % (session['session_id']))
                 new_session = Session(server=self, **session)
                 self._sessions.append(new_session)
             return self._sessions
@@ -125,16 +125,16 @@ class Server(object):
         for s in self._sessions:
             # remove session objects if deleted or out of session
             if s.get('session_id') in deleted:
-                logging.info("removing %s" % s)
+                logger.info("removing %s" % s)
                 self._sessions.remove(s)
 
             if s.get('session_id') in intersect and s.get('session_id') in diff:
-                logging.debug('updating session_id %s session_name %s' % (s.get('session_id'), s.get('session_name')))
+                logger.debug('updating session_id %s session_name %s' % (s.get('session_id'), s.get('session_name')))
                 s.update(diff[s.get('session_id')])
 
         # create session objects for non-existant session_id's
         for session in [new[session_id] for session_id in created]:
-            logging.debug('new session %s' % session['session_id'])
+            logger.debug('new session %s' % session['session_id'])
             new_session = Session(server=self, **session)
             self._sessions.append(new_session)
 
@@ -166,7 +166,7 @@ class Server(object):
 
         if not self._clients:
             for client in new_clients:
-                logging.debug('adding client_tty %s' % (client['client_tty']))
+                logger.debug('adding client_tty %s' % (client['client_tty']))
                 self._clients.append(client)
             return self._clients
 
@@ -179,7 +179,7 @@ class Server(object):
 
         diff = {id: dict(set(new[id].items()) - set(old[id].items())) for id in intersect}
 
-        logging.info(
+        logger.info(
             "syncing clients"
             "\n\tdiff: %s\n"
             "\tcreated: %s\n"
@@ -190,16 +190,16 @@ class Server(object):
         for s in self._clients:
             # remove client objects if deleted or out of client
             if s.get('client_tty') in deleted:
-                logging.info("removing %s" % s)
+                logger.info("removing %s" % s)
                 self._clients.remove(s)
 
             if s.get('client_tty') in intersect:
-                logging.debug('updating client_tty %s' % (s.get('client_tty')))
+                logger.debug('updating client_tty %s' % (s.get('client_tty')))
                 s.update(diff[s.get('client_tty')])
 
         # create client objects for non-existant client_tty's
         for client in [new[client_tty] for client_tty in created]:
-            logging.debug('new client %s' % client['client_tty'])
+            logger.debug('new client %s' % client['client_tty'])
             self._clients.append(client)
 
         return self._clients
@@ -241,7 +241,7 @@ class Server(object):
             if 'session_attached' in session:
                 # for now session_active is a unicode
                 if session.get('session_attached') == '1':
-                    logging.info('session %s attached', session.get('session_name'))
+                    logger.info('session %s attached', session.get('session_name'))
                     attached_sessions.append(session)
                 else:
                     continue
@@ -335,11 +335,11 @@ class Server(object):
         if self.has_session(session_name):
             if kill_session:
                 self.tmux('kill-session', '-t', session_name)
-                logging.error('session %s exists. killed it.' % session_name)
+                logger.error('session %s exists. killed it.' % session_name)
             else:
                 raise TmuxSessionExists('Session named %s exists' % session_name)
 
-        logging.debug('creating session %s' % session_name)
+        logger.debug('creating session %s' % session_name)
 
         formats = SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]

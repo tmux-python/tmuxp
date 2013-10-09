@@ -164,7 +164,7 @@ class Session(TmuxObject):
 
         if not self._windows:
             for window in new_windows:
-                logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+                logger.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
                 self._windows.append(Window(session=self, **window))
         else:
             new = {window['window_id']: window for window in new_windows}
@@ -190,21 +190,21 @@ class Session(TmuxObject):
             if deleted:
                 log_diff += "deleted %s" % deleted
             if log_diff:
-                logging.info(log_diff)
+                logger.info(log_diff)
 
             for w in self._windows:
                 # remove window objects if deleted or out of session
                 if w.get('window_id') in deleted or self.get('session_id') != w.get('session_id'):
-                    logging.debug("removing %s" % w)
+                    logger.debug("removing %s" % w)
                     self._windows.remove(w)
 
                 if w.get('window_id') in intersect and w.get('window_id') in diff:
-                    logging.debug('updating %s %s' % (w.get('window_name'), w.get('window_id')))
+                    logger.debug('updating %s %s' % (w.get('window_name'), w.get('window_id')))
                     w.update(diff[w.get('window_id')])
 
             # create window objects for non-existant window_id's
             for window in [new[window_id] for window_id in created]:
-                logging.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
+                logger.debug('adding window_name %s window_id %s' % (window['window_name'], window['window_id']))
                 self._windows.append(Window(session=self, **window))
 
         return self._windows
@@ -255,17 +255,17 @@ class Session(TmuxObject):
             returns True or False.
         '''
         if (len(self._windows) > 1):
-            logging.info('%s not clean, multiple windows', self)
+            logger.info('%s not clean, multiple windows', self)
             return False
 
         self.attached_window().list_panes()  # get the newest pane data
 
         if (len(self.attached_window()._panes) > 1):
-            logging.info('%s not clean, multiple panes (%s)' % (self, len(self.attached_window()._panes)))
+            logger.info('%s not clean, multiple panes (%s)' % (self, len(self.attached_window()._panes)))
             return False
 
         if (int(self.attached_window().attached_pane().get('history_size')) > 0):
-            logging.info('%s history_size (%s), greater than 0' % (self, self.attached_window().attached_pane().get('history_size')))
+            logger.info('%s history_size (%s), greater than 0' % (self, self.attached_window().attached_pane().get('history_size')))
             return False
 
         return True

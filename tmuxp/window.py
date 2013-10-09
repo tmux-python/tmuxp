@@ -143,7 +143,7 @@ class Window(TmuxObject):
             )
             self['window_name'] = new_name
         except Exception, e:
-            logging.error(e)
+            logger.error(e)
 
         self.session.list_windows()
 
@@ -166,7 +166,7 @@ class Window(TmuxObject):
         try:
             self.tmux('select-pane', '-t', target_pane)
         except Exception:
-            logging.error('pane not found %s %s' % (target_pane, self.list_panes()))
+            logger.error('pane not found %s %s' % (target_pane, self.list_panes()))
         self.list_panes()
         return self.attached_pane()
 
@@ -258,7 +258,7 @@ class Window(TmuxObject):
 
         if not self._panes:
             for pane in new_panes:
-                logging.debug('adding pane_id %s for window_id %s' % (pane['pane_id'], pane['window_id']))
+                logger.debug('adding pane_id %s for window_id %s' % (pane['pane_id'], pane['window_id']))
                 self._panes.append(Pane(window=self, **pane))
             return self._panes
 
@@ -285,21 +285,21 @@ class Window(TmuxObject):
         if deleted:
             log_diff += "deleted %s" % deleted
         if log_diff:
-            logging.info(log_diff)
+            logger.info(log_diff)
 
         for p in self._panes:
             # remove pane objects if deleted or out of session
             if p.get('pane_id') in deleted or self.get('session_id') != p.get('session_id'):
-                logging.debug("removing %s" % p)
+                logger.debug("removing %s" % p)
                 self._panes.remove(p)
 
             if p.get('pane_id') in intersect and p.get('p_id') in diff:
-                logging.debug('updating pane_id %s window_id %s' % (p.get('pane_id'), p.get('window_id')))
+                logger.debug('updating pane_id %s window_id %s' % (p.get('pane_id'), p.get('window_id')))
                 p.update(diff[p.get('pane_id')])
 
         # create pane objects for non-existant pane_id's
         for pane in [new[pane_id] for pane_id in created]:
-            logging.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
+            logger.debug('adding pane_id %s window_id %s' % (pane['pane_id'], pane['window_id']))
             self._panes.append(Pane(window=self, **pane))
 
         return self._panes

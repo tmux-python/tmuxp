@@ -22,7 +22,7 @@ class WindowSelectTestCase(TmuxTestCase):
 
         window = self.session.new_window(window_name='testing 3')
 
-        #logging.error([window._TMUX for window in self.session.list_windows()])
+        #logger.error([window._TMUX for window in self.session.list_windows()])
         #self.assertEqual(2, int(self.session.attached_window().get('window_index')))
         self.assertEqual(int(window_base_index) + 1, int(window.get('window_index')))
 
@@ -40,7 +40,7 @@ class WindowNewTestCase(TmuxTestCase):
     def test_zfresh_window_data(self):
         #self.session.select_window(1)
         current_windows = len(self.session._windows)
-        #logging.error("current panes: %s" % len(self.session.attached_window()._panes))
+        #logger.error("current panes: %s" % len(self.session.attached_window()._panes))
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(1)

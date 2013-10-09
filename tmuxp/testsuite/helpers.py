@@ -47,7 +47,7 @@ def bootstrap():
     )
 
     for old_test_session in old_test_sessions:
-        logging.debug('Old test test session %s found. Killing it.' %
+        logger.debug('Old test test session %s found. Killing it.' %
                       old_test_session)
         t.kill_session(old_test_session)
 
@@ -73,13 +73,13 @@ class TmuxTestCase(unittest.TestCase):
         try:
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except TmuxNoClientsRunning:
-            logging.error('test: TmuxNoClientsRunning')
+            logger.error('test: TmuxNoClientsRunning')
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
             import traceback
-            logging.error(e)
+            logger.error(e)
 
-            logging.error(traceback.print_exc())
+            logger.error(traceback.print_exc())
             #raise Exception(e)
         return
 
