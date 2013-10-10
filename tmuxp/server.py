@@ -21,6 +21,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class Server(object):
 
     '''
@@ -360,7 +361,5 @@ class Server(object):
         session._windows = session.list_windows()
 
         self._sessions.append(session)
-
-        logger.info('hihi ho? 365')
 
         return session
