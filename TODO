@@ -1,9 +1,10 @@
 Roadmap
 -------
 
-Top
-"""
+To do
+"""""
 
+- remove redundant from . import log from files
 - look at removing sh dependency
 - socket-name, socket-path support for .server instance and tmux commands
 - tmux command should be from server, since it will rely on the contexxt of the
