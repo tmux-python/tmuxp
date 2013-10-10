@@ -9,9 +9,9 @@ from ..exc import TmuxNoClientsRunning
 from . import t
 import logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
 
 TEST_SESSION_PREFIX = 'tmuxp_'
+
 
 def bootstrap():
     '''

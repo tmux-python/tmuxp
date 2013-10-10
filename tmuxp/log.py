@@ -125,6 +125,16 @@ def safe_unicode(s):
     except UnicodeDecodeError:
         return repr(s)
 
+NORMAL = Fore.RESET + Style.RESET_ALL + Back.RESET
+
+LEVEL_COLORS = {
+    'DEBUG': Fore.BLUE,  # Blue
+    'INFO': Fore.GREEN,  # Green
+    'WARNING': Fore.YELLOW,
+    'ERROR': Fore.RED,
+    'CRITICAL': Fore.RED
+}
+
 
 class LogFormatter(logging.Formatter):
 
@@ -140,18 +150,29 @@ class LogFormatter(logging.Formatter):
     `tornado.options.parse_command_line` (unless ``--logging=none`` is
     used).
     """
+
+    def prefix_template(self, record):
+        ''' this is available as a property definition instead of a class
+        variable so it can access to instance.
+
+        :param: record: :py:class:`logging.LogRecord` object. this is passed in
+        from inside the :py:meth:`logging.Formatter.format` record.
+        '''
+
+        prefix_template = ''
+        prefix_template += NORMAL
+        prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)1.1s)' + NORMAL + ' '
+        prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
+        prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
+        prefix_template += Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
+        prefix_template += Fore.BLACK + Style.DIM + Style.BRIGHT + ':' + NORMAL + Fore.CYAN + '%(lineno)d'
+        prefix_template += NORMAL
+
+        return prefix_template
+
     def __init__(self, color=True, *args, **kwargs):
         logging.Formatter.__init__(self, *args, **kwargs)
         self._color = color and _stderr_supports_color()
-        if self._color:
-            self._colors = {
-                'DEBUG': Fore.BLUE,  # Blue
-                'INFO': Fore.GREEN,  # Green
-                'WARNING': Fore.YELLOW,
-                'ERROR': Fore.RED,
-                'CRITICAL': Fore.RED
-            }
-            self._normal = Fore.RESET + Style.RESET_ALL + Back.RESET
 
     def format(self, record):
         try:
@@ -164,15 +185,7 @@ class LogFormatter(logging.Formatter):
         date_format = '%H:%m:%S'
         record.asctime = time.strftime(date_format, self.converter(record.created))
 
-        prefix = ''
-        prefix += self._normal
-        prefix += self._colors.get(record.levelname) + Style.BRIGHT + '(%(levelname)1.1s)' + self._normal + ' '
-        prefix += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
-        prefix += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
-        prefix += Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
-        prefix += Fore.BLACK + Style.DIM + Style.BRIGHT + ':' + self._normal + Fore.CYAN + '%(lineno)d'
-        prefix += self._normal
-        prefix = prefix % record.__dict__
+        prefix = self.prefix_template(record) % record.__dict__
 
         formatted = prefix + " " + safe_unicode(record.message)
         if record.exc_info:

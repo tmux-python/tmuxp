@@ -59,3 +59,18 @@
 from ..server import Server
 t = Server()
 t.socket_name = 'tmuxp_test'
+
+from .. import log
+import logging
+logger = logging.getLogger()
+
+
+if not logger.handlers:
+    logger = logging.getLogger(__name__)
+    if not logger.handlers:
+        channel = logging.StreamHandler()
+        channel.setFormatter(log.LogFormatter())
+        logger.propagate = False
+        logger.addHandler(channel)
+
+        logger.setLevel('DEBUG')

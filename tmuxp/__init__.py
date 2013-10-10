@@ -23,4 +23,13 @@ __version__ = '0.0.1-dev'
 
 
 def main():
-    print('output')
+    from . import log
+    import logging
+
+    logger = logging.getLogger()
+    channel = logging.StreamHandler()
+    channel.setFormatter(log.LogFormatter())
+    logger.setLevel('INFO')
+    logger.addHandler(channel)
+    logger.info('output')
+    pass
