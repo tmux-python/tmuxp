@@ -20,10 +20,12 @@ else:
         reqs = [str(r.req) for r in install_reqs]
         return reqs
 
+from tmuxp import __version__
+
 
 setup(
     name='tmuxp',
-    version='0.0.1-dev',
+    version=__version__,
     url='http://github.com/tony/tmuxp/',
     download_url='https://pypi.python.org/pypi/tmuxp',
     license='BSD',
@@ -38,9 +40,11 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         "License :: OSI Approved :: BSD License",
+        "Operating System :: POSIX",
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
         "Topic :: Utilities",
         "Topic :: System :: Shells",
     ],
