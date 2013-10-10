@@ -26,14 +26,14 @@ parser.add_argument('--pypid', type=int, required=False)
 
 def main():
 
-    from tmuxp import log
-    import logging
+    # from tmuxp import log
+    # import logging
 
-    logger = logging.getLogger()
-    channel = logging.StreamHandler()
-    channel.setFormatter(log.LogFormatter())
-    logger.setLevel('INFO')
-    logger.addHandler(channel)
+    # logger = logging.getLogger()
+    # channel = logging.StreamHandler()
+    # channel.setFormatter(log.LogFormatter())
+    # logger.setLevel('INFO')
+    # logger.addHandler(channel)
 
     def has_virtualenv():
         if os.environ.get('VIRTUAL_ENV'):

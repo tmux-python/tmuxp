@@ -14,8 +14,8 @@ import os
 def run():
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.insert(0, base)
-    import tmuxp
-    tmuxp.main()
+    import tmuxp.cli
+    tmuxp.cli.main()
 
 if __name__ == '__main__':
     exit = run()

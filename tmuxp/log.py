@@ -152,8 +152,9 @@ class LogFormatter(logging.Formatter):
     """
 
     def prefix_template(self, record):
-        ''' this is available as a property definition instead of a class
-        variable so it can access to instance.
+        ''' this is available as a definition instead of a class
+        variable so it can access to instance. it also accepts the record
+        parameter.
 
         :param: record: :py:class:`logging.LogRecord` object. this is passed in
         from inside the :py:meth:`logging.Formatter.format` record.
@@ -161,11 +162,9 @@ class LogFormatter(logging.Formatter):
 
         prefix_template = ''
         prefix_template += NORMAL
-        prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)1.1s)' + NORMAL + ' '
+        prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)s)' + NORMAL + ' '
         prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
         prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
-        prefix_template += Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
-        prefix_template += Fore.BLACK + Style.DIM + Style.BRIGHT + ':' + NORMAL + Fore.CYAN + '%(lineno)d'
         prefix_template += NORMAL
 
         return prefix_template
@@ -202,17 +201,25 @@ class LogFormatter(logging.Formatter):
         return formatted.replace("\n", "\n    ")
 
 
-class RepoLogFormatter(LogFormatter):
+class DebugLogFormatter(LogFormatter):
 
-    def format(self, record):
-        formatted = '%s|%s| %s(%s) %s %s%s' % (
-            Fore.GREEN + Style.DIM,
-            record.repo_name,
-            Fore.YELLOW,
-            record.repo_vcs,
-            Fore.MAGENTA,
-            safe_unicode(record.getMessage()),
-            Fore.RESET
-        )
+    def prefix_template(self, record):
+        ''' this is available as a definition instead of a class
+        variable so it can access to instance. it also accepts the record
+        argument.
 
-        return formatted
+        :param: record: :py:class:`logging.LogRecord` object. this is passed in
+        from inside the :py:meth:`logging.Formatter.format` record.
+        '''
+
+        prefix_template = ''
+        prefix_template += NORMAL
+        prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)1.1s)' + NORMAL + ' '
+        prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
+        prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
+        prefix_template += Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
+        prefix_template += Fore.BLACK + Style.DIM + Style.BRIGHT + ':' + NORMAL + Fore.CYAN + '%(lineno)d'
+        prefix_template += NORMAL
+
+        return prefix_template
+

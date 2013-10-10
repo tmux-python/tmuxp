@@ -10,26 +10,17 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
+__import__('pkg_resources').declare_namespace(__name__)
+
 from .session import Session
 from .server import Server
 from .window import Window
 from .pane import Pane
 from .builder import Builder
 from .config import expand_config, trickledown_config
+from .cli import main
 
 from .util import TmuxObject
+import logging
 
 __version__ = '0.0.1-dev'
-
-
-def main():
-    from . import log
-    import logging
-
-    logger = logging.getLogger()
-    channel = logging.StreamHandler()
-    channel.setFormatter(log.LogFormatter())
-    logger.setLevel('INFO')
-    logger.addHandler(channel)
-    logger.info('output')
-    pass

@@ -66,11 +66,11 @@ logger = logging.getLogger()
 
 
 if not logger.handlers:
-    logger = logging.getLogger(__name__)
-    if not logger.handlers:
-        channel = logging.StreamHandler()
-        channel.setFormatter(log.LogFormatter())
-        logger.propagate = False
-        logger.addHandler(channel)
+    channel = logging.StreamHandler()
+    channel.setFormatter(log.DebugLogFormatter())
+    logger.addHandler(channel)
+    logger.setLevel('INFO')
 
-        logger.setLevel('DEBUG')
+    # enable DEBUG message if channel is at testsuite + testsuite.* packages.
+    testsuite_logger = logging.getLogger(__name__)
+    testsuite_logger.setLevel('DEBUG')
