@@ -8,7 +8,7 @@ env:
   - TMUX_VERSION=1.7
 matrix:
   allow_failures:
-    - env: TMUX_VERSION: 1.7
+    - env: TMUX_VERSION=1.7
 before_install:
  - sudo apt-get update -qq
 install:
