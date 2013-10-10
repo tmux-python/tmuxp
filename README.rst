@@ -10,7 +10,9 @@ ORM layer on top of tmux.
 
 Not ready for public use. Tested with tmux 1.8, 1.9-dev.
 
-============    ==========================================================
+==============  ==========================================================
+tmux support    1.8, 1.9-dev
+config support  yaml, json, python dict
 Travis          http://travis-ci.org/tony/tmuxp
 Docs            http://tmuxp.rtfd.org
 API             http://tmuxp.readthedocs.org/en/latest/api.html
@@ -18,7 +20,6 @@ Issues          https://github.com/tony/tmuxp/issues
 Source          https://github.com/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
 License         `BSD`_.
-Tmux support    1.8, 1.9-dev
 git repo        .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git
@@ -32,6 +33,6 @@ install dev     .. code-block:: bash
 tests           .. code-block:: bash
 
                     $ python ./run_tests.py
-============    ==========================================================
+==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
