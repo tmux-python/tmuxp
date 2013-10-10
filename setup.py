@@ -20,7 +20,15 @@ else:
         reqs = [str(r.req) for r in install_reqs]
         return reqs
 
-from tmuxp import __version__
+import re
+VERSIONFILE = "tmuxp/__init__.py"
+verstrline = open(VERSIONFILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+mo = re.search(VSRE, verstrline, re.M)
+if mo:
+    __version__ = mo.group(1)
+else:
+    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
 
 
 setup(
