@@ -3,7 +3,13 @@
 .. image:: https://travis-ci.org/tony/tmuxp.png?branch=master
    :target: https://travis-ci.org/tony/tmuxp
 
-tmuxp was written from the ground up as an ORM layer on top of tmux.
+.. image:: https://badge.fury.io/py/tmuxp.png
+    :target: http://badge.fury.io/py/tmuxp
+
+.. image:: https://pypip.in/v/tmuxp/badge.png
+        :target: https://crate.io/packages/tmuxp
+
+ORM layer on top of tmux.
 
 Not ready for public use. Testing with tmux 1.8, 1.9-dev.
 
