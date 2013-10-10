@@ -135,11 +135,19 @@ class Window(TmuxObject):
         :param new_name: name of the window
         :type new_name: string
         '''
+        #new_name = pipes.quote(new_name)
+
+        import shlex
+        lex = shlex.shlex(new_name)
+        lex.escape = ' '
+        lex.whitespace_split = False
+        #new_name = '\ '.join(new_name.split())
+
         try:
             self.tmux(
                 'rename-window',
                 '-t%s' % self.target,
-                pipes.quote(new_name)
+                new_name
             )
             self['window_name'] = new_name
         except Exception as e:

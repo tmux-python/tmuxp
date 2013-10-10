@@ -71,5 +71,4 @@ class Pane(TmuxObject):
         return "%s:%s.%s" % (self.session.get('session_id'), self.get('window_id'), int(self.get('pane_index')))
 
     def __repr__(self):
-        # todo test without session_name
         return "%s(%s %s)" % (self.__class__.__name__, self.get('pane_id'), self.window)
