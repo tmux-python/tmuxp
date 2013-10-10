@@ -6,12 +6,9 @@
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
 
-.. image:: https://pypip.in/d/tmuxp/badge.png
-        :target: https://crate.io/packages/tmuxp
-
 ORM layer on top of tmux.
 
-Not ready for public use. Testing with tmux 1.8, 1.9-dev.
+Not ready for public use. Tested with tmux 1.8, 1.9-dev.
 
 ============    ==========================================================
 Travis          http://travis-ci.org/tony/tmuxp
