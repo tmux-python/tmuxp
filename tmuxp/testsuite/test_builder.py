@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
 import os
 import shutil
-import kaptan
 import unittest
+import kaptan
 from .. import Window
 from ..config import expand_config
 from ..builder import Builder

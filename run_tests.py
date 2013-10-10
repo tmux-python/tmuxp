@@ -1,9 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-def interact(line, stdin, process):
-#    print line
-    pass
-
+from __future__ import absolute_import, division, print_function, with_statement
 
 import unittest
 import sys
@@ -60,17 +58,16 @@ def main():
             #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
             #t.hotswap(session_name=session_name)
             def output(line):
-                #print(line)
                 pass
             #tmuxclient = t.tmux('-C')
             #tmuxclient = subprocess.Popen(['tmux', '-C', '-Lhi', 'attach'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         else:
-            print has_virtualenv()
-            print in_tmux()
-            print os.environ.get('pypid')
+            print(has_virtualenv())
+            print(in_tmux())
+            print(os.environ.get('pypid'))
             args = vars(parser.parse_args())
             if 'pypid' in args:
-                print args['pypid']
+                print(args['pypid'])
 
 
             # todo create a hook to run after suite / loader to detach

@@ -7,7 +7,8 @@
     :license: BSD, see LICENSE for details
 """
 
-__version__ = '0.0.1-dev'
+
+from __future__ import absolute_import, division, print_function, with_statement
 
 from .session import Session
 from .server import Server
@@ -17,6 +18,8 @@ from .builder import Builder
 from .config import expand_config, trickledown_config
 
 from .util import TmuxObject
+
+__version__ = '0.0.1-dev'
 
 t = Server()
 
@@ -31,4 +34,4 @@ logger.addHandler(channel)
 
 
 def main():
-    print t.list_sessions()
+    print(t.list_sessions())

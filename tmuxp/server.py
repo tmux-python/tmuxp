@@ -8,6 +8,8 @@
     :copyright: Copyright 2013 Tony Narlock.
     :license: BSD, see LICENSE for details
 """
+from __future__ import absolute_import, division, print_function, with_statement
+
 import os
 from .util import tmux
 from .session import Session
