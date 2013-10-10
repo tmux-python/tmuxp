@@ -6,7 +6,7 @@
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
 
-.. image:: https://pypip.in/v/tmuxp/badge.png
+.. image:: https://pypip.in/d/tmuxp/badge.png
         :target: https://crate.io/packages/tmuxp
 
 ORM layer on top of tmux.
