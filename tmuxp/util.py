@@ -150,3 +150,35 @@ class TmuxObject(collections.MutableMapping):
 
     def __len__(self):
         return len(self._TMUX.keys())
+
+
+class TmuxObjectDiff(object):
+    ''' Methods for updating the child objects and still keeping the
+        objects intact if they exist.
+
+        @todo
+
+        - make more generic / backbone-like by allow an 'id' property, such
+        as ``window_id`` being ``id`` for :class:`Window`.
+        - change :meth:`Server.list_session`, :meth:`Session.list_windows`,
+        :meth:`Window.list_panes` to call `list_children` in here.
+
+        The _list_sessions, _list_windows, _list_panes can retrieve a list of
+        dict from the Popen of tmux, then pass it into here.
+    '''
+
+    def set(self, object):
+        '''
+        add a or a :obj:`list` of sessions, panes or windows to the object.
+
+        this is subclassed by:
+
+            - :class:`Server` to hold :class:`Session` objects.
+            - :class:`Session` to hold :class:`Window` objects.
+            - :class:`Window` to hold :class:`Pane` objects.
+
+        if a list object is entered, use this recursively
+
+        :param: object: any sibling of :class:`TmuxObject`: :class:`Session`,
+        :class:`Window`, :class:`Pane`.
+        '''
