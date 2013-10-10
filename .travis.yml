@@ -5,15 +5,10 @@ python:
 env:
   - TMUX_VERSION=master
   - TMUX_VERSION=1.8
-  - TMUX_VERSION=1.7
 before_install:
  - sudo apt-get update -qq
-# - sudo apt-get install -qq tmux
-# command to install dependencies
 install:
-  #  - "pip install . --use-mirrors"
   - "pip install -e ."
-  #  - "pip install -r requirements.pip --use-mirrors"
 before_script:
   - sudo apt-get install -qq libevent-dev libncurses-dev
   - git clone git://git.code.sf.net/p/tmux/tmux-code tmux
@@ -23,9 +18,6 @@ before_script:
   - ./configure && make && sudo make install
   - cd ..
   - tmux -V
-#  - /sbin/start-stop-daemon --start --quiet --background --exec /usr/local/bin/tmux -- -C
-# command to run tests
 script: python run_tests.py
-#script: nosetests tmuxp
 after_script:
   - killall tmux

@@ -51,23 +51,6 @@ class Server(object):
             args.insert(0, '-f{}'.format(self.config_file))
         return tmux(*args, **kwargs)
 
-    def hotswap(self, session_name=None):
-        args = ['/usr/local/bin/tmux', 'tmux']
-        if self.socket_name:
-            args.append('-L{}'.format(self.socket_name))
-        if self.socket_path:
-            args.append('-S{}'.format(self.socket_path))
-        if self.config_file:
-            args.append('-f{}'.format(self.config_file))
-        args.append('attach-session')
-        if session_name:
-            args.append('-t{}'.format(session_name))
-
-        # logger.info(args)
-        os.execl(*args)
-        # os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t',
-        # session_name)
-
     def list_sessions(self):
         '''
         Return a list of :class:`Session` from tmux server.
@@ -357,7 +340,9 @@ class Server(object):
             '-d',  # assume detach = True for now, todo: fix
             '-s', session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
-        ).stdout[0]
+        )
+
+        session_info = session_info.stdout[0]
 
         if env:
             os.environ['TMUX'] = env
