@@ -5,6 +5,10 @@ python:
 env:
   - TMUX_VERSION=master
   - TMUX_VERSION=1.8
+  - TMUX_VERSION=1.7
+matrix:
+  allow_failures:
+    - TMUX_VERSION: 1.7
 before_install:
  - sudo apt-get update -qq
 install:
