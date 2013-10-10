@@ -22,18 +22,36 @@ For pythonistas
 
 tmuxp is an abstraction of :term:`tmux(1)` into python objects.
 
-Uses `sh`_ for a clean :py:mod:`subprocess` interface, `kaptan`_ for
+Uses `kaptan`_ for
 configuration.
 
 `unittest`_ for tests. Tested in python 2.7.  You can read our :ref:`api`
 documentation for more.
 
-tmuxp is `BSD-licensed`_. Its code can be found at VCS
-http://github.com/tony/tmuxp.
+License
+-------
 
+tmuxp is `BSD-licensed`_.
 
+Source
+------
+
+Code can be found at VCS http://github.com/tony/tmuxp.
+
+Compatibility
+-------------
+
+Currently tmuxp is tested with 1.8 and above. It is recommended to update
+to the latest version. If there is enough demand, support can be added
+to support older versions.
+
+1.7 and below issues:
+
+- tmuxp relies on the ``-P`` option to print out session information when
+``new-session`` is called (see `attempt at 1.7 test`_).
+
+.. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
-.. _sh: https://github.com/amoffat/sh
 .. _unittest: http://docs.python.org/2/library/unittest.html
 .. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
 
