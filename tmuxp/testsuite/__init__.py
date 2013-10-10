@@ -55,3 +55,7 @@
     have a second terminal with tmux running alongside the terminal running the
     tests.
 """
+
+from ..server import Server
+t = Server()
+t.socket_name = 'tmuxp_test'

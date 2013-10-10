@@ -21,17 +21,6 @@ from .util import TmuxObject
 
 __version__ = '0.0.1-dev'
 
-t = Server()
-
-from . import log
-import logging
-
-logger = logging.getLogger()
-channel = logging.StreamHandler()
-channel.setFormatter(log.LogFormatter())
-logger.setLevel('INFO')
-logger.addHandler(channel)
-
 
 def main():
-    print(t.list_sessions())
+    print('output')

@@ -10,7 +10,8 @@ import subprocess
 import argparse
 import tmuxp.testsuite
 from tmuxp.util import tmux
-from tmuxp import t
+
+t = tmuxp.testsuite.t
 
 tmux_path = sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 if tmux_path not in sys.path:
@@ -25,7 +26,14 @@ parser.add_argument('--pypid', type=int, required=False)
 
 def main():
 
-    t.socket_name = 'hi'
+    from tmuxp import log
+    import logging
+
+    logger = logging.getLogger()
+    channel = logging.StreamHandler()
+    channel.setFormatter(log.LogFormatter())
+    logger.setLevel('INFO')
+    logger.addHandler(channel)
 
     def has_virtualenv():
         if os.environ.get('VIRTUAL_ENV'):

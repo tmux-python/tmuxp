@@ -4,9 +4,10 @@ from __future__ import absolute_import, division, print_function, with_statement
 import unittest
 from random import randint
 from time import sleep
-from .. import t, Session, Window, Pane
+from .. import Session, Window, Pane
 from ..util import tmux
 from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
+from . import t
 
 from .. import log
 import logging

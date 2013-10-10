@@ -3,9 +3,10 @@ from __future__ import absolute_import, division, print_function, with_statement
 import unittest
 import time
 from random import randint
-from .. import t, Server
+from .. import Server
 from .. import log
 from ..exc import TmuxNoClientsRunning
+from . import t
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)

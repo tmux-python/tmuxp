@@ -10,6 +10,7 @@ from ..config import expand_config
 from ..builder import Builder
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
+from . import t
 
 from .. import log
 import logging
