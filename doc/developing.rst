@@ -115,7 +115,7 @@ Multiple can be separated by spaces:
 
 .. code-block:: shell
 
-    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json \\
+    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json \
         testsuite.test_config.ImportExportTest.test_window
 
 .. _test_builder_visually:
