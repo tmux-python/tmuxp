@@ -74,4 +74,4 @@ if not logger.handlers:
     # enable DEBUG message if channel is at testsuite + testsuite.* packages.
     testsuite_logger = logging.getLogger(__name__)
 
-    testsuite_logger.setLevel('DEBUG')
+    testsuite_logger.setLevel('INFO')

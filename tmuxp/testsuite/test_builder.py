@@ -101,13 +101,17 @@ class BuilderTestN(BuilderTest):
                 w.conf = {}
                 w.conf['panes'] = wconf['panes']
                 w.list_panes()
+
                 yield w
             else:
-                w = s.new_window(window_name=window_name,
-                                    automatic_rename=automatic_rename)
+                w = s.new_window(
+                    window_name=window_name,
+                    automatic_rename=automatic_rename
+                )
                 w.conf = {}
                 w.conf['panes'] = wconf['panes']
                 w.list_panes()
+
                 yield w
 
     @staticmethod
