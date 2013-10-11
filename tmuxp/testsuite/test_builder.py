@@ -30,6 +30,21 @@ class BuilderTestCase(TmuxTestCase):
                 TMUXWRAPPER_DIR)
         super(BuilderTestCase, cls).setUpClass()
 
+    def test_uses_first_window_if_exists(self):
+        '''
+        if the session is already on the first window, use that.
+
+        this is useful if the user is already inside of a tmux session
+        '''
+
+    def test_same_session_already_exists_unclean(self):
+        '''
+        raise exception if session_name already exists and has multiple
+        windows the user could potentially be offered to add a cli argument to
+        override the session_name in config. Perhaps `-n` could be used to load
+        a config from file with overridden session_name.
+        '''
+
     def test_split_windows(self):
         s = self.session
         tmux_config = expand_config(sampleconfigdict)
@@ -57,6 +72,7 @@ class BuilderTestCase(TmuxTestCase):
 
                 # current pane count, of course 1 since we just made it
                 window_pane_count = len(w._panes)
+                self.assertEqual(window_pane_count, 1)
                 for pindex, pconf in enumerate(wconf['panes'], start=1):
                     if pindex != int(1):
                         p = w.split_window()
