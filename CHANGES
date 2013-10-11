@@ -3,6 +3,19 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-11
+----------
+
+- [builder] More preparation for builder / session maker utility.
+- [tests] Major test runner and test suite overhaul.
+- [docs] Documentation for development environment and test runner updated.
+- [tests] Travis now tests against tmux 1.8 and latest source. Door open for
+  future testing against python 3 and earlier tmux versions in the future.
+- [internal] Quiet logger down in some areas
+- [internal] __future__ imports for future python 3 compatibility 
+- [internal] setup.py import __version__ via regex from tmuxp package
+- [cli] move beginnings of cli to tmuxp.cli
+
 2013-10-09
 ----------
 
