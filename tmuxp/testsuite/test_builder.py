@@ -7,6 +7,7 @@ from . import t
 from .. import Window
 from ..config import expand_config
 from ..builder import Builder
+import kaptan
 
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
@@ -15,6 +16,29 @@ logger = logging.getLogger(__name__)
 
 
 class BuilderTest(TmuxTestCase):
+
+    yaml_config = '''
+    session_name: sampleconfig
+    start_directory: '~'
+    windows:
+    - layout: main-verticle
+      panes:
+      - shell_command:
+        - vim
+        start_directory: '~'
+      - shell_command:
+        - cowsay "hey"
+      window_name: editor
+    - panes:
+      - shell_command:
+        - tail -F /var/log/syslog
+        start_directory: /var/log
+      window_name: logging
+    - automatic_rename: true
+      panes:
+      - shell_command:
+        - htop
+    '''
 
     @staticmethod
     def _iter_create_windows(s, sconf):
@@ -66,7 +90,8 @@ class BuilderTest(TmuxTestCase):
 
     def test_split_windows(self):
         s = self.session
-        sconfig = expand_config(sampleconfigdict)  # session config
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
 
         if 'session_name' in sconfig:
             window_count = len(self.session._windows)  # current window count
@@ -82,6 +107,7 @@ class BuilderTest(TmuxTestCase):
                 window_count += 1
         else:
             raise ValueError('config requires session_name')
+
 
 
 class TestsToDo(object):

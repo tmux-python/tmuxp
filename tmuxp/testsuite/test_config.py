@@ -72,7 +72,7 @@ class ImportExportTest(unittest.TestCase):
         config = kaptan.Kaptan()
         config.import_config(sampleconfigdict)
 
-        yaml_config_data = config.export('yaml', indent=2)
+        yaml_config_data = config.export('yaml', indent=2, default_flow_style=False)
 
         buf = open(yaml_config_file, 'w')
         buf.write(yaml_config_data)
@@ -117,6 +117,7 @@ class ImportExportTest(unittest.TestCase):
     def tearDownClass(cls):
         if os.path.isdir(TMUXWRAPPER_DIR):
             shutil.rmtree(TMUXWRAPPER_DIR)
+        logging.debug('wiped %s' % TMUXWRAPPER_DIR)
 
 
 class ExpandTest(unittest.TestCase):
