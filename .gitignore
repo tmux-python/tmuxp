@@ -5,4 +5,4 @@ dist
 *.egg
 *.egg-info
 doc/_build
-tmux/testsuite/.tmuxp
+tmuxp/testsuite/.tmuxp
