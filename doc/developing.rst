@@ -95,8 +95,8 @@ terminal.
 
 Create two terminals:
 
-  - Terminal 1: ``$ tmux -L test_case``
-  - Terminal 2: ``$ cd`` into the tmuxp project and into the
+  - Terminal 1: :bash:`$ tmux -L test_case`
+  - Terminal 2: :bash:`$ cd` into the tmuxp project and into the
     ``virtualenv`` if you are using one, see details on installing the dev
     version of tmuxp above.
 
@@ -150,3 +150,7 @@ Currently `travis-ci`_ is used to automate unit testing.
 
 
 .. _travis-ci: http://www.travis-ci.org
+
+.. role:: python(code)
+    :language: python
+    :class: highlight
