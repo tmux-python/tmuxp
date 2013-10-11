@@ -4,6 +4,7 @@ Roadmap
 To do
 """""
 
+- use mktmpdir for config tests
 - remove redundant from . import log from files
 - look at removing sh dependency
 - socket-name, socket-path support for .server instance and tmux commands
