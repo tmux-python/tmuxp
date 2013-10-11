@@ -1,8 +1,8 @@
 .. _developing:
 
-==========
-Developing
-==========
+======================
+Developing and Testing
+======================
 
 .. todo::
     link to sliderepl or ipython notebook slides

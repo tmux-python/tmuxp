@@ -30,9 +30,13 @@ install dev     .. code-block:: bash
                     $ virtualenv .env
                     $ source .env/bin/activate
                     $ pip install -e .
+
+                See the `developing and testing`_ page in the docs for
+                more.
 tests           .. code-block:: bash
 
                     $ python ./run_tests.py
 ==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
+.. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
