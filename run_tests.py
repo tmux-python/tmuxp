@@ -21,7 +21,6 @@ from time import sleep
 import itertools
 
 
-
 def main():
 
     # from tmuxp import log
@@ -98,13 +97,47 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Run tests suite for tmuxp'
+        description='''\
+        Run tests suite for tmuxp. With no arguments, runs all test suites in tmuxp.testsuite.
+
+        Default usage:
+            $ ./run_tests.py
+        ''',
+        formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
         '--visual',
         action='store_true',
-        help= 'run the session builder in visual mode, requires having a tmux '
-              'client in a second terminal open with ``$ tmux -L tmux_test``.'
+        help = '''\
+        Run the session builder testsuite in visual mode. requires having
+        tmux client in a second terminal open with:
+
+        Terminal 1:
+            $ tmux -L tmuxp_test
+
+        Terminal 2:
+            $ ./run_tests.py --visual
+        '''
+    )
+    parser.add_argument(
+        '--tests',
+        nargs='*',
+        default=None,
+        help = '''\
+        Test individual, TestCase or TestSuites, or multiple:
+
+        by TestSuite (module):
+            $ ./run_tests.py tmuxp.testsuite.test_config
+
+        by TestCase:
+            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest
+        individual tests:
+            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest.test_export_json
+
+        Multiple can be separated by spaces:
+            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest.test_export_json \\
+                testsuite.test_config.ImportExportTest.test_window
+        '''
     )
 
     args = parser.parse_args()
@@ -121,5 +154,11 @@ if __name__ == '__main__':
             sys.exit(0)
         else:
             sys.exit(1)
+    if args.tests and len(args.tests) > 0:
+        print(args.tests)
+        suites = unittest.TestLoader().loadTestsFromNames(args.tests)
+        result = unittest.TextTestRunner(verbosity=2).run(suites)
+
+        print('done')
     else:
         main()

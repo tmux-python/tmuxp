@@ -16,14 +16,14 @@ logger = logging.getLogger(__name__)
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
-class BuilderTestCase(TmuxTestCase):
+class BuilderTest(TmuxTestCase):
 
     @classmethod
     def setUpClass(cls):
         if not os.path.exists(TMUXWRAPPER_DIR):
             os.makedirs(
                 TMUXWRAPPER_DIR)
-        super(BuilderTestCase, cls).setUpClass()
+        super(BuilderTest, cls).setUpClass()
 
     def test_split_windows(self):
         s = self.session
@@ -72,7 +72,7 @@ class BuilderTestCase(TmuxTestCase):
             raise ValueError('config requires session_name')
 
 
-class BuilderTestCaseNew(BuilderTestCase):
+class BuilderTestN(BuilderTest):
 
     def _iter_create_windows(self, s, windows):
         ''' this is a generator that will create the windows and return the

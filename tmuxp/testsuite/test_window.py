@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class WindowSelectTestCase(TmuxTestCase):
+class SelectTest(TmuxTestCase):
 
     def test_select_window(self):
         window_count = len(self.session.list_windows())
@@ -43,7 +43,7 @@ class WindowSelectTestCase(TmuxTestCase):
         self.assertEqual(len(self.session.list_windows()), 2)
 
 
-class WindowNewTestCase(TmuxTestCase):
+class NewTest(TmuxTestCase):
 
     def test_zfresh_window_data(self):
         # self.session.select_window(1)
@@ -106,7 +106,7 @@ class WindowNewTestCase(TmuxTestCase):
         pass
 
 
-class WindowRenameTestCase(TmuxTestCase):
+class RenameTest(TmuxTestCase):
 
     window_name_before = 'test'
     window_name_after = 'ha ha ha fjewlkjflwef'
@@ -131,28 +131,9 @@ class WindowRenameTestCase(TmuxTestCase):
 
         self.assertEqual(window.get('window_name'), self.window_name_after)
 
-class WindowRenameSpacesTestCase(WindowRenameTestCase):
+
+class RenameSpacesTest(RenameTest):
     window_name_after = 'hello \\ wazzup 0'
-
-class WindowRenameSpacesTestCase(WindowRenameTestCase):
-    window_name_after = 'fjewafkljewfoiwejfoew  \' \' jfweofjoewijfeoiwajfoiewjfoeiwjafpojewapofijewpof                                                                                                                                                                     '
-
-class WindowObjectUpdates(TmuxTestCase):
-
-    @unittest.SkipTest
-    def test_window_object_updates(self):
-        ''' does a window object update when the pertinent object is
-        updated within '''
-
-        import weakref
-
-        window = weakref.proxy(self.session.new_window(window_name='testing 3'))
-
-        self.assertEqual(window.get('window_name'), 'testing 3')
-
-        window.rename_window('hu ha ha ha')
-
-        self.assertEqual(window.get('window_name'), 'hu ha ha ha')
 
 
 if __name__ == '__main__':

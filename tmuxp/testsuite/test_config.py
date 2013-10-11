@@ -12,9 +12,6 @@ from .. import log
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 sampleconfigdict = {
@@ -42,7 +39,7 @@ sampleconfigdict = {
 }
 
 
-class ConfigImportExportTestCase(unittest.TestCase):
+class ImportExportTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -122,7 +119,7 @@ class ConfigImportExportTestCase(unittest.TestCase):
             shutil.rmtree(TMUXWRAPPER_DIR)
 
 
-class ConfigExpandTestCase(unittest.TestCase):
+class ExpandTest(unittest.TestCase):
 
     '''
     assumes the configuration has been imported into a python dict correctly.
@@ -194,7 +191,7 @@ class ConfigExpandTestCase(unittest.TestCase):
         self.assertDictEqual(config, self.after_config)
 
 
-class ConfigInheritanceStartCommandTestCase(unittest.TestCase):
+class InheritanceTest(unittest.TestCase):
 
     '''
     test config inheritance for the nested 'start_command'
@@ -299,7 +296,7 @@ class ConfigInheritanceStartCommandTestCase(unittest.TestCase):
         self.assertDictEqual(config, self.config_after)
 
 
-class ConfigShellCommandBefore(unittest.TestCase):
+class ShellCommandBeforeTest(unittest.TestCase):
 
     '''
     test config inheritance for the nested 'start_command'

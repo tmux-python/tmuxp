@@ -71,8 +71,6 @@ since you are in the virtual environment, your `PATH` environment was
 updated to include a special version of ``python`` inside your ``.env``
 folder with its own packages.
 
-to test:
-
 .. code-block:: bash
 
     $ ./run_tests.py
@@ -83,6 +81,40 @@ If you found a problem or are trying to write a test, you can file an
 `issue on github`_.
 
 .. _issue on github: https://github.com/tony/tmuxp/issues
+
+Testing specific testsuites, testcase and tests
+-----------------------------------------------
+
+.. code-block:: bash
+
+    $ ./run_tests.py --help
+
+Will give you an output of ways you can choose to run tests.
+
+By :py:class:`unittest.TestSuite` / module:
+
+.. code-block:: shell
+
+    $ ./run_tests.py tmuxp.testsuite.test_config
+
+by :py:class:`unittest.TestCase`:
+
+.. code-block:: shell
+
+    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
+
+individual tests:
+
+.. code-block:: shell
+
+    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json
+
+Multiple can be separated by spaces:
+
+.. code-block:: shell
+
+    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json \\
+        testsuite.test_config.ImportExportTest.test_window
 
 .. _test_builder_visually:
 
@@ -95,12 +127,14 @@ terminal.
 
 Create two terminals:
 
-  - Terminal 1: :bash:`$ tmux -L test_case`
-  - Terminal 2: :bash:`$ cd` into the tmuxp project and into the
+  - Terminal 1: ``$ tmux -L test_case``
+  - Terminal 2: ``$ cd`` into the tmuxp project and into the
     ``virtualenv`` if you are using one, see details on installing the dev
-    version of tmuxp above.
+    version of tmuxp above. Then:
 
-    Now, type ``$ python ./run_tests.py --visual``
+    .. code-block:: bash
+    
+        $ python ./run_tests.py --visual
 
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users. :)
@@ -148,9 +182,4 @@ Travis
 
 Currently `travis-ci`_ is used to automate unit testing.
 
-
 .. _travis-ci: http://www.travis-ci.org
-
-.. role:: python(code)
-    :language: python
-    :class: highlight

@@ -15,8 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
-class SessionTestCase(TmuxTestCase):
+class SessionTest(TmuxTestCase):
     def test_has_session(self):
         self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
         self.assertFalse(t.has_session('asdf2314324321'))
@@ -42,7 +41,7 @@ class SessionTestCase(TmuxTestCase):
         self.assertEqual(self.session.get('session_name'), self.TEST_SESSION_NAME)
 
 
-class SessionCleanTestCase(TmuxTestCase):
+class SessionCleanTest(TmuxTestCase):
     @unittest.skip("not working yet")
     def test_is_session_clean(self):
         self.assertEqual(self.session.is_clean(), True)
@@ -53,7 +52,7 @@ class SessionCleanTestCase(TmuxTestCase):
         self.assertEqual(self.session.is_clean(), False)
 
 
-class SessionNewTestCase(TmuxTestCase):
+class SessionNewTest(TmuxTestCase):
     def test_new_session(self):
         new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
         new_session = t.new_session(session_name=new_session_name, detach=True)
