@@ -30,7 +30,6 @@ class BuilderTest(TmuxTestCase):
         s = self.session
         tmux_config = sampleconfigdict
         tmux_config = expand_config(tmux_config)
-        logger.debug(tmux_config)
 
         if 'session_name' in tmux_config:
             window_count = len(self.session._windows)  # current window count
@@ -111,11 +110,24 @@ class BuilderTestN(BuilderTest):
                 w.list_panes()
                 yield w
 
+    @staticmethod
+    def _iter_create_panes(w, pconf):
+        for pindex, pconf in enumerate(w.conf['panes'], start=1):
+            if pindex != int(1):
+                p = w.split_window()
+            else:
+                p = w.attached_pane()
+            for cmd in pconf['shell_command']:
+                p.send_keys(cmd)
+
+            w.list_panes()
+
+            yield p
+
     def test_split_windows(self):
         s = self.session
         tmux_config = sampleconfigdict
         tmux_config = expand_config(tmux_config)
-        logger.debug(tmux_config)
 
         if 'session_name' in tmux_config:
 
@@ -123,27 +135,16 @@ class BuilderTestN(BuilderTest):
             self.assertEqual(len(s.list_windows()), window_count)
             for w in self._iter_create_windows(s, tmux_config['windows']):
                 window_pane_count = len(w._panes)
-                logger.debug(w.conf['panes'])
-                logger.debug('total panes: %s' % len(w.conf['panes']))
-                for pindex, pconf in enumerate(w.conf['panes'], start=1):
-                    logger.debug('pindex: %s len(conf[\'panes\']): %s len(conf._panes): %s' % (pindex, len(w.conf['panes']), len(w._panes)))
-                    if pindex != int(1):
-                        p = w.split_window()
-                        window_pane_count += 1
-                    else:
-                        p = w.attached_pane()
-                    for cmd in pconf['shell_command']:
-                        p.send_keys(cmd)
-
-                    w.list_panes()
-                    self.assertEqual(window_pane_count, len(w._panes))
+                for p in self._iter_create_panes(w, w.conf['panes']):
+                    p = p
+                    self.assertEqual(len(s.list_windows()), window_count)
                 self.assertIsInstance(w, Window)
 
                 self.assertEqual(len(s.list_windows()), window_count)
                 window_count += 1
-
         else:
             raise ValueError('config requires session_name')
+
 
 class TestsToDo(object):
     def test_uses_first_window_if_exists(self):
