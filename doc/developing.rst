@@ -95,25 +95,25 @@ Will give you an output of ways you can choose to run tests.
 
 By :py:class:`unittest.TestSuite` / module:
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ ./run_tests.py tmuxp.testsuite.test_config
 
 by :py:class:`unittest.TestCase`:
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
 
 individual tests:
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json
 
 Multiple can be separated by spaces:
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json \
         testsuite.test_config.ImportExportTest.test_window
@@ -146,7 +146,7 @@ Verbosity and logging
 
 ``./run_tests.py`` supports two options, these are *optional* flags that
 may be added to for :ref:`test_specific_tests` and
-:ref:`_test_builder_visually`.
+:ref:`test_builder_visually`.
 
 1.  log level: ``-l`` aka ``--log-level``, with the options of ``debug``,
     ``info``, ``warn``, ``error``, ``fatal``. Default is ``INFO``.
@@ -200,15 +200,24 @@ To run test where :ref:`test_builder_visually` you may:
 .. _npm: http://www.npmjs.org
 .. _nodemon: https://github.com/remy/nodemon
 
-Deeper
-""""""
+How does tmuxp verify session / window / pane state?
+""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-You won't see anything since the tests are verified by status checking
-commands, i.e.: ``list-sessions``, ``list-windows``, ``list-panes``.
+Normal tests won't even require a tmux session being open already. Tests 
+assert against the freshest data, ie: :meth:`tmuxp.Server.list_sessions`,
+:meth:`tmuxp.Session.list_windows`, :meth:`tmuxp.Window.list_panes`.
 
 Travis
 """"""
 
-Currently `travis-ci`_ is used to automate unit testing.
+Currently `travis-ci`_ is used to automate unit testing. To set up a
+test matrix for potentially multiple versions of tmux (currently tmuxp
+is tested against 1.8 and latest) in addition to potentially python 3.x
+support. The `travis build site`_ uses this `.travis.yml`_ configuration:
+
+.. literalinclude:: ../.travis.yml
+    :language: yaml
 
 .. _travis-ci: http://www.travis-ci.org
+.. _travis build site: http://www.travis-ci.org/tony/tmuxp
+.. _.travis.yml: https://github.com/tony/tmuxp/blob/master/.travis.yml
