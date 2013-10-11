@@ -21,8 +21,6 @@ from time import sleep
 import itertools
 
 
-parser = argparse.ArgumentParser(description="test framework")
-parser.add_argument('--pypid', type=int, required=False)
 
 def main():
 
@@ -99,4 +97,29 @@ def main():
         sys.exit(1)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description='Run tests suite for tmuxp'
+    )
+    parser.add_argument(
+        '--visual',
+        action='store_true',
+        help= 'run the session builder in visual mode, requires having a tmux '
+              'client in a second terminal open with ``$ tmux -L tmux_test``.'
+    )
+
+    args = parser.parse_args()
+
+    if 'help' in args:
+        parser.print_help()
+    elif 'visual' in args and args.visual:
+        # todo, we can have this test build, and on completion, take the user
+        # to the new session with os.exec and attach the session.
+        suites = unittest.TestLoader().loadTestsFromName('tmuxp.testsuite.test_builder')
+        result = unittest.TextTestRunner(verbosity=2).run(suites)
+
+        if result.wasSuccessful():
+            sys.exit(0)
+        else:
+            sys.exit(1)
+    else:
+        main()

@@ -2,11 +2,12 @@
 from __future__ import absolute_import, division, print_function, with_statement
 import unittest
 import time
+from . import t
+
 from random import randint
 from .. import Server
 from .. import log
 from ..exc import TmuxNoClientsRunning
-from . import t
 import logging
 logger = logging.getLogger(__name__)
 

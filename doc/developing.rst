@@ -100,7 +100,7 @@ Create two terminals:
     ``virtualenv`` if you are using one, see details on installing the dev
     version of tmuxp above.
 
-    Now, type ``$ python -m tmuxp.testsuite.test_builder``
+    Now, type ``$ python ./run_tests.py --visual``
 
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users. :)
@@ -130,7 +130,7 @@ To run test where :ref:`test_builder_visually` you may:
 
 .. code-block:: bash
 
-    $ nodemon -e py --exec 'python -m' tmuxp.testsuite.test_builder
+    $ nodemon -e py --exec 'python' ./run_tests.py --visual
 
 .. _node: http://www.nodejs.org
 .. _npm: http://www.npmjs.org

@@ -2,21 +2,16 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
-import shutil
 import unittest
-import kaptan
+from . import t
 from .. import Window
 from ..config import expand_config
 from ..builder import Builder
+
 from .helpers import TmuxTestCase
 from .test_config import sampleconfigdict
-from . import t
-
-from .. import log
 import logging
-
 logger = logging.getLogger(__name__)
-
 
 TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
@@ -32,7 +27,9 @@ class BuilderTestCase(TmuxTestCase):
 
     def test_split_windows(self):
         s = self.session
-        tmux_config = expand_config(sampleconfigdict)
+        tmux_config = sampleconfigdict
+        tmux_config = expand_config(tmux_config)
+        logger.debug(tmux_config)
 
         if 'session_name' in tmux_config:
             window_count = len(self.session._windows)  # current window count
@@ -77,54 +74,79 @@ class BuilderTestCase(TmuxTestCase):
 
 class BuilderTestCaseNew(BuilderTestCase):
 
-    def _iter_create_windows(self):
+    def _iter_create_windows(self, s, windows):
         ''' this is a generator that will create the windows and return the
         :class:`Window` object for the window.
 
         It handles the magic of cases where the user may want to start
         a session inside tmux (when `$TMUX` is in the env variables).
+
+        :param: session: :class:`Session` from the config
+        :param: windows: :py:obj:`list` of windows from the config
         '''
+
+        for i, wconf in enumerate(windows, start=1):
+            automatic_rename = False
+            if 'window_name' not in wconf:
+                window_name = None
+                automatic_rename = True
+            else:
+                window_name = wconf['window_name']
+
+            if i == int(1):  # if first window, use window 1
+                #w = s.select_window(1)
+                w = s.attached_window()
+                w = w.rename_window(window_name)
+                w.list_panes()
+                yield w
+            else:
+                w = s.new_window(window_name=window_name,
+                                    automatic_rename=automatic_rename)
+                yield w
 
     def test_split_windows(self):
         s = self.session
-        tmux_config = expand_config(sampleconfigdict)
+        tmux_config = sampleconfigdict
+        tmux_config = expand_config(tmux_config)
+        logger.debug(tmux_config)
 
         if 'session_name' in tmux_config:
-            window_count = len(self.session._windows)  # current window count
-            self.assertEqual(len(s.list_windows()), window_count)
-            for i, wconf in enumerate(tmux_config['windows'], start=1):
-                automatic_rename = False
-                if 'window_name' not in wconf:
-                    window_name = None
-                    automatic_rename = True
-                else:
-                    window_name = wconf['window_name']
-
-                if i == int(1):  # if first window, use window 1
-                    #w = s.select_window(1)
-                    w = s.attached_window()
-                    w = w.rename_window(window_name)
-                    w.list_panes()
-                else:
-                    w = s.new_window(window_name=window_name,
-                                     automatic_rename=automatic_rename)
-                    window_count += 1
-
-                # current pane count, of course 1 since we just made it
-                window_pane_count = len(w._panes)
-                self.assertEqual(window_pane_count, 1)
-                for pindex, pconf in enumerate(wconf['panes'], start=1):
-                    if pindex != int(1):
-                        p = w.split_window()
-                        window_pane_count += 1
-                    else:
-                        p = w.attached_pane()
-                    for cmd in pconf['shell_command']:
-                        p.send_keys(cmd)
-                    w.list_panes()
-                    self.assertEqual(window_pane_count, len(w._panes))
-                self.assertIsInstance(w, Window)
+            for w in self._iter_create_windows(s, tmux_config['windows']):
+                window_count = len(self.session._windows)  # current window count
                 self.assertEqual(len(s.list_windows()), window_count)
+                for i, wconf in enumerate(tmux_config['windows'], start=1):
+                    automatic_rename = False
+                    if 'window_name' not in wconf:
+                        window_name = None
+                        automatic_rename = True
+                    else:
+                        window_name = wconf['window_name']
+
+                    if i == int(1):  # if first window, use window 1
+                        #w = s.select_window(1)
+                        w = s.attached_window()
+                        w = w.rename_window(window_name)
+                        w.list_panes()
+                    else:
+                        w = s.new_window(window_name=window_name,
+                                        automatic_rename=automatic_rename)
+                        window_count += 1
+
+                    # current pane count, of course 1 since we just made it
+                    window_pane_count = len(w._panes)
+                    self.assertEqual(window_pane_count, 1)
+                    for pindex, pconf in enumerate(wconf['panes'], start=1):
+                        if pindex != int(1):
+                            p = w.split_window()
+                            window_pane_count += 1
+                        else:
+                            p = w.attached_pane()
+                        for cmd in pconf['shell_command']:
+                            p.send_keys(cmd)
+                        w.list_panes()
+                        self.assertEqual(window_pane_count, len(w._panes))
+                    self.assertIsInstance(w, Window)
+                    self.assertEqual(len(s.list_windows()), window_count)
 
         else:
             raise ValueError('config requires session_name')
@@ -168,5 +190,5 @@ class TestsToDo(object):
 
 
 if __name__ == '__main__':
-    t.socket_name = 'tmux_test'
+    #t.socket_name = 'tmuxp_test'
     unittest.main()
