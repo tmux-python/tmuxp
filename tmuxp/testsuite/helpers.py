@@ -49,8 +49,8 @@ def bootstrap():
     )
 
     '''
-    make sure that tmuxp can :ref:`test_builder_live <build sessions live>`
-    and switches to the newly created session for that testcase.
+    Make sure that tmuxp can :ref:`test_builder_visually` and switches to the
+    newly created session for that testcase.
     '''
     t.switch_client(session.get('session_id'))
 

@@ -84,10 +84,10 @@ If you found a problem or are trying to write a test, you can file an
 
 .. _issue on github: https://github.com/tony/tmuxp/issues
 
-.. _test_builder_live:
+.. _test_builder_visually:
 
-Watch tmux testsuite build sessions live
-""""""""""""""""""""""""""""""""""""""""
+Watch tmux testsuite build sessions visually
+""""""""""""""""""""""""""""""""""""""""""""
 
 The builder functionality of tmuxp, creates sessions, panes and windows
 from a configuration. It's preferential to watch this from another
@@ -126,8 +126,7 @@ To run all tests upon editing any ``.py`` file:
 
     $ nodemon -e py --exec 'python' ./run_tests.py
 
-To run test where :ref:`test_builder_live <tmux builds sessions visually>`
-you may:
+To run test where :ref:`test_builder_visually` you may:
 
 .. code-block:: bash
 
