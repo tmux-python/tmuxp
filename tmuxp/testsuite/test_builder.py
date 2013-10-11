@@ -25,6 +25,7 @@ class BuilderTest(TmuxTestCase):
                 TMUXWRAPPER_DIR)
         super(BuilderTest, cls).setUpClass()
 
+    @unittest.SkipTest
     def test_split_windows(self):
         s = self.session
         tmux_config = sampleconfigdict
@@ -98,10 +99,16 @@ class BuilderTestN(BuilderTest):
                 w = s.attached_window()
                 w = w.rename_window(window_name)
                 w.list_panes()
+                w.conf = {}
+                w.conf['panes'] = wconf['panes']
+                w.list_panes()
                 yield w
             else:
                 w = s.new_window(window_name=window_name,
                                     automatic_rename=automatic_rename)
+                w.conf = {}
+                w.conf['panes'] = wconf['panes']
+                w.list_panes()
                 yield w
 
     def test_split_windows(self):
@@ -111,42 +118,29 @@ class BuilderTestN(BuilderTest):
         logger.debug(tmux_config)
 
         if 'session_name' in tmux_config:
+
+            window_count = len(self.session._windows)  # current window count
+            self.assertEqual(len(s.list_windows()), window_count)
             for w in self._iter_create_windows(s, tmux_config['windows']):
-                window_count = len(self.session._windows)  # current window count
+                window_pane_count = len(w._panes)
+                logger.debug(w.conf['panes'])
+                logger.debug('total panes: %s' % len(w.conf['panes']))
+                for pindex, pconf in enumerate(w.conf['panes'], start=1):
+                    logger.debug('pindex: %s len(conf[\'panes\']): %s len(conf._panes): %s' % (pindex, len(w.conf['panes']), len(w._panes)))
+                    if pindex != int(1):
+                        p = w.split_window()
+                        window_pane_count += 1
+                    else:
+                        p = w.attached_pane()
+                    for cmd in pconf['shell_command']:
+                        p.send_keys(cmd)
+
+                    w.list_panes()
+                    self.assertEqual(window_pane_count, len(w._panes))
+                self.assertIsInstance(w, Window)
+
                 self.assertEqual(len(s.list_windows()), window_count)
-                for i, wconf in enumerate(tmux_config['windows'], start=1):
-                    automatic_rename = False
-                    if 'window_name' not in wconf:
-                        window_name = None
-                        automatic_rename = True
-                    else:
-                        window_name = wconf['window_name']
-
-                    if i == int(1):  # if first window, use window 1
-                        #w = s.select_window(1)
-                        w = s.attached_window()
-                        w = w.rename_window(window_name)
-                        w.list_panes()
-                    else:
-                        w = s.new_window(window_name=window_name,
-                                        automatic_rename=automatic_rename)
-                        window_count += 1
-
-                    # current pane count, of course 1 since we just made it
-                    window_pane_count = len(w._panes)
-                    self.assertEqual(window_pane_count, 1)
-                    for pindex, pconf in enumerate(wconf['panes'], start=1):
-                        if pindex != int(1):
-                            p = w.split_window()
-                            window_pane_count += 1
-                        else:
-                            p = w.attached_pane()
-                        for cmd in pconf['shell_command']:
-                            p.send_keys(cmd)
-                        w.list_panes()
-                        self.assertEqual(window_pane_count, len(w._panes))
-                    self.assertIsInstance(w, Window)
-                    self.assertEqual(len(s.list_windows()), window_count)
+                window_count += 1
 
         else:
             raise ValueError('config requires session_name')
