@@ -48,6 +48,12 @@ def bootstrap():
         session_name=TEST_SESSION_NAME,
     )
 
+    '''
+    make sure that tmuxp can :ref:`test_builder_live <build sessions live>`
+    and switches to the newly created session for that testcase.
+    '''
+    t.switch_client(session.get('session_id'))
+
     for old_test_session in old_test_sessions:
         logger.debug('Old test test session %s found. Killing it.' %
                       old_test_session)
