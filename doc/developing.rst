@@ -82,6 +82,8 @@ If you found a problem or are trying to write a test, you can file an
 
 .. _issue on github: https://github.com/tony/tmuxp/issues
 
+.. _test_specific_tests:
+
 Testing specific testsuites, testcase and tests
 -----------------------------------------------
 
@@ -139,6 +141,34 @@ Create two terminals:
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users. :)
 
+Verbosity and logging
+"""""""""""""""""""""
+
+``./run_tests.py`` supports two options, these are *optional* flags that
+may be added to for :ref:`test_specific_tests` and
+:ref:`_test_builder_visually`.
+
+1.  log level: ``-l`` aka ``--log-level``, with the options of ``debug``,
+    ``info``, ``warn``, ``error``, ``fatal``. Default is ``INFO``.
+
+    .. code-block:: bash
+
+        $ ./run_tests.py --log-level debug
+
+    short form:
+
+    .. code-block:: bash
+
+        $ ./run_tests.py -l debug
+
+2.  unit test verbosity:
+
+    ``--verbosity`` may be set to ``0``, ``1`` and ``2``.  Default: ``2``.
+
+    .. code-block:: bash
+
+        $ ./run_tests.py --verbosity 0
+
 Re-run tests automatically on file edit
 """""""""""""""""""""""""""""""""""""""
 
@@ -169,7 +199,6 @@ To run test where :ref:`test_builder_visually` you may:
 .. _node: http://www.nodejs.org
 .. _npm: http://www.npmjs.org
 .. _nodemon: https://github.com/remy/nodemon
-
 
 Deeper
 """"""

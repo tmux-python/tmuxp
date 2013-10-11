@@ -21,7 +21,7 @@ from time import sleep
 import itertools
 
 
-def main():
+def main(verbosity=2):
 
     # from tmuxp import log
     # import logging
@@ -45,27 +45,31 @@ def main():
             return False
 
     tmuxclient = None
+
     def la():
         if not in_tmux():
             shell_commands = []
             if has_virtualenv():
-                shell_commands.append('source %s/bin/activate' % has_virtualenv())
+                shell_commands.append(
+                    'source %s/bin/activate' % has_virtualenv())
             shell_commands.append('echo wat lol %s' % has_virtualenv())
             session_name = 'tmuxp'
             t.tmux('new-session', '-d', '-s', session_name)
             for shell_command in shell_commands:
                 t.tmux('send-keys', '-t', session_name, shell_command, '^M')
 
-            t.tmux('send-keys', '-R', '-t', session_name, 'python run_tests.py --pypid=%s' % os.getpid(), '^M')
+            t.tmux('send-keys', '-R', '-t', session_name,
+                   'python run_tests.py --pypid=%s' % os.getpid(), '^M')
 
             os.environ['pypid'] = str(os.getpid())
 
-            #os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
-            #t.hotswap(session_name=session_name)
+            # os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
+            # t.hotswap(session_name=session_name)
             def output(line):
                 pass
-            #tmuxclient = t.tmux('-C')
-            #tmuxclient = subprocess.Popen(['tmux', '-C', '-Lhi', 'attach'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # tmuxclient = t.tmux('-C')
+            # tmuxclient = subprocess.Popen(['tmux', '-C', '-Lhi', 'attach'],
+            # stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         else:
             print(has_virtualenv())
             print(in_tmux())
@@ -74,14 +78,14 @@ def main():
             if 'pypid' in args:
                 print(args['pypid'])
 
-
             # todo create a hook to run after suite / loader to detach
             # and killall tmuxp + tmuxp_-prefixed sessions.
-            #tmux('detach')
-            #os.kill(args['pypid'], 9)
-            #t.kill_server()
-            suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-            result = unittest.TextTestRunner(verbosity=2).run(suites)
+            # tmux('detach')
+            # os.kill(args['pypid'], 9)
+            # t.kill_server()
+            suites = unittest.TestLoader().discover(
+                'tmuxp.testsuite', pattern="*.py")
+            result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
             if result.wasSuccessful():
                 sys.exit(0)
             else:
@@ -89,7 +93,7 @@ def main():
     session_name = 'tmuxp'
     t.tmux('new-session', '-d', '-s', session_name)
     suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-    result = unittest.TextTestRunner(verbosity=2).run(suites)
+    result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
     if result.wasSuccessful():
         sys.exit(0)
     else:
@@ -108,7 +112,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--visual',
         action='store_true',
-        help = '''\
+        help='''\
         Run the session builder testsuite in visual mode. requires having
         tmux client in a second terminal open with:
 
@@ -123,7 +127,7 @@ if __name__ == '__main__':
         '--tests',
         nargs='*',
         default=None,
-        help = '''\
+        help='''\
         Test individual, TestCase or TestSuites, or multiple:
 
         by TestSuite (module):
@@ -139,26 +143,32 @@ if __name__ == '__main__':
                 testsuite.test_config.ImportExportTest.test_window
         '''
     )
-
+    parser.add_argument('-l', '--log-level', dest='log_level', default='INFO',
+                        help='Log level')
+    parser.add_argument('-v', '--verbosity', dest='verbosity', type=int, default=2,
+                        help='unittest verbosity level')
     args = parser.parse_args()
+
+    verbosity = args.verbosity
+
+    import logging
+    logging.getLogger('tmuxp.testsuite').setLevel(args.log_level.upper())
 
     if 'help' in args:
         parser.print_help()
     elif 'visual' in args and args.visual:
         # todo, we can have this test build, and on completion, take the user
         # to the new session with os.exec and attach the session.
-        suites = unittest.TestLoader().loadTestsFromName('tmuxp.testsuite.test_builder')
-        result = unittest.TextTestRunner(verbosity=2).run(suites)
+        loader = unittest.TestLoader()
+        suites = loader.loadTestsFromName('tmuxp.testsuite.test_builder')
+        result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
 
         if result.wasSuccessful():
             sys.exit(0)
         else:
             sys.exit(1)
-    if args.tests and len(args.tests) > 0:
-        print(args.tests)
+    if args.tests and len(args.tests) > int(0):
         suites = unittest.TestLoader().loadTestsFromNames(args.tests)
-        result = unittest.TextTestRunner(verbosity=2).run(suites)
-
-        print('done')
+        result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
     else:
-        main()
+        main(verbosity=verbosity)
