@@ -86,4 +86,5 @@ class BuilderTestCase(TmuxTestCase):
 
 
 if __name__ == '__main__':
+    t.socket_name = 'tmux_test'
     unittest.main()
