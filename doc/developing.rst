@@ -14,9 +14,6 @@ Developing and Testing
     please file an `issue on github`_ with your tmux version ``tmux -V``,
     OS, and any other information that would be helpful to assess.
 
-Testing
--------
-
 Our tests are inside ``./tmuxp/testsuite``. Tests are implemented using
 :py:mod:`unittest`.
 
@@ -26,7 +23,7 @@ using ``$ tmux -L test_case``.
 .. _install_dev_env:
 
 Install the latest code
-"""""""""""""""""""""""
+-----------------------
 
 To begin developing, check out the code from github:
 
@@ -62,9 +59,8 @@ adjust the code and the installed software will reflect the changes.
 
     $ tmuxp
 
-
-Run tests
-"""""""""
+run_tests.py
+------------
 
 As you seen above, the ``tmuxp`` command will now be available to you,
 since you are in the virtual environment, your `PATH` environment was
@@ -84,8 +80,11 @@ If you found a problem or are trying to write a test, you can file an
 
 .. _test_specific_tests:
 
+
+Choose tests to run
+"""""""""""""""""""
+
 Testing specific testsuites, testcase and tests
------------------------------------------------
 
 .. code-block:: bash
 
@@ -120,12 +119,10 @@ Multiple can be separated by spaces:
 
 .. _test_builder_visually:
 
-Watch tmux testsuite build sessions visually
-""""""""""""""""""""""""""""""""""""""""""""
+Visual testing
+""""""""""""""
 
-The builder functionality of tmuxp, creates sessions, panes and windows
-from a configuration. It's preferential to watch this from another
-terminal.
+You can watch tmux testsuite build sessions visually also.
 
 Create two terminals:
 
@@ -169,8 +166,10 @@ may be added to for :ref:`test_specific_tests` and
 
         $ ./run_tests.py --verbosity 0
 
-Re-run tests automatically on file edit
-"""""""""""""""""""""""""""""""""""""""
+Watch files and test
+--------------------
+
+You can re-run tests automatically on file edit.
 
 .. note::
     This requires and installation of `node`_ and `npm`_ on your system!
@@ -200,23 +199,27 @@ To run test where :ref:`test_builder_visually` you may:
 .. _npm: http://www.npmjs.org
 .. _nodemon: https://github.com/remy/nodemon
 
+Travis CI
+---------
+
+tmuxp uses `travis-ci`_ for continuous integration / automatic unit
+testing.
+
+travis allows for testing against multiple scenarios. Currently tmuxp
+is tested against 1.8 and latest in addition to python 2.7. The
+`travis build site`_ uses this `.travis.yml`_ configuration:
+
+.. literalinclude:: ../.travis.yml
+    :language: yaml
+
+How tmuxp verifies state
+------------------------
+
 How does tmuxp verify session / window / pane state?
-""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Normal tests won't even require a tmux session being open already. Tests 
 assert against the freshest data, ie: :meth:`tmuxp.Server.list_sessions`,
 :meth:`tmuxp.Session.list_windows`, :meth:`tmuxp.Window.list_panes`.
-
-Travis
-""""""
-
-Currently `travis-ci`_ is used to automate unit testing. To set up a
-test matrix for potentially multiple versions of tmux (currently tmuxp
-is tested against 1.8 and latest) in addition to potentially python 3.x
-support. The `travis build site`_ uses this `.travis.yml`_ configuration:
-
-.. literalinclude:: ../.travis.yml
-    :language: yaml
 
 .. _travis-ci: http://www.travis-ci.org
 .. _travis build site: http://www.travis-ci.org/tony/tmuxp
