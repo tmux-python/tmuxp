@@ -59,5 +59,42 @@ class SessionNewTest(TmuxTestCase):
 
         self.assertIsInstance(new_session, Session)
 
+
+class Options(TmuxTestCase):
+
+    def test_show_options(self):
+
+        options = self.session.show_options()
+        self.assertIsInstance(options, dict)
+
+        logger.info(options)
+
+    def test_set_options_single(self):
+        '''this is for :meth:`Session.show_options`
+        '''
+
+        self.session.set_option('history-limit', 20)
+        self.assertEqual(20, self.session.show_options('history-limit'))
+
+        self.session.set_option('history-limit', 40)
+        self.assertEqual(40, self.session.show_options('history-limit'))
+
+        self.assertEqual(40, self.session.show_options()['history-limit'])
+
+    def test_set_option_single(self):
+        '''this is for :meth:`Session.show_option`, note there is no s.
+        '''
+
+        self.session.set_option('history-limit', 20)
+        self.assertEqual(20, self.session.show_option('history-limit'))
+
+        self.session.set_option('history-limit', 40)
+
+        self.assertEqual(40, self.session.show_option('history-limit'))
+
+    def test_set_option_bad(self):
+        with self.assertRaises(ValueError):
+            self.session.set_option('afewewfew', 43)
+
 if __name__ == '__main__':
     unittest.main()

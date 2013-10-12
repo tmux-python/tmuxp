@@ -287,5 +287,83 @@ class Session(TmuxObject):
 
         return True
 
+    def set_option(self, option, value):
+        '''
+        wrapper for ``tmux(1)``::
+
+            $ tmux set-option <option> <value>
+
+        todo: needs tests
+
+        :param option: the window option. such as 'default-shell'.
+        :type option: string
+        :param value: window value. True/False will turn in 'on' and 'off'.
+        :type value: string or bool
+        '''
+
+        if isinstance(value, bool) and value:
+            value = 'on'
+        elif isinstance(value, bool) and not value:
+            value = 'off'
+
+        process = self.tmux(
+            'set-option', option, value
+        )
+
+        if process.stderr:
+            if isinstance(process.stderr, list) and len(process.stderr) == int(1):
+                process.stderr = process.stderr[0]
+            raise ValueError('tmux set-option stderr: %s' % process.stderr)
+
+    def show_options(self, option=None):
+        '''
+        return a dict of options for the window.
+
+        For familiarity with tmux, the option ``option`` param forwards to pick
+        a single option, forwarding to :meth:`Session.show_option`.
+
+        :param option: optional. show a single option.
+        :type option: string
+        :rtype: :py:obj:`dict`
+        '''
+
+        if option:
+            return self.show_option(option)
+        else:
+            session_options = self.tmux(
+                'show-options'
+            ).stdout
+
+        session_options = [tuple(item.split(' ')) for item in session_options]
+
+        session_options = dict(session_options)
+
+        for key, value in session_options.iteritems():
+            if value.isdigit():
+                session_options[key] = int(value)
+
+        return session_options
+
+    def show_option(self, option):
+        '''
+        return a list of options for the window
+
+        todo: test and return True/False for on/off string
+
+        :param option: open to return.
+        :type option: string
+        :rtype: string, int or bool
+        '''
+
+        window_option = self.tmux(
+            'show-options', option
+        ).stdout
+        window_option = [tuple(item.split(' ')) for item in window_option][0]
+
+        if window_option[1].isdigit():
+            window_option = (window_option[0], int(window_option[1]))
+
+        return window_option[1]
+
     def __repr__(self):
         return "%s(%s %s)" % (self.__class__.__name__, self.get('session_id'), self.get('session_name'))

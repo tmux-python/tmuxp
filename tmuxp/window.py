@@ -140,7 +140,7 @@ class Window(TmuxObject):
         return a dict of options for the window.
 
         For familiarity with tmux, the option ``option`` param forwards to pick
-        a single option, forwarding to :meth:`show_window_option`.
+        a single option, forwarding to :meth:`Window.show_window_option`.
 
         :param option: optional. show a single option.
         :type option: string

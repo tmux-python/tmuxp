@@ -135,6 +135,7 @@ class RenameTest(TmuxTestCase):
 class RenameSpacesTest(RenameTest):
     window_name_after = 'hello \\ wazzup 0'
 
+
 class Options(TmuxTestCase):
 
     def test_show_window_options(self):
