@@ -139,15 +139,14 @@ class Window(TmuxObject):
         :type option: string
         '''
 
-        if isinstance(value, bool) and value:
-            value = 'on'
-        elif isinstance(value, bool) and not value:
-            value = 'off'
-
-        self.tmux(
-            'set-window-option', option, value
-        )
-
+        if option:
+            self.tmux(
+                'show-window-options', option
+            ).stdout
+        else:
+            self.tmux(
+                'show-window-options'
+            ).stdout
 
     def rename_window(self, new_name):
         '''rename window and return new window object::
@@ -183,8 +182,6 @@ class Window(TmuxObject):
         '''
             ``$ tmux select-pane``
 
-        Returns :class:`Pane`.
-
         :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``.
         :type target_pane: string
         :rtype: :class:`Pane`
@@ -217,6 +214,8 @@ class Window(TmuxObject):
             horizontal
         -v
             vertical
+
+        :rtype: newly created :class:`Pane`
         '''
 
         formats = ['session_name', 'session_id',
@@ -241,7 +240,9 @@ class Window(TmuxObject):
 
     def attached_pane(self):
         '''
-        returns the attached :class:`Pane`.
+        Return the attached :class:`Pane`.
+
+        :rtype: :class:`Pane`
         '''
         panes = self.list_panes()
 
@@ -257,7 +258,9 @@ class Window(TmuxObject):
 
     def list_panes(self):
         '''
-            Returns a list of :class:`Pane` for the window.
+        Return list of :class:`Pane` for the window.
+
+        :rtype: list of :class:`Pane`
         '''
         formats = ['session_name', 'session_id',
                    'window_index', 'window_id'] + PANE_FORMATS
