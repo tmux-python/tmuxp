@@ -47,7 +47,7 @@ to support older versions.
 
 1.7 and below issues:
 
-- tmuxp relies on the ``-P`` option to print out session information when
+tmuxp relies on the ``-P`` option to print out session information when
 ``new-session`` is called (see `attempt at 1.7 test`_).
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263

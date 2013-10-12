@@ -37,12 +37,14 @@ class WorkspaceBuilder(object):
     1.  imported through :ref:`kaptan`:
 
         .. code-block:: python
+
             sconf = kaptan.Kaptan(handler='yaml')
             sconf = sconfig.import_config(self.yaml_config).get()
 
         or from config file:
 
         .. code-block:: python
+
             sconf = kaptan.Kaptan()
             sconf = sconfig.import_config('path/to/config.yaml').get()
 
@@ -51,6 +53,7 @@ class WorkspaceBuilder(object):
     2.  had inline config shortcuts expanded with :meth:`config.expand`
 
         .. code-block:: python
+
             from tmuxp import config
             sconf = config.expand(sconf)
 
@@ -58,6 +61,7 @@ class WorkspaceBuilder(object):
         child window and pane items with :meth:`config.trickle`:
 
         .. code-block:: python
+
             from tmuxp import config
             sconf = config.trickle(sconf)
 

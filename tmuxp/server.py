@@ -32,7 +32,7 @@ class Server(object):
             :attr:`Window._panes` [:class:`Pane`, ...]
                 :class:`Pane`
 
-    When instantiated, provides the``t`` global. stores information on live,
+    When instantiated, provides the ``t`` global. stores information on live,
     running tmux server.
     '''
 
