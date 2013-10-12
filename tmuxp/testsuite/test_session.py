@@ -64,12 +64,15 @@ class SessionTest(TmuxTestCase):
         self.assertIsInstance(self.session.select_window(window_base_index), Window)
 
     def test_attached_window(self):
+        '''Session.attached_window() returns Window'''
         self.assertIsInstance(self.session.attached_window(), Window)
 
     def test_attached_pane(self):
+        '''Session.attached_pane() returns Pane'''
         self.assertIsInstance(self.session.attached_pane(), Pane)
 
     def test_session_rename(self):
+        '''Session.rename_session renames session'''
         test_name = 'testingdis_sessname'
         self.session.rename_session(test_name)
         self.assertEqual(self.session.get('session_name'), test_name)
@@ -90,11 +93,12 @@ class SessionCleanTest(TmuxTestCase):
 
 class SessionNewTest(TmuxTestCase):
     def test_new_session(self):
+        '''Server.new_session creates new session'''
         new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
         new_session = t.new_session(session_name=new_session_name, detach=True)
 
         self.assertIsInstance(new_session, Session)
-
+        self.assertEqual(new_session.get('session_name'), new_session_name)
 
 class Options(TmuxTestCase):
 
