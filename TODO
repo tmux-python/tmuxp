@@ -4,6 +4,8 @@ Roadmap
 To do
 """""
 
+- show-options, show-window-options
+- set-option, set-window-options
 - use mktmpdir for config tests
 - remove redundant from . import log from files
 - look at removing sh dependency
