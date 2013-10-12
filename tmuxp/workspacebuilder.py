@@ -22,7 +22,7 @@ class WorkspaceBuilder(object):
 
     The normal phase of loading is:
 
-        1.  :ref:`kaptan` imports json/yaml/ini. .get() returns a
+        1.  :ref:`kaptan` imports json/yaml/ini. ``.get()`` returns
             python :class:`dict`.
 
             .. code-block:: python
@@ -69,8 +69,10 @@ class WorkspaceBuilder(object):
 
     def __init__(self, sconf):
         '''
-        :param: sconf: :py:obj:`dict` session config, includes a :py:obj:`list`
-            of ``windows``.
+        todo: initialize :class:`Session` from here, in ``self.session``.
+
+        :param sconf: session config, includes a :py:obj:`list` of ``windows``.
+        :type sconf: :py:obj:`dict`
         '''
 
         if not 'session_name' in sconf:
@@ -82,7 +84,9 @@ class WorkspaceBuilder(object):
         ''' generator that creates tmux windows, yields :class:`Window` object
         by iterating through ``sconf['windows']``.
 
-        :param: session: :class:`Session` from the config
+        todo: look at this tomorrow: may not be necessary to have session.
+
+        :param session: :class:`Session` from the config
         '''
         for i, wconf in enumerate(self.sconf['windows'], start=1):
             automatic_rename = False
