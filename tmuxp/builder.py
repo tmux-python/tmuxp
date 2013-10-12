@@ -41,7 +41,7 @@ class Builder(object):
         '''
         self.config = config
 
-    def _iter_create_windows(self, s, sconf):
+    def iter_create_windows(self, s, sconf):
         ''' this is a generator that will create the windows and return the
         :class:`Window` object for the window.
 
@@ -74,7 +74,7 @@ class Builder(object):
             w.list_panes()
             yield w, wconf
 
-    def _iter_create_panes(self, w, wconf):
+    def iter_create_panes(self, w, wconf):
         for pindex, pconf in enumerate(wconf['panes'], start=1):
             if pindex != int(1):
                 p = w.split_window()

@@ -48,9 +48,9 @@ class BuilderTest(TmuxTestCase):
         if 'session_name' in sconfig:
             window_count = len(self.session._windows)  # current window count
             self.assertEqual(len(s.list_windows()), window_count)
-            for w, wconf in builder._iter_create_windows(s, sconfig):
+            for w, wconf in builder.iter_create_windows(s, sconfig):
                 window_pane_count = len(w._panes)
-                for p in builder._iter_create_panes(w, wconf):
+                for p in builder.iter_create_panes(w, wconf):
                     p = p
                     self.assertEqual(len(s.list_windows()), window_count)
                 self.assertIsInstance(w, Window)
