@@ -17,12 +17,13 @@ logger = logging.getLogger(__name__)
 
 class WorkspaceBuilder(object):
     '''
-    used to build a configuration into a tmux real tmux workspace. creates and
-    names windows, splits windows into panes.
+    Build tmux workspace from a configuration. Creates and names windows, sets
+    options, splits windows into panes.
 
     The normal phase of loading is:
 
-        1.  :ref:`kaptan`imports files from json/yaml/ini to a python :class:`dict`
+        1.  :ref:`kaptan` imports json/yaml/ini. .get() returns a
+            python :class:`dict`.
 
             .. code-block:: python
                 import kaptan
@@ -38,18 +39,20 @@ class WorkspaceBuilder(object):
                 sconf = sconfig.import_config('path/to/config.yaml').get()
 
             kaptan automatically detects the handler from filenames.
-        2.  :meth:`config.expand` expand's the dict's inline statements to full
-            form
+        2.  :meth:`config.expand` sconf inline shorthand
+
             .. code-block:: python
 
                 from tmuxp import config
-            sconf = config.expand(sconf)
+                sconf = config.expand(sconf)
+
         3.  :meth:`config.trickle` passes down default values from session
             -> window -> pane if applicable.
 
             .. code-block:: python
 
                 sconf = config.trickle(sconf)
+
         4.  (You are here) We will create a :class:`Session` (a real
             ``tmux(1)`` session) and iterate through the list of windows, and
             their panes, returning full :class:`Window` and :class:`Pane`
