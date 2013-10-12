@@ -4,7 +4,15 @@ Roadmap
 To do
 """""
 
+- window.resize_pane()
+- window.select_layout() for custom layouts, test
+- freeze session `tmuxp freeze` from inside current session
+  - to /tmp/ then launch $EDITOR?
+  - to .tmuxp/freezed/session_name-year-mm-dd.yaml / json / py?
+  - have a .py export that can launch tmux via python .tmux.py
+- create example of an smart-session.
 - add :rtype: for methods
+- exporting config inlining. tests.
 - self.refresh()
   - self.refresh(), self.refresh_options(), self.refresh_panes()
   - self.refresh(), self.refresh_* returns self to be chainable, so set_options
@@ -16,8 +24,6 @@ To do
     allows a self.list_windows which returns the latest, but a self.refresh()
 - show-options, show-window-options
 - add options to config syntax
-- exporting config should inline single values for shell_command and window
-  name. test this.
 - set-option, set-window-options
 - use mktmpdir for config tests
 - remove redundant from . import log from files
