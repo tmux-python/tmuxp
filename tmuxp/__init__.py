@@ -17,8 +17,8 @@ from .server import Server
 from .window import Window
 from .pane import Pane
 from .builder import Builder
-from .config import expand_config, trickledown_config
 from .cli import main
+from . import config
 
 from .util import TmuxObject
 import logging

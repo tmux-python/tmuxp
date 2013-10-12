@@ -5,7 +5,7 @@ import os
 import shutil
 import unittest
 import kaptan
-from ..config import expand_config, trickledown_config
+from .. import config
 from ..util import tmux
 
 from .. import log
@@ -184,12 +184,12 @@ class ExpandTest(unittest.TestCase):
             }]
     }
 
-    def test_expand_config(self):
+    def test_config(self):
         '''
         expands shell commands from string to list
         '''
-        config = expand_config(self.before_config)
-        self.assertDictEqual(config, self.after_config)
+        test_config = config.expand(self.before_config)
+        self.assertDictEqual(test_config, self.after_config)
 
 
 class InheritanceTest(unittest.TestCase):
@@ -429,14 +429,14 @@ class ShellCommandBeforeTest(unittest.TestCase):
     }
 
     def test_shell_command_before(self):
-        config = self.config_unexpanded
-        config = expand_config(config)
+        test_config = self.config_unexpanded
+        test_config = config.expand(test_config)
 
-        self.assertDictEqual(config, self.config_expanded)
+        self.assertDictEqual(test_config, self.config_expanded)
 
-        config = trickledown_config(config)
+        test_config = config.trickle(test_config)
         self.maxDiff = None
-        self.assertDictEqual(config, self.config_after)
+        self.assertDictEqual(test_config, self.config_after)
 
 if __name__ == '__main__':
     unittest.main()

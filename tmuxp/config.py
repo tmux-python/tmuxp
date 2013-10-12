@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def expand_config(config):
+def expand(config):
     '''Expand configuration into full form. Enables shorthand forms for tmuxp
     config.
 
@@ -56,15 +56,15 @@ def expand_config(config):
 
     # recurse into window and pane config items
     if 'windows' in config:
-        config['windows'] = [expand_config(window)
+        config['windows'] = [expand(window)
                              for window in config['windows']]
     if 'panes' in config:
-        config['panes'] = [expand_config(pane) for pane in config['panes']]
+        config['panes'] = [expand(pane) for pane in config['panes']]
 
     return config
 
 
-def trickledown_config(config):
+def trickle(config):
     '''Trickle down / inherit config values
 
     This will only work if config has been expand with ConfigExpand()

@@ -75,9 +75,9 @@ Internals
 Configuration
 -------------
 
-.. automethod:: tmuxp.config.expand_config
+.. automethod:: tmuxp.config.expand
 
-.. autoclass:: tmuxp.config.trickledown_config
+.. autoclass:: tmuxp.config.trickle
    :members:
 
 Builder

@@ -4,13 +4,11 @@ from __future__ import absolute_import, division, print_function, with_statement
 import os
 import unittest
 from . import t
-from .. import Window
-from ..config import expand_config
+from .. import Window, config
 from ..builder import Builder
 import kaptan
 
 from .helpers import TmuxTestCase
-from .test_config import sampleconfigdict
 import logging
 logger = logging.getLogger(__name__)
 
@@ -40,65 +38,19 @@ class BuilderTest(TmuxTestCase):
         - htop
     '''
 
-    @staticmethod
-    def _iter_create_windows(s, sconf):
-        ''' this is a generator that will create the windows and return the
-        :class:`Window` object for the window.
-
-        It handles the magic of cases where the user may want to start
-        a session inside tmux (when `$TMUX` is in the env variables).
-
-        :param: session: :class:`Session` from the config
-        :param: sconf: :py:obj:`dict` session config, includes a :py:obj:`list`
-            of ``windows``.
-        '''
-
-        for i, wconf in enumerate(sconf['windows'], start=1):
-            automatic_rename = False
-            if 'window_name' not in wconf:
-                window_name = None
-                automatic_rename = True
-            else:
-                window_name = wconf['window_name']
-
-            if i == int(1):  # if first window, use window 1
-                #w = s.select_window(1)
-                w = s.attached_window()
-                w = w.rename_window(window_name)
-            else:
-                w = s.new_window(
-                    window_name=window_name,
-                    automatic_rename=automatic_rename
-                )
-
-            w.list_panes()
-            yield w, wconf
-
-    @staticmethod
-    def _iter_create_panes(w, wconf):
-        for pindex, pconf in enumerate(wconf['panes'], start=1):
-            if pindex != int(1):
-                p = w.split_window()
-            else:
-                p = w.attached_pane()
-            for cmd in pconf['shell_command']:
-                p.send_keys(cmd)
-
-            w.list_panes()
-
-            yield p
-
     def test_split_windows(self):
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
 
+        builder = Builder(sconfig)
+
         if 'session_name' in sconfig:
             window_count = len(self.session._windows)  # current window count
             self.assertEqual(len(s.list_windows()), window_count)
-            for w, wconf in self._iter_create_windows(s, sconfig):
+            for w, wconf in builder._iter_create_windows(s, sconfig):
                 window_pane_count = len(w._panes)
-                for p in self._iter_create_panes(w, wconf):
+                for p in builder._iter_create_panes(w, wconf):
                     p = p
                     self.assertEqual(len(s.list_windows()), window_count)
                 self.assertIsInstance(w, Window)
@@ -109,8 +61,8 @@ class BuilderTest(TmuxTestCase):
             raise ValueError('config requires session_name')
 
 
-
 class TestsToDo(object):
+
     def test_uses_first_window_if_exists(self):
         '''
         if the session is already on the first window, use that.
