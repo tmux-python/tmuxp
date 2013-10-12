@@ -21,49 +21,43 @@ class WorkspaceBuilder(object):
     names windows, splits windows into panes.
 
     The normal phase of loading is:
-        1. load the raw tmuxp config file
-        2. kaplan imports files from json/yaml/ini to a python :class:`dict`
-        3. :meth:`config.expand` expand's the dict's inline statements to full
-           form
-        4. :meth:`config.trickle` passes down default values from session
-           -> window -> pane if applicable.
-        5. (You are here) Builder loads the dict config. It will now create a
-           :class:`Session` (a real ``tmux(1)`` session) and iterate through
-           the list of windows, and their panes, returning full :class:`Window`
-           and :class:`Pane` objects each step of the way.
 
-    ``sconf`` is the configuration from yaml/json/config after it has been:
+        1.  :ref:`kaptan`imports files from json/yaml/ini to a python :class:`dict`
 
-    1.  imported through :ref:`kaptan`:
+            .. code-block:: python
+                import kaptan
+                sconf = kaptan.Kaptan(handler='yaml')
+                sconf = sconfig.import_config(self.yaml_config).get()
 
-        .. code-block:: python
+            or from config file with extension:
 
-            sconf = kaptan.Kaptan(handler='yaml')
-            sconf = sconfig.import_config(self.yaml_config).get()
+            .. code-block:: python
 
-        or from config file:
+                import kaptan
+                sconf = kaptan.Kaptan()
+                sconf = sconfig.import_config('path/to/config.yaml').get()
 
-        .. code-block:: python
+            kaptan automatically detects the handler from filenames.
+        2.  :meth:`config.expand` expand's the dict's inline statements to full
+            form
+            .. code-block:: python
 
-            sconf = kaptan.Kaptan()
-            sconf = sconfig.import_config('path/to/config.yaml').get()
-
-        kaptan automatically detects the handler from filenames.
-
-    2.  had inline config shortcuts expanded with :meth:`config.expand`
-
-        .. code-block:: python
-
-            from tmuxp import config
+                from tmuxp import config
             sconf = config.expand(sconf)
+        3.  :meth:`config.trickle` passes down default values from session
+            -> window -> pane if applicable.
 
-    3.  has passed down certain keys such as ``shell_command_before`` to
-        child window and pane items with :meth:`config.trickle`:
+            .. code-block:: python
 
-        .. code-block:: python
+                sconf = config.trickle(sconf)
+        4.  (You are here) We will create a :class:`Session` (a real
+            ``tmux(1)`` session) and iterate through the list of windows, and
+            their panes, returning full :class:`Window` and :class:`Pane`
+            objects each step of the way.
 
-            from tmuxp import config
-            sconf = config.trickle(sconf)
+            .. code-block:: python
+
+                workspace = WorkspaceBuilder(sconf=sconf)
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
