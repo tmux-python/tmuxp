@@ -170,7 +170,7 @@ class Window(TmuxObject):
 
         todo: test and return True/False for on/off string
 
-        :param option: open to return.
+        :param option: option to return.
         :type option: string
         :rtype: string, int or bool
         '''
