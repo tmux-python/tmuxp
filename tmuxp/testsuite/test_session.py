@@ -17,14 +17,47 @@ logger = logging.getLogger(__name__)
 
 class SessionTest(TmuxTestCase):
     def test_has_session(self):
+        '''Server.has_session returns True if has session_name exists'''
         self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
         self.assertFalse(t.has_session('asdf2314324321'))
 
     def test_select_window(self):
-        self.assertEqual(len(self.session._windows), 1)
+        '''Session.select_window moves window'''
+        window = self.session.new_window(window_name='test_window')
+        window_count = len(self.session.list_windows())
+
+        self.assertGreaterEqual(window_count, 2)  # 2 or more windows
+
+        self.assertEqual(len(self.session._windows), window_count)
         window_base_index = int(self.session.attached_window().get('window_index'))
 
-        self.assertEqual(len(self.session.list_windows()), 1)
+        ### tmux selects a window, moves to it, shows it as attached_window
+        selected_window1 = self.session.select_window(1)
+        self.assertIsInstance(selected_window1, Window)
+        attached_window1 = self.session.attached_window()
+
+        self.assertEqual(selected_window1, attached_window1)
+        self.assertEqual(selected_window1.__dict__, attached_window1.__dict__)
+
+        ### again: tmux selects a window, moves to it, shows it as attached_window
+        selected_window2 = self.session.select_window(2)
+        self.assertIsInstance(selected_window2, Window)
+        attached_window2 = self.session.attached_window()
+
+        self.assertEqual(selected_window2, attached_window2)
+        self.assertEqual(selected_window2.__dict__, attached_window2.__dict__)
+
+        ### assure these windows were really different
+        self.assertNotEqual(selected_window1, selected_window2)
+        self.assertNotEqual(selected_window1.__dict__, selected_window2.__dict__)
+
+    def test_select_window_returns_Window(self):
+        '''Session.select_window returns Window object'''
+
+        window_count = len(self.session.list_windows())
+        self.assertEqual(len(self.session._windows), window_count)
+        window_base_index = int(self.session.attached_window().get('window_index'))
+
         self.assertIsInstance(self.session.select_window(window_base_index), Window)
 
     def test_attached_window(self):
