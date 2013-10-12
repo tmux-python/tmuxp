@@ -86,7 +86,10 @@ class WorkspaceBuilder(object):
 
         todo: look at this tomorrow: may not be necessary to have session.
 
+        will also apply ``window_options`` to window.
+
         :param session: :class:`Session` from the config
+        :rtype: :class:`Window`
         '''
         for i, wconf in enumerate(self.sconf['windows'], start=1):
             automatic_rename = False
@@ -113,6 +116,17 @@ class WorkspaceBuilder(object):
             yield w, wconf
 
     def iter_create_panes(self, w, wconf):
+        ''' generator creating and yielding panes for Window + window config
+        section.
+
+        will also run ``shell_command`` with ``$ tmux send-keys``.
+
+        :param w: window to create panes for
+        :type w: :class:`Window`
+        :param wconf: config section for window
+        :type wconf: :py:obj:`dict`
+        :rtype: :class:`Pane`
+        '''
 
         for pindex, pconf in enumerate(wconf['panes'], start=1):
             if pindex != int(1):
