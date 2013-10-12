@@ -5,6 +5,7 @@ To do
 """""
 
 - show-options, show-window-options
+- add options to config syntax
 - set-option, set-window-options
 - use mktmpdir for config tests
 - remove redundant from . import log from files
