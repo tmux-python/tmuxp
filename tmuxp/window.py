@@ -117,7 +117,6 @@ class Window(TmuxObject):
 
         :param option: the window option. such as 'automatic_rename'.
         :type option: string
-
         :param value: window value. True/False will turn in 'on' and 'off'.
         :type value: string or bool
         '''
@@ -127,32 +126,64 @@ class Window(TmuxObject):
         elif isinstance(value, bool) and not value:
             value = 'off'
 
-        self.tmux(
+        process = self.tmux(
             'set-window-option', option, value
         )
 
+        if process.stderr:
+            if isinstance(process.stderr, list) and len(process.stderr) == int(1):
+                process.stderr = process.stderr[0]
+            raise ValueError('tmux set-window-option stderr: %s' % process.stderr)
+
     def show_window_options(self, option=None):
         '''
-        show options for window.
+        return a dict of options for the window.
+
+        For familiarity with tmux, the option ``option`` param forwards to pick
+        a single option, forwarding to :meth:`show_window_option`.
 
         :param option: optional. show a single option.
         :type option: string
-        :rtype: dict
+        :rtype: :py:obj:`dict`
         '''
 
         if option:
-            window_options = self.tmux(
-                'show-window-options', option
-            ).stdout
+            return self.show_window_option(option)
         else:
             window_options = self.tmux(
                 'show-window-options'
             ).stdout
 
         window_options = [tuple(item.split(' ')) for item in window_options]
+
         window_options = dict(window_options)
 
+        for key, value in window_options.iteritems():
+            if value.isdigit():
+                window_options[key] = int(value)
+
         return window_options
+
+    def show_window_option(self, option):
+        '''
+        return a list of options for the window
+
+        todo: test and return True/False for on/off string
+
+        :param option: open to return.
+        :type option: string
+        :rtype: string, int or bool
+        '''
+
+        window_option = self.tmux(
+            'show-window-options', option
+        ).stdout
+        window_option = [tuple(item.split(' ')) for item in window_option][0]
+
+        if window_option[1].isdigit():
+            window_option = (window_option[0], int(window_option[1]))
+
+        return window_option[1]
 
     def rename_window(self, new_name):
         '''rename window and return new window object::
@@ -212,8 +243,6 @@ class Window(TmuxObject):
         Used for splitting window and holding in a python object.
 
         Iterates ``$ tmux split-window``, ``-P`` to return data and
-        ``-F`` for return formatting.
-
         Arguments may be passed through same as ``$ tmux split-window``.
 
         -h

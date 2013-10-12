@@ -135,17 +135,49 @@ class RenameTest(TmuxTestCase):
 class RenameSpacesTest(RenameTest):
     window_name_after = 'hello \\ wazzup 0'
 
-class RenameTest(TmuxTestCase):
+class Options(TmuxTestCase):
 
     def test_show_window_options(self):
-        ''' run window rename test with this window name '''
-
         window = self.session.new_window(window_name='test_window')
 
         options = window.show_window_options()
         self.assertIsInstance(options, dict)
 
         logger.info(options)
+
+    def test_set_window_options_single(self):
+        '''this is for :meth:`Window.show_window_options`
+        '''
+        window = self.session.new_window(window_name='test_window')
+
+        window.set_window_option('main-pane-height', 20)
+        self.assertEqual(20, window.show_window_options('main-pane-height'))
+
+        window.set_window_option('main-pane-height', 40)
+        self.assertEqual(40, window.show_window_options('main-pane-height'))
+
+        self.assertEqual(40, window.show_window_options()['main-pane-height'])
+
+    def test_set_window_option_single(self):
+        '''this is for :meth:`Window.show_window_option`
+        '''
+        window = self.session.new_window(window_name='test_window')
+
+        window.set_window_option('main-pane-height', 20)
+        self.assertEqual(20, window.show_window_option('main-pane-height'))
+
+        window.set_window_option('main-pane-height', 40)
+        self.assertEqual(40, window.show_window_option('main-pane-height'))
+
+        self.assertEqual(40, window.show_window_option('main-pane-height'))
+
+    def test_set_window_option_bad(self):
+        ''' run window rename test with this window name '''
+
+        window = self.session.new_window(window_name='test_window')
+
+        with self.assertRaises(ValueError):
+            window.set_window_option('afewewfew', 43)
 
 
 if __name__ == '__main__':
