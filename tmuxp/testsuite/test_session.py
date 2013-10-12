@@ -23,16 +23,19 @@ class SessionTest(TmuxTestCase):
 
     def test_select_window(self):
         '''Session.select_window moves window'''
+        # get the current window_base_index, since different user tmux config
+        # may start at 0 or 1, or whatever they want.
+        window_base_index = int(self.session.attached_window().get('window_index'))
+
         window = self.session.new_window(window_name='test_window')
         window_count = len(self.session.list_windows())
 
         self.assertGreaterEqual(window_count, 2)  # 2 or more windows
 
         self.assertEqual(len(self.session._windows), window_count)
-        window_base_index = int(self.session.attached_window().get('window_index'))
 
         ### tmux selects a window, moves to it, shows it as attached_window
-        selected_window1 = self.session.select_window(1)
+        selected_window1 = self.session.select_window(window_base_index)
         self.assertIsInstance(selected_window1, Window)
         attached_window1 = self.session.attached_window()
 
@@ -40,7 +43,7 @@ class SessionTest(TmuxTestCase):
         self.assertEqual(selected_window1.__dict__, attached_window1.__dict__)
 
         ### again: tmux selects a window, moves to it, shows it as attached_window
-        selected_window2 = self.session.select_window(2)
+        selected_window2 = self.session.select_window(window_base_index + 1)
         self.assertIsInstance(selected_window2, Window)
         attached_window2 = self.session.attached_window()
 
