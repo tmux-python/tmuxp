@@ -187,6 +187,7 @@ class Window(TmuxObject):
 
         :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``.
         :type target_pane: string
+        :rtype: :class:`Pane`
 
         Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
