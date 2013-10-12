@@ -78,10 +78,13 @@ class NewTest(TmuxTestCase):
         self.assertEqual(3, len(self.session.attached_window()._panes))
 
     def test_attached_pane(self):
-        self.assertIsInstance(
-            self.session.attached_window().attached_pane(), Pane)
+        '''Window.attached_window() returns active Pane'''
+
+        window = self.session.attached_window()  # current window
+        self.assertIsInstance(window.attached_pane(), Pane)
 
     def test_split_window(self):
+        '''Window.split_window() splits window, returns new Pane.'''
         window_name = 'test split window'
         window = self.session.new_window(window_name=window_name)
         pane = window.split_window()
@@ -89,12 +92,12 @@ class NewTest(TmuxTestCase):
         self.assertIsInstance(pane, Pane)
         self.assertEqual(2, len(window._panes))
 
-    def test_awindow_rename(self):
-        window_name_before = 'test split window'
+    def test_window_rename(self):
+        '''Window.rename_window() renames window'''
+        window = self.session.attached_window()
+        window_name_before = window.get('window_name')
         window_name_after = 'testingdis_winname'
-        window = self.session.new_window(window_name=window_name_before)
-        self.assertEqual(window.get('window_name'), window_name_before)
-        window = window.rename_window(window_name_after)
+        window.rename_window(window_name_after)
         self.assertEqual(window.get('window_name'), window_name_after)
 
     def test_new_window_automatic_rename(self):
