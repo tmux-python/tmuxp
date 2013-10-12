@@ -63,14 +63,13 @@ class SessionNewTest(TmuxTestCase):
 class Options(TmuxTestCase):
 
     def test_show_options(self):
+        '''Session.show_options() returns dict.'''
 
         options = self.session.show_options()
         self.assertIsInstance(options, dict)
 
-        logger.info(options)
-
-    def test_set_options_single(self):
-        '''this is for :meth:`Session.show_options`
+    def test_set_show_options_single(self):
+        '''Set option then Session.show_options(key)
         '''
 
         self.session.set_option('history-limit', 20)
@@ -81,10 +80,9 @@ class Options(TmuxTestCase):
 
         self.assertEqual(40, self.session.show_options()['history-limit'])
 
-    def test_set_option_single(self):
-        '''this is for :meth:`Session.show_option`, note there is no s.
+    def test_set_show_option(self):
+        '''Set option then Session.show_option(key)
         '''
-
         self.session.set_option('history-limit', 20)
         self.assertEqual(20, self.session.show_option('history-limit'))
 
@@ -93,6 +91,7 @@ class Options(TmuxTestCase):
         self.assertEqual(40, self.session.show_option('history-limit'))
 
     def test_set_option_bad(self):
+        '''Session.set_option raises ValueError for bad option key'''
         with self.assertRaises(ValueError):
             self.session.set_option('afewewfew', 43)
 

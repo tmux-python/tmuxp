@@ -112,7 +112,7 @@ class RenameTest(TmuxTestCase):
     window_name_after = 'ha ha ha fjewlkjflwef'
 
     def test_window_rename(self):
-        ''' run window rename test with this window name '''
+        '''Window.rename_window.rename_window()'''
 
         window = self.session.new_window(window_name=self.window_name_before)
 
@@ -139,15 +139,14 @@ class RenameSpacesTest(RenameTest):
 class Options(TmuxTestCase):
 
     def test_show_window_options(self):
+        '''Window.show_window_options() returns dict.'''
         window = self.session.new_window(window_name='test_window')
 
         options = window.show_window_options()
         self.assertIsInstance(options, dict)
 
-        logger.info(options)
-
-    def test_set_window_options_single(self):
-        '''this is for :meth:`Window.show_window_options`
+    def test_set_show_window_options(self):
+        '''Set option then Window.show_window_options(key)
         '''
         window = self.session.new_window(window_name='test_window')
 
@@ -159,8 +158,8 @@ class Options(TmuxTestCase):
 
         self.assertEqual(40, window.show_window_options()['main-pane-height'])
 
-    def test_set_window_option_single(self):
-        '''this is for :meth:`Window.show_window_option`
+    def test_show_window_option(self):
+        '''Set option then Window.show_window_option(key)
         '''
         window = self.session.new_window(window_name='test_window')
 
@@ -173,7 +172,7 @@ class Options(TmuxTestCase):
         self.assertEqual(40, window.show_window_option('main-pane-height'))
 
     def test_set_window_option_bad(self):
-        ''' run window rename test with this window name '''
+        '''Window.set_window_option raises ValueError for bad option key'''
 
         window = self.session.new_window(window_name='test_window')
 
