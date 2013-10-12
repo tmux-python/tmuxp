@@ -15,6 +15,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class Builder(object):
     '''
     used to build a configuration into a tmux real tmux workspace. creates and
@@ -85,22 +86,3 @@ class Builder(object):
             w.list_panes()
 
             yield p
-
-
-    def build_session(self):
-        '''
-        returns :class:`Session` object.
-        '''
-        pass
-
-    def build_window(self):
-        '''
-        returns :class:`Window` object.
-        '''
-        pass
-
-    def build_pane(self):
-        '''
-        returns :class:`Pane` object.
-        '''
-

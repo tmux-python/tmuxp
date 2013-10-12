@@ -67,7 +67,8 @@ def expand(config):
 def trickle(config):
     '''Trickle down / inherit config values
 
-    This will only work if config has been expand with ConfigExpand()
+    This will only work if config has been expanded to full form with
+    :meth:`config.expand`.
 
     tmuxp allows certain commands to be default at the session, window
     level. shell_command_before trickles down and prepends the
