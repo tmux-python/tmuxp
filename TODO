@@ -4,6 +4,7 @@ Roadmap
 To do
 """""
 
+- add :rtype: for methods
 - self.refresh()
   - self.refresh(), self.refresh_options(), self.refresh_panes()
   - self.refresh(), self.refresh_* returns self to be chainable, so set_options
