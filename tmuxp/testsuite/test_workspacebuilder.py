@@ -18,7 +18,7 @@ class WorkspaceBuilderTest(TmuxTestCase):
     session_name: sampleconfig
     start_directory: '~'
     windows:
-    - layout: main-verticle
+    - layout: main-vertical
       panes:
       - shell_command:
         - vim
@@ -103,7 +103,7 @@ class NoSessionNameError(TmuxTestCase):
     yaml_config = '''
     start_directory: '~'
     windows:
-    - layout: main-verticle
+    - layout: main-vertical
       panes:
       - shell_command:
         - vim
@@ -132,6 +132,50 @@ class NoSessionNameError(TmuxTestCase):
 
         sconfig['session_name'] = 'give_a_session_name'
         w = WorkspaceBuilder(sconf=sconfig)  # shouldn't raise anything
+
+
+class WzindowOptions(TmuxTestCase):
+    '''sample config with no session name'''
+
+    yaml_config = '''
+    session_name: test window options
+    start_directory: '~'
+    windows:
+    - layout: main-horizontal
+      options:
+        main-pane-height: 30
+      panes:
+      - shell_command:
+        - vim
+        start_directory: '~'
+      - shell_command:
+        - cowsay "hey"
+      - shell_command:
+        - cowsay "moo"
+      window_name: editor
+    '''
+
+    def test_window_options(self):
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        window_count = len(self.session._windows)  # current window count
+        self.assertEqual(len(s.list_windows()), window_count)
+        for w, wconf in builder.iter_create_windows(s):
+
+            window_pane_count = len(w._panes)
+            for p in builder.iter_create_panes(w, wconf):
+                p = p
+                self.assertEqual(len(s.list_windows()), window_count)
+            self.assertIsInstance(w, Window)
+            self.assertEqual(w.show_window_option('main-pane-height'), 30)
+
+            self.assertEqual(len(s.list_windows()), window_count)
+            window_count += 1
+            w.select_layout(wconf['layout'])
 
 
 class TestsToDo(object):

@@ -101,6 +101,9 @@ class WorkspaceBuilder(object):
                     automatic_rename=automatic_rename
                 )
 
+            if 'options' in wconf and isinstance(wconf['options'], dict):
+                for key, val in wconf['options'].iteritems():
+                    w.set_window_option(key, val)
             w.list_panes()
             yield w, wconf
 
