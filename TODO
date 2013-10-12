@@ -6,6 +6,8 @@ To do
 
 - show-options, show-window-options
 - add options to config syntax
+- exporting config should inline single values for shell_command and window
+  name. test this.
 - set-option, set-window-options
 - use mktmpdir for config tests
 - remove redundant from . import log from files
