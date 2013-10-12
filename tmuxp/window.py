@@ -113,6 +113,8 @@ class Window(TmuxObject):
 
             $ tmux set-window-option <option> <value>
 
+        todo: needs tests
+
         :param option: the window option. such as 'automatic_rename'.
         :type option: string
 
@@ -120,9 +122,9 @@ class Window(TmuxObject):
         :type value: string or bool
         '''
 
-        if value:
+        if isinstance(value, bool) and value:
             value = 'on'
-        else:
+        elif isinstance(value, bool) and not value:
             value = 'off'
 
         self.tmux(

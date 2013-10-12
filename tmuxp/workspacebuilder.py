@@ -10,7 +10,6 @@
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
-from . import log
 import logging
 
 logger = logging.getLogger(__name__)
@@ -72,6 +71,10 @@ class WorkspaceBuilder(object):
         :param: sconf: :py:obj:`dict` session config, includes a :py:obj:`list`
             of ``windows``.
         '''
+
+        if not 'session_name' in sconf:
+            raise ValueError('config requires session_name')
+
         self.sconf = sconf
 
     def iter_create_windows(self, s):
