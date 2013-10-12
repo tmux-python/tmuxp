@@ -131,6 +131,24 @@ class Window(TmuxObject):
             'set-window-option', option, value
         )
 
+    def show_window_options(self, option=None):
+        '''
+        show options for window.
+
+        :param option: optional. show a single option.
+        :type option: string
+        '''
+
+        if isinstance(value, bool) and value:
+            value = 'on'
+        elif isinstance(value, bool) and not value:
+            value = 'off'
+
+        self.tmux(
+            'set-window-option', option, value
+        )
+
+
     def rename_window(self, new_name):
         '''rename window and return new window object::
 

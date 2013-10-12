@@ -4,6 +4,15 @@ Roadmap
 To do
 """""
 
+- self.refresh()
+  - self.refresh(), self.refresh_options(), self.refresh_panes()
+  - self.refresh(), self.refresh_* returns self to be chainable, so set_options
+    can self.refresh_options() can refresh_options after update (it's also
+    possible to just update one entry, and read stderr, decide on this
+    !performance)
+- decouple the updating logic:
+  - self.list_windows will self.refresh and return self.windows, this
+    allows a self.list_windows which returns the latest, but a self.refresh()
 - show-options, show-window-options
 - add options to config syntax
 - exporting config should inline single values for shell_command and window
