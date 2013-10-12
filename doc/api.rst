@@ -6,8 +6,6 @@ API
 
 .. module:: tmuxp
 
-tmuxp api
-
 Server Object
 -------------
 
@@ -80,10 +78,10 @@ Configuration
 .. autoclass:: tmuxp.config.trickle
    :members:
 
-Builder
--------
+Workspace Builder
+-----------------
 
-.. autoclass:: tmuxp.Builder
+.. autoclass:: tmuxp.WorkspaceBuilder
    :members:
 
 Exceptions

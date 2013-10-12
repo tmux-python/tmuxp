@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Builder(object):
+class WorkspaceBuilder(object):
     '''
     used to build a configuration into a tmux real tmux workspace. creates and
     names windows, splits windows into panes.
@@ -32,28 +32,55 @@ class Builder(object):
            :class:`Session` (a real ``tmux(1)`` session) and iterate through
            the list of windows, and their panes, returning full :class:`Window`
            and :class:`Pane` objects each step of the way.
+
+    ``sconf`` is the configuration from yaml/json/config after it has been:
+
+    1.  imported through :ref:`kaptan`:
+
+        .. code-block:: python
+            sconf = kaptan.Kaptan(handler='yaml')
+            sconf = sconfig.import_config(self.yaml_config).get()
+
+        or from config file:
+
+        .. code-block:: python
+            sconf = kaptan.Kaptan()
+            sconf = sconfig.import_config('path/to/config.yaml').get()
+
+        kaptan automatically detects the handler from filenames.
+
+    2.  had inline config shortcuts expanded with :meth:`config.expand`
+
+        .. code-block:: python
+            from tmuxp import config
+            sconf = config.expand(sconf)
+
+    3.  has passed down certain keys such as ``shell_command_before`` to
+        child window and pane items with :meth:`config.trickle`:
+
+        .. code-block:: python
+            from tmuxp import config
+            sconf = config.trickle(sconf)
+
+    It handles the magic of cases where the user may want to start
+    a session inside tmux (when `$TMUX` is in the env variables).
+
     '''
 
-    def __init__(self, config):
+    def __init__(self, sconf):
         '''
-
-        :param: config: dict of configuration values
-        '''
-        self.config = config
-
-    def iter_create_windows(self, s, sconf):
-        ''' this is a generator that will create the windows and return the
-        :class:`Window` object for the window.
-
-        It handles the magic of cases where the user may want to start
-        a session inside tmux (when `$TMUX` is in the env variables).
-
-        :param: session: :class:`Session` from the config
         :param: sconf: :py:obj:`dict` session config, includes a :py:obj:`list`
             of ``windows``.
         '''
+        self.sconf = sconf
 
-        for i, wconf in enumerate(sconf['windows'], start=1):
+    def iter_create_windows(self, s):
+        ''' generator that creates tmux windows, yields :class:`Window` object
+        by iterating through ``sconf['windows']``.
+
+        :param: session: :class:`Session` from the config
+        '''
+        for i, wconf in enumerate(self.sconf['windows'], start=1):
             automatic_rename = False
             if 'window_name' not in wconf:
                 window_name = None
@@ -75,6 +102,7 @@ class Builder(object):
             yield w, wconf
 
     def iter_create_panes(self, w, wconf):
+
         for pindex, pconf in enumerate(wconf['panes'], start=1):
             if pindex != int(1):
                 p = w.split_window()

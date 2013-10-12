@@ -5,7 +5,7 @@ import os
 import unittest
 from . import t
 from .. import Window, config
-from ..builder import Builder
+from ..workspacebuilder import WorkspaceBuilder
 import kaptan
 
 from .helpers import TmuxTestCase
@@ -43,12 +43,12 @@ class BuilderTest(TmuxTestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
 
-        builder = Builder(sconfig)
+        builder = WorkspaceBuilder(sconf=sconfig)
 
         if 'session_name' in sconfig:
             window_count = len(self.session._windows)  # current window count
             self.assertEqual(len(s.list_windows()), window_count)
-            for w, wconf in builder.iter_create_windows(s, sconfig):
+            for w, wconf in builder.iter_create_windows(s):
                 window_pane_count = len(w._panes)
                 for p in builder.iter_create_panes(w, wconf):
                     p = p
