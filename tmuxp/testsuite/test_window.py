@@ -135,6 +135,18 @@ class RenameTest(TmuxTestCase):
 class RenameSpacesTest(RenameTest):
     window_name_after = 'hello \\ wazzup 0'
 
+class RenameTest(TmuxTestCase):
+
+    def test_show_window_options(self):
+        ''' run window rename test with this window name '''
+
+        window = self.session.new_window(window_name='test_window')
+
+        options = window.show_window_options()
+        self.assertIsInstance(options, dict)
+
+        logger.info(options)
+
 
 if __name__ == '__main__':
     unittest.main()

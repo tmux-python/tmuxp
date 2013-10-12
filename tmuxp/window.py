@@ -137,16 +137,22 @@ class Window(TmuxObject):
 
         :param option: optional. show a single option.
         :type option: string
+        :rtype: dict
         '''
 
         if option:
-            self.tmux(
+            window_options = self.tmux(
                 'show-window-options', option
             ).stdout
         else:
-            self.tmux(
+            window_options = self.tmux(
                 'show-window-options'
             ).stdout
+
+        window_options = [tuple(item.split(' ')) for item in window_options]
+        window_options = dict(window_options)
+
+        return window_options
 
     def rename_window(self, new_name):
         '''rename window and return new window object::
@@ -336,10 +342,10 @@ class Window(TmuxObject):
                     p.get('pane_id'), p.get('window_id')))
                 p.update(diff[p.get('pane_id')])
 
-        # create pane objects for non-existant pane_id's
-        for pane in [new[pane_id] for pane_id in created]:
-            logger.debug('adding pane_id %s window_id %s' % (
-                pane['pane_id'], pane['window_id']))
-            self._panes.append(Pane(window=self, **pane))
+            # create pane objects for non-existant pane_id's
+            for pane in [new[pane_id] for pane_id in created]:
+                logger.debug('adding pane_id %s window_id %s' % (
+                    pane['pane_id'], pane['window_id']))
+                self._panes.append(Pane(window=self, **pane))
 
-        return self._panes
+            return self._panes
