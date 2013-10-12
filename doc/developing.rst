@@ -90,7 +90,8 @@ Testing specific testsuites, testcase and tests
 
     $ ./run_tests.py --help
 
-Will give you an output of ways you can choose to run tests.
+Will give you an output of ways you can choose to run tests. Example for
+``test_config`` TestSuite:
 
 By :py:class:`unittest.TestSuite` / module:
 

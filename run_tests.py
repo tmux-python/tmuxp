@@ -128,7 +128,7 @@ if __name__ == '__main__':
         nargs='*',
         default=None,
         help='''\
-        Test individual, TestCase or TestSuites, or multiple:
+        Test individual, TestCase or TestSuites, or multiple. Example for test_config TestSuite:
 
         by TestSuite (module):
             $ ./run_tests.py tmuxp.testsuite.test_config
