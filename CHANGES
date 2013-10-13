@@ -3,6 +3,30 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-13
+----------
+
+- [cli] [tests]  :meth:`config.inline()` to produce far far better looking
+  config exports and tests.
+- :meth:`Pane.pane_resize()` and tests
+- documentation fixes and updates
+- [internal] :meth:`Session.refresh()`, :meth:`Window.refresh()`,
+  :meth:`Pane.refresh()`.
+- [internal] :meth:`Server.find()`, :meth:`Session.find()`,
+  :meth:`Window.find()`.
+
+2013-10-12
+----------
+
+- [tests] Test documentation updates
+- [internal] [tests] Builder is now :class:`WorkspaceBuilder` + tests.
+  - WorkspaceBuilder can build panes
+  - WorkspaceBuilder can build windows and set options
+- [internal] [tests] :meth:`Window.show_window_options()`,
+  :meth:`Window.show_window_option()`, :meth:`Window.set_window_option()`
+- [internal] [tests] :meth:`Server.show_options()`,
+  :meth:`Server.show_option()`, :meth:`Window.set_option()`
+
 2013-10-11
 ----------
 
