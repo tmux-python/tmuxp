@@ -53,10 +53,11 @@ class ImportExportTest(unittest.TestCase):
     def test_export_json(self):
         json_config_file = os.path.join(TMUXWRAPPER_DIR, 'config.json')
 
-        config = kaptan.Kaptan()
-        config.import_config(sampleconfigdict)
+        configparser = kaptan.Kaptan()
+        sampleconfig = config.inline(sampleconfigdict)
+        configparser.import_config(sampleconfigdict)
 
-        json_config_data = config.export('json', indent=2)
+        json_config_data = configparser.export('json', indent=2)
 
         buf = open(json_config_file, 'w')
         buf.write(json_config_data)
@@ -69,10 +70,11 @@ class ImportExportTest(unittest.TestCase):
     def test_export_yaml(self):
         yaml_config_file = os.path.join(TMUXWRAPPER_DIR, 'config.yaml')
 
-        config = kaptan.Kaptan()
-        config.import_config(sampleconfigdict)
+        configparser = kaptan.Kaptan()
+        sampleconfig = config.inline(sampleconfigdict)
+        configparser.import_config(sampleconfig)
 
-        yaml_config_data = config.export('yaml', indent=2, default_flow_style=False)
+        yaml_config_data = configparser.export('yaml', indent=2, default_flow_style=False)
 
         buf = open(yaml_config_file, 'w')
         buf.write(yaml_config_data)
@@ -115,8 +117,8 @@ class ImportExportTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.isdir(TMUXWRAPPER_DIR):
-            shutil.rmtree(TMUXWRAPPER_DIR)
+        #if os.path.isdir(TMUXWRAPPER_DIR):
+        #    shutil.rmtree(TMUXWRAPPER_DIR)
         logging.debug('wiped %s' % TMUXWRAPPER_DIR)
 
 
