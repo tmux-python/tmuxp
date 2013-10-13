@@ -75,8 +75,9 @@ Configuration
 
 .. automethod:: tmuxp.config.expand
 
-.. autoclass:: tmuxp.config.trickle
-   :members:
+.. automethod:: tmuxp.config.inline
+
+.. automethod:: tmuxp.config.trickle
 
 Workspace Builder
 -----------------
