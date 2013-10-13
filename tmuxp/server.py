@@ -272,6 +272,20 @@ class Server(object):
     def sessions(self):
         return self._sessions
 
+    def find(self, session_id):
+        ''' find session by session_id
+
+        :param session_id:
+        :type session_id: string
+        :rtype: :class:`Session`
+        '''
+
+        for session in self.list_sessions():
+            if session['session_id'] == session_id:
+                return session
+            else:
+                continue
+
     def switch_client(self, target_session):
         '''
         ``$ tmux switch-client``

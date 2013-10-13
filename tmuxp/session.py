@@ -61,6 +61,15 @@ class Session(TmuxObject):
             else:
                 continue
 
+    def refresh(self):
+        '''Refresh current :class:`Session` object. Chainable.
+
+        :rtype: :class:`Session`
+        '''
+        self._TMUX = self.server.find(self['session_id'])._TMUX
+
+        return self
+
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
 

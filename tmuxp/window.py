@@ -308,7 +308,7 @@ class Window(TmuxObject):
     def refresh(self):
         '''Refresh current :class:`Window` object. Chainable.
 
-        :rtype: self
+        :rtype: :class:`Window`
         '''
         self._TMUX = self.server.find(self['window_id'])._TMUX
 
