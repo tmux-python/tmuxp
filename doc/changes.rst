@@ -7,3 +7,4 @@ Changelog
 =========
 
 .. include:: ../CHANGES
+    :start-line: 3
