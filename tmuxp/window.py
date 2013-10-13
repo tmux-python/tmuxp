@@ -291,6 +291,13 @@ class Window(TmuxObject):
 
         return False
 
+    def find(self, pane_id):
+        for pane in self.list_panes():
+            if pane['pane_id'] == pane_id:
+                return pane
+            else:
+                continue
+
     def list_panes(self):
         '''
         Return list of :class:`Pane` for the window.
@@ -308,7 +315,7 @@ class Window(TmuxObject):
             'list-panes',
             # '-s',                               # for sessions
             # '-t%s' % self._session.session_name,      # target (name of session)
-            '-t%s' % self.get('window_index'),      # target (name of session)
+            '-t%s' % self.get('window_id'),      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
         ).stdout
 
@@ -320,9 +327,9 @@ class Window(TmuxObject):
             dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
         ]
 
-        # filter by window_index
+        # filter by window_id
         panes = [
-            pane for pane in panes if pane['window_index'] == self.get('window_index')
+            pane for pane in panes if pane['window_id'] == self.get('window_id')
         ]
 
         new_panes = panes
@@ -366,7 +373,7 @@ class Window(TmuxObject):
                 logger.debug("removing %s" % p)
                 self._panes.remove(p)
 
-            if p.get('pane_id') in intersect and p.get('p_id') in diff:
+            if p.get('pane_id') in intersect and p.get('pane_id') in diff:
                 logger.debug('updating pane_id %s window_id %s' % (
                     p.get('pane_id'), p.get('window_id')))
                 p.update(diff[p.get('pane_id')])

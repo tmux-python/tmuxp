@@ -18,9 +18,21 @@ class ResizeTest(TmuxTestCase):
     def setUpClass(cls):
         super(ResizeTest, cls).setUpClass()
 
-    def test_window_resize(self):
-        '''Window.resize_window()'''
+    def test_window_pane(self):
+        '''Pane.resize_pane()'''
 
         window = self.session.attached_window()
 
-        logger.error(window.attached_pane()._TMUX)
+        pane1 = window.attached_pane()
+        pane1_id = pane1['pane_id']
+        pane1_height = pane1['pane_height']
+        pane2 = window.split_window()
+
+        pane1.resize_pane(height=20)
+        pane1 = window.find(pane1_id)
+        self.assertNotEqual(pane1['pane_height'], pane1_height)
+        self.assertEqual(int(pane1['pane_height']), 20)
+
+        pane1.resize_pane(height=10)
+        pane1 = window.find(pane1_id)
+        self.assertEqual(int(pane1['pane_height']), 10)

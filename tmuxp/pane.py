@@ -62,7 +62,7 @@ class Pane(TmuxObject):
         if enter:
             self.enter()
 
-    def resize_pane(self, target_pane, *args, **kwargs):
+    def resize_pane(self, *args, **kwargs):
         '''
             ``$ tmux resize-pane``
 
@@ -71,16 +71,18 @@ class Pane(TmuxObject):
         :rtype: :class:`Pane`
 
         '''
-        if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
-            target_pane = "%s.%s" % (self.target, target_pane)
+        #if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
+        #    target_pane = "%s.%s" % (self.target, target_pane)
 
-        try:
-            self.tmux('resize-pane', '-t%s' % target_pane)
-        except Exception:
-            logger.error('pane not found %s %s' % (
-                target_pane, self.list_panes()))
-        self.list_panes()
-        return self.attached_pane()
+        #logger.error('resize-pane', '-t%s' % self.target)
+        if 'height' in kwargs:
+            proc = self.tmux('resize-pane', '-t%s' % self.target, '-y%s' % int(kwargs['height']))
+        elif 'width' in kwargs:
+            proc = self.tmux('resize-pane', '-t%s' % self.target, '-x%s' % int(kwargs['width']))
+        else:
+            proc = self.tmux('resize-pane', '-t%s' % self.target, args[0])
+
+        return self
 
     def enter(self):
         '''
@@ -90,7 +92,8 @@ class Pane(TmuxObject):
 
     @property
     def target(self):
-        return "%s:%s.%s" % (self.session.get('session_id'), self.get('window_id'), int(self.get('pane_index')))
+        #return "%s:%s.%s" % (self.session.get('session_id'), self.get('window_id'), self.get('pane_index'))
+        return self.get('pane_id')
 
     def __repr__(self):
         return "%s(%s %s)" % (self.__class__.__name__, self.get('pane_id'), self.window)
