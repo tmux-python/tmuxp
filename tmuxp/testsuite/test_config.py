@@ -192,6 +192,77 @@ class ExpandTest(unittest.TestCase):
         self.assertDictEqual(test_config, self.after_config)
 
 
+class InlineTest(unittest.TestCase):
+    '''tests for :meth:`config.inline()`.
+    '''
+
+    before_config = {
+        'session_name': 'sampleconfig',
+        'start_directory': '~',
+        'windows': [{
+            'shell_command': ['top'],
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': ['vim'],
+                    },  {
+                    'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': ['tail -F /var/log/syslog'],
+                     'start_directory':'/var/log'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': ['htop']}
+                ]
+            }]
+    }
+
+    after_config = {
+        'session_name': 'sampleconfig',
+        'start_directory': '~',
+        'windows': [{
+            'shell_command': 'top',
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'start_directory': '~', 'shell_command': 'vim',
+                    },  {
+                    'shell_command': 'cowsay "hey"'
+                },
+            ],
+            'layout': 'main-verticle'},
+            {
+                'window_name': 'logging',
+                'panes': [
+                    {'shell_command': 'tail -F /var/log/syslog',
+                     'start_directory':'/var/log'}
+                ]
+            },
+            {
+                'automatic_rename': True,
+                'panes': [
+                    {'shell_command': 'htop'}
+                ]
+            }]
+    }
+
+    def test_config(self):
+        '''
+        config.inline() inlines shell commands from list to string where applicable
+        '''
+        self.maxDiff = None
+        test_config = config.inline(self.before_config)
+        self.assertDictEqual(test_config, self.after_config)
+
+
 class InheritanceTest(unittest.TestCase):
 
     '''

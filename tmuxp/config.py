@@ -16,6 +16,25 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def inline(config):
+    ''' opposite of :meth:`config.expand`. Where possible, inline.
+    '''
+
+    if ('shell_command' in config and isinstance(config['shell_command'], list) and len(config['shell_command']) == 1):
+        config['shell_command'] = config['shell_command'][0]
+    if ('shell_command_before' in config and isinstance(config['shell_command_before'], list) and len(config['shell_command_before']) == 1):
+        config['shell_command_before'] = config['shell_command_before'][0]
+
+    # recurse into window and pane config items
+    if 'windows' in config:
+        config['windows'] = [inline(window)
+                             for window in config['windows']]
+    if 'panes' in config:
+        config['panes'] = [inline(pane) for pane in config['panes']]
+
+    return config
+
+
 def expand(config):
     '''Expand configuration into full form. Enables shorthand forms for tmuxp
     config.
@@ -38,8 +57,6 @@ def expand(config):
 
     iterate through session, windows, and panes for ``shell_command``, if
     it is a string, turn to list.
-
-    shell_command: 'string' => shell_command: list('string')
 
     :param config: the session configuration
     :type config: dict
