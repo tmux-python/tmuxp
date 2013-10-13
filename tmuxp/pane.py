@@ -62,6 +62,26 @@ class Pane(TmuxObject):
         if enter:
             self.enter()
 
+    def resize_pane(self, target_pane, *args, **kwargs):
+        '''
+            ``$ tmux resize-pane``
+
+        :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``.
+        :type target_pane: string
+        :rtype: :class:`Pane`
+
+        '''
+        if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
+            target_pane = "%s.%s" % (self.target, target_pane)
+
+        try:
+            self.tmux('resize-pane', '-t%s' % target_pane)
+        except Exception:
+            logger.error('pane not found %s %s' % (
+                target_pane, self.list_panes()))
+        self.list_panes()
+        return self.attached_pane()
+
     def enter(self):
         '''
             ``$ tmux send-keys`` send Enter to the pane.

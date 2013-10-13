@@ -182,6 +182,5 @@ class Options(TmuxTestCase):
         with self.assertRaises(ValueError):
             window.set_window_option('afewewfew', 43)
 
-
 if __name__ == '__main__':
     unittest.main()
