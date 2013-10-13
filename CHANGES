@@ -8,7 +8,7 @@ Here you can find the recent changes to tmuxp.
 
 - [cli] [tests]  :meth:`config.inline()` to produce far far better looking
   config exports and tests.
-- :meth:`Pane.pane_resize()` and tests
+- :meth:`Pane.resize_pane()` and tests
 - documentation fixes and updates
 - [internal] :meth:`Session.refresh()`, :meth:`Window.refresh()`,
   :meth:`Pane.refresh()`.
@@ -24,8 +24,8 @@ Here you can find the recent changes to tmuxp.
   - WorkspaceBuilder can build windows and set options
 - [internal] [tests] :meth:`Window.show_window_options()`,
   :meth:`Window.show_window_option()`, :meth:`Window.set_window_option()`
-- [internal] [tests] :meth:`Server.show_options()`,
-  :meth:`Server.show_option()`, :meth:`Window.set_option()`
+- [internal] [tests] :meth:`Session.show_options()`,
+  :meth:`Session.show_option()`, :meth:`Session.set_option()`
 
 2013-10-11
 ----------
