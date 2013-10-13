@@ -292,15 +292,30 @@ class Window(TmuxObject):
         return False
 
     def find(self, pane_id):
+        ''' find pane by pane_id
+
+        :param pane_id:
+        :type pane_id: string
+        :rtype: :class:`Pane`
+        '''
+
         for pane in self.list_panes():
             if pane['pane_id'] == pane_id:
                 return pane
             else:
                 continue
 
-    def list_panes(self):
+    def refresh(self):
+        '''Refresh current :class:`Window` object. Chainable.
+
+        :rtype: self
         '''
-        Return list of :class:`Pane` for the window.
+        self._TMUX = self.server.find(self['window_id'])._TMUX
+
+        return self
+
+    def list_panes(self):
+        '''Return list of :class:`Pane` for the window.
 
         :rtype: list of :class:`Pane`
         '''

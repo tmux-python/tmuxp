@@ -47,6 +47,20 @@ class Session(TmuxObject):
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
+    def find(self, window_id):
+        ''' find window by window_id
+
+        :param window_id:
+        :type window_id: string
+        :rtype: :class:`Window`
+        '''
+
+        for window in self.list_windows():
+            if window['window_id'] == window_id:
+                return window
+            else:
+                continue
+
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
 
