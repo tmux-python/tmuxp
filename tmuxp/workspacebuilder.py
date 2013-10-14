@@ -69,12 +69,15 @@ class WorkspaceBuilder(object):
 
     '''
 
-    def __init__(self, sconf):
+    def __init__(self, sconf, server=None):
         '''
         todo: initialize :class:`Session` from here, in ``self.session``.
 
         :param sconf: session config, includes a :py:obj:`list` of ``windows``.
         :type sconf: :py:obj:`dict`
+
+        :param server:
+        :type server: :class:`Server`
         '''
 
         if not sconf:
@@ -83,7 +86,29 @@ class WorkspaceBuilder(object):
         if not 'session_name' in sconf:
             raise ValueError('config requires session_name')
 
+        if server:
+            self.server = server
+
         self.sconf = sconf
+
+    def build(self):
+        '''high-level builder, relies on :attr:`server`.'''
+
+        if self.server.has_session(self.sconf['session_name']):
+            raise exc.TmuxSessionExists('Session name %s already is running.' %
+                                        self.sconf['session_name'])
+        else:
+            session = self.server.new_session(session_name=self.sconf['session_name'])
+
+        window_count = len(session._windows)  # current window count
+        for w, wconf in self.iter_create_windows(session):
+
+            window_pane_count = len(w._panes)
+            for p in self.iter_create_panes(w, wconf):
+                p = p
+
+            w.set_window_option('main-pane-height', 50)
+            w.select_layout(wconf['layout'])
 
     def iter_create_windows(self, s):
         ''' generator that creates tmux windows, yields :class:`Window` object

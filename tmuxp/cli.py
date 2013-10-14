@@ -54,18 +54,17 @@ def build_workspace(config_file):
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
 
+    t = Server()
     try:
-        builder = WorkspaceBuilder(sconf=sconfig)
+        builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
         logger.error('%s is empty or parsed no config data' % config_file)
-        return
 
-    t = Server()
-    if t.has_session(sconfig['session_name']):
-        logger.error('Session name %s already is running.' % sconfig['session_name'])
+    try:
+        builder.build()
+    except exc.TmuxSessionExists as e:
+        logger.error(e.message)
         return
-    else:
-        session = t.new_session(session_name=sconfig['session_name'])
 
     window_count = len(session._windows)  # current window count
     for w, wconf in builder.iter_create_windows(session):
@@ -136,6 +135,7 @@ def main():
 
     elif args.configs:
         # todo: implement support for $ tmux .
+        # todo: pass thru -L socket-name, -S socket-path
 
         for configfile in args.configs:
             file_user = os.path.join(config_dir, configfile)
