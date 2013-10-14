@@ -11,7 +11,7 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 import logging
-from . import exc, config
+from . import exc, config, Window, Pane, Session
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class WorkspaceBuilder(object):
         if not sconf:
             raise exc.EmptyConfigException('session configuration is empty.')
 
-        config.check_consistency(sconf)
+        # config.check_consistency(sconf)
 
         if server:
             self.server = server
@@ -98,14 +98,15 @@ class WorkspaceBuilder(object):
         else:
             session = self.server.new_session(session_name=self.sconf['session_name'])
 
+        assert(isinstance(session, Session))
+
         window_count = len(session._windows)  # current window count
         for w, wconf in self.iter_create_windows(session):
 
-            window_pane_count = len(w._panes)
             for p in self.iter_create_panes(w, wconf):
+                assert(isinstance(p, Pane))
                 p = p
 
-            w.set_window_option('main-pane-height', 50)
             w.select_layout(wconf['layout'])
 
     def iter_create_windows(self, s):
@@ -137,6 +138,8 @@ class WorkspaceBuilder(object):
                     automatic_rename=automatic_rename
                 )
 
+            assert(isinstance(w, Window))
+
             if 'options' in wconf and isinstance(wconf['options'], dict):
                 for key, val in wconf['options'].iteritems():
                     w.set_window_option(key, val)
@@ -155,12 +158,16 @@ class WorkspaceBuilder(object):
         :type wconf: :py:obj:`dict`
         :rtype: :class:`Pane`
         '''
+        assert(isinstance(w, Window))
 
         for pindex, pconf in enumerate(wconf['panes'], start=1):
             if pindex != int(1):
                 p = w.split_window()
+                assert(isinstance(p, Pane))
             else:
                 p = w.attached_pane()
+                assert(isinstance(p, Pane))
+
             for cmd in pconf['shell_command']:
                 p.send_keys(cmd)
 

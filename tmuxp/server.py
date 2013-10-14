@@ -353,7 +353,7 @@ class Server(object):
         session_info = self.tmux(
             'new-session',
             '-d',  # assume detach = True for now, todo: fix
-            '-s', session_name,
+            '-s%s' % session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
         )
 

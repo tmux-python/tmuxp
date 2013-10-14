@@ -330,7 +330,7 @@ class Window(TmuxObject):
             'list-panes',
             # '-s',                               # for sessions
             # '-t%s' % self._session.session_name,      # target (name of session)
-            '-t%s' % self.get('window_id'),      # target (name of session)
+            '-t%s' % self.get('window_index'),      # target (name of session)
             '-F%s' % ''.join(tmux_formats),     # output
         ).stdout
 
@@ -343,11 +343,14 @@ class Window(TmuxObject):
         ]
 
         # filter by window_id
-        panes = [
-            pane for pane in panes if pane['window_id'] == self.get('window_id')
-        ]
+        # this is causing errors with winderbuilder, the early window_id is
+        # returning as 0 when building sessions
+        # panes = [
+           # pane for pane in panes if pane['window_id'] == self.get('window_id')
+        # ]
 
         new_panes = panes
+
 
         if not self._panes:
             for pane in new_panes:
