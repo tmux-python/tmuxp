@@ -107,12 +107,14 @@ class Session(TmuxObject):
         if window_name:
             window = self.tmux(
                 'new-window',
+                '-t%s' % self.get('session_id'),
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
                 '-n', window_name
             )
         else:
             window = self.tmux(
                 'new-window',
+                '-t%s' % self.get('session_id'),
                 '-P', '-F%s' % '\t'.join(tmux_formats),  # output
             )
 

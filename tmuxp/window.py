@@ -328,9 +328,7 @@ class Window(TmuxObject):
 
         panes = self.tmux(
             'list-panes',
-            # '-s',                               # for sessions
-            # '-t%s' % self._session.session_name,      # target (name of session)
-            '-t%s' % self.get('window_index'),      # target (name of session)
+            '-t%s:%s' % (self.get('session_name'), self.get('window_id')),
             '-F%s' % ''.join(tmux_formats),     # output
         ).stdout
 
@@ -349,8 +347,11 @@ class Window(TmuxObject):
            # pane for pane in panes if pane['window_id'] == self.get('window_id')
         # ]
 
-        new_panes = panes
+        # panes = [
+           # pane for pane in panes if pane['session_id'] == self.get('session_id')
+        # ]
 
+        new_panes = panes
 
         if not self._panes:
             for pane in new_panes:

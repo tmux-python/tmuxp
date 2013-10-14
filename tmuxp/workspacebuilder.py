@@ -1,4 +1,4 @@
-# -*- coding: utf8 - *-
+# -*- coding: utf8 -*-
 """
     tmuxp.builder
     ~~~~~~~~~~~~~
@@ -99,15 +99,17 @@ class WorkspaceBuilder(object):
             session = self.server.new_session(session_name=self.sconf['session_name'])
 
         assert(isinstance(session, Session))
+        assert(self.sconf['session_name'] == session.get('session_name'))
 
-        window_count = len(session._windows)  # current window count
         for w, wconf in self.iter_create_windows(session):
-
+            assert(isinstance(w, Window))
+            w.list_panes()
             for p in self.iter_create_panes(w, wconf):
                 assert(isinstance(p, Pane))
                 p = p
 
-            w.select_layout(wconf['layout'])
+            if 'layout' in wconf:
+                w.select_layout(wconf['layout'])
 
     def iter_create_windows(self, s):
         ''' generator that creates tmux windows, yields :class:`Window` object
@@ -144,6 +146,7 @@ class WorkspaceBuilder(object):
                 for key, val in wconf['options'].iteritems():
                     w.set_window_option(key, val)
             w.list_panes()
+
             yield w, wconf
 
     def iter_create_panes(self, w, wconf):
