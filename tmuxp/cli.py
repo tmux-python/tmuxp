@@ -118,7 +118,7 @@ def main():
         configs_in_user = config.in_dir(config_dir)
         configs_in_cwd = config.in_cwd()
 
-        output = '\n'
+        output = ''
 
         if not configs_in_user:
             output += '# %s: \n\tNone found.\n' % config_dir
@@ -127,12 +127,12 @@ def main():
                 config_dir, ', '.join(configs_in_user)
             )
 
-        if not configs_in_cwd:
-            output += '# current directory: \n\tNone found.\n'
-        else:
+        if configs_in_cwd:
             output += '# current directory:\n\t%s' % (
                 ', '.join(configs_in_cwd)
             )
+
+        print(output)
 
     elif args.configs:
         # todo: implement support for $ tmux .
