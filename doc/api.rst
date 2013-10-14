@@ -70,8 +70,17 @@ Internals
 
 .. automethod:: tmuxp.util.tmux
 
+Command Line
+------------
+
+.. automethod:: tmuxp.cli.startup
+
 Configuration
 -------------
+
+.. automethod:: tmuxp.config.is_config_file
+
+.. automethod:: tmuxp.config.in_dir
 
 .. automethod:: tmuxp.config.expand
 
