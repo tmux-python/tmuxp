@@ -4,6 +4,8 @@ Roadmap
 To do
 """""
 
+- adjust builder tests to count windows + panes in conf then assert against
+  the ._panes, ._windows, .sessions count in built objects
 - config_consistency_check() to check the structure, if windows have panes,
   diagnose config issues.
 - cli: allow shorthand for 'filename' without json/yaml/py/ini, but cli will
