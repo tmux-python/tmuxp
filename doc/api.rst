@@ -66,9 +66,8 @@ Internals
 ---------
 
 .. autoclass:: tmuxp.util.TmuxObject
-   :show-inheritance:
 
-.. automethod:: tmuxp.util.tmux
+.. autoclass:: tmuxp.util.tmux
 
 Command Line
 ------------
@@ -78,9 +77,17 @@ Command Line
 Configuration
 -------------
 
+Finding
+"""""""
+
 .. automethod:: tmuxp.config.is_config_file
 
 .. automethod:: tmuxp.config.in_dir
+
+.. automethod:: tmuxp.config.in_cwd
+
+Import and export
+"""""""""""""""""
 
 .. automethod:: tmuxp.config.expand
 

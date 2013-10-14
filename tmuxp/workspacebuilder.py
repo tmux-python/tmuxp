@@ -26,6 +26,7 @@ class WorkspaceBuilder(object):
             python :class:`dict`.
 
             .. code-block:: python
+
                 import kaptan
                 sconf = kaptan.Kaptan(handler='yaml')
                 sconf = sconfig.import_config(self.yaml_config).get()
