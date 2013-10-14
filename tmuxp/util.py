@@ -78,7 +78,7 @@ class TmuxObject(collections.MutableMapping):
 
     Base class for of :class:`Pane`, :class:`Window` and :class:`Session`.
 
-    The mapping uses attribute``._TMUX`` to store values.
+    The mapping uses attribute ``._TMUX`` to store values.
     '''
     def __getitem__(self, key):
         return self._TMUX[key]
