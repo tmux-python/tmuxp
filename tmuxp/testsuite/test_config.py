@@ -533,7 +533,7 @@ class ConfigConsistency(unittest.TestCase):
         - htop
     '''
 
-    def test_split_windows(self):
+    def test_no_session_name(self):
         yaml_config = '''
         - window_name: editor
           panes:
@@ -550,8 +550,42 @@ class ConfigConsistency(unittest.TestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
-        with self.assertRaises(exc.ConfigError):
+        with self.assertRaisesRegexp(exc.ConfigError, 'requires "session_name"'):
             config.check_consistency(sconfig)
+
+    def test_no_windows(self):
+        yaml_config = '''
+        session_name: test session
+        '''
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+
+        with self.assertRaisesRegexp(exc.ConfigError, 'list of "windows"'):
+            config.check_consistency(sconfig)
+
+    def test_no_window_name(self):
+        yaml_config = '''
+        session_name: test session
+        windows:
+        - window_name: editor
+          panes:
+          shell_command:
+            - tail -F /var/log/syslog
+          start_directory: /var/log
+        - automatic_rename: true
+          panes:
+          - shell_command:
+            - htop
+        '''
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+
+        with self.assertRaisesRegexp(exc.ConfigError, 'missing "window_name"'):
+            config.check_consistency(sconfig)
+
+
 
 
 if __name__ == '__main__':

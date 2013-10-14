@@ -25,17 +25,17 @@ def check_consistency(sconf):
 
     # verify session_name
     if not 'session_name' in sconf:
-        raise exc.ConfigError('config requires session_name')
+        raise exc.ConfigError('config requires "session_name"')
 
     if not 'windows' in sconf:
-        raise exc.ConfigError('config requires windows')
+        raise exc.ConfigError('config requires list of "windows"')
 
     for window in sconf['windows']:
         if not 'window_name' in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
         if not 'panes' in window:
-            raise exc.ConfigError('config window %s requires panes' % window['window_name'])
+            raise exc.ConfigError('config window %s requires list of panes' % window['window_name'])
 
     return True
 
