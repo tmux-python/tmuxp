@@ -12,7 +12,7 @@ from .. import log
 import logging
 
 logger = logging.getLogger(__name__)
-TMUXWRAPPER_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
+TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 sampleconfigdict = {
     'session_name': 'sampleconfig',
@@ -45,13 +45,13 @@ class ImportExportTest(unittest.TestCase):
     def setUpClass(cls):
         # run parent
         # setUpClass
-        if not os.path.exists(TMUXWRAPPER_DIR):
+        if not os.path.exists(TMUXP_DIR):
             os.makedirs(
-                TMUXWRAPPER_DIR)
+                TMUXP_DIR)
             # super(ConfigTest, cls).setUpClass()
 
     def test_export_json(self):
-        json_config_file = os.path.join(TMUXWRAPPER_DIR, 'config.json')
+        json_config_file = os.path.join(TMUXP_DIR, 'config.json')
 
         configparser = kaptan.Kaptan()
         sampleconfig = config.inline(sampleconfigdict)
@@ -68,7 +68,7 @@ class ImportExportTest(unittest.TestCase):
         self.assertDictEqual(sampleconfigdict, new_config_data)
 
     def test_export_yaml(self):
-        yaml_config_file = os.path.join(TMUXWRAPPER_DIR, 'config.yaml')
+        yaml_config_file = os.path.join(TMUXP_DIR, 'config.yaml')
 
         configparser = kaptan.Kaptan()
         sampleconfig = config.inline(sampleconfigdict)
@@ -87,39 +87,39 @@ class ImportExportTest(unittest.TestCase):
     def test_scan_config(self):
         configs = []
 
-        garbage_file = os.path.join(TMUXWRAPPER_DIR, 'config.psd')
+        garbage_file = os.path.join(TMUXP_DIR, 'config.psd')
         buf = open(garbage_file, 'w')
         buf.write('wat')
         buf.close()
 
-        if os.path.exists(TMUXWRAPPER_DIR):
-            for r, d, f in os.walk(TMUXWRAPPER_DIR):
+        if os.path.exists(TMUXP_DIR):
+            for r, d, f in os.walk(TMUXP_DIR):
                 for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
                     configs.append(os.path.join(
-                        TMUXWRAPPER_DIR, filela))
+                        TMUXP_DIR, filela))
 
         files = 0
-        if os.path.exists(os.path.join(TMUXWRAPPER_DIR, 'config.json')):
+        if os.path.exists(os.path.join(TMUXP_DIR, 'config.json')):
             files += 1
             self.assertIn(os.path.join(
-                TMUXWRAPPER_DIR, 'config.json'), configs)
+                TMUXP_DIR, 'config.json'), configs)
 
-        if os.path.exists(os.path.join(TMUXWRAPPER_DIR, 'config.yaml')):
+        if os.path.exists(os.path.join(TMUXP_DIR, 'config.yaml')):
             files += 1
             self.assertIn(os.path.join(
-                TMUXWRAPPER_DIR, 'config.yaml'), configs)
+                TMUXP_DIR, 'config.yaml'), configs)
 
-        if os.path.exists(os.path.join(TMUXWRAPPER_DIR, 'config.ini')):
+        if os.path.exists(os.path.join(TMUXP_DIR, 'config.ini')):
             files += 1
-            self.assertIn(os.path.join(TMUXWRAPPER_DIR, 'config.ini'), configs)
+            self.assertIn(os.path.join(TMUXP_DIR, 'config.ini'), configs)
 
         self.assertEqual(len(configs), files)
 
     @classmethod
     def tearDownClass(cls):
-        #if os.path.isdir(TMUXWRAPPER_DIR):
-        #    shutil.rmtree(TMUXWRAPPER_DIR)
-        logging.debug('wiped %s' % TMUXWRAPPER_DIR)
+        #if os.path.isdir(TMUXP_DIR):
+        #    shutil.rmtree(TMUXP_DIR)
+        logging.debug('wiped %s' % TMUXP_DIR)
 
 
 class ExpandTest(unittest.TestCase):
