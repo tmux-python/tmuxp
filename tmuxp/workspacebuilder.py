@@ -26,6 +26,16 @@ def check_consistency(sconf):
     if not 'session_name' in sconf:
         raise exc.ConfigError('config requires session_name')
 
+    if not 'windows' in sconf:
+        raise exc.ConfigError('config requires windows')
+
+    for window in sconf['windows']:
+        if not 'window_name' in window:
+            raise exc.ConfigError('config window is missing "window_name"')
+
+        if not 'panes' in window:
+            raise exc.ConfigError('config window %s requires panes' % window['window_name'])
+
     return True
 
 
@@ -106,7 +116,7 @@ class WorkspaceBuilder(object):
         '''high-level builder, relies on :attr:`server`.'''
 
         if self.server.has_session(self.sconf['session_name']):
-            raise exc.TmuxSessionExists('Session name %s already is running.' %
+            raise exc.TmuxSessionExists('Session name %s is already running.' %
                                         self.sconf['session_name'])
         else:
             session = self.server.new_session(session_name=self.sconf['session_name'])
