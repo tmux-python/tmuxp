@@ -106,7 +106,7 @@ class FindConfigsTest(unittest.TestCase):
         '''config.in_cwd() finds config in shell's current working directory'''
 
         try:
-            config1 = open('.pullv.json', 'w+b')
+            config1 = open('.tmuxp.json', 'w+b')
             config1.close()
 
             configs_found = config.in_cwd()
@@ -114,7 +114,7 @@ class FindConfigsTest(unittest.TestCase):
             os.remove(config1.name)
 
         self.assertEqual(len(configs_found), 1)
-        self.assertIn('.pullv.json', configs_found)
+        self.assertIn('.tmuxp.json', configs_found)
 
     @classmethod
     def tearDownClass(cls):

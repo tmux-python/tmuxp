@@ -86,17 +86,17 @@ def main():
         output = '\n'
 
         if not configs_in_user:
-            output += '# In %s: \n\tNone found.\n' % config_dir
+            output += '# %s: \n\tNone found.\n' % config_dir
         else:
-            output += '# In %s: \n\t%s\n' % (
+            output += '# %s: \n\t%s\n' % (
                 config_dir, ', '.join(configs_in_user)
             )
 
         if not configs_in_cwd:
-            output += '# In %s (current directory): \n\tNone found.\n' % cwd_dir
+            output += '# current directory: \n\tNone found.\n'
         else:
-            output += '# In %s (current directory):\n\t%s' % (
-                cwd_dir, ', '.join(configs_in_user)
+            output += '# current directory:\n\t%s' % (
+                ', '.join(configs_in_cwd)
             )
 
         logger.info(output)

@@ -47,15 +47,15 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
 def in_cwd():
     '''Return list of configs in current working directory.
 
-    If filename is ``.pullv.py``, ``.pullv.json``, ``.pullv.yaml`` or
-    ``.pullv.ini``.
+    If filename is ``.tmuxp.py``, ``.tmuxp.json``, ``.tmuxp.yaml`` or
+    ``.tmuxp.ini``.
 
     :rtype: list
     '''
     configs = []
 
     for filename in os.listdir(os.getcwd()):
-        if filename.startswith('.pullv') and is_config_file(filename):
+        if filename.startswith('.tmuxp') and is_config_file(filename):
             configs.append(filename)
 
     return configs
