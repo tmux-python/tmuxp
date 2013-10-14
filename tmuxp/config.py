@@ -43,8 +43,30 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
 
     return configs
 
+
+def in_cwd():
+    '''find configs in cwd
+
+    If filename is ``.pullv.py``, ``.pullv.json``, ``.pullv.yaml`` or
+    ``.pullv.ini``.
+
+    :rtype: list
+    '''
+    configs = []
+
+    for filename in os.listdir(os.getcwd()):
+        if filename.startswith('.pullv') and is_config_file(filename):
+            configs.append(filename)
+
+    return configs
+
+
 def inline(config):
     ''' opposite of :meth:`config.expand`. Where possible, inline.
+
+    :param config: unexpanded config file
+    :type config: dict
+    :rtype: dict
     '''
 
     if ('shell_command' in config and isinstance(config['shell_command'], list) and len(config['shell_command']) == 1):

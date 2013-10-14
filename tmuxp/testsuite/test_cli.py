@@ -35,7 +35,7 @@ class StartupTest(unittest.TestCase):
     def tearDownClass(cls):
         if os.path.isdir(TMUXP_DIR):
             shutil.rmtree(TMUXP_DIR)
-        logging.debug('wiped %s' % TMUXP_DIR)
+        logger.debug('wiped %s' % TMUXP_DIR)
 
 
 class FindConfigsTest(unittest.TestCase):
@@ -83,8 +83,6 @@ class FindConfigsTest(unittest.TestCase):
 
         self.assertEqual(len(configs_found), 2)
 
-        logger.error(os.getcwd())
-
     def test_ignore_non_configs_from_current_dir(self):
         '''cli.in_dir() ignores non-configs from config dir'''
 
@@ -104,13 +102,25 @@ class FindConfigsTest(unittest.TestCase):
 
         self.assertEqual(len(configs_found), 1)
 
-        logger.error(os.getcwd())
+    def test_get_configs_cwd(self):
+        '''config.in_cwd() finds config in shell's current working directory'''
+
+        try:
+            config1 = open('.pullv.json', 'w+b')
+            config1.close()
+
+            configs_found = config.in_cwd()
+        finally:
+            os.remove(config1.name)
+
+        self.assertEqual(len(configs_found), 1)
+        self.assertIn('.pullv.json', configs_found)
 
     @classmethod
     def tearDownClass(cls):
         if os.path.isdir(TMUXP_DIR):
             shutil.rmtree(TMUXP_DIR)
-        logging.debug('wiped %s' % TMUXP_DIR)
+        logger.debug('wiped %s' % TMUXP_DIR)
 
 sampleconfigdict = {
     'session_name': 'sampleconfig',

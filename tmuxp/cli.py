@@ -36,8 +36,6 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-
-
 def main():
     setupLogger()
 
