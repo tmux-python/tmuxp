@@ -11,32 +11,9 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 import logging
-from . import exc
+from . import exc, config
 
 logger = logging.getLogger(__name__)
-
-
-def check_consistency(sconf):
-    '''Verify the consistency of the config file.
-
-    Config files in tmuxp are met to import into :py:mod:`dict`.
-    '''
-
-    # verify session_name
-    if not 'session_name' in sconf:
-        raise exc.ConfigError('config requires session_name')
-
-    if not 'windows' in sconf:
-        raise exc.ConfigError('config requires windows')
-
-    for window in sconf['windows']:
-        if not 'window_name' in window:
-            raise exc.ConfigError('config window is missing "window_name"')
-
-        if not 'panes' in window:
-            raise exc.ConfigError('config window %s requires panes' % window['window_name'])
-
-    return True
 
 
 class WorkspaceBuilder(object):
@@ -105,7 +82,7 @@ class WorkspaceBuilder(object):
         if not sconf:
             raise exc.EmptyConfigException('session configuration is empty.')
 
-        check_consistency(sconf)
+        config.check_consistency(sconf)
 
         if server:
             self.server = server

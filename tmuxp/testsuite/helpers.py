@@ -5,9 +5,7 @@ import time
 from . import t
 
 from random import randint
-from .. import Server
-from .. import log
-from ..exc import TmuxNoClientsRunning
+from .. import Server, log, exc
 import logging
 logger = logging.getLogger(__name__)
 

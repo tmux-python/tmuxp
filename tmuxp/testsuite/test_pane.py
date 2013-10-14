@@ -2,7 +2,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import unittest
-from ..exc import TmuxSessionNotFound
 from .helpers import TmuxTestCase
 from . import t
 

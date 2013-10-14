@@ -5,7 +5,7 @@ import os
 import shutil
 import unittest
 import kaptan
-from .. import config
+from .. import config, exc
 from ..util import tmux
 
 from .. import log
@@ -43,12 +43,8 @@ class ImportExportTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # run parent
-        # setUpClass
         if not os.path.exists(TMUXP_DIR):
-            os.makedirs(
-                TMUXP_DIR)
-            # super(ConfigTest, cls).setUpClass()
+            os.makedirs(TMUXP_DIR)
 
     def test_export_json(self):
         json_config_file = os.path.join(TMUXP_DIR, 'config.json')
@@ -510,6 +506,53 @@ class ShellCommandBeforeTest(unittest.TestCase):
         test_config = config.trickle(test_config)
         self.maxDiff = None
         self.assertDictEqual(test_config, self.config_after)
+
+
+class ConfigConsistency(unittest.TestCase):
+
+    delete_this = '''
+    session_name: sampleconfig
+    start_directory: '~'
+    windows:
+    - layout: main-vertical
+    panes:
+    - shell_command:
+        - vim
+        start_directory: '~'
+    - shell_command:
+        - cowsay "hey"
+    window_name: editor
+    - panes:
+    - shell_command:
+        - tail -F /var/log/syslog
+        start_directory: /var/log
+    window_name: logging
+    - automatic_rename: true
+    panes:
+    - shell_command:
+        - htop
+    '''
+
+    def test_split_windows(self):
+        yaml_config = '''
+        - window_name: editor
+          panes:
+          shell_command:
+            - tail -F /var/log/syslog
+          start_directory: /var/log
+        - window_name: logging
+          automatic_rename: true
+          panes:
+          - shell_command:
+            - htop
+        '''
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+
+        with self.assertRaises(exc.ConfigError):
+            config.check_consistency(sconfig)
+
 
 if __name__ == '__main__':
     unittest.main()

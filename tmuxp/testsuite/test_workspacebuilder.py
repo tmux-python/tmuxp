@@ -5,7 +5,7 @@ import os
 import unittest
 import logging
 import kaptan
-from .. import Window, config
+from .. import Window, config, exc
 from ..workspacebuilder import WorkspaceBuilder
 from .helpers import TmuxTestCase
 
@@ -31,7 +31,8 @@ class WorkspaceBuilderTest(TmuxTestCase):
         - tail -F /var/log/syslog
         start_directory: /var/log
       window_name: logging
-    - automatic_rename: true
+    - window_name: test
+      automatic_rename: true
       panes:
       - shell_command:
         - htop
@@ -63,7 +64,8 @@ class WorkspaceBuilderTestPane(TmuxTestCase):
     session_name: sampleconfig
     start_directory: '~'
     windows:
-    - layout: main-horizontal
+    - window_name: test
+      layout: main-horizontal
       panes:
       - shell_command:
         - vim
@@ -95,43 +97,6 @@ class WorkspaceBuilderTestPane(TmuxTestCase):
             window_count += 1
             w.set_window_option('main-pane-height', 50)
             w.select_layout(wconf['layout'])
-
-
-class NoSessionNameError(TmuxTestCase):
-    '''sample config with no session name'''
-
-    yaml_config = '''
-    start_directory: '~'
-    windows:
-    - layout: main-vertical
-      panes:
-      - shell_command:
-        - vim
-        start_directory: '~'
-      - shell_command:
-        - cowsay "hey"
-      window_name: editor
-    - panes:
-      - shell_command:
-        - tail -F /var/log/syslog
-        start_directory: /var/log
-      window_name: logging
-    - automatic_rename: true
-      panes:
-      - shell_command:
-        - htop
-    '''
-
-    def test_no_session_name_raises(self):
-        s = self.session
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(self.yaml_config).get()
-
-        with self.assertRaises(ValueError):
-            w = WorkspaceBuilder(sconf=sconfig)
-
-        sconfig['session_name'] = 'give_a_session_name'
-        w = WorkspaceBuilder(sconf=sconfig)  # shouldn't raise anything
 
 
 class WzindowOptions(TmuxTestCase):
