@@ -73,7 +73,6 @@ def build_workspace(config_file):
         window_pane_count = len(w._panes)
         for p in builder.iter_create_panes(w, wconf):
             p = p
-            assertEqual(len(s.list_windows()), window_count)
 
         w.set_window_option('main-pane-height', 50)
         w.select_layout(wconf['layout'])

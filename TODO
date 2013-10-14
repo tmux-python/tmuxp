@@ -6,6 +6,8 @@ To do
 
 - config_consistency_check() to check the structure, if windows have panes,
   diagnose config issues.
+- cli: allow shorthand for 'filename' without json/yaml/py/ini, but cli will
+  respond with more than one match if multiple file exists.
 - window.resize_pane()
 - window.select_layout() for custom layouts, test
 - freeze session `tmuxp freeze` from inside current session
