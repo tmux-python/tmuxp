@@ -89,6 +89,8 @@ Finding
 Import and export
 """""""""""""""""
 
+.. automethod:: tmuxp.config.check_consistency
+
 .. automethod:: tmuxp.config.expand
 
 .. automethod:: tmuxp.config.inline
