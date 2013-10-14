@@ -5,6 +5,7 @@ import os
 import shutil
 import unittest
 import kaptan
+import tempfile
 from .. import config, cli
 from ..util import tmux
 
@@ -31,8 +32,79 @@ class StartupTest(unittest.TestCase):
         self.assertTrue(os.path.exists(TMUXP_DIR))
 
     @classmethod
-    def setUpClass(cls):
-        pass
+    def tearDownClass(cls):
+        if os.path.isdir(TMUXP_DIR):
+            shutil.rmtree(TMUXP_DIR)
+        logging.debug('wiped %s' % TMUXP_DIR)
+
+
+class FindConfigsTest(unittest.TestCase):
+    '''test in_dir() test'''
+
+    def setUp(self):
+        if os.path.isdir(TMUXP_DIR):
+            shutil.rmtree(TMUXP_DIR)
+
+    def test_in_dir_from_config_dir(self):
+        '''config.in_dir() finds configs config dir'''
+
+        cli.startup(TMUXP_DIR)
+        config1 = tempfile.NamedTemporaryFile(
+            dir=TMUXP_DIR,
+            prefix='myconfig',
+            suffix='.yaml'
+        )
+
+        config2 = tempfile.NamedTemporaryFile(
+            dir=TMUXP_DIR,
+            prefix='myconfig',
+            suffix='.json'
+        )
+        configs_found = config.in_dir(TMUXP_DIR)
+
+        self.assertEqual(len(configs_found), 2)
+
+    def test_in_dir_from_current_dir(self):
+        '''config.in_dir() finds configs config dir'''
+
+        cli.startup(TMUXP_DIR)
+        config1 = tempfile.NamedTemporaryFile(
+            dir=TMUXP_DIR,
+            prefix='myconfig',
+            suffix='.yaml'
+        )
+
+        config2 = tempfile.NamedTemporaryFile(
+            dir=TMUXP_DIR,
+            prefix='myconfig',
+            suffix='.json'
+        )
+        configs_found = config.in_dir(TMUXP_DIR)
+
+        self.assertEqual(len(configs_found), 2)
+
+        logger.error(os.getcwd())
+
+    def test_ignore_non_configs_from_current_dir(self):
+        '''cli.in_dir() ignores non-configs from config dir'''
+
+        cli.startup(TMUXP_DIR)
+        badconfig = tempfile.NamedTemporaryFile(
+            dir=TMUXP_DIR,
+            prefix='myconfig',
+            suffix='.psd'
+        )
+
+        config1 = tempfile.NamedTemporaryFile(
+            dir=TMUXP_DIR,
+            prefix='watmyconfig',
+            suffix='.json'
+        )
+        configs_found = config.in_dir(TMUXP_DIR)
+
+        self.assertEqual(len(configs_found), 1)
+
+        logger.error(os.getcwd())
 
     @classmethod
     def tearDownClass(cls):

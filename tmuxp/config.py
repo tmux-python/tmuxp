@@ -10,11 +10,38 @@
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
-from . import log
+import os
 import logging
 
 logger = logging.getLogger(__name__)
 
+
+def is_config_file(filename, extensions=['.yaml', '.json', '.ini', '.py']):
+    ''' only pull configs with correct name.
+
+    :param filename: filename to check (e.g. ``mysession.json``).
+    :type filename: string
+    :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
+    :rtype: bool
+    '''
+    return any(filename.endswith(e) for e in extensions)
+
+
+def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
+    '''find configs in config_dir and current dir
+
+    :param config_dir: directory to search
+    :type config_dir: string
+    :rtype: list
+    '''
+    configs = []
+
+    for (dirpath, dirname, filenames) in os.walk(config_dir):
+        for filename in filenames:
+            if is_config_file(filename):
+                configs.append(filename)
+
+    return configs
 
 def inline(config):
     ''' opposite of :meth:`config.expand`. Where possible, inline.

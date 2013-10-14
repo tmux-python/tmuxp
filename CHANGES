@@ -3,6 +3,13 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-14
+----------
+
+- [cli] [tests] :meth:`cli.startup()`
+- [config] [tests] :meth:`config.is_config_file()`
+- [config] [tests] :meth:`config.in_dir()`
+
 2013-10-13
 ----------
 

@@ -35,10 +35,7 @@ def startup(config_dir):
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
 
-    configs = []
-    configs = [(dirpath, dirname, filenames) for (dirpath, dirname, filenames) in os.walk(config_dir)]
-    for config in configs:
-        logger.info(config)
+
 
 
 def main():
