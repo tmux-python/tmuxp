@@ -10,8 +10,9 @@
 import os
 import argparse
 import logging
+import kaptan
 import config
-from . import log
+from . import log, exc, WorkspaceBuilder, Server
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,41 @@ def startup(config_dir):
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
 
+
+def build_workspace(config_file):
+    ''' build config workspace.
+
+    :param config_file: full path to config file
+    :param type: string
+    '''
+    logger.info('building %s.' % config_file)
+
+    sconfig = kaptan.Kaptan()
+    sconfig = sconfig.import_config(config_file).get()
+
+    try:
+        builder = WorkspaceBuilder(sconf=sconfig)
+    except exc.EmptyConfigException:
+        logger.error('%s is empty or parsed no config data' % config_file)
+        return
+
+    t = Server()
+    if t.has_session(sconfig['session_name']):
+        logger.error('Session name %s already is running.' % sconfig['session_name'])
+        return
+    else:
+        session = t.new_session(session_name=sconfig['session_name'])
+
+    window_count = len(session._windows)  # current window count
+    for w, wconf in builder.iter_create_windows(session):
+
+        window_pane_count = len(w._panes)
+        for p in builder.iter_create_panes(w, wconf):
+            p = p
+            assertEqual(len(s.list_windows()), window_count)
+
+        w.set_window_option('main-pane-height', 50)
+        w.select_layout(wconf['layout'])
 
 def main():
 
@@ -100,5 +136,17 @@ def main():
             )
 
         logger.info(output)
+    elif args.configs:
+        # todo: implement support for $ tmux .
+
+        for configfile in args.configs:
+            file_user = os.path.join(config_dir, configfile)
+            file_cwd = os.path.join(cwd_dir, configfile)
+            if os.path.exists(file_cwd):
+                build_workspace(file_cwd)
+            if os.path.exists(file_user):
+                build_workspace(file_user)
+            else:
+                logger.error('%s not found.' % configfile)
     else:
         logger.info(parser.print_help())

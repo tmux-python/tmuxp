@@ -11,6 +11,7 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 import logging
+from . import exc
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,9 @@ class WorkspaceBuilder(object):
         :param sconf: session config, includes a :py:obj:`list` of ``windows``.
         :type sconf: :py:obj:`dict`
         '''
+
+        if not sconf:
+            raise exc.EmptyConfigException('session configuration is empty.')
 
         if not 'session_name' in sconf:
             raise ValueError('config requires session_name')
