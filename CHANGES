@@ -9,6 +9,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] [tests] :meth:`cli.startup()`
 - [config] [tests] :meth:`config.is_config_file()`
 - [config] [tests] :meth:`config.in_dir()`
+- [config] [tests] :meth:`config.in_cwd()`
 
 2013-10-13
 ----------

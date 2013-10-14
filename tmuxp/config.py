@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def is_config_file(filename, extensions=['.yaml', '.json', '.ini', '.py']):
-    ''' only pull configs with correct name.
+    '''Is config compatible extension.
 
     :param filename: filename to check (e.g. ``mysession.json``).
     :type filename: string
@@ -28,7 +28,7 @@ def is_config_file(filename, extensions=['.yaml', '.json', '.ini', '.py']):
 
 
 def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
-    '''find configs in config_dir and current dir
+    '''Find configs in config_dir and current dir
 
     :param config_dir: directory to search
     :type config_dir: string
@@ -45,7 +45,7 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
 
 
 def in_cwd():
-    '''find configs in cwd
+    '''Return list of configs in current working directory.
 
     If filename is ``.pullv.py``, ``.pullv.json``, ``.pullv.yaml`` or
     ``.pullv.ini``.
@@ -62,7 +62,7 @@ def in_cwd():
 
 
 def inline(config):
-    ''' opposite of :meth:`config.expand`. Where possible, inline.
+    '''Opposite of :meth:`config.expand`. Where possible, inline.
 
     :param config: unexpanded config file
     :type config: dict
