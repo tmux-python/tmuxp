@@ -6,6 +6,11 @@ Here you can find the recent changes to tmuxp.
 2013-10-14
 ----------
 
+- [cli] can now -l to list configs in current directory and $HOME/.tmuxp
+- [cli] tmuxp can now launch configs and build sessions
+- [internal] new exceptions
+- [config] [tests] :meth:`config.check_consistency()` to verify and diagnose
+  issues with config files.
 - [cli] [tests] :meth:`cli.startup()`
 - [config] [tests] :meth:`config.is_config_file()`
 - [config] [tests] :meth:`config.in_dir()`
