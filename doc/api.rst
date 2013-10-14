@@ -106,6 +106,8 @@ Workspace Builder
 Exceptions
 ----------
 
-.. autoexception:: tmuxp.exc.TmuxSessionNotFound
 .. autoexception:: tmuxp.exc.TmuxSessionExists
-.. autoexception:: tmuxp.exc.TmuxNotRunning
+
+.. autoexception:: tmuxp.exc.EmptyConfigException
+
+.. autoexception:: tmuxp.exc.ConfigError
