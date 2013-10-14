@@ -59,6 +59,7 @@ def build_workspace(config_file):
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
         logger.error('%s is empty or parsed no config data' % config_file)
+        return
 
     try:
         builder.build()
@@ -66,18 +67,8 @@ def build_workspace(config_file):
         logger.error(e.message)
         return
 
-    window_count = len(session._windows)  # current window count
-    for w, wconf in builder.iter_create_windows(session):
-
-        window_pane_count = len(w._panes)
-        for p in builder.iter_create_panes(w, wconf):
-            p = p
-
-        w.set_window_option('main-pane-height', 50)
-        w.select_layout(wconf['layout'])
 
 def main():
-
     config_dir = os.path.expanduser('~/.tmuxp/')
     cwd_dir = os.getcwd() + '/'
 

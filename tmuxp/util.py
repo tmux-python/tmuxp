@@ -11,8 +11,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 from functools import wraps
-from .exc import TmuxNoClientsRunning, TmuxSessionNotFound
-from .exc import TmuxNotRunning
 import unittest
 import collections
 import subprocess

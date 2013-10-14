@@ -6,19 +6,10 @@
     :license: BSD, see LICENSE for details
 """
 
-class TmuxSessionNotFound(Exception):
-    pass
-
 class TmuxSessionExists(Exception):
     pass
 
-class TmuxNoClientsRunning(Exception):
-    pass
-
-class TmuxNotRunning(Exception):
-    '''
-    tmux server not running.
-    '''
+class ConfigError(Exception):
     pass
 
 class EmptyConfigException(Exception):

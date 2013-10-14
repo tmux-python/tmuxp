@@ -14,7 +14,6 @@ import os
 from .util import tmux
 from .session import Session
 from .formats import SESSION_FORMATS, CLIENT_FORMATS
-from .exc import TmuxNotRunning, TmuxSessionExists
 
 from . import log
 import logging
@@ -202,7 +201,7 @@ class Server(object):
             self.tmux('list-clients')
             self.tmux('list-sessions')
             return True
-        except TmuxNotRunning:
+        except Exception:
             return False
 
     def has_clients(self):

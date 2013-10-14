@@ -16,6 +16,19 @@ from . import exc
 logger = logging.getLogger(__name__)
 
 
+def check_consistency(sconf):
+    '''Verify the consistency of the config file.
+
+    Config files in tmuxp are met to import into :py:mod:`dict`.
+    '''
+
+    # verify session_name
+    if not 'session_name' in sconf:
+        raise exc.ConfigError('config requires session_name')
+
+    return True
+
+
 class WorkspaceBuilder(object):
     '''
     Build tmux workspace from a configuration. Creates and names windows, sets
@@ -66,7 +79,6 @@ class WorkspaceBuilder(object):
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
-
     '''
 
     def __init__(self, sconf, server=None):
@@ -83,8 +95,7 @@ class WorkspaceBuilder(object):
         if not sconf:
             raise exc.EmptyConfigException('session configuration is empty.')
 
-        if not 'session_name' in sconf:
-            raise ValueError('config requires session_name')
+        check_consistency(sconf)
 
         if server:
             self.server = server
