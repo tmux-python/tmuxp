@@ -4,6 +4,8 @@ Roadmap
 To do
 """""
 
+- config_consistency_check() to check the structure, if windows have panes,
+  diagnose config issues.
 - window.resize_pane()
 - window.select_layout() for custom layouts, test
 - freeze session `tmuxp freeze` from inside current session
