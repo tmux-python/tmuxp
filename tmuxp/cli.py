@@ -134,7 +134,6 @@ def main():
                 ', '.join(configs_in_cwd)
             )
 
-        logger.info(output)
     elif args.configs:
         # todo: implement support for $ tmux .
 
@@ -148,4 +147,4 @@ def main():
             else:
                 logger.error('%s not found.' % configfile)
     else:
-        logger.info(parser.print_help())
+        parser.print_help()
