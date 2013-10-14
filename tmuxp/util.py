@@ -22,6 +22,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class tmux(object):
     ''':py:mod:`subprocess` for :ref:`tmux(1)`.
 
