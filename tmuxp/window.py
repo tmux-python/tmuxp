@@ -259,6 +259,7 @@ class Window(TmuxObject):
 
         pane = self.tmux(
             'split-window',
+            '-t%s' % self.attached_pane().get('pane_id'),
             '-P', '-F%s' % ''.join(tmux_formats),     # output
         ).stdout[0]
 
