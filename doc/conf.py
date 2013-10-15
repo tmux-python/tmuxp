@@ -115,7 +115,11 @@ html_theme_path = ['_themes']
 html_theme_path.extend(sphinx_bootstrap_theme.get_html_theme_path())
 
 html_theme_options = {
-    'bootswatch_theme': 'united'
+    'bootswatch_theme': 'united',
+    'source_link_position': 'footer',
+    'navbar_links': [
+        ('Github', 'https://www.github.com/tony/tmuxp/')
+    ]
 }
 
 # The name for this set of Sphinx documents.  If None, it defaults to

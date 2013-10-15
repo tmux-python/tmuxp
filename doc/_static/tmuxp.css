@@ -1,0 +1,14 @@
+div.sidebar {
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    background-color: inherit;
+}
+
+div.sidebar .sidebar-title {
+    display: none;
+}
+
+form.navbar-form {
+    padding: 0px 10px;
+}
