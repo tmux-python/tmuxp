@@ -99,7 +99,7 @@ class WorkspaceBuilderThreePane(TmuxTestCase):
             w.select_layout(wconf['layout'])
 
 
-class WorkspaceBuilderTwoWindowPaneFocus(TmuxTestCase):
+class FocusTest(TmuxTestCase):
 
     yaml_config = '''
     session_name: sampleconfig
@@ -139,25 +139,10 @@ class WorkspaceBuilderTwoWindowPaneFocus(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-        window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s.list_windows()), window_count)
+        builder.build(session=self.session)
 
-        active_window = False
-        for w, wconf in builder.iter_create_windows(s):
-
-            window_pane_count = len(w._panes)
-            for p in builder.iter_create_panes(w, wconf):
-                p = p
-                self.assertEqual(len(s.list_windows()), window_count)
-            self.assertIsInstance(w, Window)
-
-            self.assertEqual(len(s.list_windows()), window_count)
-            window_count += 1
-            w.set_window_option('main-pane-height', 50)
-
-            if 'layout' in wconf:
-                w.select_layout(wconf['layout'])
-
+        logger.error(self.session.attached_window())
+        logger.error(self.session.attached_pane())
 
 class WzindowOptions(TmuxTestCase):
     '''sample config with no session name'''

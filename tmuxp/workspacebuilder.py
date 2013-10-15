@@ -89,17 +89,22 @@ class WorkspaceBuilder(object):
 
         self.sconf = sconf
 
-    def build(self):
+    def build(self, session=None):
         '''high-level builder, relies on :attr:`server`.'''
 
-        if self.server.has_session(self.sconf['session_name']):
-            raise exc.TmuxSessionExists('Session name %s is already running.' %
-                                        self.sconf['session_name'])
-        else:
-            session = self.server.new_session(session_name=self.sconf['session_name'])
+        if not session:
+
+            if self.server.has_session(self.sconf['session_name']):
+                raise exc.TmuxSessionExists('''\
+                      Session name %s is already running.
+                      ''' % self.sconf['session_name'])
+            else:
+                session = self.server.new_session(session_name=self.sconf['session_name'])
+
+            assert(self.sconf['session_name'] == session.get('session_name'))
 
         assert(isinstance(session, Session))
-        assert(self.sconf['session_name'] == session.get('session_name'))
+
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
