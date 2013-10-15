@@ -213,6 +213,57 @@ is tested against 1.8 and latest in addition to python 2.7. The
 .. literalinclude:: ../.travis.yml
     :language: yaml
 
+Internals
+=========
+
+
+Similarities to Tmux and Pythonics
+----------------------------------
+
+tmuxp is was built in the spirit of understanding how tmux operates
+and how python objects and tools can abstract the API's in a pleasant way.
+
+tmuxp uses the identify ``FORMATTERS`` used by tmux, you can see
+them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
+
+In this, I will also begin documenting the API.
+
+the use of:
+
+Session
+Session.new_window() - returns a new Window object bound to the session,
+also uses ``tmux new-window``.
+Session.new_session() - class method - returns a new Session object.
+
+Differences from tmux
+---------------------
+
+Because this is a python abstraction and flags like ``start-directory``
+have dashes (-) replaced with underscores (_).
+
+interesting observations
+------------------------
+
+How is tmuxp able to keep references to panes, windows and sessions?
+
+    Tmux has unique ID's for sessions, windows and panes.
+
+    panes use ``%``, such as ``%1234``
+
+    windows use ``@``, such as ``@2345``
+
+    sessions use ``$``, for money, such as ``$``
+
+How is tmuxp able to handle windows with no names?
+
+    Tmux provides ``window_id`` as a unique identifier.
+
+What is a {pane,window}_index vs a {pane,window,session}_id?
+
+    Pane index refers to the order of a pane on the screen.
+
+    Window index refers to the # of the pane in the session.
+
 How tmuxp verifies state
 ------------------------
 
@@ -221,6 +272,13 @@ How does tmuxp verify session / window / pane state?
 Normal tests won't even require a tmux session being open already. Tests 
 assert against the freshest data, ie: :meth:`tmuxp.Server.list_sessions`,
 :meth:`tmuxp.Session.list_windows`, :meth:`tmuxp.Window.list_panes`.
+
+
+Reference
+---------
+
+- tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
+- tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
 
 .. _travis-ci: http://www.travis-ci.org
 .. _travis build site: http://www.travis-ci.org/tony/tmuxp
