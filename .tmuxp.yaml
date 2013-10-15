@@ -1,0 +1,28 @@
+session_name: tmuxp
+windows:
+- window_name: tmuxp
+  layout: main-horizontal
+  options:
+    - main-pane-height: 50
+  start_directory: /srv/www/tmuxp
+  shell_command_before: source .env/bin/activate
+  panes:
+  - shell_command: 
+    - vim
+    - :Ex
+  - shell_command: 
+    - cowsay hi
+  - shell_command: 
+    - nodemon -e py --exec 'python' run_tests.py
+- window_name: docs
+  layout: main-horizontal
+  options:
+  - main-pane-height: 50
+  start_directory: /srv/www/tmuxp
+  automatic_rename: true
+  shell_command_before: source .env/bin/activate
+  panes:
+  - shell_command:
+    - vim
+  - pwd
+  - pwd
