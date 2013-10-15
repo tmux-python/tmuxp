@@ -13,6 +13,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] support for ``socket-name`` (``-L``) and ``socket-path``
   (``socket-path``)
 - [config] [builder] Support for 1-command pane items.
+
   .. code-block:: yaml
 
       session_name: my session
