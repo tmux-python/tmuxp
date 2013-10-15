@@ -80,7 +80,6 @@ If you found a problem or are trying to write a test, you can file an
 
 .. _test_specific_tests:
 
-
 Choose tests to run
 """""""""""""""""""
 
