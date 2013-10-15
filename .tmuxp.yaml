@@ -10,6 +10,7 @@ windows:
   - shell_command: 
     - vim
     - :Ex
+    focus: true
   - shell_command: 
     - cowsay hi
   - shell_command: 
@@ -24,6 +25,7 @@ windows:
     - cd ./doc
     - source .env/bin/activate
   panes:
+    focus: true
   - shell_command:
     - vim
   - pwd

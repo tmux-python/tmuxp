@@ -4,6 +4,7 @@ Roadmap
 To do
 """""
 
+- implement ``focus: true`` for panes and windows
 - importer for teamocil / tmuxinator
 - export live sessions
 - autocomplete

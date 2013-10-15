@@ -58,7 +58,7 @@ class WorkspaceBuilderTest(TmuxTestCase):
             window_count += 1
 
 
-class WorkspaceBuilderTestPane(TmuxTestCase):
+class WorkspaceBuilderThreePane(TmuxTestCase):
 
     yaml_config = '''
     session_name: sampleconfig
@@ -97,6 +97,66 @@ class WorkspaceBuilderTestPane(TmuxTestCase):
             window_count += 1
             w.set_window_option('main-pane-height', 50)
             w.select_layout(wconf['layout'])
+
+
+class WorkspaceBuilderTwoWindowPaneFocus(TmuxTestCase):
+
+    yaml_config = '''
+    session_name: sampleconfig
+    start_directory: '~'
+    windows:
+    - window_name: test
+      layout: main-horizontal
+      focus: true
+      panes:
+      - shell_command:
+        - vim
+        focus: true
+        start_directory: '~'
+      - shell_command:
+        - cowsay "hey"
+      - shell_command:
+        - cowsay "moo"
+    - window_name: window 2
+      panes:
+      - shell_command:
+        - vim
+        start_directory: '~'
+      - focus: true
+        shell_command:
+        - cowsay "hey"
+      - shell_command:
+        - cowsay "moo"
+
+    '''
+
+    # TODO: implement focus: for panes and wndows
+
+    def test_split_windows(self):
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        window_count = len(self.session._windows)  # current window count
+        self.assertEqual(len(s.list_windows()), window_count)
+
+        active_window = False
+        for w, wconf in builder.iter_create_windows(s):
+
+            window_pane_count = len(w._panes)
+            for p in builder.iter_create_panes(w, wconf):
+                p = p
+                self.assertEqual(len(s.list_windows()), window_count)
+            self.assertIsInstance(w, Window)
+
+            self.assertEqual(len(s.list_windows()), window_count)
+            window_count += 1
+            w.set_window_option('main-pane-height', 50)
+
+            if 'layout' in wconf:
+                w.select_layout(wconf['layout'])
 
 
 class WzindowOptions(TmuxTestCase):
