@@ -184,6 +184,7 @@ def main():
         # todo: implement support for $ tmux .
         # todo: pass thru -L socket-name, -S socket-path
         if '.' in args.configs:
+            args.configs.remove('.')
             args.configs.append(config.in_cwd()[0])
 
         for configfile in args.configs:

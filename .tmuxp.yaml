@@ -4,7 +4,7 @@ windows:
   layout: main-horizontal
   options:
     - main-pane-height: 50
-  start_directory: /srv/www/tmuxp
+  start_directory: ./
   shell_command_before: source .env/bin/activate
   panes:
   - shell_command: 
@@ -18,7 +18,7 @@ windows:
   layout: main-horizontal
   options:
   - main-pane-height: 50
-  start_directory: /srv/www/tmuxp
+  start_directory: ./
   automatic_rename: true
   shell_command_before: source .env/bin/activate
   panes:
