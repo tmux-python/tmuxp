@@ -86,13 +86,30 @@ class WorkspaceBuilder(object):
 
         if server:
             self.server = server
+        else:
+            self.server = None
 
         self.sconf = sconf
 
     def build(self, session=None):
-        '''high-level builder, relies on :attr:`server`.'''
+        ''' Build tmux workspace in session.
+
+        Optionally accepts ``session`` to build with only session object.
+
+        Without ``session``, it will use :class:`Server` at ``self.server``
+        passed in on initialization to create a new Session object.
+
+        :param session: - session to build workspace in
+        :type session: :class:`Session`
+        '''
 
         if not session:
+            if not self.server:
+                raise Exception('''\
+                                WorkspaceBuilder.build requires .server to be
+                                passed in on initialization, or pass in session
+                                object to here.
+                                ''')
 
             if self.server.has_session(self.sconf['session_name']):
                 raise exc.TmuxSessionExists('''\
@@ -104,7 +121,6 @@ class WorkspaceBuilder(object):
             assert(self.sconf['session_name'] == session.get('session_name'))
 
         assert(isinstance(session, Session))
-
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
