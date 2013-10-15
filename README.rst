@@ -10,7 +10,15 @@ tmuxp, a novel approach to managing :term:`tmux(1)` workspaces through
 python objects, with configuration loading in JSON, YAML and
 :py:obj:`dict` included.
 
-Check out our `Examples`_ and `Quicksart`_.
+tmuxp works in 3 ways:
+
+- a pythonic `abstraction layer`_ on top of tmux' CLI commands
+- an `ORM`_ that internally orchestrates relations between servers,
+  sessions, windows and panes for good and evil purposes.
+- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`, with
+  support for YAML, JSON and python dicts.
+
+Check out our `Examples`_ and `Quickstart`_.
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
