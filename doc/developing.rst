@@ -273,7 +273,6 @@ Normal tests won't even require a tmux session being open already. Tests
 assert against the freshest data, ie: :meth:`tmuxp.Server.list_sessions`,
 :meth:`tmuxp.Session.list_windows`, :meth:`tmuxp.Window.list_panes`.
 
-
 Reference
 ---------
 

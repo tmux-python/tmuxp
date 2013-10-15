@@ -1,0 +1,8 @@
+session_name: my session
+windows:
+  panes:
+    - shell_commands:
+      - bash
+      - top
+    - shell_commands:
+      - bash
