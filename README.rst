@@ -52,3 +52,7 @@ tests           .. code-block:: bash
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
+.. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
+.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping

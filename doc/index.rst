@@ -29,8 +29,6 @@ tmuxp works in 3 ways:
 
 More soon? You betcha`
 
-.. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
-.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
 
 Explore:
 
@@ -46,8 +44,6 @@ Explore:
     glossary
     changes
 
-
-
 Indices and tables
 ==================
 
@@ -57,3 +53,5 @@ Indices and tables
 
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
+.. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
+.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
