@@ -26,3 +26,7 @@ Kung fu
     ORM in the :ref:`API`. The second is to pass a :py:obj:`dict` into
     :class:`tmuxp.WorkspaceBuilder` with a correct schema. See:
     :meth:`tmuxp.config.check_consistency`.
+
+Add yours? Submit a pull request to the `github`_ site!
+
+.. _github: https://github.com/tony/tmuxp
