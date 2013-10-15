@@ -110,6 +110,7 @@ def build_workspace(config_file, args):
 
     try:
         builder.build()
+        os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
     except exc.TmuxSessionExists as e:
         attach_session = query_yes_no(e.message + ' attach?')
 
@@ -181,8 +182,6 @@ def main():
         print(output)
 
     elif args.configs:
-        # todo: implement support for $ tmux .
-        # todo: pass thru -L socket-name, -S socket-path
         if '.' in args.configs:
             args.configs.remove('.')
             args.configs.append(config.in_cwd()[0])
