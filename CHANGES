@@ -15,12 +15,12 @@ Here you can find the recent changes to tmuxp.
 - [config] [builder] Support for 1-command pane items.
   .. code-block:: yaml
 
-    session_name: my session
-    windows:
-      - window_name: hi
-        panes:
-        - bash
-        - htop
+      session_name: my session
+      windows:
+        - window_name: hi
+          panes:
+          - bash
+          - htop
 - [cli] If session name is already exists, prompt to attach.
 
 2013-10-14
