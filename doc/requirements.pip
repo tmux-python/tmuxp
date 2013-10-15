@@ -2,3 +2,4 @@
 docutils==0.11
 sphinxcontrib-aafig
 reportlab
+sphinx_bootstrap_theme
