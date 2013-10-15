@@ -118,7 +118,7 @@ html_theme_options = {
     'bootswatch_theme': 'united',
     'source_link_position': 'footer',
     'navbar_links': [
-        ('Github', 'https://www.github.com/tony/tmuxp/')
+        ('Github', 'https://www.github.com/tony/tmuxp/', True)
     ]
 }
 
