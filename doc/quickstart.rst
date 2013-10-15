@@ -7,13 +7,45 @@ Quickstart
 Tmux Session Manager
 --------------------
 
-tmuxp can launch a tmux session from a configuration file.
+tmuxp launches sessions from a configuration file.
 
 Configuration files can be stored in ``$HOME/.tmuxp`` or in project
 directories as ``.tmuxp.py``, ``.tmuxp.json`` or ``.tmuxp.yaml``.
 
-Scripting
----------
+Every configuratio is required to have:
+
+1. ``session_name``
+2. list of ``windows``
+3. list of ``panes`` for every window in ``windows``
+
+Create a file, ``~/.tmuxp/example.yaml``:
+
+.. literalinclude:: ../examples/2-pane-vertical.yaml
+    :language: yaml
+
+with tmuxp:
+
+.. code-block:: bash
+
+    $ tmuxp -l
+
+It will list configs available in the current directory and
+``$HOME/.tmuxp``. ``example.yaml`` is detected by tmuxp. 
+
+.. code-block:: bash
+
+    $ tmuxp example.yaml
+
+This creates your tmuxp session.
+
+.. seealso:: :ref:`quickstart`
+
+Python ORM + AL
+---------------
+
+ORM - Object Relational Mapper
+
+AL - Abstraction Layer
 
 Conventions
 """""""""""
