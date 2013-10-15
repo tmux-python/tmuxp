@@ -55,7 +55,6 @@ class tmux(object):
         except Exception as e:
             logger.error('Exception for %s: \n%s' % (
                 cmd,
-                #' '.join([str(c) for c in cmd]),
                 e.message)
             )
         self.stdout = stdout.split('\n')

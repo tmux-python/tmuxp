@@ -105,6 +105,14 @@ class FindConfigsTest(unittest.TestCase):
     def test_get_configs_cwd(self):
         '''config.in_cwd() finds config in shell's current working directory'''
 
+        current_dir = os.getcwd()
+
+        configs_found = config.in_cwd()
+
+        # create a temporary folder and change dir into it
+        tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+        os.chdir(tmp_dir)
+
         try:
             config1 = open('.tmuxp.json', 'w+b')
             config1.close()
@@ -115,6 +123,12 @@ class FindConfigsTest(unittest.TestCase):
 
         self.assertEqual(len(configs_found), 1)
         self.assertIn('.tmuxp.json', configs_found)
+
+        # clean up
+        os.chdir(current_dir)
+        if os.path.isdir(tmp_dir):
+            shutil.rmtree(tmp_dir)
+
 
     @classmethod
     def tearDownClass(cls):

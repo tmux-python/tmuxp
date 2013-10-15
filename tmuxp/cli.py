@@ -79,7 +79,7 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-def build_workspace(config_file):
+def build_workspace(config_file, args):
     ''' build config workspace.
 
     :param config_file: full path to config file
@@ -93,6 +93,15 @@ def build_workspace(config_file):
     sconfig = config.trickle(sconfig)
 
     t = Server()
+
+    if args.socket_name:
+        print('socket_name %s' % args.socket_name)
+        t.socket_name = args.socket_name
+
+    if args.socket_path:
+        print('socket_path %s' % args.socket_path)
+        t.socket_path = args.socket_path
+
     try:
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
@@ -135,6 +144,12 @@ def main():
         ''' % (cwd_dir + '/', config_dir)
     )
 
+    parser.add_argument('-L', dest='socket_name', default=None,
+                        metavar='socket-name')
+
+    parser.add_argument('-S', dest='socket_path', default=None,
+                        metavar='socket-path')
+
     parser.add_argument('-l', '--list', dest='list_configs', action='store_true',
                         help='List config files available')
     parser.add_argument('--log-level', dest='log_level', default='INFO',
@@ -173,9 +188,9 @@ def main():
             file_user = os.path.join(config_dir, configfile)
             file_cwd = os.path.join(cwd_dir, configfile)
             if os.path.exists(file_cwd):
-                build_workspace(file_cwd)
+                build_workspace(file_cwd, args)
             elif os.path.exists(file_user):
-                build_workspace(file_user)
+                build_workspace(file_user, args)
             else:
                 logger.error('%s not found.' % configfile)
     else:

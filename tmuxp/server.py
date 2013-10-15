@@ -246,7 +246,11 @@ class Server(object):
         returns True if session exists.
         '''
 
-        if 'session not found' in self.tmux('has-session', '-t%s' % target_session).stdout:
+        proc = self.tmux('has-session', '-t%s' % target_session)
+
+        if 'failed to connect to server' in proc.stdout:
+            return False
+        elif 'session not found' in proc.stdout:
             return False
         else:
             return True
