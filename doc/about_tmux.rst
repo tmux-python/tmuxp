@@ -23,9 +23,8 @@ In the world of computers, there are many dimensions:
 This is the text dimension. This is about fixed-width fonts and that old
 fashioned black terminal.
 
-tmux is to the consle what a graphical environment like your desktop in
-os x, windows or linux, but inside the text dimension. Inside tmux you
-can:
+tmux is to the console what a desktop is to gui apps. It's a world inside
+the text dimension. Inside tmux you can:
 
 - multitask inside of a terminal, run multiple applications
 - have multiple command lines in the same window
