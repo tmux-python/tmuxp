@@ -24,8 +24,8 @@ tmuxp works in 3 ways:
 - a pythonic `abstraction layer`_ on top of tmux' CLI commands
 - an `ORM`_ that internally orchestrates relations between servers,
   sessions, windows and panes for good and evil purposes.
-- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`, with
-  support for YAML, JSON and python dicts.
+- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
+  support for loading YAML, JSON and python dicts.
 
 More soon? You betcha`
 
@@ -55,3 +55,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
