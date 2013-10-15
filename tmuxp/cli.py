@@ -8,14 +8,50 @@
 """
 
 import os
+import sys
 import argparse
 import logging
 import kaptan
 import config
+from distutils.util import strtobool
 from . import log, exc, WorkspaceBuilder, Server
 
 logger = logging.getLogger(__name__)
 
+
+def query_yes_no(question, default="yes"):
+    """Ask a yes/no question via raw_input() and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes" (the default), "no" or None (meaning
+        an answer is required of the user).
+
+    The "answer" return value is one of "yes" or "no".
+
+    License MIT: http://code.activestate.com/recipes/577058/
+    """
+    valid = {"yes":"yes",   "y":"yes",  "ye":"yes",
+             "no":"no",     "n":"no"}
+    if default == None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while 1:
+        sys.stdout.write(question + prompt)
+        choice = raw_input().lower()
+        if default is not None and choice == '':
+            return strtobool(default)
+        elif choice in valid.keys():
+            return strtobool(valid[choice])
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "\
+                             "(or 'y' or 'n').\n")
 
 def setupLogger(logger=None, level='INFO'):
     '''setup logging for CLI use.
@@ -66,7 +102,10 @@ def build_workspace(config_file):
     try:
         builder.build()
     except exc.TmuxSessionExists as e:
-        logger.error(e.message)
+        attach_session = query_yes_no(e.message + ' attach?')
+
+        if attach_session:
+            os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
         return
 
 
@@ -135,7 +174,7 @@ def main():
             file_cwd = os.path.join(cwd_dir, configfile)
             if os.path.exists(file_cwd):
                 build_workspace(file_cwd)
-            if os.path.exists(file_user):
+            elif os.path.exists(file_user):
                 build_workspace(file_user)
             else:
                 logger.error('%s not found.' % configfile)
