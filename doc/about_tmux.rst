@@ -11,6 +11,10 @@ The Tao of tmux
 
     BSD-licensed terminal multiplexer.
 
+
+Features
+========
+
 For terminals only. No graphics.
 --------------------------------
 
@@ -130,7 +134,11 @@ sandwich, and re-(attach), all applications are still running!
    |                       |                        |        |        |
    +-----------------------+                        +--------+--------+
 
-The take-away
+
+Core Concepts
+=============
+
+Your workflow
 -------------
 You can keep tmux on a server with your latest work, come back and resume
 your `"train of thought"`_ and work.
@@ -143,14 +151,6 @@ If you do a task commonly, it may help to use an application which manages
 tmux workspaces.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
-
-=============
-What is what?
-=============
-
-tmux is not the only multiplexer. there is also screen.
-
-tmux is comprised of these objects:
 
 .. _server:
 

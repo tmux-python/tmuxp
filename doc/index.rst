@@ -25,6 +25,7 @@ Contents:
     about
     about_tmux
     quickstart
+    examples
     developing
     api
     glossary
