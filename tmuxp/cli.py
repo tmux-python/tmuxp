@@ -53,6 +53,8 @@ def build_workspace(config_file):
 
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
+    sconfig = config.expand(sconfig)
+    sconfig = config.trickle(sconfig)
 
     t = Server()
     try:

@@ -148,7 +148,8 @@ class ExpandTest(unittest.TestCase):
             {
                 'automatic_rename': True,
                 'panes': [
-                    {'shell_command': 'htop'}
+                    {'shell_command': 'htop'},
+                    'vim',
                 ]
             }]
     }
@@ -177,7 +178,8 @@ class ExpandTest(unittest.TestCase):
             {
                 'automatic_rename': True,
                 'panes': [
-                    {'shell_command': ['htop']}
+                    {'shell_command': ['htop']},
+                    {'shell_command': ['vim']}
                 ]
             }]
     }

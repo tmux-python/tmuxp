@@ -133,6 +133,7 @@ def expand(config):
 
     :param config: the session configuration
     :type config: dict
+    :rtype: dict
     '''
 
     '''any config section, session, window, pane that can
@@ -140,6 +141,8 @@ def expand(config):
     '''
     if ('shell_command' in config and isinstance(config['shell_command'], basestring)):
         config['shell_command'] = [config['shell_command']]
+    elif not 'windows' in config and not 'panes' in config and isinstance(config, basestring):
+        config = {'shell_command': [config]}
 
     if ('shell_command_before' in config and isinstance(config['shell_command_before'], basestring)):
         config['shell_command_before'] = [config['shell_command_before']]
@@ -166,6 +169,7 @@ def trickle(config):
 
     :param config: the session configuration
     :type config: dict
+    :rtype: dict
     '''
 
     '''
