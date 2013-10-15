@@ -6,9 +6,9 @@
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
 
-tmuxp, a novel approach to managing :term:`tmux(1)` workspaces through
+tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
 python objects, with configuration loading in JSON, YAML and
-:py:obj:`dict` included.
+python dict included.
 
 tmuxp works in 3 ways:
 
@@ -56,3 +56,4 @@ tests           .. code-block:: bash
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
 .. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
+.. _tmux(1): http://tmux.sourceforge.net/
