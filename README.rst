@@ -6,9 +6,11 @@
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
 
-ORM layer on top of tmux.
+tmuxp, a novel approach to managing :term:`tmux(1)` workspaces through
+python objects, with configuration loading in JSON, YAML and
+:py:obj:`dict` included.
 
-Not ready for public use. Tested with tmux 1.8, 1.9-dev.
+Check out our `Examples`_ and `Quicksart`_.
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
@@ -40,3 +42,5 @@ tests           .. code-block:: bash
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
+.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
+.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
