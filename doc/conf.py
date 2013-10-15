@@ -15,6 +15,7 @@ import sys, os, sphinx_bootstrap_theme
 
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('_themes'))
+sys.path.append(os.path.abspath('_templates'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -110,9 +111,9 @@ html_theme = 'bootstrap'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_themes']
+#html_theme_path = ['_themes']
 
-html_theme_path.extend(sphinx_bootstrap_theme.get_html_theme_path())
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 html_theme_options = {
     'bootswatch_theme': 'united',
