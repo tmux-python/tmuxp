@@ -30,7 +30,6 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    foreward
     about
     about_tmux
     quickstart

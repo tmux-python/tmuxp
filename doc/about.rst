@@ -1,14 +1,14 @@
 .. _about:
 
-===========
-About tmuxp
-===========
+=====
+About
+=====
 
-tmux users
-----------
+tmuxp helps you manage your text-based workspaces. Its BSD licensed.
 
-tmuxp helps you manage your text-based workspaces. Its BSD licensed,
-modelled after tmux's ``commands`` and ``formats``.
+Internally, tmuxp is an object relational mapper on top of tmux.
+End-users may use YAML, JSON and :py:obj:`dict` configurations to launch
+workspaces like `tmuxinator`_ and `teamocil`_.
 
 .. note::
 
@@ -21,31 +21,17 @@ modelled after tmux's ``commands`` and ``formats``.
     tmuxp relies on the ``-P`` option to print out session information
     when ``new-session`` is called (see `attempt at 1.7 test`_).
 
-teamocil / tmuxinator / etc.
-----------------------------
+To jump right in, see :ref:`quickstart` and :ref:`examples`.
 
-- tmuxp requires python 2.7 on your system.
-- the configuration format is slightly different.
-- tmuxp allows configs in YAML, JSON, and :py:class:`dict` format.
+Interested in some kung-fu or joining the effort? :ref:`api` and
+:ref:`developing`
 
-developer info
---------------
-
-.. seealso::
-    :ref:`api`
-    :ref:`developing`
-
-License
-"""""""
-
-tmuxp is `BSD-licensed`_.
-
-Source
-""""""
-
-Code can be found at github at http://github.com/tony/tmuxp.
+License  is `BSD-licensed`_. Code can be found at github at
+http://github.com/tony/tmuxp.
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
 .. _unittest: http://docs.python.org/2/library/unittest.html
 .. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
