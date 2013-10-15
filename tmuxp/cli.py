@@ -183,13 +183,15 @@ def main():
     elif args.configs:
         # todo: implement support for $ tmux .
         # todo: pass thru -L socket-name, -S socket-path
+        if '.' in args.configs:
+            args.configs.append(config.in_cwd()[0])
 
         for configfile in args.configs:
             file_user = os.path.join(config_dir, configfile)
             file_cwd = os.path.join(cwd_dir, configfile)
-            if os.path.exists(file_cwd):
+            if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
                 build_workspace(file_cwd, args)
-            elif os.path.exists(file_user):
+            elif os.path.exists(file_user) and os.path.isfile(file_user):
                 build_workspace(file_user, args)
             else:
                 logger.error('%s not found.' % configfile)
