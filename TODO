@@ -4,6 +4,16 @@ Roadmap
 To do
 """""
 
+- importer for teamocil / tmuxinator
+- export live sessions
+- autocomplete
+  - freeze live sessions
+  - configs in directory, in config folder
+  - tmuxp attach live sessions
+  - tmuxp attach-window live windows
+- examples in py, json, yaml
+
+
 - adjust builder tests to count windows + panes in conf then assert against
   the ._panes, ._windows, .sessions count in built objects
 - config_consistency_check() to check the structure, if windows have panes,
