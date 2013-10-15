@@ -15,17 +15,11 @@
 tmuxp
 =====
 
-Welcome to tmuxp's documentation. tmuxp is a tool for managing
-:term:`tmux(1)` workspaces.
+tmuxp, a novel approach to managing :term:`tmux(1)` workspaces through
+python objects, with configuration loading in JSON, YAML and
+:py:obj:`dict` included.
 
-tmuxp handles:
-
-- launching from inside or outside a tmux client
-- freezing tmux session configs
-- export / import configs in JSON, YAML, INI
-- a clean, python API.
-
-Contents:
+Explore:
 
 .. toctree::
     :maxdepth: 2
