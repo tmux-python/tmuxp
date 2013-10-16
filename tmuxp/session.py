@@ -33,12 +33,11 @@ class Session(TmuxObject):
     childIdAttribute = 'window_id'
 
     def __init__(self, server=None, **kwargs):
-        if not server:
-            raise ValueError('Session requires server')
 
         self.server = server
 
         self._windows = list()
+        self.children = self._windows
         self._TMUX = {}
         self.update(**kwargs)
 
