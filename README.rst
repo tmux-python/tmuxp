@@ -32,7 +32,7 @@ Get started now, ``$ mkdir ~/.tmuxp`` and make a file
 
 Now with ``tmuxp``:
 
-.. code-block::
+.. code-block:: bash
 
     $ tmuxp test.yaml
 
