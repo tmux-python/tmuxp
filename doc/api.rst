@@ -50,23 +50,31 @@ Pane Object
 -----------
 
 .. autoclass:: Pane
-   :members:
-   :inherited-members:
-   :show-inheritance:
+    :members:
+    :inherited-members:
+    :show-inheritance:
 
-   .. attribute:: _session
+    .. attribute:: _session
 
-      The :class:`Session` of the pane.
+        The :class:`Session` of the pane.
 
-   .. attribute:: _window
+    .. attribute:: _window
 
-      The :class:`Window` of the pane.
+        The :class:`Window` of the pane.
 
 Internals
 ---------
 
 .. autoclass:: tmuxp.util.TmuxObject
     :members:
+
+.. autoclass:: tmuxp.util.TmuxRelationalObject
+    :members:
+
+.. autoclass:: tmuxp.util.TmuxMappingObject
+    :members:
+    :inherited-members:
+    :show-inheritance:
 
 .. autoclass:: tmuxp.util.tmux
 
