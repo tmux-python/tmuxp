@@ -4,6 +4,7 @@ Roadmap
 To do
 """""
 
+- find, findWhere, get, a la backbone for TmuxObject's.
 - implement ``focus: true`` for panes and windows
 - importer for teamocil / tmuxinator
 - export live sessions
