@@ -39,6 +39,7 @@ Explore:
     about_tmux
     quickstart
     examples
+    orm_al
     developing
     api
     glossary

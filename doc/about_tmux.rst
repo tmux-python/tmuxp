@@ -175,26 +175,32 @@ tmux workspaces.
 
 Server
 ------
-multiple can be run by specific ``[-L socket-name]`` and ``[-S socket-path]``.  
-holds sessions.
+
+A server contains :ref:`session`'s.
 
 tmux starts the server automatically if it's not running.
+
+In advanced cases, multiple can be run by specifying ``[-L socket-name]``
+and ``[-S socket-path]``.
 
 .. _client:
 
 Client
 ------
 
-attaches to a tmux :ref:`server`.
+Attaches to a tmux :ref:`server`.
 
 .. _session:
 
 Session
 -------
 
-inside a tmux :ref:`server`.
+Inside a tmux :ref:`server`.
     
-holds :ref:`window`.
+The session holds :ref:`window`. The bottom bar in tmux shows a list of
+windows. Normally they can be navigated with ``Ctrl-a [0-9]``,
+``Ctrl-a n`` and ``Ctrl-a p``.
+
 
 .. aafig::
     :textual:
