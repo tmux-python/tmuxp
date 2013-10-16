@@ -12,7 +12,7 @@ from .helpers import TmuxTestCase
 logger = logging.getLogger(__name__)
 
 
-class WorkspaceBuilderTest(TmuxTestCase):
+class TwoPaneTest(TmuxTestCase):
 
     yaml_config = '''
     session_name: sampleconfig
@@ -58,7 +58,7 @@ class WorkspaceBuilderTest(TmuxTestCase):
             window_count += 1
 
 
-class WorkspaceBuilderThreePane(TmuxTestCase):
+class ThreePaneTest(TmuxTestCase):
 
     yaml_config = '''
     session_name: sampleconfig
@@ -144,7 +144,8 @@ class FocusTest(TmuxTestCase):
         logger.error(self.session.attached_window())
         logger.error(self.session.attached_pane())
 
-class WzindowOptions(TmuxTestCase):
+
+class WindowOptions(TmuxTestCase):
     '''sample config with no session name'''
 
     yaml_config = '''
