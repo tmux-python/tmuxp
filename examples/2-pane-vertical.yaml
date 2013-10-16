@@ -1,5 +1,6 @@
 session_name: my session
 windows:
-  panes:
-    - bash
-    - bash
+  - window_name: my test window
+    panes:
+      - bash
+      - bash
