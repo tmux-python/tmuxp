@@ -15,7 +15,6 @@ import sys, os, sphinx_bootstrap_theme
 
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('_themes'))
-sys.path.append(os.path.abspath('_templates'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
