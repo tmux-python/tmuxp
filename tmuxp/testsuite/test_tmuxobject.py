@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class TmuxObjectTest(TmuxTestCase):
-    ''' test the :class:`TmuxObject` base class object.
+    ''' test the :class:`TmuxRelationalObject` base class object.
     '''
 
     def test_findWhere(self):

@@ -109,8 +109,8 @@ class TmuxRelationalObject(object):
     :class:`Session` objects, a :class:`Session` has collection of
     :class:`Window`)
 
-    Children of :class:`TmuxObject` are going to have a ``self.children``,
-    ``self.childIdAttribute`` and ``self.list_children``.
+    Children of :class:`TmuxRelationalObject` are going to have a
+    ``self.children``, ``self.childIdAttribute`` and ``self.list_children``.
 
     ================ ================== ===================== ============================
     Object           ``.children``      ``.childIdAttribute`` ``.list_children``
