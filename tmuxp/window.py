@@ -27,8 +27,11 @@ class Window(TmuxObject):
     ``tmux(1) window``.
     '''
 
+    childIdAttribute = 'pane_id'
+
     def __init__(self, session=None, **kwargs):
         self._panes = list()  # list of panes
+        self.children = self._panes
 
         if not session:
             raise ValueError(
@@ -405,3 +408,4 @@ class Window(TmuxObject):
                 self._panes.append(Pane(window=self, **pane))
 
             return self._panes
+    list_children = list_panes

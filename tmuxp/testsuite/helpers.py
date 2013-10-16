@@ -79,9 +79,9 @@ class TmuxTestCase(unittest.TestCase):
     def setUpClass(cls):
         try:
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
-        except TmuxNoClientsRunning:
-            logger.error('test: TmuxNoClientsRunning')
-            cls.TEST_SESSION_NAME, cls.session = bootstrap()
+        #except TmuxNoClientsRunning:
+        #    logger.error('test: TmuxNoClientsRunning')
+        #    cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
             import traceback
             logger.error(e)

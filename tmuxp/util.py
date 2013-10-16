@@ -98,6 +98,34 @@ class TmuxObject(collections.MutableMapping):
     def __len__(self):
         return len(self._TMUX.keys())
 
+    def findWhere(self, attrs):
+        ''' find first match
+        '''
+        return self.where(attrs, True)
+
+    def where(self, attrs, first=False):
+        ''' find child objects by properties
+
+        :param attrs: tmux properties to match
+        :type attrs: dict
+        :rtype: list
+        '''
+
+        # from https://github.com/serkanyersen/underscore.py
+        def by(val, *args):
+            for key, value in attrs.items():
+                try:
+                    if attrs[key] != val[key]:
+                        return False
+                except KeyError:
+                    return False
+                return True
+
+        if first:
+            return list(filter(by, self.children))[0]
+        else:
+            return list(filter(by, self.children))
+
 
 class TmuxObjectDiff(object):
     ''' Methods for updating the child objects and still keeping the
