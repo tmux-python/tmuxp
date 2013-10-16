@@ -38,6 +38,7 @@ class Server(object):
     socket_name = None
     socket_path = None
     config_file = None
+    childIdAttribute = 'session_id'
 
     def __init__(self):
         self._sessions = list()
@@ -126,6 +127,7 @@ class Server(object):
             self._sessions.append(new_session)
 
         return self._sessions
+    list_children = list_sessions
 
     def list_clients(self):
         '''
@@ -274,20 +276,6 @@ class Server(object):
     @property
     def sessions(self):
         return self._sessions
-
-    def getById(self, session_id):
-        ''' get session by session_id
-
-        :param session_id:
-        :type session_id: string
-        :rtype: :class:`Session`
-        '''
-
-        for session in self.list_sessions():
-            if session['session_id'] == session_id:
-                return session
-            else:
-                continue
 
     def switch_client(self, target_session):
         '''

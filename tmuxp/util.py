@@ -126,6 +126,15 @@ class TmuxObject(collections.MutableMapping):
         else:
             return list(filter(by, self.children))
 
+    def getById(self, id):
+        for child in self.list_children():
+            if child[self.childIdAttribute] == id:
+                return child
+            else:
+                continue
+
+        return None
+
 
 class TmuxObjectDiff(object):
     ''' Methods for updating the child objects and still keeping the

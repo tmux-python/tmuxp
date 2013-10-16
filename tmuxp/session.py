@@ -30,6 +30,8 @@ class Session(TmuxObject):
 
     '''
 
+    childIdAttribute = 'window_id'
+
     def __init__(self, server=None, **kwargs):
         if not server:
             raise ValueError('Session requires server')
@@ -46,20 +48,6 @@ class Session(TmuxObject):
         # if '-t' not in kwargs:
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
-
-    def getById(self, window_id):
-        ''' get window by window_id
-
-        :param window_id:
-        :type window_id: string
-        :rtype: :class:`Window`
-        '''
-
-        for window in self.list_windows():
-            if window['window_id'] == window_id:
-                return window
-            else:
-                continue
 
     def refresh(self):
         '''Refresh current :class:`Session` object. Chainable.
@@ -240,6 +228,7 @@ class Session(TmuxObject):
                 self._windows.append(Window(session=self, **window))
 
         return self._windows
+    list_children = list_windows
 
     def attached_window(self):
         '''

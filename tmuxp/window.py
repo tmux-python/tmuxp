@@ -295,20 +295,6 @@ class Window(TmuxObject):
 
         return False
 
-    def getById(self, pane_id):
-        ''' find pane by pane_id
-
-        :param pane_id:
-        :type pane_id: string
-        :rtype: :class:`Pane`
-        '''
-
-        for pane in self.list_panes():
-            if pane['pane_id'] == pane_id:
-                return pane
-            else:
-                continue
-
     def refresh(self):
         '''Refresh current :class:`Window` object. Chainable.
 
