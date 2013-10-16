@@ -6,6 +6,8 @@ Here you can find the recent changes to tmuxp.
 2013-10-16
 ----------
 
+- [pypi / packaging] add MANIFEST.in, fix issue where package would not
+  install because missing file
 - [cli] bash / zsh completion.
 - [docs] New page on :ref:`orm_al`.
 - [docs] Updates to :ref:`about_tmux` page.
