@@ -72,11 +72,30 @@ class tmux(object):
 
 class TmuxObject(collections.MutableMapping):
     '''
+
     Base: :py:class:`collections.MutableMapping`
 
-    Base class for of :class:`Pane`, :class:`Window` and :class:`Session`.
+    Convenience container. Base class for :class:`Pane`, :class:`Window`,
+    :class:`Session` and :class:`Server`.
 
-    The mapping uses attribute ``._TMUX`` to store values.
+    1. Managing collections (a :class:`Server` has a collection of
+       :class:`Session`, a :class:`Session` has collection of :class:`Window`)
+    2. Instance attributes for useful information :term:`tmux(1)` uses for
+       Session/Window/Pane, stored :attr:`self._TMUX`. For example, a
+       :class:`Window` will have a ``window_id`` and ``window_name``.
+
+    Children of :class:`TmuxObject` are going to have a ``self.children``,
+    ``self.childIdAttribute`` and ``self.list_children``.
+
+    ================ ================== ===================== ============================
+    Object           ``.children``      ``.childIdAttribute`` ``.list_children``
+    ================ ================== ===================== ============================
+    :class:`Server`  ``self._sessions`` 'session_id'          :meth:`Server.list_sessions`
+    :class:`Session` ``self._windows``  'window_id'           :meth:`Session.list_windows`
+    :class:`Window`  ``self._panes``    'pane_id'             :meth:`Window.list_panes`
+    :class:`Pane`
+    ================ ================== ===================== ============================
+
     '''
     def __getitem__(self, key):
         return self._TMUX[key]
@@ -100,11 +119,22 @@ class TmuxObject(collections.MutableMapping):
 
     def findWhere(self, attrs):
         ''' find first match
+
+        Based on `.findWhere()`_ from `underscore.js`_.
+
+        .. _.findWhere(): http://underscorejs.org/#findWhere
+        .. _underscore.js: http://underscorejs.org/
+
         '''
         return self.where(attrs, True)
 
     def where(self, attrs, first=False):
         ''' find child objects by properties
+
+        Based on `.where()`_ from `underscore.js`_.
+
+        .. _.where(): http://underscorejs.org/#where
+        .. _underscore.js: http://underscorejs.org/
 
         :param attrs: tmux properties to match
         :type attrs: dict
@@ -127,6 +157,16 @@ class TmuxObject(collections.MutableMapping):
             return list(filter(by, self.children))
 
     def getById(self, id):
+        '''
+        Based on `.get()`_ from `backbone.js`_.
+
+        .. _backbone.js: http://backbonejs.org/
+        .. _.get(): http://backbonejs.org/#Collection-get
+
+        :param id:
+        :type id: string
+        :rtype: object
+        '''
         for child in self.list_children():
             if child[self.childIdAttribute] == id:
                 return child
