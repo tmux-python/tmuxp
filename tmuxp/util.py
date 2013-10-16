@@ -74,9 +74,12 @@ class TmuxMappingObject(collections.MutableMapping):
     '''
     Base: :py:class:`collections.MutableMapping`
 
-    2. Instance attributes for useful information :term:`tmux(1)` uses for
-       Session/Window/Pane, stored :attr:`self._TMUX`. For example, a
-       :class:`Window` will have a ``window_id`` and ``window_name``.
+    Convenience container. Base class for :class:`Pane`, :class:`Window`,
+    :class:`Session` and :class:`Server`.
+
+    Instance attributes for useful information :term:`tmux(1)` uses for
+    Session, Window, Pane, stored :attr:`self._TMUX`. For example, a
+    :class:`Window` will have a ``window_id`` and ``window_name``.
     '''
 
     def __getitem__(self, key):
@@ -177,55 +180,3 @@ class TmuxRelationalObject(object):
                 continue
 
         return None
-
-
-class TmuxObjectDiff(object):
-    ''' Methods for updating the child objects and still keeping the
-        objects intact if they exist.
-
-        @todo
-
-        - make more generic / backbone-like by allow an 'id' property, such
-        as ``window_id`` being ``id`` for :class:`Window`.
-        - change :meth:`Server.list_session`, :meth:`Session.list_windows`,
-        :meth:`Window.list_panes` to call `list_children` in here.
-
-        The _list_sessions, _list_windows, _list_panes can retrieve a list of
-        dict from the Popen of tmux, then pass it into here.
-    '''
-
-    def set(self, object):
-        '''
-        add a or a :obj:`list` of sessions, panes or windows to the object.
-
-        this is subclassed by:
-
-            - :class:`Server` to hold :class:`Session` objects.
-            - :class:`Session` to hold :class:`Window` objects.
-            - :class:`Window` to hold :class:`Pane` objects.
-
-        if a list object is entered, use this recursively
-
-        :param: object: any sibling of :class:`TmuxObject`: :class:`Session`,
-        :class:`Window`, :class:`Pane`.
-        '''
-
-
-class TmuxObject(TmuxMappingObject, TmuxRelationalObject):
-    '''
-
-    Convenience container. Base class for :class:`Pane`, :class:`Window`,
-    :class:`Session` and :class:`Server`.
-
-    1. Managing collections (a :class:`Server` has a collection of
-       :class:`Session`, a :class:`Session` has collection of :class:`Window`)
-
-       See: :class:`TmuxMappingObject`.
-    2. Instance attributes for useful information :term:`tmux(1)` uses for
-       Session/Window/Pane, stored :attr:`self._TMUX`. For example, a
-       :class:`Window` will have a ``window_id`` and ``window_name``.
-
-       See: :class:`TmuxRelationalObject`.
-    '''
-
-    pass
