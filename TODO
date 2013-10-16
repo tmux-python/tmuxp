@@ -4,6 +4,7 @@ Roadmap
 To do
 """""
 
+- rm nodemon dependency for .tmuxp.yaml, try a python solution
 - create .focus or .select_pane that works on Window and Pane objects directly.
 - find, findWhere, get, a la backbone for TmuxObject's.
 - implement ``focus: true`` for panes and windows
