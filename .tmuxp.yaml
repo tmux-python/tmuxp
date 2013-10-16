@@ -3,7 +3,7 @@ windows:
 - window_name: tmuxp
   layout: main-horizontal
   options:
-    - main-pane-height: 50
+    main-pane-height: 50
   start_directory: ./
   shell_command_before: source .env/bin/activate
   panes:
@@ -18,16 +18,16 @@ windows:
 - window_name: docs
   layout: main-horizontal
   options:
-  - main-pane-height: 50
+    main-pane-height: 50
   start_directory: ./
   automatic_rename: true
   shell_command_before: 
     - cd ./doc
     - source .env/bin/activate
   panes:
-    focus: true
   - shell_command:
     - vim
+    focus: true
   - pwd
   - shell_command:
     - cd _build/html
