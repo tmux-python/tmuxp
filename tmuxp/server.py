@@ -11,7 +11,7 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
-from .util import tmux, TmuxObject
+from .util import tmux, TmuxRelationalObject
 from .session import Session
 from .formats import SESSION_FORMATS, CLIENT_FORMATS
 
@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Server(TmuxObject):
+class Server(TmuxRelationalObject):
 
     '''
     The :term:`tmux(1)` server. Container for:
@@ -46,6 +46,8 @@ class Server(TmuxObject):
     def __init__(self, **kwargs):
         self._sessions = list()
         self.children = self._sessions
+
+        self._TMUX = {}
 
     def tmux(self, *args, **kwargs):
         args = list(args)

@@ -116,7 +116,9 @@ class Window(TmuxObject):
             value = 'off'
 
         process = self.tmux(
-            'set-window-option', option, value
+            'set-window-option',
+            '-t%s' % self['window_id'],
+            option, value
         )
 
         if process.stderr:

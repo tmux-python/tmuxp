@@ -70,33 +70,15 @@ class tmux(object):
         logging.debug('self.stdout for %s: \n%s' % (' '.join(cmd), self.stdout))
 
 
-class TmuxObject(collections.MutableMapping):
+class TmuxMappingObject(collections.MutableMapping):
     '''
-
     Base: :py:class:`collections.MutableMapping`
 
-    Convenience container. Base class for :class:`Pane`, :class:`Window`,
-    :class:`Session` and :class:`Server`.
-
-    1. Managing collections (a :class:`Server` has a collection of
-       :class:`Session`, a :class:`Session` has collection of :class:`Window`)
     2. Instance attributes for useful information :term:`tmux(1)` uses for
        Session/Window/Pane, stored :attr:`self._TMUX`. For example, a
        :class:`Window` will have a ``window_id`` and ``window_name``.
-
-    Children of :class:`TmuxObject` are going to have a ``self.children``,
-    ``self.childIdAttribute`` and ``self.list_children``.
-
-    ================ ================== ===================== ============================
-    Object           ``.children``      ``.childIdAttribute`` ``.list_children``
-    ================ ================== ===================== ============================
-    :class:`Server`  ``self._sessions`` 'session_id'          :meth:`Server.list_sessions`
-    :class:`Session` ``self._windows``  'window_id'           :meth:`Session.list_windows`
-    :class:`Window`  ``self._panes``    'pane_id'             :meth:`Window.list_panes`
-    :class:`Pane`
-    ================ ================== ===================== ============================
-
     '''
+
     def __getitem__(self, key):
         return self._TMUX[key]
 
@@ -116,6 +98,31 @@ class TmuxObject(collections.MutableMapping):
 
     def __len__(self):
         return len(self._TMUX.keys())
+
+
+class TmuxRelationalObject(object):
+    '''
+    Base: :py:class:`collections.MutableMapping`
+
+    Convenience container. Base class for :class:`Pane`, :class:`Window`,
+    :class:`Session` and :class:`Server`.
+
+    Manages collections (a :class:`Server` has a collection of
+    :class:`Session`, a :class:`Session` has collection of :class:`Window`)
+
+    Children of :class:`TmuxObject` are going to have a ``self.children``,
+    ``self.childIdAttribute`` and ``self.list_children``.
+
+    ================ ================== ===================== ============================
+    Object           ``.children``      ``.childIdAttribute`` ``.list_children``
+    ================ ================== ===================== ============================
+    :class:`Server`  ``self._sessions`` 'session_id'          :meth:`Server.list_sessions`
+    :class:`Session` ``self._windows``  'window_id'           :meth:`Session.list_windows`
+    :class:`Window`  ``self._panes``    'pane_id'             :meth:`Window.list_panes`
+    :class:`Pane`
+    ================ ================== ===================== ============================
+
+    '''
 
     def findWhere(self, attrs):
         ''' find first match
@@ -206,3 +213,23 @@ class TmuxObjectDiff(object):
         :param: object: any sibling of :class:`TmuxObject`: :class:`Session`,
         :class:`Window`, :class:`Pane`.
         '''
+
+
+class TmuxObject(TmuxMappingObject, TmuxRelationalObject):
+    '''
+
+    Convenience container. Base class for :class:`Pane`, :class:`Window`,
+    :class:`Session` and :class:`Server`.
+
+    1. Managing collections (a :class:`Server` has a collection of
+       :class:`Session`, a :class:`Session` has collection of :class:`Window`)
+
+       See: :class:`TmuxMappingObject`.
+    2. Instance attributes for useful information :term:`tmux(1)` uses for
+       Session/Window/Pane, stored :attr:`self._TMUX`. For example, a
+       :class:`Window` will have a ``window_id`` and ``window_name``.
+
+       See: :class:`TmuxRelationalObject`.
+    '''
+
+    pass

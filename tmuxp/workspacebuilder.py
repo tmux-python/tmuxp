@@ -11,7 +11,7 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 import logging
-from . import exc, config, Window, Pane, Session
+from . import exc, config, Window, Pane, Session, Server
 
 logger = logging.getLogger(__name__)
 
@@ -84,8 +84,9 @@ class WorkspaceBuilder(object):
 
         # config.check_consistency(sconf)
 
-        if server:
+        if isinstance(server, Server):
             self.server = server
+            logger.error('server yo %s' % server)
         else:
             self.server = None
 
@@ -105,11 +106,10 @@ class WorkspaceBuilder(object):
 
         if not session:
             if not self.server:
-                raise Exception('''\
-                                WorkspaceBuilder.build requires .server to be
-                                passed in on initialization, or pass in session
-                                object to here.
-                                ''')
+                raise Exception(
+                    'WorkspaceBuilder.build requires server to be passed ' +
+                    'on initialization, or pass in session object to here.'
+                )
 
             if self.server.has_session(self.sconf['session_name']):
                 raise exc.TmuxSessionExists('''\
@@ -169,7 +169,6 @@ class WorkspaceBuilder(object):
                     w.set_window_option(key, val)
 
             if 'focus' in wconf and wconf['focus']:
-                logger.error(wconf['window_name'] + ' will be focused')
                 s.select_window(w['window_id'])
 
             w.list_panes()
