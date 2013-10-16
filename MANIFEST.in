@@ -1,0 +1,2 @@
+include README.rst LICENSE CHANGES HISTORY run_tests.py .tmuxp.yaml
+recursive-include doc *.rst
