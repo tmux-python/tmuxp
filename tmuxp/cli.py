@@ -197,3 +197,18 @@ def main():
                 logger.error('%s not found.' % configfile)
     else:
         parser.print_help()
+
+
+def complete(cline, cpoint):
+
+    config_dir = os.path.expanduser('~/.tmuxp/')
+    cwd_dir = os.getcwd() + '/'
+
+    commands = []
+    commands += config.in_dir(config_dir)
+    commands += config.in_cwd()
+
+    ctext = cline.replace('tmuxp ', '')
+    commands = [c for c in commands if ctext in c]
+
+    print(' \n'.join(commands))
