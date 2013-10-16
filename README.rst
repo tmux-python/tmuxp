@@ -18,7 +18,25 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for YAML, JSON and python dicts.
 
-Check out our `Examples`_ and `Quickstart`_.
+Get started now, ``$ mkdir ~/.tmuxp`` and make a file
+``~/.tmuxp/test.yaml``.
+
+.. code-block:: yaml
+
+    session_name: my session
+    windows:
+    - window_name: my test window
+        panes:
+        - bash
+        - bash
+
+Now with ``tmuxp``:
+
+.. code-block::
+
+    $ tmuxp test.yaml
+
+Check out our `Examples`_, `Quickstart`_ and `bash completion`_ support.
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
@@ -52,6 +70,7 @@ tests           .. code-block:: bash
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
+.. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
