@@ -6,7 +6,7 @@ Here you can find the recent changes to tmuxp.
 2013-10-16
 ----------
 
-- [cli] bash autocomplete
+- [cli] bash / zsh completion.
 - [docs] New page on :ref:`orm_al`.
 - [docs] Updates to :ref:`about_tmux` page.
 - [docs] add vim modeline for rst to bottom of this page
@@ -14,9 +14,9 @@ Here you can find the recent changes to tmuxp.
 - [internal] [tests] subclasses of :class:`util.TmuxRelationalObject`,
   :class:`Server`, :class:`Session`, :class:`Window`, :class:`Pane` now
   have :meth:`util.TmuxObject.getById` (similar to `.get()`_ in
-  `backbone.js`_ collection), :meth:`util.TmuxObject.where` and
-  :meth:`util.TmuxObject.findWhere` (`.where()`_ and `.findWhere()`_ in
-  `underscore.js`_), to easily find child objects.
+  `backbone.js`_ collection), :meth:`util.TmuxRelationalObject.where` and
+  :meth:`util.TmuxRelationalObject.findWhere` (`.where()`_ and
+  `.findWhere()`_ in `underscore.js`_), to easily find child objects.
 - [internal] tmux object mapping has been split into
   :class:`util.TmuxMappingObject`. The mapping and the relational has been
   decoupled to allow :class:`Server` to have children while not being a
