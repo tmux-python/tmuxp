@@ -86,7 +86,6 @@ class WorkspaceBuilder(object):
 
         if isinstance(server, Server):
             self.server = server
-            logger.error('server yo %s' % server)
         else:
             self.server = None
 

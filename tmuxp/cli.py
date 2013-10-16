@@ -110,12 +110,12 @@ def build_workspace(config_file, args):
 
     try:
         builder.build()
-        os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
+        os.execl('tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
     except exc.TmuxSessionExists as e:
         attach_session = query_yes_no(e.message + ' attach?')
 
         if attach_session:
-            os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
+            os.execl('tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
         return
 
 
