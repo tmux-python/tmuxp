@@ -103,7 +103,8 @@ class TmuxMappingObject(collections.MutableMapping):
 class TmuxRelationalObject(object):
     '''
     Manages collection of child objects  (a :class:`Server` has a collection of
-    :class:`Session`, a :class:`Session` has collection of :class:`Window`)
+    :class:`Session` objects, a :class:`Session` has collection of
+    :class:`Window`)
 
     Children of :class:`TmuxObject` are going to have a ``self.children``,
     ``self.childIdAttribute`` and ``self.list_children``.

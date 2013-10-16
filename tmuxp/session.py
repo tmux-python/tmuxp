@@ -11,17 +11,16 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import pipes
-from .util import TmuxObject, tmux
 from .window import Window
 from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import TmuxSessionExists
 
-from . import log
+from . import log, util
 import logging
 logger = logging.getLogger(__name__)
 
 
-class Session(TmuxObject):
+class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     '''
     ``tmux(1) session``.

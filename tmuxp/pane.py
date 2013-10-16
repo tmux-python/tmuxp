@@ -10,16 +10,15 @@
 """
 from __future__ import absolute_import, division, print_function, with_statement
 
-from .util import TmuxObject
 from .formats import PANE_FORMATS
 
-from . import log
+from . import log, util
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class Pane(TmuxObject):
+class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
     '''
         ``tmux(1)`` pane.
 
