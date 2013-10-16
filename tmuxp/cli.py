@@ -14,7 +14,7 @@ import logging
 import kaptan
 import config
 from distutils.util import strtobool
-from . import log, exc, WorkspaceBuilder, Server
+from . import log, util, exc, WorkspaceBuilder, Server
 
 logger = logging.getLogger(__name__)
 
@@ -108,14 +108,16 @@ def build_workspace(config_file, args):
         logger.error('%s is empty or parsed no config data' % config_file)
         return
 
+    tmux_bin = util.which('tmux')
+
     try:
         builder.build()
-        os.execl('tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
+        os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig['session_name'])
     except exc.TmuxSessionExists as e:
         attach_session = query_yes_no(e.message + ' attach?')
 
         if attach_session:
-            os.execl('tmux', 'tmux', 'attach-session', '-t', sconfig['session_name'])
+            os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig['session_name'])
         return
 
 

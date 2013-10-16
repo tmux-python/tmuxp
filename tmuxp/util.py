@@ -14,6 +14,7 @@ from functools import wraps
 import unittest
 import collections
 import subprocess
+import os
 
 from . import log
 import logging
@@ -180,3 +181,31 @@ class TmuxRelationalObject(object):
                 continue
 
         return None
+
+
+def which(exe=None):
+    '''
+    Python clone of /usr/bin/which
+
+    from salt.util - https://www.github.com/saltstack/salt - license apache
+    '''
+    if exe:
+        if os.access(exe, os.X_OK):
+            return exe
+
+        # default path based on busybox's default
+        default_path = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin'
+        search_path = os.environ.get('PATH', default_path)
+
+        for path in search_path.split(os.pathsep):
+            full_path = os.path.join(path, exe)
+            if os.access(full_path, os.X_OK):
+                return full_path
+        log.trace(
+            '{0!r} could not be found in the following search '
+            'path: {1!r}'.format(
+                exe, search_path
+            )
+        )
+    log.trace('No executable was passed to be searched by which')
+    return None
