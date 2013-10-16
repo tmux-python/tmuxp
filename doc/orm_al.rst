@@ -41,7 +41,5 @@ Object                   Prefix                  Example
 :class:`Pane`            ``%``                   ``%5433``
 ======================== ======================= =========================
 
-
-
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
 .. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping

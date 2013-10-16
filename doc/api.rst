@@ -66,6 +66,7 @@ Internals
 ---------
 
 .. autoclass:: tmuxp.util.TmuxObject
+    :members:
 
 .. autoclass:: tmuxp.util.tmux
 
