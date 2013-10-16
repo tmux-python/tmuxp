@@ -158,7 +158,8 @@ class WorkspaceBuilder(object):
             else:
                 w = s.new_window(
                     window_name=window_name,
-                    automatic_rename=automatic_rename
+                    automatic_rename=automatic_rename,
+                    attach=False  # do not move to the new window
                 )
 
             assert(isinstance(w, Window))
@@ -166,6 +167,11 @@ class WorkspaceBuilder(object):
             if 'options' in wconf and isinstance(wconf['options'], dict):
                 for key, val in wconf['options'].iteritems():
                     w.set_window_option(key, val)
+
+            if 'focus' in wconf and wconf['focus']:
+                logger.error(wconf['window_name'] + ' will be focused')
+                s.select_window(w['window_id'])
+
             w.list_panes()
 
             yield w, wconf
@@ -186,14 +192,19 @@ class WorkspaceBuilder(object):
 
         for pindex, pconf in enumerate(wconf['panes'], start=1):
             if pindex != int(1):
-                p = w.split_window()
+                p = w.split_window(attach=False)
                 assert(isinstance(p, Pane))
             else:
                 p = w.attached_pane()
                 assert(isinstance(p, Pane))
 
+            p.refresh()
+
             for cmd in pconf['shell_command']:
                 p.send_keys(cmd)
+
+            if 'focus' in pconf and pconf['focus']:
+                w.select_pane(p['pane_id'])
 
             w.list_panes()
 

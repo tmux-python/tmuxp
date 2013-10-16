@@ -167,7 +167,11 @@ class Window(TmuxObject):
         window_option = self.tmux(
             'show-window-options', option
         ).stdout
-        window_option = [tuple(item.split(' ')) for item in window_option][0]
+
+        if window_option:
+            window_option = [tuple(item.split(' ')) for item in window_option][0]
+        else:
+            return None
 
         if window_option[1].isdigit():
             window_option = (window_option[0], int(window_option[1]))
@@ -214,8 +218,8 @@ class Window(TmuxObject):
 
         Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
-        if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
-            target_pane = "%s.%s" % (self.target, target_pane)
+        #if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
+        #    target_pane = "%s.%s" % (self.target, target_pane)
 
         try:
             self.tmux('select-pane', '-t%s' % target_pane)
@@ -225,31 +229,46 @@ class Window(TmuxObject):
         self.list_panes()
         return self.attached_pane()
 
-    def split_window(self, *args, **kwargs):
+    def split_window(self, attach=True):
         '''
         Splits window. Returns the created :class:`Pane`.
 
+        .. note::
+
+            :term:`tmux(1)` will move window to the new pane if the
+            ``split-window`` target is off screen. tmux handles the ``-d`` the
+            same way as ``new-window`` and ``attach`` in
+            :class:`Session.new_window`.
+
+            By default, this will make the window the pane is created in
+            active. To remain on the same window and split the pane in another
+            target window, pass in ``attach=False``.
+
+
         Used for splitting window and holding in a python object.
 
-        Iterates ``$ tmux split-window``, ``-P`` to return data and
-        Arguments may be passed through same as ``$ tmux split-window``.
+        :param attach: make new window the current window after creating it,
+                       default True.
+        :param type: bool
 
-        -h
-            horizontal
-        -v
-            vertical
-
-        :rtype: newly created :class:`Pane`
+        :rtype: :class:`Pane`
         '''
 
         formats = ['session_name', 'session_id',
                    'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
-        pane = self.tmux(
-            'split-window',
+        tmux_args = (
             '-t%s' % self.attached_pane().get('pane_id'),
             '-P', '-F%s' % ''.join(tmux_formats),     # output
+        )
+
+        if not attach:
+            tmux_args += ('-d',)
+
+        pane = self.tmux(
+            'split-window',
+            *tmux_args
         ).stdout[0]
 
         # zip and map the results into the dict of formats used above
@@ -278,6 +297,11 @@ class Window(TmuxObject):
                     return pane
                 else:
                     continue
+
+        # if the client is not on the window and none is active, assume the
+        # first pane.
+        if panes:
+            return panes[0]
 
         return False
 

@@ -71,9 +71,11 @@ class NewTest(TmuxTestCase):
         self.assertEqual(1, len(self.session.attached_window()._panes))
         self.session.attached_window().select_layout('even-horizontal')
 
-        self.session.attached_window().split_window()
+        self.session.attached_window().split_window(attach=True)
         self.assertEqual(2, len(self.session.attached_window()._panes))
-        self.session.attached_window().split_window('-h')
+        # note: the below used to accept -h, removing because split_window now
+        # has attach as its only argument now
+        self.session.attached_window().split_window(attach=True)
         self.assertEqual(3, len(self.session.attached_window()._panes))
 
     def test_attached_pane(self):
@@ -85,8 +87,8 @@ class NewTest(TmuxTestCase):
     def test_split_window(self):
         '''Window.split_window() splits window, returns new Pane.'''
         window_name = 'test split window'
-        window = self.session.new_window(window_name=window_name)
-        pane = window.split_window()
+        window = self.session.new_window(window_name=window_name, attach=True)
+        pane = window.split_window(attach=True)
         self.assertEqual(2, len(self.session.attached_window()._panes))
         self.assertIsInstance(pane, Pane)
         self.assertEqual(2, len(window._panes))
@@ -98,14 +100,6 @@ class NewTest(TmuxTestCase):
         window_name_after = 'testingdis_winname'
         window.rename_window(window_name_after)
         self.assertEqual(window.get('window_name'), window_name_after)
-
-    def test_new_window_automatic_rename(self):
-        '''@todo'''
-        pass
-
-    def test_new_window_start_directory(self):
-        '''@todo'''
-        pass
 
 
 class RenameTest(TmuxTestCase):

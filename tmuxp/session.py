@@ -76,34 +76,49 @@ class Session(TmuxObject):
 
         return self
 
-    def new_window(self, window_name=None, automatic_rename=False):
+    def new_window(self,
+                   window_name=None,
+                   automatic_rename=False,
+                   attach=True):
         '''
         ``$ tmux new-window``
 
-        :param window_name: window name::
+        .. note::
+
+            By default, this will make the window active. For the new window
+            to be created and not set to current, pass in ``attach=False``.
+
+        :param window_name: window name.
+
+        .. code-block:: bash
 
             $ tmux new-window -n <window_name>
+
         :type window_name: string
 
         :param automatic_rename: assume automatic_rename if no window_name.
         :type automatic_rename: bool
+
+        :param attach: make new window the current window after creating it,
+                       default True.
+        :param type: bool
         '''
         formats = ['session_name', 'session_id'] + WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in formats]
 
+        window_args = (
+            '-t%s' % self.get('session_id'),
+            '-P',
+            '-F%s' % '\t'.join(tmux_formats),  # output
+        )
+
         if window_name:
-            window = self.tmux(
-                'new-window',
-                '-t%s' % self.get('session_id'),
-                '-P', '-F%s' % '\t'.join(tmux_formats),  # output
-                '-n', window_name
-            )
-        else:
-            window = self.tmux(
-                'new-window',
-                '-t%s' % self.get('session_id'),
-                '-P', '-F%s' % '\t'.join(tmux_formats),  # output
-            )
+            window_args += ('-n', window_name)
+
+        if not attach:
+            window_args += ('-d',)
+
+        window = self.tmux('new-window', *window_args)
 
         window = window.stdout[0]
 
@@ -256,12 +271,14 @@ class Session(TmuxObject):
 
             Todo: assure ``-l``, ``-n``, ``-p`` work.
         '''
-        if isinstance(target_window, int):
-            target = '-t%s:%s' % (self.get('session_name'), target_window)
-        elif isinstance(target_window, basestring):
-            target = '-t%s:%s' % (self.get('session_name'), target_window)
-        else:
-            target = '-t%s' % target_window
+        # if isinstance(target_window, int):
+            # target = '-t%s:%s' % (self.get('session_name'), target_window)
+        # elif isinstance(target_window, basestring):
+            # target = '-t%s:%s' % (self.get('session_name'), target_window)
+        # else:
+            # target = '-t%s' % target_window
+
+        target = '-t%s' % target_window
 
         self.tmux('select-window', target)
 
