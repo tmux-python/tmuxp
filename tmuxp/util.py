@@ -102,12 +102,7 @@ class TmuxMappingObject(collections.MutableMapping):
 
 class TmuxRelationalObject(object):
     '''
-    Base: :py:class:`collections.MutableMapping`
-
-    Convenience container. Base class for :class:`Pane`, :class:`Window`,
-    :class:`Session` and :class:`Server`.
-
-    Manages collections (a :class:`Server` has a collection of
+    Manages collection of child objects  (a :class:`Server` has a collection of
     :class:`Session`, a :class:`Session` has collection of :class:`Window`)
 
     Children of :class:`TmuxObject` are going to have a ``self.children``,
