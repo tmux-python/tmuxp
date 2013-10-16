@@ -66,9 +66,6 @@ Pane Object
 Internals
 ---------
 
-.. autoclass:: tmuxp.util.TmuxObject
-    :members:
-
 .. autoclass:: tmuxp.util.TmuxRelationalObject
     :members:
 
