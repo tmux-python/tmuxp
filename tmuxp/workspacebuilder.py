@@ -23,7 +23,7 @@ class WorkspaceBuilder(object):
 
     The normal phase of loading is:
 
-        1.  :ref:`kaptan` imports json/yaml/ini. ``.get()`` returns
+        1.  :term:`kaptan` imports json/yaml/ini. ``.get()`` returns
             python :class:`dict`.
 
             .. code-block:: python

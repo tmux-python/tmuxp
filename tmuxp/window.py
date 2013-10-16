@@ -60,42 +60,28 @@ class Window(TmuxObject):
 
     def select_layout(self, layout=None):
         '''
-        wrapper for ``tmux(1)``::
+        wrapper for ``tmux(1)``.
+
+        .. code-block: bash
 
             $ tmux select-layout <layout>
 
-        The following layouts are supported::
+        even-horizontal: Panes are spread out evenly from left to right across
+        the window.
 
-            even-horizontal
-                Panes are spread out evenly from left to right across the
-                window.
+        even-vertical: Panes are spread evenly from top to bottom.
 
-            even-vertical
-                Panes are spread evenly from top to bottom.
+        main-horizontal: A large (main) pane is shown at the top of the window
+        and the remaining panes are spread from left to right in the leftover
+        space at the bottom.
 
-            main-horizontal
-                A large (main) pane is shown at the top of the window and the
-                remaining panes are spread from left to right in the leftover
-                space at the bottom.  Use the main-pane-height window option to
-                specify the height of the top pane.
+        main-vertical: Similar to main-horizontal but the large pane is placed
+        on the left and the others spread from top to bottom along the right.
 
-            main-vertical
-                Similar to main-horizontal but the large pane is placed on the
-                left and the others spread from top to bottom along the right.
-                See the main-pane-width window option.
+        tiled: Panes are spread out as evenly as possible over the window in
+        both rows and columns.
 
-            tiled
-                Panes are spread out as evenly as possible over the window in
-                both rows and columns.
-
-            In addition, select-layout may be used to apply a previously used
-            layout - the list-windows command displays the layout of each
-            window in a form suitable for use with select-layout. For example::
-
-                $ tmux list-windows
-                0: ksh [159x48]
-                    layout: bb62,159x48,0,0{79x48,0,0,79x48,80,0}
-                $ tmux select-layout bb62,159x48,0,0{79x48,0,0,79x48,80,0}
+        custom: custom dimensions (see :term:`tmux(1)` manpages).
 
         :param layout: string of the layout, 'even-horizontal', 'tiled', etc.
         :type layout: string
@@ -112,11 +98,11 @@ class Window(TmuxObject):
 
     def set_window_option(self, option, value):
         '''
-        wrapper for ``tmux(1)``::
+        wrapper for ``tmux(1)``.
+
+        .. code-block: bash
 
             $ tmux set-window-option <option> <value>
-
-        todo: needs tests
 
         :param option: the window option. such as 'automatic_rename'.
         :type option: string
@@ -175,7 +161,7 @@ class Window(TmuxObject):
 
         :param option: option to return.
         :type option: string
-        :rtype: string, int or bool
+        :rtype: string, int
         '''
 
         window_option = self.tmux(

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class tmux(object):
-    ''':py:mod:`subprocess` for :ref:`tmux(1)`.
+    ''':py:mod:`subprocess` for :term:`tmux(1)`.
 
     Usage:
 

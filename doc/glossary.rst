@@ -1,6 +1,6 @@
-=============
-tmux Glossary
-=============
+==============
+tmuxp Glossary
+==============
 
 
 .. glossary::
@@ -13,20 +13,7 @@ tmux Glossary
         The tmux binary. Used internally to distinguish tmuxp is only a
         layer on top of tmux.
 
-tmux(1) jargon
---------------
+    kaptan
+        configuration management library, see `kaptan on github`_.
 
-Understanding the internals of how tmux commands work requires understand
-the underpinnings. Some of these terms borrow directly from tmux's
-manpages.
-
-.. glossary::
-
-    target_window
-        target_window def
-
-
-Layouts
-'''''''
-
-add layouts here
+.. _kaptan on github: https://github.com/emre/kaptan

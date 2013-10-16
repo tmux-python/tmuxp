@@ -26,10 +26,13 @@ class Server(TmuxObject):
     '''
     The :term:`tmux(1)` server. Container for:
 
-    :attr:`Server._sessions` [:class:`Session`, ...]
-        :attr:`Session._windows` [:class:`Window`, ...]
-            :attr:`Window._panes` [:class:`Pane`, ...]
-                :class:`Pane`
+    - :attr:`Server._sessions` [:class:`Session`, ...]
+
+      - :attr:`Session._windows` [:class:`Window`, ...]
+
+        - :attr:`Window._panes` [:class:`Pane`, ...]
+
+          - :class:`Pane`
 
     When instantiated, provides the ``t`` global. stores information on live,
     running tmux server.
