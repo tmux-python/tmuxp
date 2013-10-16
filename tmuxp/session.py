@@ -47,8 +47,8 @@ class Session(TmuxObject):
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
-    def find(self, window_id):
-        ''' find window by window_id
+    def getById(self, window_id):
+        ''' get window by window_id
 
         :param window_id:
         :type window_id: string
@@ -66,7 +66,7 @@ class Session(TmuxObject):
 
         :rtype: :class:`Session`
         '''
-        self._TMUX = self.server.find(self['session_id'])._TMUX
+        self._TMUX = self.server.getById(self['session_id'])._TMUX
 
         return self
 

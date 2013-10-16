@@ -275,8 +275,8 @@ class Server(object):
     def sessions(self):
         return self._sessions
 
-    def find(self, session_id):
-        ''' find session by session_id
+    def getById(self, session_id):
+        ''' get session by session_id
 
         :param session_id:
         :type session_id: string

@@ -57,7 +57,7 @@ class Pane(TmuxObject):
         :rtype: :class:`Pane`
         '''
 
-        self._TMUX = self.window.find(self['pane_id'])._TMUX
+        self._TMUX = self.window.getById(self['pane_id'])._TMUX
 
         return self
 

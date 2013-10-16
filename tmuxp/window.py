@@ -292,7 +292,7 @@ class Window(TmuxObject):
 
         return False
 
-    def find(self, pane_id):
+    def getById(self, pane_id):
         ''' find pane by pane_id
 
         :param pane_id:
@@ -311,7 +311,7 @@ class Window(TmuxObject):
 
         :rtype: :class:`Window`
         '''
-        self._TMUX = self.server.find(self['window_id'])._TMUX
+        self._TMUX = self.server.getById(self['window_id'])._TMUX
 
         return self
 
