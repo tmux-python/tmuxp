@@ -15,7 +15,7 @@ Here you can find the recent changes to tmuxp.
 - [internal] [tests] Server is now a subclass of :class:`util.TmuxObject`.
 - [internal] [tests] subclasses of :class:`util.TmuxRelationalObject`,
   :class:`Server`, :class:`Session`, :class:`Window`, :class:`Pane` now
-  have :meth:`util.TmuxObject.getById` (similar to `.get()`_ in
+  have :meth:`util.TmuxRelationalObject.getById` (similar to `.get()`_ in
   `backbone.js`_ collection), :meth:`util.TmuxRelationalObject.where` and
   :meth:`util.TmuxRelationalObject.findWhere` (`.where()`_ and
   `.findWhere()`_ in `underscore.js`_), to easily find child objects.
