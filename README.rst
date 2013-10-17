@@ -57,7 +57,7 @@ Advanced tmux workflow:
         - :Ex
         focus: true
       - shell_command: 
-        - cowsay hi
+        - echo hi
       - shell_command: 
         - '[ -d .env -a -f .env/bin/activate ] || virtualenv .env'
         - command -v tmuxp >/dev/null 2>&1 || { pip install -e .; }
