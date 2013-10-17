@@ -22,8 +22,8 @@ using ``$ tmux -L test_case``.
 
 .. _install_dev_env:
 
-Install the latest code
------------------------
+Install the latest code from git
+--------------------------------
 
 To begin developing, check out the code from github:
 
@@ -197,6 +197,14 @@ To run test where :ref:`test_builder_visually` you may:
 
 Super power
 -----------
+
+After you :ref:`install_dev_env`, when inside the tmuxp checkout:
+
+.. code-block:: bash
+
+    $ tmuxp .
+
+this will load the ``.tmuxp.yaml`` in the root of the project.
 
 .. literalinclude:: ../.tmuxp.yaml
     :language: yaml
