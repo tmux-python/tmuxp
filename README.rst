@@ -9,13 +9,13 @@
 tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
 python objects. Features:
 
-- loading configs + switching to sessions even when inside tmux.
+- loading configs + switching to sessions even when inside tmux
 - bash / zsh / tcsh completion
 - JSON and YAML config
 - Support for pre-commands with ``shell_command_before`` to load
-  virtualenv / rvm / any other commands.
+  virtualenv / rvm / any other commands
 - Automatic renaming
-- Loading sessions directly from directory with ``$ tmuxp .``.
+- Loading sessions directly from directory with ``$ tmuxp .``
 
 .. figure:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
     :scale: 100%
