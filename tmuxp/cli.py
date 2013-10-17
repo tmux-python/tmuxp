@@ -186,7 +186,10 @@ def main():
     elif args.configs:
         if '.' in args.configs:
             args.configs.remove('.')
-            args.configs.append(config.in_cwd()[0])
+            if config.in_cwd():
+                args.configs.append(config.in_cwd()[0])
+            else:
+                print('No tmuxp configs found in current directory.')
 
         for configfile in args.configs:
             file_user = os.path.join(config_dir, configfile)
