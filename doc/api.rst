@@ -70,8 +70,6 @@ Internals
 
 .. autoclass:: tmuxp.util.TmuxMappingObject
     :members:
-    :inherited-members:
-    :show-inheritance:
 
 .. autoclass:: tmuxp.util.tmux
 
