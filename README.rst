@@ -83,11 +83,11 @@ Advanced tmux workflow:
         - vim
         focus: true
       - pwd
+      - echo 'docs built to <http://0.0.0.0:8000/_build/html>'; python -m SimpleHTTPServer
       - shell_command:
         - command -v sphinx-quickstart >/dev/null 2>&1 || { pip install -r requirements.pip; }
         - command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }
-        - watching_testrunner --basepath ./ --pattern="*.rst" make html
-        - python -m SimpleHTTPServer
+        - watching_testrunner --basepath ./ --pattern="*.rst" 'make html'
 
 see this in the `Developing and Testing`_ documentation page.
 
