@@ -3,9 +3,20 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-17
+----------
+
+- [docs] updated README docs with new project details, screenshots
+- [dev] [docs] - new example ``.tmuxp.yaml`` file updated to include
+  development workflow. Removed nodemon as the tool for checking files for
+  now.
+- [cli] Support for switching sessions from within tmux. In both cases
+  after the the session is built and if session already exists.
+
 2013-10-16
 ----------
 
+- [cli] use :meth:`util.which()` from salt.util to find tmux binary.
 - [pypi / packaging] add MANIFEST.in, fix issue where package would not
   install because missing file
 - [cli] bash / zsh completion.
