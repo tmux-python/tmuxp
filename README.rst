@@ -42,7 +42,6 @@ Advanced tmux workflow:
 
 .. code-block:: yaml
 
-    # Note, this requires $ pip install -r dev_requirements.pip
     session_name: tmuxp
     windows:
     - window_name: tmuxp
