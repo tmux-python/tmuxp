@@ -19,6 +19,7 @@ python objects. Features:
 - Load sessions from directory with ``$ tmuxp .`` to load ``.tmuxp.py`` /
   ``.tmuxp.yaml`` / ``.tmuxp.json`` and  ``$ tmuxp configfile.yaml`` when
   inside same directory.
+- Have a feature suggestion, bug,  or need help? `post an issue`_.
 
 .. figure:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
     :scale: 100%
@@ -150,3 +151,4 @@ tests           .. code-block:: bash
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
 .. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
 .. _tmux(1): http://tmux.sourceforge.net/
+.. _post an issue: https://github.com/tony/tmuxp/issues
