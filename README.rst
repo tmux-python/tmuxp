@@ -33,8 +33,17 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for YAML, JSON and python dicts.
 
-Get started now, ``$ mkdir ~/.tmuxp`` and make a file
-``~/.tmuxp/test.yaml``.
+Get started now, make sure:
+
+1.) have ``tmux`` installed.
+2.) is at least version 1.8 ``$ tmux -V``.
+3.) libyaml is installed for your distribution.
+
+.. code-block:: bash
+
+    $ pip install tmuxp
+    
+``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
 
 .. code-block:: yaml
 
