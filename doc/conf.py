@@ -11,7 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os, sphinx_bootstrap_theme
+import sys, os, cloud_sptheme
 
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('_themes'))
@@ -102,7 +102,9 @@ pygments_style = 'sphinx'
     # html_theme = 'bootstrap'
     # html_theme = 'rtd'
 
-html_theme = 'bootstrap'
+# html_theme = 'bootstrap'
+
+html_theme ='cloud'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -112,15 +114,16 @@ html_theme = 'bootstrap'
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = ['_themes']
 
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme_path = [cloud_sptheme.get_theme_dir()]
 
-html_theme_options = {
-    'bootswatch_theme': 'united',
-    'source_link_position': 'footer',
-    'navbar_links': [
-        ('Github', 'https://www.github.com/tony/tmuxp/', True)
-    ]
-}
+# html_theme_options = {
+    # 'bootswatch_theme': 'united',
+    # 'source_link_position': 'footer',
+    # 'navbar_links': [
+        # ('Github', 'https://www.github.com/tony/tmuxp/', True)
+    # ]
+# }
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

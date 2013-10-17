@@ -3,4 +3,5 @@ docutils==0.11
 sphinx==dev
 sphinxcontrib-aafig
 reportlab
-sphinx_bootstrap_theme
+#sphinx_bootstrap_theme
+cloud-sptheme
