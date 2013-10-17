@@ -38,6 +38,56 @@ Now with ``tmuxp``:
 
 Check out our `Examples`_, `Quickstart`_ and `bash completion`_ support.
 
+Advanced tmux workflow:
+
+.. code-block:: yaml
+
+    # Note, this requires $ pip install -r dev_requirements.pip
+    session_name: tmuxp
+    windows:
+    - window_name: tmuxp
+      layout: main-horizontal
+      options:
+        main-pane-height: 50
+      start_directory: ./
+      shell_command_before:
+        - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'
+      panes:
+      - shell_command: 
+        - vim
+        - :Ex
+        focus: true
+      - shell_command: 
+        - cowsay hi
+      - shell_command: 
+        - '[ -d .env -a -f .env/bin/activate ] || virtualenv .env'
+        - command -v tmuxp >/dev/null 2>&1 || { pip install -e .; }
+        - command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }
+        - watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py
+    - window_name: docs
+      layout: main-horizontal
+      options:
+        main-pane-height: 50
+      start_directory: ./
+      automatic_rename: true
+      shell_command_before: 
+        - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'
+        - command -v tmuxp >/dev/null 2>&1 || { pip install -e .; }
+        - cd ./doc
+      panes:
+      - shell_command:
+        - vim
+        focus: true
+      - pwd
+      - shell_command:
+        - command -v sphinx-quickstart >/dev/null 2>&1 || { pip install -r requirements.pip; }
+        - command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }
+
+        - watching_testrunner --basepath ./ --pattern="*.rst" make html
+        - python -m SimpleHTTPServer
+
+see this in the `Developing and Testing`_ documentation page.
+
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
 config support  yaml, json, python dict
@@ -72,6 +122,7 @@ tests           .. code-block:: bash
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
+.. _Developing and Testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer

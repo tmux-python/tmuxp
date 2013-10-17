@@ -59,8 +59,8 @@ adjust the code and the installed software will reflect the changes.
 
     $ tmuxp
 
-run_tests.py
-------------
+Test Runner
+-----------
 
 As you seen above, the ``tmuxp`` command will now be available to you,
 since you are in the virtual environment, your `PATH` environment was
@@ -172,32 +172,34 @@ Watch files and test
 You can re-run tests automatically on file edit.
 
 .. note::
-    This requires and installation of `node`_ and `npm`_ on your system!
+    This requires and installation of ``watching_testrunner`` from pypi.
 
-    be sure your in the tmuxp project and virtualenv as discussed in
-    :ref:`install_dev_env` (``source .env/bin/activate``).
-
-Install `nodemon`_:
+Install `watching_testrunner`_ from `pypi`_:
 
 .. code-block:: bash
 
-    $ sudo npm install -g nodemon
+    $ pip install watching_testrunner
 
 To run all tests upon editing any ``.py`` file:
 
 .. code-block:: bash
 
-    $ nodemon -e py --exec 'python' ./run_tests.py
+    $ watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py
 
 To run test where :ref:`test_builder_visually` you may:
 
 .. code-block:: bash
 
-    $ nodemon -e py --exec 'python' ./run_tests.py --visual
+    $ watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py --visual
 
-.. _node: http://www.nodejs.org
-.. _npm: http://www.npmjs.org
-.. _nodemon: https://github.com/remy/nodemon
+.. _watching_testrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
+.. _pypi: https://pypi.python.org/pypi
+
+Super power
+-----------
+
+.. literalinclude:: ../.tmuxp.yaml
+    :language: yaml
 
 Travis CI
 ---------
