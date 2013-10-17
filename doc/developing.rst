@@ -196,7 +196,12 @@ To run test where :ref:`test_builder_visually` you may:
 .. _pypi: https://pypi.python.org/pypi
 
 Super power
------------
+"""""""""""
+
+.. image:: _static/tmuxp-dev-screenshot.png
+    :scale: 100%
+    :width: 35%
+    :align: right
 
 After you :ref:`install_dev_env`, when inside the tmuxp checkout:
 
@@ -210,7 +215,7 @@ this will load the ``.tmuxp.yaml`` in the root of the project.
     :language: yaml
 
 Travis CI
----------
+"""""""""
 
 tmuxp uses `travis-ci`_ for continuous integration / automatic unit
 testing.
@@ -223,8 +228,7 @@ is tested against 1.8 and latest in addition to python 2.7. The
     :language: yaml
 
 Internals
-=========
-
+---------
 
 Similarities to Tmux and Pythonics
 ----------------------------------
@@ -273,14 +277,9 @@ What is a {pane,window}_index vs a {pane,window,session}_id?
 
     Window index refers to the # of the pane in the session.
 
-How tmuxp verifies state
-------------------------
-
-How does tmuxp verify session / window / pane state?
-
-Normal tests won't even require a tmux session being open already. Tests 
-assert against the freshest data, ie: :meth:`tmuxp.Server.list_sessions`,
-:meth:`tmuxp.Session.list_windows`, :meth:`tmuxp.Window.list_panes`.
+To assert pane, window and session data, tmuxp will use
+:meth:`tmuxp.Server.list_sessions`, :meth:`tmuxp.Session.list_windows`,
+:meth:`tmuxp.Window.list_panes` to update objects.
 
 Reference
 ---------

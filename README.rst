@@ -10,6 +10,11 @@ tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
 python objects, with configuration loading in JSON, YAML and
 python dict included.
 
+.. figure:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
+    :scale: 100%
+    :width: 65%
+    :align: center
+
 tmuxp works in 3 ways:
 
 - a pythonic `abstraction layer`_ on top of tmux' CLI commands

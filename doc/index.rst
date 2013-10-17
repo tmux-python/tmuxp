@@ -1,16 +1,7 @@
-.. sidebar:: $ tmuxp
-
-    .. aafig::
-
-        +--------+--------+
-        |        |        |
-        |        |        |
-        |        |        |
-        +--------+--------+
-        |        |        |
-        |        |        |
-        |        |        |
-        +--------+--------+
+.. image:: _static/tmuxp-dev-screenshot.png
+    :scale: 35%
+    :width: 100%
+    :align: right
 
 tmuxp
 =====
@@ -27,8 +18,26 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for loading YAML, JSON and python dicts.
 
-More soon? You betcha`
+Get started now, ``$ mkdir ~/.tmuxp`` and make a file
+``~/.tmuxp/test.yaml``.
 
+.. code-block:: yaml
+
+    session_name: my session
+    windows:
+    - window_name: my test window
+        panes:
+        - bash
+        - bash
+
+Now with ``tmuxp``:
+
+.. code-block:: bash
+
+    $ tmuxp test.yaml
+
+Jump right in: See `Examples`_, `Quickstart`_ and `bash completion`_
+support.
 
 Explore:
 
@@ -56,3 +65,6 @@ Indices and tables
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
 .. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
+.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
+.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
+.. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
