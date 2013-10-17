@@ -30,7 +30,6 @@ Session Object
 
         A :py:obj:`list` of session's :class:`Window` objects.
 
-
 Window Object
 -------------
 
@@ -75,6 +74,8 @@ Internals
     :show-inheritance:
 
 .. autoclass:: tmuxp.util.tmux
+
+.. automethod:: tmuxp.util.which
 
 Command Line
 ------------

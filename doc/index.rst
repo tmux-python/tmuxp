@@ -1,10 +1,10 @@
+tmuxp
+=====
+
 .. image:: _static/tmuxp-dev-screenshot.png
     :scale: 35%
     :width: 100%
     :align: right
-
-tmuxp
-=====
 
 tmuxp, a novel approach to managing :term:`tmux(1)` workspaces through
 python objects, with configuration loading in JSON, YAML and
