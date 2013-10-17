@@ -111,9 +111,9 @@ class WorkspaceBuilder(object):
                 )
 
             if self.server.has_session(self.sconf['session_name']):
-                raise exc.TmuxSessionExists('''\
-                      Session name %s is already running.
-                      ''' % self.sconf['session_name'])
+                raise exc.TmuxSessionExists(
+                    'Session name %s is already running.' % self.sconf['session_name']
+                )
             else:
                 session = self.server.new_session(session_name=self.sconf['session_name'])
 
