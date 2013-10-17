@@ -1,4 +1,2 @@
 kaptan
 colorama
-#git+https://github.com/pypa/pip.git@develop#egg=pip-dev
-#git://github.com/surfly/gevent.git@1.0rc2#egg=gevent
