@@ -14,7 +14,7 @@ windows:
   - shell_command: 
     - cowsay hi
   - shell_command: 
-    - nodemon -e py --exec 'python' run_tests.py
+    - watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py
 - window_name: docs
   layout: main-horizontal
   options:
@@ -30,6 +30,5 @@ windows:
     focus: true
   - pwd
   - shell_command:
-    - cd _build/html
     - python -m SimpleHTTPServer
-  - nodemon -e py,rst --exec 'make html'
+    - watching_testrunner --basepath ./ --pattern="*.*[py,rst]" make html
