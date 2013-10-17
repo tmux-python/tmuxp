@@ -46,9 +46,9 @@ Get started now, make sure:
     session_name: my session
     windows:
     - window_name: my test window
-        panes:
-        - bash
-        - bash
+      panes:
+        - pwd
+        - pwd
 
 Now with ``tmuxp``:
 
