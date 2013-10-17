@@ -7,13 +7,6 @@ Developing and Testing
 .. todo::
     link to sliderepl or ipython notebook slides
 
-.. important::
-
-    We are trying to make tmuxp stable and friendly as possible. If
-    something in these instructions is not working, or you need help,
-    please file an `issue on github`_ with your tmux version ``tmux -V``,
-    OS, and any other information that would be helpful to assess.
-
 Our tests are inside ``./tmuxp/testsuite``. Tests are implemented using
 :py:mod:`unittest`.
 
@@ -75,8 +68,6 @@ You probably didn't see anything but tests scroll by.
 
 If you found a problem or are trying to write a test, you can file an
 `issue on github`_.
-
-.. _issue on github: https://github.com/tony/tmuxp/issues
 
 .. _test_specific_tests:
 
@@ -200,8 +191,8 @@ Super power
 
 .. image:: _static/tmuxp-dev-screenshot.png
     :scale: 100%
-    :width: 35%
-    :align: right
+    :width: 60%
+    :align: center
 
 After you :ref:`install_dev_env`, when inside the tmuxp checkout:
 
@@ -290,3 +281,4 @@ Reference
 .. _travis-ci: http://www.travis-ci.org
 .. _travis build site: http://www.travis-ci.org/tony/tmuxp
 .. _.travis.yml: https://github.com/tony/tmuxp/blob/master/.travis.yml
+.. _issue on github: https://github.com/tony/tmuxp/issues

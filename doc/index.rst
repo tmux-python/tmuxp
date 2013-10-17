@@ -6,9 +6,19 @@ tmuxp
     :width: 100%
     :align: right
 
-tmuxp, a novel approach to managing :term:`tmux(1)` workspaces through
-python objects, with configuration loading in JSON, YAML and
-:py:obj:`dict` included.
+tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
+python objects. Features:
+
+- resume session from config file, if already built.
+- load configs + build workspace + switching to new session even when
+  inside tmux
+- bash / zsh / tcsh completion
+- JSON, YAML and :py:obj:`dict` config
+- Support for pre-commands with ``shell_command_before`` to load
+  virtualenv / rvm / any other commands
+- Load sessions from directory with ``$ tmuxp .`` to load ``.tmuxp.py`` /
+  ``.tmuxp.yaml`` / ``.tmuxp.json`` and  ``$ tmuxp configfile.yaml`` when
+  inside same directory.
 
 tmuxp works in 3 ways:
 
@@ -18,8 +28,17 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for loading YAML, JSON and python dicts.
 
-Get started now, ``$ mkdir ~/.tmuxp`` and make a file
-``~/.tmuxp/test.yaml``.
+Get started now, make sure:
+
+1.) have ``tmux`` installed.
+2.) is at least version 1.8 ``$ tmux -V``.
+3.) libyaml is installed for your distribution.
+
+.. code-block:: bash
+
+    $ pip install tmuxp
+    
+``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
 
 .. code-block:: yaml
 
@@ -68,3 +87,4 @@ Indices and tables
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
+.. _tmux(1): http://tmux.sourceforge.net/
