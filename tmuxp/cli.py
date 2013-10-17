@@ -112,9 +112,19 @@ def build_workspace(config_file, args):
 
     try:
         builder.build()
+
+        if 'TMUX' in os.environ:
+            if query_yes_no('Already inside TMUX, load session?'):
+                del os.environ['TMUX']
+                os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig['session_name'])
+
         os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig['session_name'])
     except exc.TmuxSessionExists as e:
-        attach_session = query_yes_no(e.message + ' attach?')
+        attach_session = query_yes_no(e.message + ' Attach?')
+
+        if 'TMUX' in os.environ:
+            del os.environ['TMUX']
+            os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig['session_name'])
 
         if attach_session:
             os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig['session_name'])
