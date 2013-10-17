@@ -2,7 +2,7 @@ session_name: my session
 windows:
   panes:
     - shell_commands:
-      - bash
+      - pwd
       - top
     - shell_commands:
-      - bash
+      - pwd

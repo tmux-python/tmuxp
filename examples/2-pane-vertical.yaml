@@ -2,5 +2,5 @@ session_name: my session
 windows:
   - window_name: my test window
     panes:
-      - bash
-      - bash
+      - pwd
+      - pwd
