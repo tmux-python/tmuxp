@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class ServerTest(unittest.TestCase):
+
     def test_thing(self):
         pass
 

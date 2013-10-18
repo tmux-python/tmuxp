@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 @unittest.skip('test')
 class TmuxObjectTest(TmuxTestCase):
+
     ''' test the :class:`TmuxRelationalObject` base class object.
     '''
 
@@ -27,21 +28,26 @@ class TmuxObjectTest(TmuxTestCase):
             logger.error(session_id)
 
             self.assertEqual(t.findWhere({'session_id': session_id}), session)
-            self.assertIsInstance(t.findWhere({'session_id': session_id}), Session)
+            self.assertIsInstance(t.findWhere({
+                                  'session_id': session_id}), Session)
 
             # session.findWhere
             for window in session.windows:
                 window_id = window.get('window_id')
 
-                self.assertEqual(session.findWhere({'window_id': window_id}), window)
-                self.assertIsInstance(session.findWhere({'window_id': window_id}), Window)
+                self.assertEqual(session.findWhere(
+                    {'window_id': window_id}), window)
+                self.assertIsInstance(session.findWhere(
+                    {'window_id': window_id}), Window)
 
                 # window.findWhere
                 for pane in window.panes:
                     pane_id = pane.get('pane_id')
 
-                    self.assertEqual(window.findWhere({'pane_id': pane_id}), pane)
-                    self.assertIsInstance(window.findWhere({'pane_id': pane_id}), Pane)
+                    self.assertEqual(window.findWhere(
+                        {'pane_id': pane_id}), pane)
+                    self.assertIsInstance(window.findWhere(
+                        {'pane_id': pane_id}), Pane)
 
     def test_findWhere_multiple_attrs(self):
         '''.findWhere returns objects with multiple attributes
@@ -183,9 +189,9 @@ class ReferenceTestCase(TmuxTestCase):
 
     @unittest.skip('not doing yet, complete unit tests first')
     def test_mutability(self):
-        #window = self.session.attached_window()
+        # window = self.session.attached_window()
 
-        #window.split_window()  # create second pane
+        # window.split_window()  # create second pane
 
         for session in t._sessions:
             session_id = session.get('session_id')
@@ -211,7 +217,8 @@ class ReferenceTestCase(TmuxTestCase):
 
                 if last_window:
                     self.assertEqual(last_window.session, window.session)
-                    self.assertEqual(id(last_window.session), id(window.session))
+                    self.assertEqual(id(
+                        last_window.session), id(window.session))
                     self.assertNotEqual(last_window, window)
                     self.assertNotEqual(id(last_window), id(window))
                 last_window = window

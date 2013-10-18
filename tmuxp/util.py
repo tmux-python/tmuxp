@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class tmux(object):
+
     ''':py:mod:`subprocess` for :term:`tmux(1)`.
 
     Usage:
@@ -69,10 +70,12 @@ class tmux(object):
             if not self.stdout:
                 self.stdout = self.stderr[0]
 
-        logging.debug('self.stdout for %s: \n%s' % (' '.join(cmd), self.stdout))
+        logging.debug('self.stdout for %s: \n%s' %
+                      (' '.join(cmd), self.stdout))
 
 
 class TmuxMappingObject(collections.MutableMapping):
+
     '''
     Base: :py:class:`collections.MutableMapping`
 
@@ -106,6 +109,7 @@ class TmuxMappingObject(collections.MutableMapping):
 
 
 class TmuxRelationalObject(object):
+
     '''
     Manages collection of child objects  (a :class:`Server` has a collection of
     :class:`Session` objects, a :class:`Session` has collection of
@@ -220,7 +224,7 @@ except NameError:
     str = str
     unicode = str
     bytes = bytes
-    basestring = (str,bytes)
+    basestring = (str, bytes)
 else:
     # 'unicode' exists, must be Python 2
     str = str

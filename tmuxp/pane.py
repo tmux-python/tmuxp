@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
+
     '''
         ``tmux(1)`` pane.
 
@@ -42,7 +43,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         self._pane_id = kwargs['pane_id']
 
         self.server._update_panes()
-        #self.update(**kwargs)
+        # self.update(**kwargs)
 
     @property
     def _TMUX(self, *args):
@@ -63,11 +64,11 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return list(filter(by, self.server._panes))[0]
 
-    #def __getitem__(self, key):
+    # def __getitem__(self, key):
     #    return
 
     def tmux(self, *args, **kwargs):
-        #if '-t' not in kwargs:
+        # if '-t' not in kwargs:
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
@@ -91,14 +92,16 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Pane`
 
         '''
-        #if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
+        # if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
         #    target_pane = "%s.%s" % (self.target, target_pane)
 
-        #logger.error('resize-pane', '-t%s' % self.target)
+        # logger.error('resize-pane', '-t%s' % self.target)
         if 'height' in kwargs:
-            proc = self.tmux('resize-pane', '-t%s' % self.target, '-y%s' % int(kwargs['height']))
+            proc = self.tmux('resize-pane', '-t%s' %
+                             self.target, '-y%s' % int(kwargs['height']))
         elif 'width' in kwargs:
-            proc = self.tmux('resize-pane', '-t%s' % self.target, '-x%s' % int(kwargs['width']))
+            proc = self.tmux('resize-pane', '-t%s' %
+                             self.target, '-x%s' % int(kwargs['width']))
         else:
             proc = self.tmux('resize-pane', '-t%s' % self.target, args[0])
 
@@ -116,7 +119,8 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     @property
     def target(self):
-        #return "%s:%s.%s" % (self.session.get('session_id'), self.get('window_id'), self.get('pane_index'))
+        # return "%s:%s.%s" % (self.session.get('session_id'),
+        # self.get('window_id'), self.get('pane_index'))
         return self.get('pane_id')
 
     def __repr__(self):

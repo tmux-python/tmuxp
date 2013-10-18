@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ServerTest(TmuxTestCase):
+
     def test_has_session(self):
         self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
         self.assertFalse(t.has_session('asdf2314324321'))

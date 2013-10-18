@@ -70,7 +70,8 @@ class ImportExportTest(unittest.TestCase):
         sampleconfig = config.inline(sampleconfigdict)
         configparser.import_config(sampleconfig)
 
-        yaml_config_data = configparser.export('yaml', indent=2, default_flow_style=False)
+        yaml_config_data = configparser.export(
+            'yaml', indent=2, default_flow_style=False)
 
         buf = open(yaml_config_file, 'w')
         buf.write(yaml_config_data)
@@ -113,7 +114,7 @@ class ImportExportTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        #if os.path.isdir(TMUXP_DIR):
+        # if os.path.isdir(TMUXP_DIR):
         #    shutil.rmtree(TMUXP_DIR)
         logging.debug('wiped %s' % TMUXP_DIR)
 
@@ -193,6 +194,7 @@ class ExpandTest(unittest.TestCase):
 
 
 class InlineTest(unittest.TestCase):
+
     '''tests for :meth:`config.inline()`.
     '''
 
@@ -243,7 +245,7 @@ class InlineTest(unittest.TestCase):
                 'window_name': 'logging',
                 'panes': [
                     {'shell_command': 'tail -F /var/log/syslog',
-                     'start_directory':'/var/log'}
+                     'start_directory': '/var/log'}
                 ]
             },
             {
@@ -586,8 +588,6 @@ class ConfigConsistency(unittest.TestCase):
 
         with self.assertRaisesRegexp(exc.ConfigError, 'missing "window_name"'):
             config.check_consistency(sconfig)
-
-
 
 
 if __name__ == '__main__':

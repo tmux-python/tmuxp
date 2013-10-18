@@ -36,7 +36,8 @@ def check_consistency(sconf):
             raise exc.ConfigError('config window is missing "window_name"')
 
         if not 'panes' in window:
-            raise exc.ConfigError('config window %s requires list of panes' % window['window_name'])
+            raise exc.ConfigError(
+                'config window %s requires list of panes' % window['window_name'])
 
     return True
 

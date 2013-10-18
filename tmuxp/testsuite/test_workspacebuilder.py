@@ -147,35 +147,39 @@ class FocusTest(TmuxTestCase):
 
         self.assertEqual(
             self.session.attached_window().get('window_name'),
-           'focused window'
+            'focused window'
         )
 
-        pane_base_index = self.session.attached_window().show_window_option('base-pane-index')
+        pane_base_index = self.session.attached_window().show_window_option(
+            'base-pane-index')
 
         if not pane_base_index:
             pane_base_index = 0
         else:
             pane_base_index = int(pane_base_index)
 
-
         # logger.error('attached window: %s' % (self.session.attached_window()))
         # logger.error('attached window: %s' % (self.session.attached_window()._TMUX))
-        # logger.error('attached pane: %s' % (self.session.attached_window().attached_pane()))
+        # logger.error('attached pane: %s' %
+        # (self.session.attached_window().attached_pane()))
         import time
         time.sleep(1)
         self.session.list_windows()
         self.session.attached_window().list_panes()
-        logger.error('attached pane: %s' % (self.session.attached_window().attached_pane()))
-        logger.error('attached pane: %s' % (self.session.attached_window().attached_pane())._TMUX)
-        logger.error('attached pane: %s' % (self.session.attached_window().list_panes()))
-        logger.error('attached pane: %s' % (self.session.attached_window().where({'pane_active': '1'})[0]._TMUX))
-
-
+        logger.error('attached pane: %s' % (
+            self.session.attached_window().attached_pane()))
+        logger.error('attached pane: %s' % (
+            self.session.attached_window().attached_pane())._TMUX)
+        logger.error('attached pane: %s' % (
+            self.session.attached_window().list_panes()))
+        logger.error('attached pane: %s' % (
+            self.session.attached_window().where({'pane_active': '1'})[0]._TMUX))
 
         for pane in self.session.attached_window().panes:
             logger.error(
                 '%s and %s and %s, total panes %s' %
-                (pane, pane['pane_index'], pane.window.get('window_name'), len(self.session.attached_window().list_panes()))
+                (pane, pane['pane_index'], pane.window.get('window_name'), len(
+                    self.session.attached_window().list_panes()))
             )
 
         self.assertEqual(
@@ -184,8 +188,8 @@ class FocusTest(TmuxTestCase):
         )
 
 
-
 class WindowOptions(TmuxTestCase):
+
     '''sample config with no session name'''
 
     yaml_config = '''
@@ -269,5 +273,5 @@ class TestsToDo(object):
 
 
 if __name__ == '__main__':
-    #t.socket_name = 'tmuxp_test'
+    # t.socket_name = 'tmuxp_test'
     unittest.main()

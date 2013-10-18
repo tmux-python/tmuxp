@@ -12,7 +12,7 @@ import sys
 import argparse
 import logging
 import kaptan
-import config
+from . import config
 from distutils.util import strtobool
 from . import log, util, exc, WorkspaceBuilder, Server
 
@@ -31,8 +31,8 @@ def query_yes_no(question, default="yes"):
 
     License MIT: http://code.activestate.com/recipes/577058/
     """
-    valid = {"yes":"yes",   "y":"yes",  "ye":"yes",
-             "no":"no",     "n":"no"}
+    valid = {"yes": "yes",   "y": "yes",  "ye": "yes",
+             "no": "no",     "n": "no"}
     if default == None:
         prompt = " [y/n] "
     elif default == "yes":
@@ -42,7 +42,7 @@ def query_yes_no(question, default="yes"):
     else:
         raise ValueError("invalid default answer: '%s'" % default)
 
-    while 1:
+    while True:
         sys.stdout.write(question + prompt)
         choice = raw_input().lower()
         if default is not None and choice == '':
@@ -50,8 +50,9 @@ def query_yes_no(question, default="yes"):
         elif choice in valid.keys():
             return strtobool(valid[choice])
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "\
+            sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
+
 
 def setupLogger(logger=None, level='INFO'):
     '''setup logging for CLI use.
@@ -116,18 +117,22 @@ def build_workspace(config_file, args):
         if 'TMUX' in os.environ:
             if query_yes_no('Already inside TMUX, load session?'):
                 del os.environ['TMUX']
-                os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig['session_name'])
+                os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig[
+                         'session_name'])
 
-        os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig['session_name'])
+        os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
+                 'session_name'])
     except exc.TmuxSessionExists as e:
         attach_session = query_yes_no(e.message + ' Attach?')
 
         if 'TMUX' in os.environ:
             del os.environ['TMUX']
-            os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig['session_name'])
+            os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig[
+                     'session_name'])
 
         if attach_session:
-            os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig['session_name'])
+            os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
+                     'session_name'])
         return
 
 
@@ -163,8 +168,9 @@ def main():
     parser.add_argument('-S', dest='socket_path', default=None,
                         metavar='socket-path')
 
-    parser.add_argument('-l', '--list', dest='list_configs', action='store_true',
-                        help='List config files available')
+    parser.add_argument(
+        '-l', '--list', dest='list_configs', action='store_true',
+        help='List config files available')
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         help='Log level')
 

@@ -140,7 +140,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         if process.stderr:
             if isinstance(process.stderr, list) and len(process.stderr) == int(1):
                 process.stderr = process.stderr[0]
-            raise ValueError('tmux set-window-option stderr: %s' % process.stderr)
+            raise ValueError(
+                'tmux set-window-option stderr: %s' % process.stderr)
 
     def show_window_options(self, option=None):
         '''
@@ -187,7 +188,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         ).stdout
 
         if window_option:
-            window_option = [tuple(item.split(' ')) for item in window_option][0]
+            window_option = [tuple(item.split(' '))
+                             for item in window_option][0]
         else:
             return None
 
@@ -204,13 +206,13 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param new_name: name of the window
         :type new_name: string
         '''
-        #new_name = pipes.quote(new_name)
+        # new_name = pipes.quote(new_name)
 
         import shlex
         lex = shlex.shlex(new_name)
         lex.escape = ' '
         lex.whitespace_split = False
-        #new_name = '\ '.join(new_name.split())
+        # new_name = '\ '.join(new_name.split())
 
         try:
             self.tmux(
@@ -236,7 +238,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
-        #if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
+        # if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
         #    target_pane = "%s.%s" % (self.target, target_pane)
 
         proc = self.tmux('select-pane', '-t%s' % target_pane)
@@ -272,7 +274,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         '''
 
         pformats = ['session_name', 'session_id',
-                   'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
         #'-t%s' % self.attached_pane().get('pane_id'),
@@ -313,34 +315,22 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             if 'pane_active' in pane:
                 # for now pane_active is a unicode
                 if pane.get('pane_active') == '1':
-                    #return Pane(window=self, **pane)
+                    # return Pane(window=self, **pane)
                     return Pane(window=self, **pane)
                 else:
                     continue
 
-        # if the client is not on the window and none is active, assume the
-        # first pane.
-        if panes:
-            return panes[0]
-
-        return False
-
     @property
     def _panes(self):
-
         panes = self.server._update_panes()._panes
 
-        assert(self['session_id'])
-        assert(self['window_id'])
-
         panes = [
-           p for p in panes if p['session_id'] == self.get('session_id')
+            p for p in panes if p['session_id'] == self.get('session_id')
         ]
         panes = [
-           p for p in panes if p['window_id'] == self.get('window_id')
+            p for p in panes if p['window_id'] == self.get('window_id')
         ]
         return panes
-
 
     @property
     def panes(self):
@@ -350,7 +340,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         '''
         panes = self._panes
 
-        #self._panes[:] = []
+        # self._panes[:] = []
 
         return [Pane(window=self, **pane) for pane in panes]
 

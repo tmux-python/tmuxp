@@ -73,6 +73,7 @@ class NewTest(TmuxTestCase):
 
 
 class NewTest2(TmuxTestCase):
+
     def test_newest_pane_data(self):
         # self.session.select_window(1)
         #
@@ -96,6 +97,7 @@ class NewTest2(TmuxTestCase):
 
 
 class NewTest3(TmuxTestCase):
+
     def test_attached_pane(self):
         '''Window.attached_window() returns active Pane'''
 
@@ -113,6 +115,7 @@ class NewTest4(TmuxTestCase):
         self.assertEqual(2, len(window.panes))
         self.assertIsInstance(pane, Pane)
 
+
 class RenameTest(TmuxTestCase):
 
     window_name_before = 'test'
@@ -121,7 +124,8 @@ class RenameTest(TmuxTestCase):
     def test_window_rename(self):
         '''Window.rename_window.rename_window()'''
         self.session.set_option('automatic-rename', 'off')
-        window = self.session.new_window(window_name=self.window_name_before, attach=True)
+        window = self.session.new_window(
+            window_name=self.window_name_before, attach=True)
         t._update_sessions()
 
         self.assertEqual(window, self.session.attached_window())

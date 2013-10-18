@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class WorkspaceBuilder(object):
+
     '''
     Build tmux workspace from a configuration. Creates and names windows, sets
     options, splits windows into panes.
@@ -112,10 +113,12 @@ class WorkspaceBuilder(object):
 
             if self.server.has_session(self.sconf['session_name']):
                 raise exc.TmuxSessionExists(
-                    'Session name %s is already running.' % self.sconf['session_name']
+                    'Session name %s is already running.' % self.sconf[
+                        'session_name']
                 )
             else:
-                session = self.server.new_session(session_name=self.sconf['session_name'])
+                session = self.server.new_session(
+                    session_name=self.sconf['session_name'])
 
             assert(self.sconf['session_name'] == session.get('session_name'))
 
@@ -151,7 +154,7 @@ class WorkspaceBuilder(object):
                 window_name = wconf['window_name']
 
             if i == int(1):  # if first window, use window 1
-                #w = s.select_window(1)
+                # w = s.select_window(1)
                 w = s.attached_window()
                 w = w.rename_window(window_name)
             else:

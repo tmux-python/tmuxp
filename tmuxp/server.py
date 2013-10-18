@@ -184,7 +184,7 @@ class Server(TmuxRelationalObject):
         :rtype: list of :class:`Pane`
         '''
         pformats = ['session_name', 'session_id',
-                   'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
         # if isinstance(self.get('window_id'), basestring):
@@ -207,7 +207,7 @@ class Server(TmuxRelationalObject):
         a list of dicts'''
 
         pformats = ['session_name', 'session_id',
-                   'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id'] + formats.PANE_FORMATS
 
         panes = self._list_panes()
 
@@ -508,7 +508,6 @@ class Server(TmuxRelationalObject):
         else:
             session_info = proc.stdout[0]
 
-
         if env:
             os.environ['TMUX'] = env
 
@@ -520,7 +519,7 @@ class Server(TmuxRelationalObject):
 
         session = Session(server=self, **session_info)
 
-        #self._sessions.append(session)
+        # self._sessions.append(session)
         self._update_sessions()
 
         return session

@@ -31,9 +31,10 @@ def bootstrap():
 
     # assert session_list == t.sessions
 
-    # # find current sessions prefixed with tmuxp
+    # find current sessions prefixed with tmuxp
     # old_test_sessions = [s.get('session_name') for s in session_list
-                        # if s.get('session_name').startswith(TEST_SESSION_PREFIX)]
+                        # if
+                        # s.get('session_name').startswith(TEST_SESSION_PREFIX)]
 
     # other_sessions = [s.get('session_name') for s in session_list
                       # if not s.get('session_name').startswith(
@@ -55,17 +56,14 @@ def bootstrap():
         logger.error(session.get('session_id'))
         t.switch_client(session.get('session_id'))
     except Exception:
-        #t.attach_session(session.get('session_id'))
+        # t.attach_session(session.get('session_id'))
         pass
     t._update_sessions()
-
-
 
     # for old_test_session in old_test_sessions:
         # logger.debug('Old test test session %s found. Killing it.' %
                       # old_test_session)
         # t.kill_session(old_test_session)
-
     assert TEST_SESSION_NAME == session.get('session_name')
 
     return (TEST_SESSION_NAME, session)
@@ -89,7 +87,7 @@ class TmuxTestCase(unittest.TestCase):
             t.tmux('kill-server')
 
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
-        #except TmuxNoClientsRunning:
+        # except TmuxNoClientsRunning:
         #    logger.error('test: TmuxNoClientsRunning')
         #    cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
@@ -97,7 +95,7 @@ class TmuxTestCase(unittest.TestCase):
             logger.error(e)
 
             logger.error(traceback.print_exc())
-            #raise Exception(e)
+            # raise Exception(e)
         return
 
     @classmethod

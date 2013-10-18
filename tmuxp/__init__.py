@@ -10,8 +10,6 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
-#__import__('pkg_resources').declare_namespace(__name__)
-
 from .session import Session
 from .server import Server
 from .window import Window

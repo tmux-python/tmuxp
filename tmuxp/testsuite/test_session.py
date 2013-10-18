@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class SessionTest(TmuxTestCase):
+
     def test_has_session(self):
         '''Server.has_session returns True if has session_name exists'''
         self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
@@ -25,7 +26,8 @@ class SessionTest(TmuxTestCase):
         '''Session.select_window moves window'''
         # get the current window_base_index, since different user tmux config
         # may start at 0 or 1, or whatever they want.
-        window_base_index = int(self.session.attached_window().get('window_index'))
+        window_base_index = int(
+            self.session.attached_window().get('window_index'))
 
         window = self.session.new_window(window_name='test_window')
         window_count = len(self.session._windows)
@@ -34,7 +36,7 @@ class SessionTest(TmuxTestCase):
 
         self.assertEqual(len(self.session._windows), window_count)
 
-        ### tmux selects a window, moves to it, shows it as attached_window
+        # tmux selects a window, moves to it, shows it as attached_window
         selected_window1 = self.session.select_window(window_base_index)
         self.assertIsInstance(selected_window1, Window)
         attached_window1 = self.session.attached_window()
@@ -42,7 +44,8 @@ class SessionTest(TmuxTestCase):
         self.assertEqual(selected_window1, attached_window1)
         self.assertEqual(selected_window1.__dict__, attached_window1.__dict__)
 
-        ### again: tmux selects a window, moves to it, shows it as attached_window
+        # again: tmux selects a window, moves to it, shows it as
+        # attached_window
         selected_window2 = self.session.select_window(window_base_index + 1)
         self.assertIsInstance(selected_window2, Window)
         attached_window2 = self.session.attached_window()
@@ -50,18 +53,21 @@ class SessionTest(TmuxTestCase):
         self.assertEqual(selected_window2, attached_window2)
         self.assertEqual(selected_window2.__dict__, attached_window2.__dict__)
 
-        ### assure these windows were really different
+        # assure these windows were really different
         self.assertNotEqual(selected_window1, selected_window2)
-        self.assertNotEqual(selected_window1.__dict__, selected_window2.__dict__)
+        self.assertNotEqual(
+            selected_window1.__dict__, selected_window2.__dict__)
 
     def test_select_window_returns_Window(self):
         '''Session.select_window returns Window object'''
 
         window_count = len(self.session._windows)
         self.assertEqual(len(self.session._windows), window_count)
-        window_base_index = int(self.session.attached_window().get('window_index'))
+        window_base_index = int(
+            self.session.attached_window().get('window_index'))
 
-        self.assertIsInstance(self.session.select_window(window_base_index), Window)
+        self.assertIsInstance(self.session.select_window(
+            window_base_index), Window)
 
     def test_attached_window(self):
         '''Session.attached_window() returns Window'''
@@ -77,21 +83,25 @@ class SessionTest(TmuxTestCase):
         self.session.rename_session(test_name)
         self.assertEqual(self.session.get('session_name'), test_name)
         self.session.rename_session(self.TEST_SESSION_NAME)
-        self.assertEqual(self.session.get('session_name'), self.TEST_SESSION_NAME)
+        self.assertEqual(self.session.get(
+            'session_name'), self.TEST_SESSION_NAME)
 
 
 class SessionCleanTest(TmuxTestCase):
+
     @unittest.skip("not working yet")
     def test_is_session_clean(self):
         self.assertEqual(self.session.is_clean(), True)
         self.session.attached_window().attached_pane().send_keys('top')
         sleep(.4)
         self.session.attached_window().list_panes()
-        self.session.attached_window().attached_pane().send_keys('C-c', enter=False)
+        self.session.attached_window().attached_pane().send_keys(
+            'C-c', enter=False)
         self.assertEqual(self.session.is_clean(), False)
 
 
 class SessionNewTest(TmuxTestCase):
+
     def test_new_session(self):
         '''Server.new_session creates new session'''
         new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
@@ -99,6 +109,7 @@ class SessionNewTest(TmuxTestCase):
 
         self.assertIsInstance(new_session, Session)
         self.assertEqual(new_session.get('session_name'), new_session_name)
+
 
 class Options(TmuxTestCase):
 

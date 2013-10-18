@@ -17,6 +17,7 @@ TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
 class StartupTest(unittest.TestCase):
+
     '''test startup_cli()'''
 
     def setUp(self):
@@ -39,6 +40,7 @@ class StartupTest(unittest.TestCase):
 
 
 class FindConfigsTest(unittest.TestCase):
+
     '''test in_dir() test'''
 
     def setUp(self):
@@ -128,7 +130,6 @@ class FindConfigsTest(unittest.TestCase):
         os.chdir(current_dir)
         if os.path.isdir(tmp_dir):
             shutil.rmtree(tmp_dir)
-
 
     @classmethod
     def tearDownClass(cls):
