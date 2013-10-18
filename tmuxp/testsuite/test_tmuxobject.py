@@ -176,5 +176,48 @@ class TmuxObjectTest(TmuxTestCase):
                     ))
 
 
+class ReferenceTestCase(TmuxTestCase):
+
+    def test_mutability(self):
+        #window = self.session.attached_window()
+
+        #window.split_window()  # create second pane
+
+        for session in t.list_sessions():
+            session_id = session.get('session_id')
+            session_name = session.get('session_name')
+            get_by_id = t.getById(session_id)
+
+            for x in range(random.randint(1, 6)):
+                window = session.new_window()
+
+            for window in session.list_windows():
+                for y in range(random.randint(1, 3)):
+                    try:
+                        pane = window.split_window()
+                    except Exception as e:
+                        logger.info(e)
+
+            # session.getById
+            last_window = None
+            for window in session.list_windows():
+                window_id = window.get('window_id')
+                window_index = window.get('window_index')
+
+                if last_window:
+                    self.assertEqual(last_window.session, window.session)
+                    self.assertEqual(id(last_window.session), id(window.session))
+                    self.assertNotEqual(last_window, window)
+                    self.assertNotEqual(id(last_window), id(window))
+                    logger.error(last_window)
+                last_window = window
+
+                # window.getById
+                for pane in window.list_panes():
+                    pane_id = pane.get('pane_id')
+                    pane_tty = pane.get('pane_tty')
+
+                    get_by_id = window.getById(pane_id)
+
 if __name__ == '__main__':
     unittest.main()

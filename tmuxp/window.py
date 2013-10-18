@@ -270,7 +270,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         pane = self.tmux(
             'split-window',
             *tmux_args
-        ).stdout[0]
+        )
+
+        if pane.stderr:
+            raise Exception(pane.stderr)
+
+        pane = pane.stdout[0]
 
         # zip and map the results into the dict of formats used above
         pane = dict(zip(formats, pane.split('\t')))
