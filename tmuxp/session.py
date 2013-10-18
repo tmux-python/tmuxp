@@ -42,7 +42,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         self._session_id = kwargs['session_id']
 
 
-        self.server._update_windows()
+        #self.server._update_windows()
 
     @property
     def _TMUX(self, *args):
