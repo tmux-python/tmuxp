@@ -245,8 +245,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return self.attached_pane()
 
-
-
     def split_window(self, attach=True):
         '''
         Splits window. Returns the created :class:`Pane`.

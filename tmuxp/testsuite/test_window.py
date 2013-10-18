@@ -52,7 +52,9 @@ class NewTest(TmuxTestCase):
         # len(self.session.attached_window().panes))
         for w in self.session.windows:
             self.assertIsInstance(w, Window)
-        self.assertIsInstance(self.session.attached_window(), Window)
+        window = self.session.attached_window()
+        self.assertIsInstance(window, Window)
+        pane = window.split_window()
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(1)
