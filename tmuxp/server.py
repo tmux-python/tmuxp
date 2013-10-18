@@ -119,11 +119,7 @@ class Server(TmuxRelationalObject):
 
         :rtype: :class:`session`
         '''
-        new_sessions = self.server._update_sessions()._sessions
-
-        new_sessions = [
-           s for s in new_sessions if w['session_id'] == self.get('session_id')
-        ]
+        new_sessions = self._update_sessions()._sessions
 
         return [Session(server=self, **session) for session in new_sessions]
     list_children = sessions
@@ -489,15 +485,30 @@ class Server(TmuxRelationalObject):
         if not attach:
             tmux_args += ('-d',)
 
-        session_info = self.tmux(
+        proc = self.tmux(
             'new-session',
             *tmux_args
         )
 
-        if session_info.stderr:
-            raise Exception(session_info.stderr)
+        if proc.stderr:
+            if 'unknown option -- P' in proc.stderr[0]:
+                proc = self.tmux(
+                    'new-session',
+                    '-s%s' % session_name,
+                )
 
-        session_info = session_info.stdout[0]
+                if proc.stderr:
+                    raise Exception(proc.stderr)
+                else:
+                    self._update_sessions()
+                    self.findWhere({
+                        'session_name': session_name
+                    })
+            else:
+                raise Exception(proc.stderr)
+        else:
+            session_info = proc.stdout[0]
+
 
         if env:
             os.environ['TMUX'] = env
