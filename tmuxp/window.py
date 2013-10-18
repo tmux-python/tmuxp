@@ -12,9 +12,8 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import pipes
 from .pane import Pane
-from .formats import PANE_FORMATS
 
-from . import log, util
+from . import util, formats
 import logging
 
 logger = logging.getLogger(__name__)
@@ -273,9 +272,9 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Pane`
         '''
 
-        formats = ['session_name', 'session_id',
-                   'window_index', 'window_id'] + PANE_FORMATS
-        tmux_formats = ['#{%s}\t' % format for format in formats]
+        pformats = ['session_name', 'session_id',
+                   'window_index', 'window_id'] + formats.PANE_FORMATS
+        tmux_formats = ['#{%s}\t' % f for f in pformats]
 
         #'-t%s' % self.attached_pane().get('pane_id'),
         # 2013-10-18 LOOK AT THIS, rm'd it..
@@ -298,7 +297,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         pane = pane.stdout[0]
 
-        pane = dict(zip(formats, pane.split('\t')))
+        pane = dict(zip(pformats, pane.split('\t')))
 
         # clear up empty dict
         pane = dict((k, v) for k, v in pane.iteritems() if v)

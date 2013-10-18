@@ -9,10 +9,7 @@
     :license: BSD, see LICENSE for details
 """
 from __future__ import absolute_import, division, print_function, with_statement
-
-from .formats import PANE_FORMATS
-
-from . import log, util
+from . import util, formats
 import logging
 
 logger = logging.getLogger(__name__)

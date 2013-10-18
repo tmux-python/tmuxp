@@ -13,8 +13,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 import os
 from .util import tmux, TmuxRelationalObject
 from .session import Session
-
-from . import log, formats
+from . import formats
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,15 +41,11 @@ class Server(TmuxRelationalObject):
     config_file = None
     childIdAttribute = 'session_id'
 
-    def __init__(self,
-                 socket_name=None,
-                 socket_path=None,
-                 config_file=None,
+    def __init__(self, socket_name=None, socket_path=None, config_file=None,
                  **kwargs):
         self._windows = []
         self._panes = []
         self._sessions = []
-        self.children = self.sessions
 
         if socket_name:
             self.socket_name = socket_name
@@ -129,8 +124,6 @@ class Server(TmuxRelationalObject):
         new_sessions = [
            s for s in new_sessions if w['session_id'] == self.get('session_id')
         ]
-
-        #self._sessions[:] = []
 
         return [Session(server=self, **session) for session in new_sessions]
     list_children = sessions

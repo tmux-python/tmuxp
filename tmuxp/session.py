@@ -12,10 +12,8 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import pipes
 from .window import Window
-from .formats import WINDOW_FORMATS, SESSION_FORMATS
 from .exc import TmuxSessionExists
-
-from . import log, util
+from . import util, formats
 import logging
 logger = logging.getLogger(__name__)
 
@@ -41,7 +39,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise ValueError('Session requires a `session_id`')
         self._session_id = kwargs['session_id']
 
-
         self.server._update_windows()
 
     @property
@@ -62,7 +59,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                 return True
 
         return list(filter(by, self.server._sessions))[0]
-
 
     def tmux(self, *args, **kwargs):
         # if '-t' not in kwargs:
@@ -115,8 +111,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                        default True.
         :param type: bool
         '''
-        formats = ['session_name', 'session_id'] + WINDOW_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
+        wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
+        tmux_formats = ['#{%s}' % f for f in wformats]
 
         window_args = (
             '-t%s' % self.get('session_id'),
@@ -134,7 +130,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         window = window.stdout[0]
 
-        window = dict(zip(formats, window.split('\t')))
+        window = dict(zip(wformats, window.split('\t')))
 
         # clear up empty dict
         window = dict((k, v) for k, v in window.iteritems() if v)
@@ -169,7 +165,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         proc = self.tmux('kill-window', target)
 
         if proc.stderr:
-            raise Exception(pane.stderr)
+            raise Exception(proc.stderr)
 
         self.server._update_windows()
 
