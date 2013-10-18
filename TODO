@@ -1,13 +1,42 @@
 Roadmap
 -------
 
-To do
+Notes
 """""
 
 - 1.6 introduces formatters -F. tmux 1.7 may not support -P for returning
 - it may be still possible to get basic tmux state with ``-a`` without custom
   formatting for older versions. actions can be done, and list-sessions,
   list-panes, list-windows can be indexed the new state
+- http://sourceforge.net/projects/tmux/files/tmux/tmux-1.4/
+  - tmux 1.4  adds that pane is active.
+  - adds more window for list-windows and list-panes
+- 1.3 
+  - http://sourceforge.net/projects/tmux/files/tmux/tmux-1.3/tmux-1.3-notes/download
+  - adds tiled layout. 
+  - select pane UDLR
+- 1.2 
+  - http://sourceforge.net/projects/tmux/files/tmux/tmux-1.2/tmux-1.2-notes/download
+  - libevent. 
+  - panes can be reffered to as top, bottom, top-left, etc.
+  - server-wide options, set-options -s, show-options -s.
+  - join-pane (alias joinp) to split, and move an existing pane into the space
+    (the opposite of break-pane), tus simpolifying calls to split-window,
+    followed by move-window.
+  - window tarets supports -t! last window, -t+ next, -t- previous.
+  - reads socket path from $TMUX env if present and -L -S are not given
+  - vi style keys b, w, e copy mode
+  - copy mode may be prefixed by repeat count, [1-9] in vi mode, M-[1-9] in
+    emacs mode.
+  - attach session -r for read only
+
+
+big note. since 1.2, display-message -p  can print to pane.
+
+To do
+"""""
+
+
 - redo unit tests to test for proper response from tmux commands for tmux
   versions.  this can be done by making tmux shell commands kept inside of _cmd
   to see in travis how different versions react to this.
