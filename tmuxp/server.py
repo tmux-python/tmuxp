@@ -43,12 +43,10 @@ class Server(TmuxRelationalObject):
     childIdAttribute = 'session_id'
 
     def __init__(self, **kwargs):
-        self._sessions = list()
-        self.children = self._sessions
-
-        self._TMUX = {}
         self._windows = []
         self._panes = []
+        self._sessions = []
+        self.children = self.sessions
 
     def tmux(self, *args, **kwargs):
         args = list(args)
@@ -58,6 +56,7 @@ class Server(TmuxRelationalObject):
             args.insert(0, '-S{}'.format(self.socket_path))
         if self.config_file:
             args.insert(0, '-f{}'.format(self.config_file))
+
         return tmux(*args, **kwargs)
 
     def _list_sessions(self):
@@ -78,7 +77,7 @@ class Server(TmuxRelationalObject):
 
         return sessions.stdout
 
-    def list_sessions(self):
+    def _update_sessions(self):
         '''
         Return a list of :class:`Session` from tmux server.
 
@@ -97,59 +96,31 @@ class Server(TmuxRelationalObject):
             dict((k, v) for k, v in session.iteritems() if v) for session in sessions
         ]
 
-        if not self._sessions:
-            for session in new_sessions:
-                logger.debug('adding session_id %s' % (session['session_id']))
-                new_session = Session(server=self, **session)
-                self._sessions.append(new_session)
-            return self._sessions
+        if self._sessions:
+            # http://stackoverflow.com/a/14465359
+            self._sessions[:] = []
 
-        new = {session['session_id']: session for session in new_sessions}
-        old = {session.get(
-            'session_id'): session for session in self._sessions}
+        self._sessions.extend(new_sessions)
 
-        created = set(new.keys()) - set(old.keys()) or ()
-        deleted = set(old.keys()) - set(new.keys()) or ()
-        intersect = set(new.keys()).intersection(set(old.keys()))
+        return self
 
-        diff = {id: dict(set(new[id].items()) - set(old[id].items()))
-                for id in intersect}
+    @property
+    def sessions(self):
+        '''
+        Return a list of :class:`session` from the ``tmux(1)`` session.
 
-        intersect = set(k for k, v in diff.iteritems() if v) or ()
-        diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
+        :rtype: :class:`session`
+        '''
+        new_sessions = self.server._update_sessions()._sessions
 
-        if diff or created or deleted:
-            log_diff = "sync sessions for server:\n"
-        else:
-            log_diff = None
-        if diff and intersect:
-            log_diff += "diff %s for %s" % (diff, intersect)
-        if created:
-            log_diff += "created %s" % created
-        if deleted:
-            log_diff += "deleted %s" % deleted
-        if log_diff:
-            logger.debug(log_diff)
+        new_sessions = [
+           s for s in new_sessions if w['session_id'] == self.get('session_id')
+        ]
 
-        for s in self._sessions:
-            # remove session objects if deleted or out of session
-            if s.get('session_id') in deleted:
-                logger.debug("removing %s" % s)
-                self._sessions.remove(s)
+        #self._sessions[:] = []
 
-            if s.get('session_id') in intersect and s.get('session_id') in diff:
-                logger.debug('updating session_id %s session_name %s' % (
-                    s.get('session_id'), s.get('session_name')))
-                s.update(diff[s.get('session_id')])
-
-        # create session objects for non-existant session_id's
-        for session in [new[session_id] for session_id in created]:
-            logger.debug('new session %s' % session['session_id'])
-            new_session = Session(server=self, **session)
-            self._sessions.append(new_session)
-
-        return self._sessions
-    list_children = list_sessions
+        return [Session(server=self, **session) for session in new_sessions]
+    list_children = sessions
 
     def _list_windows(self):
         '''
@@ -405,12 +376,18 @@ class Server(TmuxRelationalObject):
         :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
                                 kill asdfasd
         '''
-        self.tmux('kill-session', '-t%s' % target_session)
-        self.list_sessions()
+        proc = self.tmux('kill-session', '-t%s' % target_session)
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+        self._update_sessions()
+
+        return self
 
     @property
     def sessions(self):
-        return self._sessions
+        return self._update_sessions()._sessions
 
     def switch_client(self, target_session):
         '''
@@ -419,11 +396,31 @@ class Server(TmuxRelationalObject):
         :param: target_session: str. name of the session. fnmatch(3) works.
         '''
         # tmux('switch-client', '-t', target_session)
-        self.tmux('switch-client', '-t%s' % target_session)
+        proc = self.tmux('switch-client', '-t%s' % target_session)
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+    def attach_session(self, target_session=None):
+        '''
+        ``$ tmux attach-session`` aka alias: ``$ tmux attach``
+
+        :param: target_session: str. name of the session. fnmatch(3) works.
+        '''
+        # tmux('switch-client', '-t', target_session)
+        tmux_args = tuple()
+        if target_session:
+            tmux_args += ('-t%s' % target_session,)
+
+        proc = self.tmux('attach-session', *tmux_args)
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
 
     def new_session(self,
                     session_name=None,
                     kill_session=False,
+                    attach=False,
                     *args,
                     **kwargs):
         '''
@@ -477,12 +474,21 @@ class Server(TmuxRelationalObject):
         if env:
             del os.environ['TMUX']
 
-        session_info = self.tmux(
-            'new-session',
-            '-d',  # assume detach = True for now, todo: fix
+        tmux_args = (
             '-s%s' % session_name,
             '-P', '-F%s' % '\t'.join(tmux_formats),   # output
         )
+
+        if not attach:
+            tmux_args += ('-d',)
+
+        session_info = self.tmux(
+            'new-session',
+            *tmux_args
+        )
+
+        if session_info.stderr:
+            raise Exception(session_info.stderr)
 
         session_info = session_info.stdout[0]
 
@@ -497,9 +503,7 @@ class Server(TmuxRelationalObject):
 
         session = Session(server=self, **session_info)
 
-        # need to be able to get first windows
-        session._windows = session.list_windows()
-
-        self._sessions.append(session)
+        #self._sessions.append(session)
+        self._update_sessions()
 
         return session

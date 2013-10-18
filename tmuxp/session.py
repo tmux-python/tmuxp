@@ -35,26 +35,39 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.server = server
 
-        self._windows = list()
         self.children = self._windows
-        self._TMUX = {}
-        self.update(**kwargs)
 
-        self.list_windows()
+        if not 'session_id' in kwargs:
+            raise ValueError('Session requires a `session_id`')
+        self._session_id = kwargs['session_id']
+
+
+        self.server._update_windows()
+
+    @property
+    def _TMUX(self, *args):
+
+        attrs = {
+            'session_id': self._session_id
+        }
+
+        # from https://github.com/serkanyersen/underscore.py
+        def by(val, *args):
+            for key, value in attrs.items():
+                try:
+                    if attrs[key] != val[key]:
+                        return False
+                except KeyError:
+                    return False
+                return True
+
+        return list(filter(by, self.server._sessions))[0]
+
 
     def tmux(self, *args, **kwargs):
         # if '-t' not in kwargs:
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
-
-    def refresh(self):
-        '''Refresh current :class:`Session` object. Chainable.
-
-        :rtype: :class:`Session`
-        '''
-        self._TMUX = self.server.getById(self['session_id'])._TMUX
-
-        return self
 
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
@@ -126,14 +139,12 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         # clear up empty dict
         window = dict((k, v) for k, v in window.iteritems() if v)
         window = Window(session=self, **window)
-        window.list_panes()
 
         if automatic_rename:
             window.set_window_option('automatic-rename', True)
 
-        self._windows.append(window)
+        self.server._update_windows()
 
-        self.list_windows()
         return window
 
     def kill_window(self, target_window=None):
@@ -155,105 +166,59 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             else:
                 target = '-t%s' % target_window
 
-        self.tmux('kill-window', target)
+        proc = self.tmux('kill-window', target)
 
-        self.list_windows()
+        if proc.stderr:
+            raise Exception(pane.stderr)
 
-    def list_windows(self):
+        self.server._update_windows()
+
+    @property
+    def _windows(self):
+        return self.server._update_windows()._windows
+
+    @property
+    def windows(self):
         '''
         Return a list of :class:`Window` from the ``tmux(1)`` session.
+
+        :rtype: :class:`Window`
         '''
-        new_windows = self.server._update_windows()._windows
+        new_windows = self._windows
 
         new_windows = [
-           w for w in new_windows if w['session_id'] == self.get('session_id')
+           w for w in new_windows if w['session_id'] == self._session_id
         ]
 
+        #self._windows[:] = []
 
-        self._windows[:] = []
+        assert(self.server)
+        logger.error(self.server)
 
-        for window in new_windows:
-            winobject = Window(session=self, **window)
-            self._windows.append(winobject)
-        return self._windows
-    list_children = list_windows
+        return [Window(session=self, **window) for window in new_windows]
 
-    def delthis_list_windows(self):
-        '''
-        Return a list of :class:`Window` from the ``tmux(1)`` session.
-        '''
-        new_windows = self.server._update_windows()._windows
-
-        new_windows = [
-           p for p in new_windows if p['session_id'] == self.get('session_id')
-        ]
-
-        if not self._windows:
-            for window in new_windows:
-                logger.debug('adding window_name %s window_id %s' % (
-                    window['window_name'], window['window_id']))
-                self._windows.append(Window(session=self, **window))
-        else:
-            new = {window.get('window_id'): window for window in new_windows}
-            old = {window.get('window_id'): window for window in self._windows}
-
-            created = set(new.keys()) - set(old.keys()) or ()
-            deleted = set(old.keys()) - set(new.keys()) or ()
-            intersect = set(new.keys()).intersection(set(old.keys()))
-
-            diff = {id: dict(set(new[id].items()) - set(
-                old[id].items())) for id in intersect}
-
-            intersect = set(k for k, v in diff.iteritems() if v) or ()
-            diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
-
-            if diff or created or deleted:
-                log_diff = "sync sessions for server:\n"
-            else:
-                log_diff = None
-            if diff and intersect:
-                log_diff += "diff %s for %s" % (diff, intersect)
-            if created:
-                log_diff += "created %s" % created
-            if deleted:
-                log_diff += "deleted %s" % deleted
-            if log_diff:
-                logger.debug(log_diff)
-
-            for w in self._windows:
-                # remove window objects if deleted or out of session
-                if w.get('window_id') in deleted or self.get('session_id') != w.get('session_id'):
-                    logger.debug("removing %s" % w)
-                    self._windows.remove(w)
-
-                if w.get('window_id') in intersect and w.get('window_id') in diff:
-                    logger.debug('updating %s %s' % (
-                        w.get('window_name'), w.get('window_id'))
-                    )
-                    w.update(diff[w.get('window_id')])
-
-            # create window objects for non-existant window_id's
-            for window in [new[window_id] for window_id in created]:
-                logger.debug('adding window_name %s window_id %s' % (
-                    window['window_name'], window['window_id']))
-                self._windows.append(Window(session=self, **window))
-
-        return self._windows
-    list_children = delthis_list_windows
-
+    list_children = windows
 
     def attached_window(self):
         '''
             Returns active :class:`Window` object.
         '''
-
-        for window in self.list_windows():
+        active_windows = []
+        for window in self._windows:
             if 'window_active' in window:
                 # for now window_active is a unicode
                 if window.get('window_active') == '1':
-                    return window
+                    active_windows.append(Window(session=self, **window))
                 else:
                     continue
+
+        if len(active_windows) == 1:
+          return active_windows[0]
+        else:
+          raise Exception('multiple active windows found. %s' % active_windows)
+
+        if len(self._windows) == 0:
+          raise Exception('No Windows')
 
         return False
 
@@ -278,9 +243,11 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         target = '-t%s' % target_window
 
-        self.tmux('select-window', target)
+        proc = self.tmux('select-window', target)
 
-        self.list_windows()
+        if proc.stderr:
+            raise Exception(pane.stderr)
+
         return self.attached_window()
 
     def attached_pane(self):
@@ -300,8 +267,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if (len(self._windows) > 1):
             logger.info('%s not clean, multiple windows', self)
             return False
-
-        self.attached_window().list_panes()  # get the newest pane data
 
         if (len(self.attached_window()._panes) > 1):
             logger.info('%s not clean, multiple panes (%s)' % (

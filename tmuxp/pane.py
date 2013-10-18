@@ -74,16 +74,6 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
-    def refresh(self):
-        '''Refresh current :class:`Pane` object. Chainable.
-
-        :rtype: :class:`Pane`
-        '''
-
-        #self._TMUX.update(self.window.getById(self['pane_id'])._TMUX)
-
-        return self
-
     def send_keys(self, cmd, enter=True):
         '''
             ```tmux send-keys``` to the pane
@@ -115,7 +105,11 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         else:
             proc = self.tmux('resize-pane', '-t%s' % self.target, args[0])
 
-        return self.refresh()
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+        self.server._update_panes()
+        return self
 
     def enter(self):
         '''

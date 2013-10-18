@@ -170,7 +170,7 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 s.select_window(w['window_id'])
 
-            w.list_panes()
+            s.server._update_windows()
 
             yield w, wconf
 
@@ -196,14 +196,12 @@ class WorkspaceBuilder(object):
                 p = w.attached_pane()
                 assert(isinstance(p, Pane))
 
-            p.refresh()
-
             for cmd in pconf['shell_command']:
                 p.send_keys(cmd)
 
             if 'focus' in pconf and pconf['focus']:
                 w.select_pane(p['pane_id'])
 
-            w.list_panes()
+            w.server._update_panes()
 
             yield p

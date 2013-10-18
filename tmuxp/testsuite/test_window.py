@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import unittest
-from .. import Pane, Window
+from .. import Pane, Window, Server
 from .helpers import TmuxTestCase
 from . import t
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class SelectTest(TmuxTestCase):
 
     def test_select_window(self):
-        window_count = len(self.session.list_windows())
+        window_count = len(self.session._windows)
         # to do, get option for   base-index from tmux
         # for now hoever, let's get the index from the first window.
         self.assertEqual(window_count, 1)
@@ -39,7 +39,7 @@ class SelectTest(TmuxTestCase):
         self.assertEqual(int(window_base_index) + 1, int(
             self.session.attached_window().get('window_index')))
 
-        self.assertEqual(len(self.session.list_windows()), 2)
+        self.assertEqual(len(self.session._windows), 2)
 
 
 class NewTest(TmuxTestCase):
@@ -47,8 +47,11 @@ class NewTest(TmuxTestCase):
     def test_zfresh_window_data(self):
         # self.session.select_window(1)
         current_windows = len(self.session._windows)
+        self.assertIsInstance(self.session.server, Server)
         # logger.error("current panes: %s" %
-        # len(self.session.attached_window()._panes))
+        # len(self.session.attached_window().panes))
+        for w in self.session.windows:
+            self.assertIsInstance(w, Window)
         self.assertIsInstance(self.session.attached_window(), Window)
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
@@ -68,20 +71,26 @@ class NewTest(TmuxTestCase):
 
 
 class NewTest2(TmuxTestCase):
-    @unittest.skip('this is not working atm, come back after list_panes'
-                   ' is implemented for t/Server.')
     def test_newest_pane_data(self):
         # self.session.select_window(1)
-        self.session.attached_window().list_panes()
-        self.assertEqual(1, len(self.session.attached_window()._panes))
-        self.session.attached_window().select_layout('even-horizontal')
+        #
+        #
+        window = self.session.new_window(window_name='test', attach=True)
+        self.assertIsInstance(window, Window)
+        self.assertEqual(1, len(window.panes))
+        window.select_layout()
+        logger.error(window)
+        window.split_window(attach=True)
+        window.select_layout()
 
-        self.session.attached_window().split_window(attach=True)
-        self.assertEqual(2, len(self.session.attached_window()._panes))
+        logger.error(window._TMUX)
+        self.assertEqual(2, len(window.panes))
         # note: the below used to accept -h, removing because split_window now
         # has attach as its only argument now
-        self.session.attached_window().split_window(attach=True)
-        self.assertEqual(3, len(self.session.attached_window()._panes))
+        window.select_layout()
+        window.split_window(attach=True)
+        self.assertEqual(3, len(window.panes))
+        window.select_layout()
 
 
 class NewTest3(TmuxTestCase):
@@ -94,27 +103,13 @@ class NewTest3(TmuxTestCase):
 
 class NewTest4(TmuxTestCase):
 
-    @unittest.skip('this is not working atm, come back after list_panes'
-                   ' is implemented for t/Server.')
     def test_split_window(self):
         '''Window.split_window() splits window, returns new Pane.'''
         window_name = 'test split window'
         window = self.session.new_window(window_name=window_name, attach=True)
-        pane = window.split_window(attach=True)
-        self.assertEqual(2, len(self.session.attached_window()._panes))
+        pane = window.split_window()
+        self.assertEqual(2, len(window.panes))
         self.assertIsInstance(pane, Pane)
-        self.assertEqual(2, len(window._panes))
-
-
-class NewTest5(TmuxTestCase):
-    def test_window_rename(self):
-        '''Window.rename_window() renames window'''
-        window = self.session.attached_window()
-        window_name_before = window.get('window_name')
-        window_name_after = 'testingdis_winname'
-        window.rename_window(window_name_after)
-        self.assertEqual(window.get('window_name'), window_name_after)
-
 
 class RenameTest(TmuxTestCase):
 
@@ -123,8 +118,9 @@ class RenameTest(TmuxTestCase):
 
     def test_window_rename(self):
         '''Window.rename_window.rename_window()'''
-
-        window = self.session.new_window(window_name=self.window_name_before)
+        self.session.set_option('automatic-rename', 'off')
+        window = self.session.new_window(window_name=self.window_name_before, attach=True)
+        t._update_sessions()
 
         self.assertEqual(window, self.session.attached_window())
         self.assertEqual(window.get('window_name'), self.window_name_before)
@@ -134,8 +130,6 @@ class RenameTest(TmuxTestCase):
         window = self.session.attached_window()
 
         self.assertEqual(window.get('window_name'), self.window_name_after)
-
-        self.session.list_windows()
 
         window = self.session.attached_window()
 

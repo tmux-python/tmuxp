@@ -46,15 +46,15 @@ class TwoPaneTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s.list_windows()), window_count)
+        self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
             window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s.list_windows()), window_count)
+                self.assertEqual(len(s._windows), window_count)
             self.assertIsInstance(w, Window)
 
-            self.assertEqual(len(s.list_windows()), window_count)
+            self.assertEqual(len(s._windows), window_count)
             window_count += 1
 
 
@@ -84,16 +84,16 @@ class ThreePaneTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s.list_windows()), window_count)
+        self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
 
             window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s.list_windows()), window_count)
+                self.assertEqual(len(s._windows), window_count)
             self.assertIsInstance(w, Window)
 
-            self.assertEqual(len(s.list_windows()), window_count)
+            self.assertEqual(len(s._windows), window_count)
             window_count += 1
             w.set_window_option('main-pane-height', 50)
             w.select_layout(wconf['layout'])
@@ -165,14 +165,14 @@ class FocusTest(TmuxTestCase):
         time.sleep(1)
         self.session.list_windows()
         self.session.attached_window().list_panes()
-        logger.error('attached pane: %s' % (self.session.attached_window().attached_pane().refresh()))
+        logger.error('attached pane: %s' % (self.session.attached_window().attached_pane()))
         logger.error('attached pane: %s' % (self.session.attached_window().attached_pane())._TMUX)
         logger.error('attached pane: %s' % (self.session.attached_window().list_panes()))
         logger.error('attached pane: %s' % (self.session.attached_window().where({'pane_active': '1'})[0]._TMUX))
 
 
 
-        for pane in self.session.attached_window().list_panes():
+        for pane in self.session.attached_window().panes:
             logger.error(
                 '%s and %s and %s, total panes %s' %
                 (pane, pane['pane_index'], pane.window.get('window_name'), len(self.session.attached_window().list_panes()))
@@ -214,17 +214,17 @@ class WindowOptions(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s.list_windows()), window_count)
+        self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
 
             window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s.list_windows()), window_count)
+                self.assertEqual(len(s._windows), window_count)
             self.assertIsInstance(w, Window)
             self.assertEqual(w.show_window_option('main-pane-height'), 30)
 
-            self.assertEqual(len(s.list_windows()), window_count)
+            self.assertEqual(len(s._windows), window_count)
             window_count += 1
             w.select_layout(wconf['layout'])
 

@@ -29,20 +29,17 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     childIdAttribute = 'pane_id'
 
     def __init__(self, session=None, **kwargs):
-        self._panes = list()  # list of panes
-        self.children = self._panes
 
         if not session:
-            raise ValueError(
-                "Window requires a Session object by "
-                "specifying session=Session"
-            )
+            raise ValueError('Window requires a Session, session=Session')
         self.session = session
         self.server = self.session.server
 
-        self._TMUX = {}
-        self.update(**kwargs)
-        self.list_panes()
+        if not 'window_id' in kwargs:
+            raise ValueError('Window requires a `window_id`')
+        self._window_id = kwargs['window_id']
+
+        self.server._update_windows()
 
     def __repr__(self):
         return "%s(%s %s:%s, %s)" % (
@@ -52,6 +49,25 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             self.get('window_name'),  # @todo, bug when window name blank
             self.session
         )
+
+    @property
+    def _TMUX(self, *args):
+
+        attrs = {
+            'window_id': self._window_id
+        }
+
+        # from https://github.com/serkanyersen/underscore.py
+        def by(val, *args):
+            for key, value in attrs.items():
+                try:
+                    if attrs[key] != val[key]:
+                        return False
+                except KeyError:
+                    return False
+                return True
+
+        return list(filter(by, self.server._windows))[0]
 
     def tmux(self, *args, **kwargs):
         # if '-t' not in kwargs:
@@ -206,7 +222,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         except Exception as e:
             logger.error(e)
 
-        self.session.list_windows()
+        self.server._update_windows()
 
         return self
 
@@ -223,13 +239,14 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         #if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
         #    target_pane = "%s.%s" % (self.target, target_pane)
 
-        try:
-            self.tmux('select-pane', '-t%s' % target_pane)
-        except Exception:
-            logger.error('pane not found %s %s' % (
-                target_pane, self.list_panes()))
-        self.list_panes()
+        proc = self.tmux('select-pane', '-t%s' % target_pane)
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
         return self.attached_pane()
+
+
 
     def split_window(self, attach=True):
         '''
@@ -260,8 +277,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                    'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
 
+        #'-t%s' % self.attached_pane().get('pane_id'),
+        # 2013-10-18 LOOK AT THIS, rm'd it..
+
         tmux_args = (
-            '-t%s' % self.attached_pane().get('pane_id'),
+            '-t%s' % self.panes[0].get('pane_id'),
             '-P', '-F%s' % ''.join(tmux_formats),     # output
         )
 
@@ -278,8 +298,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         pane = pane.stdout[0]
 
-
-        # zip and map the results into the dict of formats used above
         pane = dict(zip(formats, pane.split('\t')))
 
         # clear up empty dict
@@ -293,15 +311,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :rtype: :class:`Pane`
         '''
-        panes = self.list_panes()
-
-        #for pane in self.server._panes:
-        for pane in panes:
+        for pane in self._panes:
             if 'pane_active' in pane:
                 # for now pane_active is a unicode
                 if pane.get('pane_active') == '1':
                     #return Pane(window=self, **pane)
-                    return pane
+                    return Pane(window=self, **pane)
                 else:
                     continue
 
@@ -312,126 +327,36 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return False
 
-    def refresh(self):
-        '''Refresh current :class:`Window` object. Chainable.
+    @property
+    def _panes(self):
+        logger.error(self)
+        logger.error(self.server)
 
-        :rtype: :class:`Window`
-        '''
-        self._TMUX = self.server.getById(self['window_id'])._TMUX
-
-        return self
-
-    def list_panes(self):
-        '''Return list of :class:`Pane` for the window.
-
-        :rtype: list of :class:`Pane`
-        '''
         panes = self.server._update_panes()._panes
 
+        assert(self['session_id'])
+        assert(self['window_id'])
 
+        logger.error('session_id: %s  window_id: %s' % (self['session_id'], self['window_id']))
         panes = [
            p for p in panes if p['session_id'] == self.get('session_id')
         ]
         panes = [
            p for p in panes if p['window_id'] == self.get('window_id')
         ]
+        return panes
 
-        self._panes[:] = []
 
-        for pane in panes:
-            pobject = Pane(window=self, **pane)
-            self._panes.append(pobject)
-
-        return self._panes
-
-    def list_panesold(self):
+    @property
+    def panes(self):
         '''Return list of :class:`Pane` for the window.
 
         :rtype: list of :class:`Pane`
         '''
-        formats = ['session_name', 'session_id',
-                   'window_index', 'window_id'] + PANE_FORMATS
-        tmux_formats = ['#{%s}\t' % format for format in formats]
+        panes = self._panes
 
-        # if isinstance(self.get('window_id'), basestring):
-        #    window_id =
+        #self._panes[:] = []
 
-        panes = self.tmux(
-            'list-panes',
-            '-t%s:%s' % (self.get('session_name'), self.get('window_id')),
-            '-F%s' % ''.join(tmux_formats),     # output
-        ).stdout
+        return [Pane(window=self, **pane) for pane in panes]
 
-        # zip and map the results into the dict of formats used above
-        panes = [dict(zip(formats, pane.split('\t'))) for pane in panes]
-
-        # clear up empty dict
-        panes = [
-            dict((k, v) for k, v in pane.iteritems() if v) for pane in panes
-        ]
-
-        # filter by window_id
-        # this is causing errors with winderbuilder, the early window_id is
-        # returning as 0 when building sessions
-        # panes = [
-           # pane for pane in panes if pane['window_id'] == self.get('window_id')
-        # ]
-
-        # panes = [
-           # pane for pane in panes if pane['session_id'] == self.get('session_id')
-        # ]
-
-        new_panes = panes
-
-        if not self._panes:
-            for pane in new_panes:
-                logger.debug('adding pane_id %s for window_id %s' % (
-                    pane['pane_id'], pane['window_id']))
-                self._panes.append(Pane(window=self, **pane))
-            return self._panes
-
-        new = {pane['pane_id']: pane for pane in new_panes}
-        old = {pane.get('pane_id'): pane for pane in self._panes}
-
-        created = set(new.keys()) - set(old.keys()) or ()
-        deleted = set(old.keys()) - set(new.keys()) or ()
-        intersect = set(new.keys()).intersection(set(old.keys()))
-
-        diff = {id: dict(set(new[id].items()) - set(old[id].items()))
-                for id in intersect}
-
-        intersect = set(k for k, v in diff.iteritems() if v) or ()
-        diff = dict((k, v) for k, v in diff.iteritems() if v) or ()
-
-        if diff or created or deleted:
-            log_diff = "sync sessions for server:\n"
-        else:
-            log_diff = None
-        if diff and intersect:
-            log_diff += "diff %s for %s" % (diff, intersect)
-        if created:
-            log_diff += "created %s" % created
-        if deleted:
-            log_diff += "deleted %s" % deleted
-        if log_diff:
-            logger.debug(log_diff)
-
-        for p in self._panes:
-            # remove pane objects if deleted or out of session
-            if p.get('pane_id') in deleted or self.get('session_id') != p.get('session_id'):
-                logger.debug("removing %s" % p)
-                self._panes.remove(p)
-
-            if p.get('pane_id') in intersect and p.get('pane_id') in diff:
-                logger.debug('updating pane_id %s window_id %s' % (
-                    p.get('pane_id'), p.get('window_id')))
-                p.update(diff[p.get('pane_id')])
-
-            # create pane objects for non-existant pane_id's
-            for pane in [new[pane_id] for pane_id in created]:
-                logger.debug('adding pane_id %s window_id %s' % (
-                    pane['pane_id'], pane['window_id']))
-                self._panes.append(Pane(window=self, **pane))
-
-            return self._panes
-    list_children = list_panes
+    list_children = panes

@@ -28,7 +28,7 @@ class SessionTest(TmuxTestCase):
         window_base_index = int(self.session.attached_window().get('window_index'))
 
         window = self.session.new_window(window_name='test_window')
-        window_count = len(self.session.list_windows())
+        window_count = len(self.session._windows)
 
         self.assertGreaterEqual(window_count, 2)  # 2 or more windows
 
@@ -57,7 +57,7 @@ class SessionTest(TmuxTestCase):
     def test_select_window_returns_Window(self):
         '''Session.select_window returns Window object'''
 
-        window_count = len(self.session.list_windows())
+        window_count = len(self.session._windows)
         self.assertEqual(len(self.session._windows), window_count)
         window_base_index = int(self.session.attached_window().get('window_index'))
 
