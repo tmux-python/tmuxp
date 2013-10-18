@@ -164,7 +164,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         window_options = dict(window_options)
 
-        for key, value in window_options.iteritems():
+        for key, value in window_options.items():
             if value.isdigit():
                 window_options[key] = int(value)
 
@@ -298,7 +298,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         pane = dict(zip(pformats, pane.split('\t')))
 
         # clear up empty dict
-        pane = dict((k, v) for k, v in pane.iteritems() if v)
+        pane = dict((k, v) for k, v in pane.items() if v)
 
         return Pane(window=self, **pane)
 

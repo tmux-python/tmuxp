@@ -164,7 +164,7 @@ class WorkspaceBuilder(object):
             assert(isinstance(w, Window))
 
             if 'options' in wconf and isinstance(wconf['options'], dict):
-                for key, val in wconf['options'].iteritems():
+                for key, val in wconf['options'].items():
                     w.set_window_option(key, val)
 
             if 'focus' in wconf and wconf['focus']:

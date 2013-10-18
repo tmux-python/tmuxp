@@ -101,7 +101,7 @@ class Server(TmuxRelationalObject):
 
         # clear up empty dict
         new_sessions = [
-            dict((k, v) for k, v in session.iteritems() if v) for session in sessions
+            dict((k, v) for k, v in session.items() if v) for session in sessions
         ]
 
         if self._sessions:
@@ -162,7 +162,7 @@ class Server(TmuxRelationalObject):
 
         # clear up empty dict
         windows = [
-            dict((k, v) for k, v in window.iteritems() if v) for window in windows
+            dict((k, v) for k, v in window.items() if v) for window in windows
         ]
 
         '''
@@ -222,7 +222,7 @@ class Server(TmuxRelationalObject):
 
         # clear up empty dict
         panes = [
-            dict((k, v) for k, v in window.iteritems() if v) for window in panes
+            dict((k, v) for k, v in window.items() if v) for window in panes
         ]
 
         '''
@@ -263,7 +263,7 @@ class Server(TmuxRelationalObject):
 
         # clear up empty dict
         new_clients = [
-            dict((k, v) for k, v in client.iteritems() if v) for client in clients
+            dict((k, v) for k, v in client.items() if v) for client in clients
         ]
 
         if not self._clients:
@@ -506,7 +506,7 @@ class Server(TmuxRelationalObject):
         session_info = dict(zip(sformats, session_info.split('\t')))
 
         # clear up empty dict
-        session_info = dict((k, v) for k, v in session_info.iteritems() if v)
+        session_info = dict((k, v) for k, v in session_info.items() if v)
 
         session = Session(server=self, **session_info)
 

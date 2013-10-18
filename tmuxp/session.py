@@ -133,7 +133,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         window = dict(zip(wformats, window.split('\t')))
 
         # clear up empty dict
-        window = dict((k, v) for k, v in window.iteritems() if v)
+        window = dict((k, v) for k, v in window.items() if v)
         window = Window(session=self, **window)
 
         if automatic_rename:
@@ -327,7 +327,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         session_options = dict(session_options)
 
-        for key, value in session_options.iteritems():
+        for key, value in session_options.items():
             if value.isdigit():
                 session_options[key] = int(value)
 
