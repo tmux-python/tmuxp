@@ -29,6 +29,11 @@ Notes
   - copy mode may be prefixed by repeat count, [1-9] in vi mode, M-[1-9] in
     emacs mode.
   - attach session -r for read only
+- 1.1
+  - 2009/11/05
+  - http://sourceforge.net/projects/tmux/files/tmux/tmux-1.1/tmux-1.1-notes/download
+  - split  list-panes from list-windows
+  - grouped sessions with -t
 
 
 big note. since 1.2, display-message -p  can print to pane.
@@ -36,7 +41,10 @@ big note. since 1.2, display-message -p  can print to pane.
 To do
 """""
 
-
+- load / save sessions
+- tmuxp <tab complete> to load current sessions, windows. present them like
+  unix-type files,  session_name:window_index.pane_index
+- https://github.com/zolrath/wemux wemux features
 - redo unit tests to test for proper response from tmux commands for tmux
   versions.  this can be done by making tmux shell commands kept inside of _cmd
   to see in travis how different versions react to this.
