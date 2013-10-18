@@ -178,6 +178,7 @@ class TmuxObjectTest(TmuxTestCase):
 
 class ReferenceTestCase(TmuxTestCase):
 
+    @unittest.skip('not doing yet, complete unit tests first')
     def test_mutability(self):
         #window = self.session.attached_window()
 
@@ -196,7 +197,8 @@ class ReferenceTestCase(TmuxTestCase):
                     try:
                         pane = window.split_window()
                     except Exception as e:
-                        logger.info(e)
+                        logger.debug(e)
+                        pass
 
             # session.getById
             last_window = None
@@ -209,7 +211,6 @@ class ReferenceTestCase(TmuxTestCase):
                     self.assertEqual(id(last_window.session), id(window.session))
                     self.assertNotEqual(last_window, window)
                     self.assertNotEqual(id(last_window), id(window))
-                    logger.error(last_window)
                 last_window = window
 
                 # window.getById
