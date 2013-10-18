@@ -42,11 +42,24 @@ class Server(TmuxRelationalObject):
     config_file = None
     childIdAttribute = 'session_id'
 
-    def __init__(self, **kwargs):
+    def __init__(self,
+                 socket_name=None,
+                 socket_path=None,
+                 config_file=None,
+                 **kwargs):
         self._windows = []
         self._panes = []
         self._sessions = []
         self.children = self.sessions
+
+        if socket_name:
+            self.socket_name = socket_name
+
+        if socket_path:
+            self.socket_path = socket_path
+
+        if config_file:
+            self.config_file = config_file
 
     def tmux(self, *args, **kwargs):
         args = list(args)
