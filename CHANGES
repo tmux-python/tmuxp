@@ -8,12 +8,15 @@ Here you can find the recent changes to tmuxp.
 
 - [internal] major internal overhaul of :class:`Server`, :class:`Session`,
   :class:`Window`, and :class:`Pane`. 
-  - ``Session``, ``Window`` and ``Pane`` now refer to a data object in
-    :class:`Server` internally and always pull the freshest data.
+
+  - ``Session``, ``Window`` and ``Pane`` now refer to a data object
+    in :class:`Server` internally and always pull the freshest data.
+
   - A lot of code and complexity regarding setting new data for objects
     has been reduced since objects use their unique key identifier to
     filter their objects through the windows and panes in ``Server``
     object.
+
   - ``Server`` object is what does the updating now.
 - [project] some research into supporting legacy tmux versions. tmux 1.6
   and 1.7 support seem likely eventually if there is enough demand.
