@@ -4,6 +4,13 @@ Roadmap
 To do
 """""
 
+- 1.6 introduces formatters -F. tmux 1.7 may not support -P for returning
+- it may be still possible to get basic tmux state with ``-a`` without custom
+  formatting for older versions. actions can be done, and list-sessions,
+  list-panes, list-windows can be indexed the new state
+- redo unit tests to test for proper response from tmux commands for tmux
+  versions.  this can be done by making tmux shell commands kept inside of _cmd
+  to see in travis how different versions react to this.
 - rm nodemon dependency for .tmuxp.yaml, try a python solution
 - create .focus or .select_pane that works on Window and Pane objects directly.
 - find, findWhere, get, a la backbone for TmuxObject's.
