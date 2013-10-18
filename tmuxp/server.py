@@ -127,6 +127,7 @@ class Server(TmuxRelationalObject):
 
         return [Session(server=self, **session) for session in new_sessions]
     list_children = sessions
+    children = sessions
 
     def _list_windows(self):
         '''

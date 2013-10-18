@@ -35,6 +35,8 @@ except ImportError:
 # unicode_literals" have other problems (see PEP 414).  u() can be applied
 # to ascii strings that include \u escapes (but they must not contain
 # literal non-ascii characters).
+# todo _ can remove this, this next 10 lines is from
+# http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3/
 if not isinstance('', type(b'')):
     def u(s):
         return s
