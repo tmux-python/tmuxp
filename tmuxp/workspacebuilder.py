@@ -123,7 +123,7 @@ class WorkspaceBuilder(object):
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
-            w.list_panes()
+            self.server._update_panes()
             for p in self.iter_create_panes(w, wconf):
                 assert(isinstance(p, Pane))
                 p = p

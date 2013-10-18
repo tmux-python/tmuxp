@@ -209,7 +209,6 @@ class Server(TmuxRelationalObject):
         pformats = ['session_name', 'session_id',
                    'window_index', 'window_id'] + formats.PANE_FORMATS
 
-
         panes = self._list_panes()
 
         # combine format keys with values returned from ``tmux list-panes``
@@ -244,8 +243,8 @@ class Server(TmuxRelationalObject):
 
         ``$ tmux list-clients``
         '''
-        formats = CLIENT_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
+        cformats = CLIENT_FORMATS
+        tmux_formats = ['#{%s}' % format for format in cformats]
         # import ipdb
         # ipdb.set_trace()
         clients = self.tmux(
@@ -255,7 +254,7 @@ class Server(TmuxRelationalObject):
 
         # combine format keys with values returned from ``tmux list-windows``
         clients = [dict(zip(
-            formats, client.split('\t'))) for client in clients]
+            cformats, client.split('\t'))) for client in clients]
 
         # clear up empty dict
         new_clients = [
@@ -462,7 +461,7 @@ class Server(TmuxRelationalObject):
         if self.has_session(session_name):
             if kill_session:
                 self.tmux('kill-session', '-t%s' % session_name)
-                logger.error('session %s exists. killed it.' % session_name)
+                logger.info('session %s exists. killed it.' % session_name)
             else:
                 raise TmuxSessionExists(
                     'Session named %s exists' % session_name)

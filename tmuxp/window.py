@@ -31,6 +31,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         if not session:
             raise ValueError('Window requires a Session, session=Session')
+
         self.session = session
         self.server = self.session.server
 
@@ -326,15 +327,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     @property
     def _panes(self):
-        logger.error(self)
-        logger.error(self.server)
 
         panes = self.server._update_panes()._panes
 
         assert(self['session_id'])
         assert(self['window_id'])
 
-        logger.error('session_id: %s  window_id: %s' % (self['session_id'], self['window_id']))
         panes = [
            p for p in panes if p['session_id'] == self.get('session_id')
         ]

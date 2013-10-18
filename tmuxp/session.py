@@ -189,7 +189,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         #self._windows[:] = []
 
         assert(self.server)
-        logger.error(self.server)
 
         return [Window(session=self, **window) for window in new_windows]
 
