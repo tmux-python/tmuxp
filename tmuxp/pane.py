@@ -42,8 +42,32 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.session = self.window.session
         self.server = self.session.server
 
-        self._TMUX = {}
-        self.update(**kwargs)
+        self._pane_id = kwargs['pane_id']
+
+        self.server._update_panes()
+        #self.update(**kwargs)
+
+    @property
+    def _TMUX(self, *args):
+
+        attrs = {
+            'pane_id': self._pane_id
+        }
+
+        # from https://github.com/serkanyersen/underscore.py
+        def by(val, *args):
+            for key, value in attrs.items():
+                try:
+                    if attrs[key] != val[key]:
+                        return False
+                except KeyError:
+                    return False
+                return True
+
+        return list(filter(by, self.server._panes))[0]
+
+    #def __getitem__(self, key):
+    #    return
 
     def tmux(self, *args, **kwargs):
         #if '-t' not in kwargs:
@@ -56,7 +80,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Pane`
         '''
 
-        self._TMUX = self.window.getById(self['pane_id'])._TMUX
+        #self._TMUX.update(self.window.getById(self['pane_id'])._TMUX)
 
         return self
 

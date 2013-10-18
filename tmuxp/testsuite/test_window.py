@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import unittest
-from .. import Pane
+from .. import Pane, Window
 from .helpers import TmuxTestCase
 from . import t
 
@@ -49,6 +49,7 @@ class NewTest(TmuxTestCase):
         current_windows = len(self.session._windows)
         # logger.error("current panes: %s" %
         # len(self.session.attached_window()._panes))
+        self.assertIsInstance(self.session.attached_window(), Window)
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(1)

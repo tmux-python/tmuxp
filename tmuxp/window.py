@@ -42,6 +42,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self._TMUX = {}
         self.update(**kwargs)
+        self.list_panes()
 
     def __repr__(self):
         return "%s(%s %s:%s, %s)" % (
@@ -277,16 +278,14 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         pane = pane.stdout[0]
 
+
         # zip and map the results into the dict of formats used above
         pane = dict(zip(formats, pane.split('\t')))
 
         # clear up empty dict
         pane = dict((k, v) for k, v in pane.iteritems() if v)
-        pane = Pane(window=self, **pane)
-        self._panes.append(pane)
-        self.list_panes()  # refresh all panes in :class:`Window`
 
-        return pane
+        return Pane(window=self, **pane)
 
     def attached_pane(self):
         '''
@@ -296,10 +295,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         '''
         panes = self.list_panes()
 
+        #for pane in self.server._panes:
         for pane in panes:
             if 'pane_active' in pane:
                 # for now pane_active is a unicode
                 if pane.get('pane_active') == '1':
+                    #return Pane(window=self, **pane)
                     return pane
                 else:
                     continue
