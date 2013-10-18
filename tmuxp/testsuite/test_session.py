@@ -83,8 +83,10 @@ class SessionTest(TmuxTestCase):
         self.session.rename_session(test_name)
         self.assertEqual(self.session.get('session_name'), test_name)
         self.session.rename_session(self.TEST_SESSION_NAME)
-        self.assertEqual(self.session.get(
-            'session_name'), self.TEST_SESSION_NAME)
+        self.assertEqual(
+            self.session.get('session_name'),
+            self.TEST_SESSION_NAME
+        )
 
 
 class SessionCleanTest(TmuxTestCase):

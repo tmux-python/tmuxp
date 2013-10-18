@@ -39,13 +39,13 @@ class Server(TmuxRelationalObject):
     socket_name = None
     socket_path = None
     config_file = None
-    childIdAttribute = 'session_id'
+    childIdAttribute = 'session_name'
 
     def __init__(self, socket_name=None, socket_path=None, config_file=None,
                  **kwargs):
         self._windows = []
         self._panes = []
-        self._sessions = []
+        self.__sessions = []
 
         if socket_name:
             self.socket_name = socket_name
@@ -74,7 +74,7 @@ class Server(TmuxRelationalObject):
         ``$ tmux list-sessions``
         '''
         sformats = formats.SESSION_FORMATS
-        tmux_formats = ['#{%s}' % format for format in sformats]
+        tmux_formats = ['#{%s}' % f for f in sformats]
         sessions = self.tmux(
             'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
@@ -104,13 +104,17 @@ class Server(TmuxRelationalObject):
             dict((k, v) for k, v in session.items() if v) for session in sessions
         ]
 
-        if self._sessions:
+        if self.__sessions:
             # http://stackoverflow.com/a/14465359
-            self._sessions[:] = []
+            self.__sessions[:] = []
 
-        self._sessions.extend(new_sessions)
+        self.__sessions.extend(new_sessions)
 
         return self
+
+    @property
+    def _sessions(self):
+        return self._update_sessions().__sessions
 
     @property
     def sessions(self):
@@ -119,7 +123,7 @@ class Server(TmuxRelationalObject):
 
         :rtype: :class:`session`
         '''
-        new_sessions = self._update_sessions()._sessions
+        new_sessions = self._update_sessions().__sessions
 
         return [Session(server=self, **session) for session in new_sessions]
     list_children = sessions
@@ -387,9 +391,6 @@ class Server(TmuxRelationalObject):
 
         return self
 
-    @property
-    def sessions(self):
-        return self._update_sessions()._sessions
 
     def switch_client(self, target_session):
         '''
