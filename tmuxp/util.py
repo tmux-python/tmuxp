@@ -58,10 +58,10 @@ class tmux(object):
                 cmd,
                 e.message)
             )
-        self.stdout = stdout.split('\n')
+        self.stdout = stdout.decode().split('\n')
         self.stdout = filter(None, self.stdout)  # filter empty values
 
-        self.stderr = stderr.split('\n')
+        self.stderr = stderr.decode().split('\n')
         self.stderr = filter(None, self.stderr)  # filter empty values
 
         if 'has-session' in cmd and len(self.stderr):
