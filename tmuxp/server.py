@@ -59,7 +59,7 @@ class Server(TmuxRelationalObject):
             args.insert(0, '-f{}'.format(self.config_file))
         return tmux(*args, **kwargs)
 
-    def list_sessions(self):
+    def _list_sessions(self):
         '''
         Return a list of :class:`Session` from tmux server.
 
@@ -70,7 +70,22 @@ class Server(TmuxRelationalObject):
         sessions = self.tmux(
             'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
-        ).stdout
+        )
+
+        if sessions.stderr:
+            raise Exception(sessions.stderr)
+
+        return sessions.stdout
+
+    def list_sessions(self):
+        '''
+        Return a list of :class:`Session` from tmux server.
+
+        ``$ tmux list-sessions``
+        '''
+        formats = SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in formats]
+        sessions = self._list_sessions()
 
         # combine format keys with values returned from ``tmux list-windows``
         sessions = [dict(zip(
