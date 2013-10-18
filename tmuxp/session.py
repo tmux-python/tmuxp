@@ -159,36 +159,34 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.list_windows()
 
-    def _list_windows(self):
-        '''
-        Return dict of ``tmux(1) list-windows`` values.
-        '''
-
-        formats = ['session_name', 'session_id'] + WINDOW_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
-
-        windows = self.tmux(
-            'list-windows',                     # ``tmux list-windows``
-            '-t%s' % self.get('session_id'),    # target (session name)
-            '-F%s' % '\t'.join(tmux_formats),   # output
-        ).stdout
-
-        # combine format keys with values returned from ``tmux list-windows``
-        windows = [dict(zip(
-            formats, window.split('\t'))) for window in windows]
-
-        # clear up empty dict
-        windows = [
-            dict((k, v) for k, v in window.iteritems() if v) for window in windows
-        ]
-
-        return windows
-
     def list_windows(self):
         '''
         Return a list of :class:`Window` from the ``tmux(1)`` session.
         '''
-        new_windows = self._list_windows()
+        new_windows = self.server._update_windows()._windows
+
+        new_windows = [
+           w for w in new_windows if w['session_id'] == self.get('session_id')
+        ]
+
+
+        self._windows[:] = []
+
+        for window in new_windows:
+            winobject = Window(session=self, **window)
+            self._windows.append(winobject)
+        return self._windows
+    list_children = list_windows
+
+    def delthis_list_windows(self):
+        '''
+        Return a list of :class:`Window` from the ``tmux(1)`` session.
+        '''
+        new_windows = self.server._update_windows()._windows
+
+        new_windows = [
+           p for p in new_windows if p['session_id'] == self.get('session_id')
+        ]
 
         if not self._windows:
             for window in new_windows:
@@ -241,7 +239,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                 self._windows.append(Window(session=self, **window))
 
         return self._windows
-    list_children = list_windows
+    list_children = delthis_list_windows
+
 
     def attached_window(self):
         '''

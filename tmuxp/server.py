@@ -13,9 +13,8 @@ from __future__ import absolute_import, division, print_function, with_statement
 import os
 from .util import tmux, TmuxRelationalObject
 from .session import Session
-from .formats import SESSION_FORMATS, CLIENT_FORMATS
 
-from . import log
+from . import log, formats
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,6 +47,8 @@ class Server(TmuxRelationalObject):
         self.children = self._sessions
 
         self._TMUX = {}
+        self._windows = []
+        self._panes = []
 
     def tmux(self, *args, **kwargs):
         args = list(args)
@@ -65,8 +66,8 @@ class Server(TmuxRelationalObject):
 
         ``$ tmux list-sessions``
         '''
-        formats = SESSION_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
+        sformats = formats.SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in sformats]
         sessions = self.tmux(
             'list-sessions',
             '-F%s' % '\t'.join(tmux_formats),   # output
@@ -83,13 +84,13 @@ class Server(TmuxRelationalObject):
 
         ``$ tmux list-sessions``
         '''
-        formats = SESSION_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
+        sformats = formats.SESSION_FORMATS
+        tmux_formats = ['#{%s}' % format for format in sformats]
         sessions = self._list_sessions()
 
         # combine format keys with values returned from ``tmux list-windows``
         sessions = [dict(zip(
-            formats, session.split('\t'))) for session in sessions]
+            sformats, session.split('\t'))) for session in sessions]
 
         # clear up empty dict
         new_sessions = [
@@ -149,6 +150,119 @@ class Server(TmuxRelationalObject):
 
         return self._sessions
     list_children = list_sessions
+
+    def _list_windows(self):
+        '''
+        Return dict of ``tmux(1) list-windows`` values.
+        '''
+
+        wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
+        tmux_formats = ['#{%s}' % format for format in wformats]
+
+        windows = self.tmux(
+            'list-windows',                     # ``tmux list-windows``
+            '-a',
+            '-F%s' % '\t'.join(tmux_formats),   # output
+        )
+
+        if windows.stderr:
+            raise Exception(windows.stderr)
+
+        return windows.stdout
+
+    def _update_windows(self):
+        ''' take the outpout of _list_windows from shell and put it into
+        a list of dicts'''
+
+        wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
+
+        windows = self._list_windows()
+
+        # combine format keys with values returned from ``tmux list-windows``
+        windows = [dict(zip(
+            wformats, window.split('\t'))) for window in windows]
+
+        # clear up empty dict
+        windows = [
+            dict((k, v) for k, v in window.iteritems() if v) for window in windows
+        ]
+
+        '''
+        iterate through the returned windows, see if the window_id exists, if
+        so update it.
+
+        the new method doesn't care about diffs. independent pane and window
+        objects look up their pane_id/window_id. if no pane_id or window_id
+        exists, it's a zombie :O
+        '''
+
+        if self._windows:
+            # http://stackoverflow.com/a/14465359
+            self._windows[:] = []
+
+        self._windows.extend(windows)
+
+        return self
+
+    def _list_panes(self):
+        '''Return list of :class:`Pane` for the window.
+
+        :rtype: list of :class:`Pane`
+        '''
+        pformats = ['session_name', 'session_id',
+                   'window_index', 'window_id'] + formats.PANE_FORMATS
+        tmux_formats = ['#{%s}\t' % f for f in pformats]
+
+        # if isinstance(self.get('window_id'), basestring):
+        #    window_id =
+
+        panes = self.tmux(
+            'list-panes',
+            #'-t%s:%s' % (self.get('session_name'), self.get('window_id')),
+            '-a',
+            '-F%s' % ''.join(tmux_formats),     # output
+        )
+
+        if panes.stderr:
+            raise Exception(panes.stderr)
+
+        return panes.stdout
+
+    def _update_panes(self):
+        ''' take the outpout of _list_panes from shell and put it into
+        a list of dicts'''
+
+        pformats = ['session_name', 'session_id',
+                   'window_index', 'window_id'] + formats.PANE_FORMATS
+
+
+        panes = self._list_panes()
+
+        # combine format keys with values returned from ``tmux list-panes``
+        panes = [dict(zip(
+            pformats, window.split('\t'))) for window in panes]
+
+        # clear up empty dict
+        panes = [
+            dict((k, v) for k, v in window.iteritems() if v) for window in panes
+        ]
+
+        '''
+        iterate through the returned panes, see if the window_id exists, if
+        so update it.
+
+        the new method doesn't care about diffs. independent pane and window
+        objects look up their pane_id/window_id. if no pane_id or window_id
+        exists, it's a zombie :O
+        '''
+
+        if self._panes:
+            # http://stackoverflow.com/a/14465359
+            self._panes[:] = []
+
+        self._panes.extend(panes)
+
+        return self
 
     def list_clients(self):
         '''
@@ -355,8 +469,8 @@ class Server(TmuxRelationalObject):
 
         logger.debug('creating session %s' % session_name)
 
-        formats = SESSION_FORMATS
-        tmux_formats = ['#{%s}' % format for format in formats]
+        sformats = formats.SESSION_FORMATS
+        tmux_formats = ['#{%s}' % f for f in sformats]
 
         env = os.environ.get('TMUX')
 
@@ -376,7 +490,7 @@ class Server(TmuxRelationalObject):
             os.environ['TMUX'] = env
 
         # combine format keys with values returned from ``tmux list-windows``
-        session_info = dict(zip(formats, session_info.split('\t')))
+        session_info = dict(zip(sformats, session_info.split('\t')))
 
         # clear up empty dict
         session_info = dict((k, v) for k, v in session_info.iteritems() if v)

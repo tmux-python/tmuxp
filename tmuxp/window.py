@@ -325,6 +325,29 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :rtype: list of :class:`Pane`
         '''
+        panes = self.server._update_panes()._panes
+
+
+        panes = [
+           p for p in panes if p['session_id'] == self.get('session_id')
+        ]
+        panes = [
+           p for p in panes if p['window_id'] == self.get('window_id')
+        ]
+
+        self._panes[:] = []
+
+        for pane in panes:
+            pobject = Pane(window=self, **pane)
+            self._panes.append(pobject)
+
+        return self._panes
+
+    def list_panesold(self):
+        '''Return list of :class:`Pane` for the window.
+
+        :rtype: list of :class:`Pane`
+        '''
         formats = ['session_name', 'session_id',
                    'window_index', 'window_id'] + PANE_FORMATS
         tmux_formats = ['#{%s}\t' % format for format in formats]
