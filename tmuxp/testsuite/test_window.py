@@ -25,7 +25,6 @@ class SelectTest(TmuxTestCase):
 
         window = self.session.new_window(window_name='testing 3')
 
-        # logger.error([window._TMUX for window in self.session.list_windows()])
         # self.assertEqual(2,
         # int(self.session.attached_window().get('window_index')))
         self.assertEqual(int(window_base_index) + 1, int(
@@ -48,7 +47,6 @@ class NewTest(TmuxTestCase):
         # self.session.select_window(1)
         current_windows = len(self.session._windows)
         self.assertIsInstance(self.session.server, Server)
-        # logger.error("current panes: %s" %
         # len(self.session.attached_window().panes))
         for w in self.session.windows:
             self.assertIsInstance(w, Window)
@@ -82,11 +80,9 @@ class NewTest2(TmuxTestCase):
         self.assertIsInstance(window, Window)
         self.assertEqual(1, len(window.panes))
         window.select_layout()
-        logger.error(window)
         window.split_window(attach=True)
         window.select_layout()
 
-        logger.error(window._TMUX)
         self.assertEqual(2, len(window.panes))
         # note: the below used to accept -h, removing because split_window now
         # has attach as its only argument now

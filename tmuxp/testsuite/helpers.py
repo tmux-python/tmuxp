@@ -53,7 +53,6 @@ def bootstrap():
     newly created session for that testcase.
     '''
     try:
-        logger.error(session.get('session_id'))
         t.switch_client(session.get('session_id'))
     except Exception:
         # t.attach_session(session.get('session_id'))
