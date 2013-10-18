@@ -21,7 +21,7 @@ from time import sleep
 import itertools
 
 
-def main(verbosity=2):
+def main(verbosity=2, failfast=False):
 
     # from tmuxp import log
     # import logging
@@ -93,7 +93,7 @@ def main(verbosity=2):
     session_name = 'tmuxp'
     t.tmux('new-session', '-d', '-s', session_name)
     suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-    result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
+    result = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast).run(suites)
     if result.wasSuccessful():
         sys.exit(0)
     else:
@@ -147,6 +147,9 @@ if __name__ == '__main__':
                         help='Log level')
     parser.add_argument('-v', '--verbosity', dest='verbosity', type=int, default=2,
                         help='unittest verbosity level')
+    parser.add_argument('-F', '--failfast', dest='failfast', action='store_true',
+
+                        help='Stop on first test failure. failfast=True')
     args = parser.parse_args()
 
     verbosity = args.verbosity
@@ -161,7 +164,7 @@ if __name__ == '__main__':
         # to the new session with os.exec and attach the session.
         loader = unittest.TestLoader()
         suites = loader.loadTestsFromName('tmuxp.testsuite.test_builder')
-        result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
+        result = unittest.TextTestRunner(verbosity=verbosity, failfast=args.failfast).run(suites)
 
         if result.wasSuccessful():
             sys.exit(0)
@@ -169,6 +172,6 @@ if __name__ == '__main__':
             sys.exit(1)
     if args.tests and len(args.tests) > int(0):
         suites = unittest.TestLoader().loadTestsFromNames(args.tests)
-        result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
+        result = unittest.TextTestRunner(verbosity=verbosity, failfast=args.failfast).run(suites)
     else:
-        main(verbosity=verbosity)
+        main(verbosity=verbosity, failfast=args.failfast)
