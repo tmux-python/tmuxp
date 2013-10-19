@@ -33,8 +33,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.server = server
 
-        self.children = self._windows
-
         if not 'session_id' in kwargs:
             raise ValueError('Session requires a `session_id`')
         self._session_id = kwargs['session_id']
@@ -184,6 +182,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     @property
     def _windows(self):
         return self.server._update_windows()._windows
+    children = _windows
 
     @property
     def windows(self):

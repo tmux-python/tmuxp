@@ -54,6 +54,7 @@ def bootstrap():
     '''
     try:
         t.switch_client(session.get('session_id'))
+        pass
     except Exception:
         # t.attach_session(session.get('session_id'))
         pass
