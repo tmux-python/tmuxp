@@ -27,7 +27,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     '''
 
-    childIdAttribute = 'window_id'
+    childIdAttribute = 'window_index'
 
     def __init__(self, server=None, **kwargs):
 
@@ -138,14 +138,43 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         # tmux < 1.8. This is added in 1.8.
         # todo, this needs code to find the newest window created
 
-        window = self.tmux('new-window', *window_args)
+        proc = self.tmux('new-window', *window_args)
 
-        window = window.stdout[0]
+        if proc.stderr:
 
-        window = dict(zip(wformats, window.split('\t')))
+            window_args = (
+                '-t%s' % self.get('session_name'),
+                '-P',
+            )
 
-        # clear up empty dict
-        window = dict((k, v) for k, v in window.items() if v)
+            if window_name:
+                window_args += ('-n', window_name)
+
+            if not attach:
+                window_args += ('-d',)
+
+            proc = self.tmux('new-window', *window_args)
+
+            if proc.stderr:
+                raise Exception(proc.stderr)
+
+            window = proc.stdout
+            window = dict(zip(['session_name', 'window_index'], window[0].split(':')))
+
+            # in earlier tmux < 1.8 versions, tmux uses window_name as
+            # identifier and _id.
+            window['window_index'] = window['window_index']
+
+            # clear up empty dict
+            window = dict((k, v) for k, v in window.items() if v)
+        else:
+            window = proc.stdout[0]
+
+            window = dict(zip(wformats, window.split('\t')))
+
+            # clear up empty dict
+            window = dict((k, v) for k, v in window.items() if v)
+
         window = Window(session=self, **window)
 
         if automatic_rename:

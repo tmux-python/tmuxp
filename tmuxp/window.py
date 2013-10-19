@@ -36,8 +36,14 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.server = self.session.server
 
         if not 'window_id' in kwargs:
-            raise ValueError('Window requires a `window_id`')
-        self._window_id = kwargs['window_id']
+            if kwargs['window_index']:
+                self._window_id = kwargs['window_index']
+            else:
+                raise ValueError('Window requires a `window_id`')
+
+        if not 'window_index' in kwargs:
+            raise ValueError('Window requires a `window_index`')
+        self._window_index = kwargs['window_index']
 
         self.server._update_windows()
 
@@ -54,7 +60,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def _TMUX(self, *args):
 
         attrs = {
-            'window_id': self._window_id
+            'window_index': self._window_index
         }
 
         # from https://github.com/serkanyersen/underscore.py
@@ -301,12 +307,24 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                 )
                 if not attach:
                     tmux_args += ('-d',)
-                pane = self.tmux(
+                proc = self.tmux(
                     'split-window',
+                    '-P',
                     *tmux_args
                 )
-                if pane.stderr:
+                if proc.stderr:
                     raise Exception(pane.stderr)
+
+                pane = proc.stdout[0]
+                import re
+                pane_regex = re.compile(r"^(?P<session_name>.*):(?P<window_index>\d*?).(?P<pane_index>\d*?)$")
+                m = re.match(pane_regex, pane)
+                pane = m.groupdict()
+
+                pane['pane_id'] = pane['pane_index']
+
+                #pane = dict(zip(['session_name', 'window_index'], pane[0].split(':')))
+
                 # todo, this needs code to find the newest pane created
             else:
                 raise Exception(pane.stderr)
@@ -318,7 +336,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             # clear up empty dict
             pane = dict((k, v) for k, v in pane.items() if v)
 
-            return Pane(window=self, **pane)
+        return Pane(window=self, **pane)
 
     def attached_pane(self):
         '''
