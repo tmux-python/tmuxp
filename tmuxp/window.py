@@ -39,7 +39,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise ValueError('Window requires a `window_id`')
         self._window_id = kwargs['window_id']
 
-        self.server._update_windows()
+        #self.server._update_windows()
 
     def __repr__(self):
         return "%s(%s %s:%s, %s)" % (

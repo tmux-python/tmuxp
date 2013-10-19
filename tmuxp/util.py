@@ -11,7 +11,7 @@
 from __future__ import absolute_import, division, print_function, with_statement
 from __future__ import unicode_literals
 
-from functools import wraps
+from distutils.version import StrictVersion
 import unittest
 import collections
 import subprocess
@@ -41,7 +41,7 @@ class tmux(object):
     '''
 
     def __init__(self, *args, **kwargs):
-        cmd = ['tmux']
+        cmd = [which('tmux')]
         cmd += args  # add the command arguments to cmd
         cmd = [str(c) for c in cmd]
 
@@ -54,7 +54,8 @@ class tmux(object):
                 stderr=subprocess.PIPE
             )
             self.process.wait()
-            stdout, stderr = self.process.stdout.read(), self.process.stderr.read()
+            stdout = self.process.stdout.read()
+            stderr = self.process.stderr.read()
         except Exception as e:
             logger.error('Exception for %s: \n%s' % (
                 cmd,
@@ -206,14 +207,30 @@ def which(exe=None):
             full_path = os.path.join(path, exe)
             if os.access(full_path, os.X_OK):
                 return full_path
-        log.trace(
+        raise Exception(
             '{0!r} could not be found in the following search '
             'path: {1!r}'.format(
                 exe, search_path
             )
         )
-    log.trace('No executable was passed to be searched by which')
+    logger.debug('No executable was passed to be searched by which')
     return None
+
+
+def version():
+    proc = tmux('-V')
+
+    if proc.stderr:
+        raise Exception(proc.stderr)
+
+    version = proc.stdout[0].split('tmux ')[1]
+
+    if StrictVersion(version) <= StrictVersion("1.7"):
+        raise Exception(
+            'tmuxp only supports tmux 1.8 and greater. This system'
+            ' has %s installed. Upgrade your tmux to use tmuxp.' % version
+        )
+    return version
 
 
 # http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3/

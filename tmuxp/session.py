@@ -37,17 +37,13 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise ValueError('Session requires a `session_id`')
         self._session_id = kwargs['session_id']
 
-        if not 'session_name' in kwargs:
-            raise ValueError('Session requires a `session_name`')
-        self._session_name = kwargs['session_name']
-
         self.server._update_windows()
 
     @property
     def _TMUX(self, *args):
 
         attrs = {
-            'session_name': str(self._session_name)
+            'session_id': str(self._session_id)
         }
 
         # from https://github.com/serkanyersen/underscore.py
@@ -78,17 +74,15 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param rename_session: new session name
         :type rename_session: string
         '''
-        # new_name = pipes.quote(new_name)
+        new_name = pipes.quote(new_name)
         proc = self.tmux(
             'rename-session',
-            '-t%s' % self.get('session_name'),
+            '-t%s' % self.get('session_id'),
             new_name
         )
 
         if proc.stderr:
             raise Exception(proc.stderr)
-
-        self._session_name = new_name
 
         self.server._update_sessions()
 
@@ -125,7 +119,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         tmux_formats = ['#{%s}' % f for f in wformats]
 
         window_args = (
-            '-t%s' % self.get('session_name'),
+            '-t%s' % self.get('session_id'),
             '-P',
             '-F%s' % '\t'.join(tmux_formats),  # output
         )
@@ -136,9 +130,12 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if not attach:
             window_args += ('-d',)
 
-        window = self.tmux('new-window', *window_args)
+        proc = self.tmux('new-window', *window_args)
 
-        window = window.stdout[0]
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+        window = proc.stdout[0]
 
         window = dict(zip(wformats, window.split('\t')))
 
@@ -194,7 +191,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Window`
         '''
         windows = [
-            w for w in self._windows if w['session_name'] == self._session_name
+            w for w in self._windows if w['session_id'] == self._session_id
         ]
 
         return [Window(session=self, **window) for window in windows]
@@ -251,7 +248,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         proc = self.tmux('select-window', target)
 
         if proc.stderr:
-            raise Exception(pane.stderr)
+            raise Exception(proc.stderr)
 
         return self.attached_window()
 

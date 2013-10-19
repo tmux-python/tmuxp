@@ -137,6 +137,7 @@ def build_workspace(config_file, args):
 
 
 def main():
+
     config_dir = os.path.expanduser('~/.tmuxp/')
     cwd_dir = os.getcwd() + '/'
 
@@ -177,6 +178,11 @@ def main():
     args = parser.parse_args()
 
     setupLogger(level=args.log_level.upper())
+    try:
+        util.version()
+    except Exception as e:
+        logger.error(e)
+        sys.exit()
 
     if args.list_configs:
         startup(config_dir)

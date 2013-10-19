@@ -39,7 +39,7 @@ class Server(TmuxRelationalObject):
     socket_name = None
     socket_path = None
     config_file = None
-    childIdAttribute = 'session_name'
+    childIdAttribute = 'session_id'
 
     def __init__(self, socket_name=None, socket_path=None, config_file=None,
                  **kwargs):
@@ -490,28 +490,9 @@ class Server(TmuxRelationalObject):
         )
 
         if proc.stderr:
-            if 'unknown option -- P' in proc.stderr[0]:
-                tmux_args = (
-                    '-s%s' % session_name,
-                )
-                if not attach:
-                    tmux_args += ('-d',)
-                proc = self.tmux(
-                    'new-session',
-                    *tmux_args
-                )
+            raise Exception(proc.stderr)
 
-                if proc.stderr:
-                    raise Exception(proc.stderr)
-                else:
-                    self._update_sessions()
-                    self.findWhere({
-                        'session_name': session_name
-                    })
-            else:
-                raise Exception(proc.stderr)
-        else:
-            session_info = proc.stdout[0]
+        session_info = proc.stdout[0]
 
         if env:
             os.environ['TMUX'] = env
