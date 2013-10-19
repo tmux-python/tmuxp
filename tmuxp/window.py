@@ -320,8 +320,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                 else:
                     continue
 
-    @property
-    def _panes(self):
+    def _list_panes(self):
         panes = self.server._update_panes()._panes
 
         panes = [
@@ -333,15 +332,19 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return panes
 
     @property
-    def panes(self):
+    def _panes(self):
+        return self._list_panes()
+
+    def list_panes(self):
         '''Return list of :class:`Pane` for the window.
 
         :rtype: list of :class:`Pane`
         '''
-        panes = self._panes
 
-        # self._panes[:] = []
+        return [Pane(window=self, **pane) for pane in self._panes]
 
-        return [Pane(window=self, **pane) for pane in panes]
+    list_children = list_panes
 
-    list_children = panes
+    @property
+    def panes(self):
+        return self.list_panes()

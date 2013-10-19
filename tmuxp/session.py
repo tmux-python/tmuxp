@@ -125,7 +125,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         tmux_formats = ['#{%s}' % f for f in wformats]
 
         window_args = (
-            '-t%s' % self.get('session_id'),
+            '-t%s' % self.get('session_name'),
             '-P',
             '-F%s' % '\t'.join(tmux_formats),  # output
         )
@@ -179,31 +179,29 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.server._update_windows()
 
-    @property
-    def _windows(self):
+    def _list_windows(self):
         return self.server._update_windows()._windows
-    children = _windows
 
     @property
-    def windows(self):
+    def _windows(self):
+        return self._list_windows()
+    children = _windows
+
+    def list_windows(self):
         '''
         Return a list of :class:`Window` from the ``tmux(1)`` session.
 
         :rtype: :class:`Window`
         '''
-        new_windows = self._windows
-
-        new_windows = [
-            w for w in new_windows if w['session_name'] == self._session_name
+        windows = [
+            w for w in self._windows if w['session_name'] == self._session_name
         ]
 
-        # self._windows[:] = []
+        return [Window(session=self, **window) for window in windows]
 
-        assert(self.server)
-
-        return [Window(session=self, **window) for window in new_windows]
-
-    list_children = windows
+    @property
+    def windows(self):
+        return self.list_windows()
 
     def attached_window(self):
         '''

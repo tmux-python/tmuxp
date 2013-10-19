@@ -135,7 +135,6 @@ class Server(TmuxRelationalObject):
 
         return self._sessions
 
-    @property
     def list_sessions(self):
         '''
         Return a list of :class:`Session` from the ``tmux(1)`` session.
@@ -145,8 +144,11 @@ class Server(TmuxRelationalObject):
         return [
             Session(server=self, **s) for s in self._update_sessions()._sessions
         ]
-    list_children = list_sessions
     children = list_sessions
+
+    @property
+    def sessions(self):
+        return self.list_sessions()
 
     def _update_sessions(self):
         '''
@@ -320,28 +322,12 @@ class Server(TmuxRelationalObject):
 
         return self._clients
 
-    def server_exists(self):
-        '''server is on and exists
-
-        '''
-
-        try:
-            self.tmux('list-clients')
-            self.tmux('list-sessions')
-            return True
-        except Exception:
-            return False
-
     def has_clients(self):
         # are any clients connected to tmux
-        if len(self.tmux('list-clients')) > int(1):
-            return True
-        else:
-            return False
-        # if e.stderr == 'failed to connect to server':
-        #    raise TmuxNotRunning('tmux session not running. please start'
-        #                            'a tmux session in another terminal '
-        #                            'window and continue.')
+        proc = self.tmux('list-clients')
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
 
     def attached_sessions(self):
         '''

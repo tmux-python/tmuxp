@@ -119,7 +119,7 @@ class TmuxRelationalObject(object):
     ``self.children``, ``self.childIdAttribute`` and ``self.list_children``.
 
     ================ ================== ===================== ============================
-    Object           ``.children``      ``.childIdAttribute`` ``.list_children``
+    Object           ``.children``      ``.childIdAttribute`` method
     ================ ================== ===================== ============================
     :class:`Server`  ``self._sessions`` 'session_id'          :meth:`Server.list_sessions`
     :class:`Session` ``self._windows``  'window_id'           :meth:`Session.list_windows`
@@ -179,7 +179,7 @@ class TmuxRelationalObject(object):
         :type id: string
         :rtype: object
         '''
-        for child in self.list_children():
+        for child in self.children:
             if child[self.childIdAttribute] == id:
                 return child
             else:
