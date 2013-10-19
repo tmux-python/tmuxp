@@ -14,10 +14,8 @@ python objects. Features:
 - JSON, YAML and `python dict`_ configuration.
 - Support for pre-commands with ``shell_command_before`` to load
   virtualenv / rvm / any other commands.
-- resume session from config file, if already built.
-- Per-project tmux sessions with ``$ tmuxp .`` to load ``.tmuxp.py`` /
-  ``.tmuxp.yaml`` / ``.tmuxp.json`` and  ``$ tmuxp configfile.yaml`` when
-  inside same directory.
+- Session resuming from config file if already running.
+- Per-project tmux sessions
 - uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
   create python objects to build workspaces with the freshest data.
 
@@ -29,19 +27,12 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for loading YAML, JSON and python dicts.
 
-.. note::
-
-    Have a feature suggestion, bug,  or need help? `Post an issue`_.
+Have a feature suggestion, bug,  or need help? `Post an issue`_.
 
 Get started now, get the prerequisites:
 
-1. have ``tmux`` installed.
-2. is at least version **1.8**, you can check with:
-   
-    .. code-block:: bash
-    
-        ``$ tmux -V``.
-3. libyaml is installed for your distribution.
+1. installed ``tmux``, at least version **1.8**
+2. libyaml is installed for your distribution.
 
 To install ``tmuxp``:
 
