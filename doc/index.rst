@@ -13,9 +13,12 @@ python objects. Features:
 - load configs + build workspace + switching to new session even when
   inside tmux
 - bash / zsh / tcsh completion
+- uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
+  create python objects to build workspaces with the freshest data.
 - JSON, YAML and :py:obj:`dict` config
 - Support for pre-commands with ``shell_command_before`` to load
-  virtualenv / rvm / any other commands
+  virtualenv / rvm / any other commands. Panes can inherit from
+  ``shell_command`` and ``shell_command_before`` in configurations.
 - Load sessions from directory with ``$ tmuxp .`` to load ``.tmuxp.py`` /
   ``.tmuxp.yaml`` / ``.tmuxp.json`` and  ``$ tmuxp configfile.yaml`` when
   inside same directory.
@@ -27,13 +30,22 @@ tmuxp works in 3 ways:
   sessions, windows and panes for good and evil purposes.
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for loading YAML, JSON and python dicts.
-- Have a feature suggestion, bug,  or need help? `Post an issue`_.
 
-Get started now, make sure:
+.. note::
 
-1.) have ``tmux`` installed.
-2.) is at least version 1.8 ``$ tmux -V``.
-3.) libyaml is installed for your distribution.
+    Have a feature suggestion, bug,  or need help? `Post an issue`_.
+
+Get started now, get the prerequisites:
+
+1. have ``tmux`` installed.
+2. is at least version **1.8**, you can check with:
+   
+    .. code-block:: bash
+    
+        ``$ tmux -V``.
+3. libyaml is installed for your distribution.
+
+To install ``tmuxp``:
 
 .. code-block:: bash
 
