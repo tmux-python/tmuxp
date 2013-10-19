@@ -13,15 +13,15 @@ python objects. Features:
 - load configs + build workspace + switching to new session even when
   inside tmux
 - bash / zsh / tcsh completion
-- uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
-  create python objects to build workspaces with the freshest data.
-- JSON, YAML and :py:obj:`dict` config
+- JSON, YAML and `python dict`_ configuration.
 - Support for pre-commands with ``shell_command_before`` to load
   virtualenv / rvm / any other commands. Panes can inherit from
   ``shell_command`` and ``shell_command_before`` in configurations.
 - Load sessions from directory with ``$ tmuxp .`` to load ``.tmuxp.py`` /
   ``.tmuxp.yaml`` / ``.tmuxp.json`` and  ``$ tmuxp configfile.yaml`` when
   inside same directory.
+- uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
+  create python objects to build workspaces with the freshest data.
 
 tmuxp works in 3 ways:
 
@@ -102,3 +102,4 @@ Indices and tables
 .. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _Post an issue: https://github.com/tony/tmuxp/issues
+.. _python dict: http://docs.python.org/2/library/stdtypes.html#dict
