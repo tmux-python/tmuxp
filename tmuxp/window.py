@@ -293,17 +293,32 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             *tmux_args
         )
 
+        # tmux < 1.7. This is added in 1.7.
         if pane.stderr:
-            raise Exception(pane.stderr)
+            if 'unknown option -- F' in pane.stderr[0]:
+                tmux_args = (
+                    '-t%s' % self.panes[0].get('pane_id'),
+                )
+                if not attach:
+                    tmux_args += ('-d',)
+                pane = self.tmux(
+                    'split-window',
+                    *tmux_args
+                )
+                if pane.stderr:
+                    raise Exception(pane.stderr)
+                # todo, this needs code to find the newest pane created
+            else:
+                raise Exception(pane.stderr)
+        else:
+            pane = pane.stdout[0]
 
-        pane = pane.stdout[0]
+            pane = dict(zip(pformats, pane.split('\t')))
 
-        pane = dict(zip(pformats, pane.split('\t')))
+            # clear up empty dict
+            pane = dict((k, v) for k, v in pane.items() if v)
 
-        # clear up empty dict
-        pane = dict((k, v) for k, v in pane.items() if v)
-
-        return Pane(window=self, **pane)
+            return Pane(window=self, **pane)
 
     def attached_pane(self):
         '''
@@ -324,7 +339,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         panes = self.server._update_panes()._panes
 
         panes = [
-            p for p in panes if p['session_id'] == self.get('session_id')
+            p for p in panes if p['session_name'] == self.get('session_name')
         ]
         panes = [
             p for p in panes if p['window_id'] == self.get('window_id')

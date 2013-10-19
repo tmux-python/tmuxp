@@ -33,9 +33,9 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.server = server
 
-        if not 'session_id' in kwargs:
-            raise ValueError('Session requires a `session_id`')
-        self._session_id = kwargs['session_id']
+        # if not 'session_id' in kwargs:
+            # raise ValueError('Session requires a `session_id`')
+        # self._session_id = kwargs['session_id']
 
         if not 'session_name' in kwargs:
             raise ValueError('Session requires a `session_name`')
@@ -133,6 +133,10 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         if not attach:
             window_args += ('-d',)
+
+        # compat: -F will not work in less than 1.8
+        # tmux < 1.8. This is added in 1.8.
+        # todo, this needs code to find the newest window created
 
         window = self.tmux('new-window', *window_args)
 

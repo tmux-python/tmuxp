@@ -120,11 +120,11 @@ class Server(TmuxRelationalObject):
             sformats, session.split('\t'))) for session in sessions]
 
         # clear up empty dict
-        new_sessions = [
+        sessions = [
             dict((k, v) for k, v in session.items() if v) for session in sessions
         ]
 
-        return new_sessions
+        return sessions
 
     @property
     def _sessions(self):
@@ -139,11 +139,11 @@ class Server(TmuxRelationalObject):
         return [
             Session(server=self, **s) for s in self._sessions
         ]
-    children = list_sessions
 
     @property
     def sessions(self):
         return self.list_sessions()
+    children = sessions
 
     def __list_windows(self):
         '''
@@ -181,6 +181,11 @@ class Server(TmuxRelationalObject):
             dict((k, v) for k, v in window.items() if v) for window in windows
         ]
 
+        # tmux < 1.8 doesn't have window_id, use window_name
+        for w in windows:
+            if not 'window_id' in w:
+                w['window_id'] = w['window_name']
+
         if self._windows:
             # http://stackoverflow.com/a/14465359
             self._windows[:] = []
@@ -199,7 +204,7 @@ class Server(TmuxRelationalObject):
         :rtype: list of :class:`Pane`
         '''
         pformats = ['session_name', 'session_id',
-                    'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
         panes = self.tmux(
@@ -219,7 +224,7 @@ class Server(TmuxRelationalObject):
         a list of dicts'''
 
         pformats = ['session_name', 'session_id',
-                    'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
 
         panes = self.__list_panes()
 
@@ -231,6 +236,12 @@ class Server(TmuxRelationalObject):
         panes = [
             dict((k, v) for k, v in window.items() if v) for window in panes
         ]
+
+        # tmux < 1.8 doesn't have window_id, use window_name
+        for p in panes:
+            if not 'window_id' in p:
+                p['window_id'] = p['window_name']
+
 
         if self._panes:
             # http://stackoverflow.com/a/14465359
@@ -489,7 +500,7 @@ class Server(TmuxRelationalObject):
                 if proc.stderr:
                     raise Exception(proc.stderr)
                 else:
-                    self.findWhere({
+                    return self.findWhere({
                         'session_name': session_name
                     })
             else:
