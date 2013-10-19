@@ -27,8 +27,6 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for loading YAML, JSON and python dicts.
 
-Have a feature suggestion, bug,  or need help? `Post an issue`_.
-
 Get started
 -----------
 
@@ -93,5 +91,5 @@ Indices and tables
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 .. _tmux(1): http://tmux.sourceforge.net/
-.. _Post an issue: https://github.com/tony/tmuxp/issues
+.. _Issues tracker: https://github.com/tony/tmuxp/issues
 .. _python dict: http://docs.python.org/2/library/stdtypes.html#dict

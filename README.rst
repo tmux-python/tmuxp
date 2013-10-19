@@ -11,7 +11,13 @@
     :width: 65%
     :align: center
 
-tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
+Open to testers
+---------------
+
+tmuxp is still **alpha** code and needs a few more weeks until stable.
+See the `Issues tracker`_ to see known issues and for any other concerns.
+ 
+``tmuxp``, a novel approach to managing `tmux(1)`_ workspaces through
 python objects. Features:
 
 - Load + switch to new session from inside tmux.
@@ -31,8 +37,6 @@ tmuxp works in 3 ways:
   sessions, windows and panes for good and evil purposes.
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for YAML, JSON and python dicts.
-
-Have a feature suggestion, bug,  or need help? `Post an issue`_.
 
 Get started
 -----------
@@ -155,5 +159,5 @@ tests           .. code-block:: bash
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
 .. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
 .. _tmux(1): http://tmux.sourceforge.net/
-.. _Post an issue: https://github.com/tony/tmuxp/issues
+.. _Issues tracker: https://github.com/tony/tmuxp/issues
 .. _python dict: http://docs.python.org/2/library/stdtypes.html#dict
