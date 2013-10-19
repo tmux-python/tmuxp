@@ -122,7 +122,6 @@ class RenameTest(TmuxTestCase):
         self.session.set_option('automatic-rename', 'off')
         window = self.session.new_window(
             window_name=self.window_name_before, attach=True)
-        t._update_sessions()
 
         self.assertEqual(window, self.session.attached_window())
         self.assertEqual(window.get('window_name'), self.window_name_before)

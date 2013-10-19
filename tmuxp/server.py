@@ -45,7 +45,6 @@ class Server(TmuxRelationalObject):
                  **kwargs):
         self._windows = []
         self._panes = []
-        self._sessions = []
 
         if socket_name:
             self.socket_name = socket_name
@@ -105,11 +104,9 @@ class Server(TmuxRelationalObject):
 
         return proc.stdout
 
-    @property
     def _list_sessions(self):
         '''
         Return a list of session information ``tmux(1)`` for the sessions
-        returned from ``_update_sessions``.
 
         :rtype: :py:obj:`list` of :py:obj:`dict`
         '''
@@ -127,13 +124,11 @@ class Server(TmuxRelationalObject):
             dict((k, v) for k, v in session.items() if v) for session in sessions
         ]
 
-        if self._sessions:
-            # http://stackoverflow.com/a/14465359
-            self._sessions[:] = []
+        return new_sessions
 
-        self._sessions.extend(new_sessions)
-
-        return self._sessions
+    @property
+    def _sessions(self):
+        return self._list_sessions()
 
     def list_sessions(self):
         '''
@@ -142,21 +137,13 @@ class Server(TmuxRelationalObject):
         :rtype: :py:obj:`list` of :class:`Session`
         '''
         return [
-            Session(server=self, **s) for s in self._update_sessions()._sessions
+            Session(server=self, **s) for s in self._sessions
         ]
     children = list_sessions
 
     @property
     def sessions(self):
         return self.list_sessions()
-
-    def _update_sessions(self):
-        '''
-        convenience method to update sessions and be chainable.
-        '''
-
-        self._list_sessions
-        return self
 
     def __list_windows(self):
         '''
@@ -387,8 +374,6 @@ class Server(TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-        self._update_sessions()
-
         return self
 
     def switch_client(self, target_session):
@@ -504,7 +489,6 @@ class Server(TmuxRelationalObject):
                 if proc.stderr:
                     raise Exception(proc.stderr)
                 else:
-                    self._update_sessions()
                     self.findWhere({
                         'session_name': session_name
                     })
@@ -525,6 +509,5 @@ class Server(TmuxRelationalObject):
         session = Session(server=self, **session_info)
 
         # self._sessions.append(session)
-        self._update_sessions()
 
         return session

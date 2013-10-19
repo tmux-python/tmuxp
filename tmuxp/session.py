@@ -90,8 +90,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self._session_name = new_name
 
-        self.server._update_sessions()
-
         return self
 
     def new_window(self,
