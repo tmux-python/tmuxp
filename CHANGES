@@ -26,7 +26,7 @@ Here you can find the recent changes to tmuxp.
 
   - :class:`Window` now has @proprety :meth:`Window.panes` returning a
     list of :class:`Pane` objects via :meth:`Window.list_panes()`.
-    @property :meth:`Window._windows` to :meth:`Window._list_panes()`
+    @property :meth:`Window._panes` to :meth:`Window._list_panes()`
     to return a list of dicts without making objects.
 
 2013-10-18

@@ -36,6 +36,7 @@ Window Object
 .. autoclass:: Window
     :members:
     :inherited-members:
+    :private-members:
     :show-inheritance:
 
     .. attribute:: _session
