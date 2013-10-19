@@ -1,3 +1,5 @@
+For studying the differences between prior tmux versions to check
+compatibility with legacy versions.
 
 Get source:
 
