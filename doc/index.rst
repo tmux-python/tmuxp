@@ -29,7 +29,10 @@ tmuxp works in 3 ways:
 
 Have a feature suggestion, bug,  or need help? `Post an issue`_.
 
-Get started now, get the prerequisites:
+Get started
+-----------
+
+Get the prerequisites:
 
 1. installed ``tmux``, at least version **1.8**
 2. libyaml is installed for your distribution.

@@ -48,7 +48,7 @@ project = u'tmuxp'
 copyright = u'2013, Tony Narlock'
 
 rst_prolog = """
-.. important::
+.. note::
 
     We are trying to make tmuxp stable and friendly as possible. If you find
     any issue installing, using, understanding tmuxp, it's featured or docs,
