@@ -16,8 +16,8 @@ import unittest
 import collections
 import subprocess
 import os
+import sys
 
-from . import log
 import logging
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class tmux(object):
     '''
 
     def __init__(self, *args, **kwargs):
-        cmd = ['tmux']
+        cmd = [which('tmux')]
         cmd += args  # add the command arguments to cmd
         cmd = [str(c) for c in cmd]
 
@@ -206,13 +206,14 @@ def which(exe=None):
             full_path = os.path.join(path, exe)
             if os.access(full_path, os.X_OK):
                 return full_path
-        log.trace(
+        logger.error(
             '{0!r} could not be found in the following search '
             'path: {1!r}'.format(
                 exe, search_path
             )
         )
-    log.trace('No executable was passed to be searched by which')
+        sys.exit()
+    logger.error('No executable was passed to be searched by which')
     return None
 
 
