@@ -36,8 +36,14 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.server = self.session.server
 
         if not 'window_id' in kwargs:
-            raise ValueError('Window requires a `window_id`')
-        self._window_id = kwargs['window_id']
+            if kwargs['window_index']:
+                self._window_id = kwargs['window_index']
+            else:
+                raise ValueError('Window requires a `window_id`')
+
+        if not 'window_index' in kwargs:
+            raise ValueError('Window requires a `window_index`')
+        self._window_index = kwargs['window_index']
 
         #self.server._update_windows()
 
@@ -54,7 +60,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def _TMUX(self, *args):
 
         attrs = {
-            'window_id': self._window_id
+            'window_index': self._window_index
         }
 
         # from https://github.com/serkanyersen/underscore.py
@@ -293,15 +299,42 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             *tmux_args
         )
 
+        # tmux < 1.7. This is added in 1.7.
         if pane.stderr:
-            raise Exception(pane.stderr)
+            if 'unknown option -- F' in pane.stderr[0]:
+                tmux_args = (
+                    '-t%s' % self.panes[0].get('pane_id'),
+                )
+                if not attach:
+                    tmux_args += ('-d',)
+                proc = self.tmux(
+                    'split-window',
+                    '-P',
+                    *tmux_args
+                )
+                if proc.stderr:
+                    raise Exception(pane.stderr)
 
-        pane = pane.stdout[0]
+                pane = proc.stdout[0]
+                import re
+                pane_regex = re.compile(r"^(?P<session_name>.*):(?P<window_index>\d*?).(?P<pane_index>\d*?)$")
+                m = re.match(pane_regex, pane)
+                pane = m.groupdict()
 
-        pane = dict(zip(pformats, pane.split('\t')))
+                pane['pane_id'] = pane['pane_index']
 
-        # clear up empty dict
-        pane = dict((k, v) for k, v in pane.items() if v)
+                #pane = dict(zip(['session_name', 'window_index'], pane[0].split(':')))
+
+                # todo, this needs code to find the newest pane created
+            else:
+                raise Exception(pane.stderr)
+        else:
+            pane = pane.stdout[0]
+
+            pane = dict(zip(pformats, pane.split('\t')))
+
+            # clear up empty dict
+            pane = dict((k, v) for k, v in pane.items() if v)
 
         return Pane(window=self, **pane)
 
@@ -324,7 +357,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         panes = self.server._update_panes()._panes
 
         panes = [
-            p for p in panes if p['session_id'] == self.get('session_id')
+            p for p in panes if p['session_name'] == self.get('session_name')
         ]
         panes = [
             p for p in panes if p['window_id'] == self.get('window_id')

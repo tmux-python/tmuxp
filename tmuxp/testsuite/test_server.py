@@ -14,14 +14,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-#class NewServerTest(unittest.TestCase):
+# class NewServerTest(unittest.TestCase):
 class NewServerTest(TmuxTestCase):
 
     def test_hi(self):
         self.assertEqual(2, 2)
-        sessions = t._update_sessions()._sessions
-
-        self.assertEqual
+        sessions = t._sessions
 
 
 class ServerTest(TmuxTestCase):

@@ -1,6 +1,38 @@
 Roadmap
 -------
 
+Now
+"""
+
+- in order to incorporate interoperability with tmux versions 1.6, Session,
+  Window and Pane classes will be index'd on a hierachy of keys
+
+  Session
+    - session_id   ( tmux >= 1.8 )
+    - session_name ( tmux < 1.7)
+
+  Window
+    - window_id     (tmux >= 1.8)
+    - window_index    (tmux < 1.7, if a window is moved, it will return a new
+                      object instance for the same window.  tmuxp should sound a
+                      warning that this version that objects is bound to
+                      window_index, it won't be the same window returned.)
+                      for code cleanness, tmuxp ORM only works for TMUX >= 1.8.
+                      The build system can support TMUX >= 1.6 and maybe lower.
+    - window_name ?
+
+  Pane
+    - pane_id
+
+  .getById  should be refactored to filter by the idAttribute of the object.
+
+  if child[child.idAttribute]a == id
+
+Detect version on startup, Detect if binary exists.
+
+use self.idAttribute for individual classes so it can declare it does not have a
+window_id.
+
 Notes
 """""
 

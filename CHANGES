@@ -3,6 +3,32 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-19
+----------
+
+- [internal] tmuxp will now give warning and sys.exit() with a message if
+  ``tmux`` not found in system PATH
+- [internal] major internal overhaul of :class:`Server`, :class:`Session`
+  , :class:`Window`, and :class:`Pane` continues.
+
+  - :class:`Server` has @property :meth:`Server.sessions`, which is forward
+    to :meth:`Server.list_sessions()` (kept to keep tmux commands in
+    serendipty with api), :meth:`Server._list_sessions()` returns dict
+    object from :meth:`Server.__list_sessions()` tmux command.
+    :meth:`Server.__list_sessions()` exists to keep the command layered so
+    it can be tested against in a matrix with travis and compatibility
+    methods can be made.
+
+  - :class:`Session` now has @proprety :meth:`Session.windows` returning a
+    list of  :class:`Window` objects via :meth:`Session.list_windows()`.
+    @property :meth:`Session._windows` to :meth:`Session._list_windows()`
+    to return a list of dicts without making objects.
+
+  - :class:`Window` now has @proprety :meth:`Window.panes` returning a
+    list of :class:`Pane` objects via :meth:`Window.list_panes()`.
+    @property :meth:`Window._windows` to :meth:`Window._list_panes()`
+    to return a list of dicts without making objects.
+
 2013-10-18
 ----------
 

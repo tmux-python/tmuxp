@@ -16,8 +16,8 @@ import unittest
 import collections
 import subprocess
 import os
+import sys
 
-from . import log
 import logging
 
 logger = logging.getLogger(__name__)
@@ -213,7 +213,7 @@ def which(exe=None):
                 exe, search_path
             )
         )
-    logger.debug('No executable was passed to be searched by which')
+    logger.error('No executable was passed to be searched by which')
     return None
 
 

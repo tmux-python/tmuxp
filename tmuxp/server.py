@@ -45,7 +45,6 @@ class Server(TmuxRelationalObject):
                  **kwargs):
         self._windows = []
         self._panes = []
-        self._sessions = []
 
         if socket_name:
             self.socket_name = socket_name
@@ -105,11 +104,9 @@ class Server(TmuxRelationalObject):
 
         return proc.stdout
 
-    @property
     def _list_sessions(self):
         '''
         Return a list of session information ``tmux(1)`` for the sessions
-        returned from ``_update_sessions``.
 
         :rtype: :py:obj:`list` of :py:obj:`dict`
         '''
@@ -123,17 +120,15 @@ class Server(TmuxRelationalObject):
             sformats, session.split('\t'))) for session in sessions]
 
         # clear up empty dict
-        new_sessions = [
+        sessions = [
             dict((k, v) for k, v in session.items() if v) for session in sessions
         ]
 
-        if self._sessions:
-            # http://stackoverflow.com/a/14465359
-            self._sessions[:] = []
+        return sessions
 
-        self._sessions.extend(new_sessions)
-
-        return self._sessions
+    @property
+    def _sessions(self):
+        return self._list_sessions()
 
     def list_sessions(self):
         '''
@@ -142,21 +137,13 @@ class Server(TmuxRelationalObject):
         :rtype: :py:obj:`list` of :class:`Session`
         '''
         return [
-            Session(server=self, **s) for s in self._update_sessions()._sessions
+            Session(server=self, **s) for s in self._sessions
         ]
-    children = list_sessions
 
     @property
     def sessions(self):
         return self.list_sessions()
-
-    def _update_sessions(self):
-        '''
-        convenience method to update sessions and be chainable.
-        '''
-
-        self._list_sessions
-        return self
+    children = sessions
 
     def __list_windows(self):
         '''
@@ -194,6 +181,11 @@ class Server(TmuxRelationalObject):
             dict((k, v) for k, v in window.items() if v) for window in windows
         ]
 
+        # tmux < 1.8 doesn't have window_id, use window_name
+        for w in windows:
+            if not 'window_id' in w:
+                w['window_id'] = w['window_name']
+
         if self._windows:
             # http://stackoverflow.com/a/14465359
             self._windows[:] = []
@@ -212,7 +204,7 @@ class Server(TmuxRelationalObject):
         :rtype: list of :class:`Pane`
         '''
         pformats = ['session_name', 'session_id',
-                    'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
         panes = self.tmux(
@@ -232,7 +224,7 @@ class Server(TmuxRelationalObject):
         a list of dicts'''
 
         pformats = ['session_name', 'session_id',
-                    'window_index', 'window_id'] + formats.PANE_FORMATS
+                    'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
 
         panes = self.__list_panes()
 
@@ -244,6 +236,12 @@ class Server(TmuxRelationalObject):
         panes = [
             dict((k, v) for k, v in window.items() if v) for window in panes
         ]
+
+        # tmux < 1.8 doesn't have window_id, use window_name
+        for p in panes:
+            if not 'window_id' in p:
+                p['window_id'] = p['window_name']
+
 
         if self._panes:
             # http://stackoverflow.com/a/14465359
@@ -387,8 +385,6 @@ class Server(TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-        self._update_sessions()
-
         return self
 
     def switch_client(self, target_session):
@@ -492,20 +488,19 @@ class Server(TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-        session_info = proc.stdout[0]
+        session = proc.stdout[0]
 
         if env:
             os.environ['TMUX'] = env
 
         # combine format keys with values returned from ``tmux list-windows``
-        session_info = dict(zip(sformats, session_info.split('\t')))
+        session = dict(zip(sformats, session.split('\t')))
 
         # clear up empty dict
-        session_info = dict((k, v) for k, v in session_info.items() if v)
+        session = dict((k, v) for k, v in session.items() if v)
 
-        session = Session(server=self, **session_info)
+        session = Session(server=self, **session)
 
         # self._sessions.append(session)
-        self._update_sessions()
 
         return session

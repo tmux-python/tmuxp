@@ -58,7 +58,6 @@ def bootstrap():
     except Exception:
         # t.attach_session(session.get('session_id'))
         pass
-    t._update_sessions()
 
     # for old_test_session in old_test_sessions:
         # logger.debug('Old test test session %s found. Killing it.' %

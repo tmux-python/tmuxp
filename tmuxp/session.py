@@ -84,8 +84,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-        self.server._update_sessions()
-
         return self
 
     def new_window(self,
