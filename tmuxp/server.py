@@ -242,7 +242,6 @@ class Server(TmuxRelationalObject):
             self._panes[:] = []
 
         self._panes.extend(panes)
-        logger.error([p.get('session_id') for p in self._panes])
 
         return self._panes
 

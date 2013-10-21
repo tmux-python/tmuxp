@@ -280,8 +280,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         #'-t%s' % self.attached_pane().get('pane_id'),
         # 2013-10-18 LOOK AT THIS, rm'd it..
-        logger.error(self.get('session_id'))
-        logger.error(self.panes)
 
         tmux_args = (
             '-t%s' % self.panes[0].get('pane_id'),
@@ -334,11 +332,9 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         panes = [
             p for p in panes if p['session_id'] == self.get('session_id')
         ]
-        logger.error(self.get('session_id'))
         panes = [
             p for p in panes if p['window_id'] == self.get('window_id')
         ]
-        logger.error(self.get('window_id'))
         return panes
 
     @property
