@@ -7,6 +7,18 @@ Examples
 2 split panes
 -------------
 
+.. aafig::
+
+   +--------+--------+
+   | $ pwd           |
+   |                 |
+   |                 |
+   +-----------------+
+   | $ pwd           |
+   |                 |
+   |                 |
+   +-----------------+
+
 YAML - Short form:
 
 .. literalinclude:: ../examples/2-pane-vertical.yaml
@@ -15,6 +27,43 @@ YAML - Short form:
 YAML - Christmas Tree:
 
 .. literalinclude:: ../examples/2-pane-vertical-long.yaml
+    :language: yaml
+
+3 panes
+-------
+
+.. aafig::
+
+   +--------+--------+
+   | $ pwd  | $ pwd  |
+   |        |        |
+   |        |        |
+   +--------+--------+
+   | $ pwd  | $ pwd  |
+   |        |        |
+   |        |        |
+   +--------+--------+
+
+.. literalinclude:: ../examples/3-pane.yaml
+    :language: yaml
+
+4 panes
+-------
+
+.. aafig::
+
+   +-----------------+
+   | $ pwd           |
+   |                 |
+   |                 |
+   +--------+--------+
+   | $ pwd  | $ pwd  |
+   |        |        |
+   |        |        |
+   +--------+--------+
+
+
+.. literalinclude:: ../examples/4-pane.yaml
     :language: yaml
 
 Kung fu
