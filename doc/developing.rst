@@ -186,8 +186,10 @@ To run test where :ref:`test_builder_visually` you may:
 .. _watching_testrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
 .. _pypi: https://pypi.python.org/pypi
 
-Super power
-"""""""""""
+.. _tmuxp developer config:
+
+tmuxp developer config
+""""""""""""""""""""""
 
 .. image:: _static/tmuxp-dev-screenshot.png
     :scale: 100%

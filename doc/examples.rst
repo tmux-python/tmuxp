@@ -7,17 +7,19 @@ Examples
 2 split panes
 -------------
 
-.. aafig::
+.. sidebar:: 2 pane
 
-   +--------+--------+
-   | $ pwd           |
-   |                 |
-   |                 |
-   +-----------------+
-   | $ pwd           |
-   |                 |
-   |                 |
-   +-----------------+
+    .. aafig::
+
+        +-----------------+
+        | $ pwd           |
+        |                 |
+        |                 |
+        +-----------------+
+        | $ pwd           |
+        |                 |
+        |                 |
+        +-----------------+
 
 YAML - Short form:
 
@@ -32,17 +34,19 @@ YAML - Christmas Tree:
 3 panes
 -------
 
-.. aafig::
+.. sidebar:: 3 panes
 
-   +--------+--------+
-   | $ pwd  | $ pwd  |
-   |        |        |
-   |        |        |
-   +--------+--------+
-   | $ pwd  | $ pwd  |
-   |        |        |
-   |        |        |
-   +--------+--------+
+    .. aafig::
+
+        +-----------------+
+        | $ pwd           |
+        |                 |
+        |                 |
+        +--------+--------+
+        | $ pwd  | $ pwd  |
+        |        |        |
+        |        |        |
+        +--------+--------+
 
 .. literalinclude:: ../examples/3-pane.yaml
     :language: yaml
@@ -50,20 +54,30 @@ YAML - Christmas Tree:
 4 panes
 -------
 
-.. aafig::
+.. sidebar:: 4 panes
 
-   +-----------------+
-   | $ pwd           |
-   |                 |
-   |                 |
-   +--------+--------+
-   | $ pwd  | $ pwd  |
-   |        |        |
-   |        |        |
-   +--------+--------+
+    .. aafig::
 
+        +--------+--------+
+        | $ pwd  | $ pwd  |
+        |        |        |
+        |        |        |
+        +--------+--------+
+        | $ pwd  | $ pwd  |
+        |        |        |
+        |        |        |
+        +--------+--------+
 
 .. literalinclude:: ../examples/4-pane.yaml
+    :language: yaml
+
+Super-advanced dev environment
+------------------------------
+
+.. seealso::
+    :ref:`tmuxp developer config` in the :ref:`developing` section.
+
+.. literalinclude:: ../.tmuxp.yaml
     :language: yaml
 
 Kung fu

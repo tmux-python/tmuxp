@@ -38,7 +38,7 @@ It will list configs available in the current directory and
 
 This creates your tmuxp session.
 
-.. seealso:: :ref:`quickstart`
+.. seealso:: :ref:`examples`
 
 Bash completion
 """""""""""""""
@@ -80,7 +80,8 @@ Conventions
 
 .. module:: tmuxp
 
-.. seealso:: :ref:`tmuxp python API documentation <api>`
+.. seealso::
+    :ref:`tmuxp python API documentation <api>` and :ref:`developing`.
 
 ======================================== =================================
 :ref:`tmuxp python api <api>`            :term:`tmux(1)` equivalent
