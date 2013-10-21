@@ -27,19 +27,15 @@ def bootstrap():
 
     '''
 
-    # session_list = t.sessions
-
-    # assert session_list == t.sessions
-
     # find current sessions prefixed with tmuxp
-    # old_test_sessions = [s.get('session_name') for s in session_list
-                        # if
-                        # s.get('session_name').startswith(TEST_SESSION_PREFIX)]
+    old_test_sessions = [s.get('session_name') for s in t._sessions
+                        if
+                        s.get('session_name').startswith(TEST_SESSION_PREFIX)]
 
-    # other_sessions = [s.get('session_name') for s in session_list
-                      # if not s.get('session_name').startswith(
-                          # TEST_SESSION_PREFIX
-                      # )]
+    other_sessions = [s.get('session_name') for s in t._sessions
+                      if not s.get('session_name').startswith(
+                          TEST_SESSION_PREFIX
+                      )]
 
     # assert session_list == t.sessions
 
@@ -59,11 +55,12 @@ def bootstrap():
         # t.attach_session(session.get('session_id'))
         pass
 
-    # for old_test_session in old_test_sessions:
-        # logger.debug('Old test test session %s found. Killing it.' %
-                      # old_test_session)
-        # t.kill_session(old_test_session)
+    for old_test_session in old_test_sessions:
+        logger.debug('Old test test session %s found. Killing it.' %
+                      old_test_session)
+        t.kill_session(old_test_session)
     assert TEST_SESSION_NAME == session.get('session_name')
+    assert TEST_SESSION_NAME != 'tmuxp'
 
     return (TEST_SESSION_NAME, session)
 
@@ -83,7 +80,7 @@ class TmuxTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         try:
-            t.tmux('kill-server')
+            #t.tmux('kill-server')
 
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
         # except TmuxNoClientsRunning:
@@ -99,5 +96,5 @@ class TmuxTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        t.tmux('kill-server')
+        #t.tmux('kill-server')
         pass

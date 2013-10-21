@@ -237,17 +237,12 @@ class Server(TmuxRelationalObject):
             dict((k, v) for k, v in window.items() if v) for window in panes
         ]
 
-        # tmux < 1.8 doesn't have window_id, use window_name
-        for p in panes:
-            if not 'window_id' in p:
-                p['window_id'] = p['window_name']
-
-
         if self._panes:
             # http://stackoverflow.com/a/14465359
             self._panes[:] = []
 
         self._panes.extend(panes)
+        logger.error([p.get('session_id') for p in self._panes])
 
         return self._panes
 

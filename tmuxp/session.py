@@ -175,7 +175,13 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.server._update_windows()
 
     def _list_windows(self):
-        return self.server._update_windows()._windows
+        windows = self.server._update_windows()._windows
+
+        windows = [
+            w for w in windows if w['session_id'] == self.get('session_id')
+        ]
+
+        return windows
 
     @property
     def _windows(self):

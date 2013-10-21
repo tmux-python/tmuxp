@@ -45,13 +45,30 @@ class NewTest(TmuxTestCase):
 
     def test_zfresh_window_data(self):
         # self.session.select_window(1)
+        #
+        logger.error(self.session.attached_window())
+        logger.error(self.session.attached_window().get('window_name'))
+        logger.error(self.session.windows)
+        logger.error(self.session.attached_window().panes)
+        self.assertEqual(len(self.session.windows), 1)
+
+        self.assertEqual(len(self.session.attached_window().panes), 1)
         current_windows = len(self.session._windows)
+        self.assertNotEqual('@0', self.session.get('session_id'))
+        self.assertEqual(current_windows, 1)
+
+        self.assertEqual(len(self.session.attached_window().panes), 1)
         self.assertIsInstance(self.session.server, Server)
         # len(self.session.attached_window().panes))
+
+        self.assertEqual(1, len(self.session.windows))
+        self.assertEqual(len(self.session.attached_window().panes), 1)
         for w in self.session.windows:
             self.assertIsInstance(w, Window)
         window = self.session.attached_window()
         self.assertIsInstance(window, Window)
+        logger.error(t.sessions)
+        self.assertEqual(len(self.session.attached_window().panes), 1)
         pane = window.split_window()
         self.session.attached_window().select_pane(0)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
