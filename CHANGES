@@ -10,7 +10,8 @@ Here you can find the recent changes to tmuxp.
   upgrade tmux if out of date
 - Fix regression causing unexpected build behavior due to unremoved code
   supporting old tmux versions.
-- Added 2 new examples to the :ref:`examples` page.
+- [docs] Added 2 new examples to the :ref:`examples` page.
+- [docs] Examples now have graphics
 
 2013-10-19
 ----------
