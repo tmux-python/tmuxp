@@ -13,11 +13,6 @@ logger = logging.getLogger(__name__)
 
 class ResizeTest(TmuxTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        super(ResizeTest, cls).setUpClass()
-
-    @unittest.skip('this is willy nilly, come back later')
     def test_window_pane(self):
         '''Pane.resize_pane()'''
 

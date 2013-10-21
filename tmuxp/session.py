@@ -271,16 +271,16 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             returns True or False.
         '''
         if (len(self._windows) > 1):
-            logger.info('%s not clean, multiple windows', self)
+            logger.debug('%s not clean, multiple windows', self)
             return False
 
         if (len(self.attached_window()._panes) > 1):
-            logger.info('%s not clean, multiple panes (%s)' % (
+            logger.debug('%s not clean, multiple panes (%s)' % (
                 self, len(self.attached_window()._panes)))
             return False
 
         if (int(self.attached_window().attached_pane().get('history_size')) > 0):
-            logger.info('%s history_size (%s), greater than 0' % (
+            logger.debug('%s history_size (%s), greater than 0' % (
                 self, self.attached_window().attached_pane().get('history_size')))
             return False
 
