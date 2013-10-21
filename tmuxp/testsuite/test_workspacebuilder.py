@@ -99,7 +99,7 @@ class ThreePaneTest(TmuxTestCase):
             w.select_layout(wconf['layout'])
 
 
-class FocusTest(TmuxTestCase):
+class FocusAndPaneIndexTest(TmuxTestCase):
 
     yaml_config = '''
     session_name: sampleconfig
@@ -131,10 +131,6 @@ class FocusTest(TmuxTestCase):
 
     '''
 
-    @unittest.skip(
-        'attached_{pane,window} needs to be fixed, this is working on tmux'
-        ' 1.9, if focus: true isn\'t working for you, please file an issue.'
-    )
     def test_split_windows(self):
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
@@ -151,41 +147,21 @@ class FocusTest(TmuxTestCase):
         )
 
         pane_base_index = self.session.attached_window().show_window_option(
-            'base-pane-index')
+            'pane-base-index'
+        )
 
         if not pane_base_index:
             pane_base_index = 0
         else:
             pane_base_index = int(pane_base_index)
 
-        # logger.error('attached window: %s' % (self.session.attached_window()))
-        # logger.error('attached window: %s' % (self.session.attached_window()._TMUX))
-        # logger.error('attached pane: %s' %
-        # (self.session.attached_window().attached_pane()))
-        import time
-        time.sleep(1)
-        self.session.list_windows()
-        self.session.attached_window().list_panes()
-        logger.error('attached pane: %s' % (
-            self.session.attached_window().attached_pane()))
-        logger.error('attached pane: %s' % (
-            self.session.attached_window().attached_pane())._TMUX)
-        logger.error('attached pane: %s' % (
-            self.session.attached_window().list_panes()))
-        logger.error('attached pane: %s' % (
-            self.session.attached_window().where({'pane_active': '1'})[0]._TMUX))
-
+        # get the pane index for each pane
+        pane_base_indexes = []
         for pane in self.session.attached_window().panes:
-            logger.error(
-                '%s and %s and %s, total panes %s' %
-                (pane, pane['pane_index'], pane.window.get('window_name'), len(
-                    self.session.attached_window().list_panes()))
-            )
+            pane_base_indexes.append(int(pane.get('pane_index')))
 
-        self.assertEqual(
-            self.session.attached_window().attached_pane().get('pane_index'),
-            pane_base_index + 2
-        )
+        pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
+        self.assertListEqual(pane_indexes_should_be, pane_base_indexes)
 
 
 class WindowOptions(TmuxTestCase):
