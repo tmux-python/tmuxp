@@ -255,7 +255,7 @@ class Server(TmuxRelationalObject):
 
         ``$ tmux list-clients``
         '''
-        cformats = CLIENT_FORMATS
+        cformats = formats.CLIENT_FORMATS
         tmux_formats = ['#{%s}' % format for format in cformats]
         # import ipdb
         # ipdb.set_trace()
