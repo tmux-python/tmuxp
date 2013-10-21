@@ -186,7 +186,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     @property
     def _windows(self):
         return self._list_windows()
-    children = _windows
 
     def list_windows(self):
         '''
@@ -203,6 +202,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     @property
     def windows(self):
         return self.list_windows()
+    children = windows
 
     def attached_window(self):
         '''

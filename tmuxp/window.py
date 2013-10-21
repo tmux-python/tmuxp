@@ -349,8 +349,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return [Pane(window=self, **pane) for pane in self._panes]
 
-    list_children = list_panes
-
     @property
     def panes(self):
         return self.list_panes()
+    children = panes
