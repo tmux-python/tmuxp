@@ -1,8 +1,8 @@
 session_name: my session
 windows:
   panes:
-    - shell_commands:
+    - shell_command:
       - pwd
       - top
-    - shell_commands:
+    - shell_command:
       - pwd
