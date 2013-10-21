@@ -95,7 +95,7 @@ Advanced tmux workflow:
         - '[ -d .env -a -f .env/bin/activate ] || virtualenv .env'
         - command -v tmuxp >/dev/null 2>&1 || { pip install -e .; }
         - command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }
-        - watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py
+        - watching_testrunner --basepath ./ --pattern="*.py" 'python run_tests.py'
     - window_name: docs
       layout: main-horizontal
       options:
