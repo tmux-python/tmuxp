@@ -12,6 +12,7 @@ Here you can find the recent changes to tmuxp.
   supporting old tmux versions.
 - [docs] Added 2 new examples to the :ref:`examples` page.
 - [docs] Examples now have graphics
+- [cli] [internal] ``$ tmuxp -v`` will print the version info.
 
 2013-10-19
 ----------
