@@ -1,4 +1,4 @@
-session_name: my session
+session_name: 2-pane-vertical
 windows:
   - window_name: my test window
     panes:

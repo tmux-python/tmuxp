@@ -1,8 +1,17 @@
-session_name: my session
+session_name: 2-pane-vertical-long
 windows:
-  panes:
+  - window_name: test
+    panes:
     - shell_command:
+      - cd ~
       - pwd
       - top
+    - shell_command:
+      - cd /var/www
+      - pwd
+  - window_name: second window
+    shell_command_before:  cd /var/www
+    panes:
+    - shell_command: pwd
     - shell_command:
       - pwd
