@@ -3,6 +3,15 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-21
+----------
+
+- [cli] Make 1.8 the official minimym version, give warning notice to
+  upgrade tmux if out of date
+- Fix regression causing unexpected build behavior due to unremoved code
+  supporting old tmux versions.
+- Added 2 new examples to the :ref:`examples` page.
+
 2013-10-19
 ----------
 
