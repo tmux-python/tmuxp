@@ -15,6 +15,9 @@ import kaptan
 from . import config
 from distutils.util import strtobool
 from . import log, util, exc, WorkspaceBuilder, Server
+import pkg_resources
+
+__version__ = pkg_resources.require("tmuxp")[0].version
 
 logger = logging.getLogger(__name__)
 
@@ -172,6 +175,11 @@ def main():
     parser.add_argument(
         '-l', '--list', dest='list_configs', action='store_true',
         help='List config files available')
+
+    parser.add_argument(
+        '-v', '--version', dest='version', action='store_true',
+        help='Prints the tmuxp version')
+
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         help='Log level')
 
@@ -184,7 +192,9 @@ def main():
         logger.error(e)
         sys.exit()
 
-    if args.list_configs:
+    if args.version:
+        print('tmuxp %s' % __version__)
+    elif args.list_configs:
         startup(config_dir)
         configs_in_user = config.in_dir(config_dir)
         configs_in_cwd = config.in_cwd()
