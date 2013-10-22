@@ -71,12 +71,15 @@ For zsh:
 Python ORM + AL
 ---------------
 
-ORM - Object Relational Mapper
+`ORM` - Object Relational Mapper
 
-AL - Abstraction Layer
+`AL`_ - Abstraction Layer
 
-Conventions
-"""""""""""
+.. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
+.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
+
+python abstraction layer
+""""""""""""""""""""""""
 
 .. module:: tmuxp
 
@@ -98,8 +101,18 @@ Conventions
 tmux ORM
 """"""""
 
-tmuxp's main internal feature is to abstract tmux into relational objects.
+tmuxp's core internal feature is the object relation and orchestration of
+the tmux server (think an `engine`_ in `SQLAlchemy`_) and the server's
+sessions, so on...
 
 - :class:`Server` holds :class:`Session` objects.
 - :class:`Session` holds :class:`Window` objects.
 - :class:`Window` holds :class:`Pane` objects.
+
+instances of tmux objects use tmux `1.8`_'s ``pane_id``, ``window_id`` and
+``session_id`` to build create python objects to build workspaces with the
+freshest data.
+
+.. _engine: http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html
+.. _sqlalchemy: http://www.sqlalchemy.org/
+.. _1.8: http://sourceforge.net/projects/tmux/files/tmux/tmux-1.8/

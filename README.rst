@@ -16,35 +16,48 @@ Open to testers
 
 tmuxp is still **alpha** code and needs a few more weeks until stable.
 See the `Issues tracker`_ to see known issues and for any other concerns.
- 
-``tmuxp``, a novel approach to managing `tmux(1)`_ workspaces through
-python objects. Features:
 
-- Load + switch to new session from inside tmux.
-- bash / zsh / tcsh completion
-- JSON, YAML and `python dict`_ configuration.
-- Support for pre-commands with ``shell_command_before`` to load
-  virtualenv / rvm / any other commands.
-- Session resuming from config file if already running.
-- Per-project tmux sessions
-- uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
-  create python objects to build workspaces with the freshest data.
 
-tmuxp works in 3 ways:
+tmux bash completion
+--------------------
 
-- a pythonic `abstraction layer`_ on top of tmux' CLI commands
-- an `ORM`_ that internally orchestrates relations between servers,
-  sessions, windows and panes for good and evil purposes.
-- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
-  support for YAML, JSON and python dicts.
+.. code-block:: bash
 
-Get started
------------
+    $ tmuxp attach-session<tab>
+    $ tmuxp kill-session<tab>
+    $ tmuxp load<tab>
 
-Get the prerequisites:
+.. seealso:: `bash completion`_
 
-1. installed ``tmux``, at least version **1.8**
-2. libyaml is installed for your distribution.
+load tmux sessions from yaml and json
+--------------------------------------
+
+.. code-block:: bash
+
+    $ tmuxp load .
+
+Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
+
+.. code-block:: bash
+
+    $ tmuxp load myconfig.yaml
+
+Load ``myconfig.yaml``, checking current directory, then
+``$HOME/.tmuxp/myconfig.yaml``.
+
+tmuxp will prompt you if session is already running, press ``[Enter]``
+to attach the session automatically.
+
+If you load a config from *inside* tmux, tmuxp will offer to attach it
+for you.
+
+.. seealso:: `Examples`_
+
+Install
+-------
+
+- install ``tmux``, at least version **1.8**
+- libyaml is installed for your distribution.
 
 Install ``tmuxp``:
 
@@ -59,9 +72,11 @@ Install ``tmuxp``:
     session_name: my session
     windows:
     - window_name: my test window
+      shell_command_before: cd ~
       panes:
       - pwd
       - pwd
+
 
 Now with ``tmuxp``:
 
@@ -69,7 +84,16 @@ Now with ``tmuxp``:
 
     $ tmuxp test.yaml
 
-Check out our `Examples`_, `Quickstart`_ and `bash completion`_ support.
+.. seealso:: `Quickstart`_
+
+tmuxp works in 3 ways:
+
+- a pythonic `abstraction layer`_ on top of tmux' CLI commands
+- an `ORM`_ that internally orchestrates relations between servers,
+  sessions, windows and panes for good and evil purposes.
+- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
+  support for YAML, JSON and python dicts.
+
 
 Advanced tmux workflow:
 
