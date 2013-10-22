@@ -182,7 +182,7 @@ def subcommand_load(args):
 
 
 def subcommand_attach_session(args):
-    print('attac session')
+    #print('attac session')
     for session_name in args.session_name:
         print(session_name)
 
@@ -195,10 +195,10 @@ def subcommand_attach_session(args):
             commands.extend([c for c in sessions if ctext_attach in c])
 
 def subcommand_kill_session(args):
-    print('kill session')
-    print(args)
-    print(type(args.session_name))
-    print(args.session_name)
+    #print('kill session')
+    #print(args)
+    #print(type(args.session_name))
+    #print(args.session_name)
 
     commands = []
     ctext = args.session_name[0]
@@ -305,8 +305,6 @@ def main():
     else:
         if args.version:
             print('tmuxp %s' % __version__)
-        elif args.kill_session:
-            print(args.kill_session)
 
         parser.print_help()
 
@@ -322,20 +320,29 @@ def complete(cline, cpoint):
                         metavar='socket-path')
 
     parser.add_argument(
-        dest='configs',
+        dest='ctexta',
         nargs='*',
         type=str,
-        default=None,
-    )
+        default=None,)
+
 
     args = parser.parse_args()
 
     commands = []
 
+
     commands.extend(['attach-session', 'kill-session', 'load'])
 
     ctext = cline.replace('tmuxp ', '')
+
+
     commands = [c for c in commands if ctext in c]
+
+    if args.socket_path:
+        ctext = ctext.replace(args.socket_path or None, '')
+
+    if args.socket_name:
+        ctext = ctext.replace(args.socket_name or None, '')
 
     t = Server(
         # socket_name=args.socket_name or None,
@@ -360,7 +367,6 @@ def complete(cline, cpoint):
 
     session_complete('attach', commands, ctext)
     session_complete('kill-session', commands, ctext)
-
     config_complete('load', commands, ctext)
 
     print(' \n'.join(commands))
