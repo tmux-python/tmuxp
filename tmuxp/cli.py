@@ -200,8 +200,8 @@ def subcommand_kill_session(args):
     print(type(args.session_name))
     print(args.session_name)
 
-    for session_name in args.session_name:
-        print(session_name)
+    commands = []
+    ctext = args.session_name[0]
 
     def session_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
@@ -210,6 +210,9 @@ def subcommand_kill_session(args):
 
             sessions = [s.get('session_name') for s in t._sessions]
             commands.extend([c for c in sessions if ctext_attach in c])
+
+    print(' \n'.join(commands))
+
 
 
 def cli_parser():
@@ -311,14 +314,21 @@ def main():
 
 def complete(cline, cpoint):
 
-    # parser = argparse.ArgumentParser()
-    # args = parser.parse_args()
-    # parser.add_argument('-L', dest='socket_name', default=None,
-                        # metavar='socket-name')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-L', dest='socket_name', default=None,
+                        metavar='socket-name')
 
-    # parser.add_argument('-S', dest='socket_path', default=None,
-                        # metavar='socket-path')
+    parser.add_argument('-S', dest='socket_path', default=None,
+                        metavar='socket-path')
 
+    parser.add_argument(
+        dest='configs',
+        nargs='*',
+        type=str,
+        default=None,
+    )
+
+    args = parser.parse_args()
 
     commands = []
 
