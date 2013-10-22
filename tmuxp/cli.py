@@ -323,18 +323,14 @@ def complete(cline, cpoint):
         dest='ctexta',
         nargs='*',
         type=str,
-        default=None,)
-
+        default=None,
+    )
 
     args = parser.parse_args()
-
-    commands = []
-
-
-    commands.extend(['attach-session', 'kill-session', 'load'])
-
     ctext = cline.replace('tmuxp ', '')
 
+    commands = []
+    commands.extend(['attach-session', 'kill-session', 'load'])
 
     commands = [c for c in commands if ctext in c]
 
@@ -355,15 +351,20 @@ def complete(cline, cpoint):
             ctext_attach = ctext.replace(command + ' ', '')
 
             sessions = [s.get('session_name') for s in t._sessions]
-            commands.extend([c for c in sessions if ctext_attach in c])
+            #commands.extend([c for c in sessions if ctext_attach in c])
+
+            #commands = [c for c in commands if ctext_subcommand_args in c]
+            commands = [c for c in commands if c.startswith(ctext_attach)]
 
     def config_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
             commands[:] = []
             ctext_subcommand_args = ctext.replace(command + ' ', '')
-            commands += config.in_dir(config_dir)
-            commands += config.in_cwd()
-            commands = [c for c in commands if ctext_subcommand_args in c]
+            configs = []
+            configs += config.in_cwd()
+            configs += config.in_dir(config_dir)
+            #commands = [c for c in commands if ctext_subcommand_args in c]
+            commands += [c for c in configs if c.startswith(ctext_subcommand_args)]
 
     session_complete('attach', commands, ctext)
     session_complete('kill-session', commands, ctext)
