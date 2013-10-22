@@ -21,6 +21,9 @@ __version__ = pkg_resources.require("tmuxp")[0].version
 
 logger = logging.getLogger(__name__)
 
+config_dir = os.path.expanduser('~/.tmuxp/')
+cwd_dir = os.getcwd() + '/'
+
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -96,15 +99,10 @@ def build_workspace(config_file, args):
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
-    t = Server()
-
-    if args.socket_name:
-        print('socket_name %s' % args.socket_name)
-        t.socket_name = args.socket_name
-
-    if args.socket_path:
-        print('socket_path %s' % args.socket_path)
-        t.socket_path = args.socket_path
+    t = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path
+    )
 
     try:
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
@@ -139,10 +137,7 @@ def build_workspace(config_file, args):
         return
 
 
-def main():
-
-    config_dir = os.path.expanduser('~/.tmuxp/')
-    cwd_dir = os.getcwd() + '/'
+def cli_parser():
 
     parser = argparse.ArgumentParser(
         description='''\
@@ -182,6 +177,12 @@ def main():
 
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         help='Log level')
+
+    return parser
+
+def main():
+
+    parser = cli_parser()
 
     args = parser.parse_args()
 
@@ -238,14 +239,32 @@ def main():
 
 def complete(cline, cpoint):
 
-    config_dir = os.path.expanduser('~/.tmuxp/')
-    cwd_dir = os.getcwd() + '/'
+    parser = cli_parser()
+    args = parser.parse_args()
 
     commands = []
     commands += config.in_dir(config_dir)
     commands += config.in_cwd()
+    commands.extend(['attach', 'kill-session'])
 
     ctext = cline.replace('tmuxp ', '')
     commands = [c for c in commands if ctext in c]
+
+    t = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path
+    )
+
+    def session_complete(command, commands, ctext):
+        if ctext.startswith(command + ' '):
+            commands[:] = []
+            ctext_attach = ctext.replace(command + ' ', '')
+
+            sessions = [s.get('session_name') for s in t._sessions]
+            commands.extend([c for c in sessions if ctext_attach in c])
+
+    session_complete('attach', commands, ctext)
+    session_complete('list-sessions', commands, ctext)
+    session_complete('kill-session', commands, ctext)
 
     print(' \n'.join(commands))
