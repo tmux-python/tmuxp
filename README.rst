@@ -19,7 +19,7 @@ See the `Issues tracker`_ to see known issues and for any other concerns.
 
 
 tmux bash completion
---------------------
+""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -30,7 +30,7 @@ tmux bash completion
 .. seealso:: `bash completion`_
 
 load tmux sessions from yaml and json
---------------------------------------
+""""""""""""""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -54,7 +54,7 @@ for you.
 .. seealso:: `Examples`_
 
 Install
--------
+"""""""
 
 - install ``tmux``, at least version **1.8**
 - libyaml is installed for your distribution.
@@ -93,7 +93,8 @@ tmuxp works in 3 ways:
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for YAML, JSON and python dicts.
 
-Advanced tmux workflow:
+Advanced tmux workflow
+""""""""""""""""""""""
 
 .. code-block:: yaml
 
