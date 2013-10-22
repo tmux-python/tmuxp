@@ -348,25 +348,24 @@ def complete(cline, cpoint):
     def session_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
             commands[:] = []
-            ctext_attach = ctext.replace(command + ' ', '')
+            ctext_subargs = ctext.replace(command + ' ', '')
 
             sessions = [s.get('session_name') for s in t._sessions]
-            #commands.extend([c for c in sessions if ctext_attach in c])
+            commands.extend([c for c in sessions if ctext_subargs in c])
 
             #commands = [c for c in commands if ctext_subcommand_args in c]
-            commands = [c for c in commands if c.startswith(ctext_attach)]
+            #commands = [c for c in commands if c.startswith(ctext_subargs)]
 
     def config_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
             commands[:] = []
-            ctext_subcommand_args = ctext.replace(command + ' ', '')
+            ctext_subargs = ctext.replace(command + ' ', '')
             configs = []
             configs += config.in_cwd()
             configs += config.in_dir(config_dir)
-            #commands = [c for c in commands if ctext_subcommand_args in c]
-            commands += [c for c in configs if c.startswith(ctext_subcommand_args)]
+            commands += [c for c in configs if c.startswith(ctext_subargs)]
 
-    session_complete('attach', commands, ctext)
+    session_complete('attach-session', commands, ctext)
     session_complete('kill-session', commands, ctext)
     config_complete('load', commands, ctext)
 
