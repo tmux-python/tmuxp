@@ -27,14 +27,14 @@ with tmuxp:
 
 .. code-block:: bash
 
-    $ tmuxp -l
+    $ tmuxp load -l
 
 It will list configs available in the current directory and
 ``$HOME/.tmuxp``. ``example.yaml`` is detected by tmuxp. 
 
 .. code-block:: bash
 
-    $ tmuxp example.yaml
+    $ tmuxp load example.yaml
 
 This creates your tmuxp session.
 
@@ -71,12 +71,12 @@ For zsh:
 Python ORM + AL
 ---------------
 
-`ORM` - Object Relational Mapper
+ORM - `Object Relational Mapper`_
 
-`AL`_ - Abstraction Layer
+AL - `Abstraction Layer`_
 
-.. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
-.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
+.. _Abstraction Layer: http://en.wikipedia.org/wiki/Abstraction_layer
+.. _Object Relational Mapper: http://en.wikipedia.org/wiki/Object-relational_mapping
 
 python abstraction layer
 """"""""""""""""""""""""

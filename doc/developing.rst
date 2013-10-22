@@ -200,7 +200,7 @@ After you :ref:`install_dev_env`, when inside the tmuxp checkout:
 
 .. code-block:: bash
 
-    $ tmuxp .
+    $ tmuxp load .
 
 this will load the ``.tmuxp.yaml`` in the root of the project.
 

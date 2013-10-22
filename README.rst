@@ -77,12 +77,11 @@ Install ``tmuxp``:
       - pwd
       - pwd
 
-
-Now with ``tmuxp``:
+With ``tmuxp``:
 
 .. code-block:: bash
 
-    $ tmuxp test.yaml
+    $ tmuxp load test.yaml
 
 .. seealso:: `Quickstart`_
 
@@ -93,7 +92,6 @@ tmuxp works in 3 ways:
   sessions, windows and panes for good and evil purposes.
 - CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
   support for YAML, JSON and python dicts.
-
 
 Advanced tmux workflow:
 
@@ -181,7 +179,7 @@ tests           .. code-block:: bash
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
-.. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping
+.. _ORM: http://tmuxp.readthedocs.org/en/latest/quickstart.html#tmux-orm
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _Issues tracker: https://github.com/tony/tmuxp/issues
 .. _python dict: http://docs.python.org/2/library/stdtypes.html#dict
