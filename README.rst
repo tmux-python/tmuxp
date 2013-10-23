@@ -24,8 +24,12 @@ tmux bash completion
 .. code-block:: bash
 
     $ tmuxp attach-session<tab>
+    # tmuxp will also automatically ``switch-client`` if you are already
+    # inside a tmux client.
     $ tmuxp kill-session<tab>
     $ tmuxp load<tab>
+    # load a session configuration with windows, panes, autocommands from
+    # a YAML or JSON file.
 
 See: `bash completion`_
 
