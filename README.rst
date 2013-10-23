@@ -30,7 +30,7 @@ tmux bash completion
 .. seealso:: `bash completion`_
 
 load tmux sessions from yaml and json
-""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""
 
 .. code-block:: bash
 
@@ -83,64 +83,7 @@ With ``tmuxp``:
 
     $ tmuxp load test.yaml
 
-.. seealso:: `Quickstart`_
-
-tmuxp works in 3 ways:
-
-- a pythonic `abstraction layer`_ on top of tmux' CLI commands
-- an `ORM`_ that internally orchestrates relations between servers,
-  sessions, windows and panes for good and evil purposes.
-- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
-  support for YAML, JSON and python dicts.
-
-Advanced tmux workflow
-""""""""""""""""""""""
-
-.. code-block:: yaml
-
-    session_name: tmuxp
-    windows:
-    - window_name: tmuxp
-      layout: main-horizontal
-      options:
-        main-pane-height: 50
-      start_directory: ./
-      shell_command_before:
-        - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'
-      panes:
-      - shell_command: 
-        - vim
-        - :Ex
-        focus: true
-      - shell_command: 
-        - echo hi
-      - shell_command: 
-        - '[ -d .env -a -f .env/bin/activate ] || virtualenv .env'
-        - command -v tmuxp >/dev/null 2>&1 || { pip install -e .; }
-        - command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }
-        - watching_testrunner --basepath ./ --pattern="*.py" 'python run_tests.py'
-    - window_name: docs
-      layout: main-horizontal
-      options:
-        main-pane-height: 50
-      start_directory: ./
-      automatic_rename: true
-      shell_command_before: 
-        - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'
-        - command -v tmuxp >/dev/null 2>&1 || { pip install -e .; }
-        - cd ./doc
-      panes:
-      - shell_command:
-        - vim
-        focus: true
-      - pwd
-      - echo 'docs built to <http://0.0.0.0:8000/_build/html>'; python -m SimpleHTTPServer
-      - shell_command:
-        - command -v sphinx-quickstart >/dev/null 2>&1 || { pip install -r requirements.pip; }
-        - command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }
-        - watching_testrunner --basepath ./ --pattern="*.rst" 'make html'
-
-see this in the `Developing and Testing`_ documentation page.
+See also: `Quickstart`_
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
