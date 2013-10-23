@@ -361,8 +361,12 @@ def complete(cline, cpoint):
             commands[:] = []
             ctext_subargs = ctext.replace(command + ' ', '')
             configs = []
-            configs += config.in_cwd()
-            configs += config.in_dir(config_dir)
+            configs += ['./' + c for c in config.in_cwd()]
+            #configs += config.in_cwd()
+            configs += [os.path.join(config_dir, c) for c in config.in_dir(config_dir)]
+            #configs += config.in_dir(config_dir)
+            configs += ['./' + c for c in config.in_dir(cwd_dir)]
+            #configs += config.in_dir(cwd_dir)
             commands += [c for c in configs if c.startswith(ctext_subargs)]
 
     session_complete('attach-session', commands, ctext)

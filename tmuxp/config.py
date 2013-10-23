@@ -42,7 +42,7 @@ def check_consistency(sconf):
     return True
 
 
-def is_config_file(filename, extensions=['.yaml', '.json', '.ini', '.py']):
+def is_config_file(filename, extensions=['.yaml', '.json', '.ini']):
     '''Is config compatible extension.
 
     :param filename: filename to check (e.g. ``mysession.json``).
@@ -62,10 +62,9 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
     '''
     configs = []
 
-    for (dirpath, dirname, filenames) in os.walk(config_dir):
-        for filename in filenames:
-            if is_config_file(filename):
-                configs.append(filename)
+    for filename in os.listdir(config_dir):
+        if is_config_file(filename) and not filename.startswith('.'):
+            configs.append(filename)
 
     return configs
 
