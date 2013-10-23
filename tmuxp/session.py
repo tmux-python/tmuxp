@@ -68,6 +68,42 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         #    kwargs['-t'] = self.get['session_id']
         return self.server.tmux(*args, **kwargs)
 
+    def attach_session(self, target_session=None):
+        '''
+        ``$ tmux attach-session`` aka alias: ``$ tmux attach``
+
+        :param: target_session: str. name of the session. fnmatch(3) works.
+        '''
+        proc = self.tmux('attach-session', '-t%s' % self.get('session_id'))
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+    def kill_session(self, target_session=None):
+        '''
+        ``$ tmux kill-session``
+
+        :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
+                                kill asdfasd
+        '''
+        proc = self.tmux('kill-session', '-t%s' % self.get('session_id'))
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+    def switch_client(self, target_session=None):
+        '''
+        ``$ tmux kill-session``
+
+        :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
+                                kill asdfasd
+        '''
+        proc = self.tmux('switch-client', '-t%s' % self.get('session_id'))
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
 

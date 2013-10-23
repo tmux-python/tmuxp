@@ -8,7 +8,8 @@ Here you can find the recent changes to tmuxp.
 
 - [cli] zsh/bash/tcsh completion improvements for tab-completion options
 - [cli] tmuxp ``kill-session`` with tab-completion.
-- [cli] tmuxp ``attach-session`` with tab-completion.
+- [cli] tmuxp ``attach-session`` with tab-completion. Attach session will
+  ``switch-client`` for you if you are inside of of a tmux client.
 - [cli] tmuxp ``load`` for loading configs.
 - [tests] unit test fixes.
 

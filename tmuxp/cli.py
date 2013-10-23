@@ -137,7 +137,6 @@ def build_workspace(config_file, args):
         return
 
 
-
 def subcommand_load(args):
     if args.list_configs:
         startup(config_dir)
@@ -177,42 +176,44 @@ def subcommand_load(args):
                 build_workspace(file_user, args)
             else:
                 logger.error('%s not found.' % configfile)
-    else:
-        parser.print_help()
 
 
 def subcommand_attach_session(args):
-    #print('attac session')
-    for session_name in args.session_name:
-        print(session_name)
+    commands = []
+    try:
+        ctext = args.session_name[0]
+    except IndexError as e:
+        return
 
-    def session_complete(command, commands, ctext):
-        if ctext.startswith(command + ' '):
-            commands[:] = []
-            ctext_attach = ctext.replace(command + ' ', '')
+    t = Server()
+    try:
+        session = [s for s in t.sessions if s.get('session_name') == ctext][0]
+    except IndexError as e:
+        print('Session not found.')
+        return
 
-            sessions = [s.get('session_name') for s in t._sessions]
-            commands.extend([c for c in sessions if ctext_attach in c])
+    if 'TMUX' in os.environ:
+        del os.environ['TMUX']
+        session.switch_client()
+        print('Inside tmux client, switching client.')
+    else:
+        session.attach_session()
+        print('Attaching client.')
+
 
 def subcommand_kill_session(args):
-    #print('kill session')
-    #print(args)
-    #print(type(args.session_name))
-    #print(args.session_name)
-
     commands = []
     ctext = args.session_name[0]
 
-    def session_complete(command, commands, ctext):
-        if ctext.startswith(command + ' '):
-            commands[:] = []
-            ctext_attach = ctext.replace(command + ' ', '')
+    t = Server()
+    sessions = [s for s in t.sessions if s.get('session_name') == ctext]
 
-            sessions = [s.get('session_name') for s in t._sessions]
-            commands.extend([c for c in sessions if ctext_attach in c])
+    if (len(sessions) == 1):
+        proc = sessions[0].kill_session()
+        if proc.stderr:
+            print(proc.stderr)
 
-    print(' \n'.join(commands))
-
+        print(proc.stdout)
 
 
 def cli_parser():
@@ -225,8 +226,8 @@ def cli_parser():
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='subcommands',
-                                        description='valid subcommands',
-                                        help='additional help')
+                                       description='valid subcommands',
+                                       help='additional help')
 
     kill_session = subparsers.add_parser('kill-session')
     kill_session.set_defaults(callback=subcommand_kill_session)
@@ -238,9 +239,15 @@ def cli_parser():
         default=None,
     )
 
-
     attach_session = subparsers.add_parser('attach-session')
     attach_session.set_defaults(callback=subcommand_attach_session)
+
+    attach_session.add_argument(
+        dest='session_name',
+        nargs='*',
+        type=str,
+        default=None,
+    )
 
     load = subparsers.add_parser('load')
 
@@ -265,7 +272,6 @@ def cli_parser():
     )
     load.set_defaults(callback=subcommand_load)
 
-
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         metavar='log-level',
                         help='Log level e.g. INFO, DEBUG, ERROR')
@@ -280,8 +286,8 @@ def cli_parser():
         '-v', '--version', dest='version', action='store_true',
         help='Prints the tmuxp version')
 
-
     return parser
+
 
 def main():
 
@@ -298,16 +304,15 @@ def main():
 
     if args.callback is subcommand_load:
         subcommand_load(args)
-    if args.callback is subcommand_attach_session:
+    elif args.callback is subcommand_attach_session:
         subcommand_attach_session(args)
-    if args.callback is subcommand_kill_session:
+    elif args.callback is subcommand_kill_session:
         subcommand_kill_session(args)
     else:
         if args.version:
             print('tmuxp %s' % __version__)
 
         parser.print_help()
-
 
 
 def complete(cline, cpoint):
@@ -353,8 +358,8 @@ def complete(cline, cpoint):
             sessions = [s.get('session_name') for s in t._sessions]
             commands.extend([c for c in sessions if ctext_subargs in c])
 
-            #commands = [c for c in commands if ctext_subcommand_args in c]
-            #commands = [c for c in commands if c.startswith(ctext_subargs)]
+            # commands = [c for c in commands if ctext_subcommand_args in c]
+            # commands = [c for c in commands if c.startswith(ctext_subargs)]
 
     def config_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
@@ -362,11 +367,12 @@ def complete(cline, cpoint):
             ctext_subargs = ctext.replace(command + ' ', '')
             configs = []
             configs += ['./' + c for c in config.in_cwd()]
-            #configs += config.in_cwd()
-            configs += [os.path.join(config_dir, c) for c in config.in_dir(config_dir)]
-            #configs += config.in_dir(config_dir)
+            # configs += config.in_cwd()
+            configs += [os.path.join(config_dir, c)
+                        for c in config.in_dir(config_dir)]
+            # configs += config.in_dir(config_dir)
             configs += ['./' + c for c in config.in_dir(cwd_dir)]
-            #configs += config.in_dir(cwd_dir)
+            # configs += config.in_dir(cwd_dir)
             commands += [c for c in configs if c.startswith(ctext_subargs)]
 
     session_complete('attach-session', commands, ctext)
