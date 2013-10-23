@@ -27,7 +27,7 @@ tmux bash completion
     $ tmuxp kill-session<tab>
     $ tmuxp load<tab>
 
-.. seealso:: `bash completion`_
+See: `bash completion`_
 
 load tmux sessions from yaml and json
 """""""""""""""""""""""""""""""""""""
@@ -51,7 +51,7 @@ to attach the session automatically.
 If you load a config from *inside* tmux, tmuxp will offer to attach it
 for you.
 
-.. seealso:: `Examples`_
+See: `Examples`_
 
 Install
 """""""
