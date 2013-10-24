@@ -17,9 +17,6 @@ TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 class TeamocilTest(unittest.TestCase):
 
-    '''
-    assumes the configuration has been imported into a python dict correctly.
-    '''
     teamocil_yaml = """\
     windows:
     - name: "sample-two-panes"
@@ -36,20 +33,17 @@ class TeamocilTest(unittest.TestCase):
             'root': '~/Code/sample/www',
             'layout': 'even-horizontal',
             'panes': [
-                { 'cmd': [
+                {'cmd': [
                     'pwd',
                     'ls -la'
                     ]
-                },
-                { 'cmd': 'rails server --port 3000' }
+                 },
+                {'cmd': 'rails server --port 3000'}
             ]
         }]
     }
 
     def test_config_to_dict(self):
-        '''
-        expands shell commands from string to list
-        '''
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
@@ -65,9 +59,6 @@ class TeamocilTest(unittest.TestCase):
 
 class Teamocil2Test(unittest.TestCase):
 
-    '''
-    assumes the configuration has been imported into a python dict correctly.
-    '''
     teamocil_yaml = """\
     windows:
     - name: "sample-four-panes"
@@ -86,18 +77,15 @@ class Teamocil2Test(unittest.TestCase):
             'root': '~/Code/sample/www',
             'layout': 'tiled',
             'panes': [
-                { 'cmd': 'pwd' },
-                { 'cmd': 'pwd' },
-                { 'cmd': 'pwd' },
-                { 'cmd': 'pwd' },
+                {'cmd': 'pwd'},
+                {'cmd': 'pwd'},
+                {'cmd': 'pwd'},
+                {'cmd': 'pwd'},
             ]
         }]
     }
 
     def test_config_to_dict(self):
-        '''
-        expands shell commands from string to list
-        '''
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
@@ -105,10 +93,6 @@ class Teamocil2Test(unittest.TestCase):
 
 
 class Teamocil3Test(unittest.TestCase):
-
-    '''
-    assumes the configuration has been imported into a python dict correctly.
-    '''
 
     teamocil_yaml = """\
     windows:
@@ -133,13 +117,14 @@ class Teamocil3Test(unittest.TestCase):
             'root': '~/Projects/foo-www',
             'layout': 'even-vertical',
             'filters': {
-              'before': 'rbenv local 2.0.0-p0',
-              'after': 'echo \'I am done initializing this pane.\''
+                'before': 'rbenv local 2.0.0-p0',
+                'after': 'echo \'I am done initializing this pane.\''
             },
             'panes': [
-                { 'cmd': 'git status' },
-                { 'cmd': 'bundle exec rails server --port 4000', 'focus': True },
-                { 'cmd': [
+                {'cmd': 'git status'},
+                {'cmd': 'bundle exec rails server --port 4000',
+                    'focus': True},
+                {'cmd': [
                     'sudo service memcached start',
                     'sudo service mongodb start',
                 ]}
@@ -148,11 +133,6 @@ class Teamocil3Test(unittest.TestCase):
     }
 
     def test_config_to_dict(self):
-        '''
-        expands shell commands from string to list
-        '''
-
-        self.maxDiff = None
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
@@ -174,7 +154,7 @@ class Teamocil4Test(unittest.TestCase):
             'name': 'erb-example',
             'root': "<%= ENV['MY_PROJECT_ROOT'] %>",
             'panes': [
-                { 'cmd': 'pwd' }
+                {'cmd': 'pwd'}
             ]
         }]
     }
