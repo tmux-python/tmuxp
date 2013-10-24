@@ -82,6 +82,10 @@ Load ``myconfig.yaml``.
           - pwd
           - pwd
 
+.. code-block:: bash
+
+    $ tmuxp load test.yaml
+
 or ``~/.tmuxp/test.json``:
 
 .. code-block:: json
@@ -101,7 +105,7 @@ or ``~/.tmuxp/test.json``:
 
 .. code-block:: bash
 
-    $ tmuxp load test.yaml
+    $ tmuxp load test.json
 
 See: `Examples`_
 

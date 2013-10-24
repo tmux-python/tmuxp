@@ -52,6 +52,10 @@ To install ``tmuxp``:
           - pwd
           - pwd
 
+.. code-block:: bash
+
+    $ tmuxp load test.yaml
+
 or ``~/.tmuxp/test.json``:
 
 .. code-block:: json
@@ -71,7 +75,7 @@ or ``~/.tmuxp/test.json``:
 
 .. code-block:: bash
 
-    $ tmuxp test.yaml
+    $ tmuxp load test.json
 
 Jump right in: See `Examples`_, `Quickstart`_ and `bash completion`_
 support.
