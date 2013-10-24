@@ -3,6 +3,14 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-24
+----------
+
+- [internal] clean out old code for ``automatic-rename`` option. it will
+  be reimplemented fresh.
+- [cli] check for ``oh-my-zsh`` when using ``$SHELL`` ``zsh``. Prompt if
+  ``DISABLE_AUTO_TITLE`` is unset or set to ``true``.
+
 2013-10-23
 ----------
 
