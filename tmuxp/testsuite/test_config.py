@@ -14,6 +14,7 @@ import logging
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
+
 sampleconfigdict = {
     'session_name': 'sampleconfig',
     'start_directory': '~',
@@ -32,7 +33,7 @@ sampleconfigdict = {
           'start_directory':'/var/log'}
          ]}, {
              'options': {
-               'automatic_rename': True,
+                 'automatic_rename': True,
              },
             'panes': [
                 {'shell_command': ['htop']}
@@ -149,7 +150,7 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': 'htop'},
                     'vim',
@@ -179,7 +180,7 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True },
+                'options': {'automatic_rename': True},
                 'panes': [
                     {'shell_command': ['htop']},
                     {'shell_command': ['vim']}
@@ -222,7 +223,7 @@ class InlineTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -251,7 +252,7 @@ class InlineTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': 'htop'}
                 ]
@@ -303,7 +304,7 @@ class InheritanceTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -338,7 +339,7 @@ class InheritanceTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop'], 'start_directory':'/'}
                 ]
@@ -414,7 +415,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -455,7 +456,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 ]
             },
             {
-                'options': { 'automatic_rename': True, },
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
