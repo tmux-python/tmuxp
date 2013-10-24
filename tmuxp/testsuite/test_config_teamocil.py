@@ -180,44 +180,44 @@ class TeamocilLayoutsTest(unittest.TestCase):
     # Simple two windows layout
     two-windows:
         windows:
-            - name: "foo"
+          - name: "foo"
             clear: true
             root: "/foo"
             layout: "tiled"
             panes:
-                - cmd: "echo 'foo'"
-                - cmd: "echo 'foo again'"
-            - name: "bar"
+              - cmd: "echo 'foo'"
+              - cmd: "echo 'foo again'"
+          - name: "bar"
             root: "/bar"
             splits:
-                - cmd:
+              - cmd:
                 - "echo 'bar'"
                 - "echo 'bar in an array'"
                 target: bottom-right
-                - cmd: "echo 'bar again'"
+              - cmd: "echo 'bar again'"
                 focus: true
                 width: 50
 
     # Simple two windows layout with filters
     two-windows-with-filters:
         windows:
-            - name: "foo"
+          - name: "foo"
             root: "/foo"
             filters:
-                before:
+              before:
                 - "echo first before filter"
                 - "echo second before filter"
-                after:
+              after:
                 - "echo first after filter"
                 - "echo second after filter"
             panes:
-                - cmd: "echo 'foo'"
-                - cmd: "echo 'foo again'"
+              - cmd: "echo 'foo'"
+              - cmd: "echo 'foo again'"
                 width: 50
 
     two-windows-with-custom-command-options:
         windows:
-            - name: "foo"
+          - name: "foo"
             cmd_separator: "\n"
             with_env_var: false
             clear: true
@@ -226,16 +226,16 @@ class TeamocilLayoutsTest(unittest.TestCase):
             panes:
                 - cmd: "echo 'foo'"
                 - cmd: "echo 'foo again'"
-            - name: "bar"
+          - name: "bar"
             cmd_separator: " && "
             with_env_var: true
             root: "/bar"
             splits:
-                - cmd:
+              - cmd:
                 - "echo 'bar'"
                 - "echo 'bar in an array'"
                 target: bottom-right
-                - cmd: "echo 'bar again'"
+              - cmd: "echo 'bar again'"
                 focus: true
                 width: 50
 
@@ -244,15 +244,46 @@ class TeamocilLayoutsTest(unittest.TestCase):
             name: "my awesome session"
             windows:
             - name: "first window"
-                panes:
+              panes:
                 - cmd: "echo 'foo'"
             - name: "second window"
-                panes:
+              panes:
                 - cmd: "echo 'foo'"
             - name: "third window"
-                panes:
+              panes:
                 - cmd: "echo 'foo'"
     """
+
+    teamocil_dict = {
+        'two-windows': {
+            'windows': [{
+                'name': 'foo',
+                'clear': True,
+                'root': '/root',
+                'layout': 'tiled',
+                'panes': [
+                    { 'cmd': "echo 'foo'" },
+                    { 'cmd': "echo 'foo again'" }
+                ]
+            },
+            {
+                'name': 'bar',
+                'root': '/bar',
+                'splits': [
+
+                ]
+
+            }]
+        }
+    }
+
+    def test_config_to_dict(self):
+        self.maxDiff = None
+        configparser = kaptan.Kaptan(handler='yaml')
+        test_config = configparser.import_config(self.teamocil_yaml)
+        yaml_to_dict = test_config.get()
+        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+
 
 
 if __name__ == '__main__':
