@@ -302,6 +302,8 @@ def main():
         logger.error(e)
         sys.exit()
 
+    oh_my_zsh_auto_title()
+
     if args.callback is subcommand_load:
         subcommand_load(args)
     elif args.callback is subcommand_attach_session:
@@ -376,6 +378,23 @@ def complete(cline, cpoint):
 
     print(' \n'.join(commands))
 
+
+def oh_my_zsh_auto_title():
+    '''give warning and offer to fix DISABLE_AUTO_TITLE
+
+       see: https://github.com/robbyrussell/oh-my-zsh/pull/257
+    '''
+
+    if 'SHELL' in os.environ and 'zsh' in os.environ.get('SHELL'):
+        if os.path.exists(os.path.expanduser('~/.oh-my-zsh')):
+            # oh-my-zsh exists
+            if 'DISABLE_AUTO_TITLE' not in os.environ or os.environ.get('DISABLE_AUTO_TITLE') is "true":
+                print('Please set:\n\n'
+                      '\texport DISABLE_AUTO_TITLE = \'true\'\n\n'
+                      'in ~/.zshrc or where your zsh profile is stored.\n'
+                      'Remember the "export" at the beginning!\n\n'
+                      'Then create a new shell or type:\n\n'
+                      '\t$ source ~/.zshrc')
 
 # check for oh-my-zsh
 # you are using oh-my-zsh without DISABLE_AUTO_TITLE, this can cause unexpected
