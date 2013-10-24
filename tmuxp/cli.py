@@ -432,8 +432,11 @@ def complete(cline, cpoint):
             commands[:] = []
             ctext_subargs = ctext.replace(command + ' ', '')
 
-            sessions = [s.get('session_name') for s in t._sessions]
-            commands.extend([c for c in sessions if ctext_subargs in c])
+            try:
+                sessions = [s.get('session_name') for s in t._sessions]
+                commands.extend([c for c in sessions if ctext_subargs in c])
+            except Exception:
+                pass
 
     def config_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
