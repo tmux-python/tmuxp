@@ -127,7 +127,6 @@ class WorkspaceBuilder(object):
             for key, val in self.sconf['options'].items():
                 s.set_option(key, val)
 
-
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
             for p in self.iter_create_panes(w, wconf):
