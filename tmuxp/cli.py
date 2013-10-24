@@ -375,3 +375,8 @@ def complete(cline, cpoint):
     config_complete('load', commands, ctext)
 
     print(' \n'.join(commands))
+
+
+# check for oh-my-zsh
+# you are using oh-my-zsh without DISABLE_AUTO_TITLE, this can cause unexpected
+# behavior with tmux window renaming. Let me uncomment for you?
