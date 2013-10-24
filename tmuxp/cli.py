@@ -245,6 +245,9 @@ def subcommand_attach_session(args):
     except IndexError as e:
         print('Session not found.')
         return
+    except Exception as e:
+        print(e.message[0])
+        return
 
     if 'TMUX' in os.environ:
         del os.environ['TMUX']
@@ -260,7 +263,11 @@ def subcommand_kill_session(args):
     ctext = args.session_name[0]
 
     t = Server()
-    sessions = [s for s in t.sessions if s.get('session_name') == ctext]
+    try:
+        sessions = [s for s in t.sessions if s.get('session_name') == ctext]
+    except Exception as e:
+        print(e.message[0])
+        return
 
     if (len(sessions) == 1):
         try:
@@ -379,10 +386,7 @@ def main():
 
     util.oh_my_zsh_auto_title()
 
-    print (args)
-    if args.version:
-        print('tmuxp %s' % __version__)
-    elif args.callback is subcommand_load:
+    if args.callback is subcommand_load:
         subcommand_load(args)
     elif args.callback is subcommand_convert:
         subcommand_convert(args)
