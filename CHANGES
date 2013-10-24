@@ -7,6 +7,8 @@ Here you can find the recent changes to tmuxp.
 ----------
 
 - [cli] fix bug where ``-v`` and ``--version`` wouldn't print version.
+- [cli] property handle case where no tmux server exists when
+  ``attach-session`` or ``kill-session`` is used.
 
 2013-10-24
 ----------
