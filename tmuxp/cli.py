@@ -178,6 +178,26 @@ def subcommand_load(args):
                 logger.error('%s not found.' % configfile)
 
 
+def subcommand_convert(args):
+    if args.configs:
+        if '.' in args.configs:
+            args.configs.remove('.')
+            if config.in_cwd():
+                args.configs.append(config.in_cwd()[0])
+            else:
+                print('No tmuxp configs found in current directory.')
+
+        for configfile in args.configs:
+            file_user = os.path.join(config_dir, configfile)
+            file_cwd = os.path.join(cwd_dir, configfile)
+            if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
+                print file_cwd
+            elif os.path.exists(file_user) and os.path.isfile(file_user):
+                print file_uesr
+            else:
+                logger.error('%s not found.' % configfile)
+
+
 def subcommand_attach_session(args):
     commands = []
     try:
@@ -268,9 +288,28 @@ def cli_parser():
             $ tmuxp .
 
         will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
+        will also check for any ./*.yaml and ./*.json.
         ''' % (cwd_dir + '/', config_dir)
     )
     load.set_defaults(callback=subcommand_load)
+
+    convert = subparsers.add_parser('convert')
+
+    convert.add_argument(
+        dest='configs',
+        nargs='*',
+        type=str,
+        default=None,
+        help='''\
+        Checks current working directory (%s) then $HOME/.tmuxp directory (%s).
+
+            $ tmuxp .
+
+        will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
+        will also check for any ./*.yaml and ./*.json.
+        ''' % (cwd_dir + '/', config_dir)
+    )
+    convert.set_defaults(callback=subcommand_convert)
 
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         metavar='log-level',
@@ -302,7 +341,7 @@ def main():
         logger.error(e)
         sys.exit()
 
-    oh_my_zsh_auto_title()
+    util.oh_my_zsh_auto_title()
 
     if args.callback is subcommand_load:
         subcommand_load(args)
@@ -337,7 +376,7 @@ def complete(cline, cpoint):
     ctext = cline.replace('tmuxp ', '')
 
     commands = []
-    commands.extend(['attach-session', 'kill-session', 'load'])
+    commands.extend(['attach-session', 'kill-session', 'load', 'convert'])
 
     commands = [c for c in commands if ctext in c]
 
@@ -375,23 +414,6 @@ def complete(cline, cpoint):
     session_complete('attach-session', commands, ctext)
     session_complete('kill-session', commands, ctext)
     config_complete('load', commands, ctext)
+    config_complete('convert', commands, ctext)
 
     print(' \n'.join(commands))
-
-
-def oh_my_zsh_auto_title():
-    '''give warning and offer to fix DISABLE_AUTO_TITLE
-
-       see: https://github.com/robbyrussell/oh-my-zsh/pull/257
-    '''
-
-    if 'SHELL' in os.environ and 'zsh' in os.environ.get('SHELL'):
-        if os.path.exists(os.path.expanduser('~/.oh-my-zsh')):
-            # oh-my-zsh exists
-            if 'DISABLE_AUTO_TITLE' not in os.environ or os.environ.get('DISABLE_AUTO_TITLE') == "false":
-                print('Please set:\n\n'
-                      '\texport DISABLE_AUTO_TITLE = \'true\'\n\n'
-                      'in ~/.zshrc or where your zsh profile is stored.\n'
-                      'Remember the "export" at the beginning!\n\n'
-                      'Then create a new shell or type:\n\n'
-                      '\t$ source ~/.zshrc')
