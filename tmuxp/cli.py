@@ -195,21 +195,31 @@ def subcommand_convert(args):
         file_user = os.path.join(config_dir, configfile)
         file_cwd = os.path.join(cwd_dir, configfile)
         if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-            print(file_cwd)
+            fullfile = os.path.normpath(file_cwd)
             filename, ext = os.path.splitext(file_cwd)
         elif os.path.exists(file_user) and os.path.isfile(file_user):
-            print(file_user)
+
+            fullfile = os.path.normpath(file_user)
             filename, ext = os.path.splitext(file_user)
         else:
             logger.error('%s not found.' % configfile)
             return
 
         if 'json' in ext:
-            if query_yes_no('convert to %s to yaml?' % (configfile)):
-                print('converting')
+            if query_yes_no('convert to <%s> to yaml?' % (fullfile)):
+                configparser = kaptan.Kaptan()
+                configparser.import_config(configfile)
+                newfile = fullfile.replace(ext, '.yaml')
+                if query_yes_no('write config to %s?' % (newfile)):
+                    print ('written new config to %s' % (newfile))
         elif 'yaml' in ext:
-            if query_yes_no('convert to %s to json?' % (configfile)):
-                print('converting')
+            if query_yes_no('convert to <%s> to json?' % (fullfile)):
+                configparser = kaptan.Kaptan()
+                configparser.import_config(configfile)
+                newfile = fullfile.replace(ext, '.json')
+                if query_yes_no('write config to <%s>?' % (newfile)):
+                    print ('written new config to <%s>.' % (newfile))
+
 
 
 def subcommand_attach_session(args):
