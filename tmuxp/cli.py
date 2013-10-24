@@ -346,8 +346,8 @@ def complete(cline, cpoint):
         ctext = ctext.replace(args.socket_name or None, '')
 
     t = Server(
-        # socket_name=args.socket_name or None,
-        # socket_path=args.socket_path or None
+        socket_name=args.socket_name or None,
+        socket_path=args.socket_path or None
     )
 
     def session_complete(command, commands, ctext):
@@ -358,21 +358,16 @@ def complete(cline, cpoint):
             sessions = [s.get('session_name') for s in t._sessions]
             commands.extend([c for c in sessions if ctext_subargs in c])
 
-            # commands = [c for c in commands if ctext_subcommand_args in c]
-            # commands = [c for c in commands if c.startswith(ctext_subargs)]
-
     def config_complete(command, commands, ctext):
         if ctext.startswith(command + ' '):
             commands[:] = []
             ctext_subargs = ctext.replace(command + ' ', '')
             configs = []
+
+            configs += ['./' + c for c in config.in_dir(cwd_dir)]
             configs += ['./' + c for c in config.in_cwd()]
-            # configs += config.in_cwd()
             configs += [os.path.join(config_dir, c)
                         for c in config.in_dir(config_dir)]
-            # configs += config.in_dir(config_dir)
-            configs += ['./' + c for c in config.in_dir(cwd_dir)]
-            # configs += config.in_dir(cwd_dir)
             commands += [c for c in configs if c.startswith(ctext_subargs)]
 
     session_complete('attach-session', commands, ctext)
