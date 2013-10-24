@@ -191,9 +191,9 @@ def subcommand_convert(args):
             file_user = os.path.join(config_dir, configfile)
             file_cwd = os.path.join(cwd_dir, configfile)
             if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-                print file_cwd
+                print(file_cwd)
             elif os.path.exists(file_user) and os.path.isfile(file_user):
-                print file_uesr
+                print(file_user)
             else:
                 logger.error('%s not found.' % configfile)
 
