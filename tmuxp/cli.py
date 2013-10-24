@@ -187,15 +187,29 @@ def subcommand_convert(args):
             else:
                 print('No tmuxp configs found in current directory.')
 
-        for configfile in args.configs:
-            file_user = os.path.join(config_dir, configfile)
-            file_cwd = os.path.join(cwd_dir, configfile)
-            if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-                print(file_cwd)
-            elif os.path.exists(file_user) and os.path.isfile(file_user):
-                print(file_user)
-            else:
-                logger.error('%s not found.' % configfile)
+        try:
+            configfile = args.configs[0]
+        except Exception:
+            print('Please enter a config')
+
+        file_user = os.path.join(config_dir, configfile)
+        file_cwd = os.path.join(cwd_dir, configfile)
+        if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
+            print(file_cwd)
+            filename, ext = os.path.splitext(file_cwd)
+        elif os.path.exists(file_user) and os.path.isfile(file_user):
+            print(file_user)
+            filename, ext = os.path.splitext(file_user)
+        else:
+            logger.error('%s not found.' % configfile)
+            return
+
+        if 'json' in ext:
+            if query_yes_no('convert to %s to yaml?' % (configfile)):
+                print('converting')
+        elif 'yaml' in ext:
+            if query_yes_no('convert to %s to json?' % (configfile)):
+                print('converting')
 
 
 def subcommand_attach_session(args):
@@ -345,6 +359,8 @@ def main():
 
     if args.callback is subcommand_load:
         subcommand_load(args)
+    elif args.callback is subcommand_convert:
+        subcommand_convert(args)
     elif args.callback is subcommand_attach_session:
         subcommand_attach_session(args)
     elif args.callback is subcommand_kill_session:
