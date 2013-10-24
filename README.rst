@@ -17,6 +17,21 @@ Open to testers
 tmuxp is still **alpha** code and needs a few more weeks until stable.
 See the `Issues tracker`_ to see known issues and for any other concerns.
 
+Install
+"""""""
+
+- install ``tmux``, at least version **1.8**
+- libyaml is installed for your distribution.
+
+Install ``tmuxp``:
+
+.. code-block:: bash
+
+    $ pip install tmuxp
+    
+
+See also: `Quickstart`_
+
 
 tmux bash completion
 """"""""""""""""""""
@@ -39,15 +54,12 @@ load tmux sessions from yaml and json
 .. code-block:: bash
 
     $ tmuxp load .
-
-Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
-
-.. code-block:: bash
+    # Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
 
     $ tmuxp load myconfig.yaml
 
-Load ``myconfig.yaml``, checking current directory, then
-``$HOME/.tmuxp/myconfig.yaml``.
+    # Load ``myconfig.yaml``, checking current directory, then 
+    # ``$HOME/.tmuxp/myconfig.yaml``.
 
 tmuxp will prompt you if session is already running, press ``[Enter]``
 to attach the session automatically.
@@ -57,37 +69,6 @@ for you.
 
 See: `Examples`_
 
-Install
-"""""""
-
-- install ``tmux``, at least version **1.8**
-- libyaml is installed for your distribution.
-
-Install ``tmuxp``:
-
-.. code-block:: bash
-
-    $ pip install tmuxp
-    
-``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
-
-.. code-block:: yaml
-
-    session_name: my session
-    windows:
-    - window_name: my test window
-      shell_command_before: cd ~
-      panes:
-      - pwd
-      - pwd
-
-With ``tmuxp``:
-
-.. code-block:: bash
-
-    $ tmuxp load test.yaml
-
-See also: `Quickstart`_
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
