@@ -121,8 +121,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
             $ tmux set-window-option <option> <value>
 
-        :param option: the window option. such as 'automatic_rename'.
-        :type option: string
         :param value: window value. True/False will turn in 'on' and 'off'.
         :type value: string or bool
         '''

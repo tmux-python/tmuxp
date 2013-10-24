@@ -154,7 +154,7 @@ sampleconfigdict = {
          {'shell_command': ['tail -F /var/log/syslog'],
           'start_directory':'/var/log'}
          ]}, {
-            'automatic_rename': True,
+             'options': {'automatic_rename': True, },
             'panes': [
                 {'shell_command': ['htop']}
             ]

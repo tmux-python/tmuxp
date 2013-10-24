@@ -31,7 +31,9 @@ sampleconfigdict = {
          {'shell_command': ['tail -F /var/log/syslog'],
           'start_directory':'/var/log'}
          ]}, {
-            'automatic_rename': True,
+             'options': {
+               'automatic_rename': True,
+             },
             'panes': [
                 {'shell_command': ['htop']}
             ]
@@ -147,7 +149,7 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': 'htop'},
                     'vim',
@@ -177,7 +179,7 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True },
                 'panes': [
                     {'shell_command': ['htop']},
                     {'shell_command': ['vim']}
@@ -220,7 +222,7 @@ class InlineTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -249,7 +251,7 @@ class InlineTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': 'htop'}
                 ]
@@ -301,7 +303,7 @@ class InheritanceTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -336,7 +338,7 @@ class InheritanceTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop'], 'start_directory':'/'}
                 ]
@@ -412,7 +414,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -453,7 +455,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': { 'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
@@ -494,7 +496,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 ]
             },
             {
-                'automatic_rename': True,
+                'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]

@@ -123,6 +123,10 @@ class WorkspaceBuilder(object):
             assert(self.sconf['session_name'] == session.get('session_name'))
 
         assert(isinstance(session, Session))
+        if 'options' in self.sconf and isinstance(self.sconf['options'], dict):
+            for key, val in self.sconf['options'].items():
+                s.set_option(key, val)
+
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
@@ -145,10 +149,8 @@ class WorkspaceBuilder(object):
         :rtype: :class:`Window`
         '''
         for i, wconf in enumerate(self.sconf['windows'], start=1):
-            automatic_rename = False
             if 'window_name' not in wconf:
                 window_name = None
-                automatic_rename = True
             else:
                 window_name = wconf['window_name']
 
@@ -159,7 +161,6 @@ class WorkspaceBuilder(object):
             else:
                 w = s.new_window(
                     window_name=window_name,
-                    automatic_rename=automatic_rename,
                     attach=False  # do not move to the new window
                 )
 

@@ -4,7 +4,6 @@ windows:
   layout: main-horizontal
   options:
     main-pane-height: 50
-  start_directory: ./
   shell_command_before:
     - command -v virtualenv >/dev/null 2>&1 || { pip install virtualenv; }
     - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'
@@ -24,8 +23,6 @@ windows:
   layout: main-horizontal
   options:
     main-pane-height: 50
-  start_directory: ./
-  automatic_rename: true
   shell_command_before: 
     - command -v virtualenv >/dev/null 2>&1 || { pip install virtualenv; }
     - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'

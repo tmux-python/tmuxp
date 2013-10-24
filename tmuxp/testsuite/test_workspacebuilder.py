@@ -32,7 +32,6 @@ class TwoPaneTest(TmuxTestCase):
         start_directory: /var/log
       window_name: logging
     - window_name: test
-      automatic_rename: true
       panes:
       - shell_command:
         - htop

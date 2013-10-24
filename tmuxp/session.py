@@ -36,7 +36,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if not 'session_id' in kwargs:
             raise ValueError('Session requires a `session_id`')
         self._session_id = kwargs['session_id']
-
         self.server._update_windows()
 
     @property
@@ -124,7 +123,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     def new_window(self,
                    window_name=None,
-                   automatic_rename=False,
                    attach=True):
         '''
         ``$ tmux new-window``
@@ -142,13 +140,11 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :type window_name: string
 
-        :param automatic_rename: assume automatic_rename if no window_name.
-        :type automatic_rename: bool
-
         :param attach: make new window the current window after creating it,
                        default True.
         :param type: bool
         '''
+
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
         tmux_formats = ['#{%s}' % f for f in wformats]
 
@@ -159,7 +155,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if window_name:
-            window_args += ('-n', window_name)
+            window_args += ('-n%s' % window_name,)
 
         if not attach:
             window_args += ('-d',)
@@ -176,9 +172,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         # clear up empty dict
         window = dict((k, v) for k, v in window.items() if v)
         window = Window(session=self, **window)
-
-        if automatic_rename:
-            window.set_window_option('automatic-rename', True)
 
         self.server._update_windows()
 
