@@ -29,9 +29,10 @@ sys.path.append(os.path.abspath('_themes'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.todo',
               'sphinxcontrib.aafig',
-              'pyramid_sphinx_themes'
               ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -114,10 +115,6 @@ else:
     html_theme = 'bootstrap'
     html_theme = 'rtd'
 
-# html_theme = 'bootstrap'
-
-#html_theme ='ground'
-
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -126,19 +123,8 @@ else:
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['_themes']
 
-#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-#html_theme_path = [cloud_sptheme.get_theme_dir()]
-
 # from pyramid_sphinx_themes import get_html_themes_path
 # html_theme_path = get_html_themes_path()
-
-# html_theme_options = {
-    # 'bootswatch_theme': 'united',
-    # 'source_link_position': 'footer',
-    # 'navbar_links': [
-        # ('Github', 'https://www.github.com/tony/tmuxp/', True)
-    # ]
-# }
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
