@@ -23,6 +23,7 @@ import time
 from colorama import init
 init()
 from colorama import Fore, Back, Style
+from .util import unicode, bytes, basestring
 
 try:
     import curses
@@ -37,22 +38,8 @@ except ImportError:
 # literal non-ascii characters).
 # todo _ can remove this, this next 10 lines is from
 # http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3/
-if not isinstance('', type(b'')):
-    def u(s):
-        return s
-    bytes_type = bytes
-    unicode_type = str
-    basestring_type = str
-else:
-    def u(s):
-        return s.decode('unicode_escape')
-    bytes_type = str
-    unicode_type = unicode
-    basestring_type = basestring
-
-
-_UTF8_TYPES = (bytes_type, type(None))
-_TO_UNICODE_TYPES = (unicode_type, type(None))
+_UTF8_TYPES = (bytes, type(None))
+_TO_UNICODE_TYPES = (unicode, type(None))
 
 
 def utf8(value):
@@ -63,7 +50,7 @@ def utf8(value):
     """
     if isinstance(value, _UTF8_TYPES):
         return value
-    assert isinstance(value, unicode_type), \
+    assert isinstance(value, unicode), \
         "Expected bytes, unicode, or None; got %r" % type(value)
     return value.encode("utf-8")
 
@@ -76,7 +63,7 @@ def to_unicode(value):
     """
     if isinstance(value, _TO_UNICODE_TYPES):
         return value
-    assert isinstance(value, bytes_type), \
+    assert isinstance(value, bytes), \
         "Expected bytes, unicode, or None; got %r" % type(value)
     return value.decode("utf-8")
 
@@ -86,7 +73,7 @@ _unicode = to_unicode
 
 # When dealing with the standard library across python 2 and 3 it is
 # sometimes useful to have a direct conversion to the native string type
-if str is unicode_type:
+if str is unicode:
     native_str = to_unicode
 else:
     native_str = utf8
@@ -181,7 +168,7 @@ class LogFormatter(logging.Formatter):
         except Exception as e:
             record.message = "Bad message (%r): %r" % (e, record.__dict__)
         assert isinstance(
-            record.message, basestring_type)  # guaranteed by logging
+            record.message, basestring)  # guaranteed by logging
 
         date_format = '%H:%m:%S'
         record.asctime = time.strftime(date_format, self.converter(record.created))

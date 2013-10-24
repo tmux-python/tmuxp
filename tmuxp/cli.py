@@ -370,6 +370,7 @@ def main():
     args = parser.parse_args()
 
     setupLogger(level=args.log_level.upper())
+    logger.error('hi')
     try:
         util.version()
     except Exception as e:
