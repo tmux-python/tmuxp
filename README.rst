@@ -46,7 +46,13 @@ Load a session configuration from a YAML or JSON file.
 
 .. code-block:: bash
 
-    $ tmuxp load<tab>
+    $ tmuxp load<tab> # configs in config dir, current directory
+
+Convert a session config JSON <=> YAML:
+
+.. code-block:: bash
+
+    $ tmuxp convert<tab> # configs in config dir, current directory
 
 See: `bash completion`_
 
@@ -69,13 +75,29 @@ Load ``myconfig.yaml``.
 
 .. code-block:: yaml
 
-    session_name: my session
+    session_name: 2-pane-vertical
     windows:
-    - window_name: my test window
-      shell_command_before: cd ~
-      panes:
-      - pwd
-      - pwd
+      - window_name: my test window
+        panes:
+          - pwd
+          - pwd
+
+or ``~/.tmuxp/test.json``:
+
+.. code-block:: json
+
+    {
+      "windows": [
+        {
+          "panes": [
+            "pwd", 
+            "pwd"
+          ], 
+          "window_name": "my test window"
+        }
+      ], 
+      "session_name": "2-pane-vertical"
+    }
 
 .. code-block:: bash
 

@@ -1,0 +1,12 @@
+{
+  "windows": [
+    {
+      "panes": [
+        "pwd", 
+        "pwd"
+      ], 
+      "window_name": "my test window"
+    }
+  ], 
+  "session_name": "2-pane-vertical"
+}

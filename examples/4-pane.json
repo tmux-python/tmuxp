@@ -1,0 +1,23 @@
+{
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "cd /var/log", 
+            "ls -al | grep \\.log"
+          ]
+        }, 
+        "pwd", 
+        "pwd", 
+        "pwd"
+      ], 
+      "shell_command_before": [
+        "cd ~/"
+      ], 
+      "layout": "tiled", 
+      "window_name": "dev window"
+    }
+  ], 
+  "session_name": "4-pane-split"
+}

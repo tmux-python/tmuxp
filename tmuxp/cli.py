@@ -210,14 +210,25 @@ def subcommand_convert(args):
                 configparser = kaptan.Kaptan()
                 configparser.import_config(configfile)
                 newfile = fullfile.replace(ext, '.yaml')
+                newconfig = configparser.export(
+                    'yaml', indent=2, default_flow_style=False
+                )
                 if query_yes_no('write config to %s?' % (newfile)):
+                    buf = open(newfile, 'w')
+                    buf.write(newconfig)
+                    buf.close()
                     print ('written new config to %s' % (newfile))
         elif 'yaml' in ext:
             if query_yes_no('convert to <%s> to json?' % (fullfile)):
                 configparser = kaptan.Kaptan()
                 configparser.import_config(configfile)
                 newfile = fullfile.replace(ext, '.json')
+                newconfig = configparser.export('json', indent=2)
+                print(newconfig)
                 if query_yes_no('write config to <%s>?' % (newfile)):
+                    buf = open(newfile, 'w')
+                    buf.write(newconfig)
+                    buf.close()
                     print ('written new config to <%s>.' % (newfile))
 
 

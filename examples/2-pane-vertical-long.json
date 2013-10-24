@@ -1,0 +1,37 @@
+{
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "cd ~", 
+            "pwd", 
+            "top"
+          ]
+        }, 
+        {
+          "shell_command": [
+            "cd /var/www", 
+            "pwd"
+          ]
+        }
+      ], 
+      "window_name": "test"
+    }, 
+    {
+      "panes": [
+        {
+          "shell_command": "pwd"
+        }, 
+        {
+          "shell_command": [
+            "pwd"
+          ]
+        }
+      ], 
+      "shell_command_before": "cd /var/www", 
+      "window_name": "second window"
+    }
+  ], 
+  "session_name": "2-pane-vertical-long"
+}

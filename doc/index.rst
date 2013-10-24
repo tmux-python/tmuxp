@@ -45,14 +45,29 @@ To install ``tmuxp``:
 
 .. code-block:: yaml
 
-    session_name: my session
+    session_name: 2-pane-vertical
     windows:
-    - window_name: my test window
-      panes:
-        - pwd
-        - pwd
+      - window_name: my test window
+        panes:
+          - pwd
+          - pwd
 
-Now with ``tmuxp``:
+or ``~/.tmuxp/test.json``:
+
+.. code-block:: json
+
+    {
+      "windows": [
+        {
+          "panes": [
+            "pwd", 
+            "pwd"
+          ], 
+          "window_name": "my test window"
+        }
+      ], 
+      "session_name": "2-pane-vertical"
+    }
 
 .. code-block:: bash
 
