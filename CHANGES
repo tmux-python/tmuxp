@@ -10,6 +10,13 @@ Here you can find the recent changes to tmuxp.
   be reimplemented fresh.
 - [cli] check for ``oh-my-zsh`` when using ``$SHELL`` ``zsh``. Prompt if
   ``DISABLE_AUTO_TITLE`` is unset or set to ``true``.
+- [cli] tmuxp can now ``$ tmuxp convert <file>`` from JSON <=> YAML, back
+  and forth.
+- [docs] New examples in JSON. Update the :ref:`examples` page in the
+  docs.
+- [dev] ``.tmuxp.json`` now exists as a config for tmuxp development and
+  as an example.
+
 
 2013-10-23
 ----------

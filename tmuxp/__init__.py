@@ -20,4 +20,4 @@ from . import config, util
 
 import logging
 
-__version__ = '0.0.11-dev'
+__version__ = '0.0.12-dev'
