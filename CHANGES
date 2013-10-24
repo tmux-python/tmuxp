@@ -16,6 +16,9 @@ Here you can find the recent changes to tmuxp.
   docs.
 - [dev] ``.tmuxp.json`` now exists as a config for tmuxp development and
   as an example.
+- [cli] Fix bug where ``tmuxp kill-session`` would give bad output
+- [cli] Fix bug in tab completion for listing sessions with no tmux server
+  is active.
 
 
 2013-10-23
