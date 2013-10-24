@@ -38,13 +38,12 @@ tmux bash completion
 
 .. code-block:: bash
 
+    # tmuxp uses ``switch-client`` for you if already in a TMUX client.
     $ tmuxp attach-session<tab>
-    # tmuxp will also automatically ``switch-client`` if you are already
-    # inside a tmux client.
     $ tmuxp kill-session<tab>
+
+    # load a session configuration from a YAML or JSON file.
     $ tmuxp load<tab>
-    # load a session configuration with windows, panes, autocommands from
-    # a YAML or JSON file.
 
 See: `bash completion`_
 
@@ -53,13 +52,12 @@ load tmux sessions from yaml and json
 
 .. code-block:: bash
 
-    $ tmuxp load .
     # Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
+    $ tmuxp load .
 
-    $ tmuxp load myconfig.yaml
-
-    # Load ``myconfig.yaml``, checking current directory, then 
+    # Load ``myconfig.yaml``, checking current directory, then
     # ``$HOME/.tmuxp/myconfig.yaml``.
+    $ tmuxp load myconfig.yaml
 
 tmuxp will prompt you if session is already running, press ``[Enter]``
 to attach the session automatically.
@@ -68,7 +66,6 @@ If you load a config from *inside* tmux, tmuxp will offer to attach it
 for you.
 
 See: `Examples`_
-
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
