@@ -158,5 +158,34 @@ class Teamocil3Test(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
+
+class Teamocil4Test(unittest.TestCase):
+
+    teamocil_yaml = """\
+    windows:
+    - name: "erb-example"
+      root: <%= ENV['MY_PROJECT_ROOT'] %>
+      panes:
+        - cmd: "pwd"
+    """
+
+    teamocil_dict = {
+        'windows': [{
+            'name': 'erb-example',
+            'root': "<%= ENV['MY_PROJECT_ROOT'] %>",
+            'panes': [
+                { 'cmd': 'pwd' }
+            ]
+        }]
+    }
+
+    def test_config_to_dict(self):
+        self.maxDiff = None
+        configparser = kaptan.Kaptan(handler='yaml')
+        test_config = configparser.import_config(self.teamocil_yaml)
+        yaml_to_dict = test_config.get()
+        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+
+
 if __name__ == '__main__':
     unittest.main()
