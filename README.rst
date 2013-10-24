@@ -30,19 +30,22 @@ Install ``tmuxp``:
     $ pip install tmuxp
     
 
-See also: `Quickstart`_
-
+See: `Quickstart`_
 
 tmux bash completion
 """"""""""""""""""""
 
+tmuxp uses ``switch-client`` for you if already in a TMUX client.
+
 .. code-block:: bash
 
-    # tmuxp uses ``switch-client`` for you if already in a TMUX client.
-    $ tmuxp attach-session<tab>
-    $ tmuxp kill-session<tab>
+    $ tmuxp attach-session<tab> # current sessions
+    $ tmuxp kill-session<tab> # current sessions
 
-    # load a session configuration from a YAML or JSON file.
+Load a session configuration from a YAML or JSON file.
+
+.. code-block:: bash
+
     $ tmuxp load<tab>
 
 See: `bash completion`_
@@ -50,20 +53,33 @@ See: `bash completion`_
 load tmux sessions from yaml and json
 """""""""""""""""""""""""""""""""""""
 
+Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
+
 .. code-block:: bash
 
-    # Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
     $ tmuxp load .
 
-    # Load ``myconfig.yaml``, checking current directory, then
-    # ``$HOME/.tmuxp/myconfig.yaml``.
+Load ``myconfig.yaml``.
+
+.. code-block:: bash
+
     $ tmuxp load myconfig.yaml
 
-tmuxp will prompt you if session is already running, press ``[Enter]``
-to attach the session automatically.
+``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
 
-If you load a config from *inside* tmux, tmuxp will offer to attach it
-for you.
+.. code-block:: yaml
+
+    session_name: my session
+    windows:
+    - window_name: my test window
+      shell_command_before: cd ~
+      panes:
+      - pwd
+      - pwd
+
+.. code-block:: bash
+
+    $ tmuxp load test.yaml
 
 See: `Examples`_
 
