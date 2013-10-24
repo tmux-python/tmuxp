@@ -232,7 +232,6 @@ def subcommand_convert(args):
                     print ('written new config to <%s>.' % (newfile))
 
 
-
 def subcommand_attach_session(args):
     commands = []
     try:
@@ -264,11 +263,10 @@ def subcommand_kill_session(args):
     sessions = [s for s in t.sessions if s.get('session_name') == ctext]
 
     if (len(sessions) == 1):
-        proc = sessions[0].kill_session()
-        if proc.stderr:
-            print(proc.stderr)
-
-        print(proc.stdout)
+        try:
+            sessions[0].kill_session()
+        except Exception as e:
+            logger.error(e)
 
 
 def cli_parser():
