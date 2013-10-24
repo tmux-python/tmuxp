@@ -3,6 +3,11 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-25
+----------
+
+- [cli] fix bug where ``-v`` and ``--version`` wouldn't print version.
+
 2013-10-24
 ----------
 

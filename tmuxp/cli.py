@@ -354,8 +354,10 @@ def cli_parser():
     parser.add_argument('-S', dest='socket_path', default=None,
                         metavar='socket-path')
 
+    # http://stackoverflow.com/questions/8521612/argparse-optional-subparser
     parser.add_argument(
-        '-v', '--version', dest='version', action='store_true',
+        '-v', '--version', action='version',
+        version='tmuxp %s' % __version__,
         help='Prints the tmuxp version')
 
     return parser
@@ -368,7 +370,7 @@ def main():
     args = parser.parse_args()
 
     setupLogger(level=args.log_level.upper())
-    logger.error('hi')
+
     try:
         util.version()
     except Exception as e:
@@ -377,7 +379,10 @@ def main():
 
     util.oh_my_zsh_auto_title()
 
-    if args.callback is subcommand_load:
+    print (args)
+    if args.version:
+        print('tmuxp %s' % __version__)
+    elif args.callback is subcommand_load:
         subcommand_load(args)
     elif args.callback is subcommand_convert:
         subcommand_convert(args)
@@ -386,9 +391,6 @@ def main():
     elif args.callback is subcommand_kill_session:
         subcommand_kill_session(args)
     else:
-        if args.version:
-            print('tmuxp %s' % __version__)
-
         parser.print_help()
 
 
