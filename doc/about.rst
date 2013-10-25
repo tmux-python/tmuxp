@@ -10,17 +10,6 @@ Internally, tmuxp is an object relational mapper on top of tmux.
 End-users may use YAML, JSON and :py:obj:`dict` configurations to launch
 workspaces like `tmuxinator`_ and `teamocil`_.
 
-.. note::
-
-    Currently tmuxp is tested with 1.8 and above. It is recommended to
-    update to the latest version. If there is enough demand, support can
-    be added to support older versions.
-
-    1.7 and below issues:
-
-    tmuxp relies on the ``-P`` option to print out session information
-    when ``new-session`` is called (see `attempt at 1.7 test`_).
-
 To jump right in, see :ref:`quickstart` and :ref:`examples`.
 
 Interested in some kung-fu or joining the effort? :ref:`api` and
