@@ -55,7 +55,7 @@ def tmuxinator_to_tmuxp(sconf):
         if 'shell_command_before' not in tmuxp_config:
             tmuxp_config['shell_command_before'] = []
         tmuxp_config['shell_command_before'].append(
-            'rbenv %s' % sconf['rbenv']
+            'rbenv shell %s' % sconf['rbenv']
         )
 
     for w in sconf['windows']:
@@ -248,7 +248,7 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
         'config': '~/.tmux.mac.conf',
         'shell_command_before': [
             'sudo /etc/rc.d/mysqld start',
-            'rbenv 2.0.0-p247'
+            'rbenv shell 2.0.0-p247'
         ],
         'windows': [
             {
