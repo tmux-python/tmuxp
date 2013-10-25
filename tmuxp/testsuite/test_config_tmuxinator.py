@@ -203,7 +203,64 @@ class TmuxinatoriSampleTest(unittest.TestCase):
     - capistrano:
     - server: ssh user@example.com
     """
-    pass
+
+    tmuxinator_dict = {
+        'name': 'sample',
+        'root': '~/test',
+        'socket_name': 'foo',
+        'tmux_options': '-f ~/.tmux.mac.conf',
+        'pre': 'sudo /etc/rc.d/mysqld start',
+        'pre_window': 'rbenv shell 2.0.0-p247',
+        'windows': [
+            {
+                'editor': {
+                    'pre': [
+                        'echo "I get run in each pane, before each pane command!"',
+                        None
+                    ],
+                    'layout': 'main-vertical',
+                    'panes': [
+                        'vim',
+                        None,
+                        'top'
+                    ]
+                }
+            },
+            {
+                'shell': [
+                    'git pull',
+                    'git merge'
+                ]
+            },
+            {
+                'guard': {
+                    'layout': 'tiled',
+                    'pre': [
+                        'echo "I get run in each pane."',
+                        'echo "Before each pane command!"'
+                    ],
+                    'panes': [
+                        None,
+                        None,
+                        None
+                    ]
+                }
+            },
+            {'database': 'bundle exec rails db'},
+            {'server': 'bundle exec rails s'},
+            {'logs': 'tail -f log/development.log'},
+            {'console': 'bundle exec rails c'},
+            {'capistrano': None},
+            {'server': 'ssh user@example.com'}
+        ]
+    }
+
+    def test_config_to_dict(self):
+        self.maxDiff = None
+        configparser = kaptan.Kaptan(handler='yaml')
+        test_config = configparser.import_config(self.tmuxinator_yaml)
+        yaml_to_dict = test_config.get()
+        self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
 if __name__ == '__main__':
     unittest.main()
