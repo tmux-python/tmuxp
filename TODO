@@ -4,6 +4,10 @@ Roadmap
 Now
 """
 
+- from tmuxinator: add a "pre" command that runs once at start of session
+- from teamocil: add 'clear': True
+- from teamocil: add 'target' bottom-right, bottom-left, top-right, top-left
+  to split.
 - in order to incorporate interoperability with tmux versions 1.6, Session,
   Window and Pane classes will be index'd on a hierachy of keys
 
