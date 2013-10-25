@@ -502,12 +502,30 @@ class TeamocilLayoutsTest(unittest.TestCase):
                             'cmd': [
                                 "echo 'bar'",
                                 "echo 'bar in an array'"
-                            ]
+                            ],
+                            'target': 'bottom-right'
+                        },
+                        {
+                            'cmd': [
+                                "echo 'bar again'"
+                            ],
+                            'focus': True,
+                            'width': 50
                         }
                     ]
                 }
             ]
         },
+        {
+            'session-name': 'two-windows-with-filters',
+            'windows':
+            [
+                {
+                    'window_name': 'foo',
+                }
+            ]
+        }
+
     ]
 
     def test_config_to_dict(self):
@@ -517,8 +535,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
-        self.assertDictEqual(teamocil_to_tmuxp(
-            self.tmuxinator_dict), self.tmuxp_dict)
+        #self.assertDictEqual(teamocil_to_tmuxp(self.teamocil_dict), self.tmuxp_dict)
 
         ''' this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
