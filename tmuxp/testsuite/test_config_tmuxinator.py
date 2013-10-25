@@ -41,7 +41,7 @@ def tmuxinator_to_tmuxp(sconf):
         tmuxp_config['socket_name'] = sconf['socket_name']
 
     tmuxp_config['windows'] = []
-    logger.error(sconf)
+
     if 'tabs' in sconf:
         sconf['windows'] = sconf.pop('tabs')
 
@@ -65,14 +65,12 @@ def tmuxinator_to_tmuxp(sconf):
 
             windowdict['window_name'] = k
 
-            logger.error('%s, %s' % (k, v))
-
             if isinstance(v, basestring) or v is None:
                 windowdict['panes'] = [v]
+                tmuxp_config['windows'].append(windowdict)
                 continue
 
             if 'pre' in v:
-                logger.error(v['pre'])
                 windowdict['shell_command_before'] = v['pre']
             if 'panes' in v:
                 windowdict['panes'] = v['panes']
@@ -149,7 +147,7 @@ class TmuxinatorTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
-        self.assertDictEqual(tmuxinator_to_tmuxp(yaml_to_dict), self.tmuxp_dict)
+        self.assertDictEqual(tmuxinator_to_tmuxp(self.tmuxinator_dict), self.tmuxp_dict)
 
 
 class TmuxinatorDeprecationsTest(unittest.TestCase):
@@ -268,7 +266,6 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
             },
             {
                 'window_name': 'shell',
-                'layout': 'layout',
                 'panes': [
                     'git pull'
                 ]
@@ -332,7 +329,7 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
-        self.assertDictEqual(tmuxinator_to_tmuxp(yaml_to_dict), self.tmuxp_dict)
+        self.assertDictEqual(tmuxinator_to_tmuxp(self.tmuxinator_dict), self.tmuxp_dict)
 
 
 class TmuxinatoriSampleTest(unittest.TestCase):
