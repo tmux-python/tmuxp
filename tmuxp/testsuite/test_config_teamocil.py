@@ -33,78 +33,34 @@ def teamocil_to_tmuxp(sconf):
     if 'session' in sconf:
         sconf = sconf['session']
 
-    if 'project_name' in sconf:
-        tmuxp_config['session_name'] = sconf['project_name']
-    elif 'name' in sconf:
+    if 'name' in sconf:
         tmuxp_config['session_name'] = sconf['name']
     else:
         tmuxp_config['session_name'] = None
 
-    if 'cli_args' in sconf:
-        tmuxp_config['config'] = sconf['cli_args']
-
-        if '-f' in tmuxp_config['config']:
-            tmuxp_config['config'] = tmuxp_config[
-                'config'].replace('-f', '').strip()
-    elif 'tmux_options' in sconf:
-        tmuxp_config['config'] = sconf['tmux_options']
-
-        if '-f' in tmuxp_config['config']:
-            tmuxp_config['config'] = tmuxp_config[
-                'config'].replace('-f', '').strip()
-
-    if 'socket_name' in sconf:
-        tmuxp_config['socket_name'] = sconf['socket_name']
-
     tmuxp_config['windows'] = []
 
-    if 'tabs' in sconf:
-        sconf['windows'] = sconf.pop('tabs')
-
-    if 'pre' in sconf and 'pre_window' in sconf:
-        tmuxp_config['shell_command'] = sconf['pre']
-
-        if isinstance(sconf['pre'], basestring):
-            tmuxp_config['shell_command_before'] = [sconf['pre_window']]
-        else:
-            tmuxp_config['shell_command_before'] = sconf['pre_window']
-    elif 'pre' in sconf:
-        if isinstance(sconf['pre'], basestring):
-            tmuxp_config['shell_command_before'] = [sconf['pre']]
-        else:
-            tmuxp_config['shell_command_before'] = sconf['pre']
-
-    if 'rbenv' in sconf:
-        if 'shell_command_before' not in tmuxp_config:
-            tmuxp_config['shell_command_before'] = []
-        tmuxp_config['shell_command_before'].append(
-            'rbenv shell %s' % sconf['rbenv']
-        )
-
     for w in sconf['windows']:
-        for k, v in w.items():
 
-            windowdict = {}
+        windowdict = {}
 
-            windowdict['window_name'] = k
+        if 'filters' in w:
+            if 'before' in w['filters']:
+                for b in w['filters']['before']:
+                    windowdict['shell_command_before'] = w['filters']['before']
+            if 'after' in w['filters']:
+                for b in w['filters']['after']:
+                    windowdict['shell_command_after'] = w['filters']['after']
 
-            if isinstance(v, basestring) or v is None:
-                windowdict['panes'] = [v]
-                tmuxp_config['windows'].append(windowdict)
-                continue
-            elif isinstance(v, list):
-                windowdict['panes'] = v
-                tmuxp_config['windows'].append(windowdict)
-                continue
+        if 'panes' in w:
+            for p in w['panes']:
+                if 'cmd' in p:
+                    p['shell_command'] = p.pop('cmd')
+            windowdict['panes'] = w['panes']
 
-            if 'pre' in v:
-                windowdict['shell_command_before'] = v['pre']
-            if 'panes' in v:
-                windowdict['panes'] = v['panes']
-
-            if 'layout' in v:
-                windowdict['layout'] = v['layout']
-            tmuxp_config['windows'].append(windowdict)
+        if 'layout' in w:
+            windowdict['layout'] = w['layout']
+        tmuxp_config['windows'].append(windowdict)
 
     return tmuxp_config
 
@@ -596,7 +552,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
 
     two_windows_with_filters = \
         {
-            'session-name': 'two-windows-with-filters',
+            'session_name': 'two-windows-with-filters',
             'windows': [
                 {
                     'window_name': 'foo',
@@ -622,7 +578,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
 
     two_windows_with_custom_command_options = \
         {
-            'session-name': 'two-windows-with-custom-command-options',
+            'session_name': 'two-windows-with-custom-command-options',
             'windows': [
                 {
                     'window_name': 'foo',
