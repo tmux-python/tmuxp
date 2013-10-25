@@ -63,6 +63,9 @@ def teamocil_to_tmuxp(sconf):
             for p in w['panes']:
                 if 'cmd' in p:
                     p['shell_command'] = p.pop('cmd')
+                if 'width' in p:
+                    # todo support for height/width
+                    p.pop('width')
             windowdict['panes'] = w['panes']
 
         if 'layout' in w:
@@ -548,7 +551,6 @@ class TeamocilLayoutsTest(unittest.TestCase):
                         {
                             'shell_command': "echo 'bar again'",
                             'focus': True,
-                            'width': 50
                         }
                     ]
                 }
@@ -562,8 +564,8 @@ class TeamocilLayoutsTest(unittest.TestCase):
                 {
                     'window_name': 'foo',
                     'shell_command_before': [
-                            'echo first before filter',
-                            'echo second before filter',
+                        'echo first before filter',
+                        'echo second before filter',
                     ],
                     'shell_command_after': [
                         'echo first after filter',
@@ -609,9 +611,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
                             'target': 'bottom-right'
                         },
                         {
-                            'shell_command': [
-                                "echo 'bar again'"
-                            ],
+                            'shell_command': "echo 'bar again'",
                             'focus': True,
                         }
                     ]
@@ -664,6 +664,21 @@ class TeamocilLayoutsTest(unittest.TestCase):
             ),
             self.two_windows
         )
+
+        self.assertDictEqual(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['two-windows-with-filters'],
+            ),
+            self.two_windows_with_filters
+        )
+
+        self.assertDictEqual(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['two-windows-with-custom-command-options'],
+            ),
+            self.two_windows_with_custom_command_options
+        )
+
 
         ''' this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
