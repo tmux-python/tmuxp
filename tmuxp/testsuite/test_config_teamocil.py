@@ -259,7 +259,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
             'windows': [{
                 'name': 'foo',
                 'clear': True,
-                'root': '/root',
+                'root': '/foo',
                 'layout': 'tiled',
                 'panes': [
                     {'cmd': "echo 'foo'"},
@@ -300,8 +300,8 @@ class TeamocilLayoutsTest(unittest.TestCase):
                         ]
                 },
                 'panes': [
-                    { 'cmd': "echo 'foo'" },
-                    { 'cmd': "echo 'foo again'", 'width': 50 }
+                    {'cmd': "echo 'foo'"},
+                    {'cmd': "echo 'foo again'", 'width': 50}
                 ]
             }]
         },
@@ -309,14 +309,14 @@ class TeamocilLayoutsTest(unittest.TestCase):
         'two-windows-with-custom-command-options': {
             'windows': [{
                 'name': 'foo',
-                'cmd_separator': '\n',
+                'cmd_separator': ' ',
                 'with_env_var': False,
                 'clear': True,
                 'root': '/foo',
                 'layout': 'tiled',
                 'panes': [
-                    { 'cmd': "echo 'foo'" },
-                    { 'cmd': "echo 'foo again'" }
+                    {'cmd': "echo 'foo'"},
+                    {'cmd': "echo 'foo again'"}
                     ]
             }, {
                 'name': 'bar',
@@ -324,14 +324,16 @@ class TeamocilLayoutsTest(unittest.TestCase):
                 'with_env_var': True,
                 'root': '/bar',
                 'splits': [
-                    { 'cmd': [
+                    {'cmd': [
                         "echo 'bar'",
                         "echo 'bar in an array'"
-                    ]},
-                    { 'cmd': "echo 'bar again'",
-                    'focus': True,
-                    'width': 50
-                    }
+                    ],
+                    'target': 'bottom-right'
+                    },
+                    {'cmd': "echo 'bar again'",
+                     'focus': True,
+                     'width': 50
+                     }
                 ]
             }]
         },
@@ -340,19 +342,21 @@ class TeamocilLayoutsTest(unittest.TestCase):
             'session': {
                 'name': 'my awesome session',
                 'windows': [
-                { 'name': 'first window',
-                'panes': [
-                    { 'cmd': "echo 'foo'" }
-                    ]
-                }, {
-                'name': 'second window',
-                'panes': {
-                    'cmd': "echo 'foo'" }
-                }, {
-                'name': 'third window',
-                'panes': [
-                    { 'cmd': "echo 'foo'" }
-                ]}
+                    {
+                        'name': 'first window',
+                        'panes': [{
+                            'cmd': "echo 'foo'"
+                        }]
+                    }, {
+                        'name': 'second window',
+                        'panes': [{
+                            'cmd': "echo 'foo'"}]
+                    }, {
+                        'name': 'third window',
+                        'panes': [
+                            {'cmd': "echo 'foo'"}
+                        ]
+                    }
                 ]
             }
         }
