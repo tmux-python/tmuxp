@@ -18,27 +18,35 @@ TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 sampleconfigdict = {
     'session_name': 'sampleconfig',
     'start_directory': '~',
-    'windows': [{
-        'window_name': 'editor',
-        'panes': [
-            {
-                'start_directory': '~', 'shell_command': ['vim'],
+    'windows': [
+        {
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'start_directory': '~',
+                    'shell_command': ['vim'],
                 },  {
-                'shell_command': ['cowsay "hey"']
+                    'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'
+        },
+        {
+            'window_name': 'logging',
+            'panes': [{
+                'shell_command': ['tail -F /var/log/syslog'],
+                'start_directory':'/var/log'
+            }]
+        },
+        {
+            'options': {
+                'automatic_rename': True,
             },
-        ],
-        'layout': 'main-verticle'},
-        {'window_name': 'logging', 'panes': [
-         {'shell_command': ['tail -F /var/log/syslog'],
-          'start_directory':'/var/log'}
-         ]}, {
-             'options': {
-                 'automatic_rename': True,
-             },
             'panes': [
                 {'shell_command': ['htop']}
             ]
-        }]
+        }
+    ]
 }
 
 
@@ -161,17 +169,19 @@ class ExpandTest(unittest.TestCase):
     after_config = {
         'session_name': 'sampleconfig',
         'start_directory': '~',
-        'windows': [{
-            'shell_command': ['top'],
-            'window_name': 'editor',
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['vim'],
+        'windows': [
+            {
+                'shell_command': ['top'],
+                'window_name': 'editor',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                    'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'window_name': 'logging',
                 'panes': [
@@ -185,7 +195,8 @@ class ExpandTest(unittest.TestCase):
                     {'shell_command': ['htop']},
                     {'shell_command': ['vim']}
                 ]
-            }]
+            }
+        ]
     }
 
     def test_config(self):
@@ -204,17 +215,19 @@ class InlineTest(unittest.TestCase):
     before_config = {
         'session_name': 'sampleconfig',
         'start_directory': '~',
-        'windows': [{
-            'shell_command': ['top'],
-            'window_name': 'editor',
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['vim'],
+        'windows': [
+            {
+                'shell_command': ['top'],
+                'window_name': 'editor',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                    'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'window_name': 'logging',
                 'panes': [
@@ -227,23 +240,26 @@ class InlineTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
-            }]
+            }
+        ]
     }
 
     after_config = {
         'session_name': 'sampleconfig',
         'start_directory': '~',
-        'windows': [{
-            'shell_command': 'top',
-            'window_name': 'editor',
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': 'vim',
+        'windows': [
+            {
+                'shell_command': 'top',
+                'window_name': 'editor',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': 'vim',
                     },  {
-                    'shell_command': 'cowsay "hey"'
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command': 'cowsay "hey"'
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'window_name': 'logging',
                 'panes': [
@@ -256,7 +272,8 @@ class InlineTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': 'htop'}
                 ]
-            }]
+            }
+        ]
     }
 
     def test_config(self):
@@ -279,17 +296,19 @@ class InheritanceTest(unittest.TestCase):
     config_before = {
         'session_name': 'sampleconfig',
         'start_directory': '/',
-        'windows': [{
-            'window_name': 'editor',
-            'start_directory': '~',
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['vim'],
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': '~',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                    'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'window_name': 'logging',
                 'panes': [
@@ -308,23 +327,26 @@ class InheritanceTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
-            }]
+            }
+        ]
     }
 
     config_after = {
         'session_name': 'sampleconfig',
         'start_directory': '/',
-        'windows': [{
-            'window_name': 'editor',
-            'start_directory': '~',
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['vim'],
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': '~',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                    'shell_command': ['cowsay "hey"'], 'start_directory': '~',
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command': ['cowsay "hey"'], 'start_directory': '~',
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'window_name': 'logging',
                 'panes': [
@@ -343,7 +365,8 @@ class InheritanceTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop'], 'start_directory':'/'}
                 ]
-            }]
+            }
+        ]
     }
 
     def test_start_directory(self):
@@ -384,18 +407,20 @@ class ShellCommandBeforeTest(unittest.TestCase):
     config_unexpanded = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
         'start_directory': '/',
-        'windows': [{
-            'window_name': 'editor',
-            'start_directory': '~',
-            'shell_command_before': 'source .env/bin/activate',
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['vim'],
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': '~',
+                'shell_command_before': 'source .env/bin/activate',
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'shell_command_before': 'rbenv local 2.0.0-p0',
                 'window_name': 'logging',
@@ -419,24 +444,27 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
-            }]
+            }
+        ]
     }
 
     config_expanded = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
         'start_directory': '/',
-        'windows': [{
-            'window_name': 'editor',
-            'start_directory': '~',
-            'shell_command_before': ['source .env/bin/activate'],
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['vim'],
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': '~',
+                'shell_command_before': ['source .env/bin/activate'],
+                'panes': [
+                    {
+                        'start_directory': '~', 'shell_command': ['vim'],
                     },  {
-                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'shell_command_before': ['rbenv local 2.0.0-p0'],
                 'window_name': 'logging',
@@ -460,24 +488,32 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
-            }]
+            }
+        ]
     }
 
     config_after = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
         'start_directory': '/',
-        'windows': [{
-            'window_name': 'editor',
-            'start_directory': '~',
-            'shell_command_before': ['source .env/bin/activate'],
-            'panes': [
-                {
-                    'start_directory': '~', 'shell_command': ['source .env/bin/activate', 'vim'],
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': '~',
+                'shell_command_before': ['source .env/bin/activate'],
+                'panes': [
+                    {
+                        'start_directory': '~',
+                        'shell_command': ['source .env/bin/activate', 'vim'],
                     },  {
-                    'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['source .env/bin/activate', 'rbenv local 2.0.0-p0', 'cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'},
+                        'shell_command_before': ['rbenv local 2.0.0-p0'],
+                        'shell_command': [
+                            'source .env/bin/activate',
+                            'rbenv local 2.0.0-p0', 'cowsay "hey"'
+                        ]
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'shell_command_before': ['rbenv local 2.0.0-p0'],
                 'window_name': 'logging',
@@ -501,7 +537,8 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
-            }]
+            }
+        ]
     }
 
     def test_shell_command_before(self):
