@@ -262,18 +262,99 @@ class TeamocilLayoutsTest(unittest.TestCase):
                 'root': '/root',
                 'layout': 'tiled',
                 'panes': [
-                    { 'cmd': "echo 'foo'" },
-                    { 'cmd': "echo 'foo again'" }
+                    {'cmd': "echo 'foo'"},
+                    {'cmd': "echo 'foo again'"}
                 ]
             },
-            {
+                {
+                    'name': 'bar',
+                    'root': '/bar',
+                    'splits': [
+                        {'cmd': [
+                         "echo 'bar'",
+                         "echo 'bar in an array'"
+                         ],
+                         'target': 'bottom-right'
+                         },
+                        {'cmd': "echo 'bar again'",
+                         'focus': True,
+                         'width': 50
+                         }
+                    ]
+
+                }]
+        },
+
+        'two-windows-with-filters': {
+            'windows': [{
+                'name': 'foo',
+                'root': '/foo',
+                'filters': {
+                    'before': [
+                        'echo first before filter',
+                        'echo second before filter'
+                        ],
+                    'after': [
+                        'echo first after filter',
+                        'echo second after filter',
+                        ]
+                },
+                'panes': [
+                    { 'cmd': "echo 'foo'" },
+                    { 'cmd': "echo 'foo again'", 'width': 50 }
+                ]
+            }]
+        },
+
+        'two-windows-with-custom-command-options': {
+            'windows': [{
+                'name': 'foo',
+                'cmd_separator': '\n',
+                'with_env_var': False,
+                'clear': True,
+                'root': '/foo',
+                'layout': 'tiled',
+                'panes': [
+                    { 'cmd': "echo 'foo'" },
+                    { 'cmd': "echo 'foo again'" }
+                    ]
+            }, {
                 'name': 'bar',
+                'cmd_separator': ' && ',
+                'with_env_var': True,
                 'root': '/bar',
                 'splits': [
-
+                    { 'cmd': [
+                        "echo 'bar'",
+                        "echo 'bar in an array'"
+                    ]},
+                    { 'cmd': "echo 'bar again'",
+                    'focus': True,
+                    'width': 50
+                    }
                 ]
-
             }]
+        },
+
+        'three-windows-within-a-session': {
+            'session': {
+                'name': 'my awesome session',
+                'windows': [
+                { 'name': 'first window',
+                'panes': [
+                    { 'cmd': "echo 'foo'" }
+                    ]
+                }, {
+                'name': 'second window',
+                'panes': {
+                    'cmd': "echo 'foo'" }
+                }, {
+                'name': 'third window',
+                'panes': [
+                    { 'cmd': "echo 'foo'" }
+                ]}
+                ]
+            }
         }
     }
 
@@ -283,7 +364,6 @@ class TeamocilLayoutsTest(unittest.TestCase):
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
-
 
 
 if __name__ == '__main__':
