@@ -6,7 +6,7 @@ import shutil
 import unittest
 import kaptan
 from .. import config, exc
-from ..util import tmux
+from ..util import tmux, basestring
 
 from .. import log
 import logging
