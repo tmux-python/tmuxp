@@ -15,6 +15,90 @@ logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
+def teamocil_to_tmuxp(sconf):
+    '''
+
+    :param sconf: python dict for session configuration
+    :type sconf: dict
+    '''
+
+    tmuxp_config = {}
+
+    if 'project_name' in sconf:
+        tmuxp_config['session_name'] = sconf['project_name']
+    elif 'name' in sconf:
+        tmuxp_config['session_name'] = sconf['name']
+    else:
+        tmuxp_config['session_name'] = None
+
+    if 'cli_args' in sconf:
+        tmuxp_config['config'] = sconf['cli_args']
+
+        if '-f' in tmuxp_config['config']:
+            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
+    elif 'tmux_options' in sconf:
+        tmuxp_config['config'] = sconf['tmux_options']
+
+        if '-f' in tmuxp_config['config']:
+            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
+
+    if 'socket_name' in sconf:
+        tmuxp_config['socket_name'] = sconf['socket_name']
+
+    tmuxp_config['windows'] = []
+
+    if 'tabs' in sconf:
+        sconf['windows'] = sconf.pop('tabs')
+
+    if 'pre' in sconf and 'pre_window' in sconf:
+        tmuxp_config['shell_command'] = sconf['pre']
+
+        if isinstance(sconf['pre'], basestring):
+            tmuxp_config['shell_command_before'] = [sconf['pre_window']]
+        else:
+            tmuxp_config['shell_command_before'] = sconf['pre_window']
+    elif 'pre' in sconf:
+        if isinstance(sconf['pre'], basestring):
+            tmuxp_config['shell_command_before'] = [sconf['pre']]
+        else:
+            tmuxp_config['shell_command_before'] = sconf['pre']
+
+    if 'rbenv' in sconf:
+        if 'shell_command_before' not in tmuxp_config:
+            tmuxp_config['shell_command_before'] = []
+        tmuxp_config['shell_command_before'].append(
+            'rbenv shell %s' % sconf['rbenv']
+        )
+
+    for w in sconf['windows']:
+        for k, v in w.items():
+
+            windowdict = {}
+
+            windowdict['window_name'] = k
+
+            if isinstance(v, basestring) or v is None:
+                windowdict['panes'] = [v]
+                tmuxp_config['windows'].append(windowdict)
+                continue
+            elif isinstance(v, list):
+                windowdict['panes'] = v
+                tmuxp_config['windows'].append(windowdict)
+                continue
+
+            if 'pre' in v:
+                windowdict['shell_command_before'] = v['pre']
+            if 'panes' in v:
+                windowdict['panes'] = v['panes']
+
+            if 'layout' in v:
+                windowdict['layout'] = v['layout']
+            tmuxp_config['windows'].append(windowdict)
+
+    return tmuxp_config
+
+
+
 class TeamocilTest(unittest.TestCase):
 
     teamocil_yaml = """\
@@ -369,6 +453,9 @@ class TeamocilLayoutsTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
+        ''' this configuration contains multiple sessions in a single file.
+            tmuxp can split them into files, proceed?
+        '''
 
 if __name__ == '__main__':
     unittest.main()
