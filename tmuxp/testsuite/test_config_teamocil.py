@@ -14,6 +14,8 @@ import logging
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
+# todo,  change  'root' to a cd or start_directory
+
 
 def teamocil_to_tmuxp(sconf):
     '''
@@ -35,12 +37,14 @@ def teamocil_to_tmuxp(sconf):
         tmuxp_config['config'] = sconf['cli_args']
 
         if '-f' in tmuxp_config['config']:
-            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
+            tmuxp_config['config'] = tmuxp_config[
+                'config'].replace('-f', '').strip()
     elif 'tmux_options' in sconf:
         tmuxp_config['config'] = sconf['tmux_options']
 
         if '-f' in tmuxp_config['config']:
-            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
+            tmuxp_config['config'] = tmuxp_config[
+                'config'].replace('-f', '').strip()
 
     if 'socket_name' in sconf:
         tmuxp_config['socket_name'] = sconf['socket_name']
@@ -96,7 +100,6 @@ def teamocil_to_tmuxp(sconf):
             tmuxp_config['windows'].append(windowdict)
 
     return tmuxp_config
-
 
 
 class TeamocilTest(unittest.TestCase):
@@ -340,86 +343,109 @@ class TeamocilLayoutsTest(unittest.TestCase):
 
     teamocil_dict = {
         'two-windows': {
-            'windows': [{
-                'name': 'foo',
-                'clear': True,
-                'root': '/foo',
-                'layout': 'tiled',
-                'panes': [
-                    {'cmd': "echo 'foo'"},
-                    {'cmd': "echo 'foo again'"}
-                ]
-            },
+            'windows': [
+                {
+                    'name': 'foo',
+                    'clear': True,
+                    'root': '/foo',
+                    'layout': 'tiled',
+                    'panes': [
+                        {
+                            'cmd': "echo 'foo'"
+                        },
+                        {
+                            'cmd': "echo 'foo again'"
+                        }
+                    ]
+                },
                 {
                     'name': 'bar',
                     'root': '/bar',
                     'splits': [
-                        {'cmd': [
-                         "echo 'bar'",
-                         "echo 'bar in an array'"
-                         ],
-                         'target': 'bottom-right'
-                         },
-                        {'cmd': "echo 'bar again'",
-                         'focus': True,
-                         'width': 50
-                         }
+                        {
+                            'cmd': [
+                                "echo 'bar'",
+                                "echo 'bar in an array'"
+                            ],
+                            'target': 'bottom-right'
+                        },
+                        {
+                            'cmd': "echo 'bar again'",
+                            'focus': True,
+                            'width': 50
+                        }
                     ]
 
-                }]
+                }
+            ]
         },
 
         'two-windows-with-filters': {
-            'windows': [{
-                'name': 'foo',
-                'root': '/foo',
-                'filters': {
-                    'before': [
-                        'echo first before filter',
-                        'echo second before filter'
+            'windows': [
+                {
+                    'name': 'foo',
+                    'root': '/foo',
+                    'filters':
+                    {
+                        'before': [
+                            'echo first before filter',
+                            'echo second before filter'
                         ],
-                    'after': [
-                        'echo first after filter',
-                        'echo second after filter',
+                        'after': [
+                            'echo first after filter',
+                            'echo second after filter',
                         ]
-                },
-                'panes': [
-                    {'cmd': "echo 'foo'"},
-                    {'cmd': "echo 'foo again'", 'width': 50}
-                ]
-            }]
+                    },
+                    'panes': [
+                        {
+                            'cmd': "echo 'foo'"
+                        },
+                        {
+                            'cmd': "echo 'foo again'",
+                            'width': 50
+                        }
+                    ]
+                }
+            ]
         },
 
         'two-windows-with-custom-command-options': {
-            'windows': [{
-                'name': 'foo',
-                'cmd_separator': ' ',
-                'with_env_var': False,
-                'clear': True,
-                'root': '/foo',
-                'layout': 'tiled',
-                'panes': [
-                    {'cmd': "echo 'foo'"},
-                    {'cmd': "echo 'foo again'"}
+            'windows': [
+                {
+                    'name': 'foo',
+                    'cmd_separator': ' ',
+                    'with_env_var': False,
+                    'clear': True,
+                    'root': '/foo',
+                    'layout': 'tiled',
+                    'panes': [
+                        {
+                            'cmd': "echo 'foo'"
+                        },
+                        {
+                            'cmd': "echo 'foo again'"
+                        }
                     ]
-            }, {
-                'name': 'bar',
-                'cmd_separator': ' && ',
-                'with_env_var': True,
-                'root': '/bar',
-                'splits': [
-                    {'cmd': [
-                        "echo 'bar'",
-                        "echo 'bar in an array'"
-                    ],
-                    'target': 'bottom-right'
-                    },
-                    {'cmd': "echo 'bar again'",
-                     'focus': True,
-                     'width': 50
-                     }
-                ]
-            }]
+                }, {
+                    'name': 'bar',
+                    'cmd_separator': ' && ',
+                    'with_env_var': True,
+                    'root': '/bar',
+                    'splits': [
+                        {
+                            'cmd': [
+                                "echo 'bar'",
+                                "echo 'bar in an array'"
+                            ],
+                            'target': 'bottom-right'
+                        },
+                        {
+                            'cmd': "echo 'bar again'",
+                            'focus': True,
+                            'width': 50
+                        }
+                    ]
+                }]
         },
 
         'three-windows-within-a-session': {
@@ -428,17 +454,23 @@ class TeamocilLayoutsTest(unittest.TestCase):
                 'windows': [
                     {
                         'name': 'first window',
-                        'panes': [{
-                            'cmd': "echo 'foo'"
-                        }]
+                        'panes': [
+                            {
+                                'cmd': "echo 'foo'"
+                            }
+                        ]
                     }, {
                         'name': 'second window',
-                        'panes': [{
-                            'cmd': "echo 'foo'"}]
+                        'panes': [
+                            {
+                                'cmd': "echo 'foo'"}
+                        ]
                     }, {
                         'name': 'third window',
                         'panes': [
-                            {'cmd': "echo 'foo'"}
+                            {
+                                'cmd': "echo 'foo'"
+                            }
                         ]
                     }
                 ]
@@ -446,12 +478,47 @@ class TeamocilLayoutsTest(unittest.TestCase):
         }
     }
 
+    tmuxp_yaml = [
+        {
+            'session_name': 'two-windows',
+            'windows': [
+                {
+                    'window_name': 'foo',
+                    'clear': True,
+                    'layout': 'tiled',
+                    'panes': [
+                        {
+                            'cmd': "echo 'foo'"
+                        },
+                        {
+                            'cmd': "echo 'foo again'"
+                        }
+                    ]
+                },
+                {
+                    'window_name': 'bar',
+                    'panes': [
+                        {
+                            'cmd': [
+                                "echo 'bar'",
+                                "echo 'bar in an array'"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+    ]
+
     def test_config_to_dict(self):
         self.maxDiff = None
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+
+        self.assertDictEqual(teamocil_to_tmuxp(
+            self.tmuxinator_dict), self.tmuxp_dict)
 
         ''' this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
