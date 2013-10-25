@@ -99,9 +99,21 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
     - logs: tail -f log/development.log
     - console: bundle exec rails c
     - capistrano:
-        '''
     - server: ssh user@example.com
     """
+
+    tmuxinator_dict = {
+        'project_name': 'sample',
+        'project_root': '~/test',
+        'socket_name': 'foo'
+    }
+
+    def test_config_to_dict(self):
+        self.maxDiff = None
+        configparser = kaptan.Kaptan(handler='yaml')
+        test_config = configparser.import_config(self.tmuxinator_yaml)
+        yaml_to_dict = test_config.get()
+        self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
 
 class TmuxinatoriSampleTest(unittest.TestCase):
@@ -148,9 +160,9 @@ class TmuxinatoriSampleTest(unittest.TestCase):
     - logs: tail -f log/development.log
     - console: bundle exec rails c
     - capistrano:
-
     - server: ssh user@example.com
     """
+    pass
 
 if __name__ == '__main__':
     unittest.main()
