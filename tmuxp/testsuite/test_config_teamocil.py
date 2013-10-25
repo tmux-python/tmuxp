@@ -30,6 +30,9 @@ def teamocil_to_tmuxp(sconf):
 
     tmuxp_config = {}
 
+    if 'session' in sconf:
+        sconf = sconf['session']
+
     if 'project_name' in sconf:
         tmuxp_config['session_name'] = sconf['project_name']
     elif 'name' in sconf:
@@ -552,7 +555,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
         }
     }
 
-    tmuxp_dict = [
+    two_windows = \
         {
             'session_name': 'two-windows',
             'windows': [
@@ -562,10 +565,10 @@ class TeamocilLayoutsTest(unittest.TestCase):
                     'layout': 'tiled',
                     'panes': [
                         {
-                            'cmd': "echo 'foo'"
+                            'shell_command': "echo 'foo'"
                         },
                         {
-                            'cmd': "echo 'foo again'"
+                            'shell_command': "echo 'foo again'"
                         }
                     ]
                 },
@@ -573,14 +576,14 @@ class TeamocilLayoutsTest(unittest.TestCase):
                     'window_name': 'bar',
                     'panes': [
                         {
-                            'cmd': [
+                            'shell_command': [
                                 "echo 'bar'",
                                 "echo 'bar in an array'"
                             ],
                             'target': 'bottom-right'
                         },
                         {
-                            'cmd': [
+                            'shell_command': [
                                 "echo 'bar again'"
                             ],
                             'focus': True,
@@ -589,16 +592,17 @@ class TeamocilLayoutsTest(unittest.TestCase):
                     ]
                 }
             ]
-        },
+        }
+
+    two_windows_with_filters = \
         {
             'session-name': 'two-windows-with-filters',
-            'windows':
-            [
+            'windows': [
                 {
                     'window_name': 'foo',
                     'shell_command_before': [
-                        'echo first before filter',
-                        'echo second before filter',
+                            'echo first before filter',
+                            'echo second before filter',
                     ],
                     'shell_command_after': [
                         'echo first after filter',
@@ -614,9 +618,11 @@ class TeamocilLayoutsTest(unittest.TestCase):
                     ]
                 }
             ]
-        },
+        }
+
+    two_windows_with_custom_command_options = \
         {
-            'window-name': 'two-windows-with-custm-command-options',
+            'session-name': 'two-windows-with-custom-command-options',
             'windows': [
                 {
                     'window_name': 'foo',
@@ -652,38 +658,37 @@ class TeamocilLayoutsTest(unittest.TestCase):
                 }
             ]
 
-        },
-        {
-            'session_name': 'three-window-within-a-session',
-            'windows': [
-                {
-                    'window_name': 'first window',
-                    'panes': [
-                        {
-                            'shell_command': "echo 'foo'"
-                        },
-                    ]
-                },
-                {
-                    'window_name': 'second window',
-                    'panes': [
-                        {
-                            'shell_command': "echo 'foo'"
-                        },
-                    ]
-                },
-                {
-                    'window_name': 'third window',
-                    'panes': [
-                        {
-                            'shell_command': "echo 'foo'"
-                        },
-                    ]
-                },
-            ]
         }
 
-    ]
+    three_windows_within_a_session = {
+        'session_name': 'three-window-within-a-session',
+        'windows': [
+            {
+                'window_name': 'first window',
+                'panes': [
+                    {
+                        'shell_command': "echo 'foo'"
+                    },
+                ]
+            },
+            {
+                'window_name': 'second window',
+                'panes': [
+                    {
+                        'shell_command': "echo 'foo'"
+                    },
+                ]
+            },
+            {
+                'window_name': 'third window',
+                'panes': [
+                    {
+                        'shell_command': "echo 'foo'"
+                    },
+                ]
+            },
+        ]
+    }
 
     def test_config_to_dict(self):
         self.maxDiff = None
@@ -692,8 +697,12 @@ class TeamocilLayoutsTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
-        # self.assertDictEqual(teamocil_to_tmuxp(self.teamocil_dict),
-        # self.tmuxp_dict)
+        self.assertDictEqual(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['two-windows'],
+            ),
+            self.two_windows
+        )
 
         ''' this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
