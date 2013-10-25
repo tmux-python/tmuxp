@@ -26,19 +26,57 @@ def tmuxinator_to_tmuxp(sconf):
 
     tmuxp_config = {}
 
-    tmuxp_config['session_name'] = None
+    if 'project_name' in sconf:
+        tmuxp_config['session_name'] = sconf['project_name']
+    else:
+        tmuxp_config['session_name'] = None
+
+    if 'cli_args' in sconf:
+        tmuxp_config['config'] = sconf['cli_args']
+
+        if '-f' in tmuxp_config['config']:
+            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
+
+    if 'socket_name' in sconf:
+        tmuxp_config['socket_name'] = sconf['socket_name']
 
     tmuxp_config['windows'] = []
+    logger.error(sconf)
+    if 'tabs' in sconf:
+        sconf['windows'] = sconf.pop('tabs')
+
+    if 'pre' in sconf:
+        if isinstance(sconf['pre'], basestring):
+            tmuxp_config['shell_command_before'] = [sconf['pre']]
+        else:
+            tmuxp_config['shell_command_before'] = sconf['pre']
+
+    if 'rbenv' in sconf:
+        if 'shell_command_before' not in tmuxp_config:
+            tmuxp_config['shell_command_before'] = []
+        tmuxp_config['shell_command_before'].append(
+            'rbenv %s' % sconf['rbenv']
+        )
+
     for w in sconf['windows']:
         for k, v in w.items():
 
             windowdict = {}
 
             windowdict['window_name'] = k
+
+            logger.error('%s, %s' % (k, v))
+
+            if isinstance(v, basestring) or v is None:
+                windowdict['panes'] = [v]
+                continue
+
+            if 'pre' in v:
+                logger.error(v['pre'])
+                windowdict['shell_command_before'] = v['pre']
             if 'panes' in v:
                 windowdict['panes'] = v['panes']
-            if isinstance(v, basestring):
-                windowdict['panes'] = [v]
+
             if 'layout' in v:
                 windowdict['layout'] = v['layout']
             tmuxp_config['windows'].append(windowdict)
@@ -111,7 +149,8 @@ class TmuxinatorTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
-        self.assertEqual(tmuxinator_to_tmuxp(yaml_to_dict), self.tmuxp_dict)
+        self.assertDictEqual(tmuxinator_to_tmuxp(yaml_to_dict), self.tmuxp_dict)
+
 
 class TmuxinatorDeprecationsTest(unittest.TestCase):
 
@@ -205,12 +244,95 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
         ]
     }
 
+    tmuxp_dict = {
+        'session_name': 'sample',
+        'socket_name': 'foo',
+        'config': '~/.tmux.mac.conf',
+        'shell_command_before': [
+            'sudo /etc/rc.d/mysqld start',
+            'rbenv 2.0.0-p247'
+        ],
+        'windows': [
+            {
+                'window_name': 'editor',
+                'shell_command_before': [
+                    'echo "I get run in each pane, before each pane command!"',
+                    None
+                ],
+                'layout': 'main-vertical',
+                'panes': [
+                    'vim',
+                    None,
+                    'top'
+                ]
+            },
+            {
+                'window_name': 'shell',
+                'layout': 'layout',
+                'panes': [
+                    'git pull'
+                ]
+            },
+            {
+                'window_name': 'guard',
+                'layout': 'tiled',
+                'shell_command_before': [
+                    'echo "I get run in each pane."',
+                    'echo "Before each pane command!"'
+                ],
+                'panes': [
+                    None,
+                    None,
+                    None
+                ]
+            },
+            {
+                'window_name': 'database',
+                'panes': [
+                    'bundle exec rails db'
+                ]
+            },
+            {
+                'window_name': 'server',
+                'panes': [
+                    'bundle exec rails s'
+                ]
+            },
+            {
+                'window_name': 'logs',
+                'panes': [
+                    'tail -f log/development.log'
+                ]
+            },
+            {
+                'window_name': 'console',
+                'panes': [
+                    'bundle exec rails c'
+                ]
+            },
+            {
+                'window_name': 'capistrano',
+                'panes': [
+                    None
+                ]
+            },
+            {
+                'window_name': 'server',
+                'panes': [
+                    'ssh user@example.com'
+                ]
+            }
+        ]
+    }
+
     def test_config_to_dict(self):
         self.maxDiff = None
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.tmuxinator_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
+
+        self.assertDictEqual(tmuxinator_to_tmuxp(yaml_to_dict), self.tmuxp_dict)
 
 
 class TmuxinatoriSampleTest(unittest.TestCase):
