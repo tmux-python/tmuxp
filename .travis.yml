@@ -6,11 +6,6 @@ python:
 env:
   - TMUX_VERSION=master
   - TMUX_VERSION=1.8
-  - TMUX_VERSION=1.7
-matrix:
-  allow_failures:
-    - env: TMUX_VERSION=1.7
-    - python: "3.3"
 before_install:
  - sudo apt-get update -qq
 install:
@@ -25,5 +20,3 @@ before_script:
   - cd ..
   - tmux -V
 script: python run_tests.py
-after_script:
-  - killall tmux
