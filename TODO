@@ -4,6 +4,7 @@ Roadmap
 Now
 """
 
+- panes .set_width() and .set_height()  as shortcut for .resize_pane()
 - from tmuxinator: add a "pre" command that runs once at start of session
 - from teamocil: add 'clear': True
 - from teamocil: add 'target' bottom-right, bottom-left, top-right, top-left
