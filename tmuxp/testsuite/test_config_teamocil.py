@@ -44,6 +44,10 @@ def teamocil_to_tmuxp(sconf):
 
         windowdict = {}
 
+        windowdict['window_name'] = w['name']
+        if 'clear' in w:
+            windowdict['clear'] = w['clear']
+
         if 'filters' in w:
             if 'before' in w['filters']:
                 for b in w['filters']['before']:
@@ -51,6 +55,9 @@ def teamocil_to_tmuxp(sconf):
             if 'after' in w['filters']:
                 for b in w['filters']['after']:
                     windowdict['shell_command_after'] = w['filters']['after']
+
+        if 'splits' in w:
+            w['panes'] = w.pop('splits')
 
         if 'panes' in w:
             for p in w['panes']:
@@ -513,7 +520,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
 
     two_windows = \
         {
-            'session_name': 'two-windows',
+            'session_name': None,
             'windows': [
                 {
                     'window_name': 'foo',
@@ -539,9 +546,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
                             'target': 'bottom-right'
                         },
                         {
-                            'shell_command': [
-                                "echo 'bar again'"
-                            ],
+                            'shell_command': "echo 'bar again'",
                             'focus': True,
                             'width': 50
                         }
@@ -552,7 +557,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
 
     two_windows_with_filters = \
         {
-            'session_name': 'two-windows-with-filters',
+            'session_name': None,
             'windows': [
                 {
                     'window_name': 'foo',
@@ -578,7 +583,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
 
     two_windows_with_custom_command_options = \
         {
-            'session_name': 'two-windows-with-custom-command-options',
+            'session_name': None,
             'windows': [
                 {
                     'window_name': 'foo',
