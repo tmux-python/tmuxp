@@ -33,7 +33,7 @@ class TmuxinatorTest(unittest.TestCase):
     tmuxinator_dict = {
         'windows': [
             {
-               'editor': {
+                'editor': {
                     'layout': 'main-vertical',
                     'panes': [
                         'vim',
@@ -58,6 +58,7 @@ class TmuxinatorTest(unittest.TestCase):
 
 
 class TmuxinatorDeprecationsTest(unittest.TestCase):
+
     ''' tmuxinator uses `tabs` instead of `windows` in older versions
 
     https://github.com/aziz/tmuxinator/blob/master/lib/tmuxinator/project.rb#L18
@@ -105,7 +106,47 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
     tmuxinator_dict = {
         'project_name': 'sample',
         'project_root': '~/test',
-        'socket_name': 'foo'
+        'socket_name': 'foo',
+        'pre': 'sudo /etc/rc.d/mysqld start',
+        'rbenv': '2.0.0-p247',
+        'cli_args': '-f ~/.tmux.mac.conf',
+        'tabs': [
+            {
+                'editor': {
+                    'pre': [
+                        'echo "I get run in each pane, before each pane command!"',
+                        None
+                    ],
+                    'layout': 'main-vertical',
+                    'panes': [
+                        'vim',
+                        None,
+                        'top'
+                    ]
+                }
+            },
+            {'shell': 'git pull', },
+            {
+                'guard': {
+                    'layout': 'tiled',
+                    'pre': [
+                        'echo "I get run in each pane."',
+                        'echo "Before each pane command!"'
+                    ],
+                    'panes': [
+                        None,
+                        None,
+                        None
+                    ]
+                }
+            },
+            {'database': 'bundle exec rails db'},
+            {'server': 'bundle exec rails s'},
+            {'logs': 'tail -f log/development.log'},
+            {'console': 'bundle exec rails c'},
+            {'capistrano': None},
+            {'server': 'ssh user@example.com'}
+        ]
     }
 
     def test_config_to_dict(self):
