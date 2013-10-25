@@ -17,6 +17,35 @@ TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 # https://github.com/aziz/tmuxinator
 
 
+def tmuxinator_to_tmuxp(sconf):
+    '''
+
+    :param sconf: python dict for session configuration
+    :type sconf: dict
+    '''
+
+    tmuxp_config = {}
+
+    tmuxp_config['session_name'] = None
+
+    tmuxp_config['windows'] = []
+    for w in sconf['windows']:
+        for k, v in w.items():
+
+            windowdict = {}
+
+            windowdict['window_name'] = k
+            if 'panes' in v:
+                windowdict['panes'] = v['panes']
+            if isinstance(v, basestring):
+                windowdict['panes'] = [v]
+            if 'layout' in v:
+                windowdict['layout'] = v['layout']
+            tmuxp_config['windows'].append(windowdict)
+
+    return tmuxp_config
+
+
 class TmuxinatorTest(unittest.TestCase):
 
     tmuxinator_yaml = """\
@@ -50,12 +79,39 @@ class TmuxinatorTest(unittest.TestCase):
         ]
     }
 
+    tmuxp_dict = {
+        'session_name': None,
+        'windows': [
+            {
+                'window_name': 'editor',
+                'layout': 'main-vertical',
+                'panes': [
+                    'vim',
+                    'guard'
+                ]
+            },
+            {
+                'window_name': 'server',
+                'panes': [
+                    'bundle exec rails s'
+                ]
+            },
+            {
+                'window_name': 'logs',
+                'panes': [
+                    'tail -f logs/development.log'
+                ]
+            }
+        ]
+    }
+
     def test_config_to_dict(self):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.tmuxinator_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
+        self.assertEqual(tmuxinator_to_tmuxp(yaml_to_dict), self.tmuxp_dict)
 
 class TmuxinatorDeprecationsTest(unittest.TestCase):
 
