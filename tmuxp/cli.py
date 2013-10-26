@@ -178,6 +178,14 @@ def subcommand_load(args):
                 logger.error('%s not found.' % configfile)
 
 
+def subcommand_import_teamocil(args):
+    print(args)
+
+
+def subcommand_import_tmuxinator(args):
+    print(args)
+
+
 def subcommand_convert(args):
     if args.configs:
         if '.' in args.configs:
@@ -284,7 +292,6 @@ def cli_parser():
         ''',
     )
 
-    parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='subcommands',
                                        description='valid subcommands',
                                        help='additional help')
@@ -294,7 +301,7 @@ def cli_parser():
 
     kill_session.add_argument(
         dest='session_name',
-        nargs='*',
+        nargs=1,
         type=str,
         default=None,
     )
@@ -304,7 +311,7 @@ def cli_parser():
 
     attach_session.add_argument(
         dest='session_name',
-        nargs='*',
+        nargs=1,
         type=str,
         default=None,
     )
@@ -317,7 +324,7 @@ def cli_parser():
 
     load.add_argument(
         dest='configs',
-        nargs='*',
+        nargs=1,
         type=str,
         default=None,
         help='''\
@@ -337,7 +344,7 @@ def cli_parser():
 
     convert.add_argument(
         dest='configs',
-        nargs='*',
+        nargs=1,
         type=str,
         default=None,
         help='''\
@@ -350,6 +357,37 @@ def cli_parser():
         ''' % (cwd_dir + '/', config_dir)
     )
     convert.set_defaults(callback=subcommand_convert)
+
+    importparser = subparsers.add_parser('import')
+    importsubparser = importparser.add_subparsers(title='subcommands',
+                                                  description='valid subcommands',
+                                                  help='additional help')
+
+    import_teamocil = importsubparser.add_parser('teamocil')
+
+    import_teamocil.add_argument(
+        dest='config',
+        nargs=1,
+        type=str,
+        default=None,
+        help='''\
+        Checks current ~/.teamocil and current directory for yaml files.
+        '''
+    )
+    import_teamocil.set_defaults(callback=subcommand_import_teamocil)
+
+    import_tmuxinator = importsubparser.add_parser('tmuxinator')
+
+    import_tmuxinator.add_argument(
+        dest='config',
+        nargs=1,
+        type=str,
+        default=None,
+        help='''\
+        Checks current ~/.tmuxinator and current directory for yaml files.
+        '''
+    )
+    import_tmuxinator.set_defaults(callback=subcommand_import_tmuxinator)
 
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         metavar='log-level',
