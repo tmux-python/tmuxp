@@ -1,6 +1,22 @@
 Roadmap
 -------
 
+Immediate
+"""""""""
+
+- shorts for load
+
+========================= ======================================================
+tmuxp .                   search cwd for .tmuxp.yaml, .tmuxp.json, load
+tmuxp /                   list sessions
+tmuxp / <name>            load session name
+tmuxp load <name>         search ~/.tmuxp for <name>.yaml, <name>.json,
+                          <name>.py
+tmuxp load fullpath       load from path
+  (starts with . or /) 
+========================= ======================================================
+
+
 Now
 """
 
