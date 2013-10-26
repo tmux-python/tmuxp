@@ -45,7 +45,7 @@ setup(
     packages=['tmuxp', 'tmuxp.testsuite'],
     include_package_data=True,
     install_requires=requirements('requirements.pip'),
-    scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh'],
+    scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:main']),
     classifiers=[
         'Development Status :: 3 - Alpha',

@@ -43,30 +43,23 @@ This creates your tmuxp session.
 Bash completion
 """""""""""""""
 
-.. note::
-
-    Parts of the zsh, bash and tcsh completion and these docs are based on
-    `aws cli`_.
-
-For bash:
+For bash, ``.bashrc``:
 
 .. code-block:: bash
 
-    $ complete -C tmuxp.bash tmuxp
+    $ source tmuxp.bash
 
-For tcsh:
+For tcsh, ``.tcshrc``:
 
 .. code-block:: bash
 
-    $ complete tmuxp 'p/*/`tmuxp.bash`/'
+    $ complete tmuxp 'p/*/`tmuxp.tcsh`/'
 
-For zsh:
+For zsh, ``.zshrc``:
 
 .. code-block:: bash
 
     $ source tmuxp.zsh
-
-.. _aws cli: https://github.com/aws/aws-cli
 
 Python ORM + AL
 ---------------

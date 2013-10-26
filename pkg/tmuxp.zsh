@@ -63,4 +63,4 @@ _bash_complete() {
   return ret
 }
 
-complete -C tmuxp.bash tmuxp
+eval "$(register-python-argcomplete tmuxp)"
