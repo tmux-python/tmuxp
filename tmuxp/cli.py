@@ -162,22 +162,21 @@ def subcommand_load(args):
         print(output)
 
     elif args.config:
-        if '.' in args.config:
-            args.config.remove('.')
+        if '.' == args.config:
             if config.in_cwd():
                 args.config.append(config.in_cwd()[0])
             else:
                 print('No tmuxp configs found in current directory.')
 
-        for configfile in args.config:
-            file_user = os.path.join(config_dir, configfile)
-            file_cwd = os.path.join(cwd_dir, configfile)
-            if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-                build_workspace(file_cwd, args)
-            elif os.path.exists(file_user) and os.path.isfile(file_user):
-                build_workspace(file_user, args)
-            else:
-                logger.error('%s not found.' % configfile)
+        configfile = args.config
+        file_user = os.path.join(config_dir, configfile)
+        file_cwd = os.path.join(cwd_dir, configfile)
+        if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
+            build_workspace(file_cwd, args)
+        elif os.path.exists(file_user) and os.path.isfile(file_user):
+            build_workspace(file_user, args)
+        else:
+            logger.error('%s not found.' % configfile)
 
 
 def subcommand_import_teamocil(args):
@@ -586,6 +585,14 @@ def complete(cline, cpoint):
             commands[:] = []
             ctext_subargs = ctext.replace(command + ' ', '')
             configs = []
+
+            # if ctext_subargs.startswith('.') or ctext_subargs.startswith('/'):
+                # configs += ['.hi']
+
+                # if ctext_subargs.endswith('/') and ctext_subargs != './':
+                    # configs += ['./' + c for c in config.in_dir(os.path.relpath(ctext_subargs))]
+                # else:
+                    # configs += os.listdir(os.path.relpath(ctext_subargs))
 
             configs += ['./' + c for c in config.in_dir(cwd_dir)]
             configs += ['./' + c for c in config.in_cwd()]
