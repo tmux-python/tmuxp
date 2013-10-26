@@ -54,7 +54,7 @@ Convert a session config JSON <=> YAML:
 
     $ tmuxp convert<tab> # configs in config dir, current directory
 
-See: `bash completion`_
+See: `installing bash completion`_
 
 load tmux sessions from yaml and json
 """""""""""""""""""""""""""""""""""""
@@ -142,7 +142,7 @@ tests           .. code-block:: bash
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
-.. _bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
+.. _installing bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 .. _Developing and Testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil

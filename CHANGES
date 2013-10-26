@@ -3,12 +3,21 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-26
+----------
+
+- [import] [tests] initial version of `tmuxinator`_ and `teamocil`_
+  config importer. it does not support all options and it not guaranteed
+  to fully convert window/pane size and state.
+
 2013-10-25
 ----------
 
 - [cli] fix bug where ``-v`` and ``--version`` wouldn't print version.
 - [cli] property handle case where no tmux server exists when
   ``attach-session`` or ``kill-session`` is used.
+- [import] [tests] test fixtures and inital work for importing
+  `tmuxinator`_ and `teamocil`_ configs
 
 2013-10-24
 ----------
@@ -226,3 +235,6 @@ initial
 - sphinx documentation
 
 # vim: set filetype=rst:
+
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
