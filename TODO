@@ -11,6 +11,7 @@ Now
   to split.
 - in order to incorporate interoperability with tmux versions 1.6, Session,
   Window and Pane classes will be index'd on a hierachy of keys
+- new-session inside $TMUX that switches' client
 
   Session
     - session_id   ( tmux >= 1.8 )
