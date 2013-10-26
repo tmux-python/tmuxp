@@ -26,6 +26,7 @@ cwd_dir = os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
+
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
 
@@ -182,10 +183,12 @@ def subcommand_load(args):
 def subcommand_import_teamocil(args):
     if args.list:
             try:
-                configs_in_user = config.in_dir(teamocil_config_dir, extensions='yml')
+                configs_in_user = config.in_dir(
+                    teamocil_config_dir, extensions='yml')
             except OSError:
                 configs_in_user = []
-            configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
+            configs_in_cwd = config.in_dir(
+                config_dir=cwd_dir, extensions='yml')
 
             output = ''
 
@@ -205,15 +208,30 @@ def subcommand_import_teamocil(args):
 
             print(output)
 
+    if args.config:
+        configfile = os.path.relpath(args.config)
+        configparser = kaptan.Kaptan(handler='yaml')
+        configparser.import_config(configfile)
+
+        newconfig = config.import_teamocil(configparser.get())
+
+        newconfig = configparser.import_config(newconfig)
+        newconfig = configparser.export(
+            'yaml', indent=2, default_flow_style=False
+        )
+
+        print(newconfig)
 
 
 def subcommand_import_tmuxinator(args):
     if args.list:
             try:
-                configs_in_user = config.in_dir(tmuxinator_config_dir, extensions='yml')
+                configs_in_user = config.in_dir(
+                    tmuxinator_config_dir, extensions='yml')
             except OSError:
                 configs_in_user = []
-            configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
+            configs_in_cwd = config.in_dir(
+                config_dir=cwd_dir, extensions='yml')
 
             output = ''
 
@@ -232,6 +250,21 @@ def subcommand_import_tmuxinator(args):
                 )
 
             print(output)
+
+    if args.config:
+        configfile = os.path.relpath(args.config)
+        configparser = kaptan.Kaptan(handler='yaml')
+        configparser.import_config(configfile)
+
+        newconfig = config.import_tmuxinator(configparser.get())
+
+        newconfig = configparser.import_config(newconfig)
+        newconfig = configparser.export(
+            'yaml', indent=2, default_flow_style=False
+        )
+
+        print(newconfig)
+
 
 def subcommand_convert(args):
     if args.config:
@@ -296,7 +329,8 @@ def subcommand_attach_session(args):
         socket_path=args.socket_path or None
     )
     try:
-        session = next((s for s in t.sessions if s.get('session_name') == ctext), None)
+        session = next((s for s in t.sessions if s.get(
+            'session_name') == ctext), None)
         if not session:
             raise Exception('Session not found.')
     except Exception as e:
@@ -322,7 +356,8 @@ def subcommand_kill_session(args):
     )
 
     try:
-        session = next((s for s in t.sessions if s.get('session_name') == ctext), None)
+        session = next((s for s in t.sessions if s.get(
+            'session_name') == ctext), None)
         if not session:
             raise Exception('Session not found.')
     except Exception as e:
@@ -412,7 +447,8 @@ def cli_parser():
 
     import_teamocil = importsubparser.add_parser('teamocil')
 
-    import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(required=True)
+    import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(
+        required=True)
     import_teamocilgroup.add_argument(
         '-l', '--list', dest='list', action='store_true',
         help='List yaml configs in ~/.teamocil and current working directory.'
@@ -430,7 +466,8 @@ def cli_parser():
 
     import_tmuxinator = importsubparser.add_parser('tmuxinator')
 
-    import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(required=True)
+    import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
+        required=True)
     import_tmuxinatorgroup.add_argument(
         '-l', '--list', dest='list', action='store_true',
         help='List yaml configs in ~/.tmuxinator and current working directory.'
@@ -558,14 +595,16 @@ def complete(cline, cpoint):
 
     def teamocil_config_complete(command, commands, ctext):
         try:
-            configs_in_user = config.in_dir(teamocil_config_dir, extensions='yml')
+            configs_in_user = config.in_dir(
+                teamocil_config_dir, extensions='yml')
         except OSError:
             configs_in_user = []
         configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
 
     def tmuxinator_config_complete(command, commands, ctext):
         try:
-            configs_in_user = config.in_dir(tmuxinator_config_dir, extensions='yml')
+            configs_in_user = config.in_dir(
+                tmuxinator_config_dir, extensions='yml')
         except OSError:
             configs_in_user = []
         configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
