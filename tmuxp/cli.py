@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 
 config_dir = os.path.expanduser('~/.tmuxp/')
 cwd_dir = os.getcwd() + '/'
-
+tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
+teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -179,12 +180,58 @@ def subcommand_load(args):
 
 
 def subcommand_import_teamocil(args):
-    print(args)
+    if args.list:
+            try:
+                configs_in_user = config.in_dir(teamocil_config_dir, extensions='yml')
+            except OSError:
+                configs_in_user = []
+            configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
+
+            output = ''
+
+            if not os.path.exists(teamocil_config_dir):
+                output += '# %s: \n\tDirectory doesn\'t exist.\n' % teamocil_config_dir
+            elif not configs_in_user:
+                output += '# %s: \n\tNone found.\n' % teamocil_config_dir
+            else:
+                output += '# %s: \n\t%s\n' % (
+                    config_dir, ', '.join(configs_in_user)
+                )
+
+            if configs_in_cwd:
+                output += '# current directory:\n\t%s' % (
+                    ', '.join(configs_in_cwd)
+                )
+
+            print(output)
+
 
 
 def subcommand_import_tmuxinator(args):
-    print(args)
+    if args.list:
+            try:
+                configs_in_user = config.in_dir(tmuxinator_config_dir, extensions='yml')
+            except OSError:
+                configs_in_user = []
+            configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
 
+            output = ''
+
+            if not os.path.exists(tmuxinator_config_dir):
+                output += '# %s: \n\tDirectory doesn\'t exist.\n' % tmuxinator_config_dir
+            elif not configs_in_user:
+                output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir
+            else:
+                output += '# %s: \n\t%s\n' % (
+                    config_dir, ', '.join(configs_in_user)
+                )
+
+            if configs_in_cwd:
+                output += '# current directory:\n\t%s' % (
+                    ', '.join(configs_in_cwd)
+                )
+
+            print(output)
 
 def subcommand_convert(args):
     if args.config:
@@ -365,10 +412,16 @@ def cli_parser():
 
     import_teamocil = importsubparser.add_parser('teamocil')
 
-    import_teamocil.add_argument(
+    import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(required=True)
+    import_teamocilgroup.add_argument(
+        '-l', '--list', dest='list', action='store_true',
+        help='List yaml configs in ~/.teamocil and current working directory.'
+    )
+
+    import_teamocilgroup.add_argument(
         dest='config',
         type=str,
-        default=None,
+        nargs='?',
         help='''\
         Checks current ~/.teamocil and current directory for yaml files.
         '''
@@ -377,14 +430,21 @@ def cli_parser():
 
     import_tmuxinator = importsubparser.add_parser('tmuxinator')
 
-    import_tmuxinator.add_argument(
+    import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(required=True)
+    import_tmuxinatorgroup.add_argument(
+        '-l', '--list', dest='list', action='store_true',
+        help='List yaml configs in ~/.tmuxinator and current working directory.'
+    )
+
+    import_tmuxinatorgroup.add_argument(
         dest='config',
         type=str,
-        default=None,
+        nargs='?',
         help='''\
         Checks current ~/.tmuxinator and current directory for yaml files.
         '''
     )
+
     import_tmuxinator.set_defaults(callback=subcommand_import_tmuxinator)
 
     parser.add_argument('--log-level', dest='log_level', default='INFO',
@@ -495,6 +555,20 @@ def complete(cline, cpoint):
             configs += [os.path.join(config_dir, c)
                         for c in config.in_dir(config_dir)]
             commands += [c for c in configs if c.startswith(ctext_subargs)]
+
+    def teamocil_config_complete(command, commands, ctext):
+        try:
+            configs_in_user = config.in_dir(teamocil_config_dir, extensions='yml')
+        except OSError:
+            configs_in_user = []
+        configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
+
+    def tmuxinator_config_complete(command, commands, ctext):
+        try:
+            configs_in_user = config.in_dir(tmuxinator_config_dir, extensions='yml')
+        except OSError:
+            configs_in_user = []
+        configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
 
     session_complete('attach-session', commands, ctext)
     session_complete('kill-session', commands, ctext)

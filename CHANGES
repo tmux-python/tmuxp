@@ -9,6 +9,12 @@ Here you can find the recent changes to tmuxp.
 - [import] [tests] initial version of `tmuxinator`_ and `teamocil`_
   config importer. it does not support all options and it not guaranteed
   to fully convert window/pane size and state.
+- [internal] :meth:`config.in_dir` supports a list of ``extensions`` for
+  filetypes to search, i.e. ``['.yaml', '.json']``.
+- [internal] :meth:`config.is_config_file` now supports ``extensions``
+  argument as a string also.
+- [cli] fix ``$ tmuxp load -l`` to work correctly alongside
+  ``$ tmuxp load filename``.
 
 2013-10-25
 ----------

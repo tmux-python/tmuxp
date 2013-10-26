@@ -48,22 +48,27 @@ def is_config_file(filename, extensions=['.yaml', '.json', '.ini']):
     :param filename: filename to check (e.g. ``mysession.json``).
     :type filename: string
     :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
+    :type extensions: list or string
     :rtype: bool
     '''
+
+    extensions = [extensions] if isinstance(extensions, basestring) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
-def in_dir(config_dir=os.path.expanduser('~/.tmuxp')):
+def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yaml', '.json', '.ini']):
     '''Find configs in config_dir and current dir
 
     :param config_dir: directory to search
     :type config_dir: string
+    :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
+    :type extensions: list
     :rtype: list
     '''
     configs = []
 
     for filename in os.listdir(config_dir):
-        if is_config_file(filename) and not filename.startswith('.'):
+        if is_config_file(filename, extensions) and not filename.startswith('.'):
             configs.append(filename)
 
     return configs
