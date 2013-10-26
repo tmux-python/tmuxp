@@ -93,14 +93,38 @@ class TeamocilTest(unittest.TestCase):
             'root': '~/Code/sample/www',
             'layout': 'even-horizontal',
             'panes': [
-                {'cmd': [
-                    'pwd',
-                    'ls -la'
+                {
+                    'cmd': [
+                        'pwd',
+                        'ls -la'
                     ]
-                 },
-                {'cmd': 'rails server --port 3000'}
+                },
+                {
+                    'cmd': 'rails server --port 3000'
+                }
             ]
         }]
+    }
+
+    tmuxp_dict = {
+        'session_name': None,
+        'windows': [
+            {
+                'window_name': 'sample-two-panes',
+                'layout': 'even-horizontal',
+                'panes': [
+                    {
+                        'shell_command': [
+                            'pwd',
+                            'ls -la'
+                        ]
+                    },
+                    {
+                        'shell_command': 'rails server --port 3000'
+                    }
+                ]
+            }
+        ]
     }
 
     def test_config_to_dict(self):
@@ -108,6 +132,17 @@ class TeamocilTest(unittest.TestCase):
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+
+        self.assertDictEqual(
+            teamocil_to_tmuxp(self.teamocil_dict),
+            self.tmuxp_dict
+        )
+
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict
+            )
+        )
 
     def test_config_to_yaml(self):
         '''teamocil yaml to tmuxp yaml config
@@ -175,6 +210,17 @@ class Teamocil2Test(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
+        self.assertDictEqual(
+            teamocil_to_tmuxp(self.teamocil_dict),
+            self.tmuxp_dict
+        )
+
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict
+            )
+        )
+
 
 class Teamocil3Test(unittest.TestCase):
 
@@ -222,12 +268,8 @@ class Teamocil3Test(unittest.TestCase):
             {
                 'window_name': 'my-first-window',
                 'layout': 'even-vertical',
-                'shell_command_before': [
-                    'rbenv local 2.0.0-p0',
-                ],
-                'shell_command_after': [
-                    'echo \'I am done initializing this pane.\''
-                ],
+                'shell_command_before': 'rbenv local 2.0.0-p0',
+                'shell_command_after': 'echo \'I am done initializing this pane.\'',
                 'panes': [
                     {
                         'shell_command': 'git status'
@@ -249,10 +291,22 @@ class Teamocil3Test(unittest.TestCase):
     }
 
     def test_config_to_dict(self):
+        self.maxDiff = None
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+
+        self.assertDictEqual(
+            teamocil_to_tmuxp(self.teamocil_dict),
+            self.tmuxp_dict
+        )
+
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict
+            )
+        )
 
 
 class Teamocil4Test(unittest.TestCase):
@@ -295,6 +349,17 @@ class Teamocil4Test(unittest.TestCase):
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+
+        self.assertDictEqual(
+            teamocil_to_tmuxp(self.teamocil_dict),
+            self.tmuxp_dict
+        )
+
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict
+            )
+        )
 
 
 class TeamocilLayoutsTest(unittest.TestCase):
@@ -665,11 +730,23 @@ class TeamocilLayoutsTest(unittest.TestCase):
             self.two_windows
         )
 
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['two-windows']
+            )
+        )
+
         self.assertDictEqual(
             teamocil_to_tmuxp(
                 self.teamocil_dict['two-windows-with-filters'],
             ),
             self.two_windows_with_filters
+        )
+
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['two-windows-with-filters']
+            )
         )
 
         self.assertDictEqual(
@@ -679,13 +756,23 @@ class TeamocilLayoutsTest(unittest.TestCase):
             self.two_windows_with_custom_command_options
         )
 
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['two-windows-with-custom-command-options']
+            )
+        )
+
         self.assertDictEqual(
             teamocil_to_tmuxp(
                 self.teamocil_dict['three-windows-within-a-session'],
             ),
             self.three_windows_within_a_session
         )
-
+        config.check_consistency(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['three-windows-within-a-session']
+            )
+        )
 
         ''' this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
