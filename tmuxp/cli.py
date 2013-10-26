@@ -10,6 +10,7 @@
 import os
 import sys
 import argparse
+import argcomplete
 import logging
 import kaptan
 from . import config
@@ -25,6 +26,53 @@ config_dir = os.path.expanduser('~/.tmuxp/')
 cwd_dir = os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
+
+
+class ConfigCompleter(argcomplete.completers.FilesCompleter):
+
+    def __call__(self, prefix, **kwargs):
+        completion = argcomplete.completers.FilesCompleter.__call__(
+            self, prefix, **kwargs
+        )
+
+        completion += [os.path.join(config_dir, c)
+                       for c in config.in_dir(config_dir)]
+
+        return completion
+
+
+class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
+
+    def __call__(self, prefix, **kwargs):
+        completion = argcomplete.completers.FilesCompleter.__call__(
+            self, prefix, **kwargs
+        )
+
+        tmuxinator_configs = config.in_dir(
+            tmuxinator_config_dir, extensions='yml')
+        completion += [os.path.join(tmuxinator_config_dir, f)
+                       for f in tmuxinator_configs]
+
+        return completion
+
+
+class TeamocilCompleter(argcomplete.completers.FilesCompleter):
+
+    def __call__(self, prefix, **kwargs):
+        completion = argcomplete.completers.FilesCompleter.__call__(
+            self, prefix, **kwargs
+        )
+
+        teamocil_configs = config.in_dir(teamocil_config_dir, extensions='yml')
+        completion += [os.path.join(teamocil_config_dir, f)
+                       for f in teamocil_configs]
+
+        return completion
+
+
+def SessionCompleter(prefix, **kwargs):
+    t = Server()
+    return [s.get('session_name') for s in t._sessions if s.get('session_name').startswith(prefix)]
 
 
 def query_yes_no(question, default="yes"):
@@ -388,7 +436,7 @@ def cli_parser():
         dest='session_name',
         type=str,
         default=None,
-    )
+    ).completer = SessionCompleter
 
     attach_session = subparsers.add_parser('attach-session')
     attach_session.set_defaults(callback=subcommand_attach_session)
@@ -396,14 +444,15 @@ def cli_parser():
     attach_session.add_argument(
         dest='session_name',
         type=str,
-    )
+    ).completer = SessionCompleter
 
     load = subparsers.add_parser('load')
 
     loadgroup = load.add_mutually_exclusive_group(required=True)
     loadgroup.add_argument(
-        '-l', '--list', dest='list', action='store_true',
-        help='List config files available')
+        '--list', dest='list', action='store_true',
+        help='List config files available',
+    )
 
     loadgroup.add_argument(
         dest='config',
@@ -418,8 +467,10 @@ def cli_parser():
 
         will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
         will also check for any ./*.yaml and ./*.json.
-        ''' % (cwd_dir + '/', config_dir)
-    )
+        ''' % (cwd_dir + '/', config_dir),
+        #).completer = ConfigCompleter
+        #).completer = argcomplete.completers.FilesCompleter(allowednames=('.yaml', '.json'), directories=False)
+    ).completer = ConfigCompleter(allowednames=('.yaml', '.json'), directories=False)
     load.set_defaults(callback=subcommand_load)
 
     convert = subparsers.add_parser('convert')
@@ -436,7 +487,8 @@ def cli_parser():
         will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
         will also check for any ./*.yaml and ./*.json.
         ''' % (cwd_dir + '/', config_dir)
-    )
+    ).completer = ConfigCompleter(allowednames=('.yaml', '.json'), directories=False)
+
     convert.set_defaults(callback=subcommand_convert)
 
     importparser = subparsers.add_parser('import')
@@ -449,7 +501,7 @@ def cli_parser():
     import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(
         required=True)
     import_teamocilgroup.add_argument(
-        '-l', '--list', dest='list', action='store_true',
+        '--list', dest='list', action='store_true',
         help='List yaml configs in ~/.teamocil and current working directory.'
     )
 
@@ -460,7 +512,7 @@ def cli_parser():
         help='''\
         Checks current ~/.teamocil and current directory for yaml files.
         '''
-    )
+    ).completer = TeamocilCompleter(allowednames=('.yml'), directories=False)
     import_teamocil.set_defaults(callback=subcommand_import_teamocil)
 
     import_tmuxinator = importsubparser.add_parser('tmuxinator')
@@ -468,7 +520,7 @@ def cli_parser():
     import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
         required=True)
     import_tmuxinatorgroup.add_argument(
-        '-l', '--list', dest='list', action='store_true',
+        '--list', dest='list', action='store_true',
         help='List yaml configs in ~/.tmuxinator and current working directory.'
     )
 
@@ -479,7 +531,7 @@ def cli_parser():
         help='''\
         Checks current ~/.tmuxinator and current directory for yaml files.
         '''
-    )
+    ).completer = TmuxinatorCompleter(allowednames=('.yml'), directories=False)
 
     import_tmuxinator.set_defaults(callback=subcommand_import_tmuxinator)
 
@@ -505,6 +557,8 @@ def cli_parser():
 def main():
 
     parser = cli_parser()
+
+    argcomplete.autocomplete(parser, always_complete_options=False)
 
     args = parser.parse_args()
 
@@ -532,93 +586,3 @@ def main():
         subcommand_kill_session(args)
     else:
         parser.print_help()
-
-
-def complete(cline, cpoint):
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-L', dest='socket_name', default=None,
-                        metavar='socket-name')
-
-    parser.add_argument('-S', dest='socket_path', default=None,
-                        metavar='socket-path')
-
-    parser.add_argument(
-        dest='ctexta',
-        nargs='*',
-        type=str,
-        default=None,
-    )
-
-    args = parser.parse_args()
-    ctext = cline.replace('tmuxp ', '')
-
-    commands = []
-    commands.extend(['attach-session', 'kill-session', 'load', 'convert'])
-
-    commands = [c for c in commands if ctext in c]
-
-    if args.socket_path:
-        ctext = ctext.replace(args.socket_path or None, '')
-
-    if args.socket_name:
-        ctext = ctext.replace(args.socket_name or None, '')
-
-    t = Server(
-        socket_name=args.socket_name or None,
-        socket_path=args.socket_path or None
-    )
-
-    def session_complete(command, commands, ctext):
-        if ctext.startswith(command + ' '):
-            commands[:] = []
-            ctext_subargs = ctext.replace(command + ' ', '')
-
-            try:
-                sessions = [s.get('session_name') for s in t._sessions]
-                commands.extend([c for c in sessions if ctext_subargs in c])
-            except Exception:
-                pass
-
-    def config_complete(command, commands, ctext):
-        if ctext.startswith(command + ' '):
-            commands[:] = []
-            ctext_subargs = ctext.replace(command + ' ', '')
-            configs = []
-
-            # if ctext_subargs.startswith('.') or ctext_subargs.startswith('/'):
-                # configs += ['.hi']
-
-                # if ctext_subargs.endswith('/') and ctext_subargs != './':
-                    # configs += ['./' + c for c in config.in_dir(os.path.relpath(ctext_subargs))]
-                # else:
-                    # configs += os.listdir(os.path.relpath(ctext_subargs))
-
-            configs += ['./' + c for c in config.in_dir(cwd_dir)]
-            configs += ['./' + c for c in config.in_cwd()]
-            configs += [os.path.join(config_dir, c)
-                        for c in config.in_dir(config_dir)]
-            commands += [c for c in configs if c.startswith(ctext_subargs)]
-
-    def teamocil_config_complete(command, commands, ctext):
-        try:
-            configs_in_user = config.in_dir(
-                teamocil_config_dir, extensions='yml')
-        except OSError:
-            configs_in_user = []
-        configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
-
-    def tmuxinator_config_complete(command, commands, ctext):
-        try:
-            configs_in_user = config.in_dir(
-                tmuxinator_config_dir, extensions='yml')
-        except OSError:
-            configs_in_user = []
-        configs_in_cwd = config.in_dir(config_dir=cwd_dir, extensions='yml')
-
-    session_complete('attach-session', commands, ctext)
-    session_complete('kill-session', commands, ctext)
-    config_complete('load', commands, ctext)
-    config_complete('convert', commands, ctext)
-
-    print(' \n'.join(commands))
