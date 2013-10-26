@@ -138,7 +138,7 @@ def build_workspace(config_file, args):
 
 
 def subcommand_load(args):
-    if args.list_configs:
+    if args.list:
         startup(config_dir)
         configs_in_user = config.in_dir(config_dir)
         configs_in_cwd = config.in_cwd()
@@ -159,15 +159,15 @@ def subcommand_load(args):
 
         print(output)
 
-    elif args.configs:
-        if '.' in args.configs:
-            args.configs.remove('.')
+    elif args.config:
+        if '.' in args.config:
+            args.config.remove('.')
             if config.in_cwd():
-                args.configs.append(config.in_cwd()[0])
+                args.config.append(config.in_cwd()[0])
             else:
                 print('No tmuxp configs found in current directory.')
 
-        for configfile in args.configs:
+        for configfile in args.config:
             file_user = os.path.join(config_dir, configfile)
             file_cwd = os.path.join(cwd_dir, configfile)
             if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
@@ -187,16 +187,16 @@ def subcommand_import_tmuxinator(args):
 
 
 def subcommand_convert(args):
-    if args.configs:
-        if '.' in args.configs:
-            args.configs.remove('.')
+    if args.config:
+        if '.' in args.config:
+            args.config.remove('.')
             if config.in_cwd():
-                args.configs.append(config.in_cwd()[0])
+                args.config.append(config.in_cwd()[0])
             else:
                 print('No tmuxp configs found in current directory.')
 
         try:
-            configfile = args.configs[0]
+            configfile = args.config
         except Exception:
             print('Please enter a config')
 
@@ -242,17 +242,16 @@ def subcommand_convert(args):
 
 def subcommand_attach_session(args):
     commands = []
-    try:
-        ctext = args.session_name[0]
-    except IndexError as e:
-        return
+    ctext = args.session_name
 
-    t = Server()
+    t = Server(
+        socket_name=args.socket_name or None,
+        socket_path=args.socket_path or None
+    )
     try:
-        session = [s for s in t.sessions if s.get('session_name') == ctext][0]
-    except IndexError as e:
-        print('Session not found.')
-        return
+        session = next((s for s in t.sessions if s.get('session_name') == ctext), None)
+        if not session:
+            raise Exception('Session not found.')
     except Exception as e:
         print(e.message[0])
         return
@@ -268,20 +267,25 @@ def subcommand_attach_session(args):
 
 def subcommand_kill_session(args):
     commands = []
-    ctext = args.session_name[0]
+    ctext = args.session_name
 
-    t = Server()
+    t = Server(
+        socket_name=args.socket_name or None,
+        socket_path=args.socket_path or None
+    )
+
     try:
-        sessions = [s for s in t.sessions if s.get('session_name') == ctext]
+        session = next((s for s in t.sessions if s.get('session_name') == ctext), None)
+        if not session:
+            raise Exception('Session not found.')
     except Exception as e:
         print(e.message[0])
         return
 
-    if (len(sessions) == 1):
-        try:
-            sessions[0].kill_session()
-        except Exception as e:
-            logger.error(e)
+    try:
+        session.kill_session()
+    except Exception as e:
+        logger.error(e)
 
 
 def cli_parser():
@@ -301,7 +305,6 @@ def cli_parser():
 
     kill_session.add_argument(
         dest='session_name',
-        nargs=1,
         type=str,
         default=None,
     )
@@ -311,22 +314,20 @@ def cli_parser():
 
     attach_session.add_argument(
         dest='session_name',
-        nargs=1,
         type=str,
-        default=None,
     )
 
     load = subparsers.add_parser('load')
 
-    load.add_argument(
-        '-l', '--list', dest='list_configs', action='store_true',
+    loadgroup = load.add_mutually_exclusive_group(required=True)
+    loadgroup.add_argument(
+        '-l', '--list', dest='list', action='store_true',
         help='List config files available')
 
-    load.add_argument(
-        dest='configs',
-        nargs=1,
+    loadgroup.add_argument(
+        dest='config',
         type=str,
-        default=None,
+        nargs='?',
         help='''\
         List of config files to launch session from.
 
@@ -343,8 +344,7 @@ def cli_parser():
     convert = subparsers.add_parser('convert')
 
     convert.add_argument(
-        dest='configs',
-        nargs=1,
+        dest='config',
         type=str,
         default=None,
         help='''\
@@ -367,7 +367,6 @@ def cli_parser():
 
     import_teamocil.add_argument(
         dest='config',
-        nargs=1,
         type=str,
         default=None,
         help='''\
@@ -380,7 +379,6 @@ def cli_parser():
 
     import_tmuxinator.add_argument(
         dest='config',
-        nargs=1,
         type=str,
         default=None,
         help='''\
@@ -428,6 +426,10 @@ def main():
         subcommand_load(args)
     elif args.callback is subcommand_convert:
         subcommand_convert(args)
+    elif args.callback is subcommand_import_teamocil:
+        subcommand_import_teamocil(args)
+    elif args.callback is subcommand_import_tmuxinator:
+        subcommand_import_tmuxinator(args)
     elif args.callback is subcommand_attach_session:
         subcommand_attach_session(args)
     elif args.callback is subcommand_kill_session:
