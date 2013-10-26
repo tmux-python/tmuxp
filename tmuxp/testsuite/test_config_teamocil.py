@@ -622,7 +622,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
         }
 
     three_windows_within_a_session = {
-        'session_name': 'three-window-within-a-session',
+        'session_name': 'my awesome session',
         'windows': [
             {
                 'window_name': 'first window',
@@ -677,6 +677,13 @@ class TeamocilLayoutsTest(unittest.TestCase):
                 self.teamocil_dict['two-windows-with-custom-command-options'],
             ),
             self.two_windows_with_custom_command_options
+        )
+
+        self.assertDictEqual(
+            teamocil_to_tmuxp(
+                self.teamocil_dict['three-windows-within-a-session'],
+            ),
+            self.three_windows_within_a_session
         )
 
 
