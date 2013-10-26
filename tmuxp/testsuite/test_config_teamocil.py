@@ -14,67 +14,6 @@ import logging
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
-# todo,  change  'root' to a cd or start_directory
-# todo: width in pane -> main-pain-width
-# todo: with_env_var
-# todo: clear
-# todo: cmd_separator
-
-
-def teamocil_to_tmuxp(sconf):
-    '''
-
-    :param sconf: python dict for session configuration
-    :type sconf: dict
-    '''
-
-    tmuxp_config = {}
-
-    if 'session' in sconf:
-        sconf = sconf['session']
-
-    if 'name' in sconf:
-        tmuxp_config['session_name'] = sconf['name']
-    else:
-        tmuxp_config['session_name'] = None
-
-    tmuxp_config['windows'] = []
-
-    for w in sconf['windows']:
-
-        windowdict = {}
-
-        windowdict['window_name'] = w['name']
-        if 'clear' in w:
-            windowdict['clear'] = w['clear']
-
-        if 'filters' in w:
-            if 'before' in w['filters']:
-                for b in w['filters']['before']:
-                    windowdict['shell_command_before'] = w['filters']['before']
-            if 'after' in w['filters']:
-                for b in w['filters']['after']:
-                    windowdict['shell_command_after'] = w['filters']['after']
-
-        if 'splits' in w:
-            w['panes'] = w.pop('splits')
-
-        if 'panes' in w:
-            for p in w['panes']:
-                if 'cmd' in p:
-                    p['shell_command'] = p.pop('cmd')
-                if 'width' in p:
-                    # todo support for height/width
-                    p.pop('width')
-            windowdict['panes'] = w['panes']
-
-        if 'layout' in w:
-            windowdict['layout'] = w['layout']
-        tmuxp_config['windows'].append(windowdict)
-
-    return tmuxp_config
-
-
 class TeamocilTest(unittest.TestCase):
 
     teamocil_yaml = """\
@@ -134,12 +73,12 @@ class TeamocilTest(unittest.TestCase):
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(self.teamocil_dict),
+            config.import_teamocil(self.teamocil_dict),
             self.tmuxp_dict
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict
             )
         )
@@ -211,12 +150,12 @@ class Teamocil2Test(unittest.TestCase):
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(self.teamocil_dict),
+            config.import_teamocil(self.teamocil_dict),
             self.tmuxp_dict
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict
             )
         )
@@ -298,12 +237,12 @@ class Teamocil3Test(unittest.TestCase):
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(self.teamocil_dict),
+            config.import_teamocil(self.teamocil_dict),
             self.tmuxp_dict
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict
             )
         )
@@ -351,12 +290,12 @@ class Teamocil4Test(unittest.TestCase):
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(self.teamocil_dict),
+            config.import_teamocil(self.teamocil_dict),
             self.tmuxp_dict
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict
             )
         )
@@ -724,52 +663,52 @@ class TeamocilLayoutsTest(unittest.TestCase):
         self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['two-windows'],
             ),
             self.two_windows
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['two-windows']
             )
         )
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['two-windows-with-filters'],
             ),
             self.two_windows_with_filters
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['two-windows-with-filters']
             )
         )
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['two-windows-with-custom-command-options'],
             ),
             self.two_windows_with_custom_command_options
         )
 
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['two-windows-with-custom-command-options']
             )
         )
 
         self.assertDictEqual(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['three-windows-within-a-session'],
             ),
             self.three_windows_within_a_session
         )
         config.check_consistency(
-            teamocil_to_tmuxp(
+            config.import_teamocil(
                 self.teamocil_dict['three-windows-within-a-session']
             )
         )

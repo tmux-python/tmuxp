@@ -81,6 +81,10 @@ Command Line
 
 .. automethod:: tmuxp.cli.startup
 
+.. automethod:: tmuxp.cli.query_yes_no
+
+.. automethod:: tmuxp.cli.setupLogger
+
 Configuration
 -------------
 
@@ -103,6 +107,10 @@ Import and export
 .. automethod:: tmuxp.config.inline
 
 .. automethod:: tmuxp.config.trickle
+
+.. automethod:: tmuxp.config.import_teamocil
+
+.. automethod:: tmuxp.config.import_tmuxinator
 
 Workspace Builder
 -----------------

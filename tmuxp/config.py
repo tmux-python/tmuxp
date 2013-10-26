@@ -195,3 +195,152 @@ def trickle(config):
             paneconfig['shell_command'] = commands_before
 
     return config
+
+
+def import_tmuxinator(sconf):
+    '''
+    :param sconf: python dict for session configuration
+    :type sconf: dict
+
+    # https://github.com/aziz/tmuxinator
+    # TODO: handle 'root' with a cd shell_command_before
+    '''
+
+    tmuxp_config = {}
+
+    if 'project_name' in sconf:
+        tmuxp_config['session_name'] = sconf['project_name']
+    elif 'name' in sconf:
+        tmuxp_config['session_name'] = sconf['name']
+    else:
+        tmuxp_config['session_name'] = None
+
+    if 'cli_args' in sconf:
+        tmuxp_config['config'] = sconf['cli_args']
+
+        if '-f' in tmuxp_config['config']:
+            tmuxp_config['config'] = tmuxp_config[
+                'config'].replace('-f', '').strip()
+    elif 'tmux_options' in sconf:
+        tmuxp_config['config'] = sconf['tmux_options']
+
+        if '-f' in tmuxp_config['config']:
+            tmuxp_config['config'] = tmuxp_config[
+                'config'].replace('-f', '').strip()
+
+    if 'socket_name' in sconf:
+        tmuxp_config['socket_name'] = sconf['socket_name']
+
+    tmuxp_config['windows'] = []
+
+    if 'tabs' in sconf:
+        sconf['windows'] = sconf.pop('tabs')
+
+    if 'pre' in sconf and 'pre_window' in sconf:
+        tmuxp_config['shell_command'] = sconf['pre']
+
+        if isinstance(sconf['pre'], basestring):
+            tmuxp_config['shell_command_before'] = [sconf['pre_window']]
+        else:
+            tmuxp_config['shell_command_before'] = sconf['pre_window']
+    elif 'pre' in sconf:
+        if isinstance(sconf['pre'], basestring):
+            tmuxp_config['shell_command_before'] = [sconf['pre']]
+        else:
+            tmuxp_config['shell_command_before'] = sconf['pre']
+
+    if 'rbenv' in sconf:
+        if 'shell_command_before' not in tmuxp_config:
+            tmuxp_config['shell_command_before'] = []
+        tmuxp_config['shell_command_before'].append(
+            'rbenv shell %s' % sconf['rbenv']
+        )
+
+    for w in sconf['windows']:
+        for k, v in w.items():
+
+            windowdict = {}
+
+            windowdict['window_name'] = k
+
+            if isinstance(v, basestring) or v is None:
+                windowdict['panes'] = [v]
+                tmuxp_config['windows'].append(windowdict)
+                continue
+            elif isinstance(v, list):
+                windowdict['panes'] = v
+                tmuxp_config['windows'].append(windowdict)
+                continue
+
+            if 'pre' in v:
+                windowdict['shell_command_before'] = v['pre']
+            if 'panes' in v:
+                windowdict['panes'] = v['panes']
+
+            if 'layout' in v:
+                windowdict['layout'] = v['layout']
+            tmuxp_config['windows'].append(windowdict)
+
+    return tmuxp_config
+
+
+def import_teamocil(sconf):
+    '''
+    :param sconf: python dict for session configuration
+    :type sconf: dict
+
+    # https://github.com/remiprev/teamocil
+
+    # todo,  change  'root' to a cd or start_directory
+    # todo: width in pane -> main-pain-width
+    # todo: with_env_var
+    # todo: clear
+    # todo: cmd_separator
+    '''
+
+    tmuxp_config = {}
+
+    if 'session' in sconf:
+        sconf = sconf['session']
+
+    if 'name' in sconf:
+        tmuxp_config['session_name'] = sconf['name']
+    else:
+        tmuxp_config['session_name'] = None
+
+    tmuxp_config['windows'] = []
+
+    for w in sconf['windows']:
+
+        windowdict = {}
+
+        windowdict['window_name'] = w['name']
+        if 'clear' in w:
+            windowdict['clear'] = w['clear']
+
+        if 'filters' in w:
+            if 'before' in w['filters']:
+                for b in w['filters']['before']:
+                    windowdict['shell_command_before'] = w['filters']['before']
+            if 'after' in w['filters']:
+                for b in w['filters']['after']:
+                    windowdict['shell_command_after'] = w['filters']['after']
+
+        if 'splits' in w:
+            w['panes'] = w.pop('splits')
+
+        if 'panes' in w:
+            for p in w['panes']:
+                if 'cmd' in p:
+                    p['shell_command'] = p.pop('cmd')
+                if 'width' in p:
+                    # todo support for height/width
+                    p.pop('width')
+            windowdict['panes'] = w['panes']
+
+        if 'layout' in w:
+            windowdict['layout'] = w['layout']
+        tmuxp_config['windows'].append(windowdict)
+
+    return tmuxp_config
+
