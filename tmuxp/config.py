@@ -198,12 +198,14 @@ def trickle(config):
 
 
 def import_tmuxinator(sconf):
-    '''
+    '''Import yaml configs from `tmuxinator`_.
+
+    .. _tmuxinator: https://github.com/aziz/tmuxinator
+
+    :todo: handle 'root' with a cd shell_command_before
+
     :param sconf: python dict for session configuration
     :type sconf: dict
-
-    # https://github.com/aziz/tmuxinator
-    # TODO: handle 'root' with a cd shell_command_before
     '''
 
     tmuxp_config = {}
@@ -285,17 +287,18 @@ def import_tmuxinator(sconf):
 
 
 def import_teamocil(sconf):
-    '''
+    '''Import yaml configs from `teamocil`_.
+
+    .. _teamocil: https://github.com/remiprev/teamocil
+
+    :todo: change  'root' to a cd or start_directory
+    :todo: width in pane -> main-pain-width
+    :todo: with_env_var
+    :todo: clear
+    :todo: cmd_separator
+
     :param sconf: python dict for session configuration
     :type sconf: dict
-
-    # https://github.com/remiprev/teamocil
-
-    # todo,  change  'root' to a cd or start_directory
-    # todo: width in pane -> main-pain-width
-    # todo: with_env_var
-    # todo: clear
-    # todo: cmd_separator
     '''
 
     tmuxp_config = {}

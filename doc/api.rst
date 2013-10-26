@@ -126,3 +126,5 @@ Exceptions
 .. autoexception:: tmuxp.exc.EmptyConfigException
 
 .. autoexception:: tmuxp.exc.ConfigError
+
+
