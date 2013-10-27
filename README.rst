@@ -32,14 +32,19 @@ Install ``tmuxp``:
 
 See: `Quickstart`_
 
-tmux bash completion
-""""""""""""""""""""
+CLI Commands
+""""""""""""
 
 tmuxp uses ``switch-client`` for you if already in a TMUX client.
 
 .. code-block:: bash
 
     $ tmuxp attach-session<tab> # current sessions
+
+Kill session
+
+.. code-block:: bash
+
     $ tmuxp kill-session<tab> # current sessions
 
 Load a session configuration from a YAML or JSON file.
@@ -54,7 +59,15 @@ Convert a session config JSON <=> YAML:
 
     $ tmuxp convert<tab> # configs in config dir, current directory
 
-See: `installing bash completion`_
+Experimental: Import configuration from `teamocil`_ or `tmuxinator`_:
+
+.. code-block:: bash
+
+    $ tmuxp import teamocil<tab> # configs in ~/.teamocil dir
+    $ tmuxp import tmuxinator<tab> # configs in ~/.tmuxinator dir
+
+See `installing bash completion`_ to get bash, zsh and tcsh completion
+working on your machine.
 
 load tmux sessions from yaml and json
 """""""""""""""""""""""""""""""""""""
@@ -65,11 +78,19 @@ Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
 
     $ tmuxp load .
 
-Load ``myconfig.yaml``.
+Load ``myconfig.yaml`` from ``~/.tmuxp``
 
 .. code-block:: bash
 
     $ tmuxp load myconfig.yaml
+
+Load a relative or full config file (bash complete supports this too)
+
+.. code-block:: bash
+
+    $ tmuxp load ./myconfig.yaml
+    $ tmuxp load ../myconfig.yaml
+    $ tmuxp load /var/www/mywebproject/myconfig.yaml
 
 ``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
 

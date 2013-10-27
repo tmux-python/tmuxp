@@ -3,6 +3,14 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-27
+----------
+
+- [cli] `argcomplete`_ overhaul for CLI bash completion.
+- [cli] ``tmuxp load``, ``tmuxp convert`` and ``tmuxp import`` now support
+  relative and full filenames in addition to searching the config
+  directory.
+
 2013-10-26
 ----------
 
@@ -244,3 +252,4 @@ initial
 
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
+.. _argcomplete: https://github.com/kislyuk/argcomplete

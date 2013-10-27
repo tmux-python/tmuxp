@@ -468,8 +468,6 @@ def cli_parser():
         will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
         will also check for any ./*.yaml and ./*.json.
         ''' % (cwd_dir + '/', config_dir),
-        #).completer = ConfigCompleter
-        #).completer = argcomplete.completers.FilesCompleter(allowednames=('.yaml', '.json'), directories=False)
     ).completer = ConfigCompleter(allowednames=('.yaml', '.json'), directories=False)
     load.set_defaults(callback=subcommand_load)
 
