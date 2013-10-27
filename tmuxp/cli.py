@@ -212,11 +212,12 @@ def subcommand_load(args):
     elif args.config:
         if '.' == args.config:
             if config.in_cwd():
-                args.config.append(config.in_cwd()[0])
+                configfile = config.in_cwd()[0]
+                print configfile
             else:
                 print('No tmuxp configs found in current directory.')
-
-        configfile = args.config
+        else:
+            configfile = args.config
         file_user = os.path.join(config_dir, configfile)
         file_cwd = os.path.join(cwd_dir, configfile)
         if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
