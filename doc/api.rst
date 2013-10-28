@@ -74,6 +74,10 @@ Internals
 
 .. autoclass:: tmuxp.util.tmux
 
+.. automethod:: tmuxp.util.version
+
+.. automethod:: tmuxp.util.oh_my_zsh_autotitle
+
 .. automethod:: tmuxp.util.which
 
 Command Line
