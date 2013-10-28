@@ -6,7 +6,9 @@ Here you can find the recent changes to tmuxp.
 2013-10-28
 ----------
 
-- [cli] fix ``tmuxp load .``
+- [cli] fix ``tmuxp load .`` fixed
+- [cli] fix ``tmuxp convert <file>`` fixed.
+- [internal] `pep257` fixes.
 
 2013-10-27
 ----------
@@ -258,3 +260,4 @@ initial
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _argcomplete: https://github.com/kislyuk/argcomplete
+.. _pep257: http://www.python.org/dev/peps/pep-0257/

@@ -265,7 +265,6 @@ def subcommand_load(args):
         if '.' == args.config:
             if config.in_cwd():
                 configfile = config.in_cwd()[0]
-                print configfile
             else:
                 print('No tmuxp configs found in current directory.')
         else:
@@ -398,7 +397,7 @@ def subcommand_convert(args):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
-                print ('written new config to %s' % (newfile))
+                print('written new config to %s' % (newfile))
     elif 'yaml' in ext:
         if prompt_bool('convert to <%s> to json?' % (fullfile)):
             configparser = kaptan.Kaptan()
@@ -410,7 +409,7 @@ def subcommand_convert(args):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
-                print ('written new config to <%s>.' % (newfile))
+                print('written new config to <%s>.' % (newfile))
 
 
 def subcommand_attach_session(args):
