@@ -11,6 +11,8 @@ Here you can find the recent changes to tmuxp.
 - [internal] `pep257`_ fixes.
 - [internal] [tests] - :class:`Pane` now has :meth:`Pane.set_width` and
   :meth:`Pane.set_height`.
+- [tests] ``./run_tests.py --tests`` now automatically prepends
+  ``tmuxp.testsuite`` to names.
 
 2013-10-27
 ----------

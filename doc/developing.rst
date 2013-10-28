@@ -74,7 +74,22 @@ If you found a problem or are trying to write a test, you can file an
 Choose tests to run
 """""""""""""""""""
 
-Testing specific testsuites, testcase and tests
+.. note::
+
+    As of v0.0.20, ``--tests`` automatically assume the namespace of
+    ``tmuxp.testsuite``.
+
+    .. code-block:: bash
+
+        $ ./run_tests.py --tests test_config.ImportExportTest
+
+    Is now equivalent to:
+
+    .. code-block:: bash
+
+        $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
+
+Testing specific TestSuites, TestCase and tests
 
 .. code-block:: bash
 
@@ -87,26 +102,26 @@ By :py:class:`unittest.TestSuite` / module:
 
 .. code-block:: bash
 
-    $ ./run_tests.py tmuxp.testsuite.test_config
+    $ ./run_tests.py test_config
 
 by :py:class:`unittest.TestCase`:
 
 .. code-block:: bash
 
-    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
+    $ ./run_tests.py --tests test_config.ImportExportTest
 
 individual tests:
 
 .. code-block:: bash
 
-    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json
+    $ ./run_tests.py --tests test_config.ImportExportTest.test_export_json
 
 Multiple can be separated by spaces:
 
 .. code-block:: bash
 
-    $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest.test_export_json \
-        testsuite.test_config.ImportExportTest.test_window
+    $ ./run_tests.py --tests ImportExportTest.test_export_json \
+        ImportExportTest.test_window
 
 .. _test_builder_visually:
 
@@ -237,9 +252,9 @@ In this, I will also begin documenting the API.
 the use of:
 
 Session
-Session.new_window() - returns a new Window object bound to the session,
+:meth:`Session.new_window()` - returns a new Window object bound to the session,
 also uses ``tmux new-window``.
-Session.new_session() - class method - returns a new Session object.
+:meth:`Session.new_session()` - class method - returns a new Session object.
 
 Differences from tmux
 ---------------------

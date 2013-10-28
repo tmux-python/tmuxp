@@ -131,16 +131,24 @@ if __name__ == '__main__':
         Test individual, TestCase or TestSuites, or multiple. Example for test_config TestSuite:
 
         by TestSuite (module):
-            $ ./run_tests.py tmuxp.testsuite.test_config
+            $ ./run_tests.py test_config
 
         by TestCase:
-            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest
+            $ ./run_tests.py test_config.ImportExportTest
         individual tests:
-            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest.test_export_json
+            $ ./run_tests.py test_config.ImportExportTest.test_export_json
 
         Multiple can be separated by spaces:
-            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest.test_export_json \\
-                testsuite.test_config.ImportExportTest.test_window
+            $ ./run_tests.py test_config.ImportExportTest.test_export_json \\
+                test_config.ImportExportTest.test_window
+
+        ./run_tests will automatically assume the package namespace ``tmuxp.testsuite``.
+
+            $ ./run_tests.py test_config.ImportExportTest
+
+        is the same as:
+
+            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest
         '''
     )
     parser.add_argument('-l', '--log-level', dest='log_level', default='INFO',
@@ -171,6 +179,10 @@ if __name__ == '__main__':
         else:
             sys.exit(1)
     if args.tests and len(args.tests) > int(0):
+        for arg in args.tests:
+            if not arg.startswith('tmuxp.testsuite'):
+                loc = args.tests.index(arg)
+                args.tests[loc] = 'tmuxp.testsuite.%s' % arg
         suites = unittest.TestLoader().loadTestsFromNames(args.tests)
         result = unittest.TextTestRunner(verbosity=verbosity, failfast=args.failfast).run(suites)
     else:
