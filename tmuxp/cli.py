@@ -69,8 +69,18 @@ def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
     yes_choices = yes_choices or ('y', 'yes', '1', 'on', 'true', 't')
     no_choices = no_choices or ('n', 'no', '0', 'off', 'false', 'f')
 
+    if default is None:
+        prompt_choice = 'y/n'
+    elif default is True:
+        prompt_choice = 'Y/n'
+    else:
+        prompt_choice = 'y/N'
+
+    prompt = name + ' [%s]' % prompt_choice
+    prompt += name.endswith('?') and ' ' or ': '
+
     while True:
-        rv = prompt(name, default and yes_choices[0] or no_choices[0])
+        rv = input(prompt)
         if not rv:
             return default
         if rv.lower() in yes_choices:
@@ -80,11 +90,7 @@ def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
 
 
 def prompt_yes_no(name, default=True):
-    return prompt_bool(name,
-                       default=default,
-                       yes_choices=['Y', 'y'],
-                       no_choices=['n']
-                       )
+    return prompt_bool(name, default=default)
 
 def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
                    no_choice=('none',)):
@@ -236,7 +242,7 @@ def load_workspace(config_file, args):
         builder.build()
 
         if 'TMUX' in os.environ:
-            if prompt_yes_no('Already inside TMUX, load session?', default='Y'):
+            if prompt_yes_no('Already inside TMUX, load session?'):
                 del os.environ['TMUX']
                 os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig[
                          'session_name'])
@@ -244,7 +250,7 @@ def load_workspace(config_file, args):
         os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
                  'session_name'])
     except exc.TmuxSessionExists as e:
-        attach_session = prompt_yes_no(e.message + ' Attach?', default='Y')
+        attach_session = prompt_yes_no(e.message + ' Attach?')
 
         if 'TMUX' in os.environ:
             del os.environ['TMUX']
@@ -408,26 +414,26 @@ def command_convert(args):
         return
 
     if 'json' in ext:
-        if prompt_yes_no('convert to <%s> to yaml?' % (fullfile), default='Y'):
+        if prompt_yes_no('convert to <%s> to yaml?' % (fullfile)):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
             newfile = fullfile.replace(ext, '.yaml')
             newconfig = configparser.export(
                 'yaml', indent=2, default_flow_style=False
             )
-            if prompt_yes_no('write config to %s?' % (newfile), default='Y'):
+            if prompt_yes_no('write config to %s?' % (newfile)):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
                 print('written new config to %s' % (newfile))
     elif 'yaml' in ext:
-        if prompt_yes_no('convert to <%s> to json?' % (fullfile), default='Y'):
+        if prompt_yes_no('convert to <%s> to json?' % (fullfile)):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
             newfile = fullfile.replace(ext, '.json')
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
-            if prompt_yes_no('write config to <%s>?' % (newfile), default='Y'):
+            if prompt_yes_no('write config to <%s>?' % (newfile)):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
