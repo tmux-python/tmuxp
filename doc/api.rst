@@ -76,7 +76,7 @@ Internals
 
 .. automethod:: tmuxp.util.version
 
-.. automethod:: tmuxp.util.oh_my_zsh_autotitle
+.. automethod:: tmuxp.util.oh_my_zsh_auto_title
 
 .. automethod:: tmuxp.util.which
 
