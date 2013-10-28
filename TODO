@@ -4,6 +4,11 @@ Roadmap
 Immediate
 """""""""
 
+- auto-rename
+- prompt  filepath/filename choice before save
+- confirm and loop
+- fix import of blank panes teamocil tmuxinator
+
 - make prompt_bool Y/n by default
 - shorts for load
 
