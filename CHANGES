@@ -13,6 +13,8 @@ Here you can find the recent changes to tmuxp.
   :meth:`Pane.set_height`.
 - [tests] ``./run_tests.py --tests`` now automatically prepends
   ``tmuxp.testsuite`` to names.
+- [internal] :meth:`Window.tmux` and :meth:`Pane.tmux` will automatically add
+  their ``{window/pane}_id`` if one isn't specific.
 
 2013-10-27
 ----------

@@ -70,10 +70,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return list(filter(by, self.server._windows))[0]
 
-    def tmux(self, *args, **kwargs):
-        # if '-t' not in kwargs:
-        #    kwargs['-t'] = self.get['session_id']
-        return self.server.tmux(*args, **kwargs)
+    def tmux(self, cmd, *args, **kwargs):
+        if not len([arg for arg in args if '-t' in str(arg)]):
+            args = ('-t', self.get('window_id')) + args
+
+        return self.server.tmux(cmd, *args, **kwargs)
 
     def select_layout(self, layout=None):
         '''
@@ -105,7 +106,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         '''
         self.tmux(
             'select-layout',
-            '-t%s' % self.target,      # target (name of session)
             layout
         )
 
@@ -132,7 +132,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         process = self.tmux(
             'set-window-option',
-            '-t%s' % self['window_id'],
             option, value
         )
 
@@ -216,7 +215,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         try:
             self.tmux(
                 'rename-window',
-                '-t%s' % self.target,
                 new_name
             )
             self['window_name'] = new_name
