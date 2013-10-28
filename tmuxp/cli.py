@@ -183,7 +183,7 @@ def SessionCompleter(prefix, **kwargs):
             if s.get('session_name').startswith(prefix)]
 
 
-def setupLogger(logger=None, level='INFO'):
+def setup_logger(logger=None, level='INFO'):
     """Setup logging for CLI use.
 
     :param logger: instance of logger
@@ -636,7 +636,7 @@ def main():
 
     args = parser.parse_args()
 
-    setupLogger(level=args.log_level.upper())
+    setup_logger(level=args.log_level.upper())
 
     try:
         util.version()

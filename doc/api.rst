@@ -89,7 +89,8 @@ Command Line
 .. automethod:: tmuxp.cli.prompt_bool
 .. automethod:: tmuxp.cli.prompt_choices
 
-.. automethod:: tmuxp.cli.get_logger
+.. automethod:: tmuxp.cli.setup_logger
+.. automethod:: tmuxp.cli.get_parser
 
 Configuration
 -------------
