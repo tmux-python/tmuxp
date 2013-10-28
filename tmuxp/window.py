@@ -71,6 +71,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return list(filter(by, self.server._windows))[0]
 
     def tmux(self, cmd, *args, **kwargs):
+        """Send command to tmux with :attr:`window_id` as ``target-window``.
+
+        Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
+        ``args`` will override using the object's ``window_id`` as target.
+
+        """
         if not len([arg for arg in args if '-t' in str(arg)]):
             args = ('-t', self.get('window_id')) + args
 
