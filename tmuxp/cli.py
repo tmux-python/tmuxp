@@ -115,7 +115,9 @@ def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
             return rv
 
 
-class ConfigCompleter(argcomplete.completers.FilesCompleter):
+class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
+
+    """ argcomplete completer for tmuxp files. """
 
     def __call__(self, prefix, **kwargs):
         completion = argcomplete.completers.FilesCompleter.__call__(
@@ -129,6 +131,8 @@ class ConfigCompleter(argcomplete.completers.FilesCompleter):
 
 
 class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
+
+    """ argcomplete completer for Tmuxinator files. """
 
     def __call__(self, prefix, **kwargs):
         completion = argcomplete.completers.FilesCompleter.__call__(
@@ -145,6 +149,8 @@ class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
 
 class TeamocilCompleter(argcomplete.completers.FilesCompleter):
 
+    """ argcomplete completer for Teamocil files. """
+
     def __call__(self, prefix, **kwargs):
         completion = argcomplete.completers.FilesCompleter.__call__(
             self, prefix, **kwargs
@@ -158,16 +164,19 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
 
 
 def SessionCompleter(prefix, **kwargs):
+    """ Return list of session names for argcomplete completer. """
     t = Server()
-    return [s.get('session_name') for s in t._sessions if s.get('session_name').startswith(prefix)]
+    return [s.get('session_name') for s in t._sessions
+            if s.get('session_name').startswith(prefix)]
 
 
 def setupLogger(logger=None, level='INFO'):
-    '''setup logging for CLI use.
+    """Setup logging for CLI use.
 
     :param logger: instance of logger
     :type logger: :py:class:`Logger`
-    '''
+
+    """
     if not logger:
         logger = logging.getLogger()
     if not logger.handlers:
@@ -178,22 +187,24 @@ def setupLogger(logger=None, level='INFO'):
 
 
 def startup(config_dir):
-    ''' Initialize CLI.
+    """Initialize CLI.
 
     :param config_dir: Config directory to search
     :type config_dir: string
-    '''
+
+    """
 
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
 
 
-def build_workspace(config_file, args):
-    ''' build config workspace.
+def load_workspace(config_file, args):
+    """ Build config workspace.
 
     :param config_file: full path to config file
     :param type: string
-    '''
+
+    """
     logger.info('building %s.' % config_file)
 
     sconfig = kaptan.Kaptan()
@@ -239,7 +250,8 @@ def build_workspace(config_file, args):
         return
 
 
-def subcommand_load(args):
+def command_load(args):
+    """ Load a session from a tmuxp session file. """
     if args.list:
         startup(config_dir)
         configs_in_user = config.in_dir(config_dir)
@@ -272,14 +284,16 @@ def subcommand_load(args):
         file_user = os.path.join(config_dir, configfile)
         file_cwd = os.path.join(cwd_dir, configfile)
         if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-            build_workspace(file_cwd, args)
+            load_workspace(file_cwd, args)
         elif os.path.exists(file_user) and os.path.isfile(file_user):
-            build_workspace(file_user, args)
+            load_workspace(file_user, args)
         else:
             logger.error('%s not found.' % configfile)
 
 
-def subcommand_import_teamocil(args):
+def command_import_teamocil(args):
+    """ Import teamocil config to tmuxp format. """
+
     if args.list:
             try:
                 configs_in_user = config.in_dir(
@@ -306,8 +320,7 @@ def subcommand_import_teamocil(args):
                 )
 
             print(output)
-
-    if args.config:
+    elif args.config:
         configfile = os.path.relpath(args.config)
         configparser = kaptan.Kaptan(handler='yaml')
         configparser.import_config(configfile)
@@ -322,7 +335,8 @@ def subcommand_import_teamocil(args):
         print(newconfig)
 
 
-def subcommand_import_tmuxinator(args):
+def command_import_tmuxinator(args):
+    """ Import tmuxinator config to tmuxp format. """
     if args.list:
             try:
                 configs_in_user = config.in_dir(
@@ -365,7 +379,8 @@ def subcommand_import_tmuxinator(args):
         print(newconfig)
 
 
-def subcommand_convert(args):
+def command_convert(args):
+    """ Convert tmuxp config to and from JSON and YAML. """
 
     try:
         configfile = args.config
@@ -412,7 +427,8 @@ def subcommand_convert(args):
                 print('written new config to <%s>.' % (newfile))
 
 
-def subcommand_attach_session(args):
+def command_attach_session(args):
+    """ Command to attach / switch client to a tmux session."""
     commands = []
     ctext = args.session_name
 
@@ -438,7 +454,8 @@ def subcommand_attach_session(args):
         print('Attaching client.')
 
 
-def subcommand_kill_session(args):
+def command_kill_session(args):
+    """ Command to kill a tmux session."""
     commands = []
     ctext = args.session_name
 
@@ -462,7 +479,8 @@ def subcommand_kill_session(args):
         logger.error(e)
 
 
-def cli_parser():
+def get_parser():
+    """ Return :py:class:`argparse.ArgumentParser` instance for CLI. """
 
     parser = argparse.ArgumentParser(
         description='''\
@@ -470,12 +488,12 @@ def cli_parser():
         ''',
     )
 
-    subparsers = parser.add_subparsers(title='subcommands',
-                                       description='valid subcommands',
+    subparsers = parser.add_subparsers(title='commands',
+                                       description='valid commands',
                                        help='additional help')
 
     kill_session = subparsers.add_parser('kill-session')
-    kill_session.set_defaults(callback=subcommand_kill_session)
+    kill_session.set_defaults(callback=command_kill_session)
 
     kill_session.add_argument(
         dest='session_name',
@@ -484,7 +502,7 @@ def cli_parser():
     ).completer = SessionCompleter
 
     attach_session = subparsers.add_parser('attach-session')
-    attach_session.set_defaults(callback=subcommand_attach_session)
+    attach_session.set_defaults(callback=command_attach_session)
 
     attach_session.add_argument(
         dest='session_name',
@@ -513,8 +531,8 @@ def cli_parser():
         will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
         will also check for any ./*.yaml and ./*.json.
         ''' % (cwd_dir + '/', config_dir),
-    ).completer = ConfigCompleter(allowednames=('.yaml', '.json'), directories=False)
-    load.set_defaults(callback=subcommand_load)
+    ).completer = ConfigFileCompleter(allowednames=('.yaml', '.json'), directories=False)
+    load.set_defaults(callback=command_load)
 
     convert = subparsers.add_parser('convert')
 
@@ -530,13 +548,13 @@ def cli_parser():
         will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
         will also check for any ./*.yaml and ./*.json.
         ''' % (cwd_dir + '/', config_dir)
-    ).completer = ConfigCompleter(allowednames=('.yaml', '.json'), directories=False)
+    ).completer = ConfigFileCompleter(allowednames=('.yaml', '.json'), directories=False)
 
-    convert.set_defaults(callback=subcommand_convert)
+    convert.set_defaults(callback=command_convert)
 
     importparser = subparsers.add_parser('import')
-    importsubparser = importparser.add_subparsers(title='subcommands',
-                                                  description='valid subcommands',
+    importsubparser = importparser.add_subparsers(title='commands',
+                                                  description='valid commands',
                                                   help='additional help')
 
     import_teamocil = importsubparser.add_parser('teamocil')
@@ -556,7 +574,7 @@ def cli_parser():
         Checks current ~/.teamocil and current directory for yaml files.
         '''
     ).completer = TeamocilCompleter(allowednames=('.yml'), directories=False)
-    import_teamocil.set_defaults(callback=subcommand_import_teamocil)
+    import_teamocil.set_defaults(callback=command_import_teamocil)
 
     import_tmuxinator = importsubparser.add_parser('tmuxinator')
 
@@ -576,7 +594,7 @@ def cli_parser():
         '''
     ).completer = TmuxinatorCompleter(allowednames=('.yml'), directories=False)
 
-    import_tmuxinator.set_defaults(callback=subcommand_import_tmuxinator)
+    import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
 
     parser.add_argument('--log-level', dest='log_level', default='INFO',
                         metavar='log-level',
@@ -599,7 +617,7 @@ def cli_parser():
 
 def main():
 
-    parser = cli_parser()
+    parser = get_parser()
 
     argcomplete.autocomplete(parser, always_complete_options=False)
 
@@ -615,17 +633,17 @@ def main():
 
     util.oh_my_zsh_auto_title()
 
-    if args.callback is subcommand_load:
-        subcommand_load(args)
-    elif args.callback is subcommand_convert:
-        subcommand_convert(args)
-    elif args.callback is subcommand_import_teamocil:
-        subcommand_import_teamocil(args)
-    elif args.callback is subcommand_import_tmuxinator:
-        subcommand_import_tmuxinator(args)
-    elif args.callback is subcommand_attach_session:
-        subcommand_attach_session(args)
-    elif args.callback is subcommand_kill_session:
-        subcommand_kill_session(args)
+    if args.callback is command_load:
+        command_load(args)
+    elif args.callback is command_convert:
+        command_convert(args)
+    elif args.callback is command_import_teamocil:
+        command_import_teamocil(args)
+    elif args.callback is command_import_tmuxinator:
+        command_import_tmuxinator(args)
+    elif args.callback is command_attach_session:
+        command_attach_session(args)
+    elif args.callback is command_kill_session:
+        command_kill_session(args)
     else:
         parser.print_help()
