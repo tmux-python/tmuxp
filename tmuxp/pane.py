@@ -35,7 +35,6 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         self._pane_id = kwargs['pane_id']
 
         self.server._update_panes()
-        # self.update(**kwargs)
 
     @property
     def _TMUX(self, *args):
@@ -57,6 +56,12 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         return list(filter(by, self.server._panes))[0]
 
     def tmux(self, cmd, *args, **kwargs):
+        """Send command to tmux with :attr:`pane_id` as ``target-pane``.
+
+        Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
+        ``args`` will override using the object's ``pane_id`` as target.
+
+        """
         if not len([arg for arg in args if '-t' in arg]):
             args = ('-t', self.get('pane_id')) + args
 
@@ -72,6 +77,15 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         if enter:
             self.enter()
+
+    def clear(self):
+        """Clear pane."""
+        self.send_keys('reset')
+
+    def reset(self):
+        """Reset and clear pane history. """
+
+        self.tmux('send-keys', '-R \; clear-history')
 
     def set_width(self, width):
         """Set width of pane.
