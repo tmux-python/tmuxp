@@ -267,12 +267,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
             Todo: assure ``-l``, ``-n``, ``-p`` work.
         '''
-        # if isinstance(target_window, int):
-            # target = '-t%s:%s' % (self.get('session_name'), target_window)
-        # elif isinstance(target_window, basestring):
-            # target = '-t%s:%s' % (self.get('session_name'), target_window)
-        # else:
-            # target = '-t%s' % target_window
 
         target = '-t%s' % target_window
 
@@ -288,30 +282,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             Returns active :class:`Pane` object
         '''
         return self.attached_window().attached_pane()
-
-    def is_clean(self):
-        ''' check if current session is pure, untouched:
-
-            - 1 window
-            - 1 pane, no history.
-
-            returns True or False.
-        '''
-        if (len(self._windows) > 1):
-            logger.debug('%s not clean, multiple windows', self)
-            return False
-
-        if (len(self.attached_window()._panes) > 1):
-            logger.debug('%s not clean, multiple panes (%s)' % (
-                self, len(self.attached_window()._panes)))
-            return False
-
-        if (int(self.attached_window().attached_pane().get('history_size')) > 0):
-            logger.debug('%s history_size (%s), greater than 0' % (
-                self, self.attached_window().attached_pane().get('history_size')))
-            return False
-
-        return True
 
     def set_option(self, option, value):
         '''
