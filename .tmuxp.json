@@ -4,6 +4,7 @@
       "panes": [
         {
           "shell_command": [
+            "reset", 
             "vim", 
             ":Ex"
           ], 
@@ -37,7 +38,9 @@
       "panes": [
         {
           "shell_command": [
-            "vim"
+            "reset", 
+            "vim", 
+            ":Ex"
           ], 
           "focus": true
         }, 

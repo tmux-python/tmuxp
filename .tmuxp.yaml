@@ -10,6 +10,7 @@ windows:
     - '[ ! -d .env/build ] || rm -rf .env/build'
   panes:
   - shell_command: 
+    - reset
     - vim
     - :Ex
     focus: true
@@ -31,7 +32,9 @@ windows:
     - cd ./doc
   panes:
   - shell_command:
+    - reset
     - vim
+    - :Ex
     focus: true
   - pwd
   - echo 'docs built to <http://0.0.0.0:8000/_build/html>'; python -m SimpleHTTPServer
