@@ -8,7 +8,7 @@ Here you can find the recent changes to tmuxp.
 
 - [cli] fix ``tmuxp load .`` fixed
 - [cli] fix ``tmuxp convert <file>`` fixed.
-- [internal] `pep257` fixes.
+- [internal] `pep257`_ fixes.
 - [internal] [tests] - :class:`Pane` now has :meth:`Pane.set_width` and
   :meth:`Pane.set_height`.
 
