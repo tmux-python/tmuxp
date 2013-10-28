@@ -17,19 +17,11 @@ logger = logging.getLogger(__name__)
 
 class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
-    '''
-        ``tmux(1)`` pane.
+    """:term:`tmux(1)` :ref:`pane`.
 
-        pane holds a psuedoterm and linked to tmux windows.
+    :param window: :class:`Window`
 
-        Retrieve a tmux pane from server. Returns :class:`Pane`.
-
-        Iterates ``$ tmux list-panes``, ``-F`` for return formatting.
-
-        :param session: :class:`Session` object.
-        :param window: :class:`Window` object.
-
-    '''
+    """
 
     def __init__(self, window=None, **kwargs):
         if not window:
@@ -64,13 +56,11 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return list(filter(by, self.server._panes))[0]
 
-    # def __getitem__(self, key):
-    #    return
+    def tmux(self, cmd, *args, **kwargs):
+        if not len([arg for arg in args if '-t' in arg]):
+            args = ('-t', self.get('pane_id')) + args
 
-    def tmux(self, *args, **kwargs):
-        # if '-t' not in kwargs:
-        #    kwargs['-t'] = self.get['session_id']
-        return self.server.tmux(*args, **kwargs)
+        return self.server.tmux(cmd, *args, **kwargs)
 
     def send_keys(self, cmd, enter=True):
         '''
@@ -78,7 +68,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
             :param enter: bool. send enter after sending the key.
         '''
-        self.tmux('send-keys', '-t%s' % self.get('pane_id'), cmd)
+        self.tmux('send-keys', cmd)
 
         if enter:
             self.enter()
@@ -111,15 +101,12 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         # if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
         #    target_pane = "%s.%s" % (self.target, target_pane)
 
-        # logger.error('resize-pane', '-t%s' % self.target)
         if 'height' in kwargs:
-            proc = self.tmux('resize-pane', '-t%s' %
-                             self.get('pane_id'), '-y%s' % int(kwargs['height']))
+            proc = self.tmux('resize-pane', '-y%s' % int(kwargs['height']))
         elif 'width' in kwargs:
-            proc = self.tmux('resize-pane', '-t%s' %
-                             self.get('pane_id'), '-x%s' % int(kwargs['width']))
+            proc = self.tmux('resize-pane', '-x%s' % int(kwargs['width']))
         else:
-            proc = self.tmux('resize-pane', '-t%s' % self.get('pane_id'), args[0])
+            proc = self.tmux('resize-pane', args[0])
 
         if proc.stderr:
             raise Exception(proc.stderr)
@@ -131,7 +118,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         '''
             ``$ tmux send-keys`` send Enter to the pane.
         '''
-        self.tmux('send-keys', '-t%s' % self.get('pane_id'), 'Enter')
+        self.tmux('send-keys', 'Enter')
 
     def __repr__(self):
         return "%s(%s %s)" % (self.__class__.__name__, self.get('pane_id'), self.window)
