@@ -324,6 +324,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                 else:
                     continue
 
+        return []
+
     def _list_panes(self):
         panes = self.server._update_panes()._panes
 

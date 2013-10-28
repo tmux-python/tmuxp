@@ -246,16 +246,14 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                 else:
                     continue
 
-        if len(active_windows) == 1:
+        if len(active_windows) == int(1):
             return active_windows[0]
         else:
             raise Exception(
                 'multiple active windows found. %s' % active_windows)
 
-        if len(self._windows) == 0:
+        if len(self._windows) == int(0):
             raise Exception('No Windows')
-
-        return False
 
     def select_window(self, target_window):
         '''

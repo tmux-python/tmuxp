@@ -81,9 +81,11 @@ Command Line
 
 .. automethod:: tmuxp.cli.startup
 
-.. automethod:: tmuxp.cli.query_yes_no
+.. automethod:: tmuxp.cli.prompt
+.. automethod:: tmuxp.cli.prompt_bool
+.. automethod:: tmuxp.cli.prompt_choices
 
-.. automethod:: tmuxp.cli.setupLogger
+.. automethod:: tmuxp.cli.get_logger
 
 Configuration
 -------------
