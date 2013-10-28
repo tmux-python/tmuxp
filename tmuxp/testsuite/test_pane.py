@@ -52,3 +52,5 @@ class ResizeTest(TmuxTestCase):
         pane1.set_width(25)
         self.assertNotEqual(pane1['pane_width'], pane1_width)
         self.assertEqual(int(pane1['pane_width']), 25)
+
+        pane1.reset()
