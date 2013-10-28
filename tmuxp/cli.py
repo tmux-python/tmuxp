@@ -1,10 +1,16 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.cli
-    ~~~~~~~~~
+"""Command line tool for managing tmux workspaces and tmuxp configurations.
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp.cli
+~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+
+prompt, prompt_bool, prompt_choices
+LICENSE: https://github.com/techniq/flask-script/blob/master/LICENSE
+
 """
 
 import os
@@ -16,6 +22,7 @@ import kaptan
 from . import config
 from distutils.util import strtobool
 from . import log, util, exc, WorkspaceBuilder, Server
+from .util import ascii_lowercase, input
 import pkg_resources
 
 __version__ = pkg_resources.require("tmuxp")[0].version
@@ -26,6 +33,86 @@ config_dir = os.path.expanduser('~/.tmuxp/')
 cwd_dir = os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
+
+
+def prompt(name, default=None):
+    """Return user input from command line.
+
+    :param name: prompt text
+    :param default: default value if no input provided.
+    :rtype: string
+
+    """
+
+    prompt = name + (default and ' [%s]' % default or '')
+    prompt += name.endswith('?') and ' ' or ': '
+    while True:
+        rv = input(prompt)
+        if rv:
+            return rv
+        if default is not None:
+            return default
+
+
+def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
+    """
+    Return user input from command line and converts to boolean value.
+
+    :param name: prompt text
+    :param default: default value if no input provided.
+    :param yes_choices: default 'y', 'yes', '1', 'on', 'true', 't'
+    :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
+    :rtype: bool
+
+    """
+
+    yes_choices = yes_choices or ('y', 'yes', '1', 'on', 'true', 't')
+    no_choices = no_choices or ('n', 'no', '0', 'off', 'false', 'f')
+
+    while True:
+        rv = prompt(name, default and yes_choices[0] or no_choices[0])
+        if not rv:
+            return default
+        if rv.lower() in yes_choices:
+            return True
+        elif rv.lower() in no_choices:
+            return False
+
+
+def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
+                   no_choice=('none',)):
+    """
+    Return user input from command line from set of provided choices.
+
+    :param name: prompt text
+    :param choices: list or tuple of available choices. Choices may be
+                    single strings or (key, value) tuples.
+    :param default: default value if no input provided.
+    :param no_choice: acceptable list of strings for "null choice"
+    :rtype: str
+
+    """
+
+    _choices = []
+    options = []
+
+    for choice in choices:
+        if isinstance(choice, basestring):
+            options.append(choice)
+        else:
+            options.append("%s [%s]" % (choice[1], choice[0]))
+            choice = choice[0]
+        _choices.append(choice)
+
+    while True:
+        rv = prompt(name + ' - (%s)' % ', '.join(options), default)
+        if not rv:
+            return default
+        rv = resolve(rv)
+        if rv in no_choice:
+            return None
+        if rv in _choices:
+            return rv
 
 
 class ConfigCompleter(argcomplete.completers.FilesCompleter):
@@ -73,41 +160,6 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
 def SessionCompleter(prefix, **kwargs):
     t = Server()
     return [s.get('session_name') for s in t._sessions if s.get('session_name').startswith(prefix)]
-
-
-def query_yes_no(question, default="yes"):
-    """Ask a yes/no question via raw_input() and return their answer.
-
-    "question" is a string that is presented to the user.
-    "default" is the presumed answer if the user just hits <Enter>.
-        It must be "yes" (the default), "no" or None (meaning
-        an answer is required of the user).
-
-    The "answer" return value is one of "yes" or "no".
-
-    License MIT: http://code.activestate.com/recipes/577058/
-    """
-    valid = {"yes": "yes",   "y": "yes",  "ye": "yes",
-             "no": "no",     "n": "no"}
-    if default == None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
-    else:
-        raise ValueError("invalid default answer: '%s'" % default)
-
-    while True:
-        sys.stdout.write(question + prompt)
-        choice = raw_input().lower()
-        if default is not None and choice == '':
-            return strtobool(default)
-        elif choice in valid.keys():
-            return strtobool(valid[choice])
-        else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "
-                             "(or 'y' or 'n').\n")
 
 
 def setupLogger(logger=None, level='INFO'):
@@ -166,7 +218,7 @@ def build_workspace(config_file, args):
         builder.build()
 
         if 'TMUX' in os.environ:
-            if query_yes_no('Already inside TMUX, load session?'):
+            if prompt_bool('Already inside TMUX, load session?'):
                 del os.environ['TMUX']
                 os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig[
                          'session_name'])
@@ -174,7 +226,7 @@ def build_workspace(config_file, args):
         os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
                  'session_name'])
     except exc.TmuxSessionExists as e:
-        attach_session = query_yes_no(e.message + ' Attach?')
+        attach_session = prompt_bool(e.message + ' Attach?')
 
         if 'TMUX' in os.environ:
             del os.environ['TMUX']
@@ -315,57 +367,50 @@ def subcommand_import_tmuxinator(args):
 
 
 def subcommand_convert(args):
-    if args.config:
-        if '.' in args.config:
-            args.config.remove('.')
-            if config.in_cwd():
-                args.config.append(config.in_cwd()[0])
-            else:
-                print('No tmuxp configs found in current directory.')
 
-        try:
-            configfile = args.config
-        except Exception:
-            print('Please enter a config')
+    try:
+        configfile = args.config
+    except Exception:
+        print('Please enter a config')
 
-        file_user = os.path.join(config_dir, configfile)
-        file_cwd = os.path.join(cwd_dir, configfile)
-        if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-            fullfile = os.path.normpath(file_cwd)
-            filename, ext = os.path.splitext(file_cwd)
-        elif os.path.exists(file_user) and os.path.isfile(file_user):
+    file_user = os.path.join(config_dir, configfile)
+    file_cwd = os.path.join(cwd_dir, configfile)
+    if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
+        fullfile = os.path.normpath(file_cwd)
+        filename, ext = os.path.splitext(file_cwd)
+    elif os.path.exists(file_user) and os.path.isfile(file_user):
 
-            fullfile = os.path.normpath(file_user)
-            filename, ext = os.path.splitext(file_user)
-        else:
-            logger.error('%s not found.' % configfile)
-            return
+        fullfile = os.path.normpath(file_user)
+        filename, ext = os.path.splitext(file_user)
+    else:
+        logger.error('%s not found.' % configfile)
+        return
 
-        if 'json' in ext:
-            if query_yes_no('convert to <%s> to yaml?' % (fullfile)):
-                configparser = kaptan.Kaptan()
-                configparser.import_config(configfile)
-                newfile = fullfile.replace(ext, '.yaml')
-                newconfig = configparser.export(
-                    'yaml', indent=2, default_flow_style=False
-                )
-                if query_yes_no('write config to %s?' % (newfile)):
-                    buf = open(newfile, 'w')
-                    buf.write(newconfig)
-                    buf.close()
-                    print ('written new config to %s' % (newfile))
-        elif 'yaml' in ext:
-            if query_yes_no('convert to <%s> to json?' % (fullfile)):
-                configparser = kaptan.Kaptan()
-                configparser.import_config(configfile)
-                newfile = fullfile.replace(ext, '.json')
-                newconfig = configparser.export('json', indent=2)
-                print(newconfig)
-                if query_yes_no('write config to <%s>?' % (newfile)):
-                    buf = open(newfile, 'w')
-                    buf.write(newconfig)
-                    buf.close()
-                    print ('written new config to <%s>.' % (newfile))
+    if 'json' in ext:
+        if prompt_bool('convert to <%s> to yaml?' % (fullfile)):
+            configparser = kaptan.Kaptan()
+            configparser.import_config(configfile)
+            newfile = fullfile.replace(ext, '.yaml')
+            newconfig = configparser.export(
+                'yaml', indent=2, default_flow_style=False
+            )
+            if prompt_bool('write config to %s?' % (newfile)):
+                buf = open(newfile, 'w')
+                buf.write(newconfig)
+                buf.close()
+                print ('written new config to %s' % (newfile))
+    elif 'yaml' in ext:
+        if prompt_bool('convert to <%s> to json?' % (fullfile)):
+            configparser = kaptan.Kaptan()
+            configparser.import_config(configfile)
+            newfile = fullfile.replace(ext, '.json')
+            newconfig = configparser.export('json', indent=2)
+            print(newconfig)
+            if prompt_bool('write config to <%s>?' % (newfile)):
+                buf = open(newfile, 'w')
+                buf.write(newconfig)
+                buf.close()
+                print ('written new config to <%s>.' % (newfile))
 
 
 def subcommand_attach_session(args):

@@ -22,6 +22,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+PY2 = sys.version_info[0] == 2
+
 
 class tmux(object):
 
@@ -266,3 +268,11 @@ else:
     unicode = unicode
     bytes = str
     basestring = basestring
+
+
+if not PY2:
+    input = input
+    from string import ascii_lowercase
+else:
+    input = raw_input
+    from string import lower as ascii_lowercase
