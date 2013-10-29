@@ -1,0 +1,15 @@
+session_name: main-pane-height
+start_directory: '~'
+windows:
+- layout: main-horizontal
+  options:
+    main-pane-height: 30
+  panes:
+  - shell_command:
+    - top
+    start_directory: '~'
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo"
+  window_name: my window name

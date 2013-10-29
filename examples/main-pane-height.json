@@ -1,0 +1,31 @@
+{
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "vim"
+          ], 
+          "start_directory": "~"
+        }, 
+        {
+          "shell_command": [
+            "echo \"hey\""
+          ]
+        }, 
+        {
+          "shell_command": [
+            "echo \"moo\""
+          ]
+        }
+      ], 
+      "layout": "main-horizontal", 
+      "options": {
+        "main-pane-height": 30
+      }, 
+      "window_name": "editor"
+    }
+  ], 
+  "session_name": "main pane height", 
+  "start_directory": "~"
+}

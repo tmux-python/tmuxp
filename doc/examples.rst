@@ -104,6 +104,36 @@ JSON
     :language: json
 
 
+Automatic Rename
+----------------
+
+YAML
+""""
+
+.. literalinclude:: ../examples/automatic-rename.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/automatic-rename.json
+    :language: json
+
+Main pane height
+----------------
+
+YAML
+""""
+
+.. literalinclude:: ../examples/main-pane-height.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/main-pane-height.json
+    :language: json
+
 Super-advanced dev environment
 ------------------------------
 

@@ -1,0 +1,30 @@
+{
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "man echo"
+          ], 
+          "start_directory": "~"
+        }, 
+        {
+          "shell_command": [
+            "echo \"hey\""
+          ]
+        }, 
+        {
+          "shell_command": [
+            "echo \"moo\""
+          ]
+        }
+      ], 
+      "layout": "main-horizontal", 
+      "options": {
+        "automatic-rename": true
+      }
+    }
+  ], 
+  "session_name": "test window options", 
+  "start_directory": "~"
+}
