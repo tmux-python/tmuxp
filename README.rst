@@ -35,17 +35,19 @@ See: `Quickstart`_
 CLI Commands
 """"""""""""
 
-========================== ==============================================
+========================== ===============================================
  ``tmuxp attach-session``  ``<session_name>``
                            tmuxp uses ``switch-client`` if already inside
                            tmux client.
- ``tmuxp kill-session``    ``<session name>``.
- ``tmuxp load``            ``<file>``. Load a workspace yaml / json file.
+ ``tmuxp kill-session``    ``<session name>``
+ ``tmuxp load``            ``<file>``
+                           Load a workspace yaml / json file.
                            If session already made, will offer to attach.
- ``tmuxp convert``         ``<file>``. Convert session yaml / json.
- ``tmuxp import``          ``[teamocil | tmuxinator]`` ``<file>`` import
-                           a `teamocil`_ or `tmuxinator`_ config.
-========================== ==============================================
+ ``tmuxp convert``         ``<file>``
+                           Convert session yaml / json.
+ ``tmuxp import``          ``[teamocil | tmuxinator]`` ``<file>``
+                           Import a `teamocil`_ or `tmuxinator`_ config.
+========================== ===============================================
 
 Bash completion
 """""""""""""""
