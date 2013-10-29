@@ -259,7 +259,6 @@ def load_workspace(config_file, args):
                      sconfig['session_name'])
 
         if attach_session:
-            print(sconfig['sesson_name'])
             os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
                      sconfig['session_name'])
         return
