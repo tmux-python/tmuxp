@@ -243,22 +243,23 @@ def load_workspace(config_file, args):
         builder.build()
 
         if 'TMUX' in os.environ:
-            if prompt_yes_no('Already inside TMUX, load session?'):
-                del os.environ['TMUX']
-                os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig[
-                         'session_name'])
+            if prompt_yes_no('Already inside TMUX, switch to session?'):
+                tmux_env = os.environ.pop('TMUX')
+                builder.session.switch_client()
 
-        os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
-                 'session_name'])
+                os.environ['TMUX'] = tmux_env
+                return
+            else:
+                sys.exit('Session created in detached state.')
+
+        builder.session.attach_session()
     except exc.TmuxSessionExists as e:
         if prompt_yes_no(e.message + ' Attach?'):
-            # TODO, do we need os.execl for this?
             if 'TMUX' in os.environ:
-                os.execl(tmux_bin, 'tmux', 'switch-client', '-t',
-                        sconfig['session_name'])
+                builder.session.switch_client()
+
             else:
-                os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
-                        sconfig['session_name'])
+                builder.session.attach_session()
         return
     except Exception as e:
         logger.error(e)

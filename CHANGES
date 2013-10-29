@@ -21,6 +21,8 @@ Here you can find the recent changes to tmuxp.
   ``target-window`` fix.
 - [internal] :class:`WorkspaceBuilder` now has ``.session`` attribute accessible
   publicly.
+- [cli] tmux will now use :meth:`Session.switch_client` and
+  :meth:`Session.attach_session` to open new sessions instead of ``os.exec``.
 
 2013-10-28
 ----------
