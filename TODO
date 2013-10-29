@@ -8,6 +8,7 @@ Immediate
 - prompt  filepath/filename choice before save
 - confirm and loop
 - fix import of blank panes teamocil tmuxinator
+- give a real session name if none exists
 
 - make prompt_bool Y/n by default
 - shorts for load
