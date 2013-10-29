@@ -92,6 +92,7 @@ def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
 def prompt_yes_no(name, default=True):
     return prompt_bool(name, default=default)
 
+
 def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
                    no_choice=('none',)):
     """
@@ -254,12 +255,13 @@ def load_workspace(config_file, args):
 
         if 'TMUX' in os.environ:
             del os.environ['TMUX']
-            os.execl(tmux_bin, 'tmux', 'switch-client', '-t', sconfig[
-                     'session_name'])
+            os.execl(tmux_bin, 'tmux', 'switch-client', '-t',
+                     sconfig['session_name'])
 
         if attach_session:
-            os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
-                     'session_name'])
+            print(sconfig['sesson_name'])
+            os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
+                     sconfig['session_name'])
         return
 
 
@@ -334,18 +336,60 @@ def command_import_teamocil(args):
 
             print(output)
     elif args.config:
-        configfile = os.path.relpath(args.config)
+        configfile = os.path.abspath(os.path.relpath(args.config))
         configparser = kaptan.Kaptan(handler='yaml')
-        configparser.import_config(configfile)
+
+        if os.path.exists(configfile):
+            print(configfile)
+            configparser.import_config(configfile)
+        else:
+            sys.exit('File not found: %s' % configfile)
 
         newconfig = config.import_teamocil(configparser.get())
 
-        newconfig = configparser.import_config(newconfig)
-        newconfig = configparser.export(
-            'yaml', indent=2, default_flow_style=False
-        )
+        config_format = prompt_choices('Convert to', choices=[
+                                       'yaml', 'json'], default='yaml')
+
+        if config_format == 'yaml':
+            newconfig = configparser.export(
+                'yaml', indent=2, default_flow_style=False
+            )
+        elif config_format == 'json':
+            newconfig = configparser.export('json', indent=2)
+        else:
+            sys.exit('Unknown config format.')
 
         print(newconfig)
+        print(
+            '---------------------------------------------------------------')
+        print(
+            'Configuration import does its best to convert teamocil files.\n')
+        if prompt_yes_no(
+            'The new config *WILL* require adjusting afterwards. Save config?'
+        ):
+            dest = None
+            while not dest:
+                dest_prompt = prompt('Save to: ', os.path.abspath(
+                    os.path.join(config_dir, 'myimport.%s' % config_format)))
+                if os.path.exists(dest_prompt):
+                    print('%s exists. Pick a new filename.' % dest_prompt)
+                    continue
+
+                dest = dest_prompt
+
+            dest = os.path.abspath(os.path.relpath(dest))
+            if prompt_yes_no('Write to %s?' % dest):
+                buf = open(dest, 'w')
+                buf.write(newconfig)
+                buf.close()
+
+                print('Saved to %s.' % dest)
+        else:
+            print(
+                'tmuxp has examples in JSON and YAML format at <http://tmuxp.readthedocs.org/en/latest/examples.html>\n'
+                'View tmuxp docs at <http://tmuxp.readthedocs.org/>'
+            )
+            sys.exit()
 
 
 def command_import_tmuxinator(args):
@@ -378,18 +422,60 @@ def command_import_tmuxinator(args):
             print(output)
 
     if args.config:
-        configfile = os.path.relpath(args.config)
+        configfile = os.path.abspath(os.path.relpath(args.config))
         configparser = kaptan.Kaptan(handler='yaml')
-        configparser.import_config(configfile)
+
+        if os.path.exists(configfile):
+            print(configfile)
+            configparser.import_config(configfile)
+        else:
+            sys.exit('File not found: %s' % configfile)
 
         newconfig = config.import_tmuxinator(configparser.get())
 
-        newconfig = configparser.import_config(newconfig)
-        newconfig = configparser.export(
-            'yaml', indent=2, default_flow_style=False
-        )
+        config_format = prompt_choices('Convert to', choices=[
+                                       'yaml', 'json'], default='yaml')
+
+        if config_format == 'yaml':
+            newconfig = configparser.export(
+                'yaml', indent=2, default_flow_style=False
+            )
+        elif config_format == 'json':
+            newconfig = configparser.export('json', indent=2)
+        else:
+            sys.exit('Unknown config format.')
 
         print(newconfig)
+        print(
+            '---------------------------------------------------------------')
+        print(
+            'Configuration import does its best to convert teamocil files.\n')
+        if prompt_yes_no(
+            'The new config *WILL* require adjusting afterwards. Save config?'
+        ):
+            dest = None
+            while not dest:
+                dest_prompt = prompt('Save to: ', os.path.abspath(
+                    os.path.join(config_dir, 'myimport.%s' % config_format)))
+                if os.path.exists(dest_prompt):
+                    print('%s exists. Pick a new filename.' % dest_prompt)
+                    continue
+
+                dest = dest_prompt
+
+            dest = os.path.abspath(os.path.relpath(dest))
+            if prompt_yes_no('Write to %s?' % dest):
+                buf = open(dest, 'w')
+                buf.write(newconfig)
+                buf.close()
+
+                print('Saved to %s.' % dest)
+        else:
+            print(
+                'tmuxp has examples in JSON and YAML format at <http://tmuxp.readthedocs.org/en/latest/examples.html>\n'
+                'View tmuxp docs at <http://tmuxp.readthedocs.org/>'
+            )
+            sys.exit()
 
 
 def command_convert(args):
