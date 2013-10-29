@@ -24,12 +24,12 @@ class ResizeTest(TmuxTestCase):
         pane1_height = pane1['pane_height']
         pane2 = window.split_window()
 
-        pane1.resize_pane(height=17)
+        pane1.resize_pane(height=7)
         self.assertNotEqual(pane1['pane_height'], pane1_height)
-        self.assertEqual(int(pane1['pane_height']), 17)
+        self.assertEqual(int(pane1['pane_height']), 7)
 
-        pane1.resize_pane(height=10)
-        self.assertEqual(int(pane1['pane_height']), 10)
+        pane1.resize_pane(height=9)
+        self.assertEqual(int(pane1['pane_height']), 9)
 
     def test_set_height(self):
         window = self.session.new_window(window_name='test_set_height')
@@ -37,9 +37,9 @@ class ResizeTest(TmuxTestCase):
         pane1 = window.attached_pane()
         pane1_height = pane1['pane_height']
 
-        pane1.set_height(20)
+        pane1.set_height(12)
         self.assertNotEqual(pane1['pane_height'], pane1_height)
-        self.assertEqual(int(pane1['pane_height']), 20)
+        self.assertEqual(int(pane1['pane_height']), 12)
 
     def test_set_width(self):
         window = self.session.new_window(window_name='test_set_width')
