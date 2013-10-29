@@ -122,6 +122,8 @@ class WorkspaceBuilder(object):
 
             assert(self.sconf['session_name'] == session.get('session_name'))
 
+        self.session = session
+
         assert(isinstance(session, Session))
         if 'options' in self.sconf and isinstance(self.sconf['options'], dict):
             for key, val in self.sconf['options'].items():

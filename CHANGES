@@ -19,6 +19,8 @@ Here you can find the recent changes to tmuxp.
   detach it.
 - [cli] tmux 1.8  ``set-option`` / ``set-window-options`` command
   ``target-window`` fix.
+- [internal] :class:`WorkspaceBuilder` now has ``.session`` attribute accessible
+  publicly.
 
 2013-10-28
 ----------
