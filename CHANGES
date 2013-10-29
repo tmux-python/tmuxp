@@ -6,6 +6,10 @@ Here you can find the recent changes to tmuxp.
 2013-10-29
 ----------
 
+- [internal] :meth:`Window.select_pane` now accepts ``-l``, ``-U``, ``-D``,
+  ``-L``, ``-R``.
+- [internal] [tests] support for ``automatic-rename`` option.
+- [docs] 2 new :ref:`examples`, 'main-pane-height' and 'automatic-rename'.
 - [cli] enhancements to prompts
 - [cli] ``tmuxp import`` for teamocil and tmuxinator now has a wizard and offers
   to save in JSON or YAML format.
