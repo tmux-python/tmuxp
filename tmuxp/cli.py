@@ -251,16 +251,17 @@ def load_workspace(config_file, args):
         os.execl(tmux_bin, 'tmux', 'attach-session', '-t', sconfig[
                  'session_name'])
     except exc.TmuxSessionExists as e:
-        attach_session = prompt_yes_no(e.message + ' Attach?')
+        if prompt_yes_no(e.message + ' Attach?'):
 
-        if 'TMUX' in os.environ:
-            del os.environ['TMUX']
-            os.execl(tmux_bin, 'tmux', 'switch-client', '-t',
-                     sconfig['session_name'])
+            if 'TMUX' in os.environ:
+                del os.environ['TMUX']
+                os.execl(tmux_bin, 'tmux', 'switch-client', '-t',
+                        sconfig['session_name'])
 
-        if attach_session:
-            os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
-                     sconfig['session_name'])
+            if attach_session:
+                os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
+                        sconfig['session_name'])
+            return
         return
 
 
