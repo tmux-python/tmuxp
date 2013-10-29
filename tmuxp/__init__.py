@@ -1,10 +1,12 @@
 # -*- coding: utf8 - *-
 """
-    tmuxp
-    ~~~~~
+Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp
+~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
 """
 
 
