@@ -716,9 +716,11 @@ def get_parser():
                         help='Log level e.g. INFO, DEBUG, ERROR')
 
     parser.add_argument('-L', dest='socket_name', default=None,
+                        help='socket name of tmux server. Same as tmux.',
                         metavar='socket-name')
 
     parser.add_argument('-S', dest='socket_path', default=None,
+                        help='socket path of tmux server. Same as tmux.',
                         metavar='socket-path')
 
     # http://stackoverflow.com/questions/8521612/argparse-optional-subparser

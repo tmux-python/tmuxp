@@ -7,6 +7,11 @@ Quickstart
 Tmux Session Manager
 --------------------
 
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+
 tmuxp launches sessions from a configuration file.
 
 Configuration files can be stored in ``$HOME/.tmuxp`` or in project

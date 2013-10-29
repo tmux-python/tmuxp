@@ -18,6 +18,15 @@ Interested in some kung-fu or joining the effort? :ref:`api` and
 License  is `BSD-licensed`_. Code can be found at github at
 http://github.com/tony/tmuxp.
 
+How is tmuxp different from teamocil and tmuxinator
+---------------------------------------------------
+
+teamocil and tmuxinator both build tmux workspaces from yaml. tmuxp
+also handles building workspaces.
+
+teamocil and tmuxinator do this by turning YAML directly into tmux
+commands.
+
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
 .. _unittest: http://docs.python.org/2/library/unittest.html
