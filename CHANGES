@@ -13,6 +13,8 @@ Here you can find the recent changes to tmuxp.
 - [cli] enhancements to prompts
 - [cli] ``tmuxp import`` for teamocil and tmuxinator now has a wizard and offers
   to save in JSON or YAML format.
+- [cli] [bug] [b6c2e84] Fix bug where tmuxp load w/ session already loaded would
+  switch/attach even if no was entered
 
 2013-10-28
 ----------
