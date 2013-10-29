@@ -12,16 +12,16 @@ Short hand / inline
     .. aafig::
        :textual:
 
-        +-----------------+
-        |'did you know'   |
-        |'you can inline' |
-        +-----------------+
-        |'single commands'|
-        |                 |
-        +-----------------+
-        |'for panes'      |
-        |                 |
-        +-----------------+
+        +-------------------+
+        | 'did you know'    |
+        | 'you can inline'  |
+        +-------------------+
+        | 'single commands' |
+        |                   |
+        +-------------------+
+        | 'for panes'       |
+        |                   |
+        +-------------------+
 
 YAML
 """"
