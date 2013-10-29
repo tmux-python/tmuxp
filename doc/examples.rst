@@ -4,6 +4,35 @@
 Examples
 ========
 
+Short hand / inline
+-------------------
+
+.. sidebar:: short hand
+
+    .. aafig::
+
+        +-----------------+
+        | $               |
+        |                 |
+        +-----------------+
+        | $               |
+        |                 |
+        +-----------------+
+        | $               |
+        +-----------------+
+
+YAML
+""""
+
+.. literalinclude:: ../examples/shorthands.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/shorthands.json
+    :language: json
+
 2 split panes
 -------------
 

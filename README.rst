@@ -35,6 +35,14 @@ See: `Quickstart`_
 CLI Commands
 """"""""""""
 
+==========================
+
+ ``tmuxp attach-session``
+ ``tmuxp kill-session``
+ ``tmuxp convert``
+ ``tmuxp import``
+ ``tmuxp import``
+
 tmuxp uses ``switch-client`` for you if already in a TMUX client.
 
 .. code-block:: bash

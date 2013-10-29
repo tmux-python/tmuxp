@@ -155,9 +155,16 @@ def expand(config):
 
     # recurse into window and pane config items
     if 'windows' in config:
-        config['windows'] = [expand(window)
-                             for window in config['windows']]
-    if 'panes' in config:
+        config['windows'] = [
+            expand(window) for window in config['windows']
+        ]
+    elif 'panes' in config:
+        for p in config['panes']:
+            if isinstance(p, basestring):
+                p_index = config['panes'].index(p)
+                config['panes'][p_index] = {
+                    'shell_command': [p]
+                }
         config['panes'] = [expand(pane) for pane in config['panes']]
 
     return config
