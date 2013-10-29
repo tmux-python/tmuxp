@@ -3,6 +3,13 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-29
+----------
+
+- [cli] enhancements to prompts
+- [cli] ``tmuxp import`` for teamocil and tmuxinator now has a wizard and offers
+  to save in JSON or YAML format.
+
 2013-10-28
 ----------
 
