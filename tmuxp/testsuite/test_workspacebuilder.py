@@ -252,20 +252,20 @@ class WindowAutomaticRename(TmuxTestCase):
 
         w = s.attached_window()
 
-        for i in range(5):
+        for i in range(30):
             w = s.attached_window()
             if w['window_name'] == 'man':
                 break
-            time.sleep(.1)
+            time.sleep(.01)
 
         self.assertEqual(w.get('window_name'), 'man')
 
         w.select_pane('-D')
-        for i in range(5):
+        for i in range(30):
             w = s.attached_window()
             if w['window_name'] != 'man':
                 break
-            time.sleep(.1)
+            time.sleep(.01)
 
         self.assertNotEqual(w.get('window_name'), 'man')
 
