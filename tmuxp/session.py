@@ -78,12 +78,10 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-    def kill_session(self, target_session=None):
+    def kill_session(self):
         '''
         ``$ tmux kill-session``
 
-        :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
-                                kill asdfasd
         '''
         proc = self.tmux('kill-session', '-t%s' % self.get('session_id'))
 
