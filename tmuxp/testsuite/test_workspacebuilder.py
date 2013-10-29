@@ -12,6 +12,11 @@ from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
+current_dir = os.path.abspath(os.path.dirname(__file__))
+example_dir = os.path.join('../../', current_dir)
+
+print(example_dir)
+logger.error(example_dir)
 
 class TwoPaneTest(TmuxTestCase):
 
@@ -256,7 +261,7 @@ class WindowAutomaticRename(TmuxTestCase):
             w = s.attached_window()
             if w['window_name'] == 'man':
                 break
-            time.sleep(.01)
+            time.sleep(.1)
 
         self.assertEqual(w.get('window_name'), 'man')
 
@@ -265,7 +270,7 @@ class WindowAutomaticRename(TmuxTestCase):
             w = s.attached_window()
             if w['window_name'] != 'man':
                 break
-            time.sleep(.01)
+            time.sleep(.1)
 
         self.assertNotEqual(w.get('window_name'), 'man')
 
