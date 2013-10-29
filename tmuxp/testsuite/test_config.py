@@ -163,6 +163,11 @@ class ExpandTest(unittest.TestCase):
                     {'shell_command': 'htop'},
                     'vim',
                 ]
+            },
+            {
+                'panes': [
+                    'top'
+                ]
             }]
     }
 
@@ -194,6 +199,11 @@ class ExpandTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']},
                     {'shell_command': ['vim']}
+                ]
+            },
+            {
+                'panes': [
+                    {'shell_command': ['top']}
                 ]
             }
         ]
@@ -444,6 +454,9 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
+            },
+            {
+                'panes': ['top']
             }
         ]
     }
@@ -488,7 +501,12 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
-            }
+            },
+            {
+                'panes': [{
+                    'shell_command': ['top']
+                }]
+            },
         ]
     }
 
@@ -537,11 +555,17 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
+            },
+            {
+                'panes': [
+                    {'shell_command': ['top']}
+                ]
             }
         ]
     }
 
     def test_shell_command_before(self):
+        self.maxDiff = None
         test_config = self.config_unexpanded
         test_config = config.expand(test_config)
 
