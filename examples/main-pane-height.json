@@ -4,7 +4,7 @@
       "panes": [
         {
           "shell_command": [
-            "vim"
+            "top"
           ], 
           "start_directory": "~"
         }, 
