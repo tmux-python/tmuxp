@@ -257,11 +257,9 @@ def load_workspace(config_file, args):
                 del os.environ['TMUX']
                 os.execl(tmux_bin, 'tmux', 'switch-client', '-t',
                         sconfig['session_name'])
-
-            if attach_session:
+            else:
                 os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
                         sconfig['session_name'])
-            return
         return
 
 
