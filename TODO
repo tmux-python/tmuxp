@@ -4,6 +4,7 @@ Roadmap
 Immediate
 """""""""
 
+- have test_workspace_builder use tests from ./examples!
 - auto-rename
 - prompt  filepath/filename choice before save
 - confirm and loop
