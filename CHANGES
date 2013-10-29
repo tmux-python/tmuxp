@@ -26,6 +26,7 @@ Here you can find the recent changes to tmuxp.
   :meth:`Session.attach_session` to open new sessions instead of ``os.exec``.
 - [config] tmuxp now allows a new shorter form for panes. Panes can just be a
   string. See the shorthand form in the :ref:`examples` section.
+- [cli] [config] support loading ``.yml``.
 
 2013-10-28
 ----------
