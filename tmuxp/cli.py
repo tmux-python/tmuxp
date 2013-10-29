@@ -252,15 +252,32 @@ def load_workspace(config_file, args):
                  'session_name'])
     except exc.TmuxSessionExists as e:
         if prompt_yes_no(e.message + ' Attach?'):
-
+            # TODO, do we need os.execl for this?
             if 'TMUX' in os.environ:
-                del os.environ['TMUX']
                 os.execl(tmux_bin, 'tmux', 'switch-client', '-t',
                         sconfig['session_name'])
             else:
                 os.execl(tmux_bin, 'tmux', 'attach-session', '-t',
                         sconfig['session_name'])
         return
+    except Exception as e:
+        logger.error(e)
+        choice = prompt_choices(
+            'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
+            choices=['k', 'a', 'd'],
+            default='k'
+        )
+
+        if choice == 'k':
+            builder.session.kill_session()
+            print('Session killed.')
+        elif choice == 'a':
+            if 'TMUX' in os.environ:
+                builder.session.switch_session()
+            else:
+                builder.session.attach_session()
+        else:
+            sys.exit()
 
 
 def command_load(args):

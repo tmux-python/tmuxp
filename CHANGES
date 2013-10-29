@@ -15,6 +15,8 @@ Here you can find the recent changes to tmuxp.
   to save in JSON or YAML format.
 - [cli] [bug] [b6c2e84] Fix bug where tmuxp load w/ session already loaded would
   switch/attach even if no was entered
+- [cli] when workspace loader crashes, give option to kill session, attach it or
+  detach it.
 
 2013-10-28
 ----------
