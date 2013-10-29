@@ -9,7 +9,8 @@ Here you can find the recent changes to tmuxp.
 - [internal] :meth:`Window.select_pane` now accepts ``-l``, ``-U``, ``-D``,
   ``-L``, ``-R``.
 - [internal] [tests] support for ``automatic-rename`` option.
-- [docs] 2 new :ref:`examples`, 'main-pane-height' and 'automatic-rename'.
+- [docs] 3 new :ref:`examples`, 'main-pane-height', 'automatic-rename', and
+  'shorthands'.
 - [cli] enhancements to prompts
 - [cli] ``tmuxp import`` for teamocil and tmuxinator now has a wizard and offers
   to save in JSON or YAML format.
@@ -23,6 +24,8 @@ Here you can find the recent changes to tmuxp.
   publicly.
 - [cli] tmux will now use :meth:`Session.switch_client` and
   :meth:`Session.attach_session` to open new sessions instead of ``os.exec``.
+- [config] tmuxp now allows a new shorter form for panes. Panes can just be a
+  string. See the shorthand form in the :ref:`examples` section.
 
 2013-10-28
 ----------
