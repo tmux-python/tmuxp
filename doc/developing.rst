@@ -1,3 +1,5 @@
+.. module:: tmuxp
+
 .. _developing:
 
 ======================
