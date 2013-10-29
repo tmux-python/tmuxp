@@ -218,7 +218,7 @@ class WindowAutomaticRename(TmuxTestCase):
         automatic-rename: on
       panes:
       - shell_command:
-        - nano
+        - man echo
         start_directory: '~'
       - shell_command:
         - echo "hey"
@@ -254,20 +254,20 @@ class WindowAutomaticRename(TmuxTestCase):
 
         for i in range(5):
             w = s.attached_window()
-            if w['window_name'] == 'nano':
+            if w['window_name'] == 'man':
                 break
             time.sleep(.1)
 
-        self.assertEqual(w.get('window_name'), 'nano')
+        self.assertEqual(w.get('window_name'), 'man')
 
         w.select_pane('-D')
         for i in range(5):
             w = s.attached_window()
-            if w['window_name'] != 'nano':
+            if w['window_name'] != 'man':
                 break
             time.sleep(.1)
 
-        self.assertNotEqual(w.get('window_name'), 'nano')
+        self.assertNotEqual(w.get('window_name'), 'man')
 
 
 class TestsToDo(object):
