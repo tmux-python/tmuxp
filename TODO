@@ -4,6 +4,7 @@ Roadmap
 Immediate
 """""""""
 
+- tmuxp kill-session escape / quote names with spaces
 - have test_workspace_builder use tests from ./examples!
 - auto-rename
 - prompt  filepath/filename choice before save
