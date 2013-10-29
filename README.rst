@@ -35,50 +35,46 @@ See: `Quickstart`_
 CLI Commands
 """"""""""""
 
-==========================
+========================== ==============================================
+ ``tmuxp attach-session``  ``<session_name>``
+                           tmuxp uses ``switch-client`` if already inside
+                           tmux client.
+ ``tmuxp kill-session``    ``<session name>``.
+ ``tmuxp load``            ``<file>``. Load a workspace yaml / json file.
+                           If session already made, will offer to attach.
+ ``tmuxp convert``         ``<file>``. Convert session yaml / json.
+ ``tmuxp import``          ``[teamocil | tmuxinator]`` ``<file>`` import
+                           a `teamocil`_ or `tmuxinator`_ config.
+========================== ==============================================
 
- ``tmuxp attach-session``
- ``tmuxp kill-session``
- ``tmuxp convert``
- ``tmuxp import``
- ``tmuxp import``
+Bash completion
+"""""""""""""""
 
-tmuxp uses ``switch-client`` for you if already in a TMUX client.
-
-.. code-block:: bash
-
-    $ tmuxp attach-session<tab> # current sessions
-
-Kill session
-
-.. code-block:: bash
-
-    $ tmuxp kill-session<tab> # current sessions
-
-Load a session configuration from a YAML or JSON file.
+For bash, ``.bashrc``:
 
 .. code-block:: bash
 
-    $ tmuxp load<tab> # configs in config dir, current directory
+    $ source tmuxp.bash
 
-Convert a session config JSON <=> YAML:
-
-.. code-block:: bash
-
-    $ tmuxp convert<tab> # configs in config dir, current directory
-
-Experimental: Import configuration from `teamocil`_ or `tmuxinator`_:
+For tcsh, ``.tcshrc``:
 
 .. code-block:: bash
 
-    $ tmuxp import teamocil<tab> # configs in ~/.teamocil dir
-    $ tmuxp import tmuxinator<tab> # configs in ~/.tmuxinator dir
+    $ complete tmuxp 'p/*/`tmuxp.tcsh`/'
+
+For zsh, ``.zshrc``:
+
+.. code-block:: bash
+
+    $ source tmuxp.zsh
 
 See `installing bash completion`_ to get bash, zsh and tcsh completion
 working on your machine.
 
-load tmux sessions from yaml and json
-"""""""""""""""""""""""""""""""""""""
+Mini Quickstart
+"""""""""""""""
+
+See the full `Quickstart`_ in the documentation.
 
 Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
 
