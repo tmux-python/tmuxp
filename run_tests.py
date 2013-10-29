@@ -17,83 +17,14 @@ tmux_path = sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 if tmux_path not in sys.path:
     sys.path.insert(0, tmux_path)
 
-from time import sleep
-import itertools
-
 
 def main(verbosity=2, failfast=False):
 
-    # from tmuxp import log
-    # import logging
-
-    # logger = logging.getLogger()
-    # channel = logging.StreamHandler()
-    # channel.setFormatter(log.LogFormatter())
-    # logger.setLevel('INFO')
-    # logger.addHandler(channel)
-
-    def has_virtualenv():
-        if os.environ.get('VIRTUAL_ENV'):
-            return os.environ.get('VIRTUAL_ENV')
-        else:
-            False
-
-    def in_tmux():
-        if os.environ.get('TMUX'):
-            return True
-        else:
-            return False
-
-    tmuxclient = None
-
-    def la():
-        if not in_tmux():
-            shell_commands = []
-            if has_virtualenv():
-                shell_commands.append(
-                    'source %s/bin/activate' % has_virtualenv())
-            shell_commands.append('echo wat lol %s' % has_virtualenv())
-            session_name = 'tmuxp'
-            t.tmux('new-session', '-d', '-s', session_name)
-            for shell_command in shell_commands:
-                t.tmux('send-keys', '-t', session_name, shell_command, '^M')
-
-            t.tmux('send-keys', '-R', '-t', session_name,
-                   'python run_tests.py --pypid=%s' % os.getpid(), '^M')
-
-            os.environ['pypid'] = str(os.getpid())
-
-            # os.execl('/usr/local/bin/tmux', 'tmux', 'attach-session', '-t', session_name)
-            # t.hotswap(session_name=session_name)
-            def output(line):
-                pass
-            # tmuxclient = t.tmux('-C')
-            # tmuxclient = subprocess.Popen(['tmux', '-C', '-Lhi', 'attach'],
-            # stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        else:
-            print(has_virtualenv())
-            print(in_tmux())
-            print(os.environ.get('pypid'))
-            args = vars(parser.parse_args())
-            if 'pypid' in args:
-                print(args['pypid'])
-
-            # todo create a hook to run after suite / loader to detach
-            # and killall tmuxp + tmuxp_-prefixed sessions.
-            # tmux('detach')
-            # os.kill(args['pypid'], 9)
-            # t.kill_server()
-            suites = unittest.TestLoader().discover(
-                'tmuxp.testsuite', pattern="*.py")
-            result = unittest.TextTestRunner(verbosity=verbosity).run(suites)
-            if result.wasSuccessful():
-                sys.exit(0)
-            else:
-                sys.exit(1)
     session_name = 'tmuxp'
     t.tmux('new-session', '-d', '-s', session_name)
     suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
-    result = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast).run(suites)
+    result = unittest.TextTestRunner(
+        verbosity=verbosity, failfast=failfast).run(suites)
     if result.wasSuccessful():
         sys.exit(0)
     else:
@@ -153,11 +84,13 @@ if __name__ == '__main__':
     )
     parser.add_argument('-l', '--log-level', dest='log_level', default='INFO',
                         help='Log level')
-    parser.add_argument('-v', '--verbosity', dest='verbosity', type=int, default=2,
-                        help='unittest verbosity level')
-    parser.add_argument('-F', '--failfast', dest='failfast', action='store_true',
+    parser.add_argument(
+        '-v', '--verbosity', dest='verbosity', type=int, default=2,
+        help='unittest verbosity level')
+    parser.add_argument(
+        '-F', '--failfast', dest='failfast', action='store_true',
 
-                        help='Stop on first test failure. failfast=True')
+        help='Stop on first test failure. failfast=True')
     args = parser.parse_args()
 
     verbosity = args.verbosity
@@ -172,7 +105,8 @@ if __name__ == '__main__':
         # to the new session with os.exec and attach the session.
         loader = unittest.TestLoader()
         suites = loader.loadTestsFromName('tmuxp.testsuite.test_builder')
-        result = unittest.TextTestRunner(verbosity=verbosity, failfast=args.failfast).run(suites)
+        result = unittest.TextTestRunner(
+            verbosity=verbosity, failfast=args.failfast).run(suites)
 
         if result.wasSuccessful():
             sys.exit(0)
@@ -184,6 +118,7 @@ if __name__ == '__main__':
                 loc = args.tests.index(arg)
                 args.tests[loc] = 'tmuxp.testsuite.%s' % arg
         suites = unittest.TestLoader().loadTestsFromNames(args.tests)
-        result = unittest.TextTestRunner(verbosity=verbosity, failfast=args.failfast).run(suites)
+        result = unittest.TextTestRunner(
+            verbosity=verbosity, failfast=args.failfast).run(suites)
     else:
         main(verbosity=verbosity, failfast=args.failfast)
