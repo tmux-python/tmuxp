@@ -10,15 +10,16 @@ Short hand / inline
 .. sidebar:: short hand
 
     .. aafig::
+       :textual:
 
         +-----------------+
-        | did you know    |
-        | you can inline  |
+        |'did you know'   |
+        |'you can inline' |
         +-----------------+
-        | single commands |
+        |'single commands'|
         |                 |
         +-----------------+
-        | for panes       |
+        |'for panes'      |
         |                 |
         +-----------------+
 
