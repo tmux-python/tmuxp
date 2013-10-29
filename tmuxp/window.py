@@ -235,16 +235,17 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         '''
             ``$ tmux select-pane``
 
-        :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``.
+        :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``
+            or ``-l``.
         :type target_pane: string
         :rtype: :class:`Pane`
 
-        Todo: make 'up', 'down', 'left', 'right' acceptable ``target_pane``.
         '''
-        # if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
-        #    target_pane = "%s.%s" % (self.target, target_pane)
 
-        proc = self.tmux('select-pane', '-t%s' % target_pane)
+        if target_pane in ['-l', '-U', '-D', '-L', '-R']:
+            proc = self.tmux('select-pane', '-t%s' % self.get('window_id'), target_pane)
+        else:
+            proc = self.tmux('select-pane', '-t%s' % target_pane)
 
         if proc.stderr:
             raise Exception(proc.stderr)

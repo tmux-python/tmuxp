@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 import os
 import unittest
 import logging
+import time
 import kaptan
 from .. import Window, config, exc
 from ..workspacebuilder import WorkspaceBuilder
@@ -24,7 +25,7 @@ class TwoPaneTest(TmuxTestCase):
         - vim
         start_directory: '~'
       - shell_command:
-        - cowsay "hey"
+        - echo "hey"
       window_name: editor
     - panes:
       - shell_command:
@@ -70,9 +71,9 @@ class ThreePaneTest(TmuxTestCase):
         - vim
         start_directory: '~'
       - shell_command:
-        - cowsay "hey"
+        - echo "hey"
       - shell_command:
-        - cowsay "moo"
+        - echo "moo"
     '''
 
     def test_split_windows(self):
@@ -112,9 +113,9 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         - vim
         start_directory: '~'
       - shell_command:
-        - cowsay "hey"
+        - echo "hey"
       - shell_command:
-        - cowsay "moo"
+        - echo "moo"
         - top
         focus: true
     - window_name: window 2
@@ -124,9 +125,9 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         start_directory: '~'
         focus: true
       - shell_command:
-        - cowsay "hey"
+        - echo "hey"
       - shell_command:
-        - cowsay "moo"
+        - echo "moo"
 
     '''
 
@@ -165,8 +166,6 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
 class WindowOptions(TmuxTestCase):
 
-    '''sample config with no session name'''
-
     yaml_config = '''
     session_name: test window options
     start_directory: '~'
@@ -179,9 +178,9 @@ class WindowOptions(TmuxTestCase):
         - vim
         start_directory: '~'
       - shell_command:
-        - cowsay "hey"
+        - echo "hey"
       - shell_command:
-        - cowsay "moo"
+        - echo "moo"
       window_name: editor
     '''
 
@@ -206,6 +205,69 @@ class WindowOptions(TmuxTestCase):
             self.assertEqual(len(s._windows), window_count)
             window_count += 1
             w.select_layout(wconf['layout'])
+
+
+class WindowAutomaticRename(TmuxTestCase):
+
+    yaml_config = '''
+    session_name: test window options
+    start_directory: '~'
+    windows:
+    - layout: main-horizontal
+      options:
+        automatic-rename: on
+      panes:
+      - shell_command:
+        - nano
+        start_directory: '~'
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
+    '''
+
+    def test_automatic_rename_option(self):
+        """ with option automatic-rename: on. """
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        window_count = len(self.session._windows)  # current window count
+        self.assertEqual(len(s._windows), window_count)
+        for w, wconf in builder.iter_create_windows(s):
+
+            window_pane_count = len(w._panes)
+            for p in builder.iter_create_panes(w, wconf):
+                p = p
+                self.assertEqual(len(s._windows), window_count)
+            self.assertIsInstance(w, Window)
+            self.assertEqual(w.show_window_option('automatic-rename'), 'on')
+
+            self.assertEqual(len(s._windows), window_count)
+
+            window_count += 1
+            w.select_layout(wconf['layout'])
+
+        w = s.attached_window()
+
+        for i in range(5):
+            w = s.attached_window()
+            if w['window_name'] == 'nano':
+                break
+            time.sleep(.1)
+
+        self.assertEqual(w.get('window_name'), 'nano')
+
+        w.select_pane('-D')
+        for i in range(5):
+            w = s.attached_window()
+            if w['window_name'] != 'nano':
+                break
+            time.sleep(.1)
+
+        self.assertNotEqual(w.get('window_name'), 'nano')
 
 
 class TestsToDo(object):
