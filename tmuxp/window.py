@@ -138,14 +138,19 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         process = self.tmux(
             'set-window-option',
+            '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
             option, value
         )
+
+        # tmuxp set-window-option version 1.8 has a quirk where
+        # -t@2 window id won't work as ``target-pane``.
 
         if process.stderr:
             if isinstance(process.stderr, list) and len(process.stderr) == int(1):
                 process.stderr = process.stderr[0]
             raise ValueError(
-                'tmux set-window-option stderr: %s' % process.stderr)
+                'tmux set-window-option -t%s %s %s\n' % (self.get('window_id'), option, value) +
+                process.stderr)
 
     def show_window_options(self, option=None):
         '''

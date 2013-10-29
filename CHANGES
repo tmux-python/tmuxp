@@ -17,6 +17,8 @@ Here you can find the recent changes to tmuxp.
   switch/attach even if no was entered
 - [cli] when workspace loader crashes, give option to kill session, attach it or
   detach it.
+- [cli] tmux 1.8  ``set-option`` / ``set-window-options`` command
+  ``target-window`` fix.
 
 2013-10-28
 ----------
