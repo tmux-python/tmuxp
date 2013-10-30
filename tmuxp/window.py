@@ -137,6 +137,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type value: string or bool
         '''
 
+        self.server._update_windows()
+
         if isinstance(value, bool) and value:
             value = 'on'
         elif isinstance(value, bool) and not value:
@@ -145,6 +147,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         process = self.tmux(
             'set-window-option',
             '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
+            #'-t%s' % self.get('window_id'),
             option, value
         )
 
@@ -155,7 +158,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             if isinstance(process.stderr, list) and len(process.stderr) == int(1):
                 process.stderr = process.stderr[0]
             raise ValueError(
-                'tmux set-window-option -t%s %s %s\n' % (self.get('window_id'), option, value) +
+                'tmux set-window-option -t%s:%s %s %s\n' % (self.get('session_id'), self.get('window_index'), option, value) +
                 process.stderr)
 
     def show_window_options(self, option=None):
@@ -241,6 +244,24 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.server._update_windows()
 
         return self
+
+    def kill_window(self):
+        '''
+        ``$ tmux kill-window``
+
+        Kill the current :class:`Window` object.
+
+        :param target_window: the ``target window``.
+        :type target_window: string
+        '''
+
+        proc = self.tmux('kill-window', '-t%s' % self.get('window_id'))
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+        self.server._update_windows()
+
 
     def select_pane(self, target_pane):
         '''

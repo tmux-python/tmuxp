@@ -13,6 +13,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] ``tmuxp freeze <filename>`` experimental
 - [freeze] [tests] tmuxp now has experimental support for freezing live
   sessions.
+- [internals] :meth:`Window.kill_window()`
 
 2013-10-29
 ----------

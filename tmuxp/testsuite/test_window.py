@@ -149,6 +149,17 @@ class RenameSpacesTest(RenameTest):
     window_name_after = 'hello \\ wazzup 0'
 
 
+class KillWindow(TmuxTestCase):
+
+    def test_kill_window(self):
+        w = self.session.attached_window()
+        w.get('window_id')
+
+        w.kill_window()
+        with self.assertRaises(IndexError):
+            w.get('window_id')
+
+
 class Options(TmuxTestCase):
 
     def test_show_window_options(self):
