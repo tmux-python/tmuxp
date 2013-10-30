@@ -40,6 +40,7 @@ CLI Commands
                            tmuxp uses ``switch-client`` if already inside
                            tmux client.
  ``tmuxp kill-session``    ``<session name>``
+ ``tmuxp freeze``          ``<session name>``
  ``tmuxp load``            ``<file>``
                            Load a workspace yaml / json file.
                            If session already made, will offer to attach.
