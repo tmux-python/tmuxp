@@ -4,6 +4,27 @@ Roadmap
 Immediate
 """""""""
 
+bug:
+
+'pane_start_path': u'/home/tony/workspace/tmuxp/ /var/log',
+
+.. code-block:: yaml
+
+    yaml_config = '''
+    session_name: sampleconfig
+    start_directory: '~'
+    windows:
+    - window_name: test
+      start_directory: /var/log
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - vim
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
+
 - update prompt() to have verbose choices
 - tmuxp kill-session escape / quote names with spaces
 - have test_workspace_builder use tests from ./examples!
