@@ -91,17 +91,13 @@ class NewTest2(TmuxTestCase):
         window = self.session.new_window(window_name='test', attach=True)
         self.assertIsInstance(window, Window)
         self.assertEqual(1, len(window.panes))
-        window.select_layout()
         window.split_window(attach=True)
-        window.select_layout()
 
         self.assertEqual(2, len(window.panes))
         # note: the below used to accept -h, removing because split_window now
         # has attach as its only argument now
-        window.select_layout()
         window.split_window(attach=True)
         self.assertEqual(3, len(window.panes))
-        window.select_layout()
 
 
 class NewTest3(TmuxTestCase):
