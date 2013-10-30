@@ -380,7 +380,7 @@ def command_load(args):
             if config.in_cwd():
                 configfile = config.in_cwd()[0]
             else:
-                print('No tmuxp configs found in current directory.')
+                sys.exit('No tmuxp configs found in current directory.')
         else:
             configfile = args.config
         file_user = os.path.join(config_dir, configfile)
