@@ -8,6 +8,11 @@ Here you can find the recent changes to tmuxp.
 
 - [cli] fix bug where if inside tmux, loading a workspace via switch_client
   wouldn't work.
+- [cli] fix bug where ``tmuxp load .`` would return an error instead of a
+  notice.
+- [cli] ``tmuxp freeze <filename>`` experimental
+- [freeze] [tests] tmuxp now has experimental support for freezing live
+  sessions.
 
 2013-10-29
 ----------
