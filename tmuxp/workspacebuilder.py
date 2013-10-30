@@ -215,3 +215,37 @@ class WorkspaceBuilder(object):
             w.server._update_panes()
 
             yield p
+
+
+def freeze(session):
+    sconf = {}
+
+    sconf['session_name'] = session['session_name']
+
+    sconf['windows'] = []
+    for w in session.windows:
+        wconf = {}
+        wconf['options'] = w.show_window_options()
+        wconf['window_name'] = w.get('window_name')
+        wconf['panes'] = []
+        logger.error(w)
+        logger.error(dict(w))
+
+        if all(w.panes[0].get('pane_current_path') == p.get('pane_current_path') for p in w.panes):
+            wconf['shell_command_before'] = w.panes[0].get('pane_current_path')
+
+        for p in w.panes:
+            pconf = {}
+            pconf['shell_command'] = []
+            if 'shell_command_before' not in wconf:
+                pconf['shell_command'].append('cd ' + p.get('pane_current_path'))
+            pconf['shell_command'].append(p.get('pane_current_command'))
+            wconf['panes'].append(pconf)
+            logger.error(p)
+            logger.error(dict(p))
+
+
+        sconf['windows'].append(wconf)
+
+    return sconf
+

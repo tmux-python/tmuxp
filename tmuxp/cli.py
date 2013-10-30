@@ -18,12 +18,13 @@ import sys
 import argparse
 import argcomplete
 import logging
-import kaptan
-from . import config
-from distutils.util import strtobool
-from . import log, util, exc, WorkspaceBuilder, Server
-from .util import ascii_lowercase, input
 import pkg_resources
+import kaptan
+from . import log, util, exc, WorkspaceBuilder, Server, config
+from .util import ascii_lowercase, input
+from .workspacebuilder import freeze
+from distutils.util import strtobool
+
 
 __version__ = pkg_resources.require("tmuxp")[0].version
 
@@ -279,6 +280,70 @@ def load_workspace(config_file, args):
                 builder.session.attach_session()
         else:
             sys.exit()
+
+
+def command_freeze(args):
+    """ Import teamocil config to tmuxp format. """
+
+    t = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path
+    )
+
+    logger.error(args)
+    session = t.findWhere({
+        'session_name': args.session_name
+    })
+
+    sconf = freeze(session)
+    configparser = kaptan.Kaptan()
+    newconfig = config.inline(sconf)
+    configparser.import_config(newconfig)
+    config_format = prompt_choices('Convert to', choices=[
+                                    'yaml', 'json'], default='yaml')
+
+    if config_format == 'yaml':
+        newconfig = configparser.export(
+            'yaml', indent=2, default_flow_style=False, safe=True
+        )
+    elif config_format == 'json':
+        newconfig = configparser.export('json', indent=2)
+    else:
+        sys.exit('Unknown config format.')
+
+    print(newconfig)
+    print(
+        '---------------------------------------------------------------')
+    print(
+        'Configuration import does its best to convert teamocil files.\n')
+    if prompt_yes_no(
+        'The new config *WILL* require adjusting afterwards. Save config?'
+    ):
+        dest = None
+        while not dest:
+            dest_prompt = prompt('Save to: ', os.path.abspath(
+                os.path.join(config_dir, 'myimport.%s' % config_format)))
+            if os.path.exists(dest_prompt):
+                print('%s exists. Pick a new filename.' % dest_prompt)
+                continue
+
+            dest = dest_prompt
+
+        dest = os.path.abspath(os.path.relpath(dest))
+        if prompt_yes_no('Write to %s?' % dest):
+            buf = open(dest, 'w')
+            buf.write(newconfig)
+            buf.close()
+
+            print('Saved to %s.' % dest)
+    else:
+        print(
+            'tmuxp has examples in JSON and YAML format at <http://tmuxp.readthedocs.org/en/latest/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.readthedocs.org/>'
+        )
+        sys.exit()
+
+
 
 
 def command_load(args):
@@ -542,6 +607,9 @@ def command_convert(args):
                 print('written new config to <%s>.' % (newfile))
 
 
+
+
+
 def command_attach_session(args):
     """ Command to attach / switch client to a tmux session."""
     commands = []
@@ -620,6 +688,14 @@ def get_parser():
     attach_session.set_defaults(callback=command_attach_session)
 
     attach_session.add_argument(
+        dest='session_name',
+        type=str,
+    ).completer = SessionCompleter
+
+    freeze = subparsers.add_parser('freeze')
+    freeze.set_defaults(callback=command_freeze)
+
+    freeze.add_argument(
         dest='session_name',
         type=str,
     ).completer = SessionCompleter
@@ -758,6 +834,8 @@ def main():
         command_import_teamocil(args)
     elif args.callback is command_import_tmuxinator:
         command_import_tmuxinator(args)
+    elif args.callback is command_freeze:
+        command_freeze(args)
     elif args.callback is command_attach_session:
         command_attach_session(args)
     elif args.callback is command_kill_session:

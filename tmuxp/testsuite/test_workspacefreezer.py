@@ -2,53 +2,19 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
+import sys
 import unittest
 import logging
 import time
 import kaptan
 from .. import Window, config, exc
-from ..workspacebuilder import WorkspaceBuilder
+from ..workspacebuilder import WorkspaceBuilder, freeze
 from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 example_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
-
-
-def freeza(session):
-    sconf = {}
-
-    sconf['session_name'] = session['session_name']
-
-    sconf['windows'] = []
-    for w in session.windows:
-        wconf = {}
-        wconf['options'] = w.show_window_options()
-        wconf['window_name'] = w.get('window_name')
-        wconf['panes'] = []
-        logger.error(w)
-        logger.error(dict(w))
-
-        for p in w.panes:
-            pconf = {}
-            pconf['shell_command'] = []
-            pconf['shell_command'].append('cd ' + p.get('pane_current_path'))
-            pconf['shell_command'].append(p.get('pane_current_command'))
-            wconf['panes'].append(pconf)
-            logger.error(p)
-            logger.error(dict(p))
-
-
-        sconf['windows'].append(wconf)
-
-    logger.error(sconf)
-
-    return sconf
-
-
-
-
 
 
 class FreezeTest(TmuxTestCase):
@@ -77,7 +43,11 @@ class FreezeTest(TmuxTestCase):
         - htop
     '''
 
-    def test_split_windows(self):
+    def test_focus(self):
+        # assure the built yaml config has focus
+        pass
+
+    def test_freeze_config(self):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
 
@@ -89,7 +59,7 @@ class FreezeTest(TmuxTestCase):
         time.sleep(1)
 
         session = self.session
-        sconf = freeza(session)
+        sconf = freeze(session)
 
         config.check_consistency(sconf)
 
@@ -101,7 +71,6 @@ class FreezeTest(TmuxTestCase):
         json = kaptanconf.export('json', indent=2)
         yaml = kaptanconf.export(
             'yaml', indent=2, default_flow_style=False, safe=True)
-
 
         logger.error(json)
         logger.error(yaml)
