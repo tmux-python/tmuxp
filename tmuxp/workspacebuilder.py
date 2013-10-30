@@ -142,7 +142,6 @@ class WorkspaceBuilder(object):
                 p = p
 
                 if 'layout' in wconf:
-                    logger.error(wconf['layout'])
                     w.select_layout(wconf['layout'])
 
     def iter_create_windows(self, s):
@@ -208,7 +207,6 @@ class WorkspaceBuilder(object):
                 assert(isinstance(p, Pane))
 
             if 'layout' in wconf:
-                logger.error(wconf['layout'])
                 w.select_layout(wconf['layout'])
 
             for cmd in pconf['shell_command']:
@@ -234,8 +232,6 @@ def freeze(session):
         wconf['window_name'] = w.get('window_name')
         wconf['layout'] = w.get('window_layout')
         wconf['panes'] = []
-        logger.error(w)
-        logger.error(dict(w))
 
         if all(w.panes[0].get('pane_current_path') == p.get('pane_current_path') for p in w.panes):
             wconf['shell_command_before'] = w.panes[0].get('pane_current_path')
@@ -244,14 +240,13 @@ def freeze(session):
             pconf = {}
             pconf['shell_command'] = []
             if 'shell_command_before' not in wconf:
-                pconf['shell_command'].append('cd ' + p.get('pane_current_path'))
+                pconf['shell_command'].append(
+                    'cd ' + p.get('pane_current_path'))
             pconf['shell_command'].append(p.get('pane_current_command'))
             wconf['panes'].append(pconf)
-            logger.error(p)
-            logger.error(dict(p))
-
+            # logger.error(p)
+            # logger.error(dict(p))
 
         sconf['windows'].append(wconf)
 
     return sconf
-
