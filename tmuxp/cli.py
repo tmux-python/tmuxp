@@ -196,7 +196,9 @@ def setup_logger(logger=None, level='INFO'):
         logger = logging.getLogger()
     if not logger.handlers:
         channel = logging.StreamHandler()
-        channel.setFormatter(log.LogFormatter())
+        channel.setFormatter(log.DebugLogFormatter())
+
+        #channel.setFormatter(log.LogFormatter())
         logger.setLevel(level)
         logger.addHandler(channel)
 
@@ -263,7 +265,11 @@ def load_workspace(config_file, args):
                 builder.session.attach_session()
         return
     except Exception as e:
+        import traceback
+
+        print(traceback.format_exc())
         logger.error(e)
+
         choice = prompt_choices(
             'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
             choices=['k', 'a', 'd'],

@@ -141,8 +141,9 @@ class WorkspaceBuilder(object):
                 assert(isinstance(p, Pane))
                 p = p
 
-            if 'layout' in wconf:
-                w.select_layout(wconf['layout'])
+                if 'layout' in wconf:
+                    logger.error(wconf['layout'])
+                    w.select_layout(wconf['layout'])
 
     def iter_create_windows(self, s):
         ''' generator that creates tmux windows, yields :class:`Window` object
@@ -206,6 +207,10 @@ class WorkspaceBuilder(object):
                 p = w.attached_pane()
                 assert(isinstance(p, Pane))
 
+            if 'layout' in wconf:
+                logger.error(wconf['layout'])
+                w.select_layout(wconf['layout'])
+
             for cmd in pconf['shell_command']:
                 p.send_keys(cmd)
 
@@ -227,6 +232,7 @@ def freeze(session):
         wconf = {}
         wconf['options'] = w.show_window_options()
         wconf['window_name'] = w.get('window_name')
+        wconf['layout'] = w.get('window_layout')
         wconf['panes'] = []
         logger.error(w)
         logger.error(dict(w))

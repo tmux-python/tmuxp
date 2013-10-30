@@ -110,10 +110,16 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param layout: string of the layout, 'even-horizontal', 'tiled', etc.
         :type layout: string
         '''
-        self.tmux(
+
+
+        proc = self.tmux(
             'select-layout',
+            '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
             layout
         )
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
 
     @property
     def target(self):
