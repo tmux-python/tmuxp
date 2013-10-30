@@ -224,6 +224,8 @@ this will load the ``.tmuxp.yaml`` in the root of the project.
 .. literalinclude:: ../.tmuxp.yaml
     :language: yaml
 
+.. _travis:
+
 Travis CI
 """""""""
 

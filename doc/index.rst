@@ -10,14 +10,17 @@ tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
 python objects. Features:
 
 - Load + switch to new session from inside tmux.
-- bash / zsh / tcsh completion
+- :ref:`bash / zsh / tcsh completion <bash_completion>`.
 - JSON, YAML and `python dict`_ configuration.
 - Support for pre-commands with ``shell_command_before`` to load
   virtualenv / rvm / any other commands.
 - Session resuming from config file if already running.
-- Per-project tmux sessions
+- Per-project tmux sessions, load directly from config file.
+  `` $ tmuxp load /full/file/path.json ``
 - uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
   create python objects to build workspaces with the freshest data.
+- (experimental) Import configs from `teamocil`_ and `tmuxinator`_.
+- (experimental) Freezing sessions.
 
 tmuxp works in 3 ways:
 

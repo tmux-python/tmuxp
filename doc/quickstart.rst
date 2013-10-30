@@ -45,6 +45,8 @@ This creates your tmuxp session.
 
 .. seealso:: :ref:`examples`
 
+.. _bash_completion:
+
 Bash completion
 """""""""""""""
 

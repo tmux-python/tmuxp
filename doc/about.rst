@@ -1,3 +1,5 @@
+.. module:: tmuxp
+
 .. _about:
 
 =====
@@ -18,14 +20,59 @@ Interested in some kung-fu or joining the effort? :ref:`api` and
 License  is `BSD-licensed`_. Code can be found at github at
 http://github.com/tony/tmuxp.
 
-How is tmuxp different from teamocil and tmuxinator
----------------------------------------------------
+Differences from tmuxinator / teamocil
+--------------------------------------
 
-teamocil and tmuxinator both build tmux workspaces from yaml. tmuxp
-also handles building workspaces.
+.. note::
 
-teamocil and tmuxinator do this by turning YAML directly into tmux
-commands.
+    If you use teamocli / tmuxinator and can clarify or add differences,
+    please free to `edit this page`_ on github.
+
+Similarities
+""""""""""""
+
+**Load sessions** Loads tmux sessions from config
+
+**YAML** Supports YAML format
+
+**Inlining / shorthand configuration** All three support short-hand and
+simplified markup for panes that have one command.
+
+Missing
+"""""""
+
+**Stability** tmuxinator and teamocil are far more stable and
+well-developed than tmuxp.
+
+**ERB / Template support** teamocil supports `ERB`_ markup.
+
+**Version support** tmuxp only supports ``tmux >= 1.8``. Teamocil and
+tmuxinator may have support for earlier versions.
+
+Differences
+"""""""""""
+
+**Programming Language** python. teamocil and tmuxinator uses ruby.
+
+**Internals** teamocil and tmuxinator pipe configurations into
+commands. tmuxp turns configuration into a live :class:`Session` object
+with access to all window and pane data. See :ref:`ORM_AL`.
+
+**CLI** tmuxp's CLI can attach and kill sessions.
+
+Additional Features
+"""""""""""""""""""
+
+**Unit tests** Tests against live tmux version to test statefulness of
+tmux sessions, windows and panes. See :ref:`travis`.
+
+**Import config** import configs from Teamocil / Tmuxinator
+
+**JSON config** JSON config support
+
+**Conversion**
+
+**Session freezing** Supports session freezing into YAML and JSON format.
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
@@ -33,3 +80,5 @@ commands.
 .. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
+.. _ERB: http://ruby-doc.org/stdlib-2.0.0/libdoc/erb/rdoc/ERB.html
+.. _edit this page: https://github.com/tony/tmuxp/edit/master/doc/about.rst
