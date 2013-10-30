@@ -3,6 +3,12 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-30
+----------
+
+- [cli] fix bug where if inside tmux, loading a workspace via switch_client
+  wouldn't work.
+
 2013-10-29
 ----------
 

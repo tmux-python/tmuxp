@@ -275,7 +275,7 @@ def load_workspace(config_file, args):
             print('Session killed.')
         elif choice == 'a':
             if 'TMUX' in os.environ:
-                builder.session.switch_session()
+                builder.session.switch_client()
             else:
                 builder.session.attach_session()
         else:
