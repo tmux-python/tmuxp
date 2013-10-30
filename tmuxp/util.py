@@ -69,6 +69,9 @@ class tmux(object):
         self.stderr = stderr.decode().split('\n')
         self.stderr = list(filter(None, self.stderr))  # filter empty values
 
+        if 'new-window' in cmd:
+            logger.error(' '.join(cmd))
+
         if 'has-session' in cmd and len(self.stderr):
             if not self.stdout:
                 self.stdout = self.stderr[0]

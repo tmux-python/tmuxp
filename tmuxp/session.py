@@ -100,7 +100,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-
     def rename_session(self, new_name):
         '''rename session and return new :class:`Session` object
 
@@ -121,6 +120,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     def new_window(self,
                    window_name=None,
+                   start_directory=None,
                    attach=True):
         '''
         ``$ tmux new-window``
@@ -134,10 +134,12 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         .. code-block:: bash
 
-            $ tmux new-window -n <window_name>
+            $ tmux new-window -n <window_name> -c <start_directory>
 
         :type window_name: string
-
+        :param start_directory: specifies the working directory in which the
+            new created.
+        :type start_directory: string
         :param attach: make new window the current window after creating it,
                        default True.
         :param type: bool
@@ -149,14 +151,22 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         window_args = (
             '-t%s' % self.get('session_id'),
             '-P',
-            '-F%s' % '\t'.join(tmux_formats),  # output
         )
+
+        if not attach:
+            window_args += ('-d',)
+
+        if start_directory:
+            # start_directory = pipes.quote(start_directory)
+            logger.error(start_directory)
+            window_args += ('-c %s' % start_directory,)
 
         if window_name:
             window_args += ('-n%s' % window_name,)
 
-        if not attach:
-            window_args += ('-d',)
+        window_args += (
+            '-F%s' % '\t'.join(tmux_formats),  # output
+        )
 
         proc = self.tmux('new-window', *window_args)
 

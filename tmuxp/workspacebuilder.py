@@ -161,18 +161,19 @@ class WorkspaceBuilder(object):
             else:
                 window_name = wconf['window_name']
 
+            w1 = None
             if i == int(1):  # if first window, use window 1
-                # w = s.select_window(1)
-                w = s.attached_window()
-                w = w.rename_window(window_name)
-            else:
-                w = s.new_window(
-                    window_name=window_name,
-                    attach=False  # do not move to the new window
-                )
+                w1 = s.attached_window()
+            w = s.new_window(
+                window_name=window_name,
+                start_directory=wconf['start_directory'] if 'start_directory' in wconf else None,
+                attach=False  # do not move to the new window
+            )
 
+            if i == int(1) and w1:  # if first window, use window 1
+                w1.kill_window()
             assert(isinstance(w, Window))
-
+            s.server._update_windows()
             if 'options' in wconf and isinstance(wconf['options'], dict):
                 for key, val in wconf['options'].items():
                     w.set_window_option(key, val)

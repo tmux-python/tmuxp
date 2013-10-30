@@ -26,14 +26,12 @@ class TwoPaneTest(TmuxTestCase):
       panes:
       - shell_command:
         - vim
-        start_directory: '~'
       - shell_command:
         - echo "hey"
       window_name: editor
     - panes:
       - shell_command:
         - tail -F /var/log/syslog
-        start_directory: /var/log
       window_name: logging
     - window_name: test
       panes:
@@ -72,7 +70,6 @@ class ThreePaneTest(TmuxTestCase):
       panes:
       - shell_command:
         - vim
-        start_directory: '~'
       - shell_command:
         - echo "hey"
       - shell_command:
@@ -114,7 +111,6 @@ class FocusAndPaneIndexTest(TmuxTestCase):
       panes:
       - shell_command:
         - vim
-        start_directory: '~'
       - shell_command:
         - echo "hey"
       - shell_command:
@@ -125,8 +121,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
       panes:
       - shell_command:
         - vim
-        start_directory: '~'
-        focus: true
+        rocus: true
       - shell_command:
         - echo "hey"
       - shell_command:
@@ -272,6 +267,41 @@ class WindowAutomaticRename(TmuxTestCase):
 
         self.assertNotEqual(w.get('window_name'), 'man')
 
+
+class StartDirectoryTest(TmuxTestCase):
+
+    yaml_config = '''
+    session_name: sampleconfig
+    start_directory: '~'
+    windows:
+    - window_name: test
+      start_directory: /var/log
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - vim
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
+    '''
+
+    def test_start_directory(self):
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+        #sconfig = config.expand(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+        builder.build(session=self.session)
+
+        assert(self.session == builder.session)
+        logger.error(self.session)
+        self.assertEqual(1, len(self.session.windows))
+        for window in self.session.windows:
+            for p in window.panes:
+                logger.error(dict(p))
+                logger.error(p.get('pane_start_path'))
+                self.assertEqual('/var/log', p.get('pane_start_path'))
 
 if __name__ == '__main__':
     unittest.main()

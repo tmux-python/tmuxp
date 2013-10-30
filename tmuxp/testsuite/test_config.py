@@ -158,6 +158,7 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
+                'start_directory': '/var/log',
                 'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': 'htop'},
@@ -195,6 +196,7 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
+                'start_directory': '/var/log',
                 'options': {'automatic_rename': True},
                 'panes': [
                     {'shell_command': ['htop']},
