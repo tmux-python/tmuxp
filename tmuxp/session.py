@@ -148,24 +148,32 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
         tmux_formats = ['#{%s}' % f for f in wformats]
 
-        window_args = (
-            '-t%s' % self.get('session_id'),
-            '-P',
-        )
+        window_args = tuple()
+
 
         if not attach:
             window_args += ('-d',)
 
-        if start_directory:
-            # start_directory = pipes.quote(start_directory)
-            logger.error(start_directory)
-            window_args += ('-c %s' % start_directory,)
+        window_args += (
+            '-P',
+        )
 
+        if start_directory:
+            self.tmux('set-option', 'default-path', start_directory)
+            self.server.tmux('set-option', 'default-path', start_directory)
+            #start_directory = pipes.quote(start_directory)
+            logger.error(start_directory)
+            #window_args += ('-c%s' % start_directory,)
+
+
+        window_args += (
+            '-F"%s"' % '\t'.join(tmux_formats),  # output
+        )
         if window_name:
             window_args += ('-n%s' % window_name,)
 
         window_args += (
-            '-F%s' % '\t'.join(tmux_formats),  # output
+            '-t%s' % self.get('session_id'),
         )
 
         proc = self.tmux('new-window', *window_args)

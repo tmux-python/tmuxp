@@ -85,17 +85,7 @@ class Server(TmuxRelationalObject):
         )
 
         if proc.stderr:
-            if 'unknown option -- F' in proc.stderr[0]:
-                proc = self.tmux(
-                    'list-sessions',
-                )
-
-                if proc.stderr:
-                    raise Exception(proc.stderr)
-                else:
-                    return 'hi'
-            else:
-                raise Exception(proc.stderr)
+            raise Exception(proc.stderr)
         else:
             session_info = proc.stdout[0]
 

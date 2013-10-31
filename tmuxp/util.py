@@ -53,14 +53,14 @@ class tmux(object):
             self.process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
             self.process.wait()
             stdout = self.process.stdout.read()
             stderr = self.process.stderr.read()
         except Exception as e:
             logger.error('Exception for %s: \n%s' % (
-                cmd,
+                subprocess.list2cmdline(cmd),
                 e.message)
             )
         self.stdout = stdout.decode().split('\n')
@@ -221,8 +221,25 @@ def which(exe=None):
     logger.error('No executable was passed to be searched by which')
     return None
 
+def get_version(version):
+    """ Return True if tmux version installed.
+
+    :param version: version, '1.8'
+    :param type: string
+    """
+    proc = tmux('-V')
+
+    if proc.stderr:
+        raise Exception(proc.stderr)
+
+    installed_version = proc.stdout[0].split('tmux ')[1]
+
+    return StrictVersion(installed_version) == StrictVersion(version)
 
 def version():
+    """
+    check to see if tmux is version >1.8 or above
+    """
     proc = tmux('-V')
 
     if proc.stderr:

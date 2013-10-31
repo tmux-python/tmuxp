@@ -164,6 +164,7 @@ class WorkspaceBuilder(object):
             w1 = None
             if i == int(1):  # if first window, use window 1
                 w1 = s.attached_window()
+                w1.attached_pane().send_keys('la')
             w = s.new_window(
                 window_name=window_name,
                 start_directory=wconf['start_directory'] if 'start_directory' in wconf else None,
@@ -241,8 +242,8 @@ def freeze(session):
             pconf = {}
             pconf['shell_command'] = []
             if 'shell_command_before' not in wconf:
-                pconf['shell_command'].append(
-                    'cd ' + p.get('pane_current_path'))
+               pconf['shell_command'].append(
+                   'cd ' + p.get('pane_current_path'))
             pconf['shell_command'].append(p.get('pane_current_command'))
             wconf['panes'].append(pconf)
             # logger.error(p)
