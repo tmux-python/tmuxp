@@ -86,7 +86,9 @@ Minor tweaks
 - Load + switch to new session from inside tmux.
 - Resume session if config loaded.
 - Pre-commands virtualenv / rvm / any other commands.
-- Load config from anywhere `$ tmuxp load /full/file/path.json`.
+- Load config from anywhere ``$ tmuxp load /full/file/path.json``.
+- Load config ``.tmuxp.yaml`` or ``.tmuxp.json`` from current working
+  directory with ``$ tmuxp load .``.
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
