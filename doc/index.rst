@@ -21,7 +21,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 
 Ready to begin? See the `Quickstart`_.
 
-.. _tmuxp on Travis CI`: http://travis-ci.org/tony/tmuxp
+.. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
 .. _Documentation: http://tmuxp.rtfd.org/
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _tmuxinator: https://github.com/aziz/tmuxinator
