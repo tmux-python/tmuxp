@@ -152,7 +152,12 @@ class RenameSpacesTest(RenameTest):
 class KillWindow(TmuxTestCase):
 
     def test_kill_window(self):
+        self.session.new_window()
+        # create a second window to not kick out the client.
+        # there is another way to do this via options too.
+
         w = self.session.attached_window()
+
         w.get('window_id')
 
         w.kill_window()

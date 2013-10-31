@@ -218,7 +218,7 @@ def which(exe=None):
     logger.error('No executable was passed to be searched by which')
     return None
 
-def get_version(version):
+def is_version(version):
     """ Return True if tmux version installed.
 
     :param version: version, '1.8'

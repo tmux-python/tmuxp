@@ -3,6 +3,13 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-10-31
+----------
+
+- [internal] :meth:`util.is_version()`
+- [config] [tests]: correctly :meth:`config.trickle()` the ``start_directory``.
+- [config] [tests]: get ``start_directory`` working for configs
+
 2013-10-30
 ----------
 
