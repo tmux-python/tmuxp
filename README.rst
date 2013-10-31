@@ -24,23 +24,6 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 - and `much, much more`_
 
 Ready to begin? See the `Quickstart`_.
-.. _tmuxp on Travis CI`: http://travis-ci.org/tony/tmuxp
-.. _Documentation: http://tmuxp.rtfd.org/
-.. _tmux(1): http://tmux.sourceforge.net/
-.. _tmuxinator: https://github.com/aziz/tmuxinator
-.. _teamocil: https://github.com/remiprev/teamocil
-.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
-.. _freezing live sessions: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
-.. _importing: http://tmuxp.readthedocs.org/en/latest/cli.html#import
-.. _travis.yml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
-.. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
-.. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
-.. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
-.. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
-.. _bash, zsh and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
-.. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
-.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
-.. _Internals: http://tmuxp.readthedocs.org/en/latest/internals.html
 
 CLI Commands
 """"""""""""
@@ -89,6 +72,24 @@ tests           .. code-block:: bash
                     $ python ./run_tests.py
 ==============  ==========================================================
 
+.. _tmuxp on Travis CI`: http://travis-ci.org/tony/tmuxp
+.. _Documentation: http://tmuxp.rtfd.org/
+.. _tmux(1): http://tmux.sourceforge.net/
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
+.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
+.. _freezing live sessions: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
+.. _importing: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _travis.yml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
+.. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
+.. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
+.. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
+.. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
+.. _bash, zsh and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
+.. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
+.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
+.. _Internals: http://tmuxp.readthedocs.org/en/latest/internals.html
+
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
@@ -98,7 +99,5 @@ tests           .. code-block:: bash
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
-.. _ORM: http://tmuxp.readthedocs.org/en/latest/quickstart.html#tmux-orm
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _Issues tracker: https://github.com/tony/tmuxp/issues
-.. _python dict: http://docs.python.org/2/library/stdtypes.html#dict

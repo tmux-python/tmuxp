@@ -20,6 +20,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 - and `much, much more`_
 
 Ready to begin? See the `Quickstart`_.
+
 .. _tmuxp on Travis CI`: http://travis-ci.org/tony/tmuxp
 .. _Documentation: http://tmuxp.rtfd.org/
 .. _tmux(1): http://tmux.sourceforge.net/
