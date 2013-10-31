@@ -11,17 +11,36 @@ Freeze sessions
 
 .. code-block:: bash
 
-    $ tmuxp freeze <filename>
+    $ tmuxp freeze <session-name>
 
 Tmuxp will offer to convert file to ``.json`` or ``.yaml``.
+
+Load session
+""""""""""""
+
+Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by
+:ref:`bash_completion`.
+
+Files also may be loaded by absolute path.
+
+.. code-block:: bash
+
+    $ tmuxp load <filename>
+
+Files named ``.tmuxp.yaml`` or ``.tmuxp.json`` in the current working
+directory may be loaded with:
+
+.. code-block:: bash
+
+    $ tmuxp load .
 
 Import
 """"""
 
+.. _import_teamocil:
+
 From teamocil
 '''''''''''''
-
-.. _import_teamocil:
 
 .. code-block:: bash
 
@@ -41,12 +60,14 @@ From tmuxinator
 Convert between YAML and JSON
 """""""""""""""""""""""""""""
 
-.. _bash_completion:
+.. code-block:: bash
 
     $ tmuxp convert <filename>
 
 tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
 ``.json`` to  ``.yaml``.
+
+.. _bash_completion:
 
 Bash completion
 """""""""""""""
