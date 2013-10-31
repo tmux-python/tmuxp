@@ -251,8 +251,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         Kill the current :class:`Window` object.
 
-        :param target_window: the ``target window``.
-        :type target_window: string
         '''
 
         proc = self.tmux(
@@ -266,6 +264,27 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.server._update_windows()
 
+    def move_window(self, destination):
+        '''
+        ``$ tmux move-window``
+
+        move the current :class:`Window` object.
+
+        :param destination: the ``target window`` or index to move the window
+            to.
+        :type target_window: string
+        '''
+
+        proc = self.tmux(
+            'move-window',
+            '-s%s:%s' % (self.get('session_id'), self.get('window_index')),
+            '-t%s' % destination,
+        )
+
+        if proc.stderr:
+            raise Exception(proc.stderr)
+
+        self.server._update_windows()
 
     def select_pane(self, target_pane):
         '''

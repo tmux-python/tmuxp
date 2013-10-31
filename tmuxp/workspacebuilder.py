@@ -164,7 +164,7 @@ class WorkspaceBuilder(object):
             w1 = None
             if i == int(1):  # if first window, use window 1
                 w1 = s.attached_window()
-                w1.attached_pane().send_keys('la')
+                w1.move_window(99)
             w = s.new_window(
                 window_name=window_name,
                 start_directory=wconf['start_directory'] if 'start_directory' in wconf else None,

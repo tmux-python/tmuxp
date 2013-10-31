@@ -12,6 +12,8 @@ Here you can find the recent changes to tmuxp.
 - [internal]: fix :meth:``Window.kill_window()`` target to
   ``session_id:window_index`` for compatibility and pass tests.
 - [docs] [examples]: Example for ``start_directory``.
+- [internal] fix bug where first and second window would load in mixed order
+- [internal] :class:`Window.move_window()` for moving window.
 
 2013-10-30
 ----------
