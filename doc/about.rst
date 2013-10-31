@@ -66,7 +66,7 @@ Additional Features
 **Unit tests** Tests against live tmux version to test statefulness of
 tmux sessions, windows and panes. See :ref:`travis`.
 
-**Import config** import configs from Teamocil / Tmuxinator *****
+**Import config** import configs from Teamocil / Tmuxinator [1]_.
 
 **Session freezing** Supports session freezing into YAML and JSON
 format [1]_.
@@ -76,9 +76,9 @@ format [1]_.
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
 
-.. [1] Freezing sessions is a great way to save time, but tweaking will
-       probably be required - There is no substitute to a config made with
-       love.
+.. [1] While freezing and importing sessions is a great way to save time, 
+       tweaking will probably be required - There is no substitute to a
+       config made with love.
 
 Minor tweaks
 ------------
