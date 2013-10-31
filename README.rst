@@ -6,10 +6,10 @@
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
 
-.. figure:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
+.. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
     :scale: 100%
-    :width: 50%
-    :align: center
+    :width: 35%
+    :align: right
 
 tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 `python objects`_.
