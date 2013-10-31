@@ -11,26 +11,34 @@
     :width: 65%
     :align: center
 
-Open to testers
----------------
+tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
+`python objects`_.
 
-tmuxp is still **alpha** code and needs a few more weeks until stable.
-See the `Issues tracker`_ to see known issues and for any other concerns.
+- Basic support for `freezing live sessions`_
+- `importing`_ from `teamocil`_ and `tmuxinator`_.
+- JSON or YAML for `simple`_ or `very elaborate`_ configurations.
+- `bash, zsh and tcsh`_ completion.
+- Unit tested against against live tmux (1.8 and git). See `travis.yml`_
+  file and `testing`_ page.
+- Documented `Examples`_, Internals.
+- and `much, much more`_
 
-Install
-"""""""
+Ready to begin? See the `Quickstart`_.
 
-- install ``tmux``, at least version **1.8**
-- libyaml is installed for your distribution.
-
-Install ``tmuxp``:
-
-.. code-block:: bash
-
-    $ pip install tmuxp
-    
-
-See: `Quickstart`_
+.. _tmux(1): http://tmux.sourceforge.net/
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
+.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
+.. _freezing live sessions: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
+.. _importing: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _travis.yml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
+.. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
+.. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
+.. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
+.. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
+.. _bash, zsh and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
+.. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
+.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 
 CLI Commands
 """"""""""""
@@ -49,93 +57,6 @@ CLI Commands
  ``tmuxp import``          ``[teamocil | tmuxinator]`` ``<file>``
                            Import a `teamocil`_ or `tmuxinator`_ config.
 ========================== ===============================================
-
-Bash completion
-"""""""""""""""
-
-For bash, ``.bashrc``:
-
-.. code-block:: bash
-
-    $ source tmuxp.bash
-
-For tcsh, ``.tcshrc``:
-
-.. code-block:: bash
-
-    $ complete tmuxp 'p/*/`tmuxp.tcsh`/'
-
-For zsh, ``.zshrc``:
-
-.. code-block:: bash
-
-    $ source tmuxp.zsh
-
-See `installing bash completion`_ to get bash, zsh and tcsh completion
-working on your machine.
-
-Mini Quickstart
-"""""""""""""""
-
-See the full `Quickstart`_ in the documentation.
-
-Load from ``~/.tmuxp.yaml`` or ``~/.tmuxp.json`` in current directory.
-
-.. code-block:: bash
-
-    $ tmuxp load .
-
-Load ``myconfig.yaml`` from ``~/.tmuxp``
-
-.. code-block:: bash
-
-    $ tmuxp load myconfig.yaml
-
-Load a relative or full config file (bash complete supports this too)
-
-.. code-block:: bash
-
-    $ tmuxp load ./myconfig.yaml
-    $ tmuxp load ../myconfig.yaml
-    $ tmuxp load /var/www/mywebproject/myconfig.yaml
-
-``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
-
-.. code-block:: yaml
-
-    session_name: 2-pane-vertical
-    windows:
-      - window_name: my test window
-        panes:
-          - pwd
-          - pwd
-
-.. code-block:: bash
-
-    $ tmuxp load test.yaml
-
-or ``~/.tmuxp/test.json``:
-
-.. code-block:: json
-
-    {
-      "windows": [
-        {
-          "panes": [
-            "pwd", 
-            "pwd"
-          ], 
-          "window_name": "my test window"
-        }
-      ], 
-      "session_name": "2-pane-vertical"
-    }
-
-.. code-block:: bash
-
-    $ tmuxp load test.json
-
-See: `Examples`_
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
