@@ -13,8 +13,11 @@ Freeze sessions
 
     $ tmuxp freeze <filename>
 
-Import from teamocil
-""""""""""""""""""""
+Import
+""""""
+
+From teamocil
+'''''''''''''
 
 .. _import_teamocil:
 
@@ -24,8 +27,8 @@ Import from teamocil
 
 .. _import_tmuxinator:
 
-Import from tmuxinator
-""""""""""""""""""""""
+From tmuxinator
+'''''''''''''''
 
 .. code-block:: bash
 
