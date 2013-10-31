@@ -44,5 +44,12 @@ class ServerTest(TmuxTestCase):
         myserver = Server(config_file='test')
         self.assertEqual(myserver.config_file, 'test')
 
+    def test_256_colors(self):
+        myserver = Server(colors=256)
+        self.assertEqual(myserver.colors, 256)
+
+        # try to read the command in  util.tmux()
+        # get util.tmux  to have a self.cmd and create tests for it
+
 if __name__ == '__main__':
     unittest.main()

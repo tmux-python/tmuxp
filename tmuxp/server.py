@@ -39,10 +39,17 @@ class Server(TmuxRelationalObject):
     socket_name = None
     socket_path = None
     config_file = None
+    colors = None
     childIdAttribute = 'session_id'
 
-    def __init__(self, socket_name=None, socket_path=None, config_file=None,
-                 **kwargs):
+    def __init__(
+        self,
+        socket_name=None,
+        socket_path=None,
+        config_file=None,
+        colors=None,
+        **kwargs
+    ):
         self._windows = []
         self._panes = []
 
@@ -55,6 +62,9 @@ class Server(TmuxRelationalObject):
         if config_file:
             self.config_file = config_file
 
+        if colors:
+            self.colors = colors
+
     def tmux(self, *args, **kwargs):
         args = list(args)
         if self.socket_name:
@@ -63,6 +73,13 @@ class Server(TmuxRelationalObject):
             args.insert(0, '-S{}'.format(self.socket_path))
         if self.config_file:
             args.insert(0, '-f{}'.format(self.config_file))
+        if self.colors:
+            if self.colors == 256:
+                args.insert(0, '-2')
+            elif self.colors == 88:
+                args.insert(0, '-8')
+            else:
+                raise ValueError('Server.colors must equal 88 or 256')
 
         return tmux(*args, **kwargs)
 
@@ -437,14 +454,14 @@ class Server(TmuxRelationalObject):
         :type kill_session: bool
         '''
 
-        # ToDo: Update below to work with attach_if_exists
         if self.has_session(session_name):
             if kill_session:
                 self.tmux('kill-session', '-t%s' % session_name)
                 logger.info('session %s exists. killed it.' % session_name)
             else:
                 raise TmuxSessionExists(
-                    'Session named %s exists' % session_name)
+                    'Session named %s exists' % session_name
+                )
 
         logger.debug('creating session %s' % session_name)
 
@@ -484,7 +501,5 @@ class Server(TmuxRelationalObject):
         session = dict((k, v) for k, v in session.items() if v)
 
         session = Session(server=self, **session)
-
-        # self._sessions.append(session)
 
         return session
