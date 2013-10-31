@@ -56,7 +56,7 @@ Differences
 
 **Internals** teamocil and tmuxinator pipe configurations into
 commands. tmuxp turns configuration into a live :class:`Session` object
-with access to all window and pane data. See :ref:`ORM_AL`.
+with access to all window and pane data. See :ref:`internals`.
 
 **CLI** tmuxp's CLI can attach and kill sessions.
 

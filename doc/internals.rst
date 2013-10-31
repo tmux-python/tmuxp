@@ -1,8 +1,8 @@
-.. _orm_al:
+.. _Internals:
 
-=========================
-ORM and Abstraction Layer
-=========================
+=========
+Internals
+=========
 
 .. module:: tmuxp
 

@@ -14,17 +14,18 @@
 tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 `python objects`_.
 
-- Basic support for `freezing live sessions`_
+- Basic support for `freezing live sessions`_.
 - `importing`_ from `teamocil`_ and `tmuxinator`_.
 - JSON or YAML for `simple`_ or `very elaborate`_ configurations.
 - `bash, zsh and tcsh`_ completion.
 - Unit tested against against live tmux (1.8 and git). See `travis.yml`_
-  file and `testing`_ page.
-- Documented `Examples`_, Internals.
+  file, `tmuxp on Travis CI`_ and `testing`_ page.
+- `Documentation`_, `Examples`_, `Internals`_.
 - and `much, much more`_
 
 Ready to begin? See the `Quickstart`_.
-
+.. _tmuxp on Travis CI`: http://travis-ci.org/tony/tmuxp
+.. _Documentation: http://tmuxp.rtfd.org/
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
@@ -39,6 +40,7 @@ Ready to begin? See the `Quickstart`_.
 .. _bash, zsh and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
 .. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
+.. _Internals: http://tmuxp.readthedocs.org/en/latest/internals.html
 
 CLI Commands
 """"""""""""
