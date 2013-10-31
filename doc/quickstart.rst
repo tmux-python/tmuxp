@@ -4,13 +4,10 @@
 Quickstart
 ==========
 
-Tmux Session Manager
---------------------
+CLI
+---
 
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
+.. seealso:: :ref:`examples`, :ref:`cli`, :ref:`bash_completion`.
 
 tmuxp launches sessions from a configuration file.
 
@@ -43,30 +40,6 @@ It will list configs available in the current directory and
 
 This creates your tmuxp session.
 
-.. seealso:: :ref:`examples`
-
-.. _bash_completion:
-
-Bash completion
-"""""""""""""""
-
-For bash, ``.bashrc``:
-
-.. code-block:: bash
-
-    $ source tmuxp.bash
-
-For tcsh, ``.tcshrc``:
-
-.. code-block:: bash
-
-    $ complete tmuxp 'p/*/`tmuxp.tcsh`/'
-
-For zsh, ``.zshrc``:
-
-.. code-block:: bash
-
-    $ source tmuxp.zsh
 
 Python ORM + AL
 ---------------

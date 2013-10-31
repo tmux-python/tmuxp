@@ -21,12 +21,6 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 
 Ready to begin? See the `Quickstart`_.
 
-More tweaks:
-
-- Load + switch to new session from inside tmux.
-- Resume session if config loaded.
-- Pre-commands virtualenv / rvm / any other commands.
-- Load config from anywhere `$ tmuxp load /full/file/path.json`.
 
 .. _bash, zsh, and tcsh: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 
@@ -90,6 +84,7 @@ Explore:
 
     about
     about_tmux
+    cli
     quickstart
     examples
     orm_al
