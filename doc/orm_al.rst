@@ -41,5 +41,53 @@ Object                   Prefix                  Example
 :class:`Pane`            ``%``                   ``%5433``
 ======================== ======================= =========================
 
+Similarities to Tmux and Pythonics
+----------------------------------
+
+tmuxp is was built in the spirit of understanding how tmux operates
+and how python objects and tools can abstract the API's in a pleasant way.
+
+tmuxp uses ``FORMATTERS`` in tmux to give identity attributes to
+:class:`Session`, :class:`Window` and :class:`Pane` objects. See
+`formatters.c`_.
+
+.. _formatters.c: http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
+
+How is tmuxp able to keep references to panes, windows and sessions?
+
+    Tmux has unique ID's for sessions, windows and panes.
+
+    panes use ``%``, such as ``%1234``
+
+    windows use ``@``, such as ``@2345``
+
+    sessions use ``$``, for money, such as ``$``
+
+How is tmuxp able to handle windows with no names?
+
+    Tmux provides ``window_id`` as a unique identifier.
+
+What is a {pane,window}_index vs a {pane,window,session}_id?
+
+    Pane index refers to the order of a pane on the screen.
+
+    Window index refers to the # of the pane in the session.
+
+To assert pane, window and session data, tmuxp will use
+:meth:`Server.list_sessions()`, :meth:`Session.list_windows()`,
+:meth:`Window.list_panes()` to update objects.
+
+Idiosyncrasies
+--------------
+
+Because this is a python abstraction and commands like ``new-window``
+have dashes (-) replaced with underscores (_).
+
+Reference
+---------
+
+- tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
+- tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
+
 .. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
 .. _ORM: http://en.wikipedia.org/wiki/Object-relational_mapping

@@ -73,7 +73,7 @@ If you found a problem or are trying to write a test, you can file an
 
 .. _test_specific_tests:
 
-Choose tests to run
+Test runner options
 """""""""""""""""""
 
 .. note::
@@ -128,9 +128,10 @@ Multiple can be separated by spaces:
 .. _test_builder_visually:
 
 Visual testing
-""""""""""""""
+''''''''''''''
 
-You can watch tmux testsuite build sessions visually also.
+You can watch tmux testsuite build sessions visually by keeping a client
+open in a separate terminal.
 
 Create two terminals:
 
@@ -147,7 +148,7 @@ Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users. :)
 
 Verbosity and logging
-"""""""""""""""""""""
+'''''''''''''''''''''
 
 ``./run_tests.py`` supports two options, these are *optional* flags that
 may be added to for :ref:`test_specific_tests` and
@@ -174,8 +175,8 @@ may be added to for :ref:`test_specific_tests` and
 
         $ ./run_tests.py --verbosity 0
 
-Watch files and test
---------------------
+Run tests on save
+-----------------
 
 You can re-run tests automatically on file edit.
 
@@ -238,66 +239,6 @@ is tested against 1.8 and latest in addition to python 2.7. The
 
 .. literalinclude:: ../.travis.yml
     :language: yaml
-
-Internals
----------
-
-Similarities to Tmux and Pythonics
-----------------------------------
-
-tmuxp is was built in the spirit of understanding how tmux operates
-and how python objects and tools can abstract the API's in a pleasant way.
-
-tmuxp uses the identify ``FORMATTERS`` used by tmux, you can see
-them inside of http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c.
-
-In this, I will also begin documenting the API.
-
-the use of:
-
-Session
-:meth:`Session.new_window()` - returns a new Window object bound to the session,
-also uses ``tmux new-window``.
-:meth:`Session.new_session()` - class method - returns a new Session object.
-
-Differences from tmux
----------------------
-
-Because this is a python abstraction and flags like ``start-directory``
-have dashes (-) replaced with underscores (_).
-
-interesting observations
-------------------------
-
-How is tmuxp able to keep references to panes, windows and sessions?
-
-    Tmux has unique ID's for sessions, windows and panes.
-
-    panes use ``%``, such as ``%1234``
-
-    windows use ``@``, such as ``@2345``
-
-    sessions use ``$``, for money, such as ``$``
-
-How is tmuxp able to handle windows with no names?
-
-    Tmux provides ``window_id`` as a unique identifier.
-
-What is a {pane,window}_index vs a {pane,window,session}_id?
-
-    Pane index refers to the order of a pane on the screen.
-
-    Window index refers to the # of the pane in the session.
-
-To assert pane, window and session data, tmuxp will use
-:meth:`tmuxp.Server.list_sessions`, :meth:`tmuxp.Session.list_windows`,
-:meth:`tmuxp.Window.list_panes` to update objects.
-
-Reference
----------
-
-- tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1
-- tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/
 
 .. _travis-ci: http://www.travis-ci.org
 .. _travis build site: http://www.travis-ci.org/tony/tmuxp
