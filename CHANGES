@@ -3,6 +3,14 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-11-01
+----------
+
+- [internal] New servers for :class:`Server` arguments ``socket_name``,
+  ``socket_path``, ``config_file``.
+- [internal] :class:`Server` support for ``-2`` with ``colors=256`` and
+  ``colors=8``.
+
 2013-10-31
 ----------
 
