@@ -6,10 +6,11 @@ Here you can find the recent changes to tmuxp.
 2013-11-01
 ----------
 
-- [internal] New servers for :class:`Server` arguments ``socket_name``,
+- [internal] [tests] New servers for :class:`Server` arguments ``socket_name``,
   ``socket_path``, ``config_file``.
 - [internal] :class:`Server` support for ``-2`` with ``colors=256`` and
   ``colors=8``.
+- [cli] ``$ tmuxp -2`` for forcing 256 colors and ``tmuxp -8`` for forcing 88.
 
 2013-10-31
 ----------
