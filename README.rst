@@ -72,7 +72,7 @@ tests           .. code-block:: bash
                     $ python ./run_tests.py
 ==============  ==========================================================
 
-.. _tmuxp on Travis CI`: http://travis-ci.org/tony/tmuxp
+.. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
 .. _Documentation: http://tmuxp.rtfd.org/
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _tmuxinator: https://github.com/aziz/tmuxinator
@@ -92,12 +92,6 @@ tests           .. code-block:: bash
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
-.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
-.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _installing bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 .. _Developing and Testing: http://tmuxp.readthedocs.org/en/latest/developing.html
-.. _tmuxinator: https://github.com/aziz/tmuxinator
-.. _teamocil: https://github.com/remiprev/teamocil
-.. _abstraction layer: http://en.wikipedia.org/wiki/Abstraction_layer
-.. _tmux(1): http://tmux.sourceforge.net/
 .. _Issues tracker: https://github.com/tony/tmuxp/issues
