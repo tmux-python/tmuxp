@@ -190,7 +190,11 @@ def trickle(config):
     ``shell_command_before``.
     '''
 
+    session_start_directory = config['start_directory'] if 'start_directory' in config else None
+
     for windowconfig in config['windows']:
+        if not 'start_directory' in windowconfig and session_start_directory:
+            windowconfig['start_directory'] = session_start_directory
         for paneconfig in windowconfig['panes']:
             commands_before = config[
                 'shell_command_before'] if 'shell_command_before' in config else []

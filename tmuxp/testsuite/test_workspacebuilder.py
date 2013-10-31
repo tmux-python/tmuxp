@@ -271,7 +271,7 @@ class WindowAutomaticRename(TmuxTestCase):
 class StartDirectoryTest(TmuxTestCase):
     yaml_config = '''
     session_name: sampleconfig
-    #start_directory: '/home/tony'
+    start_directory: '/var'
     windows:
     - window_name: test
       start_directory: '/var/log'
@@ -293,12 +293,23 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
+    - window_name: testsa3
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo3"
     '''
 
     def test_start_directory(self):
 
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
 
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
@@ -306,7 +317,7 @@ class StartDirectoryTest(TmuxTestCase):
         assert(self.session == builder.session)
         for window in self.session.windows:
             for p in window.panes:
-                self.assertTrue(any(p.get('pane_start_path', ['/var/log', '/dev/'])))
+                self.assertTrue(any(p.get('pane_start_path', ['/var/log', '/dev/', '/var/'])))
 
 if __name__ == '__main__':
     unittest.main()

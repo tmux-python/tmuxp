@@ -144,8 +144,9 @@ class ExpandTest(unittest.TestCase):
             'window_name': 'editor',
             'panes': [
                 {
-                    'start_directory': '~', 'shell_command': ['vim'],
-                    },  {
+                    'shell_command': ['vim'],
+                },
+                {
                     'shell_command': 'cowsay "hey"'
                 },
             ],
@@ -154,7 +155,7 @@ class ExpandTest(unittest.TestCase):
                 'window_name': 'logging',
                 'panes': [
                     {'shell_command': ['tail -F /var/log/syslog'],
-                     'start_directory':'/var/log'}
+                     }
                 ]
             },
             {
@@ -181,7 +182,7 @@ class ExpandTest(unittest.TestCase):
                 'window_name': 'editor',
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': ['vim'],
+                        'shell_command': ['vim'],
                     },  {
                         'shell_command': ['cowsay "hey"']
                     },
@@ -192,7 +193,7 @@ class ExpandTest(unittest.TestCase):
                 'window_name': 'logging',
                 'panes': [
                     {'shell_command': ['tail -F /var/log/syslog'],
-                     'start_directory':'/var/log'}
+                     }
                 ]
             },
             {
@@ -215,6 +216,7 @@ class ExpandTest(unittest.TestCase):
         '''
         expands shell commands from string to list
         '''
+        self.maxDiff = None
         test_config = config.expand(self.before_config)
         self.assertDictEqual(test_config, self.after_config)
 
@@ -426,7 +428,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'shell_command_before': 'source .env/bin/activate',
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': ['vim'],
+                        'shell_command': ['vim'],
                     },  {
                         'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
                     },
@@ -438,9 +440,9 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'window_name': 'logging',
                 'panes': [
                     {'shell_command': ['tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'},
+                        },
                     {
-                        'start_directory': '/var/log'}
+                        }
                 ]
             },
             {
@@ -448,7 +450,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['htop'], 'start_directory': '/etc/'}
+                        'shell_command': ['htop'], }
                 ]
             },
             {
@@ -473,7 +475,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'shell_command_before': ['source .env/bin/activate'],
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': ['vim'],
+                        'shell_command': ['vim'],
                     },  {
                         'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
                     },
@@ -485,9 +487,9 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'window_name': 'logging',
                 'panes': [
                     {'shell_command': ['tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'},
+                        },
                     {
-                        'start_directory': '/var/log'}
+                        }
                 ]
             },
             {
@@ -495,7 +497,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'panes': [
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['htop'], 'start_directory': '/etc/'}
+                        'shell_command': ['htop'],}
                 ]
             },
             {
@@ -522,7 +524,6 @@ class ShellCommandBeforeTest(unittest.TestCase):
                 'shell_command_before': ['source .env/bin/activate'],
                 'panes': [
                     {
-                        'start_directory': '~',
                         'shell_command': ['source .env/bin/activate', 'vim'],
                     },  {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
@@ -536,29 +537,33 @@ class ShellCommandBeforeTest(unittest.TestCase):
             },
             {
                 'shell_command_before': ['rbenv local 2.0.0-p0'],
+                'start_directory': '/',
                 'window_name': 'logging',
                 'panes': [
                     {'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'},
+                        },
                     {
-                        'start_directory': '/var/log', 'shell_command': ['rbenv local 2.0.0-p0']}
+                        'shell_command': ['rbenv local 2.0.0-p0']}
                 ]
             },
             {
+                'start_directory': '/',
                 'window_name': 'shufu',
                 'panes': [
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['rbenv local 2.0.0-p0', 'htop'], 'start_directory': '/etc/'}
+                        'shell_command': ['rbenv local 2.0.0-p0', 'htop'],}
                 ]
             },
             {
+                'start_directory': '/',
                 'options': {'automatic_rename': True, },
                 'panes': [
                     {'shell_command': ['htop']}
                 ]
             },
             {
+                'start_directory': '/',
                 'panes': [
                     {'shell_command': ['top']}
                 ]
