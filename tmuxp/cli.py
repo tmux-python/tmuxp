@@ -807,14 +807,11 @@ def get_parser():
                         help='socket path of tmux server. Same as tmux.',
                         metavar='socket-path')
 
-    colorsgroup = parser.add_mutually_exclusive_group(
-        required=True
-    )
+    colorsgroup = parser.add_mutually_exclusive_group()
 
     colorsgroup.add_argument(
         '-2',
         dest='colors',
-        # action='store_true',
         action='store_const',
         const=256,
         help='Force tmux to assume the terminal supports 256 colours.',
@@ -823,7 +820,6 @@ def get_parser():
     colorsgroup.add_argument(
         '-8',
         dest='colors',
-        # action='store_true',
         action='store_const',
         const=88,
         help='Like -2, but indicates that the terminal supports 88 colours.',
