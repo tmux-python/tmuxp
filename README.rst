@@ -8,7 +8,7 @@
 
 .. figure:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
     :scale: 100%
-    :width: 65%
+    :width: 50%
     :align: center
 
 tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
