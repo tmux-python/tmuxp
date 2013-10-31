@@ -14,6 +14,7 @@ Here you can find the recent changes to tmuxp.
 - [docs] [examples]: Example for ``start_directory``.
 - [internal] fix bug where first and second window would load in mixed order
 - [internal] :class:`Window.move_window()` for moving window.
+- [docs] major doc overhaul. front page, renamed orm_al.rst to internals.rst.
 
 2013-10-30
 ----------
