@@ -48,8 +48,19 @@ class ServerTest(TmuxTestCase):
         myserver = Server(colors=256)
         self.assertEqual(myserver.colors, 256)
 
-        # try to read the command in  util.tmux()
-        # get util.tmux  to have a self.cmd and create tests for it
+        proc = myserver.tmux('list-servers')
+
+        self.assertIn('-2', proc.cmd)
+        self.assertNotIn('-8', proc.cmd)
+
+    def test_88_colors(self):
+        myserver = Server(colors=88)
+        self.assertEqual(myserver.colors, 88)
+
+        proc = myserver.tmux('list-servers')
+
+        self.assertIn('-8', proc.cmd)
+        self.assertNotIn('-2', proc.cmd)
 
 if __name__ == '__main__':
     unittest.main()

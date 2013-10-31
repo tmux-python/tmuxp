@@ -198,7 +198,7 @@ def setup_logger(logger=None, level='INFO'):
         channel = logging.StreamHandler()
         channel.setFormatter(log.DebugLogFormatter())
 
-        #channel.setFormatter(log.LogFormatter())
+        # channel.setFormatter(log.LogFormatter())
         logger.setLevel(level)
         logger.addHandler(channel)
 
@@ -231,7 +231,8 @@ def load_workspace(config_file, args):
 
     t = Server(
         socket_name=args.socket_name,
-        socket_path=args.socket_path
+        socket_path=args.socket_path,
+        colors=args.colors
     )
 
     try:
@@ -288,13 +289,18 @@ def load_workspace(config_file, args):
             sys.exit()
 
 
+def get_server_from_args(args):
+    """ Return a :class:`Server` object from the argparse response.
+
+    tmuxp allows flags such as -L, -S, -2 and -8.
+    may delete. sec
+
+    """
+    pass
+
+
 def command_freeze(args):
     """ Import teamocil config to tmuxp format. """
-
-    t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path
-    )
 
     logger.error(args)
     session = t.findWhere({
@@ -306,7 +312,7 @@ def command_freeze(args):
     newconfig = config.inline(sconf)
     configparser.import_config(newconfig)
     config_format = prompt_choices('Convert to', choices=[
-                                    'yaml', 'json'], default='yaml')
+        'yaml', 'json'], default='yaml')
 
     if config_format == 'yaml':
         newconfig = configparser.export(
@@ -348,8 +354,6 @@ def command_freeze(args):
             'View tmuxp docs at <http://tmuxp.readthedocs.org/>'
         )
         sys.exit()
-
-
 
 
 def command_load(args):
@@ -613,17 +617,15 @@ def command_convert(args):
                 print('written new config to <%s>.' % (newfile))
 
 
-
-
-
 def command_attach_session(args):
     """ Command to attach / switch client to a tmux session."""
     commands = []
     ctext = args.session_name
 
     t = Server(
-        socket_name=args.socket_name or None,
-        socket_path=args.socket_path or None
+        socket_name=args.socket_name,
+        socket_path=args.socket_path,
+        colors=args.colors
     )
     try:
         session = next((s for s in t.sessions if s.get(
@@ -805,6 +807,30 @@ def get_parser():
                         help='socket path of tmux server. Same as tmux.',
                         metavar='socket-path')
 
+    colorsgroup = parser.add_mutually_exclusive_group(
+        required=True
+    )
+
+    colorsgroup.add_argument(
+        '-2',
+        dest='colors',
+        # action='store_true',
+        action='store_const',
+        const=256,
+        help='Force tmux to assume the terminal supports 256 colours.',
+    )
+
+    colorsgroup.add_argument(
+        '-8',
+        dest='colors',
+        # action='store_true',
+        action='store_const',
+        const=88,
+        help='Like -2, but indicates that the terminal supports 88 colours.',
+    )
+
+    parser.set_defaults(colors=None)
+
     # http://stackoverflow.com/questions/8521612/argparse-optional-subparser
     parser.add_argument(
         '-v', '--version', action='version',
@@ -831,6 +857,12 @@ def main():
         sys.exit()
 
     util.oh_my_zsh_auto_title()
+
+    t = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path,
+        colors=args.colors
+    )
 
     if args.callback is command_load:
         command_load(args)
