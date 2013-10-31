@@ -1,0 +1,12 @@
+session_name: start directory
+start_directory: /var/log
+windows:
+  - window_name: should be /var/log
+    panes:
+    - pwd
+    - echo 'it trickles down from session-level'
+  - window_name: should be $HOME
+    start_directory: $HOME
+    panes:
+    - pwd
+    - echo 'has precedence'

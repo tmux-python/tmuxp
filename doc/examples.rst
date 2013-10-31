@@ -165,6 +165,25 @@ JSON
 .. literalinclude:: ../examples/main-pane-height.json
     :language: json
 
+Start Directory
+---------------
+
+Equivalent to ``tmux new-window -c <start-directory>``.
+
+.. sidebar:: short hand
+
+YAML
+""""
+
+.. literalinclude:: ../examples/start_directory.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/start_directory.json
+    :language: json
+
 Super-advanced dev environment
 ------------------------------
 

@@ -1,0 +1,21 @@
+{
+  "windows": [
+    {
+      "panes": [
+        "pwd", 
+        "echo 'it trickles down from session-level'"
+      ], 
+      "window_name": "should be /var/log"
+    }, 
+    {
+      "panes": [
+        "pwd", 
+        "echo 'has precedence'"
+      ], 
+      "start_directory": "$HOME", 
+      "window_name": "should be $HOME"
+    }
+  ], 
+  "session_name": "start directory", 
+  "start_directory": "/var/log"
+}

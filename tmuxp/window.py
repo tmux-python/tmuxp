@@ -255,7 +255,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type target_window: string
         '''
 
-        proc = self.tmux('kill-window', '-t%s' % self.get('window_id'))
+        proc = self.tmux(
+            'kill-window',
+            #'-t:%s' % self.get('window_id')
+            '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
+        )
 
         if proc.stderr:
             raise Exception(proc.stderr)

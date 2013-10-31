@@ -9,6 +9,9 @@ Here you can find the recent changes to tmuxp.
 - [internal] :meth:`util.is_version()`
 - [config] [tests]: correctly :meth:`config.trickle()` the ``start_directory``.
 - [config] [tests]: get ``start_directory`` working for configs
+- [internal]: fix :meth:``Window.kill_window()`` target to
+  ``session_id:window_index`` for compatibility and pass tests.
+- [docs] [examples]: Example for ``start_directory``.
 
 2013-10-30
 ----------
