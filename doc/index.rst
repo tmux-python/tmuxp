@@ -6,29 +6,29 @@ tmuxp
     :width: 100%
     :align: right
 
-tmuxp, a novel approach to managing `tmux(1)`_ workspaces through
-python objects. Features:
+
+tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
+`python objects`_.
+
+- Basic support for `freezing live sessions`_
+- `importing`_ from `teamocil`_ and `tmuxinator`_.
+- JSON or YAML for `simple`_ or `very elaborate`_ configurations.
+- `bash, zsh and tcsh`_ completion.
+- Unit tested against against live tmux (1.8 and git). See `travis.yml`_
+  file and `testing`_ page.
+- Documented Examples, Internals.
+- and `much, much more`_
+
+Ready to begin? See the `Quickstart`_.
+
+More tweaks:
 
 - Load + switch to new session from inside tmux.
-- :ref:`bash / zsh / tcsh completion <bash_completion>`.
-- JSON, YAML and `python dict`_ configuration.
-- Support for pre-commands with ``shell_command_before`` to load
-  virtualenv / rvm / any other commands.
-- Session resuming from config file if already running.
-- Per-project tmux sessions, load directly from config file.
-  `` $ tmuxp load /full/file/path.json ``
-- uses tmux 1.8's ``pane_id``, ``window_id`` and ``session_id`` to build
-  create python objects to build workspaces with the freshest data.
-- (experimental) Import configs from `teamocil`_ and `tmuxinator`_.
-- (experimental) Freezing sessions.
+- Resume session if config loaded.
+- Pre-commands virtualenv / rvm / any other commands.
+- Load config from anywhere `$ tmuxp load /full/file/path.json`.
 
-tmuxp works in 3 ways:
-
-- a pythonic `abstraction layer`_ on top of tmux' CLI commands
-- an `ORM`_ that internally orchestrates relations between servers,
-  sessions, windows and panes for good and evil purposes.
-- CLI tmux session manager, similar to `teamocil`_ and `tmuxinator`_, with
-  support for loading YAML, JSON and python dicts.
+.. _bash, zsh, and tcsh: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 
 Get started
 -----------

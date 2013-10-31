@@ -76,6 +76,14 @@ format *****.
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
 
+Minor tweaks
+""""""""""""
+
+- Load + switch to new session from inside tmux.
+- Resume session if config loaded.
+- Pre-commands virtualenv / rvm / any other commands.
+- Load config from anywhere `$ tmuxp load /full/file/path.json`.
+
 Footnotes
 """""""""
 
