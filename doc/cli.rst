@@ -4,7 +4,7 @@
 Command Line Interface
 ======================
 
-.. _import_teamocil:
+.. _cli_freeze:
 
 Freeze sessions
 """""""""""""""
@@ -14,6 +14,8 @@ Freeze sessions
     $ tmuxp freeze <session-name>
 
 Tmuxp will offer to convert file to ``.json`` or ``.yaml``.
+
+.. _cli_load:
 
 Load session
 """"""""""""

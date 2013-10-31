@@ -11,7 +11,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 `python objects`_.
 
 - Basic support for `freezing live sessions`_.
-- `importing`_ from `teamocil`_ and `tmuxinator`_.
+- `Importing`_ from `teamocil`_ and `tmuxinator`_.
 - JSON or YAML for `simple`_ or `very elaborate`_ configurations.
 - `bash, zsh and tcsh`_ completion.
 - Unit tested against against live tmux (1.8 and git). See `travis.yml`_
@@ -28,7 +28,7 @@ Ready to begin? See the `Quickstart`_.
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
 .. _freezing live sessions: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
-.. _importing: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _Importing: http://tmuxp.readthedocs.org/en/latest/cli.html#import
 .. _travis.yml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
 .. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
 .. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
