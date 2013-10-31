@@ -13,6 +13,8 @@ Freeze sessions
 
     $ tmuxp freeze <filename>
 
+Tmuxp will offer to convert file to ``.json`` or ``.yaml``.
+
 Import
 """"""
 
@@ -34,7 +36,17 @@ From tmuxinator
 
     $ tmuxp import tmuxinator <filename>
 
+.. _convert_config:
+
+Convert between YAML and JSON
+"""""""""""""""""""""""""""""
+
 .. _bash_completion:
+
+    $ tmuxp convert <filename>
+
+tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
+``.json`` to  ``.yaml``.
 
 Bash completion
 """""""""""""""

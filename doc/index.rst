@@ -16,19 +16,21 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 - `bash, zsh and tcsh`_ completion.
 - Unit tested against against live tmux (1.8 and git). See `travis.yml`_
   file and `testing`_ page.
-- Documented Examples, Internals.
+- Documented `Examples`_, Internals.
 - and `much, much more`_
 
 Ready to begin? See the `Quickstart`_.
 
+.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
+.. _freezing live sessions: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
+.. _importing: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _travis.yaml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
+.. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
 .. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
 .. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
 .. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
 .. _bash, zsh and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
 .. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
-
-Jump right in: See `Examples`_, `Quickstart`_ and `bash completion`_
-support.
 
 Explore:
 
