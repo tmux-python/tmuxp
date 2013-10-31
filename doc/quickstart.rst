@@ -14,7 +14,7 @@ tmuxp launches sessions from a configuration file.
 Configuration files can be stored in ``$HOME/.tmuxp`` or in project
 directories as ``.tmuxp.py``, ``.tmuxp.json`` or ``.tmuxp.yaml``.
 
-Every configuratio is required to have:
+Every configuration is required to have:
 
 1. ``session_name``
 2. list of ``windows``

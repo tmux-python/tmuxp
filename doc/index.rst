@@ -21,58 +21,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 
 Ready to begin? See the `Quickstart`_.
 
-
 .. _bash, zsh, and tcsh: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
-
-Get started
------------
-
-Get the prerequisites:
-
-1. installed ``tmux``, at least version **1.8**
-2. libyaml is installed for your distribution.
-
-To install ``tmuxp``:
-
-.. code-block:: bash
-
-    $ pip install tmuxp
-    
-``$ mkdir ~/.tmuxp`` and make a file ``~/.tmuxp/test.yaml``.
-
-.. code-block:: yaml
-
-    session_name: 2-pane-vertical
-    windows:
-      - window_name: my test window
-        panes:
-          - pwd
-          - pwd
-
-.. code-block:: bash
-
-    $ tmuxp load test.yaml
-
-or ``~/.tmuxp/test.json``:
-
-.. code-block:: json
-
-    {
-      "windows": [
-        {
-          "panes": [
-            "pwd", 
-            "pwd"
-          ], 
-          "window_name": "my test window"
-        }
-      ], 
-      "session_name": "2-pane-vertical"
-    }
-
-.. code-block:: bash
-
-    $ tmuxp load test.json
 
 Jump right in: See `Examples`_, `Quickstart`_ and `bash completion`_
 support.

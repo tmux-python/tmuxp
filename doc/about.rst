@@ -61,7 +61,7 @@ with access to all window and pane data. See :ref:`ORM_AL`.
 **CLI** tmuxp's CLI can attach and kill sessions.
 
 Additional Features
-"""""""""""""""""""
+-------------------
 
 **Unit tests** Tests against live tmux version to test statefulness of
 tmux sessions, windows and panes. See :ref:`travis`.
@@ -69,27 +69,24 @@ tmux sessions, windows and panes. See :ref:`travis`.
 **Import config** import configs from Teamocil / Tmuxinator *****
 
 **Session freezing** Supports session freezing into YAML and JSON
-format *****.
+format [1]_.
 
 **JSON config** JSON config support
 
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
 
+.. [1] Freezing sessions may save a lot of time, but tweaking will
+       probably be required. There is no substitute for a config made with
+       love.
+
 Minor tweaks
-""""""""""""
+------------
 
 - Load + switch to new session from inside tmux.
 - Resume session if config loaded.
 - Pre-commands virtualenv / rvm / any other commands.
 - Load config from anywhere `$ tmuxp load /full/file/path.json`.
-
-Footnotes
-"""""""""
-
-* Tmuxp session configurations can be very complicated, importing and
-  freezing sessions may save a lot of time, but tweaking will probably be
-  required. There is no substitute for a config made with love.
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
