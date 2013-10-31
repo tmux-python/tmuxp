@@ -76,8 +76,8 @@ format [1]_.
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
 
-.. [1] Freezing sessions may save a lot of time, but tweaking will
-       probably be required. There is no substitute for a config made with
+.. [1] Freezing sessions is a great way to save time, but tweaking will
+       probably be required - There is no substitute to a config made with
        love.
 
 Minor tweaks

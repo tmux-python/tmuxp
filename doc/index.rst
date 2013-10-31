@@ -32,15 +32,15 @@ Explore:
     :maxdepth: 2
 
     about
-    about_tmux
     cli
     quickstart
     examples
     orm_al
     developing
     api
-    glossary
     changes
+    about_tmux
+    glossary
 
 Indices and tables
 ==================
