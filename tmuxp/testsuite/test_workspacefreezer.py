@@ -72,8 +72,8 @@ class FreezeTest(TmuxTestCase):
         yaml = kaptanconf.export(
             'yaml', indent=2, default_flow_style=False, safe=True)
 
-        logger.error(json)
-        logger.error(yaml)
+        #logger.error(json)
+        #logger.error(yaml)
 
 if __name__ == '__main__':
     unittest.main()

@@ -299,18 +299,13 @@ class StartDirectoryTest(TmuxTestCase):
 
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
-        #sconfig = config.expand(sconfig)
 
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        logger.error(self.session)
-        #self.assertEqual(1, len(self.session.windows))
         for window in self.session.windows:
             for p in window.panes:
-                logger.error(dict(p))
-                logger.error(p.get('pane_start_path'))
                 self.assertTrue(any(p.get('pane_start_path', ['/var/log', '/dev/'])))
 
 if __name__ == '__main__':

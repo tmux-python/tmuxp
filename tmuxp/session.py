@@ -150,7 +150,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         window_args = tuple()
 
-
         if not attach:
             window_args += ('-d',)
 
@@ -161,10 +160,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if start_directory:
             self.tmux('set-option', 'default-path', start_directory)
             self.server.tmux('set-option', 'default-path', start_directory)
-            #start_directory = pipes.quote(start_directory)
-            logger.error(start_directory)
-            #window_args += ('-c%s' % start_directory,)
-
+            # start_directory = pipes.quote(start_directory)
+            # window_args += ('-c%s' % start_directory,)
 
         window_args += (
             '-F"%s"' % '\t'.join(tmux_formats),  # output
