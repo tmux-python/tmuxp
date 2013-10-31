@@ -41,8 +41,8 @@ It will list configs available in the current directory and
 This creates your tmuxp session.
 
 
-Python ORM + AL
----------------
+Pythonics
+---------
 
 ORM - `Object Relational Mapper`_
 
@@ -62,11 +62,11 @@ python abstraction layer
 ======================================== =================================
 :ref:`tmuxp python api <api>`            :term:`tmux(1)` equivalent
 ======================================== =================================
+:class:`Server.new_session()`            ``$ tmux new-session``
 :class:`Server.list_sessions()`          ``$ tmux list-sessions``
 :class:`Session.list_windows()`          ``$ tmux list-windows``
-:class:`Window.list_panes()`             ``$ tmux list-panes``
-:class:`Server.new_session()`            ``$ tmux new-session``
 :class:`Session.new_window()`            ``$ tmux new-window``
+:class:`Window.list_panes()`             ``$ tmux list-panes``
 :class:`Window.split_window()`           ``$ tmux split-window``
 :class:`Pane.send_keys()`                ``$ tmux send-keys``
 ======================================== =================================

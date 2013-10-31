@@ -21,7 +21,11 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 
 Ready to begin? See the `Quickstart`_.
 
-.. _bash, zsh, and tcsh: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
+.. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
+.. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
+.. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
+.. _bash, zsh, and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
+.. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
 
 Jump right in: See `Examples`_, `Quickstart`_ and `bash completion`_
 support.
