@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
-
 class TmuxinatorTest(unittest.TestCase):
 
     tmuxinator_yaml = """\
@@ -181,6 +180,7 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
         'session_name': 'sample',
         'socket_name': 'foo',
         'config': '~/.tmux.mac.conf',
+        'start_directory': '~/test',
         'shell_command_before': [
             'sudo /etc/rc.d/mysqld start',
             'rbenv shell 2.0.0-p247'
@@ -264,8 +264,9 @@ class TmuxinatorDeprecationsTest(unittest.TestCase):
         yaml_to_dict = test_config.get()
         self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
 
-        self.assertDictEqual(config.import_tmuxinator(
-            self.tmuxinator_dict), self.tmuxp_dict)
+        self.assertDictEqual(
+            config.import_tmuxinator(self.tmuxinator_dict), self.tmuxp_dict
+        )
 
 
 class TmuxinatoriSampleTest(unittest.TestCase):
