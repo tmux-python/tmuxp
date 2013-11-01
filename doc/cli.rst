@@ -93,7 +93,7 @@ For zsh, ``.zshrc``:
     $ source tmuxp.zsh
 
 
-.. commands::
+.. _commands:
 
 Commands
 """"""""
@@ -102,3 +102,4 @@ Commands
     :module: tmuxp.cli
     :func: get_parser
     :prog: tmuxp
+

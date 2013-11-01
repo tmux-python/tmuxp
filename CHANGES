@@ -220,7 +220,7 @@ Here you can find the recent changes to tmuxp.
 - [pypi / packaging] add MANIFEST.in, fix issue where package would not
   install because missing file
 - [cli] bash / zsh completion.
-- [docs] New page on :ref:`orm_al`.
+- [docs] New page on :ref:`internals`.
 - [docs] Updates to :ref:`about_tmux` page.
 - [docs] add vim modeline for rst to bottom of this page
 - [internal] [tests] Server is now a subclass of :class:`util.TmuxObject`.
