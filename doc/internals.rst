@@ -4,13 +4,15 @@
 Internals
 =========
 
+.. seealso:: :ref:`api`
+
 .. module:: tmuxp
 
 tmuxp is an `abstraction layer` against tmux' command line arguments.
 
-tmuxp is an `ORM` in the sense bases of :class:`util.TmuxObject`, such as
-:class:`Server`, :class:`Session`, :class:`Window` and :class:`Pane`
-are stateful objects and related to their parent or child.
+:class:`util.TmuxRelationalObject` acts as a container to connect the
+relations of :class:`Server`, :class:`Session`, :class:`Window` and
+:class:`Pane`.
 
 ======================== ======================= =========================
 Object                   Child                   Parent
@@ -29,7 +31,9 @@ A server can have multiple sessions. ``Ctrl-a s`` can be used to switch
 between sessions running on the server.
 
 Sessions, Windows and Panes all have their own unique identifier for
-internal purposes.
+internal purposes. :class:`util.TmuxMappingObject` will make use of the
+unique identifiers (``session_id``, ``window_id``, ``pane_id`` ) to look
+up the data stored in the :class:`Server` object.
 
 ======================== ======================= =========================
 Object                   Prefix                  Example
