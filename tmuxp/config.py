@@ -272,7 +272,7 @@ def import_tmuxinator(sconf):
 
     if 'tabs' in sconf:
         sconf['windows'] = sconf.pop('tabs')
-    logger.error(tmuxp_config)
+
     if 'pre' in sconf and 'pre_window' in sconf:
         tmuxp_config['shell_command'] = sconf['pre']
 
@@ -292,7 +292,7 @@ def import_tmuxinator(sconf):
         tmuxp_config['shell_command_before'].append(
             'rbenv shell %s' % sconf['rbenv']
         )
-    logger.error(tmuxp_config)
+
     for w in sconf['windows']:
         for k, v in w.items():
 
@@ -317,7 +317,6 @@ def import_tmuxinator(sconf):
             if 'layout' in v:
                 windowdict['layout'] = v['layout']
             tmuxp_config['windows'].append(windowdict)
-    logger.error(tmuxp_config)
     return tmuxp_config
 
 def import_teamocil(sconf):
