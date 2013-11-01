@@ -511,7 +511,7 @@ def command_import_tmuxinator(args):
             print(output)
 
     if args.config:
-        configfile = os.path.abspath(os.path.relpath(args.config))
+        configfile = os.path.abspath(os.path.relpath(os.path.expanduser(args.config)))
         configparser = kaptan.Kaptan(handler='yaml')
 
         if os.path.exists(configfile):
@@ -552,7 +552,7 @@ def command_import_tmuxinator(args):
 
                 dest = dest_prompt
 
-            dest = os.path.abspath(os.path.relpath(dest))
+            dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
             if prompt_yes_no('Write to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
