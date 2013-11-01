@@ -89,6 +89,10 @@ Minor tweaks
 - Load config from anywhere ``$ tmuxp load /full/file/path.json``.
 - Load config ``.tmuxp.yaml`` or ``.tmuxp.json`` from current working
   directory with ``$ tmuxp load .``.
+- ``$ tmuxp -2``, ``$ tmuxp -8`` for forcing term colors a la
+  :ref:`tmux(1)`.
+- ``$ tmuxp -L<socket-name>``, ``$ tmuxp -S<socket-path>`` for sockets and
+  ``$ tmuxp -f<config-file>` for config file.
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
