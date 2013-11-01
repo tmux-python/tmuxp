@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 import os
 from .util import tmux, TmuxRelationalObject
 from .session import Session
-from . import formats
+from . import formats, exc
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,8 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Server(TmuxRelationalObject):
 
-    '''
-    The :term:`tmux(1)` server. Container for:
+    """The :term:`tmux(1)` server.
 
     - :attr:`Server._sessions` [:class:`Session`, ...]
 
@@ -36,7 +35,8 @@ class Server(TmuxRelationalObject):
 
     When instantiated, provides the ``t`` global. stores information on live,
     running tmux server.
-    '''
+
+    """
 
     #: socket name
     socket_name = None
@@ -69,6 +69,12 @@ class Server(TmuxRelationalObject):
             self.colors = colors
 
     def tmux(self, *args, **kwargs):
+        """Send command to tmux with :attr:`pane_id` as ``target-pane``.
+
+        :rtype: :class:`util.tmux`
+
+        """
+
         args = list(args)
         if self.socket_name:
             args.insert(0, '-L{}'.format(self.socket_name))
@@ -87,11 +93,14 @@ class Server(TmuxRelationalObject):
         return tmux(*args, **kwargs)
 
     def __list_sessions(self):
-        '''
-        compatibility wrapping for ``$ tmux list-sessions``.
+        """Return list of ``$ tmux(1) list-sessions`` stdout.
 
-        :rtype: stdout or stderr of tmux proc
-        '''
+        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
+        which wraps :py:meth:`Subprocess.Popen`.
+
+        :rtype: list
+
+        """
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % f for f in sformats]
 
@@ -166,8 +175,8 @@ class Server(TmuxRelationalObject):
     def __list_windows(self):
         """Return list of ``$ tmux(1) list-windows`` stdout.
 
-        The :py:obj:`list` is derived from :class:`util.tmux` which wraps
-        :py:meth:`Subprocess.Popen`.
+        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
+        which wraps :py:meth:`Subprocess.Popen`.
 
         :rtype: list
 
@@ -217,15 +226,20 @@ class Server(TmuxRelationalObject):
         return self._windows
 
     def _update_windows(self):
-        """Update internal window data and return ``self`` for chainability."""
+        """Update internal window data and return ``self`` for chainability.
+
+        :rtype: :class:`Server`
+
+        """
         self._list_windows()
         return self
 
     def __list_panes(self):
         """Return list of ``$ tmux(1) list-panes`` stdout.
 
-        The :py:obj:`list` is derived from :class:`util.tmux` which wraps
-        :py:meth:`Subprocess.Popen`.
+        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
+        which wraps :py:meth:`Subprocess.Popen`.
+
 
         :rtype: list
 
@@ -272,15 +286,22 @@ class Server(TmuxRelationalObject):
         return self._panes
 
     def _update_panes(self):
+        """Update internal pane data and return ``self`` for chainability.
+
+        :rtype: :class:`Server`
+
+        """
         self._list_panes()
         return self
 
     def attached_sessions(self):
-        '''
-            Returns active :class:`Session` object
+        """Return active :class:`Session` object.
 
-            This will not work where multiple tmux sessions are attached.
-        '''
+        This will not work where multiple tmux sessions are attached.
+
+        :rtype: :class:`Server`
+
+        """
 
         sessions = self._sessions
         attached_sessions = list()
@@ -298,13 +319,12 @@ class Server(TmuxRelationalObject):
         return attached_sessions or None
 
     def has_session(self, target_session):
-        '''
-        ``$ tmux has-session``
+        """Return True if session exists. ``$ tmux has-session``.
 
         :param: target_session: str of session name.
+        :rtype: bool
 
-        returns True if session exists.
-        '''
+        """
 
         proc = self.tmux('has-session', '-t%s' % target_session)
 
@@ -316,18 +336,18 @@ class Server(TmuxRelationalObject):
             return True
 
     def kill_server(self):
-        '''
-        ``$ tmux kill-server``
-        '''
+        """``$ tmux kill-server``."""
         self.tmux('kill-server')
 
     def kill_session(self, target_session=None):
-        '''
-        ``$ tmux kill-session``
+        """Kill the tmux session with ``$ tmux kill-session``.
 
-        :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
-                                kill asdfasd
-        '''
+        :param: target_session: str. note this accepts ``fnmatch(3)``. 'asdf'
+            will kill 'asdfasd'.
+
+        :rtype: :class:`Server`
+
+        """
         proc = self.tmux('kill-session', '-t%s' % target_session)
 
         if proc.stderr:
@@ -336,11 +356,12 @@ class Server(TmuxRelationalObject):
         return self
 
     def switch_client(self, target_session):
-        '''
-        ``$ tmux switch-client``
+        """``$ tmux switch-client``.
 
         :param: target_session: str. name of the session. fnmatch(3) works.
-        '''
+
+        """
+
         # tmux('switch-client', '-t', target_session)
         proc = self.tmux('switch-client', '-t%s' % target_session)
 
@@ -348,11 +369,11 @@ class Server(TmuxRelationalObject):
             raise Exception(proc.stderr)
 
     def attach_session(self, target_session=None):
-        '''
-        ``$ tmux attach-session`` aka alias: ``$ tmux attach``
+        """``$ tmux attach-session`` aka alias: ``$ tmux attach``.
 
         :param: target_session: str. name of the session. fnmatch(3) works.
-        '''
+
+        """
         # tmux('switch-client', '-t', target_session)
         tmux_args = tuple()
         if target_session:
@@ -369,10 +390,7 @@ class Server(TmuxRelationalObject):
                     attach=False,
                     *args,
                     **kwargs):
-        '''
-        ``$ tmux new-session``
-
-        Returns :class:`Session`
+        """Return :class:`Session` from  ``$ tmux new-session``.
 
         Uses ``-P`` flag to print session info, ``-F`` for return formatting
         returns new Session object.
@@ -399,14 +417,16 @@ class Server(TmuxRelationalObject):
         :param kill_session: Kill current session if ``$ tmux has-session``
                              Useful for testing workspaces.
         :type kill_session: bool
-        '''
+        :rtype: :class:`Session`
+
+        """
 
         if self.has_session(session_name):
             if kill_session:
                 self.tmux('kill-session', '-t%s' % session_name)
                 logger.info('session %s exists. killed it.' % session_name)
             else:
-                raise TmuxSessionExists(
+                raise exc.TmuxSessionExists(
                     'Session named %s exists' % session_name
                 )
 
