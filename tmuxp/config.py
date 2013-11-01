@@ -240,8 +240,6 @@ def import_tmuxinator(sconf):
 
     tmuxp_config = {}
 
-    logger.error(sconf)
-
     if 'project_name' in sconf:
         tmuxp_config['session_name'] = sconf.pop('project_name')
     elif 'name' in sconf:
@@ -249,7 +247,8 @@ def import_tmuxinator(sconf):
     else:
         tmuxp_config['session_name'] = None
 
-    logger.error(tmuxp_config)
+    if 'project_root' in sconf:
+        tmuxp_config['start_directory'] = sconf.pop('project_root')
 
     if 'cli_args' in sconf:
         tmuxp_config['config'] = sconf['cli_args']

@@ -232,6 +232,7 @@ def load_workspace(config_file, args):
     t = Server(
         socket_name=args.socket_name,
         socket_path=args.socket_path,
+        colors=args.colors
     )
 
     try:
@@ -301,7 +302,6 @@ def get_server_from_args(args):
 def command_freeze(args):
     """ Import teamocil config to tmuxp format. """
 
-    logger.error(args)
     session = t.findWhere({
         'session_name': args.session_name
     })
@@ -394,7 +394,6 @@ def command_load(args):
             load_workspace(file_user, args)
         else:
             logger.error('%s not found.' % configfile)
-
 
 def command_import_teamocil(args):
     """ Import teamocil config to tmuxp format. """
