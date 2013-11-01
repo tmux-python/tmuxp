@@ -12,11 +12,9 @@ Server Object
 .. autoclass:: Server
     :members:
     :inherited-members:
+    :private-members:
     :show-inheritance:
-
-    .. attribute:: _sessions
-
-        A :py:obj:`list` of the server's :class:`Session` objects.
+    :member-order: bysource
 
 Session Object
 --------------
@@ -26,9 +24,17 @@ Session Object
     :inherited-members:
     :show-inheritance:
 
-    .. attribute:: _windows
+    .. attribute:: server
 
-        A :py:obj:`list` of session's :class:`Window` objects.
+        The :class:`Server` of the window.
+
+    .. attribute:: windows
+
+        A :py:obj:`list` of the window's :class:`Window` objects.
+
+    .. attribute:: _window
+
+        A :py:obj:`list` of the session's windows as :py:obj:`dict`.
 
 Window Object
 -------------
@@ -39,13 +45,17 @@ Window Object
     :private-members:
     :show-inheritance:
 
-    .. attribute:: _session
+    .. attribute:: session
 
         The :class:`Session` of the window.
 
-    .. attribute:: _panes
+    .. attribute:: panes
 
         A :py:obj:`list` of the window's :class:`Pane` objects.
+
+    .. attribute:: _panes
+
+        A :py:obj:`list` of the window's panes as :py:obj:`dict`.
 
 Pane Object
 -----------

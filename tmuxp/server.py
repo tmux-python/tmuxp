@@ -1,12 +1,14 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.server
-    ~~~~~~~~~~~~
+"""Pythonization of the :ref:`tmux(1)` server.
 
-    tmuxp helps you manage tmux workspaces.
+tmuxp.server
+~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp helps you manage tmux workspaces.
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 from __future__ import absolute_import, division, print_function, with_statement
 
@@ -36,6 +38,7 @@ class Server(TmuxRelationalObject):
     running tmux server.
     '''
 
+    #: socket name
     socket_name = None
     socket_path = None
     config_file = None
@@ -135,27 +138,40 @@ class Server(TmuxRelationalObject):
 
     @property
     def _sessions(self):
+        """Return list of the server's sessions as :py:obj:`dict`.
+
+        :rtype: list
+
+        """
+
         return self._list_sessions()
 
     def list_sessions(self):
-        '''
-        Return a list of :class:`Session` from the ``tmux(1)`` session.
+        """Return list of :class:`Session` from the ``tmux(1)`` session.
 
         :rtype: :py:obj:`list` of :class:`Session`
-        '''
+
+        """
         return [
             Session(server=self, **s) for s in self._sessions
         ]
 
     @property
     def sessions(self):
+        """Return a :py:obj:`list` of the server's :class:`Session` objects."""
         return self.list_sessions()
+    #: Alias of :attr:`sessions`.
     children = sessions
 
     def __list_windows(self):
-        '''
-        Return dict of ``tmux(1) list-windows`` values.
-        '''
+        """Return list of ``$ tmux(1) list-windows`` stdout.
+
+        The :py:obj:`list` is derived from :class:`util.tmux` which wraps
+        :py:meth:`Subprocess.Popen`.
+
+        :rtype: list
+
+        """
 
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in wformats]
@@ -172,8 +188,7 @@ class Server(TmuxRelationalObject):
         return windows.stdout
 
     def _list_windows(self):
-        ''' take the outpout of _list_windows from shell and put it into
-        a list of dicts'''
+        """Return list of dicts filtered from :meth:`__list_windows`."""
 
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
 
@@ -202,14 +217,19 @@ class Server(TmuxRelationalObject):
         return self._windows
 
     def _update_windows(self):
+        """Update internal window data and return ``self`` for chainability."""
         self._list_windows()
         return self
 
     def __list_panes(self):
-        '''Return list of :class:`Pane` for the window.
+        """Return list of ``$ tmux(1) list-panes`` stdout.
 
-        :rtype: list of :class:`Pane`
-        '''
+        The :py:obj:`list` is derived from :class:`util.tmux` which wraps
+        :py:meth:`Subprocess.Popen`.
+
+        :rtype: list
+
+        """
         pformats = ['session_name', 'session_id',
                     'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
@@ -227,8 +247,7 @@ class Server(TmuxRelationalObject):
         return panes.stdout
 
     def _list_panes(self):
-        ''' take the outpout of _list_panes from shell and put it into
-        a list of dicts'''
+        """Return list of dicts filtered from :meth:`__list_panes`."""
 
         pformats = ['session_name', 'session_id',
                     'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
@@ -255,78 +274,6 @@ class Server(TmuxRelationalObject):
     def _update_panes(self):
         self._list_panes()
         return self
-
-    def list_clients(self):
-        '''
-        Return a list of :class:`client` from tmux server.
-
-        ``$ tmux list-clients``
-        '''
-        cformats = formats.CLIENT_FORMATS
-        tmux_formats = ['#{%s}' % format for format in cformats]
-        # import ipdb
-        # ipdb.set_trace()
-        clients = self.tmux(
-            'list-clients',
-            '-F%s' % '\t'.join(tmux_formats),   # output
-        ).stdout
-
-        # combine format keys with values returned from ``tmux list-windows``
-        clients = [dict(zip(
-            cformats, client.split('\t'))) for client in clients]
-
-        # clear up empty dict
-        new_clients = [
-            dict((k, v) for k, v in client.items() if v) for client in clients
-        ]
-
-        if not self._clients:
-            for client in new_clients:
-                logger.debug('adding client_tty %s' % (client['client_tty']))
-                self._clients.append(client)
-            return self._clients
-
-        new = {client['client_tty']: client for client in new_clients}
-        old = {client.get('client_tty'): client for client in self._clients}
-
-        created = set(new.keys()) - set(old.keys())
-        deleted = set(old.keys()) - set(new.keys())
-        intersect = set(new.keys()).intersection(set(old.keys()))
-
-        diff = {id: dict(set(new[id].items()) - set(old[id].items()))
-                for id in intersect}
-
-        logger.debug(
-            "syncing clients"
-            "\n\tdiff: %s\n"
-            "\tcreated: %s\n"
-            "\tdeleted: %s\n"
-            "\tintersect: %s" % (diff, created, deleted, intersect)
-        )
-
-        for s in self._clients:
-            # remove client objects if deleted or out of client
-            if s.get('client_tty') in deleted:
-                logger.debug("removing %s" % s)
-                self._clients.remove(s)
-
-            if s.get('client_tty') in intersect:
-                logger.debug('updating client_tty %s' % (s.get('client_tty')))
-                s.update(diff[s.get('client_tty')])
-
-        # create client objects for non-existant client_tty's
-        for client in [new[client_tty] for client_tty in created]:
-            logger.debug('new client %s' % client['client_tty'])
-            self._clients.append(client)
-
-        return self._clients
-
-    def has_clients(self):
-        # are any clients connected to tmux
-        proc = self.tmux('list-clients')
-
-        if proc.stderr:
-            raise Exception(proc.stderr)
 
     def attached_sessions(self):
         '''

@@ -1,12 +1,14 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.util
-    ~~~~~~~~~~
+"""Utility and helper methods for tmuxp.
 
-    tmuxp helps you manage tmux workspaces.
+tmuxp.util
+~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp helps you manage tmux workspaces.
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 from __future__ import absolute_import, division, print_function, with_statement
 from __future__ import unicode_literals

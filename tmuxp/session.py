@@ -1,12 +1,14 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.session
-    ~~~~~~~~~~~~~
+"""Pythonization of the :ref:`tmux(1)` session.
 
-    tmuxp helps you manage tmux workspaces.
+tmuxp.session
+~~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp helps you manage tmux workspaces.
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 from __future__ import absolute_import, division, print_function, with_statement
 

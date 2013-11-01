@@ -1,12 +1,14 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.window
-    ~~~~~~~~~~~~
+"""Pythonization of the :ref:`tmux(1)` window.
 
-    tmuxp helps you manage tmux workspaces.
+tmuxp.window
+~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp helps you manage tmux workspaces.
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 from __future__ import absolute_import, division, print_function, with_statement
 
