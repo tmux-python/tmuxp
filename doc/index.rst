@@ -16,7 +16,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 - `bash, zsh and tcsh`_ completion.
 - Unit tested against against live tmux (1.8 and git). See `travis.yml`_
   file, `tmuxp on Travis CI`_ and `testing`_ page.
-- `Documentation`_, `Examples`_, Internals.
+- `Documentation`_, `Examples`_, `Internals`_.
 - and `much, much more`_.
 
 Ready to begin? See the `Quickstart`_.
