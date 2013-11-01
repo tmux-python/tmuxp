@@ -64,16 +64,21 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             logger.error(self.server._sessions)
 
     def tmux(self, *args, **kwargs):
-        # if '-t' not in kwargs:
-        #    kwargs['-t'] = self.get['session_id']
+        """Return :meth:`Server.tmux`.
+
+        :rtype: :class:`Server.tmux`
+
+        """
+        if '-t' not in kwargs:
+            kwargs['-t'] = self.get('session_id')
         return self.server.tmux(*args, **kwargs)
 
     def attach_session(self, target_session=None):
-        '''
-        ``$ tmux attach-session`` aka alias: ``$ tmux attach``
+        """ Return ``$ tmux attach-session`` aka alias: ``$ tmux attach``.
 
         :param: target_session: str. name of the session. fnmatch(3) works.
-        '''
+
+        """
         proc = self.tmux('attach-session', '-t%s' % self.get('session_id'))
 
         if proc.stderr:

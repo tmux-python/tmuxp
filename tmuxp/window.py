@@ -23,9 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
-    '''
-    ``tmux(1) window``.
-    '''
+    """:ref:`tmux(1)` window."""
 
     childIdAttribute = 'pane_id'
 
@@ -42,14 +40,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self._window_id = kwargs['window_id']
 
-        #self.server._update_windows()
-
     def __repr__(self):
         return "%s(%s %s:%s, %s)" % (
             self.__class__.__name__,
             self.get('window_id'),
             self.get('window_index'),
-            self.get('window_name'),  # @todo, bug when window name blank
+            self.get('window_name'),
             self.session
         )
 
@@ -73,10 +69,14 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return list(filter(by, self.server._windows))[0]
 
     def tmux(self, cmd, *args, **kwargs):
-        """Send command to tmux with :attr:`window_id` as ``target-window``.
+        """Return :meth:`Server.tmux` defaulting ``target_window`` as target.
+
+        Send command to tmux with :attr:`window_id` as ``target-window``.
 
         Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
         ``args`` will override using the object's ``window_id`` as target.
+
+        :rtype: :class:`Server.tmux`
 
         """
         if not len([arg for arg in args if '-t' in str(arg)]):

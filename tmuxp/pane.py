@@ -65,7 +65,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
         ``args`` will override using the object's ``pane_id`` as target.
 
-        :rtype: :class:`util.tmux`
+        :rtype: :class:`Server.tmux`
 
         """
         if not len([arg for arg in args if '-t' in arg]):

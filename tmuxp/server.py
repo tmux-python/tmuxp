@@ -250,7 +250,6 @@ class Server(TmuxRelationalObject):
 
         panes = self.tmux(
             'list-panes',
-            #'-t%s:%s' % (self.get('session_name'), self.get('window_id')),
             '-a',
             '-F%s' % ''.join(tmux_formats),     # output
         )
@@ -340,7 +339,7 @@ class Server(TmuxRelationalObject):
         self.tmux('kill-server')
 
     def kill_session(self, target_session=None):
-        """Kill the tmux session with ``$ tmux kill-session``.
+        """Kill the tmux session with ``$ tmux kill-session``, return ``self``.
 
         :param: target_session: str. note this accepts ``fnmatch(3)``. 'asdf'
             will kill 'asdfasd'.
