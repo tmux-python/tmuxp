@@ -231,6 +231,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return windows
 
+    #: Property of :meth:_list_windows()
     @property
     def _windows(self):
         return self._list_windows()
@@ -249,11 +250,13 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     @property
     def windows(self):
+        """Return a :py:obj:`list` of the server's :class:`Window` objects."""
         return self.list_windows()
+    #: Alias of :attr:`windows`.
     children = windows
 
     def attached_window(self):
-        """Returns active :class:`Window` object.
+        """Return active :class:`Window` object.
 
         :rtype: :class:`Window`
 
@@ -277,14 +280,14 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise Exception('No Windows')
 
     def select_window(self, target_window):
-        """ Returns :class:`Window` selected via ``$ tmux select-window``.
+        """Return :class:`Window` selected via ``$ tmux select-window``.
 
-            :param: window: ``target_window`` also 'last-window' (``-l``),
-                            'next-window' (``-n``), or 'previous-window' (``-p``)
-            :type window: integer
-            :rtype: :class:`Window`
+        :param: window: ``target_window`` also 'last-window' (``-l``),
+                        'next-window' (``-n``), or 'previous-window' (``-p``)
+        :type window: integer
+        :rtype: :class:`Window`
 
-            :todo: assure ``-l``, ``-n``, ``-p`` work.
+        :todo: assure ``-l``, ``-n``, ``-p`` work.
 
         """
 
@@ -319,14 +322,14 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         elif isinstance(value, bool) and not value:
             value = 'off'
 
-        process = self.tmux(
+        proc = self.tmux(
             'set-option', option, value
         )
 
-        if process.stderr:
-            if isinstance(process.stderr, list) and len(process.stderr) == int(1):
-                process.stderr = process.stderr[0]
-            raise ValueError('tmux set-option stderr: %s' % process.stderr)
+        if proc.stderr:
+            if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
+                proc.stderr = proc.stderr[0]
+            raise ValueError('tmux set-option stderr: %s' % proc.stderr)
 
     def show_options(self, option=None):
         """Return a dict of options for the window.
@@ -360,7 +363,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     def show_option(self, option):
         """Return a list of options for the window.
 
-        todo: test and return True/False for on/off string
+        :todo: test and return True/False for on/off string
 
         :param option: option to return.
         :type option: string
@@ -379,4 +382,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         return window_option[1]
 
     def __repr__(self):
-        return "%s(%s %s)" % (self.__class__.__name__, self.get('session_id'), self.get('session_name'))
+        return "%s(%s %s)" % (
+            self.__class__.__name__,
+            self.get('session_id'),
+            self.get('session_name')
+        )
