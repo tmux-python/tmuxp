@@ -1,8 +1,8 @@
 .. _api:
 
-===================
-tmuxp API Reference
-===================
+=============
+API Reference
+=============
 
 .. module:: tmuxp
 
