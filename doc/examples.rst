@@ -170,8 +170,6 @@ Start Directory
 
 Equivalent to ``tmux new-window -c <start-directory>``.
 
-.. sidebar:: short hand
-
 YAML
 """"
 
