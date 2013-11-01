@@ -539,7 +539,7 @@ def command_import_tmuxinator(args):
         print(
             '---------------------------------------------------------------')
         print(
-            'Configuration import does its best to convert teamocil files.\n')
+            'Configuration import does its best to convert tmuxinator files.\n')
         if prompt_yes_no(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
