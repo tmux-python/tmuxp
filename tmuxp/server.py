@@ -96,15 +96,18 @@ class Server(TmuxRelationalObject):
 
         return tmux(*args, **kwargs)
 
-    def __list_sessions(self):
-        """Return list of ``$ tmux(1) list-sessions`` stdout.
+    def _list_sessions(self):
+        """Return a list of session information ``tmux(1)`` for the sessions.
+
+        Via ``$ tmux(1) list-sessions`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
         which wraps :py:meth:`Subprocess.Popen`.
 
-        :rtype: list
+        :rtype: :py:obj:`list` of :py:obj:`dict`
 
         """
+
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % f for f in sformats]
 
@@ -123,20 +126,11 @@ class Server(TmuxRelationalObject):
             session_info = proc.stdout[0]
 
         if proc.stderr:
-            raise Exception(sessions.stderr)
-
-        return proc.stdout
-
-    def _list_sessions(self):
-        '''
-        Return a list of session information ``tmux(1)`` for the sessions
-
-        :rtype: :py:obj:`list` of :py:obj:`dict`
-        '''
+            raise Exception(proc.stderr)
 
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in sformats]
-        sessions = self.__list_sessions()
+        sessions = proc.stdout
 
         # combine format keys with values returned from ``tmux list-windows``
         sessions = [dict(zip(
@@ -176,8 +170,10 @@ class Server(TmuxRelationalObject):
     #: Alias of :attr:`sessions`.
     children = sessions
 
-    def __list_windows(self):
-        """Return list of ``$ tmux(1) list-windows`` stdout.
+    def _list_windows(self):
+        """Return list of dicts filtered from :meth:`__list_windows`.
+
+        List of ``$ tmux(1) list-windows`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
         which wraps :py:meth:`Subprocess.Popen`.
@@ -189,23 +185,18 @@ class Server(TmuxRelationalObject):
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in wformats]
 
-        windows = self.tmux(
+        proc = self.tmux(
             'list-windows',                     # ``tmux list-windows``
             '-a',
             '-F%s' % '\t'.join(tmux_formats),   # output
         )
 
-        if windows.stderr:
-            raise Exception(windows.stderr)
+        if proc.stderr:
+            raise Exception(proc.stderr)
 
-        return windows.stdout
-
-    def _list_windows(self):
-        """Return list of dicts filtered from :meth:`__list_windows`."""
+        windows = proc.stdout
 
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
-
-        windows = self.__list_windows()
 
         # combine format keys with values returned from ``tmux list-windows``
         windows = [dict(zip(
@@ -238,38 +229,35 @@ class Server(TmuxRelationalObject):
         self._list_windows()
         return self
 
-    def __list_panes(self):
-        """Return list of ``$ tmux(1) list-panes`` stdout.
+    def _list_panes(self):
+        """Return list of dicts filtered from :meth:`__list_panes`.
+
+        list of ``$ tmux(1) list-panes`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
         which wraps :py:meth:`Subprocess.Popen`.
 
-
         :rtype: list
 
         """
+
         pformats = ['session_name', 'session_id',
                     'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
-        panes = self.tmux(
+        proc = self.tmux(
             'list-panes',
             '-a',
             '-F%s' % ''.join(tmux_formats),     # output
         )
 
-        if panes.stderr:
-            raise Exception(panes.stderr)
+        if proc.stderr:
+            raise Exception(proc.stderr)
 
-        return panes.stdout
-
-    def _list_panes(self):
-        """Return list of dicts filtered from :meth:`__list_panes`."""
+        panes = proc.stdout
 
         pformats = ['session_name', 'session_id',
                     'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
-
-        panes = self.__list_panes()
 
         # combine format keys with values returned from ``tmux list-panes``
         panes = [dict(zip(
