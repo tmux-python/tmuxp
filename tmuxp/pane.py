@@ -1,12 +1,14 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.pane
-    ~~~~~~~~~~
+"""Pythonization of the :ref:`tmux(1)` pane.
 
-    tmuxp helps you manage tmux workspaces.
+tmuxp.pane
+~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp helps you manage tmux workspaces.
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 from __future__ import absolute_import, division, print_function, with_statement
 from . import util, formats
@@ -56,7 +58,9 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         return list(filter(by, self.server._panes))[0]
 
     def tmux(self, cmd, *args, **kwargs):
-        """Send command to tmux with :attr:`pane_id` as ``target-pane``.
+        """Return :meth:`Server.tmux` defaulting to ``target_pane`` as target.
+
+        Send command to tmux with :attr:`pane_id` as ``target-pane``.
 
         Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
         ``args`` will override using the object's ``pane_id`` as target.
@@ -68,11 +72,14 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self.server.tmux(cmd, *args, **kwargs)
 
     def send_keys(self, cmd, enter=True):
-        '''
-            ```tmux send-keys``` to the pane
+        """``$ tmux send-keys`` to the pane.
 
-            :param enter: bool. send enter after sending the key.
-        '''
+        :param cmd: Text or input into pane
+        :type cmd: str
+        :param enter: Send enter after sending the input.
+        :type enter: bool
+
+        """
         self.tmux('send-keys', cmd)
 
         if enter:
@@ -90,30 +97,29 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
     def set_width(self, width):
         """Set width of pane.
 
-            :param width: pane width, in cells.
-            :type width: int
+        :param width: pane width, in cells.
+        :type width: int
+
         """
         self.resize_pane(width=width)
 
     def set_height(self, height):
         """Set height of pane.
 
-            :param height: pane height, in cells.
-            :type height: int
+        :param height: pane height, in cells.
+        :type height: int
+
         """
         self.resize_pane(height=height)
 
     def resize_pane(self, *args, **kwargs):
-        '''
-            ``$ tmux resize-pane``
+        """``$ tmux resize-pane`` of pane and return ``self``.
 
         :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``.
         :type target_pane: string
         :rtype: :class:`Pane`
 
-        '''
-        # if isinstance(target_pane, basestring) and not ':' not in target_pane or isinstance(target_pane, int):
-        #    target_pane = "%s.%s" % (self.target, target_pane)
+        """
 
         if 'height' in kwargs:
             proc = self.tmux('resize-pane', '-y%s' % int(kwargs['height']))
@@ -129,10 +135,16 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self
 
     def enter(self):
-        '''
-            ``$ tmux send-keys`` send Enter to the pane.
-        '''
+        """Send carriage return to pane.
+
+        ``$ tmux send-keys`` send Enter to the pane.
+
+        """
         self.tmux('send-keys', 'Enter')
 
     def __repr__(self):
-        return "%s(%s %s)" % (self.__class__.__name__, self.get('pane_id'), self.window)
+        return "%s(%s %s)" % (
+            self.__class__.__name__,
+            self.get('pane_id'),
+            self.window
+        )
