@@ -22,12 +22,11 @@ logger = logging.getLogger(__name__)
 
 class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
-    '''
-    ``tmux(1) session``.
+    """:ref:`tmux(1)` session.
 
     Holds :class:`Window` objects.
 
-    '''
+    """
 
     childIdAttribute = 'window_id'
 
@@ -74,7 +73,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self.server.tmux(*args, **kwargs)
 
     def attach_session(self, target_session=None):
-        """ Return ``$ tmux attach-session`` aka alias: ``$ tmux attach``.
+        """Return ``$ tmux attach-session`` aka alias: ``$ tmux attach``.
 
         :param: target_session: str. name of the session. fnmatch(3) works.
 
@@ -85,33 +84,33 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise Exception(proc.stderr)
 
     def kill_session(self):
-        '''
-        ``$ tmux kill-session``
+        """``$ tmux kill-session``."""
 
-        '''
         proc = self.tmux('kill-session', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
             raise Exception(proc.stderr)
 
     def switch_client(self, target_session=None):
-        '''
-        ``$ tmux kill-session``
+        """``$ tmux kill-session``.
 
         :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
                                 kill asdfasd
-        '''
+
+        """
         proc = self.tmux('switch-client', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
             raise Exception(proc.stderr)
 
     def rename_session(self, new_name):
-        '''rename session and return new :class:`Session` object
+        """Rename session and return new :class:`Session` object.
 
         :param rename_session: new session name
         :type rename_session: string
-        '''
+        :rtype: :class:`Session`
+
+        """
         new_name = pipes.quote(new_name)
         proc = self.tmux(
             'rename-session',
@@ -128,8 +127,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                    window_name=None,
                    start_directory=None,
                    attach=True):
-        '''
-        ``$ tmux new-window``
+        """Return :class:`Window` from ``$ tmux new-window``.
 
         .. note::
 
@@ -149,7 +147,9 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param attach: make new window the current window after creating it,
                        default True.
         :param type: bool
-        '''
+        :rtype: :class:`Window`
+
+        """
 
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
         tmux_formats = ['#{%s}' % f for f in wformats]
@@ -197,15 +197,15 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         return window
 
     def kill_window(self, target_window=None):
-        '''
-        ``$ tmux kill-window``
+        """``$ tmux kill-window``.
 
         Kill the current window or the window at ``target-window``. removing it
         from any sessions to which it is linked.
 
         :param target_window: the ``target window``.
         :type target_window: string
-        '''
+
+        """
 
         tmux_args = list()
 
@@ -236,11 +236,11 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self._list_windows()
 
     def list_windows(self):
-        '''
-        Return a list of :class:`Window` from the ``tmux(1)`` session.
+        """Return a list of :class:`Window` from the ``tmux(1)`` session.
 
         :rtype: :class:`Window`
-        '''
+
+        """
         windows = [
             w for w in self._windows if w['session_id'] == self._session_id
         ]
@@ -253,9 +253,11 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     children = windows
 
     def attached_window(self):
-        '''
-            Returns active :class:`Window` object.
-        '''
+        """Returns active :class:`Window` object.
+
+        :rtype: :class:`Window`
+
+        """
         active_windows = []
         for window in self._windows:
             if 'window_active' in window:
@@ -275,17 +277,16 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise Exception('No Windows')
 
     def select_window(self, target_window):
-        '''
-            ``$ tmux select-window``
+        """ Returns :class:`Window` selected via ``$ tmux select-window``.
 
             :param: window: ``target_window`` also 'last-window' (``-l``),
                             'next-window' (``-n``), or 'previous-window' (``-p``)
             :type window: integer
+            :rtype: :class:`Window`
 
-            Returns the attached :class:`Window`.
+            :todo: assure ``-l``, ``-n``, ``-p`` work.
 
-            Todo: assure ``-l``, ``-n``, ``-p`` work.
-        '''
+        """
 
         target = '-t%s' % target_window
 
@@ -297,16 +298,12 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self.attached_window()
 
     def attached_pane(self):
-        '''
-            Returns active :class:`Pane` object
-        '''
+        """Return active :class:`Pane` object."""
+
         return self.attached_window().attached_pane()
 
     def set_option(self, option, value):
-        '''
-        wrapper for ``tmux(1)``::
-
-            $ tmux set-option <option> <value>
+        """Set option ``$ tmux set-option <option> <value>``.
 
         todo: needs tests
 
@@ -314,7 +311,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type option: string
         :param value: window value. True/False will turn in 'on' and 'off'.
         :type value: string or bool
-        '''
+
+        """
 
         if isinstance(value, bool) and value:
             value = 'on'
@@ -331,8 +329,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise ValueError('tmux set-option stderr: %s' % process.stderr)
 
     def show_options(self, option=None):
-        '''
-        return a dict of options for the window.
+        """Return a dict of options for the window.
 
         For familiarity with tmux, the option ``option`` param forwards to pick
         a single option, forwarding to :meth:`Session.show_option`.
@@ -340,7 +337,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param option: optional. show a single option.
         :type option: string
         :rtype: :py:obj:`dict`
-        '''
+
+        """
 
         if option:
             return self.show_option(option)
@@ -360,15 +358,15 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         return session_options
 
     def show_option(self, option):
-        '''
-        return a list of options for the window
+        """Return a list of options for the window.
 
         todo: test and return True/False for on/off string
 
         :param option: option to return.
         :type option: string
         :rtype: string, int or bool
-        '''
+
+        """
 
         window_option = self.tmux(
             'show-options', option
