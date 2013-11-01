@@ -38,11 +38,15 @@ class Server(TmuxRelationalObject):
 
     """
 
-    #: socket name
+    #: ``[-L socket-name]``
     socket_name = None
+    #: ``[-S socket-path]``
     socket_path = None
+    #: ``[-f file]``
     config_file = None
+    #: ``-2`` or ``-8``
     colors = None
+    #: unique child ID key
     childIdAttribute = 'session_id'
 
     def __init__(
@@ -69,7 +73,7 @@ class Server(TmuxRelationalObject):
             self.colors = colors
 
     def tmux(self, *args, **kwargs):
-        """Send command to tmux with :attr:`pane_id` as ``target-pane``.
+        """Return :class:`util.tmux` send tmux commands with sockets, colors.
 
         :rtype: :class:`util.tmux`
 
