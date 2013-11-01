@@ -432,10 +432,10 @@ def command_import_teamocil(args):
         if os.path.exists(configfile):
             print(configfile)
             configparser.import_config(configfile)
+            newconfig = config.import_tmuxinator(configparser.get())
+            configparser.import_config(newconfig)
         else:
             sys.exit('File not found: %s' % configfile)
-
-        newconfig = config.import_teamocil(configparser.get())
 
         config_format = prompt_choices('Convert to', choices=[
                                        'yaml', 'json'], default='yaml')
@@ -518,10 +518,10 @@ def command_import_tmuxinator(args):
         if os.path.exists(configfile):
             print(configfile)
             configparser.import_config(configfile)
+            newconfig = config.import_tmuxinator(configparser.get())
+            configparser.import_config(newconfig)
         else:
             sys.exit('File not found: %s' % configfile)
-
-        newconfig = config.import_tmuxinator(configparser.get())
 
         config_format = prompt_choices('Convert to', choices=[
                                        'yaml', 'json'], default='yaml')
