@@ -3,6 +3,12 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-11-02
+----------
+
+- [docs] Many documentation, pep247, pep8 fixes
+- [cli] #12 bug fix for ``$ tmuxp freeze`` by @finder.
+
 2013-11-01
 ----------
 
