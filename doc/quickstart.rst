@@ -44,6 +44,11 @@ This creates your tmuxp session.
 Pythonics
 ---------
 
+.. seealso::
+    :ref:`tmuxp python API documentation <api>` and :ref:`developing`,
+    :ref:`internals`.
+
+
 ORM - `Object Relational Mapper`_
 
 AL - `Abstraction Layer`_
@@ -55,9 +60,6 @@ python abstraction layer
 """"""""""""""""""""""""
 
 .. module:: tmuxp
-
-.. seealso::
-    :ref:`tmuxp python API documentation <api>` and :ref:`developing`.
 
 ======================================== =================================
 :ref:`tmuxp python api <api>`            :term:`tmux(1)` equivalent
