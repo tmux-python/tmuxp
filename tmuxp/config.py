@@ -22,6 +22,10 @@ def check_consistency(sconf):
     '''Verify the consistency of the config file.
 
     Config files in tmuxp are met to import into :py:mod:`dict`.
+
+    :param sconf: session configuration
+    :type sconf: dict
+
     '''
 
     # verify session_name
@@ -43,28 +47,31 @@ def check_consistency(sconf):
 
 
 def is_config_file(filename, extensions=['.yml', '.yaml', '.json', '.ini']):
-    '''Is config compatible extension.
+    """Is config compatible extension.
 
     :param filename: filename to check (e.g. ``mysession.json``).
     :type filename: string
     :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
     :type extensions: list or string
     :rtype: bool
-    '''
 
-    extensions = [extensions] if isinstance(extensions, basestring) else extensions
+    """
+
+    extensions = [extensions] if isinstance(
+        extensions, basestring) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
 def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml', '.json', '.ini']):
-    '''Find configs in config_dir and current dir
+    """Find configs in config_dir and current dir.
 
     :param config_dir: directory to search
     :type config_dir: string
     :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
     :type extensions: list
     :rtype: list
-    '''
+
+    """
     configs = []
 
     for filename in os.listdir(config_dir):
@@ -75,13 +82,14 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml
 
 
 def in_cwd():
-    '''Return list of configs in current working directory.
+    """Return list of configs in current working directory.
 
     If filename is ``.tmuxp.py``, ``.tmuxp.json``, ``.tmuxp.yaml`` or
     ``.tmuxp.ini``.
 
     :rtype: list
-    '''
+
+    """
     configs = []
 
     for filename in os.listdir(os.getcwd()):
@@ -91,35 +99,36 @@ def in_cwd():
     return configs
 
 
-def inline(config):
-    '''Opposite of :meth:`config.expand`. Where possible, inline.
+def inline(sconf):
+    """ Return config in inline form, opposite of :meth:`config.expand`.
 
-    :param config: unexpanded config file
-    :type config: dict
+    :param sconf: unexpanded config file
+    :type sconf: dict
     :rtype: dict
-    '''
 
-    if ('shell_command' in config and isinstance(config['shell_command'], list) and len(config['shell_command']) == 1):
-        config['shell_command'] = config['shell_command'][0]
-    if ('shell_command_before' in config and isinstance(config['shell_command_before'], list) and len(config['shell_command_before']) == 1):
-        config['shell_command_before'] = config['shell_command_before'][0]
+    """
+
+    if ('shell_command' in sconf and isinstance(sconf['shell_command'], list) and len(sconf['shell_command']) == 1):
+        sconf['shell_command'] = sconf['shell_command'][0]
+    if ('shell_command_before' in sconf and isinstance(sconf['shell_command_before'], list) and len(sconf['shell_command_before']) == 1):
+        sconf['shell_command_before'] = sconf['shell_command_before'][0]
 
     # recurse into window and pane config items
-    if 'windows' in config:
-        config['windows'] = [inline(window)
-                             for window in config['windows']]
-    if 'panes' in config:
-        config['panes'] = [inline(pane) for pane in config['panes']]
+    if 'windows' in sconf:
+        sconf['windows'] = [
+            inline(window) for window in sconf['windows']
+        ]
+    if 'panes' in sconf:
+        sconf['panes'] = [inline(pane) for pane in sconf['panes']]
 
-    return config
+    return sconf
 
 
-def expand(config):
-    '''Expand configuration into full form. Enables shorthand forms for tmuxp
-    config.
+def expand(sconf):
+    """Return config with shorthand and inline properties expanded.
 
-    This is necessary to keep the code in the :class:`Builder` clean and also
-    allow for neat, short-hand configurations.
+    This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
+    and also allow for neat, short-hand configurations.
 
     As a simple example, internally, tmuxp expects that config options
     like ``shell_command`` are a list (array)::
@@ -131,47 +140,42 @@ def expand(config):
         'shell_command': 'htop'
 
     Kaptan will load JSON/YAML/INI files into python dicts for you.
-    :param config: the configuration for the session
-    :type config: dict
-
-    iterate through session, windows, and panes for ``shell_command``, if
-    it is a string, turn to list.
-
-    :param config: the session configuration
-    :type config: dict
+    :param sconf: the configuration for the session
+    :type sconf: dict
     :rtype: dict
-    '''
 
-    '''any config section, session, window, pane that can
-    contain the 'shell_command' value
-    '''
-    if ('shell_command' in config and isinstance(config['shell_command'], basestring)):
-        config['shell_command'] = [config['shell_command']]
-    elif not 'windows' in config and not 'panes' in config and isinstance(config, basestring):
-        config = {'shell_command': [config]}
+    """
 
-    if ('shell_command_before' in config and isinstance(config['shell_command_before'], basestring)):
-        config['shell_command_before'] = [config['shell_command_before']]
+    # Any config section, session, window, pane that can contain the
+    # 'shell_command' value
+
+    if ('shell_command' in sconf and isinstance(sconf['shell_command'], basestring)):
+        sconf['shell_command'] = [sconf['shell_command']]
+    elif not 'windows' in sconf and not 'panes' in sconf and isinstance(sconf, basestring):
+        sconf = {'shell_command': [sconf]}
+
+    if ('shell_command_before' in sconf and isinstance(sconf['shell_command_before'], basestring)):
+        sconf['shell_command_before'] = [sconf['shell_command_before']]
 
     # recurse into window and pane config items
-    if 'windows' in config:
-        config['windows'] = [
-            expand(window) for window in config['windows']
+    if 'windows' in sconf:
+        sconf['windows'] = [
+            expand(window) for window in sconf['windows']
         ]
-    elif 'panes' in config:
-        for p in config['panes']:
+    elif 'panes' in sconf:
+        for p in sconf['panes']:
             if isinstance(p, basestring):
-                p_index = config['panes'].index(p)
-                config['panes'][p_index] = {
+                p_index = sconf['panes'].index(p)
+                sconf['panes'][p_index] = {
                     'shell_command': [p]
                 }
-        config['panes'] = [expand(pane) for pane in config['panes']]
+        sconf['panes'] = [expand(pane) for pane in sconf['panes']]
 
-    return config
+    return sconf
 
 
-def trickle(config):
-    '''Trickle down / inherit config values
+def trickle(sconf):
+    """Return a dict with "trickled down" / inherited config values.
 
     This will only work if config has been expanded to full form with
     :meth:`config.expand`.
@@ -180,22 +184,21 @@ def trickle(config):
     level. shell_command_before trickles down and prepends the
     ``shell_command`` for the pane.
 
-    :param config: the session configuration
-    :type config: dict
+    :param sconf: the session configuration
+    :type sconf: dict
     :rtype: dict
-    '''
 
-    '''
-    prepends a pane's ``shell_command`` list with the window and sessions'
-    ``shell_command_before``.
-    '''
+    """
 
-    if 'start_directory' in config:
-        session_start_directory = config['start_directory']
+    # prepends a pane's ``shell_command`` list with the window and sessions'
+    # ``shell_command_before``.
+
+    if 'start_directory' in sconf:
+        session_start_directory = sconf['start_directory']
     else:
         session_start_directory = None
 
-    for windowconfig in config['windows']:
+    for windowconfig in sconf['windows']:
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
@@ -204,14 +207,15 @@ def trickle(config):
                 windowconfig['start_directory'] = session_start_directory
             else:
                 if not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
-                    windowconfig['start_directory'] = os.path.join(session_start_directory, windowconfig['start_directory'])
+                    windowconfig['start_directory'] = os.path.join(
+                        session_start_directory, windowconfig['start_directory'])
 
         for paneconfig in windowconfig['panes']:
             commands_before = []
 
             # Prepend shell_command_before to commands
-            if 'shell_command_before' in config:
-                commands_before = config['shell_command_before']
+            if 'shell_command_before' in sconf:
+                commands_before = sconf['shell_command_before']
             if 'shell_command_before' in windowconfig:
                 commands_before.extend(windowconfig['shell_command_before'])
             if 'shell_command_before' in paneconfig:
@@ -224,19 +228,19 @@ def trickle(config):
 
             paneconfig['shell_command'] = commands_before
 
-    return config
+    return sconf
 
 
 def import_tmuxinator(sconf):
-    '''Import yaml configs from `tmuxinator`_.
+    """Import yaml configs from `tmuxinator`_.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
 
-    :todo: handle 'root' with a cd shell_command_before
-
     :param sconf: python dict for session configuration
     :type sconf: dict
-    '''
+    :rtype: dict
+
+    """
 
     tmuxp_config = {}
 
@@ -319,6 +323,7 @@ def import_tmuxinator(sconf):
             tmuxp_config['windows'].append(windowdict)
     return tmuxp_config
 
+
 def import_teamocil(sconf):
     '''Import yaml configs from `teamocil`_.
 
@@ -379,4 +384,3 @@ def import_teamocil(sconf):
         tmuxp_config['windows'].append(windowdict)
 
     return tmuxp_config
-

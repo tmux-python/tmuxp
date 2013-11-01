@@ -7,6 +7,7 @@ tmuxp
 
 :copyright: Copyright 2013 Tony Narlock.
 :license: BSD, see LICENSE for details
+
 """
 
 

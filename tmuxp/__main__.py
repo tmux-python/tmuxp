@@ -1,10 +1,12 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp
-    ~~~~~
+"""For accessing tmuxp as a package.
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp
+~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 
 import sys
@@ -12,6 +14,7 @@ import os
 
 
 def run():
+    """Assure tmuxp is in python path's and available as a package. """
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sys.path.insert(0, base)
     import tmuxp.cli

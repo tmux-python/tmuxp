@@ -91,13 +91,13 @@ def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
 
 
 def prompt_yes_no(name, default=True):
+    """:meth:`prompt_bool()` returning yes by default."""
     return prompt_bool(name, default=default)
 
 
 def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
                    no_choice=('none',)):
-    """
-    Return user input from command line from set of provided choices.
+    """Return user input from command line from set of provided choices.
 
     :param name: prompt text
     :param choices: list or tuple of available choices. Choices may be
@@ -395,6 +395,7 @@ def command_load(args):
         else:
             logger.error('%s not found.' % configfile)
 
+
 def command_import_teamocil(args):
     """ Import teamocil config to tmuxp format. """
 
@@ -425,7 +426,8 @@ def command_import_teamocil(args):
 
             print(output)
     elif args.config:
-        configfile = os.path.abspath(os.path.relpath(os.path.expanduser(args.config)))
+        configfile = os.path.abspath(os.path.relpath(
+            os.path.expanduser(args.config)))
         configparser = kaptan.Kaptan(handler='yaml')
 
         if os.path.exists(configfile):
@@ -511,7 +513,8 @@ def command_import_tmuxinator(args):
             print(output)
 
     if args.config:
-        configfile = os.path.abspath(os.path.relpath(os.path.expanduser(args.config)))
+        configfile = os.path.abspath(os.path.relpath(
+            os.path.expanduser(args.config)))
         configparser = kaptan.Kaptan(handler='yaml')
 
         if os.path.exists(configfile):
