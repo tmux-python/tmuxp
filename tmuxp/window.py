@@ -85,12 +85,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self.server.tmux(cmd, *args, **kwargs)
 
     def select_layout(self, layout=None):
-        '''
-        wrapper for ``tmux(1)``.
-
-        .. code-block: bash
-
-            $ tmux select-layout <layout>
+        """Wrapper for ``$ tmux select-layout <layout>``.
 
         even-horizontal: Panes are spread out evenly from left to right across
         the window.
@@ -111,8 +106,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :param layout: string of the layout, 'even-horizontal', 'tiled', etc.
         :type layout: string
-        '''
 
+        """
 
         proc = self.tmux(
             'select-layout',
@@ -123,21 +118,13 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         if proc.stderr:
             raise Exception(proc.stderr)
 
-    @property
-    def target(self):
-        return "%s:%s" % (self.session.get('session_id'), self.get('window_id'))
-
     def set_window_option(self, option, value):
-        '''
-        wrapper for ``tmux(1)``.
-
-        .. code-block: bash
-
-            $ tmux set-window-option <option> <value>
+        """Wrapper for ``$ tmux set-window-option <option> <value>``.
 
         :param value: window value. True/False will turn in 'on' and 'off'.
         :type value: string or bool
-        '''
+
+        """
 
         self.server._update_windows()
 
@@ -153,19 +140,21 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             option, value
         )
 
-        # tmuxp set-window-option version 1.8 has a quirk where
-        # -t@2 window id won't work as ``target-pane``.
-
         if process.stderr:
             if isinstance(process.stderr, list) and len(process.stderr) == int(1):
                 process.stderr = process.stderr[0]
             raise ValueError(
-                'tmux set-window-option -t%s:%s %s %s\n' % (self.get('session_id'), self.get('window_index'), option, value) +
-                process.stderr)
+                'tmux set-window-option -t%s:%s %s %s\n' % (
+                    self.get('session_id'),
+                    self.get('window_index'),
+                    option,
+                    value
+                ) +
+                process.stderr
+            )
 
     def show_window_options(self, option=None):
-        '''
-        return a dict of options for the window.
+        """Return a dict of options for the window.
 
         For familiarity with tmux, the option ``option`` param forwards to pick
         a single option, forwarding to :meth:`Window.show_window_option`.
@@ -173,7 +162,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param option: optional. show a single option.
         :type option: string
         :rtype: :py:obj:`dict`
-        '''
+
+        """
 
         if option:
             return self.show_window_option(option)
@@ -193,15 +183,15 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return window_options
 
     def show_window_option(self, option):
-        '''
-        return a list of options for the window
+        """Return a list of options for the window.
 
         todo: test and return True/False for on/off string
 
         :param option: option to return.
         :type option: string
         :rtype: string, int
-        '''
+
+        """
 
         window_option = self.tmux(
             'show-window-options', option
@@ -219,20 +209,19 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return window_option[1]
 
     def rename_window(self, new_name):
-        '''rename window and return new window object::
 
-            $ tmux rename-window <new_name>
+        """Return :class:`Window` object ``$ tmux rename-window <new_name>``.
 
         :param new_name: name of the window
         :type new_name: string
-        '''
+
+        """
         # new_name = pipes.quote(new_name)
 
         import shlex
         lex = shlex.shlex(new_name)
         lex.escape = ' '
         lex.whitespace_split = False
-        # new_name = '\ '.join(new_name.split())
 
         try:
             self.tmux(
@@ -248,12 +237,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self
 
     def kill_window(self):
-        '''
-        ``$ tmux kill-window``
-
-        Kill the current :class:`Window` object.
-
-        '''
+        """Kill the current :class:`Window` object. ``$ tmux kill-window``."""
 
         proc = self.tmux(
             'kill-window',
@@ -267,15 +251,13 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.server._update_windows()
 
     def move_window(self, destination):
-        '''
-        ``$ tmux move-window``
-
-        move the current :class:`Window` object.
+        """Move the current :class:`Window` object ``$ tmux move-window``.
 
         :param destination: the ``target window`` or index to move the window
             to.
         :type target_window: string
-        '''
+
+        """
 
         proc = self.tmux(
             'move-window',
@@ -289,15 +271,14 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.server._update_windows()
 
     def select_pane(self, target_pane):
-        '''
-            ``$ tmux select-pane``
+        """Return selected :class:`Pane` through ``$ tmux select-pane``.
 
         :param target_pane: ``target_pane``, or ``-U``,``-D``, ``-L``, ``-R``
             or ``-l``.
         :type target_pane: string
         :rtype: :class:`Pane`
 
-        '''
+        """
 
         if target_pane in ['-l', '-U', '-D', '-L', '-R']:
             proc = self.tmux('select-pane', '-t%s' % self.get('window_id'), target_pane)
@@ -310,8 +291,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self.attached_pane()
 
     def split_window(self, attach=True):
-        '''
-        Splits window. Returns the created :class:`Pane`.
+        """Split window and return the created :class:`Pane`.
 
         .. note::
 
@@ -332,7 +312,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param type: bool
 
         :rtype: :class:`Pane`
-        '''
+
+        """
 
         pformats = ['session_name', 'session_id',
                     'window_index', 'window_id'] + formats.PANE_FORMATS
@@ -372,11 +353,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return Pane(window=self, **pane)
 
     def attached_pane(self):
-        '''
-        Return the attached :class:`Pane`.
+        """Return the attached :class:`Pane`.
 
         :rtype: :class:`Pane`
-        '''
+
+        """
         for pane in self._panes:
             if 'pane_active' in pane:
                 # for now pane_active is a unicode
@@ -404,10 +385,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self._list_panes()
 
     def list_panes(self):
-        '''Return list of :class:`Pane` for the window.
+        """Return list of :class:`Pane` for the window.
 
         :rtype: list of :class:`Pane`
-        '''
+
+        """
 
         return [Pane(window=self, **pane) for pane in self._panes]
 
