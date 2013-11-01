@@ -58,7 +58,8 @@ Differences
 commands. tmuxp turns configuration into a live :class:`Session` object
 with access to all window and pane data. See :ref:`internals`.
 
-**CLI** tmuxp's CLI can attach and kill sessions.
+**CLI** tmuxp's CLI can attach and kill sessions with tab-completion
+support.
 
 Additional Features
 -------------------
