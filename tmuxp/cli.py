@@ -302,7 +302,12 @@ def get_server_from_args(args):
 def command_freeze(args):
     """ Import teamocil config to tmuxp format. """
 
-    t = Server()
+    t = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path,
+        colors=args.colors
+    )
+
     session = t.findWhere({
         'session_name': args.session_name
     })
