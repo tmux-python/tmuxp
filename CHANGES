@@ -12,7 +12,7 @@ Here you can find the recent changes to tmuxp.
   ``colors=8``.
 - [cli] ``$ tmuxp -2`` for forcing 256 colors and ``tmuxp -8`` for forcing 88.
 - [config] [tests] Concatenation with ``start_directory`` via
-  :meth:`Config.trickle()` if window ``start_directory`` is alphanumeric /
+  :meth:`config.trickle()` if window ``start_directory`` is alphanumeric /
   relative (doesn't start with ``/``). See :ref:`Examples` in *start directory*.
 
 2013-10-31
