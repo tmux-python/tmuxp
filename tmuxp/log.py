@@ -43,10 +43,11 @@ _TO_UNICODE_TYPES = (unicode, type(None))
 
 
 def utf8(value):
-    """Converts a string argument to a byte string.
+    """Convert a string argument to a byte string.
 
     If the argument is already a byte string or None, it is returned unchanged.
     Otherwise it must be a unicode string and is encoded as utf8.
+
     """
     if isinstance(value, _UTF8_TYPES):
         return value
@@ -56,10 +57,11 @@ def utf8(value):
 
 
 def to_unicode(value):
-    """Converts a string argument to a unicode string.
+    """Convert a string argument to a unicode string.
 
     If the argument is already a unicode string or None, it is returned
     unchanged.  Otherwise it must be a byte string and is decoded as utf8.
+
     """
     if isinstance(value, _TO_UNICODE_TYPES):
         return value
@@ -125,6 +127,24 @@ LEVEL_COLORS = {
 }
 
 
+def default_log_template(self, record):
+    """ Return the prefix for the log message. Template for Formatter.
+
+    :param: record: :py:class:`logging.LogRecord` object. this is passed in
+    from inside the :py:meth:`logging.Formatter.format` record.
+
+    """
+
+    prefix_template = ''
+    prefix_template += NORMAL
+    prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)s)' + NORMAL + ' '
+    prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
+    prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
+    prefix_template += NORMAL
+
+    return prefix_template
+
+
 class LogFormatter(logging.Formatter):
 
     """Log formatter used in Tornado.
@@ -138,25 +158,10 @@ class LogFormatter(logging.Formatter):
     This formatter is enabled automatically by
     `tornado.options.parse_command_line` (unless ``--logging=none`` is
     used).
+
     """
 
-    def prefix_template(self, record):
-        ''' this is available as a definition instead of a class
-        variable so it can access to instance. it also accepts the record
-        parameter.
-
-        :param: record: :py:class:`logging.LogRecord` object. this is passed in
-        from inside the :py:meth:`logging.Formatter.format` record.
-        '''
-
-        prefix_template = ''
-        prefix_template += NORMAL
-        prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)s)' + NORMAL + ' '
-        prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
-        prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
-        prefix_template += NORMAL
-
-        return prefix_template
+    template = default_log_template
 
     def __init__(self, color=True, *args, **kwargs):
         logging.Formatter.__init__(self, *args, **kwargs)
@@ -173,7 +178,7 @@ class LogFormatter(logging.Formatter):
         date_format = '%H:%m:%S'
         record.asctime = time.strftime(date_format, self.converter(record.created))
 
-        prefix = self.prefix_template(record) % record.__dict__
+        prefix = self.template(record) % record.__dict__
 
         formatted = prefix + " " + safe_unicode(record.message)
         if record.exc_info:
@@ -190,25 +195,28 @@ class LogFormatter(logging.Formatter):
         return formatted.replace("\n", "\n    ")
 
 
+def debug_log_template(self, record):
+    """ Return the prefix for the log message. Template for Formatter.
+
+    :param: record: :py:class:`logging.LogRecord` object. this is passed in
+    from inside the :py:meth:`logging.Formatter.format` record.
+
+    """
+
+    prefix_template = ''
+    prefix_template += NORMAL
+    prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)1.1s)' + NORMAL + ' '
+    prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
+    prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
+    prefix_template += Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
+    prefix_template += Fore.BLACK + Style.DIM + Style.BRIGHT + ':' + NORMAL + Fore.CYAN + '%(lineno)d'
+    prefix_template += NORMAL
+
+    return prefix_template
+
+
 class DebugLogFormatter(LogFormatter):
 
-    def prefix_template(self, record):
-        ''' this is available as a definition instead of a class
-        variable so it can access to instance. it also accepts the record
-        argument.
+    """Provides greater technical details than standard log Formatter."""
 
-        :param: record: :py:class:`logging.LogRecord` object. this is passed in
-        from inside the :py:meth:`logging.Formatter.format` record.
-        '''
-
-        prefix_template = ''
-        prefix_template += NORMAL
-        prefix_template += LEVEL_COLORS.get(record.levelname) + Style.BRIGHT + '(%(levelname)1.1s)' + NORMAL + ' '
-        prefix_template += '[' + Fore.BLACK + Style.DIM + Style.BRIGHT + '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
-        prefix_template += ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT + '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
-        prefix_template += Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
-        prefix_template += Fore.BLACK + Style.DIM + Style.BRIGHT + ':' + NORMAL + Fore.CYAN + '%(lineno)d'
-        prefix_template += NORMAL
-
-        return prefix_template
-
+    template = debug_log_template

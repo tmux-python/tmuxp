@@ -232,7 +232,7 @@ def trickle(sconf):
 
 
 def import_tmuxinator(sconf):
-    """Import yaml configs from `tmuxinator`_.
+    """Return tmuxp config from a `tmuxinator`_ yaml config.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
 
@@ -325,7 +325,7 @@ def import_tmuxinator(sconf):
 
 
 def import_teamocil(sconf):
-    '''Import yaml configs from `teamocil`_.
+    """Return tmuxp config from a `teamocil`_ yaml config.
 
     .. _teamocil: https://github.com/remiprev/teamocil
 
@@ -337,7 +337,8 @@ def import_teamocil(sconf):
 
     :param sconf: python dict for session configuration
     :type sconf: dict
-    '''
+
+    """
 
     tmuxp_config = {}
 
