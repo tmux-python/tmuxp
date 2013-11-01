@@ -14,6 +14,10 @@ Here you can find the recent changes to tmuxp.
 - [config] [tests] Concatenation with ``start_directory`` via
   :meth:`config.trickle()` if window ``start_directory`` is alphanumeric /
   relative (doesn't start with ``/``). See :ref:`Examples` in *start directory*.
+- [import] Fix bug with import teamocil and tmuxinator
+- [import] Improve quality of tmuxinator imports. Especially ``session_name``
+  and ``start_directory``.
+- [cli] Allow saving with ``~`` in file destination.
 
 2013-10-31
 ----------
