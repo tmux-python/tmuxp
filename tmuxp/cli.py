@@ -232,7 +232,6 @@ def load_workspace(config_file, args):
     t = Server(
         socket_name=args.socket_name,
         socket_path=args.socket_path,
-        colors=args.colors
     )
 
     try:
@@ -831,7 +830,8 @@ def get_parser():
     parser.add_argument(
         '-v', '--version', action='version',
         version='tmuxp %s' % __version__,
-        help='Prints the tmuxp version')
+        help='Prints the tmuxp version',
+    )
 
     return parser
 

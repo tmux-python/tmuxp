@@ -190,24 +190,38 @@ def trickle(config):
     ``shell_command_before``.
     '''
 
-    session_start_directory = config['start_directory'] if 'start_directory' in config else None
+    if 'start_directory' in config:
+        session_start_directory = config['start_directory']
+    else:
+        session_start_directory = None
 
     for windowconfig in config['windows']:
-        if not 'start_directory' in windowconfig and session_start_directory:
-            windowconfig['start_directory'] = session_start_directory
-        for paneconfig in windowconfig['panes']:
-            commands_before = config[
-                'shell_command_before'] if 'shell_command_before' in config else []
-            commands_before.extend(windowconfig[
-                                   'shell_command_before']) if 'shell_command_before' in windowconfig else None
-            commands_before.extend(paneconfig[
-                                   'shell_command_before']) if 'shell_command_before' in paneconfig else None
 
+        # Prepend start_directory to relative window commands
+        if session_start_directory:
+
+            if not 'start_directory' in windowconfig:
+                windowconfig['start_directory'] = session_start_directory
+            else:
+                if not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
+                    windowconfig['start_directory'] = os.path.join(session_start_directory, windowconfig['start_directory'])
+
+        for paneconfig in windowconfig['panes']:
+            commands_before = []
+
+            # Prepend shell_command_before to commands
+            if 'shell_command_before' in config:
+                commands_before = config['shell_command_before']
+            if 'shell_command_before' in windowconfig:
+                commands_before.extend(windowconfig['shell_command_before'])
+            if 'shell_command_before' in paneconfig:
+                commands_before.extend(paneconfig['shell_command_before'])
             if 'shell_command' not in paneconfig:
                 paneconfig['shell_command'] = list()
 
-            commands_before.extend(paneconfig[
-                                   'shell_command']) if paneconfig['shell_command'] else None
+            if paneconfig['shell_command']:
+                commands_before.extend(paneconfig['shell_command'])
+
             paneconfig['shell_command'] = commands_before
 
     return config

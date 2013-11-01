@@ -278,7 +278,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         proc = self.tmux(
             'move-window',
             '-s%s:%s' % (self.get('session_id'), self.get('window_index')),
-            '-t%s' % destination,
+            '-t%s:%s' % (self.get('session_id'), destination),
         )
 
         if proc.stderr:

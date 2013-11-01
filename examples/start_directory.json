@@ -5,17 +5,35 @@
         "pwd", 
         "echo 'it trickles down from session-level'"
       ], 
+      "window_name": "should be /var/"
+    }, 
+    {
+      "panes": [
+        "pwd", 
+        "echo 'window start_directory concatenates to session start_directory'", 
+        "echo 'if it is not absolute'"
+      ], 
+      "start_directory": "log", 
       "window_name": "should be /var/log"
     }, 
     {
       "panes": [
         "pwd", 
-        "echo 'has precedence'"
+        "echo 'has precedence'", 
+        "echo 'remember to quote ~ in YAML'"
       ], 
-      "start_directory": "$HOME", 
-      "window_name": "should be $HOME"
+      "start_directory": "~", 
+      "window_name": "should be ~"
+    }, 
+    {
+      "panes": [
+        "pwd", 
+        "echo 'absolute paths also have precedence'"
+      ], 
+      "start_directory": "/proc", 
+      "window_name": "should be /proc"
     }
   ], 
   "session_name": "start directory", 
-  "start_directory": "/var/log"
+  "start_directory": "/var/"
 }

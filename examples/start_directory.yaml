@@ -1,12 +1,24 @@
 session_name: start directory
-start_directory: /var/log
+start_directory: /var/
 windows:
-  - window_name: should be /var/log
+  - window_name: should be /var/
     panes:
     - pwd
     - echo 'it trickles down from session-level'
-  - window_name: should be $HOME
-    start_directory: $HOME
+  - window_name: should be /var/log
+    start_directory: log
+    panes:
+      - pwd
+      - echo 'window start_directory concatenates to session start_directory'
+      - echo 'if it is not absolute'
+  - window_name: should be ~
+    start_directory: '~'
     panes:
     - pwd
     - echo 'has precedence'
+    - echo 'remember to quote ~ in YAML'
+  - window_name: should be /proc
+    start_directory: /proc
+    panes:
+    - pwd
+    - echo 'absolute paths also have precedence'

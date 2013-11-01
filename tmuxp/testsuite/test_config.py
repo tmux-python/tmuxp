@@ -583,6 +583,80 @@ class ShellCommandBeforeTest(unittest.TestCase):
         self.assertDictEqual(test_config, self.config_after)
 
 
+
+class TrickleRelativeStartDirectory(unittest.TestCase):
+    config_expanded = {  # shell_command_before is string in some areas
+        'session_name': 'sampleconfig',
+        'start_directory': '/var',
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': 'log',
+                'panes': [
+                    {
+                        'shell_command': ['vim'],
+                    },
+                    {
+                        'shell_command': ['cowsay "hey"']
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
+            {
+                'window_name': 'logging',
+                'start_directory': '~',
+                'panes': [
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    },
+                    {
+                    }
+                ]
+            },
+         ]
+    }
+
+    config_after = {  # shell_command_before is string in some areas
+        'session_name': 'sampleconfig',
+        'start_directory': '/var',
+        'windows': [
+            {
+                'window_name': 'editor',
+                'start_directory': '/var/log',
+                'panes': [
+                    {
+                        'shell_command': ['vim'],
+                    },
+                    {
+                        'shell_command': [
+                            'cowsay "hey"'
+                        ]
+                    },
+                ],
+                'layout': 'main-verticle'
+            },
+            {
+                'start_directory': '~',
+                'window_name': 'logging',
+                'panes': [
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    },
+                    {
+                        'shell_command': []
+                    }
+                ]
+            },
+         ]
+    }
+
+    def test_shell_command_before(self):
+        self.maxDiff = None
+
+        test_config = config.trickle(self.config_expanded)
+        self.maxDiff = None
+        self.assertDictEqual(test_config, self.config_after)
+
 class ConfigConsistency(unittest.TestCase):
 
     delete_this = '''

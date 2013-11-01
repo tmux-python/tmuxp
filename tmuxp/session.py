@@ -59,7 +59,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             return list(filter(by, self.server._sessions))[0]
         except IndexError as e:
             logger.error(e)
-            logger.error(self._session_name)
             logger.error(self.server._sessions)
 
     def tmux(self, *args, **kwargs):
