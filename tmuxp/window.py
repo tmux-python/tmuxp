@@ -382,6 +382,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     @property
     def _panes(self):
+        """Return list of the windows' panes as :py:obj:`dict`.
+
+        :rtype: list
+
+        """
         return self._list_panes()
 
     def list_panes(self):
@@ -395,5 +400,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     @property
     def panes(self):
+        """Return a :py:obj:`list` of the windows' :class:`Pane` objects."""
         return self.list_panes()
+    #: Alias of :attr:`panes`.
     children = panes

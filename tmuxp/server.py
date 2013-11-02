@@ -365,7 +365,6 @@ class Server(TmuxRelationalObject):
         :param: target_session: str. name of the session. fnmatch(3) works.
 
         """
-        # tmux('switch-client', '-t', target_session)
         tmux_args = tuple()
         if target_session:
             tmux_args += ('-t%s' % target_session,)
