@@ -124,7 +124,7 @@ def inline(sconf):
     return sconf
 
 
-def expand(sconf):
+def expand(sconf, cwd=None):
     """Return config with shorthand and inline properties expanded.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
@@ -142,12 +142,22 @@ def expand(sconf):
     Kaptan will load JSON/YAML/INI files into python dicts for you.
     :param sconf: the configuration for the session
     :type sconf: dict
+    :param cwd: directory to expand relative paths against. should be the dir of
+        the config directory.
     :rtype: dict
 
     """
 
+    if not cwd:
+        cwd = os.getcwd()
+
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
+    if 'start_directory' in sconf:
+        if any(sconf['start_directory'].startswith(a) for a in ['.', './']):
+            sconf['start_directory'] = os.path.normpath(os.path.join(cwd, sconf['start_directory']))
+        elif any(sconf['start_directory'] == a for a in ['.', './']):
+            sconf['start_directory'] = os.path.normpath(os.path.join(cwd, sconf['start_directory']))
 
     if ('shell_command' in sconf and isinstance(sconf['shell_command'], basestring)):
         sconf['shell_command'] = [sconf['shell_command']]
@@ -202,13 +212,10 @@ def trickle(sconf):
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
-
             if not 'start_directory' in windowconfig:
                 windowconfig['start_directory'] = session_start_directory
             else:
-                if any(windowconfig['start_directory'] == a for a in ['.', './']):
-                    windowconfig['start_directory'] = os.getcwd()
-                elif not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
+                if not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
                     windowconfig['start_directory'] = os.path.join(
                         session_start_directory, windowconfig['start_directory'])
 

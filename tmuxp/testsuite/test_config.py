@@ -168,6 +168,25 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
+                'start_directory': './',
+                'panes': [
+                    'pwd'
+                ]
+            },
+            {
+                'start_directory': './asdf/',
+                'panes': [
+                    'pwd'
+                ]
+            },
+            {
+                'start_directory': '../',
+                'panes': [
+                    'pwd'
+                ]
+            },
+
+            {
                 'panes': [
                     'top'
                 ]
@@ -194,8 +213,9 @@ class ExpandTest(unittest.TestCase):
             {
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                     }
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    }
                 ]
             },
             {
@@ -207,6 +227,25 @@ class ExpandTest(unittest.TestCase):
                 ]
             },
             {
+                'start_directory': os.path.abspath('./'),
+                'panes': [
+                    {'shell_command': ['pwd']}
+                ]
+            },
+            {
+                'start_directory': os.path.abspath('./asdf/'),
+                'panes': [
+                    {'shell_command': ['pwd']}
+                ]
+            },
+            {
+                'start_directory': os.path.abspath('../'),
+                'panes': [
+                    {'shell_command': ['pwd']}
+                ]
+            },
+
+            {
                 'panes': [
                     {'shell_command': ['top']}
                 ]
@@ -215,11 +254,10 @@ class ExpandTest(unittest.TestCase):
     }
 
     def test_config(self):
-        '''
-        expands shell commands from string to list
-        '''
+        """Expand shell commands from string to list."""
         self.maxDiff = None
         test_config = config.expand(self.before_config)
+        logger.error(test_config)
         self.assertDictEqual(test_config, self.after_config)
 
 
