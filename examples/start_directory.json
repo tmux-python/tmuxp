@@ -2,36 +2,70 @@
   "windows": [
     {
       "panes": [
-        "pwd", 
-        "echo 'it trickles down from session-level'"
+        {
+          "shell_command": [
+            "echo \"\\033c", 
+            "it trickles down from session-level\""
+          ]
+        }, 
+        "pwd"
       ], 
       "window_name": "should be /var/"
     }, 
     {
       "panes": [
-        "pwd", 
-        "echo 'window start_directory concatenates to session start_directory'", 
-        "echo 'if it is not absolute'"
+        {
+          "shell_command": [
+            "echo '\\033c", 
+            "window start_directory concatenates to session start_directory", 
+            "if it is not absolute'"
+          ]
+        }, 
+        "pwd"
       ], 
       "start_directory": "log", 
       "window_name": "should be /var/log"
     }, 
     {
       "panes": [
-        "pwd", 
-        "echo 'has precedence'", 
-        "echo 'remember to quote ~ in YAML'"
+        {
+          "shell_command": [
+            "echo \\\\033c ~ has precedence. note: remember to quote ~ in YAML"
+          ]
+        }, 
+        "pwd"
       ], 
       "start_directory": "~", 
       "window_name": "should be ~"
     }, 
     {
       "panes": [
-        "pwd", 
-        "echo 'absolute paths also have precedence'"
+        "echo '\\033c absolute paths also have precedence.'", 
+        "pwd"
       ], 
       "start_directory": "/proc", 
       "window_name": "should be /proc"
+    }, 
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "echo '\\033c", 
+            "./ is relative to config file location", 
+            "../ will be parent of config file", 
+            "./test will be \\\"test\\\" dir inside dir of config file'"
+          ]
+        }, 
+        {
+          "shell_command": [
+            "echo '\\033c", 
+            "This way you can load up workspaces from projects and maintain", 
+            "relative paths.'"
+          ]
+        }
+      ], 
+      "start_directory": "./", 
+      "window_name": "should be config's dir"
     }
   ], 
   "session_name": "start directory", 

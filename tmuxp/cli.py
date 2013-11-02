@@ -226,7 +226,7 @@ def load_workspace(config_file, args):
 
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
-    sconfig = config.expand(sconfig)
+    sconfig = config.expand(sconfig, os.path.dirname(config_file))
     sconfig = config.trickle(sconfig)
 
     t = Server(

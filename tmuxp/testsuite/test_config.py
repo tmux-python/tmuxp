@@ -257,14 +257,12 @@ class ExpandTest(unittest.TestCase):
         """Expand shell commands from string to list."""
         self.maxDiff = None
         test_config = config.expand(self.before_config)
-        logger.error(test_config)
         self.assertDictEqual(test_config, self.after_config)
 
 
 class InlineTest(unittest.TestCase):
 
-    '''tests for :meth:`config.inline()`.
-    '''
+    """Tests for :meth:`config.inline()`."""
 
     before_config = {
         'session_name': 'sampleconfig',
@@ -339,21 +337,15 @@ class InlineTest(unittest.TestCase):
     }
 
     def test_config(self):
-        '''
-        config.inline() inlines shell commands from list to string where applicable
-        '''
+        """:meth:`config.inline()` shell commands list to string where applicable."""
+
         self.maxDiff = None
         test_config = config.inline(self.before_config)
         self.assertDictEqual(test_config, self.after_config)
 
 
 class InheritanceTest(unittest.TestCase):
-
-    '''
-    test config inheritance for the nested 'start_command'
-
-    format for tests will be
-    '''
+    """Test config inheritance for the nested 'start_command'."""
 
     config_before = {
         'session_name': 'sampleconfig',

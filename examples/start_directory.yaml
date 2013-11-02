@@ -3,22 +3,38 @@ start_directory: /var/
 windows:
   - window_name: should be /var/
     panes:
-    - pwd
-    - echo 'it trickles down from session-level'
+      - shell_command:
+        - echo "\033c
+        - it trickles down from session-level"
+      - pwd
   - window_name: should be /var/log
     start_directory: log
     panes:
+      - shell_command:
+        - echo '\033c
+        - window start_directory concatenates to session start_directory
+        - if it is not absolute'
       - pwd
-      - echo 'window start_directory concatenates to session start_directory'
-      - echo 'if it is not absolute'
   - window_name: should be ~
     start_directory: '~'
     panes:
+    - shell_command:
+      - 'echo \\033c ~ has precedence. note: remember to quote ~ in YAML'
     - pwd
-    - echo 'has precedence'
-    - echo 'remember to quote ~ in YAML'
   - window_name: should be /proc
     start_directory: /proc
     panes:
+    - echo '\033c absolute paths also have precedence.'
     - pwd
-    - echo 'absolute paths also have precedence'
+  - window_name: should be config's dir
+    start_directory: ./
+    panes:
+      - shell_command:
+        - echo '\033c
+        - ./ is relative to config file location
+        - ../ will be parent of config file
+        - ./test will be \"test\" dir inside dir of config file'
+      - shell_command:
+        - echo '\033c
+        - This way you can load up workspaces from projects and maintain
+        - relative paths.'
