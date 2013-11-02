@@ -6,7 +6,7 @@ Here you can find the recent changes to tmuxp.
 2013-11-02
 ----------
 
-- [docs] Many documentation, pep247, pep8 fixes
+- [docs] Many documentation, `pep257`_, `pep8`_ fixes
 - [internal] move old :class:`Server` methods ``__list_panes()``,
   ``__list_windows`` and ``__list_sessions`` into the single underscore.
 - [cli] #12 bug fix for ``$ tmuxp freeze`` by @finder.
@@ -346,3 +346,4 @@ initial
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _argcomplete: https://github.com/kislyuk/argcomplete
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
+.. _pep257: http://www.python.org/dev/peps/pep-0008/
