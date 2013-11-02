@@ -54,9 +54,8 @@ Differences
 
 **Programming Language** python. teamocil and tmuxinator uses ruby.
 
-**Internals** teamocil and tmuxinator process configurations into shell
-commands. tmuxp turns configuration into a live :class:`Session` object
-with access to all window and pane data. See :ref:`internals`.
+**Workspace building process** teamocil and tmuxinator process configs
+directly shell commands. tmuxp processes configuration via ORM layer.
 
 Additional Features
 -------------------
@@ -74,8 +73,8 @@ format [1]_. See :ref:`cli_freeze`.
 
 **ORM-based API** - Utilitizes tmux >= 1.8's unique ID's for panes,
 windows and sessions to create an object relational view of the tmux
-:class:`Server` and its entities; :class:`Session`, :class:`Window`,
-:class:`Pane`. See :ref:`Internals`.
+:class:`Server` and its':class:`Session`, :class:`Window`, :class:`Pane`.
+See :ref:`Internals`.
 
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
