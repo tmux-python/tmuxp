@@ -36,6 +36,8 @@ directory may be loaded with:
 
     $ tmuxp load .
 
+.. _cli_import:
+
 Import
 """"""
 

@@ -273,7 +273,7 @@ class StartDirectoryTest(TmuxTestCase):
     session_name: sampleconfig
     start_directory: '/var'
     windows:
-    - window_name: test
+    - window_name: supposed to be /var/log
       start_directory: '/var/log'
       layout: main-horizontal
       options:
@@ -283,7 +283,7 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
-    - window_name: testsa
+    - window_name: support to be /dev
       start_directory: '/dev'
       layout: main-horizontal
       panes:
@@ -302,6 +302,17 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo3"
+    - window_name: cwd relative to config file
+      layout: main-horizontal
+      start_directory: ./
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo3"
+
     '''
 
     def test_start_directory(self):
@@ -311,13 +322,16 @@ class StartDirectoryTest(TmuxTestCase):
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
 
+        logger.error(sconfig)
+
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        for window in self.session.windows:
-            for p in window.panes:
-                self.assertTrue(any(p.get('pane_start_path', ['/var/log', '/dev/', '/var/'])))
+        for path in ['/var/log', '/dev/', '/var/', os.getcwd()]:
+            for window in self.session.windows:
+                for p in window.panes:
+                    self.assertTrue(p.get('pane_start_path', path))
 
 if __name__ == '__main__':
     unittest.main()

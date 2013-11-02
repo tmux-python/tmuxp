@@ -206,7 +206,9 @@ def trickle(sconf):
             if not 'start_directory' in windowconfig:
                 windowconfig['start_directory'] = session_start_directory
             else:
-                if not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
+                if any(windowconfig['start_directory'] == a for a in ['.', './']):
+                    windowconfig['start_directory'] = os.getcwd()
+                elif not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
                     windowconfig['start_directory'] = os.path.join(
                         session_start_directory, windowconfig['start_directory'])
 

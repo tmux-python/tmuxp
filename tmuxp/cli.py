@@ -369,6 +369,8 @@ def command_load(args):
         startup(config_dir)
         configs_in_user = config.in_dir(config_dir)
         configs_in_cwd = config.in_cwd()
+        print(configs_in_cwd)
+        sys.exit()
 
         output = ''
 
@@ -390,13 +392,18 @@ def command_load(args):
         if '.' == args.config:
             if config.in_cwd():
                 configfile = config.in_cwd()[0]
+                print(configfile)
             else:
                 sys.exit('No tmuxp configs found in current directory.')
         else:
             configfile = args.config
         file_user = os.path.join(config_dir, configfile)
         file_cwd = os.path.join(cwd_dir, configfile)
+        print(file_user)
+        print(file_cwd)
+        print(cwd_dir)
         if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
+            print('load %s' % file_cwd)
             load_workspace(file_cwd, args)
         elif os.path.exists(file_user) and os.path.isfile(file_user):
             load_workspace(file_user, args)

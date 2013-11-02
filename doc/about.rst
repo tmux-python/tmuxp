@@ -54,25 +54,28 @@ Differences
 
 **Programming Language** python. teamocil and tmuxinator uses ruby.
 
-**Internals** teamocil and tmuxinator pipe configurations into
+**Internals** teamocil and tmuxinator process configurations into shell
 commands. tmuxp turns configuration into a live :class:`Session` object
 with access to all window and pane data. See :ref:`internals`.
-
-**CLI** tmuxp's CLI can attach and kill sessions with tab-completion
-support.
 
 Additional Features
 -------------------
 
-**Unit tests** Tests against live tmux version to test statefulness of
-tmux sessions, windows and panes. See :ref:`travis`.
+**CLI** tmuxp's CLI can attach and kill sessions with tab-completion
+support. See :ref:`commands`.
 
-**Import config** import configs from Teamocil / Tmuxinator [1]_.
+**Import config** import configs from Teamocil / Tmuxinator [1]_. See
+:ref:`cli_import`.
 
 **Session freezing** Supports session freezing into YAML and JSON
-format [1]_.
+format [1]_. See :ref:`cli_freeze`.
 
-**JSON config** JSON config support
+**JSON config** JSON config support. See :ref:`Examples`.
+
+**ORM-based API** - Utilitizes tmux >= 1.8's unique ID's for panes,
+windows and sessions to create an object relational view of the tmux
+:class:`Server` and its entities; :class:`Session`, :class:`Window`,
+:class:`Pane`. See :ref:`Internals`.
 
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
@@ -84,6 +87,8 @@ from JSON and YAML.
 Minor tweaks
 ------------
 
+- Unit tests against live tmux version to test statefulness of tmux
+  sessions, windows and panes. See :ref:`travis`.
 - Load + switch to new session from inside tmux.
 - Resume session if config loaded.
 - Pre-commands virtualenv / rvm / any other commands.

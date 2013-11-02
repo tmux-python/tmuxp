@@ -132,9 +132,7 @@ class ImportExportTest(unittest.TestCase):
 
 class ExpandTest(unittest.TestCase):
 
-    '''
-    assumes the configuration has been imported into a python dict correctly.
-    '''
+    """Assume configuration has been imported into a python dict correctly."""
 
     before_config = {
         'session_name': 'sampleconfig',
@@ -154,15 +152,18 @@ class ExpandTest(unittest.TestCase):
             {
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                     }
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    }
                 ]
             },
             {
                 'start_directory': '/var/log',
                 'options': {'automatic_rename': True, },
                 'panes': [
-                    {'shell_command': 'htop'},
+                    {
+                        'shell_command': 'htop'
+                    },
                     'vim',
                 ]
             },
@@ -170,7 +171,8 @@ class ExpandTest(unittest.TestCase):
                 'panes': [
                     'top'
                 ]
-            }]
+            }
+        ]
     }
 
     after_config = {
@@ -267,8 +269,10 @@ class InlineTest(unittest.TestCase):
                 'window_name': 'editor',
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': 'vim',
-                    },  {
+                        'start_directory': '~',
+                        'shell_command': 'vim',
+                    },
+                    {
                         'shell_command': 'cowsay "hey"'
                     },
                 ],
@@ -277,14 +281,20 @@ class InlineTest(unittest.TestCase):
             {
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': 'tail -F /var/log/syslog',
-                     'start_directory': '/var/log'}
+                    {
+                        'shell_command': 'tail -F /var/log/syslog',
+                        'start_directory': '/var/log'
+                    }
                 ]
             },
             {
-                'options': {'automatic_rename': True, },
+                'options': {
+                    'automatic_rename': True,
+                },
                 'panes': [
-                    {'shell_command': 'htop'}
+                    {
+                        'shell_command': 'htop'
+                    }
                 ]
             }
         ]
@@ -316,8 +326,10 @@ class InheritanceTest(unittest.TestCase):
                 'start_directory': '~',
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': ['vim'],
-                    },  {
+                        'start_directory': '~',
+                        'shell_command': ['vim'],
+                    },
+                    {
                         'shell_command': ['cowsay "hey"']
                     },
                 ],
@@ -364,8 +376,10 @@ class InheritanceTest(unittest.TestCase):
             {
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'}
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'
+                    }
                 ]
             },
             {
