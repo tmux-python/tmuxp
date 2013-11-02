@@ -29,20 +29,24 @@ PY2 = sys.version_info[0] == 2
 
 class tmux(object):
 
-    ''':py:mod:`subprocess` for :term:`tmux(1)`.
+    """:py:mod:`subprocess` for :term:`tmux(1)`.
 
-    Usage:
+    Usage::
 
-    .. code-block:: python
+        proc = tmux('new-session', '-s%' % 'my session')
 
-        tmux('new-session', '-s%' % 'my session')
+        if proc.stderr:
+            raise Exception('Command: %s returned error: %s' % (proc.cmd, proc.stderr))
+
+        print('tmux command returned %s' % proc.stdout)
 
     Equivalent to:
 
     .. code-block:: bash
 
         $ tmux new-session -s my session
-    '''
+
+    """
 
     def __init__(self, *args, **kwargs):
         cmd = [which('tmux')]
@@ -81,8 +85,7 @@ class tmux(object):
 
 class TmuxMappingObject(collections.MutableMapping):
 
-    '''
-    Base: :py:class:`collections.MutableMapping`
+    """Base: :py:class:`collections.MutableMapping`.
 
     Convenience container. Base class for :class:`Pane`, :class:`Window`,
     :class:`Session` and :class:`Server`.
@@ -90,7 +93,8 @@ class TmuxMappingObject(collections.MutableMapping):
     Instance attributes for useful information :term:`tmux(1)` uses for
     Session, Window, Pane, stored :attr:`self._TMUX`. For example, a
     :class:`Window` will have a ``window_id`` and ``window_name``.
-    '''
+
+    """
 
     def __getitem__(self, key):
         return self._TMUX[key]
