@@ -97,9 +97,9 @@ class Server(TmuxRelationalObject):
         return tmux(*args, **kwargs)
 
     def _list_sessions(self):
-        """Return a list of session information ``tmux(1)`` for the sessions.
+        """Return list of sessions in :py:obj:`dict` form.
 
-        Via ``$ tmux(1) list-sessions`` stdout.
+        Retrieved from ``$ tmux(1) list-sessions`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
         which wraps :py:meth:`Subprocess.Popen`.
@@ -171,9 +171,9 @@ class Server(TmuxRelationalObject):
     children = sessions
 
     def _list_windows(self):
-        """Return list of dicts filtered from :meth:`__list_windows`.
+        """Return list of windows in :py:obj:`dict` form.
 
-        List of ``$ tmux(1) list-windows`` stdout.
+        Retrieved from ``$ tmux(1) list-windows`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
         which wraps :py:meth:`Subprocess.Popen`.
@@ -230,9 +230,9 @@ class Server(TmuxRelationalObject):
         return self
 
     def _list_panes(self):
-        """Return list of dicts filtered from :meth:`__list_panes`.
+        """Return list of panes in :py:obj:`dict` form.
 
-        list of ``$ tmux(1) list-panes`` stdout.
+        Retrieved from ``$ tmux(1) list-panes`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
         which wraps :py:meth:`Subprocess.Popen`.
