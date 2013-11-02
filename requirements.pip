@@ -1,3 +1,4 @@
-kaptan
+pip>=1.4.1
+kaptan>=0.5.7
 colorama
 argcomplete
