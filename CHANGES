@@ -8,6 +8,10 @@ Here you can find the recent changes to tmuxp.
 
 - [docs] Many documentation, pep247, pep8 fixes
 - [cli] #12 bug fix for ``$ tmuxp freeze`` by @finder.
+- [internal] move old :class:`Server` methods ``__list_panes()``,
+  ``__list_windows`` and ``__list_sessions`` into the single underscore.
+- [cli] Support for spaces in ``$ tmuxp attach-session`` and
+  ``$ tmuxp kill-session``, and `` $ tmuxp freeze``.
 
 2013-11-01
 ----------

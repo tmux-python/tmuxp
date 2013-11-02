@@ -302,6 +302,8 @@ def get_server_from_args(args):
 def command_freeze(args):
     """ Import teamocil config to tmuxp format. """
 
+    ctext = ' '.join(args.session_name)
+
     t = Server(
         socket_name=args.socket_name,
         socket_path=args.socket_path,
@@ -309,7 +311,7 @@ def command_freeze(args):
     )
 
     session = t.findWhere({
-        'session_name': args.session_name
+        'session_name': ctext
     })
 
     sconf = freeze(session)
@@ -627,20 +629,21 @@ def command_convert(args):
 def command_attach_session(args):
     """ Command to attach / switch client to a tmux session."""
     commands = []
-    ctext = args.session_name
+    ctext = ' '.join(args.session_name)
 
     t = Server(
         socket_name=args.socket_name,
         socket_path=args.socket_path,
         colors=args.colors
     )
+
     try:
         session = next((s for s in t.sessions if s.get(
             'session_name') == ctext), None)
         if not session:
             raise Exception('Session not found.')
     except Exception as e:
-        print(e.message[0])
+        print(e.message)
         return
 
     if 'TMUX' in os.environ:
@@ -655,7 +658,7 @@ def command_attach_session(args):
 def command_kill_session(args):
     """ Command to kill a tmux session."""
     commands = []
-    ctext = args.session_name
+    ctext = ' '.join(args.session_name)
 
     t = Server(
         socket_name=args.socket_name or None,
@@ -668,11 +671,12 @@ def command_kill_session(args):
         if not session:
             raise Exception('Session not found.')
     except Exception as e:
-        print(e.message[0])
+        print(e.message)
         return
 
     try:
         session.kill_session()
+        print("Killed session %s." % ctext)
     except Exception as e:
         logger.error(e)
 
@@ -696,7 +700,9 @@ def get_parser():
     kill_session.add_argument(
         dest='session_name',
         type=str,
+        nargs='+',
         default=None,
+        help='Name of session',
     ).completer = SessionCompleter
 
     attach_session = subparsers.add_parser('attach-session')
@@ -704,7 +710,9 @@ def get_parser():
 
     attach_session.add_argument(
         dest='session_name',
+        nargs='+',
         type=str,
+        help='Name of session',
     ).completer = SessionCompleter
 
     freeze = subparsers.add_parser('freeze')
@@ -713,6 +721,8 @@ def get_parser():
     freeze.add_argument(
         dest='session_name',
         type=str,
+        nargs='+',
+        help='Name of session',
     ).completer = SessionCompleter
 
     load = subparsers.add_parser('load')
