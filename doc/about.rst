@@ -91,7 +91,7 @@ Minor tweaks
 - Load config ``.tmuxp.yaml`` or ``.tmuxp.json`` from current working
   directory with ``$ tmuxp load .``.
 - ``$ tmuxp -2``, ``$ tmuxp -8`` for forcing term colors a la
-  :ref:`tmux(1)`.
+  :term:`tmux(1)`.
 - ``$ tmuxp -L<socket-name>``, ``$ tmuxp -S<socket-path>`` for sockets and
   ``$ tmuxp -f<config-file>`` for config file.
 
