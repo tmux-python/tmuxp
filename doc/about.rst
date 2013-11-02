@@ -73,7 +73,7 @@ format [1]_. See :ref:`cli_freeze`.
 
 **ORM-based API** - Utilitizes tmux >= 1.8's unique ID's for panes,
 windows and sessions to create an object relational view of the tmux
-:class:`Server` and its':class:`Session`, :class:`Window`, :class:`Pane`.
+:class:`Server` and its' :class:`Session`, :class:`Window`, :class:`Pane`.
 See :ref:`Internals`.
 
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
