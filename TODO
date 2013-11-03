@@ -4,6 +4,11 @@ Roadmap
 Immediate
 """""""""
 
+have tmuxp freeze detact ENV variables for 
+virtualenv, rbenv, rvm.
+
+make sure tmuxp freeze has cd
+
 bug:
 
 'pane_start_path': u'/home/tony/workspace/tmuxp/ /var/log',
