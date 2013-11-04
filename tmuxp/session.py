@@ -1,5 +1,5 @@
 # -*- coding: utf8 - *-
-"""Pythonization of the :ref:`tmux(1)` session.
+"""Pythonization of the :term:`tmux(1)` session.
 
 tmuxp.session
 ~~~~~~~~~~~~~
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
-    """:ref:`tmux(1)` session.
+    """:term:`tmux(1)` session.
 
     Holds :class:`Window` objects.
 
