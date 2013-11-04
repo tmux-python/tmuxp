@@ -4,4 +4,4 @@ sphinx
 sphinxcontrib-aafig
 reportlab
 sphinx-argparse
--e git+git://github.com/tony/sphinx_rtd_theme@pypi#egg=sphinx_rtd_theme
+-e git+git://github.com/tony/sphinx_rtd_theme@sphinx-basic-updates#egg=sphinx_rtd_theme
