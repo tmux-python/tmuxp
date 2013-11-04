@@ -20,67 +20,61 @@ logger = logging.getLogger(__name__)
 
 class WorkspaceBuilder(object):
 
-    '''
+    """Load workspace from session :py:obj:`dict`.
+
     Build tmux workspace from a configuration. Creates and names windows, sets
     options, splits windows into panes.
 
     The normal phase of loading is:
 
         1.  :term:`kaptan` imports json/yaml/ini. ``.get()`` returns
-            python :class:`dict`.
-
-            .. code-block:: python
+            python :class:`dict`::
 
                 import kaptan
                 sconf = kaptan.Kaptan(handler='yaml')
                 sconf = sconfig.import_config(self.yaml_config).get()
 
-            or from config file with extension:
-
-            .. code-block:: python
+            or from config file with extension::
 
                 import kaptan
                 sconf = kaptan.Kaptan()
                 sconf = sconfig.import_config('path/to/config.yaml').get()
 
             kaptan automatically detects the handler from filenames.
-        2.  :meth:`config.expand` sconf inline shorthand
-
-            .. code-block:: python
+        2.  :meth:`config.expand` sconf inline shorthand::
 
                 from tmuxp import config
                 sconf = config.expand(sconf)
 
         3.  :meth:`config.trickle` passes down default values from session
-            -> window -> pane if applicable.
-
-            .. code-block:: python
+            -> window -> pane if applicable::
 
                 sconf = config.trickle(sconf)
 
         4.  (You are here) We will create a :class:`Session` (a real
             ``tmux(1)`` session) and iterate through the list of windows, and
             their panes, returning full :class:`Window` and :class:`Pane`
-            objects each step of the way.
-
-            .. code-block:: python
+            objects each step of the way::
 
                 workspace = WorkspaceBuilder(sconf=sconf)
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
-    '''
+
+    """
 
     def __init__(self, sconf, server=None):
-        '''
-        todo: initialize :class:`Session` from here, in ``self.session``.
+        """Initialize workspace loading.
+
+        :todo: initialize :class:`Session` from here, in ``self.session``.
 
         :param sconf: session config, includes a :py:obj:`list` of ``windows``.
         :type sconf: :py:obj:`dict`
 
         :param server:
         :type server: :class:`Server`
-        '''
+
+        """
 
         if not sconf:
             raise exc.EmptyConfigException('session configuration is empty.')
@@ -95,7 +89,7 @@ class WorkspaceBuilder(object):
         self.sconf = sconf
 
     def build(self, session=None):
-        ''' Build tmux workspace in session.
+        """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
 
@@ -104,7 +98,8 @@ class WorkspaceBuilder(object):
 
         :param session: - session to build workspace in
         :type session: :class:`Session`
-        '''
+
+        """
 
         if not session:
             if not self.server:
@@ -134,9 +129,6 @@ class WorkspaceBuilder(object):
         self.session = session
 
         assert(isinstance(session, Session))
-        if 'options' in self.sconf and isinstance(self.sconf['options'], dict):
-            for key, val in self.sconf['options'].items():
-                s.set_option(key, val)
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
@@ -148,16 +140,17 @@ class WorkspaceBuilder(object):
                     w.select_layout(wconf['layout'])
 
     def iter_create_windows(self, s):
-        ''' generator that creates tmux windows, yields :class:`Window` object
-        by iterating through ``sconf['windows']``.
+        """Return :class:`Window` iterating through session config dict.
 
-        todo: look at this tomorrow: may not be necessary to have session.
+        Generator yielding :class:`Window` by iterating through
+        ``sconf['windows']``.
 
-        will also apply ``window_options`` to window.
+        Applies ``window_options`` to window.
 
         :param session: :class:`Session` from the config
         :rtype: :class:`Window`
-        '''
+
+        """
         for i, wconf in enumerate(self.sconf['windows'], start=1):
             if 'window_name' not in wconf:
                 window_name = None
@@ -171,7 +164,8 @@ class WorkspaceBuilder(object):
                 pass
             w = s.new_window(
                 window_name=window_name,
-                start_directory=wconf['start_directory'] if 'start_directory' in wconf else None,
+                start_directory=wconf[
+                    'start_directory'] if 'start_directory' in wconf else None,
                 attach=False  # do not move to the new window
             )
 
@@ -191,17 +185,17 @@ class WorkspaceBuilder(object):
             yield w, wconf
 
     def iter_create_panes(self, w, wconf):
-        ''' generator creating and yielding panes for Window + window config
-        section.
+        """Return :class:`Pane` iterating through window config dict.
 
-        will also run ``shell_command`` with ``$ tmux send-keys``.
+        Run ``shell_command`` with ``$ tmux send-keys``.
 
         :param w: window to create panes for
         :type w: :class:`Window`
         :param wconf: config section for window
         :type wconf: :py:obj:`dict`
         :rtype: :class:`Pane`
-        '''
+
+        """
         assert(isinstance(w, Window))
 
         for pindex, pconf in enumerate(wconf['panes'], start=1):
@@ -227,6 +221,13 @@ class WorkspaceBuilder(object):
 
 
 def freeze(session):
+    """Freeze live tmux session and Return session config :py:obj:`dict`.
+
+    :param session: session object
+    :type session: :class:`Session`
+    :rtype: dict
+
+    """
     sconf = {}
 
     sconf['session_name'] = session['session_name']
@@ -246,8 +247,9 @@ def freeze(session):
             pconf = {}
             pconf['shell_command'] = []
             if 'shell_command_before' not in wconf:
-               pconf['shell_command'].append(
-                   'cd ' + p.get('pane_current_path'))
+                pconf['shell_command'].append(
+                    'cd ' + p.get('pane_current_path')
+                )
             pconf['shell_command'].append(p.get('pane_current_command'))
             wconf['panes'].append(pconf)
 

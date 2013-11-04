@@ -119,7 +119,8 @@ class TmuxMappingObject(collections.MutableMapping):
 
 class TmuxRelationalObject(object):
 
-    '''
+    """Base Class for managing tmux object child entities.
+
     Manages collection of child objects  (a :class:`Server` has a collection of
     :class:`Session` objects, a :class:`Session` has collection of
     :class:`Window`)
@@ -136,21 +137,21 @@ class TmuxRelationalObject(object):
     :class:`Pane`
     ================ ================== ===================== ============================
 
-    '''
+    """
 
     def findWhere(self, attrs):
-        ''' find first match
+        """Return object on first match.
 
         Based on `.findWhere()`_ from `underscore.js`_.
 
         .. _.findWhere(): http://underscorejs.org/#findWhere
         .. _underscore.js: http://underscorejs.org/
 
-        '''
+        """
         return self.where(attrs, True)
 
     def where(self, attrs, first=False):
-        ''' find child objects by properties
+        """Return objects matching child objects properties>
 
         Based on `.where()`_ from `underscore.js`_.
 
@@ -160,7 +161,8 @@ class TmuxRelationalObject(object):
         :param attrs: tmux properties to match
         :type attrs: dict
         :rtype: list
-        '''
+
+        """
 
         # from https://github.com/serkanyersen/underscore.py
         def by(val, *args):
@@ -178,8 +180,7 @@ class TmuxRelationalObject(object):
             return list(filter(by, self.children))
 
     def getById(self, id):
-        '''
-        Based on `.get()`_ from `backbone.js`_.
+        """Return object based on `.get()`_ from `backbone.js`_.
 
         .. _backbone.js: http://backbonejs.org/
         .. _.get(): http://backbonejs.org/#Collection-get
@@ -187,7 +188,8 @@ class TmuxRelationalObject(object):
         :param id:
         :type id: string
         :rtype: object
-        '''
+
+        """
         for child in self.children:
             if child[self.childIdAttribute] == id:
                 return child
@@ -198,11 +200,15 @@ class TmuxRelationalObject(object):
 
 
 def which(exe=None):
-    '''
-    Python clone of /usr/bin/which
+    """Return path of bin. Python clone of /usr/bin/which.
 
     from salt.util - https://www.github.com/saltstack/salt - license apache
-    '''
+
+    :param exe: Application to search PATHs for.
+    :type exe: string
+    :rtype: string
+
+    """
     if exe:
         if os.access(exe, os.X_OK):
             return exe
@@ -224,11 +230,14 @@ def which(exe=None):
     logger.error('No executable was passed to be searched by which')
     return None
 
+
 def is_version(version):
-    """ Return True if tmux version installed.
+    """Return True if tmux version installed.
 
     :param version: version, '1.8'
     :param type: string
+    :rtype: bool
+
     """
     proc = tmux('-V')
 
@@ -239,10 +248,9 @@ def is_version(version):
 
     return StrictVersion(installed_version) == StrictVersion(version)
 
+
 def version():
-    """
-    check to see if tmux is version >1.8 or above
-    """
+    """Return if tmux meets version requirement. Version >1.8 or above."""
     proc = tmux('-V')
 
     if proc.stderr:
@@ -259,10 +267,11 @@ def version():
 
 
 def oh_my_zsh_auto_title():
-    '''give warning and offer to fix DISABLE_AUTO_TITLE
+    """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 
-       see: https://github.com/robbyrussell/oh-my-zsh/pull/257
-    '''
+    see: https://github.com/robbyrussell/oh-my-zsh/pull/257
+
+    """
 
     if 'SHELL' in os.environ and 'zsh' in os.environ.get('SHELL'):
         if os.path.exists(os.path.expanduser('~/.oh-my-zsh')):

@@ -1,13 +1,14 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.formats
-    ~~~~~~~~~~~~~
+"""Format variables for tmux objects.
 
-    .. _For reference:
-       http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
+tmuxp.formats
+~~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+For reference: http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 
 SESSION_FORMATS = [
