@@ -25,7 +25,7 @@ Differences from tmuxinator / teamocil
 
 .. note::
 
-    If you use teamocli / tmuxinator and can clarify or add differences,
+    If you use teamocil / tmuxinator and can clarify or add differences,
     please free to `edit this page`_ on github.
 
 Similarities
