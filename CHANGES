@@ -3,6 +3,12 @@ tmuxp Changelog
 
 Here you can find the recent changes to tmuxp.
 
+2013-11-14
+----------
+
+- [internal] [docs] - `pep257`_, `pep8`_.
+- tagged version ``v0.0.36``.
+
 2013-11-02
 ----------
 
@@ -340,10 +346,10 @@ initial
 - changedlog added
 - sphinx documentation
 
-# vim: set filetype=rst:
-
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _argcomplete: https://github.com/kislyuk/argcomplete
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
-.. _pep257: http://www.python.org/dev/peps/pep-0008/
+.. _pep8: http://www.python.org/dev/peps/pep-0008/
+
+# vim: set filetype=rst:
