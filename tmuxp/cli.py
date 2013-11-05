@@ -7,8 +7,6 @@ tmuxp.cli
 :copyright: Copyright 2013 Tony Narlock.
 :license: BSD, see LICENSE for details
 
-
-
 """
 
 import os
@@ -291,16 +289,6 @@ def load_workspace(config_file, args):
                 builder.session.attach_session()
         else:
             sys.exit()
-
-
-def get_server_from_args(args):
-    """ Return a :class:`Server` object from the argparse response.
-
-    tmuxp allows flags such as -L, -S, -2 and -8.
-    may delete. sec
-
-    """
-    pass
 
 
 def command_freeze(args):
