@@ -750,7 +750,10 @@ def get_parser():
         help='additional help'
     )
 
-    kill_session = subparsers.add_parser('kill-session')
+    kill_session = subparsers.add_parser(
+        'kill-session',
+        parents=[server_parser]
+    )
     kill_session.set_defaults(callback=command_kill_session)
 
     kill_session.add_argument(
@@ -803,26 +806,31 @@ def get_parser():
         type=str,
         nargs='?',
         help='''\
-        List of config files to launch session from.
+        List of config files to launch session from. Usage::
 
-        Checks current working directory (%s) then $HOME/.tmuxp directory (%s).
+        Load ~/.tmuxp/myproject.yaml::
+
+            $ tmuxp load myproject.yaml
+
+        Load $CWD/.tmuxp.yaml or $CWD/.tmuxp.json::
 
             $ tmuxp .
 
-        will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
-        will also check for any ./*.yaml and ./*.json.
-        ''' % (cwd_dir + '/', config_dir),
+        '''
     ).completer = ConfigFileCompleter(allowednames=('.yaml', '.json'), directories=False)
     load.set_defaults(callback=command_load)
 
-    convert = subparsers.add_parser('convert')
+    convert = subparsers.add_parser(
+        'convert',
+        help='Convert tmuxp config between YAML and JSON format.'
+    )
 
     convert.add_argument(
         dest='config',
         type=str,
         default=None,
         help='''\
-        Checks current working directory (%s) then $HOME/.tmuxp directory (%s).
+        Check current working directory (%s) then $HOME/.tmuxp directory (%s).
 
             $ tmuxp .
 
@@ -833,20 +841,27 @@ def get_parser():
 
     convert.set_defaults(callback=command_convert)
 
-    importparser = subparsers.add_parser('import')
+    importparser = subparsers.add_parser(
+        'import',
+        help='Import configurations from teamocil and tmuxinator'
+    )
     importsubparser = importparser.add_subparsers(
         title='commands',
         description='valid commands',
         help='additional help'
     )
 
-    import_teamocil = importsubparser.add_parser('teamocil')
+    import_teamocil = importsubparser.add_parser(
+        'teamocil',
+        help="Parse teamocil configurations into tmuxp format"
+    )
 
     import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(
-        required=True)
+        required=True
+    )
     import_teamocilgroup.add_argument(
         '--list', dest='list', action='store_true',
-        help='List yaml configs in ~/.teamocil and current working directory.'
+        help='List configs in ~/.teamocil and current working directory.'
     )
 
     import_teamocilgroup.add_argument(
@@ -859,7 +874,10 @@ def get_parser():
     ).completer = TeamocilCompleter(allowednames=('.yml'), directories=False)
     import_teamocil.set_defaults(callback=command_import_teamocil)
 
-    import_tmuxinator = importsubparser.add_parser('tmuxinator')
+    import_tmuxinator = importsubparser.add_parser(
+        'tmuxinator',
+        help="Parse teamocil configurations into tmuxp format"
+    )
 
     import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
         required=True)
