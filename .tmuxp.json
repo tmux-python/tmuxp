@@ -69,5 +69,6 @@
       }
     }
   ], 
-  "session_name": "tmuxp"
+  "session_name": "tmuxp", 
+  "start_directory": "./"
 }

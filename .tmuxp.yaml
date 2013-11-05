@@ -1,4 +1,5 @@
 session_name: tmuxp
+start_directory: ./ # load session relative to config location (project root).
 windows:
 - window_name: tmuxp
   layout: main-horizontal
