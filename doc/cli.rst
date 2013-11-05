@@ -17,10 +17,6 @@ You can save the state of your tmux session by freezing it.
 
 Tmuxp will offer to save your session state to ``.json`` or ``.yaml``.
 
-``v0.0.37`` introduces support for freezing `virtualenv`_, 
-
-.. _virtualenv: http://www.virtualenv.org/
-
 .. _cli_load:
 
 Load session
