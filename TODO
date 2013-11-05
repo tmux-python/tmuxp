@@ -4,6 +4,9 @@ TODO
 0.1 milestone
 -------------
 
+- Remove doc for ``run_tests.py`` visual test runner. Just have
+  instruction for running test builder package.
+- Add help docs to CLI commands and options.
 - `pep8`_, `pep257`_ for tests.
 - ``$ tmux freeze`` for virtualenv
 - ``shell_command_before`` for `teamocil`_.
