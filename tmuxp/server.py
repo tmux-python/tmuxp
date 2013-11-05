@@ -145,11 +145,7 @@ class Server(TmuxRelationalObject):
 
     @property
     def _sessions(self):
-        """Return list of the server's sessions as :py:obj:`dict`.
-
-        :rtype: list
-
-        """
+        """Property / alias to return :meth:`~._list_sessions`."""
 
         return self._list_sessions()
 
@@ -165,7 +161,7 @@ class Server(TmuxRelationalObject):
 
     @property
     def sessions(self):
-        """Return a :py:obj:`list` of the server's :class:`Session` objects."""
+        """Property / alias to return :meth:`~.list_sessions`."""
         return self.list_sessions()
     #: Alias of :attr:`sessions`.
     children = sessions

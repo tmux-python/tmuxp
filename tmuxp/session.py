@@ -231,9 +231,10 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return windows
 
-    #: Property of :meth:_list_windows()
     @property
     def _windows(self):
+        """Property / alias to return :meth:`~._list_windows`."""
+
         return self._list_windows()
 
     def list_windows(self):
@@ -250,7 +251,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     @property
     def windows(self):
-        """Return a :py:obj:`list` of the server's :class:`Window` objects."""
+        """Property / alias to return :meth:`~.list_windows`."""
         return self.list_windows()
     #: Alias of :attr:`windows`.
     children = windows
