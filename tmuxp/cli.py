@@ -689,30 +689,66 @@ def command_kill_session(args):
 def get_parser():
     """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 
+
+
+    server_parser = argparse.ArgumentParser(add_help=False)
+
+    server_parser.add_argument(
+        '--log-level',
+        dest='log_level',
+        default='INFO',
+        metavar='log-level',
+        help='Log level e.g. INFO, DEBUG, ERROR'
+    )
+
+    server_parser.add_argument(
+        '-L', dest='socket_name',
+        default=None,
+        help='socket name of tmux server. Same as tmux.',
+        metavar='socket-name'
+    )
+
+    server_parser.add_argument(
+        '-S',
+        dest='socket_path',
+        default=None,
+        help='socket path of tmux server. Same as tmux.',
+        metavar='socket-path'
+    )
+
     parser = argparse.ArgumentParser(
         description='''\
         Launch tmux workspace. Help documentation: <http://tmuxp.rtfd.org>.
         ''',
+        parents=[server_parser]
     )
 
-    server_parser = argparse.ArgumentParser(add_help=False)
+    client_parser = argparse.ArgumentParser(add_help=False)
+    colorsgroup = client_parser.add_mutually_exclusive_group()
 
-    server_parser.add_argument('--log-level', dest='log_level', default='INFO',
-                        metavar='log-level',
-                        help='Log level e.g. INFO, DEBUG, ERROR')
+    colorsgroup.add_argument(
+        '-2',
+        dest='colors',
+        action='store_const',
+        const=256,
+        help='Force tmux to assume the terminal supports 256 colours.',
+    )
 
-    server_parser.add_argument('-L', dest='socket_name', default=None,
-                        help='socket name of tmux server. Same as tmux.',
-                        metavar='socket-name')
+    colorsgroup.add_argument(
+        '-8',
+        dest='colors',
+        action='store_const',
+        const=88,
+        help='Like -2, but indicates that the terminal supports 88 colours.',
+    )
 
-    server_parser.add_argument('-S', dest='socket_path', default=None,
-                        help='socket path of tmux server. Same as tmux.',
-                        metavar='socket-path')
+    parser.set_defaults(colors=None)
 
-    subparsers = parser.add_subparsers(title='commands',
-                                       description='valid commands',
-                                       help='additional help')
-
+    subparsers = parser.add_subparsers(
+        title='commands',
+        description='valid commands',
+        help='additional help'
+    )
 
     kill_session = subparsers.add_parser('kill-session')
     kill_session.set_defaults(callback=command_kill_session)
@@ -727,7 +763,7 @@ def get_parser():
 
     attach_session = subparsers.add_parser(
         'attach-session',
-        parents=[server_parser]
+        parents=[server_parser, client_parser]
     )
     attach_session.set_defaults(callback=command_attach_session)
 
@@ -753,7 +789,7 @@ def get_parser():
 
     load = subparsers.add_parser(
         'load',
-        parents=[server_parser]
+        parents=[server_parser, client_parser]
     )
 
     loadgroup = load.add_mutually_exclusive_group(required=True)
@@ -798,9 +834,11 @@ def get_parser():
     convert.set_defaults(callback=command_convert)
 
     importparser = subparsers.add_parser('import')
-    importsubparser = importparser.add_subparsers(title='commands',
-                                                  description='valid commands',
-                                                  help='additional help')
+    importsubparser = importparser.add_subparsers(
+        title='commands',
+        description='valid commands',
+        help='additional help'
+    )
 
     import_teamocil = importsubparser.add_parser('teamocil')
 
@@ -840,26 +878,6 @@ def get_parser():
     ).completer = TmuxinatorCompleter(allowednames=('.yml'), directories=False)
 
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
-
-    colorsgroup = parser.add_mutually_exclusive_group()
-
-    colorsgroup.add_argument(
-        '-2',
-        dest='colors',
-        action='store_const',
-        const=256,
-        help='Force tmux to assume the terminal supports 256 colours.',
-    )
-
-    colorsgroup.add_argument(
-        '-8',
-        dest='colors',
-        action='store_const',
-        const=88,
-        help='Like -2, but indicates that the terminal supports 88 colours.',
-    )
-
-    parser.set_defaults(colors=None)
 
     # http://stackoverflow.com/questions/8521612/argparse-optional-subparser
     parser.add_argument(
