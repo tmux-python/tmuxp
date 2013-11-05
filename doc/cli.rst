@@ -9,34 +9,43 @@ Command Line Interface
 Freeze sessions
 """""""""""""""
 
-You can save the state of your tmux session by freezing it.
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+    :path: freeze
 
-.. code-block:: bash
 
-    $ tmuxp freeze <session-name>
+    You can save the state of your tmux session by freezing it.
 
-Tmuxp will offer to save your session state to ``.json`` or ``.yaml``.
+    Tmuxp will offer to save your session state to ``.json`` or ``.yaml``.
 
 .. _cli_load:
 
 Load session
 """"""""""""
 
-Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by
-:ref:`bash_completion`.
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+    :path: load
 
-Files also may be loaded by absolute path.
+    Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by
+    :ref:`bash_completion`.
 
-.. code-block:: bash
+    Files also may be loaded by absolute path.
 
-    $ tmuxp load <filename>
+    .. code-block:: bash
 
-Files named ``.tmuxp.yaml`` or ``.tmuxp.json`` in the current working
-directory may be loaded with:
+        $ tmuxp load <filename>
 
-.. code-block:: bash
+    Files named ``.tmuxp.yaml`` or ``.tmuxp.json`` in the current working
+    directory may be loaded with:
 
-    $ tmuxp load .
+    .. code-block:: bash
+
+        $ tmuxp load .
 
 .. _cli_import:
 

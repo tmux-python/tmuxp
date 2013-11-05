@@ -689,8 +689,6 @@ def command_kill_session(args):
 def get_parser():
     """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 
-
-
     server_parser = argparse.ArgumentParser(add_help=False)
 
     server_parser.add_argument(
@@ -717,9 +715,8 @@ def get_parser():
     )
 
     parser = argparse.ArgumentParser(
-        description='''\
-        Launch tmux workspace. Help documentation: <http://tmuxp.rtfd.org>.
-        ''',
+        description='Launch tmux workspace. '
+                    'Help documentation: <http://tmuxp.rtfd.org>.',
         parents=[server_parser]
     )
 
@@ -811,18 +808,7 @@ def get_parser():
         dest='config',
         type=str,
         nargs='?',
-        help='''\
-        List of config files to launch session from. Usage::
-
-        Load ~/.tmuxp/myproject.yaml::
-
-            $ tmuxp load myproject.yaml
-
-        Load $CWD/.tmuxp.yaml or $CWD/.tmuxp.json::
-
-            $ tmuxp .
-
-        '''
+        help='List config available in working directory and config folder.'
     ).completer = ConfigFileCompleter(allowednames=('.yaml', '.json'), directories=False)
     load.set_defaults(callback=command_load)
 
@@ -835,14 +821,7 @@ def get_parser():
         dest='config',
         type=str,
         default=None,
-        help='''\
-        Check current working directory (%s) then $HOME/.tmuxp directory (%s).
-
-            $ tmuxp .
-
-        will check launch a ~/.pullv.yaml / ~/.pullv.json from the cwd.
-        will also check for any ./*.yaml and ./*.json.
-        ''' % (cwd_dir + '/', config_dir)
+        help='Absolute or relative path to config file.'
     ).completer = ConfigFileCompleter(allowednames=('.yaml', '.json'), directories=False)
 
     convert.set_defaults(callback=command_convert)
