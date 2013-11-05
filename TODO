@@ -26,6 +26,8 @@ TODO
 - Determine the workflow for ``$ tmuxp load filename`` for sure. Document
   it.
 - Get `sphinx-argparse`_ in good enough shape for docs.
+- Handle case where switching client via ``$ tmuxp load`` or
+  ``$ tmuxp attach-session`` into another socket may cause an error.
 
 Future
 ------

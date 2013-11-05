@@ -9,6 +9,9 @@ Here you can find the recent changes to tmuxp.
 2013-11-05
 ''''''''''
 
+- [cli] Support for ``[-L socket-name]`` and ``[-S socket-path]`` in
+  autocompletion and when loading. Note, switching client into another
+  socket may cause an error.
 - Documentation tweaking to :ref:`API`, :ref:`about_tmux`.
 - New :ref:`roadmap`.
 - `pep257`_, `pep8`_.
