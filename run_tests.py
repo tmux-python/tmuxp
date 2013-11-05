@@ -7,10 +7,8 @@ from __future__ import absolute_import, division, print_function, with_statement
 import unittest
 import sys
 import os
-import subprocess
 import argparse
 import tmuxp.testsuite
-from tmuxp.util import tmux
 
 t = tmuxp.testsuite.t
 
