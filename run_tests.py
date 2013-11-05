@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Test runner for tmuxp project. ``$ ./run_tests.py --help`` for more."""
 
 from __future__ import absolute_import, division, print_function, with_statement
 
@@ -19,6 +20,7 @@ if tmux_path not in sys.path:
 
 
 def main(verbosity=2, failfast=False):
+    """Run TestSuite in new tmux session. Exit with code 0 if success."""
 
     session_name = 'tmuxp'
     t.tmux('new-session', '-d', '-s', session_name)
@@ -101,8 +103,6 @@ if __name__ == '__main__':
     if 'help' in args:
         parser.print_help()
     elif 'visual' in args and args.visual:
-        # todo, we can have this test build, and on completion, take the user
-        # to the new session with os.exec and attach the session.
         loader = unittest.TestLoader()
         suites = loader.loadTestsFromName('tmuxp.testsuite.test_builder')
         result = unittest.TextTestRunner(
