@@ -1,4 +1,1 @@
 
-[submodule "doc/_themes"]
-	path = doc/_themes
-	url = https://github.com/ericholscher/readthedocs-sphinx.git
