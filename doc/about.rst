@@ -6,11 +6,11 @@
 About
 =====
 
-tmuxp helps you manage your text-based workspaces. Its BSD licensed.
+tmuxp helps you manage tmux workspaces. Its BSD licensed.
 
-Internally, tmuxp is an object relational mapper on top of tmux.
-End-users may use YAML, JSON and :py:obj:`dict` configurations to launch
-workspaces like `tmuxinator`_ and `teamocil`_.
+tmuxp is build upon an object relational mapper for tmux. End-users may
+use YAML, JSON and :py:obj:`dict` configurations to launch workspaces like
+`tmuxinator`_ and `teamocil`_.
 
 To jump right in, see :ref:`quickstart` and :ref:`examples`.
 

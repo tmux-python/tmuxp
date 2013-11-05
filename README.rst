@@ -20,31 +20,14 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 - `bash, zsh and tcsh`_ completion.
 - Unit tested against against live tmux (1.8 and git). See `travis.yml`_
   file, `tmuxp on Travis CI`_ and `testing`_ page.
-- `Documentation`_, `Examples`_, `Internals`_.
+- `Documentation`_, `Examples`_, `Commands`_, `Internals`_.
 - and `much, much more`_.
 
 Ready to begin? See the `Quickstart`_.
 
-CLI Commands
-""""""""""""
-
-========================== ===============================================
- ``tmuxp attach-session``  ``<session_name>``
-                           tmuxp uses ``switch-client`` if already inside
-                           tmux client.
- ``tmuxp kill-session``    ``<session name>``
- ``tmuxp freeze``          ``<session name>``
- ``tmuxp load``            ``<file>``
-                           Load a workspace yaml / json file.
-                           If session already made, will offer to attach.
- ``tmuxp convert``         ``<file>``
-                           Convert session yaml / json.
- ``tmuxp import``          ``[teamocil | tmuxinator]`` ``<file>``
-                           Import a `teamocil`_ or `tmuxinator`_ config.
-========================== ===============================================
-
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
+python support  2.7, >= 3.3
 config support  yaml, json, python dict
 Travis          http://travis-ci.org/tony/tmuxp
 Docs            http://tmuxp.rtfd.org
@@ -89,6 +72,7 @@ tests           .. code-block:: bash
 .. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _Internals: http://tmuxp.readthedocs.org/en/latest/internals.html
+.. _Commands: http://tmuxp.readthedocs.org/en/latest/cli.html
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
