@@ -83,7 +83,7 @@ Convert between YAML and JSON
     :module: tmuxp.cli
     :func: get_parser
     :prog: tmuxp
-    :path: load
+    :path: convert
 
 
     tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
