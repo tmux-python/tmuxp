@@ -1,5 +1,5 @@
 # -*- coding: utf8 - *-
-"""Pythonization of the :ref:`tmux(1)` window.
+"""Pythonization of the :term:`tmux(1)` window.
 
 tmuxp.window
 ~~~~~~~~~~~~
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
-    """:ref:`tmux(1)` window."""
+    """:term:`tmux(1)` window."""
 
     childIdAttribute = 'pane_id'
 

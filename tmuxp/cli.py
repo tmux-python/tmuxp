@@ -8,8 +8,6 @@ tmuxp.cli
 :license: BSD, see LICENSE for details
 
 
-prompt, prompt_bool, prompt_choices
-LICENSE: https://github.com/techniq/flask-script/blob/master/LICENSE
 
 """
 
@@ -39,6 +37,13 @@ teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 def prompt(name, default=None):
     """Return user input from command line.
 
+    :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from
+    `flask-script`_. See the `flask-script license`_.
+
+    .. _flask-script: https://github.com/techniq/flask-script
+    .. _flask-script license:
+        https://github.com/techniq/flask-script/blob/master/LICENSE
+
     :param name: prompt text
     :param default: default value if no input provided.
     :rtype: string
@@ -56,8 +61,7 @@ def prompt(name, default=None):
 
 
 def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
-    """
-    Return user input from command line and converts to boolean value.
+    """Return user input from command line and converts to boolean value.
 
     :param name: prompt text
     :param default: default value if no input provided.

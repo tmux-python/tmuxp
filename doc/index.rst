@@ -52,6 +52,7 @@ Explore:
     developing
     api
     changes
+    roadmap
     about_tmux
     glossary
 

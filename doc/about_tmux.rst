@@ -159,6 +159,7 @@ Core Concepts
 
 Your workflow
 -------------
+
 You can keep tmux on a server with your latest work, come back and resume
 your `"train of thought"`_ and work.
 
@@ -197,10 +198,13 @@ Session
 
 Inside a tmux :ref:`server`.
     
-The session holds :ref:`window`. The bottom bar in tmux shows a list of
-windows. Normally they can be navigated with ``Ctrl-a [0-9]``,
+The session has 1 or more :ref:`window`. The bottom bar in tmux show a
+list of windows. Normally they can be navigated with ``Ctrl-a [0-9]``,
 ``Ctrl-a n`` and ``Ctrl-a p``.
 
+Sessions can have a ``session_name``.
+
+Uniquely identified by ``session_id``.
 
 .. aafig::
     :textual:
@@ -221,37 +225,14 @@ windows. Normally they can be navigated with ``Ctrl-a [0-9]``,
     | session                                                        |
     \----------------------------------------------------------------/
 
-sessions can have a name.
-
-uniquely identified by:
-
-important attributes:
-
-========================= ================================================
-session_name
-session_id
-========================= ================================================
-
-other attributes:
-
-========================= ================================================
-session_windows
-session_width
-session_height
-session_created
-session_created_string
-session_attached
-session_grouped
-session_group
-========================= ================================================
-
 .. _window:
 
 Window
 ------
-inside a :ref:`session`.
 
-holds panes.
+Entity of a :ref:`session`.
+
+Can have 1 or more :ref:`pane`.
 
 panes can be organized with a layouts.
 
@@ -261,14 +242,15 @@ windows can have names.
 
 Pane
 ----
-inside / Linked to a :ref:`window`.
 
-a pty (pseudoterminal).
+Linked to a :ref:`window`.
+
+a pseudoterminal.
 
 .. _target:
 
 Target
 ------
 
-a target, cited in the manual as ``[-t target]`` can be a session, window
+A target, cited in the manual as ``[-t target]`` can be a session, window
 or pane.

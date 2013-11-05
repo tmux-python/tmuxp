@@ -1,12 +1,12 @@
 # -*- coding: utf8 - *-
-"""
-    tmuxp.config
-    ~~~~~~~~~~~~
+"""Configuration parsing and export for tmuxp.
 
-    tmuxp helps you manage tmux workspaces.
+tmuxp.config
+~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
@@ -19,14 +19,13 @@ logger = logging.getLogger(__name__)
 
 
 def check_consistency(sconf):
-    '''Verify the consistency of the config file.
-
-    Config files in tmuxp are met to import into :py:mod:`dict`.
+    """Return True if config schema is correct.
 
     :param sconf: session configuration
     :type sconf: dict
+    :rtype: bool
 
-    '''
+    """
 
     # verify session_name
     if not 'session_name' in sconf:
@@ -47,7 +46,7 @@ def check_consistency(sconf):
 
 
 def is_config_file(filename, extensions=['.yml', '.yaml', '.json', '.ini']):
-    """Is config compatible extension.
+    """Return True if file has a valid config file type.
 
     :param filename: filename to check (e.g. ``mysession.json``).
     :type filename: string
@@ -63,7 +62,7 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json', '.ini']):
 
 
 def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml', '.json', '.ini']):
-    """Find configs in config_dir and current dir.
+    """Return a list of configs in ``config_dir``.
 
     :param config_dir: directory to search
     :type config_dir: string
@@ -140,10 +139,11 @@ def expand(sconf, cwd=None):
         'shell_command': 'htop'
 
     Kaptan will load JSON/YAML/INI files into python dicts for you.
+
     :param sconf: the configuration for the session
     :type sconf: dict
-    :param cwd: directory to expand relative paths against. should be the dir of
-        the config directory.
+    :param cwd: directory to expand relative paths against. should be the dir
+                of the config directory.
     :rtype: dict
 
     """

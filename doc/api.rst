@@ -75,6 +75,8 @@ Command Line
 .. automethod:: tmuxp.cli.setup_logger
 .. automethod:: tmuxp.cli.get_parser
 
+.. automethod:: tmuxp.cli.load_workspace
+
 Configuration
 -------------
 

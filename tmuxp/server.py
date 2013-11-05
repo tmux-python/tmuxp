@@ -1,5 +1,5 @@
 # -*- coding: utf8 - *-
-"""Pythonization of the :ref:`tmux(1)` server.
+"""Pythonization of the :term:`tmux(1)` server.
 
 tmuxp.server
 ~~~~~~~~~~~~
