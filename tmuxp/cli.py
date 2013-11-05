@@ -747,12 +747,12 @@ def get_parser():
     subparsers = parser.add_subparsers(
         title='commands',
         description='valid commands',
-        help='additional help'
     )
 
     kill_session = subparsers.add_parser(
         'kill-session',
-        parents=[server_parser]
+        parents=[server_parser],
+        help='Kill tmux session by name.'
     )
     kill_session.set_defaults(callback=command_kill_session)
 
@@ -766,7 +766,10 @@ def get_parser():
 
     attach_session = subparsers.add_parser(
         'attach-session',
-        parents=[server_parser, client_parser]
+        parents=[server_parser, client_parser],
+        help='If run from outside tmux, create a new client in the current '
+             'terminal and attach it. If used from inside, switch the current '
+             'client.'
     )
     attach_session.set_defaults(callback=command_attach_session)
 
@@ -779,7 +782,8 @@ def get_parser():
 
     freeze = subparsers.add_parser(
         'freeze',
-        parents=[server_parser]
+        parents=[server_parser],
+        help='Create a snapshot of a tmux session and save it to JSON or YAML.'
     )
     freeze.set_defaults(callback=command_freeze)
 
@@ -792,7 +796,9 @@ def get_parser():
 
     load = subparsers.add_parser(
         'load',
-        parents=[server_parser, client_parser]
+        parents=[server_parser, client_parser],
+        help='Load a configuration from file. Attach the session. If session '
+             'already exists, offer to attach instead.'
     )
 
     loadgroup = load.add_mutually_exclusive_group(required=True)
@@ -843,7 +849,7 @@ def get_parser():
 
     importparser = subparsers.add_parser(
         'import',
-        help='Import configurations from teamocil and tmuxinator'
+        help='Import configurations from teamocil and tmuxinator.'
     )
     importsubparser = importparser.add_subparsers(
         title='commands',
