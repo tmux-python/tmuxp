@@ -134,9 +134,10 @@ def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
 
 class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
 
-    """ argcomplete completer for tmuxp files. """
+    """argcomplete completer for tmuxp files."""
 
     def __call__(self, prefix, **kwargs):
+
         completion = argcomplete.completers.FilesCompleter.__call__(
             self, prefix, **kwargs
         )
@@ -149,7 +150,7 @@ class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
 
 class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
 
-    """ argcomplete completer for Tmuxinator files. """
+    """argcomplete completer for Tmuxinator files."""
 
     def __call__(self, prefix, **kwargs):
         completion = argcomplete.completers.FilesCompleter.__call__(
@@ -166,7 +167,7 @@ class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
 
 class TeamocilCompleter(argcomplete.completers.FilesCompleter):
 
-    """ argcomplete completer for Teamocil files. """
+    """argcomplete completer for Teamocil files."""
 
     def __call__(self, prefix, **kwargs):
         completion = argcomplete.completers.FilesCompleter.__call__(
@@ -180,9 +181,14 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
         return completion
 
 
-def SessionCompleter(prefix, **kwargs):
-    """ Return list of session names for argcomplete completer. """
-    t = Server()
+def SessionCompleter(prefix, parsed_args, **kwargs):
+    """Return list of session names for argcomplete completer."""
+
+    t = Server(
+        socket_name=parsed_args.socket_name,
+        socket_path=parsed_args.socket_path
+    )
+
     return [s.get('session_name') for s in t._sessions
             if s.get('session_name').startswith(prefix)]
 
@@ -218,7 +224,7 @@ def startup(config_dir):
 
 
 def load_workspace(config_file, args):
-    """ Build config workspace.
+    """Build config workspace.
 
     :param config_file: full path to config file
     :param type: string
@@ -292,7 +298,7 @@ def load_workspace(config_file, args):
 
 
 def command_freeze(args):
-    """ Import teamocil config to tmuxp format. """
+    """Import teamocil config to tmuxp format."""
 
     ctext = ' '.join(args.session_name)
 
@@ -356,7 +362,7 @@ def command_freeze(args):
 
 
 def command_load(args):
-    """ Load a session from a tmuxp session file. """
+    """Load a session from a tmuxp session file."""
     if args.list:
         startup(config_dir)
         configs_in_user = config.in_dir(config_dir)
@@ -404,34 +410,34 @@ def command_load(args):
 
 
 def command_import_teamocil(args):
-    """ Import teamocil config to tmuxp format. """
+    """Import teamocil config to tmuxp format."""
 
     if args.list:
-            try:
-                configs_in_user = config.in_dir(
-                    teamocil_config_dir, extensions='yml')
-            except OSError:
-                configs_in_user = []
-            configs_in_cwd = config.in_dir(
-                config_dir=cwd_dir, extensions='yml')
+        try:
+            configs_in_user = config.in_dir(
+                teamocil_config_dir, extensions='yml')
+        except OSError:
+            configs_in_user = []
+        configs_in_cwd = config.in_dir(
+            config_dir=cwd_dir, extensions='yml')
 
-            output = ''
+        output = ''
 
-            if not os.path.exists(teamocil_config_dir):
-                output += '# %s: \n\tDirectory doesn\'t exist.\n' % teamocil_config_dir
-            elif not configs_in_user:
-                output += '# %s: \n\tNone found.\n' % teamocil_config_dir
-            else:
-                output += '# %s: \n\t%s\n' % (
-                    config_dir, ', '.join(configs_in_user)
-                )
+        if not os.path.exists(teamocil_config_dir):
+            output += '# %s: \n\tDirectory doesn\'t exist.\n' % teamocil_config_dir
+        elif not configs_in_user:
+            output += '# %s: \n\tNone found.\n' % teamocil_config_dir
+        else:
+            output += '# %s: \n\t%s\n' % (
+                config_dir, ', '.join(configs_in_user)
+            )
 
-            if configs_in_cwd:
-                output += '# current directory:\n\t%s' % (
-                    ', '.join(configs_in_cwd)
-                )
+        if configs_in_cwd:
+            output += '# current directory:\n\t%s' % (
+                ', '.join(configs_in_cwd)
+            )
 
-            print(output)
+        print(output)
     elif args.config:
         configfile = os.path.abspath(os.path.relpath(
             os.path.expanduser(args.config)))
@@ -491,7 +497,7 @@ def command_import_teamocil(args):
 
 
 def command_import_tmuxinator(args):
-    """ Import tmuxinator config to tmuxp format. """
+    """Import tmuxinator config to tmuxp format."""
     if args.list:
             try:
                 configs_in_user = config.in_dir(
@@ -578,7 +584,7 @@ def command_import_tmuxinator(args):
 
 
 def command_convert(args):
-    """ Convert tmuxp config to and from JSON and YAML. """
+    """Convert tmuxp config to and from JSON and YAML."""
 
     try:
         configfile = args.config
@@ -626,7 +632,7 @@ def command_convert(args):
 
 
 def command_attach_session(args):
-    """ Command to attach / switch client to a tmux session."""
+    """Command to attach / switch client to a tmux session."""
     commands = []
     ctext = ' '.join(args.session_name)
 
@@ -655,7 +661,7 @@ def command_attach_session(args):
 
 
 def command_kill_session(args):
-    """ Command to kill a tmux session."""
+    """Command to kill a tmux session."""
     commands = []
     ctext = ' '.join(args.session_name)
 
@@ -681,7 +687,7 @@ def command_kill_session(args):
 
 
 def get_parser():
-    """ Return :py:class:`argparse.ArgumentParser` instance for CLI. """
+    """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 
     parser = argparse.ArgumentParser(
         description='''\
@@ -689,9 +695,24 @@ def get_parser():
         ''',
     )
 
+    server_parser = argparse.ArgumentParser(add_help=False)
+
+    server_parser.add_argument('--log-level', dest='log_level', default='INFO',
+                        metavar='log-level',
+                        help='Log level e.g. INFO, DEBUG, ERROR')
+
+    server_parser.add_argument('-L', dest='socket_name', default=None,
+                        help='socket name of tmux server. Same as tmux.',
+                        metavar='socket-name')
+
+    server_parser.add_argument('-S', dest='socket_path', default=None,
+                        help='socket path of tmux server. Same as tmux.',
+                        metavar='socket-path')
+
     subparsers = parser.add_subparsers(title='commands',
                                        description='valid commands',
                                        help='additional help')
+
 
     kill_session = subparsers.add_parser('kill-session')
     kill_session.set_defaults(callback=command_kill_session)
@@ -704,7 +725,10 @@ def get_parser():
         help='Name of session',
     ).completer = SessionCompleter
 
-    attach_session = subparsers.add_parser('attach-session')
+    attach_session = subparsers.add_parser(
+        'attach-session',
+        parents=[server_parser]
+    )
     attach_session.set_defaults(callback=command_attach_session)
 
     attach_session.add_argument(
@@ -714,7 +738,10 @@ def get_parser():
         help='Name of session',
     ).completer = SessionCompleter
 
-    freeze = subparsers.add_parser('freeze')
+    freeze = subparsers.add_parser(
+        'freeze',
+        parents=[server_parser]
+    )
     freeze.set_defaults(callback=command_freeze)
 
     freeze.add_argument(
@@ -724,7 +751,10 @@ def get_parser():
         help='Name of session',
     ).completer = SessionCompleter
 
-    load = subparsers.add_parser('load')
+    load = subparsers.add_parser(
+        'load',
+        parents=[server_parser]
+    )
 
     loadgroup = load.add_mutually_exclusive_group(required=True)
     loadgroup.add_argument(
@@ -810,18 +840,6 @@ def get_parser():
     ).completer = TmuxinatorCompleter(allowednames=('.yml'), directories=False)
 
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
-
-    parser.add_argument('--log-level', dest='log_level', default='INFO',
-                        metavar='log-level',
-                        help='Log level e.g. INFO, DEBUG, ERROR')
-
-    parser.add_argument('-L', dest='socket_name', default=None,
-                        help='socket name of tmux server. Same as tmux.',
-                        metavar='socket-name')
-
-    parser.add_argument('-S', dest='socket_path', default=None,
-                        help='socket path of tmux server. Same as tmux.',
-                        metavar='socket-path')
 
     colorsgroup = parser.add_mutually_exclusive_group()
 
