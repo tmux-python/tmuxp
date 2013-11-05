@@ -690,13 +690,13 @@ def get_parser():
 
     server_parser = argparse.ArgumentParser(add_help=False)
 
-    server_parser.add_argument(
-        '--log-level',
-        dest='log_level',
-        default='INFO',
-        metavar='log-level',
-        help='Log level e.g. INFO, DEBUG, ERROR'
-    )
+    # server_parser.add_argument(
+        # '--log-level',
+        # dest='log_level',
+        # default='INFO',
+        # metavar='log-level',
+        # help='Log level e.g. INFO, DEBUG, ERROR'
+    # )
 
     server_parser.add_argument(
         '-L', dest='socket_name',
