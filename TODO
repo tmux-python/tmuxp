@@ -23,8 +23,9 @@ TODO
   - ``util.version()`` to ``util.has_required_tmux_version()``.
   - ``config.check_consistency()`` to ``config.validate_schema()``.
 - remove duplicated code in :mod:`tmuxp.cli`.
-
-
+- Determine the workflow for ``$ tmuxp load filename`` for sure. Document
+  it.
+- Get `sphinx-argparse`_ in good enough shape for docs.
 
 Future
 ------
@@ -40,6 +41,7 @@ Future
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
 .. _teamocil: https://github.com/remiprev/teamocil
+.. _sphinx-argparse: https://github.com/tony/sphinx-argparse
 
 
 .. todo:: vim: set filetype=rst:
