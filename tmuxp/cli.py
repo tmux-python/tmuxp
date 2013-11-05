@@ -685,7 +685,6 @@ def command_kill_session(args):
     except Exception as e:
         logger.error(e)
 
-
 def get_parser():
     """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 

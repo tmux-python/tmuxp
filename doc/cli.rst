@@ -57,30 +57,37 @@ Import
 From teamocil
 '''''''''''''
 
-.. code-block:: bash
-
-    $ tmuxp import teamocil <filename>
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+    :path: import teamocil
 
 .. _import_tmuxinator:
 
 From tmuxinator
 '''''''''''''''
 
-.. code-block:: bash
-
-    $ tmuxp import tmuxinator <filename>
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+    :path: import tmuxinator
 
 .. _convert_config:
 
 Convert between YAML and JSON
 """""""""""""""""""""""""""""
 
-.. code-block:: bash
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+    :path: load
 
-    $ tmuxp convert <filename>
 
-tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
-``.json`` to  ``.yaml``.
+    tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
+    ``.json`` to  ``.yaml``.
 
 .. _bash_completion:
 
@@ -105,14 +112,19 @@ For zsh, ``.zshrc``:
 
     $ source tmuxp.zsh
 
-
 .. _commands:
 
-Commands
-""""""""
+Other commands
+""""""""""""""
 
 .. argparse::
     :module: tmuxp.cli
     :func: get_parser
     :prog: tmuxp
+    :path: kill-session
 
+.. argparse::
+    :module: tmuxp.cli
+    :func: get_parser
+    :prog: tmuxp
+    :path: attach-session
