@@ -27,6 +27,10 @@ def bootstrap():
 
     '''
 
+    session_name = 'tmuxp'
+    if not t.has_session(session_name):
+        t.tmux('new-session', '-d', '-s', session_name)
+
     # find current sessions prefixed with tmuxp
     old_test_sessions = [s.get('session_name') for s in t._sessions
                         if
@@ -52,7 +56,7 @@ def bootstrap():
         t.switch_client(session.get('session_id'))
         pass
     except Exception:
-        # t.attach_session(session.get('session_id'))
+        #t.attach_session(session.get('session_id'))
         pass
 
     for old_test_session in old_test_sessions:
@@ -74,11 +78,12 @@ class TmuxTestCase(unittest.TestCase):
             string. name of the test case session.
     '''
 
-    def setup(self):
-        pass
-
     @classmethod
     def setUpClass(cls):
+        cls.TEST_SESSION_NAME, cls.session = bootstrap()
+
+    @classmethod
+    def setUpClassa(cls):
         try:
             #t.tmux('kill-server')
 
