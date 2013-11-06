@@ -47,9 +47,12 @@ def bootstrap():
     # assert session_list == t.sessions
 
     TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 13370))
-    session = t.new_session(
-        session_name=TEST_SESSION_NAME,
-    )
+    try:
+        session = t.new_session(
+            session_name=TEST_SESSION_NAME,
+        )
+    except exc.TmuxpException as e:
+        raise e
 
     '''
     Make sure that tmuxp can :ref:`test_builder_visually` and switches to the
@@ -58,7 +61,7 @@ def bootstrap():
     try:
         t.switch_client(session.get('session_id'))
         pass
-    except Exception:
+    except exc.TmuxpException as e:
         #t.attach_session(session.get('session_id'))
         pass
 
@@ -74,35 +77,17 @@ def bootstrap():
 
 class TmuxTestCase(unittest.TestCase):
 
-    '''
-        self.session
-            Session object
-        self.TEST_SESSION_NAME
-            string. name of the test case session.
-    '''
+    """TmuxTestCase class, wraps the TestCase in a :class:`Session`."""
+
+    #: :class:`Session` object.
+    # session = None
+    #: Session name for the TestCase.
+    # TEST_SESSION_NAME = None
 
     @classmethod
     def setUpClass(cls):
-        cls.TEST_SESSION_NAME, cls.session = bootstrap()
-
-    @classmethod
-    def setUpClassa(cls):
+        """Add :attr:`~.TEST_SESSION_NAME` and :attr:`~.session`."""
         try:
-            #t.tmux('kill-server')
-
             cls.TEST_SESSION_NAME, cls.session = bootstrap()
-        # except TmuxNoClientsRunning:
-        #    logger.error('test: TmuxNoClientsRunning')
-        #    cls.TEST_SESSION_NAME, cls.session = bootstrap()
         except Exception as e:
-            import traceback
-            logger.error(e)
-
-            logger.error(traceback.print_exc())
-            # raise exc.TmuxpException(e)
-        return
-
-    @classmethod
-    def tearDownClass(cls):
-        #t.tmux('kill-server')
-        pass
+            raise e

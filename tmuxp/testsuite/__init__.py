@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-    tmuxp.tests
-    ~~~~~~~~~~~
+"""Tests for tmuxp.
 
-    :copyright: Copyright 2013 Tony Narlock.
-    :license: BSD, see LICENSE for details
+tmuxp.tests
+~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
 
 """
 
@@ -30,6 +31,7 @@ if not logger.handlers:
 
 
 def suite():
+    """Return TestSuite."""
     try:
         import unittest2 as unittest
     except ImportError:  # Python 2.7
