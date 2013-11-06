@@ -23,4 +23,5 @@ before_script:
   - ./configure && make && sudo make install
   - cd ..
   - tmux -V
-script: python run_tests.py
+#script: python run_tests.py
+script: python setup.py test

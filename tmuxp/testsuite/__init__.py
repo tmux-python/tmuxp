@@ -27,3 +27,9 @@ if not logger.handlers:
     testsuite_logger = logging.getLogger(__name__)
 
     testsuite_logger.setLevel('INFO')
+
+
+def suite():
+    import unittest
+
+    return unittest.TestLoader().discover('.', pattern="*.py")

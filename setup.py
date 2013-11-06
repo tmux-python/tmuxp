@@ -5,7 +5,6 @@ tmuxp
 
 Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
 
-
 """
 import sys
 from setuptools import setup
@@ -44,6 +43,7 @@ setup(
     include_package_data=True,
     install_requires=install_reqs,
     tests_require=tests_reqs,
+    test_suite='tmuxp.testsuite',
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:main']),
     classifiers=[
