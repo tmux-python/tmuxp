@@ -6,28 +6,32 @@ TODO
 
 - Remove doc for ``run_tests.py`` visual test runner. Just have
   instruction for running test builder package.
-- Add help docs to CLI commands and options.
 - `pep8`_, `pep257`_ for tests.
 - ``$ tmux freeze`` for virtualenv
 - ``shell_command_before`` for `teamocil`_.
 - if no ``window_name`` in config, option ``automatic_rename: on`` by 
   default and test.
-- tmuxp -L and -S autocomplete to correct server ``socket-name`` and
-  ``socket-path``.
 - example of doctest/usage example of creating a new tmux session from
   object
 - example of accessing a current tmux session from object
 - example of loading a tmux session from a :py:obj:``dict``. example of
   the schema.
-- rename functions
-  - ``util.version()`` to ``util.has_required_tmux_version()``.
-  - ``config.check_consistency()`` to ``config.validate_schema()``.
 - remove duplicated code in :mod:`tmuxp.cli`.
 - Determine the workflow for ``$ tmuxp load filename`` for sure. Document
   it.
-- Get `sphinx-argparse`_ in good enough shape for docs.
 - Handle case where switching client via ``$ tmuxp load`` or
   ``$ tmuxp attach-session`` into another socket may cause an error.
+
+Done
+''''
+
+- Add help docs to CLI commands and options.
+- tmuxp -L and -S autocomplete to correct server ``socket-name`` and
+  ``socket-path``.
+- Get `sphinx-argparse`_ in good enough shape for docs.
+- rename functions
+  - ``util.version()`` to ``util.has_required_tmux_version()``. (done)
+  - ``config.check_consistency()`` to ``config.validate_schema()``. (done)
 
 Future
 ------
