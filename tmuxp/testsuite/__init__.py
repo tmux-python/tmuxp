@@ -32,7 +32,7 @@ if not logger.handlers:
 def suite():
     try:
         import unittest2 as unittest
-    except ImportError: # Python 2.7
+    except ImportError:  # Python 2.7
         import unittest
 
     return unittest.TestLoader().discover('.', pattern="test_*.py")

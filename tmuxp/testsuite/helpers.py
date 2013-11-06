@@ -99,7 +99,7 @@ class TmuxTestCase(unittest.TestCase):
             logger.error(e)
 
             logger.error(traceback.print_exc())
-            # raise Exception(e)
+            # raise exc.TmuxpException(e)
         return
 
     @classmethod

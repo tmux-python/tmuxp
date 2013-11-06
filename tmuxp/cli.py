@@ -273,7 +273,7 @@ def load_workspace(config_file, args):
             else:
                 builder.session.attach_session()
         return
-    except Exception as e:
+    except exc.TmuxpException as e:
         import traceback
 
         print(traceback.format_exc())
@@ -587,7 +587,7 @@ def command_convert(args):
 
     try:
         configfile = args.config
-    except Exception:
+    except exc.TmuxpException:
         print('Please enter a config')
 
     file_user = os.path.join(config_dir, configfile)
@@ -645,8 +645,8 @@ def command_attach_session(args):
         session = next((s for s in t.sessions if s.get(
             'session_name') == ctext), None)
         if not session:
-            raise Exception('Session not found.')
-    except Exception as e:
+            raise exc.TmuxpException('Session not found.')
+    except exc.TmuxpException as e:
         print(e.message)
         return
 
@@ -673,15 +673,15 @@ def command_kill_session(args):
         session = next((s for s in t.sessions if s.get(
             'session_name') == ctext), None)
         if not session:
-            raise Exception('Session not found.')
-    except Exception as e:
-        print(e.message)
+            raise exc.TmuxpException('Session not found.')
+    except exc.TmuxpException as e:
+        print(e.getMessage())
         return
 
     try:
         session.kill_session()
         print("Killed session %s." % ctext)
-    except Exception as e:
+    except exc.TmuxpException as e:
         logger.error(e)
 
 def get_parser():
@@ -902,7 +902,7 @@ def main():
 
     try:
         util.has_required_tmux_version()
-    except Exception as e:
+    except exc.TmuxpException as e:
         logger.error(e)
         sys.exit()
 

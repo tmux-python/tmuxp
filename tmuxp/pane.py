@@ -11,7 +11,7 @@ tmuxp helps you manage tmux workspaces.
 
 """
 from __future__ import absolute_import, division, print_function, with_statement
-from . import util, formats
+from . import util, formats, exc
 import logging
 
 logger = logging.getLogger(__name__)
@@ -131,7 +131,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
             proc = self.tmux('resize-pane', args[0])
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         self.server._update_panes()
         return self

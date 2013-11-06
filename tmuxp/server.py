@@ -121,12 +121,12 @@ class Server(TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
         else:
             session_info = proc.stdout[0]
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in sformats]
@@ -188,7 +188,7 @@ class Server(TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         windows = proc.stdout
 
@@ -248,7 +248,7 @@ class Server(TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         panes = proc.stdout
 
@@ -338,7 +338,7 @@ class Server(TmuxRelationalObject):
         proc = self.tmux('kill-session', '-t%s' % target_session)
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         return self
 
@@ -353,7 +353,7 @@ class Server(TmuxRelationalObject):
         proc = self.tmux('switch-client', '-t%s' % target_session)
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
     def attach_session(self, target_session=None):
         """``$ tmux attach-session`` aka alias: ``$ tmux attach``.
@@ -368,7 +368,7 @@ class Server(TmuxRelationalObject):
         proc = self.tmux('attach-session', *tmux_args)
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
     def new_session(self,
                     session_name=None,
@@ -440,7 +440,7 @@ class Server(TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         session = proc.stdout[0]
 

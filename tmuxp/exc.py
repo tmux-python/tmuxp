@@ -9,14 +9,24 @@ tmuxp.exc
 """
 
 
-class TmuxSessionExists(Exception):
+class TmuxpException(Exception):
+
+    """Base Exception for Tmuxp Errors.
+
+    Also for Python 2.6 compat:
+        http://stackoverflow.com/a/6029838
+
+    """
+
+
+class TmuxSessionExists(TmuxpException):
 
     """Session does not exist in the server."""
 
     pass
 
 
-class ConfigError(Exception):
+class ConfigError(TmuxpException):
 
     """Error parsing tmuxp configuration dict."""
 

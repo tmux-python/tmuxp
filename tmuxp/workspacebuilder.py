@@ -103,7 +103,7 @@ class WorkspaceBuilder(object):
 
         if not session:
             if not self.server:
-                raise Exception(
+                raise exc.TmuxpException(
                     'WorkspaceBuilder.build requires server to be passed ' +
                     'on initialization, or pass in session object to here.'
                 )

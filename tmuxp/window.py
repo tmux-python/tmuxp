@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 import pipes
 from .pane import Pane
 
-from . import util, formats
+from . import util, formats, exc
 import logging
 
 logger = logging.getLogger(__name__)
@@ -116,7 +116,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
     def set_window_option(self, option, value):
         """Wrapper for ``$ tmux set-window-option <option> <value>``.
@@ -246,7 +246,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         self.server._update_windows()
 
@@ -266,7 +266,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         self.server._update_windows()
 
@@ -286,7 +286,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             proc = self.tmux('select-pane', '-t%s' % target_pane)
 
         if proc.stderr:
-            raise Exception(proc.stderr)
+            raise exc.TmuxpException(proc.stderr)
 
         return self.attached_pane()
 
@@ -337,11 +337,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         # tmux < 1.7. This is added in 1.7.
         if pane.stderr:
-            raise Exception(pane.stderr)
+            raise exc.TmuxpException(pane.stderr)
             if 'pane too small' in pane.stderr:
                 pass
 
-            raise Exception(pane.stderr, self._TMUX, self.panes)
+            raise exc.TmuxpException(pane.stderr, self._TMUX, self.panes)
         else:
             pane = pane.stdout[0]
 
