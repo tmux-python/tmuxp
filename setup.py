@@ -44,8 +44,9 @@ setup(
     install_requires=install_reqs,
     tests_require=tests_reqs,
     test_suite='tmuxp.testsuite',
+    zip_safe=False,
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
-    entry_points=dict(console_scripts=['tmuxp=tmuxp:main']),
+    entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.main']),
     classifiers=[
         'Development Status :: 3 - Alpha',
         "License :: OSI Approved :: BSD License",

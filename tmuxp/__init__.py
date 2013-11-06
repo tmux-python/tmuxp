@@ -18,8 +18,7 @@ from .server import Server
 from .window import Window
 from .pane import Pane
 from .workspacebuilder import WorkspaceBuilder
-from .cli import main
-from . import config, util
+from . import config, util, cli
 
 import logging
 

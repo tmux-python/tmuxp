@@ -4,8 +4,6 @@ TODO
 0.1 milestone
 -------------
 
-- Remove doc for ``run_tests.py`` visual test runner. Just have
-  instruction for running test builder package.
 - `pep8`_, `pep257`_ for tests.
 - ``$ tmux freeze`` for virtualenv
 - ``shell_command_before`` for `teamocil`_.
@@ -21,7 +19,7 @@ TODO
   it.
 - Handle case where switching client via ``$ tmuxp load`` or
   ``$ tmuxp attach-session`` into another socket may cause an error.
-- python 2.6 support
+
 
 Done
 ''''
@@ -33,6 +31,10 @@ Done
 - rename functions
   - ``util.version()`` to ``util.has_required_tmux_version()``. (done)
   - ``config.check_consistency()`` to ``config.validate_schema()``. (done)
+- python 2.6 support
+- Remove doc for ``run_tests.py`` visual test runner. Just have
+  instruction for running test builder package.
+
 
 Future
 ------

@@ -20,7 +20,7 @@ if tmux_path not in sys.path:
 def main(verbosity=2, failfast=False):
     """Run TestSuite in new tmux session. Exit with code 0 if success."""
 
-    suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
+    suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="test_*.py")
     result = unittest.TextTestRunner(
         verbosity=verbosity, failfast=failfast).run(suites)
     if result.wasSuccessful():

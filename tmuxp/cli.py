@@ -22,7 +22,7 @@ from .workspacebuilder import freeze
 from distutils.util import strtobool
 
 
-__version__ = pkg_resources.require("tmuxp")[0].version
+__version__ = pkg_resources.require("tmuxp").version
 
 logger = logging.getLogger(__name__)
 

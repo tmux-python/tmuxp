@@ -142,10 +142,10 @@ Create two terminals:
 
     .. code-block:: bash
     
-        $ python ./run_tests.py --visual
+        $ python ./run_tests.py --tests tests_workspacebuilder
 
 Terminal 1 should have flickered and built the session before your eyes.
-tmuxp hides this building from normal users. :)
+tmuxp hides this building from normal users.
 
 Verbosity and logging
 '''''''''''''''''''''
