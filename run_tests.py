@@ -11,9 +11,6 @@ except ImportError:  # Python 2.7
 import sys
 import os
 import argparse
-import tmuxp.testsuite
-
-t = tmuxp.testsuite.t
 
 tmux_path = sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 if tmux_path not in sys.path:
@@ -23,8 +20,6 @@ if tmux_path not in sys.path:
 def main(verbosity=2, failfast=False):
     """Run TestSuite in new tmux session. Exit with code 0 if success."""
 
-    #session_name = 'tmuxp'
-    #t.tmux('new-session', '-d', '-s', session_name)
     suites = unittest.TestLoader().discover('tmuxp.testsuite', pattern="*.py")
     result = unittest.TextTestRunner(
         verbosity=verbosity, failfast=failfast).run(suites)
@@ -42,20 +37,6 @@ if __name__ == '__main__':
             $ ./run_tests.py
         ''',
         formatter_class=argparse.RawTextHelpFormatter
-    )
-    parser.add_argument(
-        '--visual',
-        action='store_true',
-        help='''\
-        Run the session builder testsuite in visual mode. requires having
-        tmux client in a second terminal open with:
-
-        Terminal 1:
-            $ tmux -L tmuxp_test
-
-        Terminal 2:
-            $ ./run_tests.py --visual
-        '''
     )
     parser.add_argument(
         '--tests',
@@ -103,16 +84,6 @@ if __name__ == '__main__':
 
     if 'help' in args:
         parser.print_help()
-    elif 'visual' in args and args.visual:
-        loader = unittest.TestLoader()
-        suites = loader.loadTestsFromName('tmuxp.testsuite.test_builder')
-        result = unittest.TextTestRunner(
-            verbosity=verbosity, failfast=args.failfast).run(suites)
-
-        if result.wasSuccessful():
-            sys.exit(0)
-        else:
-            sys.exit(1)
     if args.tests and len(args.tests) > int(0):
         for arg in args.tests:
             if not arg.startswith('tmuxp.testsuite'):
