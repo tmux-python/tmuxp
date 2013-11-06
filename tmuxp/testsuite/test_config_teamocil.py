@@ -2,20 +2,18 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
 import kaptan
 from .. import config, exc
 from ..util import tmux
+from .helpers import TestCase
 
 import logging
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
-class TeamocilTest(unittest.TestCase):
+
+class TeamocilTest(TestCase):
 
     teamocil_yaml = """\
     windows:
@@ -85,14 +83,14 @@ class TeamocilTest(unittest.TestCase):
         )
 
     def test_config_to_yaml(self):
-        '''teamocil yaml to tmuxp yaml config
+        """teamocil yaml to tmuxp yaml config
 
         use validate_schema to assert against
-        '''
+        """
         pass
 
 
-class Teamocil2Test(unittest.TestCase):
+class Teamocil2Test(TestCase):
 
     teamocil_yaml = """\
     windows:
@@ -162,7 +160,7 @@ class Teamocil2Test(unittest.TestCase):
         )
 
 
-class Teamocil3Test(unittest.TestCase):
+class Teamocil3Test(TestCase):
 
     teamocil_yaml = """\
     windows:
@@ -249,7 +247,7 @@ class Teamocil3Test(unittest.TestCase):
         )
 
 
-class Teamocil4Test(unittest.TestCase):
+class Teamocil4Test(TestCase):
 
     teamocil_yaml = """\
     windows:
@@ -302,14 +300,14 @@ class Teamocil4Test(unittest.TestCase):
         )
 
 
-class TeamocilLayoutsTest(unittest.TestCase):
+class TeamocilLayoutsTest(TestCase):
 
-    '''
+    """
 
     https://github.com/remiprev/teamocil/blob/master/spec/fixtures/layouts.yml
 
     LICENSE: https://github.com/remiprev/teamocil/blob/master/LICENSE
-    '''
+    """
 
     teamocil_yaml = """\
     # Simple two windows layout
@@ -714,9 +712,6 @@ class TeamocilLayoutsTest(unittest.TestCase):
             )
         )
 
-        ''' this configuration contains multiple sessions in a single file.
+        """ this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
-        '''
-
-if __name__ == '__main__':
-    unittest.main()
+        """

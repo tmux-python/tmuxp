@@ -3,13 +3,10 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import os
 import shutil
-try:
-    import unittest2 as unittest
-except ImportError: # Python 2.7
-    import unittest
 import kaptan
 from .. import config, exc
 from ..util import tmux
+from .helpers import TestCase
 
 import logging
 
@@ -52,7 +49,7 @@ sampleconfigdict = {
 }
 
 
-class ImportExportTest(unittest.TestCase):
+class ImportExportTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -132,7 +129,7 @@ class ImportExportTest(unittest.TestCase):
         logging.debug('wiped %s' % TMUXP_DIR)
 
 
-class ExpandTest(unittest.TestCase):
+class ExpandTest(TestCase):
 
     """Assume configuration has been imported into a python dict correctly."""
 
@@ -262,7 +259,7 @@ class ExpandTest(unittest.TestCase):
         self.assertDictEqual(test_config, self.after_config)
 
 
-class InlineTest(unittest.TestCase):
+class InlineTest(TestCase):
 
     """Tests for :meth:`config.inline()`."""
 
@@ -346,7 +343,7 @@ class InlineTest(unittest.TestCase):
         self.assertDictEqual(test_config, self.after_config)
 
 
-class InheritanceTest(unittest.TestCase):
+class InheritanceTest(TestCase):
     """Test config inheritance for the nested 'start_command'."""
 
     config_before = {
@@ -456,13 +453,13 @@ class InheritanceTest(unittest.TestCase):
         self.assertDictEqual(config, self.config_after)
 
 
-class ShellCommandBeforeTest(unittest.TestCase):
+class ShellCommandBeforeTest(TestCase):
 
-    '''
+    """
     test config inheritance for the nested 'start_command'
 
     format for tests will be pre
-    '''
+    """
 
     config_unexpanded = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
@@ -630,7 +627,7 @@ class ShellCommandBeforeTest(unittest.TestCase):
 
 
 
-class TrickleRelativeStartDirectory(unittest.TestCase):
+class TrickleRelativeStartDirectory(TestCase):
     config_expanded = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
         'start_directory': '/var',
@@ -703,9 +700,9 @@ class TrickleRelativeStartDirectory(unittest.TestCase):
         self.maxDiff = None
         self.assertDictEqual(test_config, self.config_after)
 
-class ConfigConsistency(unittest.TestCase):
+class ConfigConsistency(TestCase):
 
-    delete_this = '''
+    delete_this = """
     session_name: sampleconfig
     start_directory: '~'
     windows:
@@ -726,10 +723,10 @@ class ConfigConsistency(unittest.TestCase):
     panes:
     - shell_command:
         - htop
-    '''
+    """
 
     def test_no_session_name(self):
-        yaml_config = '''
+        yaml_config = """
         - window_name: editor
           panes:
           shell_command:
@@ -740,7 +737,7 @@ class ConfigConsistency(unittest.TestCase):
           panes:
           - shell_command:
             - htop
-        '''
+        """
 
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
@@ -749,9 +746,9 @@ class ConfigConsistency(unittest.TestCase):
             config.validate_schema(sconfig)
 
     def test_no_windows(self):
-        yaml_config = '''
+        yaml_config = """
         session_name: test session
-        '''
+        """
 
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
@@ -760,7 +757,7 @@ class ConfigConsistency(unittest.TestCase):
             config.validate_schema(sconfig)
 
     def test_no_window_name(self):
-        yaml_config = '''
+        yaml_config = """
         session_name: test session
         windows:
         - window_name: editor
@@ -772,14 +769,10 @@ class ConfigConsistency(unittest.TestCase):
           panes:
           - shell_command:
             - htop
-        '''
+        """
 
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
         with self.assertRaisesRegexp(exc.ConfigError, 'missing "window_name"'):
             config.validate_schema(sconfig)
-
-
-if __name__ == '__main__':
-    unittest.main()

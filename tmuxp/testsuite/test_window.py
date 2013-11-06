@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
 from .. import Pane, Window, Server
 from .helpers import TmuxTestCase
 from . import t
@@ -105,7 +101,7 @@ class NewTest2(TmuxTestCase):
 class NewTest3(TmuxTestCase):
 
     def test_attached_pane(self):
-        '''Window.attached_window() returns active Pane'''
+        """Window.attached_window() returns active Pane"""
 
         window = self.session.attached_window()  # current window
         self.assertIsInstance(window.attached_pane(), Pane)
@@ -114,7 +110,7 @@ class NewTest3(TmuxTestCase):
 class NewTest4(TmuxTestCase):
 
     def test_split_window(self):
-        '''Window.split_window() splits window, returns new Pane.'''
+        """Window.split_window() splits window, returns new Pane."""
         window_name = 'test split window'
         window = self.session.new_window(window_name=window_name, attach=True)
         pane = window.split_window()
@@ -128,7 +124,7 @@ class RenameTest(TmuxTestCase):
     window_name_after = 'ha ha ha fjewlkjflwef'
 
     def test_window_rename(self):
-        '''Window.rename_window.rename_window()'''
+        """Window.rename_window.rename_window()"""
         self.session.set_option('automatic-rename', 'off')
         window = self.session.new_window(
             window_name=self.window_name_before, attach=True)
@@ -170,15 +166,15 @@ class KillWindow(TmuxTestCase):
 class Options(TmuxTestCase):
 
     def test_show_window_options(self):
-        '''Window.show_window_options() returns dict.'''
+        """Window.show_window_options() returns dict."""
         window = self.session.new_window(window_name='test_window')
 
         options = window.show_window_options()
         self.assertIsInstance(options, dict)
 
     def test_set_show_window_options(self):
-        '''Set option then Window.show_window_options(key)
-        '''
+        """Set option then Window.show_window_options(key)
+        """
         window = self.session.new_window(window_name='test_window')
 
         window.set_window_option('main-pane-height', 20)
@@ -190,8 +186,8 @@ class Options(TmuxTestCase):
         self.assertEqual(40, window.show_window_options()['main-pane-height'])
 
     def test_show_window_option(self):
-        '''Set option then Window.show_window_option(key)
-        '''
+        """Set option then Window.show_window_option(key)
+        """
         window = self.session.new_window(window_name='test_window')
 
         window.set_window_option('main-pane-height', 20)
@@ -203,12 +199,9 @@ class Options(TmuxTestCase):
         self.assertEqual(40, window.show_window_option('main-pane-height'))
 
     def test_set_window_option_bad(self):
-        '''Window.set_window_option raises ValueError for bad option key'''
+        """Window.set_window_option raises ValueError for bad option key"""
 
         window = self.session.new_window(window_name='test_window')
 
         with self.assertRaises(ValueError):
             window.set_window_option('afewewfew', 43)
-
-if __name__ == '__main__':
-    unittest.main()

@@ -3,14 +3,11 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import os
 import shutil
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
 import kaptan
 import tempfile
 from .. import config, cli
 from ..util import tmux
+from .helpers import TestCase
 
 import logging
 
@@ -18,16 +15,16 @@ logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
-class StartupTest(unittest.TestCase):
+class StartupTest(TestCase):
 
-    '''test startup_cli()'''
+    """test startup_cli()."""
 
     def setUp(self):
         if os.path.isdir(TMUXP_DIR):
             shutil.rmtree(TMUXP_DIR)
 
     def test_creates_config_dir_not_exists(self):
-        '''cli.startup() creates config dir if not exists'''
+        """cli.startup() creates config dir if not exists."""
 
         self.assertFalse(os.path.exists(TMUXP_DIR))
         cli.startup(TMUXP_DIR)
@@ -41,16 +38,16 @@ class StartupTest(unittest.TestCase):
         logger.debug('wiped %s' % TMUXP_DIR)
 
 
-class FindConfigsTest(unittest.TestCase):
+class FindConfigsTest(TestCase):
 
-    '''test in_dir() test'''
+    """test in_dir() test."""
 
     def setUp(self):
         if os.path.isdir(TMUXP_DIR):
             shutil.rmtree(TMUXP_DIR)
 
     def test_in_dir_from_config_dir(self):
-        '''config.in_dir() finds configs config dir'''
+        """config.in_dir() finds configs config dir."""
 
         cli.startup(TMUXP_DIR)
         config1 = tempfile.NamedTemporaryFile(
@@ -69,7 +66,7 @@ class FindConfigsTest(unittest.TestCase):
         self.assertEqual(len(configs_found), 2)
 
     def test_in_dir_from_current_dir(self):
-        '''config.in_dir() finds configs config dir'''
+        """config.in_dir() find configs config dir."""
 
         cli.startup(TMUXP_DIR)
         config1 = tempfile.NamedTemporaryFile(
@@ -88,7 +85,7 @@ class FindConfigsTest(unittest.TestCase):
         self.assertEqual(len(configs_found), 2)
 
     def test_ignore_non_configs_from_current_dir(self):
-        '''cli.in_dir() ignores non-configs from config dir'''
+        """cli.in_dir() ignore non-config from config dir."""
 
         cli.startup(TMUXP_DIR)
         badconfig = tempfile.NamedTemporaryFile(
@@ -107,7 +104,7 @@ class FindConfigsTest(unittest.TestCase):
         self.assertEqual(len(configs_found), 1)
 
     def test_get_configs_cwd(self):
-        '''config.in_cwd() finds config in shell's current working directory'''
+        """config.in_cwd() find config in shell current working directory."""
 
         current_dir = os.getcwd()
 
@@ -142,26 +139,34 @@ class FindConfigsTest(unittest.TestCase):
 sampleconfigdict = {
     'session_name': 'sampleconfig',
     'start_directory': '~',
-    'windows': [{
-        'window_name': 'editor',
-        'panes': [
-            {
-                'start_directory': '~', 'shell_command': ['vim'],
-                },  {
-                'shell_command': ['cowsay "hey"']
-            },
-        ],
-        'layout': 'main-verticle'},
-        {'window_name': 'logging', 'panes': [
-         {'shell_command': ['tail -F /var/log/syslog'],
-          'start_directory':'/var/log'}
-         ]}, {
-             'options': {'automatic_rename': True, },
+    'windows': [
+        {
+            'window_name': 'editor',
             'panes': [
-                {'shell_command': ['htop']}
+                {
+                    'start_directory': '~',
+                    'shell_command': ['vim'],
+                },
+                {
+                    'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'
+        },
+        {
+            'window_name': 'logging', 'panes': [
+                {
+                    'shell_command': ['tail -F /var/log/syslog'],
+                    'start_directory':'/var/log'
+                }
             ]
-        }]
+        }, {
+            'options': {'automatic_rename': True, },
+            'panes': [
+                {
+                    'shell_command': ['htop']
+                }
+            ]
+        }
+    ]
 }
-
-if __name__ == '__main__':
-    unittest.main()

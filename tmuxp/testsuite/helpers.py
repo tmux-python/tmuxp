@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
+
+import time
+from random import randint
+
 try:
     import unittest2 as unittest
-except ImportError: # Python 2.7
+except ImportError:  # Python 2.7
     import unittest
-import time
 from . import t
-
-from random import randint
 from .. import Server, log, exc
 import logging
 logger = logging.getLogger(__name__)
@@ -15,10 +16,12 @@ logger = logging.getLogger(__name__)
 TEST_SESSION_PREFIX = 'tmuxp_'
 
 
+class TestCase(unittest.TestCase):
+
+    """Base TestClass so we don't have to try: unittest2 every module. """
 
 
-
-class TmuxTestCase(unittest.TestCase):
+class TmuxTestCase(TestCase):
 
     """TmuxTestCase class, wraps the TestCase in a :class:`Session`."""
 
@@ -28,8 +31,9 @@ class TmuxTestCase(unittest.TestCase):
     TEST_SESSION_NAME = None
 
     def setUp(self):
+        """Run bootstrap if :attr:`~.session` is not set."""
         if not self.TEST_SESSION_NAME or not self.session:
-            self.TEST_SESSION_NAME, self.session = self.bootstrap()
+            self.bootstrap()
 
     def bootstrap(self):
         """Return tuple of the session_name (generated) and :class:`Session`.
@@ -90,4 +94,5 @@ class TmuxTestCase(unittest.TestCase):
         assert TEST_SESSION_NAME == session.get('session_name')
         assert TEST_SESSION_NAME != 'tmuxp'
 
-        return (TEST_SESSION_NAME, session)
+        self.TEST_SESSION_NAME = TEST_SESSION_NAME
+        self.session = session

@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-try:
-    import unittest2
-except ImportError: # Python 2.7
-    import unittest
 from random import randint
 from .. import Server
 from .helpers import TmuxTestCase

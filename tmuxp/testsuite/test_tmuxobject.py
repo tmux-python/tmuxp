@@ -2,14 +2,9 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import random
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
-
 from .. import Pane, Window, Session
-from .helpers import TmuxTestCase
 from . import t
+from .helpers import TmuxTestCase
 
 import logging
 
@@ -18,11 +13,10 @@ logger = logging.getLogger(__name__)
 
 class TmuxObjectTest(TmuxTestCase):
 
-    ''' test the :class:`TmuxRelationalObject` base class object.
-    '''
+    """Test the :class:`TmuxRelationalObject` base class object."""
 
     def test_findWhere(self):
-        '''findWhere'''
+        """findWhere."""
         self.maxDiff = None
         # server.findWhere
         for session in t.sessions:
@@ -53,8 +47,7 @@ class TmuxObjectTest(TmuxTestCase):
                         {'pane_id': pane_id}), Pane)
 
     def test_findWhere_multiple_attrs(self):
-        '''.findWhere returns objects with multiple attributes
-        '''
+        """.findWhere returns objects with multiple attributes."""
 
         for session in t.sessions:
             session_id = session.get('session_id')
@@ -94,7 +87,7 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsInstance(find_where, Pane)
 
     def test_where(self):
-        '''.where'''
+        """.where"""
 
         window = self.session.attached_window()
         window.split_window()  # create second pane
@@ -143,7 +136,7 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsInstance(where[0], Pane)
 
     def test_getById(self):
-        '''.getById'''
+        """.getById"""
 
         window = self.session.attached_window()
 
@@ -186,6 +179,3 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsNone(window.getById(
                         '%' + str(random.randint(50000, 90000))
                     ))
-
-if __name__ == '__main__':
-    unittest.main()

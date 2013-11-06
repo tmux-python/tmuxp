@@ -3,10 +3,6 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import os
 import sys
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
 import logging
 import time
 import kaptan
@@ -22,7 +18,7 @@ example_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
 
 class FreezeTest(TmuxTestCase):
 
-    yaml_config = '''
+    yaml_config = """
     session_name: sampleconfig
     start_directory: '~'
     windows:
@@ -44,7 +40,7 @@ class FreezeTest(TmuxTestCase):
       panes:
       - shell_command:
         - htop
-    '''
+    """
 
     def test_focus(self):
         # assure the built yaml config has focus
@@ -77,6 +73,3 @@ class FreezeTest(TmuxTestCase):
 
         #logger.error(json)
         #logger.error(yaml)
-
-if __name__ == '__main__':
-    unittest.main()
