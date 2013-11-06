@@ -22,7 +22,7 @@ from distutils.util import strtobool
 
 
 import re
-VERSIONFILE = "tmuxp/__init__.py"
+VERSIONFILE = os.path.join(os.path.abspath(os.path.dirname(__file__)), '__init__.py')
 verstrline = open(VERSIONFILE, "rt").read()
 VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
 mo = re.search(VSRE, verstrline, re.M)
