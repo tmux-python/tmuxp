@@ -1,4 +1,5 @@
-"""
+"""tmuxp lives at <https://github.com/tony/tmuxp>.
+
 tmuxp
 -----
 
@@ -6,19 +7,16 @@ Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
 
 
 """
+import sys
 from setuptools import setup
-try:
-    from pip.req import parse_requirements
-except ImportError:
-    def requirements(f):
-        reqs = open(f, 'r').read().splitlines()
-        reqs = [r for r in reqs if not r.strip().startswith('#')]
-        return reqs
-else:
-    def requirements(f):
-        install_reqs = parse_requirements(f)
-        reqs = [str(r.req) for r in install_reqs]
-        return reqs
+
+with open('requirements.pip') as f:
+    install_reqs = [line for line in f.read().split('\n') if line]
+    tests_reqs = []
+
+if sys.version_info < (2, 7):
+    install_reqs += ['argparse']
+    tests_reqs += ['unittest2']
 
 import re
 VERSIONFILE = "tmuxp/__init__.py"
@@ -44,7 +42,8 @@ setup(
     long_description=open('README.rst').read(),
     packages=['tmuxp', 'tmuxp.testsuite'],
     include_package_data=True,
-    install_requires=requirements('requirements.pip'),
+    install_requires=install_reqs,
+    tests_require=tests_reqs,
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:main']),
     classifiers=[
