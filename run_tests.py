@@ -4,7 +4,10 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:  # Python 2.7
+    import unittest
 import sys
 import os
 import argparse
