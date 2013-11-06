@@ -3,13 +3,15 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import os
 import shutil
-import unittest
+try:
+    import unittest2
+except ImportError:  # Python 2.7
+    import unittest
 import kaptan
 import tempfile
 from .. import config, cli
 from ..util import tmux
 
-from .. import log
 import logging
 
 logger = logging.getLogger(__name__)

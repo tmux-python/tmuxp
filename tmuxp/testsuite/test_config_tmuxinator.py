@@ -2,13 +2,14 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
-import shutil
-import unittest
+try:
+    import unittest2
+except ImportError:  # Python 2.7
+    import unittest
 import kaptan
 from .. import config, exc
 from ..util import tmux, basestring
 
-from .. import log
 import logging
 
 logger = logging.getLogger(__name__)

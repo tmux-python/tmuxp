@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-import unittest
+try:
+    import unittest2
+except ImportError: # Python 2.7
+    import unittest
 from random import randint
 from .. import Server
-from ..util import tmux
-from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
+from .helpers import TmuxTestCase
 from . import t
 
-from .. import log
 import logging
 
 logger = logging.getLogger(__name__)

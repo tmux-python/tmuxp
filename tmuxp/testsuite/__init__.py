@@ -30,6 +30,9 @@ if not logger.handlers:
 
 
 def suite():
-    import unittest
+    try:
+        import unittest2
+    except ImportError: # Python 2.7
+        import unittest
 
     return unittest.TestLoader().discover('.', pattern="test_*.py")
