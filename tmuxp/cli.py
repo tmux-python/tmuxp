@@ -14,7 +14,6 @@ import sys
 import argparse
 import argcomplete
 import logging
-import pkg_resources
 import kaptan
 from . import log, util, exc, WorkspaceBuilder, Server, config
 from .util import ascii_lowercase, input
@@ -22,7 +21,15 @@ from .workspacebuilder import freeze
 from distutils.util import strtobool
 
 
-__version__ = pkg_resources.require("tmuxp")[0].version
+import re
+VERSIONFILE = "tmuxp/__init__.py"
+verstrline = open(VERSIONFILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+mo = re.search(VSRE, verstrline, re.M)
+if mo:
+    __version__ = mo.group(1)
+#import pkg_resources
+#__version__ = pkg_resources.require("tmuxp")[0].version
 
 logger = logging.getLogger(__name__)
 
