@@ -81,11 +81,11 @@ class Server(TmuxRelationalObject):
 
         args = list(args)
         if self.socket_name:
-            args.insert(0, '-L{}'.format(self.socket_name))
+            args.insert(0, '-L{0}'.format(self.socket_name))
         if self.socket_path:
-            args.insert(0, '-S{}'.format(self.socket_path))
+            args.insert(0, '-S{0}'.format(self.socket_path))
         if self.config_file:
-            args.insert(0, '-f{}'.format(self.config_file))
+            args.insert(0, '-f{0}'.format(self.config_file))
         if self.colors:
             if self.colors == 256:
                 args.insert(0, '-2')
