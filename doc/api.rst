@@ -57,7 +57,7 @@ Internals
 
 .. autoclass:: tmuxp.util.tmux
 
-.. automethod:: tmuxp.util.version
+.. automethod:: tmuxp.util.has_required_tmux_version
 
 .. automethod:: tmuxp.util.oh_my_zsh_auto_title
 

@@ -249,7 +249,7 @@ def is_version(version):
     return StrictVersion(installed_version) == StrictVersion(version)
 
 
-def version():
+def has_required_tmux_version():
     """Return if tmux meets version requirement. Version >1.8 or above."""
     proc = tmux('-V')
 

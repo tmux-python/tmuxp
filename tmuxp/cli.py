@@ -230,7 +230,7 @@ def load_workspace(config_file, args):
     :param type: string
 
     """
-    logger.info('building %s.' % config_file)
+    logger.info('Loading %s.' % config_file)
 
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
@@ -367,7 +367,7 @@ def command_load(args):
         startup(config_dir)
         configs_in_user = config.in_dir(config_dir)
         configs_in_cwd = config.in_cwd()
-        print(configs_in_cwd)
+
         sys.exit()
 
         output = ''
@@ -385,6 +385,7 @@ def command_load(args):
             )
 
         print(output)
+        return
 
     elif args.config:
         if '.' == args.config:
@@ -397,9 +398,7 @@ def command_load(args):
             configfile = args.config
         file_user = os.path.join(config_dir, configfile)
         file_cwd = os.path.join(cwd_dir, configfile)
-        print(file_user)
-        print(file_cwd)
-        print(cwd_dir)
+
         if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
             print('load %s' % file_cwd)
             load_workspace(file_cwd, args)
@@ -899,10 +898,10 @@ def main():
 
     args = parser.parse_args()
 
-    setup_logger(level=args.log_level.upper())
+    setup_logger(level=args.log_level.upper() if 'log_level' in args else 'INFO')
 
     try:
-        util.version()
+        util.has_required_tmux_version()
     except Exception as e:
         logger.error(e)
         sys.exit()
