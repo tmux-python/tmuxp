@@ -32,4 +32,7 @@ if not logger.handlers:
 def suite():
     import unittest
 
+    session_name = 'tmuxp'
+    t.tmux('new-session', '-d', '-s', session_name)
+
     return unittest.TestLoader().discover('.', pattern="*.py")
