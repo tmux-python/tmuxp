@@ -18,7 +18,7 @@ from .util import basestring
 logger = logging.getLogger(__name__)
 
 
-def check_consistency(sconf):
+def validate_schema(sconf):
     """Return True if config schema is correct.
 
     :param sconf: session configuration

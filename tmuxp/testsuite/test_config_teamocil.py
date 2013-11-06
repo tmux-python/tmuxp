@@ -77,7 +77,7 @@ class TeamocilTest(unittest.TestCase):
             self.tmuxp_dict
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict
             )
@@ -86,7 +86,7 @@ class TeamocilTest(unittest.TestCase):
     def test_config_to_yaml(self):
         '''teamocil yaml to tmuxp yaml config
 
-        use check_consistency to assert against
+        use validate_schema to assert against
         '''
         pass
 
@@ -154,7 +154,7 @@ class Teamocil2Test(unittest.TestCase):
             self.tmuxp_dict
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict
             )
@@ -241,7 +241,7 @@ class Teamocil3Test(unittest.TestCase):
             self.tmuxp_dict
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict
             )
@@ -294,7 +294,7 @@ class Teamocil4Test(unittest.TestCase):
             self.tmuxp_dict
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict
             )
@@ -669,7 +669,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
             self.two_windows
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict['two-windows']
             )
@@ -682,7 +682,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
             self.two_windows_with_filters
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict['two-windows-with-filters']
             )
@@ -695,7 +695,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
             self.two_windows_with_custom_command_options
         )
 
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict['two-windows-with-custom-command-options']
             )
@@ -707,7 +707,7 @@ class TeamocilLayoutsTest(unittest.TestCase):
             ),
             self.three_windows_within_a_session
         )
-        config.check_consistency(
+        config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict['three-windows-within-a-session']
             )

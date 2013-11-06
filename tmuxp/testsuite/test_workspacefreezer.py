@@ -61,7 +61,7 @@ class FreezeTest(TmuxTestCase):
         session = self.session
         sconf = freeze(session)
 
-        config.check_consistency(sconf)
+        config.validate_schema(sconf)
 
         sconf = config.inline(sconf)
 

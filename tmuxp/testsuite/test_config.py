@@ -744,7 +744,7 @@ class ConfigConsistency(unittest.TestCase):
         sconfig = sconfig.import_config(yaml_config).get()
 
         with self.assertRaisesRegexp(exc.ConfigError, 'requires "session_name"'):
-            config.check_consistency(sconfig)
+            config.validate_schema(sconfig)
 
     def test_no_windows(self):
         yaml_config = '''
@@ -755,7 +755,7 @@ class ConfigConsistency(unittest.TestCase):
         sconfig = sconfig.import_config(yaml_config).get()
 
         with self.assertRaisesRegexp(exc.ConfigError, 'list of "windows"'):
-            config.check_consistency(sconfig)
+            config.validate_schema(sconfig)
 
     def test_no_window_name(self):
         yaml_config = '''
@@ -776,7 +776,7 @@ class ConfigConsistency(unittest.TestCase):
         sconfig = sconfig.import_config(yaml_config).get()
 
         with self.assertRaisesRegexp(exc.ConfigError, 'missing "window_name"'):
-            config.check_consistency(sconfig)
+            config.validate_schema(sconfig)
 
 
 if __name__ == '__main__':

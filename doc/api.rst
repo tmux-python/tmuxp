@@ -92,7 +92,7 @@ Finding
 Import and export
 """""""""""""""""
 
-.. automethod:: tmuxp.config.check_consistency
+.. automethod:: tmuxp.config.validate_schema
 
 .. automethod:: tmuxp.config.expand
 
