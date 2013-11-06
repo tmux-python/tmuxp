@@ -20,9 +20,8 @@ import logging
 import logging.handlers
 import sys
 import time
-from colorama import init
-init()
-from colorama import Fore, Back, Style
+from ._vendor.colorama import init
+from ._vendor.colorama import Fore, Back, Style
 from .util import unicode, bytes, basestring
 
 try:
@@ -88,6 +87,7 @@ def _stderr_supports_color():
             curses.setupterm()
             if curses.tigetnum("colors") > 0:
                 color = True
+                init()
         except Exception:
             pass
     return color

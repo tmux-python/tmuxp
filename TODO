@@ -21,6 +21,7 @@ TODO
   it.
 - Handle case where switching client via ``$ tmuxp load`` or
   ``$ tmuxp attach-session`` into another socket may cause an error.
+- python 2.6 support
 
 Done
 ''''
