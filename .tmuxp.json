@@ -65,7 +65,7 @@
       "layout": "main-horizontal", 
       "window_name": "docs", 
       "options": {
-        "main-pane-height": 50
+        "main-pane-height": 35
       }
     }
   ], 

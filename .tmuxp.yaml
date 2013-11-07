@@ -24,7 +24,7 @@ windows:
 - window_name: docs
   layout: main-horizontal
   options:
-    main-pane-height: 50
+    main-pane-height: 35
   shell_command_before: 
     - command -v virtualenv >/dev/null 2>&1 || { pip install virtualenv; }
     - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env'
