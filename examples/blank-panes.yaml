@@ -1,0 +1,20 @@
+session_name: Blank pane test
+windows:
+  # Emptiness will simply open a blank pane, if no shell_command_before.
+  # All these are equivalent
+  - window_name: Blank pane test
+    panes:
+    -
+    - pane
+    - blank
+    - null
+    - shell_command: 
+    - shell_command:
+      - 
+  # an empty string will be treated as a carriage return
+  - window_name: Empty string (return)
+    panes:
+    - ''
+    - shell_command: ''
+    - shell_command:
+      - ''

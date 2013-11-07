@@ -250,7 +250,19 @@ def freeze(session):
                 pconf['shell_command'].append(
                     'cd ' + p.get('pane_current_path')
                 )
-            pconf['shell_command'].append(p.get('pane_current_command'))
+
+            current_cmd = p.get('pane_current_command')
+
+            if current_cmd.startswith('-') or \
+                any(current_cmd.endswith(cmd) for cmd in ['python', 'ruby', 'node']):
+                    current_cmd = None
+
+            if current_cmd:
+                pconf['shell_command'].append(current_cmd)
+            else:
+                if not len(pconf['shell_command']):
+                    pconf = 'pane'
+
             wconf['panes'].append(pconf)
 
         sconf['windows'].append(wconf)

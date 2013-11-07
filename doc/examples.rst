@@ -35,6 +35,26 @@ JSON
 .. literalinclude:: ../examples/shorthands.json
     :language: json
 
+Blank panes
+-----------
+
+.. important::
+
+    In Development Version, see :ref:`Developing`. This will be released
+    soon.
+
+YAML
+""""
+
+.. literalinclude:: ../examples/blank-panes.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/blank-panes.json
+    :language: json
+
 2 split panes
 -------------
 

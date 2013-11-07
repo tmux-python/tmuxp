@@ -151,6 +151,7 @@ def expand(sconf, cwd=None):
     if not cwd:
         cwd = os.getcwd()
 
+
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:
@@ -161,8 +162,9 @@ def expand(sconf, cwd=None):
 
     if ('shell_command' in sconf and isinstance(sconf['shell_command'], basestring)):
         sconf['shell_command'] = [sconf['shell_command']]
-    elif not 'windows' in sconf and not 'panes' in sconf and isinstance(sconf, basestring):
-        sconf = {'shell_command': [sconf]}
+    # elif not 'windows' in sconf and not 'panes' in sconf and isinstance(sconf, basestring):  # probable pane
+        # logger.error(sconf)
+        # sconf = {'shell_command': [sconf]}
 
     if ('shell_command_before' in sconf and isinstance(sconf['shell_command_before'], basestring)):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
@@ -173,12 +175,56 @@ def expand(sconf, cwd=None):
             expand(window) for window in sconf['windows']
         ]
     elif 'panes' in sconf:
+
         for p in sconf['panes']:
-            if isinstance(p, basestring):
-                p_index = sconf['panes'].index(p)
-                sconf['panes'][p_index] = {
+            p_index = sconf['panes'].index(p)
+
+            if not isinstance(p, dict) and not isinstance(p, list):  # probable pane
+                p = sconf['panes'][p_index] = {
                     'shell_command': [p]
                 }
+
+            if isinstance (p, dict) and not len(p):
+                p = sconf['panes'][p_index] = {
+                    'shell_command': []
+                }
+
+
+            # if not p:
+                # p = sconf['panes'][p_index] = {
+                    # 'shell_command': []
+                # }
+
+            if isinstance(p, basestring):
+
+                p = sconf['panes'][p_index] = {
+                    'shell_command': [p]
+                }
+
+            if 'shell_command' in p:
+
+                if isinstance(p['shell_command'], basestring):
+                    p = sconf['panes'][p_index] = {
+                        'shell_command': [p['shell_command']]
+                    }
+
+                if p['shell_command'] is None:
+                    p = sconf['panes'][p_index] = {
+                        'shell_command': []
+                    }
+                elif isinstance(p['shell_command'], list) and \
+                    len(p['shell_command']) == int(1) and (
+                        any(a in p['shell_command'] for a in [None, 'blank', 'pane']) or \
+                        p['shell_command'][0] is None
+                    ):
+                        p = sconf['panes'][p_index] = {
+                            'shell_command': []
+                        }
+
+                #elif any(a in p['shell_command'] for a in ['blank', 'pane']):
+
+
+
         sconf['panes'] = [expand(pane) for pane in sconf['panes']]
 
     return sconf

@@ -12,6 +12,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
+current_dir = os.path.abspath(os.path.dirname(__file__))
+example_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'examples'))
 
 
 sampleconfigdict = {
@@ -142,7 +144,7 @@ class ExpandTest(TestCase):
             'panes': [
                 {
                     'shell_command': ['vim'],
-                },
+                    },
                 {
                     'shell_command': 'cowsay "hey"'
                 },
@@ -344,6 +346,7 @@ class InlineTest(TestCase):
 
 
 class InheritanceTest(TestCase):
+
     """Test config inheritance for the nested 'start_command'."""
 
     config_before = {
@@ -367,20 +370,29 @@ class InheritanceTest(TestCase):
             {
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'}
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                        'start_directory':'/var/log'
+                    }
                 ]
             },
             {
                 'window_name': 'shufu',
                 'panes': [
-                    {'shell_command': ['htop'], 'start_directory': '/etc/'}
+                    {
+                        'shell_command': ['htop'],
+                        'start_directory': '/etc/'
+                    }
                 ]
             },
             {
-                'options': {'automatic_rename': True, },
+                'options': {
+                    'automatic_rename': True,
+                },
                 'panes': [
-                    {'shell_command': ['htop']}
+                    {
+                        'shell_command': ['htop']
+                    }
                 ]
             }
         ]
@@ -414,13 +426,17 @@ class InheritanceTest(TestCase):
             {
                 'window_name': 'shufu',
                 'panes': [
-                    {'shell_command': ['htop'], 'start_directory': '/etc/'}
+                    {
+                        'shell_command': ['htop'], 'start_directory': '/etc/'
+                    }
                 ]
             },
             {
                 'options': {'automatic_rename': True, },
                 'panes': [
-                    {'shell_command': ['htop'], 'start_directory':'/'}
+                    {
+                        'shell_command': ['htop'], 'start_directory':'/'
+                    }
                 ]
             }
         ]
@@ -455,11 +471,7 @@ class InheritanceTest(TestCase):
 
 class ShellCommandBeforeTest(TestCase):
 
-    """
-    test config inheritance for the nested 'start_command'
-
-    format for tests will be pre
-    """
+    """Config inheritance for the nested 'start_command'."""
 
     config_unexpanded = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
@@ -472,8 +484,10 @@ class ShellCommandBeforeTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['vim'],
-                    },  {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
+                    },
+                    {
+                        'shell_command_before': ['rbenv local 2.0.0-p0'],
+                        'shell_command': ['cowsay "hey"']
                     },
                 ],
                 'layout': 'main-verticle'
@@ -482,10 +496,11 @@ class ShellCommandBeforeTest(TestCase):
                 'shell_command_before': 'rbenv local 2.0.0-p0',
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                        },
                     {
-                        }
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    },
+                    {
+                    }
                 ]
             },
             {
@@ -493,7 +508,8 @@ class ShellCommandBeforeTest(TestCase):
                 'panes': [
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['htop'], }
+                        'shell_command': ['htop'],
+                    }
                 ]
             },
             {
@@ -519,8 +535,10 @@ class ShellCommandBeforeTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['vim'],
-                    },  {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'], 'shell_command': ['cowsay "hey"']
+                    },
+                    {
+                        'shell_command_before': ['rbenv local 2.0.0-p0'],
+                        'shell_command': ['cowsay "hey"']
                     },
                 ],
                 'layout': 'main-verticle'
@@ -529,10 +547,12 @@ class ShellCommandBeforeTest(TestCase):
                 'shell_command_before': ['rbenv local 2.0.0-p0'],
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                        },
                     {
-                        }
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    },
+                    {
+                        'shell_command': []
+                    }
                 ]
             },
             {
@@ -540,7 +560,8 @@ class ShellCommandBeforeTest(TestCase):
                 'panes': [
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['htop'],}
+                        'shell_command': ['htop'],
+                    }
                 ]
             },
             {
@@ -568,7 +589,8 @@ class ShellCommandBeforeTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['source .env/bin/activate', 'vim'],
-                    },  {
+                    },
+                    {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
                         'shell_command': [
                             'source .env/bin/activate',
@@ -583,10 +605,12 @@ class ShellCommandBeforeTest(TestCase):
                 'start_directory': '/',
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
-                        },
                     {
-                        'shell_command': ['rbenv local 2.0.0-p0']}
+                        'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
+                    },
+                    {
+                        'shell_command': ['rbenv local 2.0.0-p0']
+                    }
                 ]
             },
             {
@@ -595,20 +619,25 @@ class ShellCommandBeforeTest(TestCase):
                 'panes': [
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['rbenv local 2.0.0-p0', 'htop'],}
+                        'shell_command': ['rbenv local 2.0.0-p0', 'htop'],
+                    }
                 ]
             },
             {
                 'start_directory': '/',
                 'options': {'automatic_rename': True, },
                 'panes': [
-                    {'shell_command': ['htop']}
+                    {
+                        'shell_command': ['htop']
+                    }
                 ]
             },
             {
                 'start_directory': '/',
                 'panes': [
-                    {'shell_command': ['top']}
+                    {
+                        'shell_command': ['top']
+                    }
                 ]
             }
         ]
@@ -626,8 +655,8 @@ class ShellCommandBeforeTest(TestCase):
         self.assertDictEqual(test_config, self.config_after)
 
 
-
 class TrickleRelativeStartDirectory(TestCase):
+
     config_expanded = {  # shell_command_before is string in some areas
         'session_name': 'sampleconfig',
         'start_directory': '/var',
@@ -653,10 +682,11 @@ class TrickleRelativeStartDirectory(TestCase):
                         'shell_command': ['tail -F /var/log/syslog'],
                     },
                     {
+                        'shell_command': []
                     }
                 ]
             },
-         ]
+        ]
     }
 
     config_after = {  # shell_command_before is string in some areas
@@ -690,15 +720,105 @@ class TrickleRelativeStartDirectory(TestCase):
                     }
                 ]
             },
-         ]
+        ]
     }
 
     def test_shell_command_before(self):
-        self.maxDiff = None
 
         test_config = config.trickle(self.config_expanded)
-        self.maxDiff = None
         self.assertDictEqual(test_config, self.config_after)
+
+
+class ConfigBlankPanes(TestCase):
+
+    yaml_config_file = os.path.join(example_dir, 'blank-panes.yaml')
+
+    expanded_config = {
+        'session_name': 'Blank pane test',
+        'windows': [
+            {
+                'window_name': 'Blank pane test',
+                'panes': [
+                    {
+                        'shell_command': [],
+                    },
+                    {
+                        'shell_command': [],
+                    },
+                    {
+                        'shell_command': [],
+                    },
+                    {
+                        'shell_command': [],
+                    },
+                    {
+                        'shell_command': [],
+                    },
+                    {
+                        'shell_command': [],
+                    }
+                ]
+            },
+            {
+                'window_name': 'Empty string (return)',
+                'panes': [
+                    {
+                        'shell_command': [
+                            ''
+                        ],
+                    },
+                    {
+                        'shell_command': [
+                            ''
+                        ],
+                    },
+                    {
+                        'shell_command': [
+                            ''
+                        ],
+                    }
+                ]
+            }
+        ]
+    }
+
+    def test_expands_blank(self):
+        """Expand blank config into full form.
+
+        Handle ``NoneType`` and 'blank'::
+
+        # nothing, None, 'blank'
+        'panes': [
+            None,
+            'blank'
+        ]
+
+        # should be blank
+        'panes': [
+            'shell_command': []
+        ]
+
+        Blank strings::
+
+            panes: [
+                ''
+            ]
+
+            # should output to:
+            panes:
+                'shell_command': ['']
+
+        """
+
+        self.maxDiff = None
+
+        test_config = kaptan.Kaptan().import_config(self.yaml_config_file).get()
+
+        self.assertDictEqual(
+            config.expand(test_config),
+            self.expanded_config
+        )
+
 
 class ConfigConsistency(TestCase):
 

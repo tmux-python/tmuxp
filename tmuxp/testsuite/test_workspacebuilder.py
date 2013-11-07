@@ -267,6 +267,9 @@ class WindowAutomaticRename(TmuxTestCase):
         self.assertNotEqual(w.get('window_name'), 'man')
 
 
+class BlankPaneTest(TmuxTestCase):
+    """:todo: Verify blank panes of various types build into workspaces"""
+
 class StartDirectoryTest(TmuxTestCase):
     yaml_config = """
     session_name: sampleconfig
