@@ -44,11 +44,6 @@ Blank panes
 No need to repeat ``pwd`` or a dummy comment, just make a blank item,
 'blank', 'pane' are valid.
 
-.. important::
-
-    In Development Version, see :ref:`Developing`. This will be released
-    soon.
-
 YAML
 """"
 
