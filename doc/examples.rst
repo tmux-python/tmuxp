@@ -7,6 +7,9 @@ Examples
 Short hand / inline
 -------------------
 
+tmuxp has a short-hand syntax to for those who wish to keep their configs
+punctual.
+
 .. sidebar:: short hand
 
     .. aafig::
@@ -38,6 +41,9 @@ JSON
 Blank panes
 -----------
 
+No need to repeat ``pwd`` or a dummy comment, just make a blank item,
+'blank', 'pane' are valid.
+
 .. important::
 
     In Development Version, see :ref:`Developing`. This will be released
@@ -53,6 +59,23 @@ JSON
 """"
 
 .. literalinclude:: ../examples/blank-panes.json
+    :language: json
+
+Start Directory
+---------------
+
+Equivalent to ``tmux new-window -c <start-directory>``.
+
+YAML
+""""
+
+.. literalinclude:: ../examples/start_directory.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/start_directory.json
     :language: json
 
 2 split panes
@@ -183,23 +206,6 @@ JSON
 """"
 
 .. literalinclude:: ../examples/main-pane-height.json
-    :language: json
-
-Start Directory
----------------
-
-Equivalent to ``tmux new-window -c <start-directory>``.
-
-YAML
-""""
-
-.. literalinclude:: ../examples/start_directory.yaml
-    :language: yaml
-
-JSON
-""""
-
-.. literalinclude:: ../examples/start_directory.json
     :language: json
 
 Super-advanced dev environment
