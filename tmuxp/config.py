@@ -189,12 +189,6 @@ def expand(sconf, cwd=None):
                     'shell_command': []
                 }
 
-
-            # if not p:
-                # p = sconf['panes'][p_index] = {
-                    # 'shell_command': []
-                # }
-
             if isinstance(p, basestring):
 
                 p = sconf['panes'][p_index] = {
@@ -220,10 +214,6 @@ def expand(sconf, cwd=None):
                         p = sconf['panes'][p_index] = {
                             'shell_command': []
                         }
-
-                #elif any(a in p['shell_command'] for a in ['blank', 'pane']):
-
-
 
         sconf['panes'] = [expand(pane) for pane in sconf['panes']]
 
