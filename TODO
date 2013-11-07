@@ -5,12 +5,6 @@ TODO
 -------------
 
 - `pep8`_, `pep257`_ for tests. (ongoing)
-- tmuxp freeze:
-
-  - offer to save ``session_name`` as default file if filename
-  doesn't already exist in config dir.
-
-  - Remove -zsh command, python, etc if just in shell.
 - `teamocil`_ and `tmuxinator`_ import support for blank panes
 - ``shell_command_before`` for `teamocil`_.
 - if no ``window_name`` in config, option ``automatic_rename: on`` by 
@@ -40,6 +34,12 @@ Done
 - python 2.6 support
 - Remove doc for ``run_tests.py`` visual test runner. Just have
   instruction for running test builder package.
+- tmuxp freeze:
+
+  - offer to save ``session_name`` as default file if filename
+  doesn't already exist in config dir.
+
+  - Remove -zsh command, python, etc if just in shell.
 
 
 Future

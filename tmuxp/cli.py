@@ -346,7 +346,7 @@ def command_freeze(args):
         dest = None
         while not dest:
             dest_prompt = prompt('Save to: ', os.path.abspath(
-                os.path.join(config_dir, 'myimport.%s' % config_format)))
+                os.path.join(config_dir, '%s.%s' % (sconf.get('session_name'), config_format))))
             if os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue

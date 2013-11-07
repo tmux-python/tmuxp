@@ -66,10 +66,16 @@ class FreezeTest(TmuxTestCase):
 
         kaptanconf = kaptan.Kaptan()
         kaptanconf = kaptanconf.import_config(sconf)
-        json = kaptanconf.export('json', indent=2)
-        json = kaptanconf.export('json', indent=2)
+        json = kaptanconf.export(
+            'json',
+            indent=2
+        )
         yaml = kaptanconf.export(
-            'yaml', indent=2, default_flow_style=False, safe=True)
+            'yaml',
+            indent=2,
+            default_flow_style=False,
+            safe=True
+        )
 
         #logger.error(json)
         #logger.error(yaml)
