@@ -65,9 +65,11 @@ class tmux(object):
             stdout = self.process.stdout.read()
             stderr = self.process.stderr.read()
         except Exception as e:
-            logger.error('Exception for %s: \n%s' % (
-                subprocess.list2cmdline(cmd),
-                e.message)
+            logger.error(
+                'Exception for %s: \n%s' % (
+                    subprocess.list2cmdline(cmd),
+                    e
+                )
             )
         self.stdout = stdout.decode().split('\n')
         self.stdout = list(filter(None, self.stdout))  # filter empty values

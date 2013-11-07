@@ -273,7 +273,7 @@ def load_workspace(config_file, args):
 
         builder.session.attach_session()
     except exc.TmuxSessionExists as e:
-        if prompt_yes_no(e.message + ' Attach?'):
+        if prompt_yes_no('%s Attach?' % e):
             if 'TMUX' in os.environ:
                 builder.session.switch_client()
 
@@ -654,7 +654,7 @@ def command_attach_session(args):
         if not session:
             raise exc.TmuxpException('Session not found.')
     except exc.TmuxpException as e:
-        print(e.message)
+        print(e)
         return
 
     if 'TMUX' in os.environ:
@@ -682,7 +682,7 @@ def command_kill_session(args):
         if not session:
             raise exc.TmuxpException('Session not found.')
     except exc.TmuxpException as e:
-        print(e.getMessage())
+        print(e)
         return
 
     try:
