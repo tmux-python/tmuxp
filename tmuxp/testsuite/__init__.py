@@ -21,7 +21,7 @@ logger = logging.getLogger()
 
 if not logger.handlers:
     channel = logging.StreamHandler()
-    #channel.setFormatter(log.DebugLogFormatter())
+    channel.setFormatter(log.DebugLogFormatter())
     logger.addHandler(channel)
     logger.setLevel('INFO')
 
