@@ -5,7 +5,12 @@ TODO
 -------------
 
 - `pep8`_, `pep257`_ for tests. (ongoing)
-- ``$ tmux freeze`` for virtualenv
+- tmuxp freeze:
+
+  - offer to save ``session_name`` as default file if filename
+  doesn't already exist in config dir.
+
+  - Remove -zsh command, python, etc if just in shell.
 - ``shell_command_before`` for `teamocil`_.
 - if no ``window_name`` in config, option ``automatic_rename: on`` by 
   default and test.
