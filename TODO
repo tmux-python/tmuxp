@@ -22,23 +22,21 @@ TODO
 
 
 Done
-''''
+""""
 
 - Add help docs to CLI commands and options.
 - tmuxp -L and -S autocomplete to correct server ``socket-name`` and
   ``socket-path``.
 - Get `sphinx-argparse`_ in good enough shape for docs.
-- rename functions
+- Rename functions
   - ``util.version()`` to ``util.has_required_tmux_version()``. (done)
   - ``config.check_consistency()`` to ``config.validate_schema()``. (done)
-- python 2.6 support
+- Python 2.6 support
 - Remove doc for ``run_tests.py`` visual test runner. Just have
   instruction for running test builder package.
 - tmuxp freeze:
-
   - offer to save ``session_name`` as default file if filename
-  doesn't already exist in config dir.
-
+    doesn't already exist in config dir.
   - Remove -zsh command, python, etc if just in shell.
 
 
