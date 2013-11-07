@@ -280,6 +280,12 @@ class BlankPaneTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=test_config)
         builder.build(session=self.session)
 
+        window1 = self.session.findWhere({'window_name': 'Blank pane test'})
+        self.assertEqual(len(window1._panes), 6)
+
+        window1 = self.session.findWhere({'window_name': 'Empty string (return)'})
+        self.assertEqual(len(window1._panes), 3)
+
         self.assertEqual(self.session, builder.session)
 
 

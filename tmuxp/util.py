@@ -150,10 +150,10 @@ class TmuxRelationalObject(object):
         .. _underscore.js: http://underscorejs.org/
 
         """
-        return self.where(attrs, True)
+        return self.where(attrs)[0] or None
 
     def where(self, attrs, first=False):
-        """Return objects matching child objects properties>
+        """Return objects matching child objects properties.
 
         Based on `.where()`_ from `underscore.js`_.
 
