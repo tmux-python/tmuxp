@@ -4,7 +4,7 @@ TODO
 0.1 milestone
 -------------
 
-- `pep8`_, `pep257`_ for tests.
+- `pep8`_, `pep257`_ for tests. (ongoing)
 - ``$ tmux freeze`` for virtualenv
 - ``shell_command_before`` for `teamocil`_.
 - if no ``window_name`` in config, option ``automatic_rename: on`` by 
