@@ -11,6 +11,7 @@ TODO
   doesn't already exist in config dir.
 
   - Remove -zsh command, python, etc if just in shell.
+- `teamocil`_ and `tmuxinator`_ import support for blank panes
 - ``shell_command_before`` for `teamocil`_.
 - if no ``window_name`` in config, option ``automatic_rename: on`` by 
   default and test.

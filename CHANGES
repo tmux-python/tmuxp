@@ -11,6 +11,12 @@ Here you can find the recent changes to tmuxp.
 
 - [cli] [tests] tagged v0.0.37. Many fixes. Python 2.6 support. Will
   switch to per-version changelog after 0.1 release..
+- [config] support for blank panes (null, ``pane``, ``blank``) and panes
+  with empty strings.
+- [freeze] tmuxp freeze supports exporting to blank panes. 
+- [freeze] tmuxp freeze will now return a blank pane for panes that would
+  previously return a duplicate shell command, or generic python, node 
+  interpreter. 
 
 2013-11-05
 ''''''''''
