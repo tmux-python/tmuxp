@@ -39,7 +39,8 @@ setup(
     description='Manage tmux workspaces from JSON and YAML, pythonic API, '
                 'shell completion',
     long_description=open('README.rst').read(),
-    packages=['tmuxp', 'tmuxp.testsuite'],
+    packages=['tmuxp', 'tmuxp.testsuite',
+              'tmuxp._vendor', 'tmuxp._vendor.colorama'],
     include_package_data=True,
     install_requires=install_reqs,
     tests_require=tests_reqs,

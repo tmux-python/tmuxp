@@ -20,8 +20,8 @@ import logging
 import logging.handlers
 import sys
 import time
-from tmuxp._vendor.colorama import init
-from tmuxp._vendor.colorama import Fore, Back, Style
+from ._vendor.colorama import init
+from ._vendor.colorama import Fore, Back, Style
 from .util import unicode, bytes, basestring
 
 try:
