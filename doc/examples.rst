@@ -69,13 +69,13 @@ Equivalent to ``tmux new-window -c <start-directory>``.
 YAML
 """"
 
-.. literalinclude:: ../examples/start_directory.yaml
+.. literalinclude:: ../examples/start-directory.yaml
     :language: yaml
 
 JSON
 """"
 
-.. literalinclude:: ../examples/start_directory.json
+.. literalinclude:: ../examples/start-directory.json
     :language: json
 
 2 split panes
