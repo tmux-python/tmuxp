@@ -6,6 +6,12 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-06
+''''''''''
+
+- [cli] [tests] tagged v0.0.37. Many fixes. Python 2.6 support. Will
+  switch to per-version changelog after 0.1 release..
+
 2013-11-05
 ''''''''''
 
