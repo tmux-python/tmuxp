@@ -41,8 +41,10 @@ JSON
 Blank panes
 -----------
 
-No need to repeat ``pwd`` or a dummy comment, just make a blank item,
-'blank', 'pane' are valid.
+No need to repeat ``pwd`` or a dummy command. A ``null``, ``'blank'``,
+``'pane'`` are valid.
+
+Note ``''`` counts as an empty carriage return.
 
 YAML
 """"
