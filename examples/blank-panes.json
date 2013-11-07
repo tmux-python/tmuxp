@@ -15,6 +15,7 @@
           ]
         }
       ], 
+      "layout": "tiled", 
       "window_name": "Blank pane test"
     }, 
     {
