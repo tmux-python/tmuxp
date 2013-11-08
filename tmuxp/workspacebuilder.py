@@ -41,6 +41,7 @@ class WorkspaceBuilder(object):
                 sconf = sconfig.import_config('path/to/config.yaml').get()
 
             kaptan automatically detects the handler from filenames.
+
         2.  :meth:`config.expand` sconf inline shorthand::
 
                 from tmuxp import config

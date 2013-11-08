@@ -56,10 +56,11 @@ copyright = u'2013, Tony Narlock'
 rst_prolog = """
 .. note::
 
-    tmuxp is still **alpha** code and needs a few more weeks until stable.
-    See the `Issues tracker`_ to see known issues and for any other concerns.
+    tmuxp is usable but still needs your help reporting errors, bugs and
+    usability feedback. If you encounter an error, please post on the
+    `Issue tracker`_.
 
-.. _Issues tracker: https://github.com/tony/tmuxp/issues
+.. _Issue tracker: https://github.com/tony/tmuxp/issues
 """
 
 # The version info for the project you're documenting, acts as replacement for

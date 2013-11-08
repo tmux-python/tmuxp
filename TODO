@@ -35,6 +35,7 @@ Done
 - Remove doc for ``run_tests.py`` visual test runner. Just have
   instruction for running test builder package.
 - tmuxp freeze:
+
   - offer to save ``session_name`` as default file if filename
     doesn't already exist in config dir.
   - Remove -zsh command, python, etc if just in shell.
@@ -54,6 +55,7 @@ Future
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
 .. _teamocil: https://github.com/remiprev/teamocil
+.. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _sphinx-argparse: https://github.com/tony/sphinx-argparse
 
 
