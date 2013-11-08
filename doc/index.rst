@@ -56,10 +56,3 @@ Explore:
     roadmap
     about_tmux
     glossary
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
