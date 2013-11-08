@@ -9,8 +9,11 @@ Here you can find the recent changes to tmuxp.
 2013-11-07
 ''''''''''
 
- - [internal] Remove old logger (based on `tornado's log.py`_), replace
+- [internal] Remove old logger (based on `tornado's log.py`_), replace
    with new, simpler one.
+- [cli] [import] fix `teamocil`_ import.
+- [import] [tests]: support import teamocil ``root`` to
+  ``start_directory``.
 
 .. _tornado's log.py: https://github.com/facebook/tornado/blob/master/tornado/log.py
 

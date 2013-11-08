@@ -5,8 +5,6 @@ TODO
 -------------
 
 - `pep8`_, `pep257`_ for tests. (ongoing)
-- `teamocil`_ and `tmuxinator`_ import support for blank panes
-- ``shell_command_before`` for `teamocil`_.
 - if no ``window_name`` in config, option ``automatic_rename: on`` by 
   default and test.
 - example of doctest/usage example of creating a new tmux session from
@@ -24,6 +22,8 @@ TODO
 Done
 """"
 
+- ``shell_command_before`` for `teamocil`_.
+- `teamocil`_ and `tmuxinator`_ import support for blank panes
 - Add help docs to CLI commands and options.
 - tmuxp -L and -S autocomplete to correct server ``socket-name`` and
   ``socket-path``.
