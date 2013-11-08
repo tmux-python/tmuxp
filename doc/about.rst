@@ -6,7 +6,7 @@
 About
 =====
 
-tmuxp helps you manage tmux workspaces. Its BSD licensed.
+tmuxp helps you manage tmux workspaces.
 
 tmuxp is build upon an object relational mapper for tmux. End-users may
 use YAML, JSON and :py:obj:`dict` configurations to launch workspaces like
