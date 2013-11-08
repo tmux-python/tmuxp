@@ -50,6 +50,7 @@ class TeamocilTest(TestCase):
             {
                 'window_name': 'sample-two-panes',
                 'layout': 'even-horizontal',
+                'start_directory': '~/Code/sample/www',
                 'panes': [
                     {
                         'shell_command': [
@@ -124,6 +125,7 @@ class Teamocil2Test(TestCase):
             {
                 'window_name': 'sample-four-panes',
                 'layout': 'tiled',
+                'start_directory': '~/Code/sample/www',
                 'panes': [
                     {
                         'shell_command': 'pwd'
@@ -206,6 +208,7 @@ class Teamocil3Test(TestCase):
             {
                 'window_name': 'my-first-window',
                 'layout': 'even-vertical',
+                'start_directory': "~/Projects/foo-www",
                 'shell_command_before': 'rbenv local 2.0.0-p0',
                 'shell_command_after': 'echo \'I am done initializing this pane.\'',
                 'panes': [
@@ -272,6 +275,7 @@ class Teamocil4Test(TestCase):
         'windows': [
             {
                 'window_name': 'erb-example',
+                'start_directory': "<%= ENV['MY_PROJECT_ROOT'] %>",
                 'panes': [
                     {
                         'shell_command': 'pwd'
@@ -530,6 +534,7 @@ class TeamocilLayoutsTest(TestCase):
             'windows': [
                 {
                     'window_name': 'foo',
+                    'start_directory': '/foo',
                     'clear': True,
                     'layout': 'tiled',
                     'panes': [
@@ -543,6 +548,7 @@ class TeamocilLayoutsTest(TestCase):
                 },
                 {
                     'window_name': 'bar',
+                    'start_directory': '/bar',
                     'panes': [
                         {
                             'shell_command': [
@@ -566,6 +572,7 @@ class TeamocilLayoutsTest(TestCase):
             'windows': [
                 {
                     'window_name': 'foo',
+                    'start_directory': '/foo',
                     'shell_command_before': [
                         'echo first before filter',
                         'echo second before filter',
@@ -592,6 +599,7 @@ class TeamocilLayoutsTest(TestCase):
             'windows': [
                 {
                     'window_name': 'foo',
+                    'start_directory': '/foo',
                     'clear': True,
                     'layout': 'tiled',
                     'panes': [
@@ -605,6 +613,7 @@ class TeamocilLayoutsTest(TestCase):
                 },
                 {
                     'window_name': 'bar',
+                    'start_directory': '/bar',
                     'panes': [
                         {
                             'shell_command': [

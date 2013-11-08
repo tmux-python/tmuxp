@@ -452,7 +452,7 @@ def command_import_teamocil(args):
         if os.path.exists(configfile):
             print(configfile)
             configparser.import_config(configfile)
-            newconfig = config.import_tmuxinator(configparser.get())
+            newconfig = config.import_teamocil(configparser.get())
             configparser.import_config(newconfig)
         else:
             sys.exit('File not found: %s' % configfile)

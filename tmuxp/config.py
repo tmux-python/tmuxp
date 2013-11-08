@@ -395,6 +395,9 @@ def import_teamocil(sconf):
     else:
         tmuxp_config['session_name'] = None
 
+    if 'root' in sconf:
+        tmuxp_config['start_directory'] = sconf.pop('root')
+
     tmuxp_config['windows'] = []
 
     for w in sconf['windows']:
@@ -412,6 +415,9 @@ def import_teamocil(sconf):
             if 'after' in w['filters']:
                 for b in w['filters']['after']:
                     windowdict['shell_command_after'] = w['filters']['after']
+
+        if 'root' in w:
+            windowdict['start_directory'] = w.pop('root')
 
         if 'splits' in w:
             w['panes'] = w.pop('splits')
