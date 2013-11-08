@@ -17,8 +17,6 @@ TODO
   it.
 - Handle case where switching client via ``$ tmuxp load`` or
   ``$ tmuxp attach-session`` into another socket may cause an error.
-- Assure ``$ tmuxp freeze`` works with ``start_directory`` and does not
-  return commands with dir and no CD's. (esp with zsh).
 - Fix issue where tmuxp freeze with exotic ``PS1``'s cause strange
   outputs.
 - If session name for ``$ tmuxp freeze`` has spaces, replace whitespace
@@ -44,6 +42,8 @@ Done
   - offer to save ``session_name`` as default file if filename
     doesn't already exist in config dir.
   - Remove -zsh command, python, etc if just in shell.
+- Assure ``$ tmuxp freeze`` works with ``start_directory`` and does not
+  return commands with dir and no CD's. (esp with zsh).
 
 
 Future

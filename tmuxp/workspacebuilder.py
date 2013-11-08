@@ -13,6 +13,7 @@ tmuxp helps you manage tmux workspaces.
 
 from __future__ import absolute_import, division, print_function, with_statement
 import logging
+import os
 from . import exc, config, Window, Pane, Session, Server
 
 logger = logging.getLogger(__name__)
@@ -242,12 +243,13 @@ def freeze(session):
         wconf['panes'] = []
 
         if all(w.panes[0].get('pane_current_path') == p.get('pane_current_path') for p in w.panes):
-            wconf['shell_command_before'] = w.panes[0].get('pane_current_path')
+            wconf['start_directory'] = w.panes[0].get('pane_current_path')
 
         for p in w.panes:
             pconf = {}
             pconf['shell_command'] = []
-            if 'shell_command_before' not in wconf:
+
+            if not 'start_directory' in wconf:
                 pconf['shell_command'].append(
                     'cd ' + p.get('pane_current_path')
                 )
