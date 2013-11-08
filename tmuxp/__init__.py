@@ -1,6 +1,5 @@
 # -*- coding: utf8 - *-
-"""
-Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
+"""Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
 
 tmuxp
 ~~~~~
