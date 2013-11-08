@@ -6,6 +6,14 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-07
+''''''''''
+
+ - [internal] Remove old logger (based on `tornado's log.py`_), replace
+   with new, simpler one.
+
+.. _tornado's log.py: https://github.com/facebook/tornado/blob/master/tornado/log.py
+
 2013-11-06
 ''''''''''
 
