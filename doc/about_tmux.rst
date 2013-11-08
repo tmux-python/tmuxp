@@ -30,19 +30,21 @@ the text dimension. Inside tmux you can:
 - have multiple windows (window) in the workspace (session)
 - switch between multiple workspaces, like virtual desktops
 
-Features
+Overview
 ========
 
-For terminals only. No graphics.
---------------------------------
+For Terminals only.
+-------------------
+
+No graphics.
 
 Uses:
 
 - window-manager for text-based applications
 - keep applications in a background process
 
-A text-based window manager
----------------------------
+Text-based window manager
+-------------------------
 
 =================== ====================== ===============================
 **tmux**            **"Desktop"-Speak**    **Plain English**
@@ -54,7 +56,7 @@ Window              Virtual Desktop or     Has windows inside
 Pane                Application            Performs operations
 =================== ====================== ===============================
 
-Multiple terminals to one screen
+Multiple terminals in one screen
 --------------------------------
 It allows multiple applications or terminals to run at once.
 
@@ -86,7 +88,7 @@ way one screen can be used to edit a file, and another may be used to
    |        |        |
    +--------+--------+
 
-You can create and remove as many terminal as you want.
+tmux supports as manys terminals as you want.
 
 It allows multiple layouts to view the apps
 -------------------------------------------
