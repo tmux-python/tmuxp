@@ -6,6 +6,27 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-08
+''''''''''
+
+- [cli] [freeze] - ``$ tmuxp freeze`` will now freeze a window with a
+  ``start_directory`` when all panes in a window are inside the same
+  directory.
+- [cli] [config] [tests] :meth:`config.inline` will now turn panes with no
+  other attributes and 1 command into a single item value.
+
+  .. code-block:: yaml
+
+    - panes:
+      - shell_command: top
+
+    # will now inline to:
+
+    - panes
+      - top
+
+    This will improve ``$ tmuxp freeze``
+
 2013-11-07
 ''''''''''
 

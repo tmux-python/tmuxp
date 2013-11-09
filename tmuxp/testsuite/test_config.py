@@ -13,7 +13,8 @@ import logging
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 current_dir = os.path.abspath(os.path.dirname(__file__))
-example_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'examples'))
+example_dir = os.path.abspath(os.path.join(
+    current_dir, '..', '..', 'examples'))
 
 
 sampleconfigdict = {
@@ -139,12 +140,17 @@ class ExpandTest(TestCase):
         'session_name': 'sampleconfig',
         'start_directory': '~',
         'windows': [{
-            'shell_command': 'top',
             'window_name': 'editor',
             'panes': [
                 {
+                    'shell_command': [
+                        'vim',
+                        'top'
+                    ]
+                },
+                {
                     'shell_command': ['vim'],
-                    },
+                },
                 {
                     'shell_command': 'cowsay "hey"'
                 },
@@ -200,12 +206,15 @@ class ExpandTest(TestCase):
         'start_directory': '~',
         'windows': [
             {
-                'shell_command': ['top'],
                 'window_name': 'editor',
                 'panes': [
                     {
+                        'shell_command': ['vim', 'top'],
+                    },
+                    {
                         'shell_command': ['vim'],
-                    },  {
+                    },
+                    {
                         'shell_command': ['cowsay "hey"']
                     },
                 ],
@@ -274,7 +283,7 @@ class InlineTest(TestCase):
                 'window_name': 'editor',
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': ['vim'],
+                        'shell_command': ['vim'],
                     },  {
                         'shell_command': ['cowsay "hey"']
                     },
@@ -284,8 +293,9 @@ class InlineTest(TestCase):
             {
                 'window_name': 'logging',
                 'panes': [
-                    {'shell_command': ['tail -F /var/log/syslog'],
-                     'start_directory':'/var/log'}
+                    {
+                        'shell_command': ['tail -F /var/log/syslog'],
+                    }
                 ]
             },
             {
@@ -305,23 +315,15 @@ class InlineTest(TestCase):
                 'shell_command': 'top',
                 'window_name': 'editor',
                 'panes': [
-                    {
-                        'start_directory': '~',
-                        'shell_command': 'vim',
-                    },
-                    {
-                        'shell_command': 'cowsay "hey"'
-                    },
+                    'vim',
+                    'cowsay "hey"'
                 ],
                 'layout': 'main-verticle'
             },
             {
                 'window_name': 'logging',
                 'panes': [
-                    {
-                        'shell_command': 'tail -F /var/log/syslog',
-                        'start_directory': '/var/log'
-                    }
+                    'tail -F /var/log/syslog',
                 ]
             },
             {
@@ -329,11 +331,10 @@ class InlineTest(TestCase):
                     'automatic_rename': True,
                 },
                 'panes': [
-                    {
-                        'shell_command': 'htop'
-                    }
+                    'htop'
                 ]
-            }
+            },
+
         ]
     }
 
@@ -358,7 +359,6 @@ class InheritanceTest(TestCase):
                 'start_directory': '~',
                 'panes': [
                     {
-                        'start_directory': '~',
                         'shell_command': ['vim'],
                     },
                     {
@@ -372,7 +372,6 @@ class InheritanceTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'
                     }
                 ]
             },
@@ -381,7 +380,6 @@ class InheritanceTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['htop'],
-                        'start_directory': '/etc/'
                     }
                 ]
             },
@@ -407,9 +405,9 @@ class InheritanceTest(TestCase):
                 'start_directory': '~',
                 'panes': [
                     {
-                        'start_directory': '~', 'shell_command': ['vim'],
+                        'shell_command': ['vim'],
                     },  {
-                        'shell_command': ['cowsay "hey"'], 'start_directory': '~',
+                        'shell_command': ['cowsay "hey"'],
                     },
                 ],
                 'layout': 'main-verticle'
@@ -419,7 +417,6 @@ class InheritanceTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['tail -F /var/log/syslog'],
-                        'start_directory':'/var/log'
                     }
                 ]
             },
@@ -427,7 +424,7 @@ class InheritanceTest(TestCase):
                 'window_name': 'shufu',
                 'panes': [
                     {
-                        'shell_command': ['htop'], 'start_directory': '/etc/'
+                        'shell_command': ['htop'],
                     }
                 ]
             },
@@ -435,7 +432,7 @@ class InheritanceTest(TestCase):
                 'options': {'automatic_rename': True, },
                 'panes': [
                     {
-                        'shell_command': ['htop'], 'start_directory':'/'
+                        'shell_command': ['htop'],
                     }
                 ]
             }
@@ -458,12 +455,13 @@ class InheritanceTest(TestCase):
                 window_start_directory = session_start_directory
 
             for paneconfitem in windowconfitem['panes']:
-                if 'start_directory' in paneconfitem:
-                    pane_start_directory = paneconfitem['start_directory']
-                elif window_start_directory:
-                    paneconfitem['start_directory'] = window_start_directory
-                elif session_start_directory:
-                    paneconfitem['start_directory'] = session_start_directory
+                # if 'start_directory' in paneconfitem:
+                    # pane_start_directory = paneconfitem['start_directory']
+                # elif window_start_directory:
+                    # paneconfitem['start_directory'] = window_start_directory
+                # elif session_start_directory:
+                    # paneconfitem['start_directory'] = session_start_directory
+                pass
 
         self.maxDiff = None
         self.assertDictEqual(config, self.config_after)
@@ -813,7 +811,8 @@ class ConfigBlankPanes(TestCase):
 
         self.maxDiff = None
 
-        test_config = kaptan.Kaptan().import_config(self.yaml_config_file).get()
+        test_config = kaptan.Kaptan().import_config(
+            self.yaml_config_file).get()
 
         self.assertDictEqual(
             config.expand(test_config),

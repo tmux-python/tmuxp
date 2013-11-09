@@ -109,6 +109,9 @@ def inline(sconf):
 
     if ('shell_command' in sconf and isinstance(sconf['shell_command'], list) and len(sconf['shell_command']) == 1):
         sconf['shell_command'] = sconf['shell_command'][0]
+
+        if len(sconf.keys()) == int(1):
+            sconf = sconf['shell_command']
     if ('shell_command_before' in sconf and isinstance(sconf['shell_command_before'], list) and len(sconf['shell_command_before']) == 1):
         sconf['shell_command_before'] = sconf['shell_command_before'][0]
 
