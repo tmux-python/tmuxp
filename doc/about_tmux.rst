@@ -175,6 +175,7 @@ sandwich, and re-(attach), all applications are still running!
    +-----------------------+           |
                                       /
             /-------------------------
+            |
             v
    +--------+--------+
    | $ bash | $ bash |
