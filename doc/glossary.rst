@@ -1,3 +1,5 @@
+.. _glossary:
+
 ==============
 tmuxp Glossary
 ==============

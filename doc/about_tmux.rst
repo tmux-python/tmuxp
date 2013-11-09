@@ -30,18 +30,8 @@ the text dimension. Inside tmux you can:
 - have multiple windows (window) in the workspace (session)
 - switch between multiple workspaces, like virtual desktops
 
-Overview
-========
-
-For Terminals only.
--------------------
-
-No graphics.
-
-Uses:
-
-- window-manager for text-based applications
-- keep applications in a background process
+Thinking Tmux
+=============
 
 Text-based window manager
 -------------------------
@@ -49,16 +39,19 @@ Text-based window manager
 =================== ====================== ===============================
 **tmux**            **"Desktop"-Speak**    **Plain English**
 ------------------- ---------------------- -------------------------------
-Multiplexer         Multitasking           Do more than one thing at once
-Session             Desktop                Where stuff gets done
-Window              Virtual Desktop or     Has windows inside
+Multiplexer         Multi-tasking          Multiple applications
+                                           simulataneously.
+Session             Desktop                Applications are visible here
+Window              Virtual Desktop or     A desktop that stores it own
+                                           applications
                     screen
 Pane                Application            Performs operations
 =================== ====================== ===============================
 
 Multiple terminals in one screen
 --------------------------------
-It allows multiple applications or terminals to run at once.
+Multiple applications or terminals to run on the same screen by splitting
+up 1 terminal into multiple.
 
 Being able to run 2 or more terminals on one screen is convenient. This
 way one screen can be used to edit a file, and another may be used to
@@ -109,17 +102,32 @@ can create new windows as much as you want.
 .. aafig::
    :textual:
 
-   +---------+---------+                            +--------------------+
-   | $ bash  | $ bash  |                            | $ vim              |
-   |         |         |                            |                    |
-   |         |         |    /-----------------\     |                    |
-   +---------+---------+ -> |'switch-window 2'| ->  |                    |
-   | $ vim   | $ bash  |    \-----------------/     |                    |
-   |         |         |                            |                    |
-   |         |         |                            |                    |
-   +---------+---------+                            +--------------------+
-   | '1:sys*  2:vim'   |                            | '1:sys  2:vim*'    |
-   +-------------------+                            +--------------------+
+   +---------+---------+                       
+   | $ bash  | $ bash  |                       
+   |         |         |                       
+   |         |         |    /-----------------\
+   +---------+---------+ -> |'switch-window 2'|
+   | $ vim   | $ bash  |    \-----------------/
+   |         |         |             |         
+   |         |         |             |         
+   +---------+---------+             |         
+   | '1:sys*  2:vim'   |             |         
+   +-------------------+             |         
+                                    /
+             /----------------------
+             |
+             v
+   +---------+---------+
+   | $ bash  | $ bash  |
+   |         |         |
+   |         |         |
+   +---------+---------+
+   | $ vim   | $ bash  |
+   |         |         |
+   |         |         |
+   +---------+---------+
+   | '1:sys*  2:vim'   |
+   +-------------------+
 
 You can switch between the windows you create.
 
@@ -132,47 +140,70 @@ sandwich, and re-(attach), all applications are still running!
 .. aafig::
    :textual:
 
-   +--------+--------+                        +-----------------------+
-   | $ bash | $ bash |                        | $ [screen detached]   |
-   |        |        |                        |                       |
-   |        |        |     /------------\     |                       |
-   +--------+--------+ --> |   detach   | --> |                       |
-   | $ vim  | $ bash |     | 'Ctrl-b b' |     |                       |
-   |        |        |     \------------/     |                       |
-   |        |        |                        |                       |
-   +--------+--------+                        +-----------------------+
-                                                           |
-               +-------------------------------------------+
+   +--------+--------+                    
+   | $ bash | $ bash |                    
+   |        |        |                    
+   |        |        |     /------------\ 
+   +--------+--------+ --> |   detach   | 
+   | $ vim  | $ bash |     | 'Ctrl-b b' |     
+   |        |        |     \------------/     
+   |        |        |            |           
+   +--------+--------+            |           
+               /------------------/
                |
                v
-   +-----------------------+                        +--------+--------+
-   | $ [screen detached]   |                        | $ bash | $ bash |
-   | $ tmux attach         |                        |        |        |
-   |                       |     /------------\     |        |        |
-   |                       | --> | attaching  | --> +--------+--------+
-   |                       |     \------------/     | $ vim  | $ bash |
-   |                       |                        |        |        |
-   |                       |                        |        |        |
-   +-----------------------+                        +--------+--------+
+   +-----------------------+
+   | $ [screen detached]   |
+   |                       |
+   |                       |
+   |                       |
+   |                       |
+   |                       |
+   |                       |
+   +-----------------------+
+               v
+               |
+               v
+   +-----------------------+                   
+   | $ [screen detached]   |                   
+   | $ tmux attach         |                   
+   |                       |     /------------\
+   |                       | --> | attaching  |
+   |                       |     \------------/
+   |                       |           |
+   |                       |           |
+   +-----------------------+           |
+                                      /
+            /-------------------------
+            v
+   +--------+--------+
+   | $ bash | $ bash |
+   |        |        |
+   |        |        |
+   +--------+--------+
+   | $ vim  | $ bash |
+   |        |        |
+   |        |        |
+   +--------+--------+
 
+Manage workflow
+---------------
+
+- System administrators monitor logs and services.
+- Programmers like to have an editor open with a CLI nearby.
+
+Applications running on a remote server can be launched inside of a tmux
+session, detached, and reattached next timeyour `"train of thought"`_ and
+work.
+
+Multitasking. Preserving the thinking you have. 
+
+.. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
 
 Core Concepts
 =============
 
-Your workflow
--------------
-
-You can keep tmux on a server with your latest work, come back and resume
-your `"train of thought"`_ and work.
-
-Multitasking. More important than any technical jargon - it's preserving
-the thinking you have, whether you were in the midst of a one-off task, or
-a common task.
-
-If you do a task commonly, it may help to use an application which manages
-tmux workspaces.
-
-.. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
+.. seealso:: :ref:`glossary` has a dictionary of tmux words.
 
 .. _server:
 
