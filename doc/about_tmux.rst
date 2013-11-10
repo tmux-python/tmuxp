@@ -48,13 +48,42 @@ Window              Virtual Desktop or     A desktop that stores it own
 Pane                Application            Performs operations
 =================== ====================== ===============================
 
-Multiple terminals in one screen
---------------------------------
+.. aafig::
+    :textual:
+
+    +----------------------------------------------------------------+
+    |  +--------+--------+ +-----------------+ +-----------------+   |
+    |  | pane   | pane   | | pane            | | pane            |   |
+    |  |        |        | |                 | |                 |   |
+    |  |        |        | |                 | |                 |   |
+    |  +--------+--------+ |                 | +-----------------+   |
+    |  | pane   | pane   | |                 | | pane            |   |
+    |  |        |        | |                 | |                 |   |
+    |  |        |        | |                 | |                 |   |
+    |  +--------+--------+ +-----------------+ +-----------------+   |
+    |  | window          | | window          | | window          |   |
+    |  \--------+--------/ \-----------------/ \-----------------/   |
+    +----------------------------------------------------------------+
+    | session                                                        |
+    \----------------------------------------------------------------/
+
+- 1 :term:`Server`.
+
+  - has 1 or more :term:`Session`.
+
+    - has 1 or more :term:`Window`.
+
+      - has 1 or more :term:`Pane`.
+
+.. seealso:: :ref:`glossary` has a dictionary of tmux words.
+
+CLI Power Tool
+--------------
+
 Multiple applications or terminals to run on the same screen by splitting
 up 1 terminal into multiple.
 
-Being able to run 2 or more terminals on one screen is convenient. This
-way one screen can be used to edit a file, and another may be used to
+One screen can be used to edit a file, and another may be used to
 ``$ tail -F`` a logfile.
 
 .. aafig::
@@ -83,21 +112,6 @@ way one screen can be used to edit a file, and another may be used to
 
 tmux supports as manys terminals as you want.
 
-It allows multiple layouts to view the apps
--------------------------------------------
-
-Different applications are viewable better in different layouts.
-
-It allows switching between layouts such as...
-
-Organize apps based on your needs
----------------------------------
-
-You can categorize and keep many terminals / applications separated into
-multiple windows.
-
-In addition to being able to split the terminal into multiple panes, you
-can create new windows as much as you want.
 
 .. aafig::
    :textual:
@@ -105,19 +119,15 @@ can create new windows as much as you want.
    +---------+---------+
    | $ bash  | $ bash  |
    |         |         |
-   |         |         |
-   +---------+---------+
-   | $ vim   | $ bash  | 
-   |         |         |
-   |         |         |
-   +---------+---------+
-   | '1:sys*  2:vim'   |
-   +-------------------+
-             |
-             v
-     /-----------------\
-     |'switch-window 2'|
-     \-----------------/
+   |         |         |     /-----------------\
+   +---------+---------+ --> |'switch-window 2'|
+   | $ vim   | $ bash  |     \-----------------/
+   |         |         |              |
+   |         |         |              |
+   +---------+---------+              |
+   | '1:sys*  2:vim'   |              |
+   +-------------------+              |
+             /------------------------/
              |
              v
    +---------+---------+
@@ -204,93 +214,24 @@ Multitasking. Preserving the thinking you have.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
 
-Core Concepts
-=============
+First steps with tmux
+=====================
 
-.. seealso:: :ref:`glossary` has a dictionary of tmux words.
+Start a new session
+-------------------
 
-.. _server:
+.. tip:: Common pitfall
 
-Server
-------
-
-A server contains :ref:`session`'s.
-
-tmux starts the server automatically if it's not running.
-
-In advanced cases, multiple can be run by specifying ``[-L socket-name]``
-and ``[-S socket-path]``.
-
-.. _client:
-
-Client
-------
-
-Attaches to a tmux :ref:`server`.
-
-.. _session:
-
-Session
--------
-
-Inside a tmux :ref:`server`.
+    Running ``$ tmux list-sessions`` or any other command for listing tmux
+    entities (such as ``$ tmux list-windows`` or ``$ tmux list-panes``).
+    This can generate the error "failed to connect to server".
     
-The session has 1 or more :ref:`window`. The bottom bar in tmux show a
-list of windows. Normally they can be navigated with ``Ctrl-a [0-9]``,
-``Ctrl-a n`` and ``Ctrl-a p``.
+    This could be because:
 
-Sessions can have a ``session_name``.
-
-Uniquely identified by ``session_id``.
-
-.. aafig::
-    :textual:
-
-    +----------------------------------------------------------------+
-    |  +--------+--------+ +-----------------+ +-----------------+   |
-    |  | pane   | pane   | | pane            | | pane            |   |
-    |  |        |        | |                 | |                 |   |
-    |  |        |        | |                 | |                 |   |
-    |  +--------+--------+ |                 | +-----------------+   |
-    |  | pane   | pane   | |                 | | pane            |   |
-    |  |        |        | |                 | |                 |   |
-    |  |        |        | |                 | |                 |   |
-    |  +--------+--------+ +-----------------+ +-----------------+   |
-    |  | window          | | window          | | window          |   |
-    |  \--------+--------/ \-----------------/ \-----------------/   |
-    +----------------------------------------------------------------+
-    | session                                                        |
-    \----------------------------------------------------------------/
-
-.. _window:
-
-Window
-------
-
-Entity of a :ref:`session`.
-
-Can have 1 or more :ref:`pane`.
-
-panes can be organized with a layouts.
-
-windows can have names.
-
-.. _pane:
-
-Pane
-----
-
-Linked to a :ref:`window`.
-
-a pseudoterminal.
-
-.. _target:
-
-Target
-------
-
-A target, cited in the manual as ``[-t target]`` can be a session, window
-or pane.
+        - tmux server has killed its' last session, killing the server.
+        - tmux server has encountered a crash. (tmux is highly stable,
+          this will rarely happen)
+        - tmux has not be launched yet at all.
 
 License
 -------
