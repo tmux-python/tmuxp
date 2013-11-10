@@ -18,7 +18,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 - `Importing`_ from `teamocil`_ and `tmuxinator`_.
 - JSON or YAML for `simple`_ or `very elaborate`_ configurations.
 - `bash, zsh and tcsh`_ completion.
-- Unit tested against against live tmux (1.8 and git). See `travis.yml`_
+- Unit tested against live tmux (1.8 and git). See `travis.yml`_
   file, `tmuxp on Travis CI`_ and `testing`_ page.
 - `Documentation`_ (also in `中文`_), `Examples`_, `Commands`_, `Internals`_.
 - and `much, much more`_.
