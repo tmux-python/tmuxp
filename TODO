@@ -52,13 +52,13 @@ Done
 Future
 ------
 
-  - Automatically grab ``[-L socket-name]`` and ``[-S socket-path]``
-    from where tmuxp was ran. ``os.environ.get('$TMUX')``.
-  - Automatically grab current sesession, window, session from where 
-    script is ran. ``$ tmuxp kill-window`` should kill current window.
-    
-    Or, As an alternative, create a mapping that pipes commands right into
-    tmux like a layer cake.
+- Automatically grab ``[-L socket-name]`` and ``[-S socket-path]``
+  from where tmuxp was ran. ``os.environ.get('$TMUX')``.
+- Automatically grab current sesession, window, session from where 
+  script is ran. ``$ tmuxp kill-window`` should kill current window.
+
+  Or, As an alternative, create a mapping that pipes commands right into
+  tmux like a layer cake.
 
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
