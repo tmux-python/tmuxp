@@ -328,7 +328,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         if target:
             tmux_args += ('-t%s' % target,)
         else:
-            tmux_args += ('-t%s' % self.panes[-1].get('pane_index'),)
+            tmux_args += ('-t%s' % self.panes[0].get('pane_id'),)
 
         tmux_args += (
             '-P', '-F%s' % ''.join(tmux_formats)     # output
