@@ -10,6 +10,7 @@ Here you can find the recent changes to tmuxp.
 ''''''''''
 
 - [docs] [translation] `documentation in Chinese`_ from `wrongwaycn`_.
+- [docs] More work done on the :ref:`about_tmux` page.
 - [cli] :meth:`Pane.split_window()` for splitting :class:`Window` at
   ``target-pane`` location.
 
