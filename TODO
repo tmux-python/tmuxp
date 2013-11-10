@@ -21,6 +21,7 @@ TODO
   outputs.
 - If session name for ``$ tmuxp freeze`` has spaces, replace whitespace
   with dashes.
+- Test and ensure correct pane. https://github.com/tony/tmuxp/issues/15.
 
 Done
 """"
