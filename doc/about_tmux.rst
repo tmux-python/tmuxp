@@ -276,8 +276,8 @@ Tmux hotkeys
 
     Release. Then pause. For less than second. Then type what's next.
 
-    ``C-b o`` means: Press ``Ctrl`` and ``b`` at the same time. Then
-    press ``o``.
+    ``C-b o`` means: Press ``Ctrl`` and ``b`` at the same time. Release,
+    Then press ``o``.
 
 
 **Remember, prefix + short cut!**. ``C`` is ``Ctrl`` key.
