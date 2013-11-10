@@ -272,7 +272,7 @@ Tmux hotkeys
     Tmux hot keys have to be pressed in a special way. **Read this
     carefully**, then try it yourself.
 
-    First, you press the *prefix* key. This is ``C-a`` by default.
+    First, you press the *prefix* key. This is ``C-b`` by default.
 
     Release. Then pause. For less than second. Then type what's next.
 
