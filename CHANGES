@@ -6,6 +6,16 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-09
+''''''''''
+
+- [docs] [translation] `documentation in Chinese`_ from `wrongwaycn`_.
+- [cli] :meth:`Pane.split_window()` for splitting :class:`Window` at
+  ``target-pane`` location.
+
+.. _documentation in Chinese: http://tmuxp-zh.readthedocs.org
+.. _wrongwaycn: https://github.com/wrongwaycn
+
 2013-11-08
 ''''''''''
 
