@@ -290,7 +290,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return self.attached_pane()
 
-    def split_window(self, attach=True):
+    def split_window(self, target=None, attach=True):
         """Split window and return the created :class:`Pane`.
 
         .. note::
@@ -309,7 +309,9 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :param attach: make new window the current window after creating it,
                        default True.
-        :param type: bool
+        :type attach: bool
+        :param target: ``target_pane`` to split.
+        :type target: bool
 
         :rtype: :class:`Pane`
 
@@ -321,10 +323,15 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         #'-t%s' % self.attached_pane().get('pane_id'),
         # 2013-10-18 LOOK AT THIS, rm'd it..
+        tmux_args = tuple()
 
-        tmux_args = (
-            '-t%s' % self.panes[0].get('pane_id'),
-            '-P', '-F%s' % ''.join(tmux_formats),     # output
+        if target:
+            tmux_args += ('-t%s' % target,)
+        else:
+            tmux_args += ('-t%s' % self.panes[-1].get('pane_index'),)
+
+        tmux_args += (
+            '-P', '-F%s' % ''.join(tmux_formats)     # output
         )
 
         if not attach:
