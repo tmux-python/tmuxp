@@ -45,7 +45,7 @@ def validate_schema(sconf):
     return True
 
 
-def is_config_file(filename, extensions=['.yml', '.yaml', '.json', '.ini']):
+def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
     """Return True if file has a valid config file type.
 
     :param filename: filename to check (e.g. ``mysession.json``).
@@ -61,7 +61,7 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json', '.ini']):
     return any(filename.endswith(e) for e in extensions)
 
 
-def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml', '.json', '.ini']):
+def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml', '.json']):
     """Return a list of configs in ``config_dir``.
 
     :param config_dir: directory to search
@@ -83,8 +83,7 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml
 def in_cwd():
     """Return list of configs in current working directory.
 
-    If filename is ``.tmuxp.py``, ``.tmuxp.json``, ``.tmuxp.yaml`` or
-    ``.tmuxp.ini``.
+    If filename is ``.tmuxp.py``, ``.tmuxp.json``, ``.tmuxp.yaml``.
 
     :rtype: list
 
@@ -141,7 +140,7 @@ def expand(sconf, cwd=None):
 
         'shell_command': 'htop'
 
-    Kaptan will load JSON/YAML/INI files into python dicts for you.
+    Kaptan will load JSON/YAML files into python dicts for you.
 
     :param sconf: the configuration for the session
     :type sconf: dict
