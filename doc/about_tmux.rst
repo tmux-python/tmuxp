@@ -291,13 +291,51 @@ Renaming
 Window Name
 -----------
 
-Rename
-""""""
+Renaming
+""""""""
 
 **Command:** ``$ tmux rename-window <window-name>``
 
 **Short cut** ``,``
 
+
+
+Creating new windows
+--------------------
+
+Create a new window via command line:
+
+
+
+Traverse windows
+----------------
+
+By number
+
+Next,
+Previous
+
+Move windows
+------------
+
+Move windows
+``$ tmux move-window`` Move the window
+
+``$ tmux swap-window``  Swaps the window
+
+Move panes
+----------
+
+``$ tmux move-panes``
+
+
+Traverse panes
+--------------
+
+Shortcut to move between panes.
+
+
+tmux conf to ``hjkl`` commands
 
 Splitting windows into panes
 ----------------------------
@@ -305,11 +343,24 @@ Splitting windows into panes
 Tmux windows can be split into multiple panes.
 
 ===================   ====================================================
-Short cut             Action    
+Short cut             Action
 -------------------   ----------------------------------------------------
 ``%``                 Split the current pane into two, left and right.
 ``"``                 Split the current pane into two, top and bottom.
 ===================   ====================================================
+
+
+
+
+Tmux configuration
+==================
+
+Tmux can be configured via a configuration at ``~/.tmux.conf``.
+
+Depending on your tmux version, there is different options available.
+
+- Status lines
+- Short cuts
 
 
 Reference
@@ -323,7 +374,7 @@ Short cuts
     :ref:`Prefix key` is pressed before a short cut!
 
 ===================   ====================================================
-Short cut             Action    
+Short cut             Action
 -------------------   ----------------------------------------------------
 ``C-b``               Send the prefix key (C-b) through to the
                       application.
