@@ -261,26 +261,66 @@ That's all it takes to launch yourself into a tmux session.
           this will rarely happen)
         - tmux has not be launched yet at all.
 
-Tmux hotkeys
+.. _Prefix key:
+
+The prefix key
+--------------
+
+Tmux hot keys have to be pressed in a special way. **Read this
+carefully**, then try it yourself.
+
+First, you press the *prefix* key. This is ``C-b`` by default.
+
+Release. Then pause. For less than second. Then type what's next.
+
+``C-b o`` means: Press ``Ctrl`` and ``b`` at the same time. Release,
+Then press ``o``.
+
+**Remember, prefix + short cut!** ``C`` is ``Ctrl`` key.
+
+Session Name
 ------------
 
-.. note::
+Renaming
+""""""""
 
-    The **prefix** key is a known stumbling block for new tmux users,
-    please pay attention!
+**Command:** ``$ tmux rename-session <session-name>``
 
-    Tmux hot keys have to be pressed in a special way. **Read this
-    carefully**, then try it yourself.
+**Short cut** ``$``
 
-    First, you press the *prefix* key. This is ``C-b`` by default.
+Window Name
+-----------
 
-    Release. Then pause. For less than second. Then type what's next.
+Rename
+""""""
 
-    ``C-b o`` means: Press ``Ctrl`` and ``b`` at the same time. Release,
-    Then press ``o``.
+**Command:** ``$ tmux rename-window <window-name>``
+
+**Short cut** ``,``
 
 
-**Remember, prefix + short cut!**. ``C`` is ``Ctrl`` key.
+Splitting windows into panes
+----------------------------
+
+Tmux windows can be split into multiple panes.
+
+===================   ====================================================
+Short cut             Action    
+-------------------   ----------------------------------------------------
+``%``                 Split the current pane into two, left and right.
+``"``                 Split the current pane into two, top and bottom.
+===================   ====================================================
+
+
+Reference
+=========
+
+Short cuts
+----------
+
+.. tip::
+
+    :ref:`Prefix key` is pressed before a short cut!
 
 ===================   ====================================================
 Short cut             Action    
@@ -340,12 +380,12 @@ Short cut             Action
                       marker.
 ``C-Up, C-Down``      Resize the current pane in steps of one cell. 
 ``C-Left, C-Right``
-                 
 ``M-Up, M-Down``      Resize the current pane in steps of five cells.
 ``M-Left, M-Right``
 ===================   ====================================================
 
 Source: tmux manpage.
+
 
 License
 -------
