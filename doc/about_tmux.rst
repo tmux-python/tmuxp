@@ -216,15 +216,15 @@ Multitasking. Preserving the thinking you have.
 Installing tmux
 ---------------
 
-Tmux is a common package / port on most Linux and BSD systems.
+Tmux is packaged on most Linux and BSD systems.
 
-Instead of creating a page for how to install tmux on every distro in the
-world, using google for "How to install tmux on <my distro>" may suit your
-purpose as package names and directions change when distributions release
-a new version.
+For the freshest results on how to get tmux installed on your system,
+"How to install tmux on <my distro>" will do, as directions change and are
+slightly different between distributions.
 
-It's best that you use the latest stable release of tmux available. This
-can been seen on `tmux homepage`_.
+This documentation is writtenf for version **1.8**. It's important that
+you have the latest stable release of tmux. The latest stable version is
+viewable on the `tmux homepage`_.
 
 **Mac OS X** users may install that latest stable version of tmux through
 `MacPorts`_, `fink`_ or `Homebrew`_ (aka brew).
@@ -281,22 +281,28 @@ Then press ``o``.
 Session Name
 ------------
 
-Renaming
-""""""""
+Session can be renamed after creation.
 
-**Command:** ``$ tmux rename-session <session-name>``
+=============== =========================================================
+Command         .. code-block:: bash
 
-**Short cut** ``$``
+                    $ tmux rename-session <sesion-name>
+
+Short cut       ``Prefix`` + ``$``
+=============== =========================================================
 
 Window Name
 -----------
 
-Renaming
-""""""""
+Windows can be renamed after creation.
 
-**Command:** ``$ tmux rename-window <window-name>``
+=============== =========================================================
+Command         .. code-block:: bash
 
-**Short cut** ``,``
+                    $ tmux rename-window <window-name>
+
+Short cut       ``Prefix`` + ``,``
+=============== =========================================================
 
 
 
