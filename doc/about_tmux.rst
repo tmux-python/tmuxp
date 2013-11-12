@@ -281,7 +281,7 @@ Then press ``o``.
 Session Name
 ------------
 
-Session can be renamed after creation.
+Sessions can be renamed after creation.
 
 =============== =========================================================
 Command         .. code-block:: bash
@@ -294,12 +294,14 @@ Short cut       ``Prefix`` + ``$``
 Window Name
 -----------
 
+.. _Rename window:
+
 Windows can be renamed after creation.
 
 =============== =========================================================
 Command         .. code-block:: bash
 
-                    $ tmux rename-window <window-name>
+                    $ tmux rename-window <new-name>
 
 Short cut       ``Prefix`` + ``,``
 =============== =========================================================
@@ -309,7 +311,15 @@ Short cut       ``Prefix`` + ``,``
 Creating new windows
 --------------------
 
-Create a new window via command line:
+=============== =========================================================
+Command         .. code-block:: bash
+
+                    $ tmux new-window [-n window-name]
+
+Short cut       ``Prefix`` + ``c``
+
+                You may then :ref:`Rename window`.
+=============== =========================================================
 
 
 
