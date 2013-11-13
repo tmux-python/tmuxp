@@ -556,6 +556,14 @@ line to the status line.  The interval is determined by the
 .. _tmux-mem-cpu-load: https://github.com/thewtex/tmux-mem-cpu-load
 .. _basic-cpu-and-memory.tmux: https://github.com/zaiste/tmuxified/blob/master/scripts/basic-cpu-and-memory.tmux
 
+Examples
+--------
+
+- https://github.com/tony/tmux-config - works with tmux 1.5+. Supports
+  screen's ``ctrl-a`` :ref:`Prefix key`. Support for system cpu, memory,
+  uptime stats.
+- Add yours, edit this page on github.
+
 Reference
 =========
 
