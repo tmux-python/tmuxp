@@ -21,4 +21,4 @@ from . import config, util, cli
 
 import logging
 
-__version__ = '0.0.41'
+__version__ = '0.0.42'
