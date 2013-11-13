@@ -338,6 +338,10 @@ Traverse windows
 
 By number
 
+.. code-block:: bash
+
+    $ tmux select-window
+
 Next
 
 .. code-block:: bash
@@ -446,6 +450,10 @@ Short cut             Action
 Kill pane
 ---------
 
+.. code-block:: bash
+
+    $ tmux kill-pane [-t target-pane]
+
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
@@ -455,6 +463,10 @@ Short cut             Action
 Kill window
 -----------
 
+.. code-block:: bash
+
+    $ tmux kill-window [-t target-window]
+
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
@@ -463,6 +475,10 @@ Short cut             Action
 
 Splitting windows into panes
 ----------------------------
+
+.. code-block:: bash
+
+    $ tmux split-window [-c start-directory] <shell-command>
 
 Tmux windows can be split into multiple panes.
 
