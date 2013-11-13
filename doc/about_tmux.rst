@@ -499,18 +499,12 @@ Short cut             Action
 ``"``                 Split the current pane into two, top and bottom.
 ===================   ====================================================
 
-
-
-
 Tmux configuration
 ==================
 
 Tmux can be configured via a configuration at ``~/.tmux.conf``.
 
 Depending on your tmux version, there is different options available.
-
-- Status lines
-- Short cuts
 
 Vi copypaste
 ------------
@@ -538,7 +532,29 @@ Reload config
 
     bind r source-file ~/.tmux.conf \; display-message "Config reloaded."
 
+Status lines
+------------
 
+Tmux allows configuring a status line that displays system information,
+window list, and even pipe in the ``stdout`` of an application.
+
+You can use `tmux-mem-cpu-load`_ to get stats (requires compilation) and
+`basic-cpu-and-memory.tmux`_. You can pipe in a bash command to a tmux
+status line like:
+
+.. code-block:: ini
+
+    $(shell-command)
+
+So if ``/usr/local/bin/tmux-mem-cpu-load`` outputs stats to
+``stdout``, then ``$(tmux-mem-cpu-load)`` is going to output the first
+line to the status line.  The interval is determined by the
+``status-interval``::
+
+    set -g status-interval 1
+
+.. _tmux-mem-cpu-load: https://github.com/thewtex/tmux-mem-cpu-load
+.. _basic-cpu-and-memory.tmux: https://github.com/zaiste/tmuxified/blob/master/scripts/basic-cpu-and-memory.tmux
 
 Reference
 =========
