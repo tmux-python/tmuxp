@@ -3,4 +3,5 @@ docutils==0.11
 sphinx
 sphinxcontrib-aafig
 reportlab
+Pillow
 -e git+https://github.com/tony/sphinx-argparse.git@empty_subcommands_fix#egg=sphinx-argparse
