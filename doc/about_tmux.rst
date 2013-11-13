@@ -422,6 +422,9 @@ Shortcut to move between panes.
 
     $ tmux last-window
 
+.. code-block:: bash
+
+    $ tmux next-window
 
 ===================   ====================================================
 Short cut             Action
