@@ -214,7 +214,7 @@ Multitasking. Preserving the thinking you have.
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
 
 Installing tmux
----------------
+===============
 
 Tmux is packaged on most Linux and BSD systems.
 
@@ -238,6 +238,9 @@ If **compiling from source**, the dependencies are `libevent`_ and
 .. _MacPorts: http://www.macports.org/
 .. _Fink: http://fink.thetis.ig42.org/
 .. _Homebrew: http://www.brew.sh
+
+Using tmux
+==========
 
 Start a new session
 -------------------
@@ -281,7 +284,13 @@ Then press ``o``.
 Session Name
 ------------
 
-Sessions can be renamed after creation.
+Sessions can be *named upon creation*.
+
+.. code-block:: bash
+
+    $ tmux new-session [-s session-name]
+
+Sessions can be *renamed after creation*.
 
 =============== =========================================================
 Command         .. code-block:: bash
@@ -294,9 +303,15 @@ Short cut       ``Prefix`` + ``$``
 Window Name
 -----------
 
+Windows can be *named upon creation*
+
+.. code-block:: bash
+
+    $ tmuxp new-window [-n window-name]
+
 .. _Rename window:
 
-Windows can be renamed after creation.
+Windows can be *renamed after creation*.
 
 =============== =========================================================
 Command         .. code-block:: bash
