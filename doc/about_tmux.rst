@@ -451,8 +451,14 @@ Short cut             Action
 ``M-Left, M-Right``
 ===================   ====================================================
 
-Source: tmux manpage.
+Source: tmux manpage [1]_.
 
+.. [1] See the ``tmux.1`` at
+   http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1 and use
+   
+   .. code-block:: bash
+   
+       $ nroff -mdoc tmux.1|less
 
 License
 -------
