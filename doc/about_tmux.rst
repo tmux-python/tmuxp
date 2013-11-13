@@ -338,8 +338,23 @@ Traverse windows
 
 By number
 
-Next,
+Next
+
+.. code-block:: bash
+
+    $ tmux next-window
+
 Previous
+
+.. code-block:: bash
+
+    $ tmux previous-window
+
+Last-window
+
+.. code-block:: bash
+
+    $ tmux last-window
 
 ===================   ====================================================
 Short cut             Action
@@ -383,7 +398,7 @@ Move panes
 
 .. code-block:: bash
 
-    $ tmux move-panes
+    $ tmux move-pane [-t dst-pane]
 
 ===================   ====================================================
 Short cut             Action
@@ -399,6 +414,11 @@ Traverse panes
 
 Shortcut to move between panes.
 
+.. code-block:: bash
+
+    $ tmux last-window
+
+
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
@@ -411,6 +431,10 @@ Recipe (todo): tmux conf to ``hjkl`` commands
 
 Kill window
 -----------
+
+.. code-block:: bash
+
+    $ tmux kill-window
 
 ===================   ====================================================
 Short cut             Action
@@ -428,6 +452,14 @@ Short cut             Action
 ``x``                 Kill the current pane.
 ===================   ====================================================
 
+Kill window
+-----------
+
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
+``&``                 Kill the current window.
+===================   ====================================================
 
 Splitting windows into panes
 ----------------------------
