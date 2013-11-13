@@ -262,7 +262,7 @@ def load_workspace(config_file, args):
         builder.build()
 
         if 'TMUX' in os.environ:
-            if prompt_yes_no('Already inside TMUX, switch to session?'):
+            if args.answer_yes or prompt_yes_no('Already inside TMUX, switch to session?'):
                 tmux_env = os.environ.pop('TMUX')
                 builder.session.switch_client()
 
@@ -273,7 +273,7 @@ def load_workspace(config_file, args):
 
         builder.session.attach_session()
     except exc.TmuxSessionExists as e:
-        if prompt_yes_no('%s Attach?' % e):
+        if args.answer_yes or prompt_yes_no('%s Attach?' % e):
             if 'TMUX' in os.environ:
                 builder.session.switch_client()
 
@@ -340,7 +340,7 @@ def command_freeze(args):
         '---------------------------------------------------------------')
     print(
         'Configuration import does its best to convert teamocil files.\n')
-    if prompt_yes_no(
+    if args.answer_yes or prompt_yes_no(
         'The new config *WILL* require adjusting afterwards. Save config?'
     ):
         dest = None
@@ -354,7 +354,7 @@ def command_freeze(args):
             dest = dest_prompt
 
         dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-        if prompt_yes_no('Write to %s?' % dest):
+        if args.answer_yes or prompt_yes_no('Write to %s?' % dest):
             buf = open(dest, 'w')
             buf.write(newconfig)
             buf.close()
@@ -474,7 +474,7 @@ def command_import_teamocil(args):
             '---------------------------------------------------------------')
         print(
             'Configuration import does its best to convert teamocil files.\n')
-        if prompt_yes_no(
+        if args.answer_yes or prompt_yes_no(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
             dest = None
@@ -488,7 +488,7 @@ def command_import_teamocil(args):
                 dest = dest_prompt
 
             dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if prompt_yes_no('Write to %s?' % dest):
+            if args.answer_yes or prompt_yes_no('Write to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
                 buf.close()
@@ -561,7 +561,7 @@ def command_import_tmuxinator(args):
             '---------------------------------------------------------------')
         print(
             'Configuration import does its best to convert tmuxinator files.\n')
-        if prompt_yes_no(
+        if args.answer_yes or prompt_yes_no(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
             dest = None
@@ -575,7 +575,7 @@ def command_import_tmuxinator(args):
                 dest = dest_prompt
 
             dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if prompt_yes_no('Write to %s?' % dest):
+            if args.answer_yes or prompt_yes_no('Write to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
                 buf.close()
@@ -611,26 +611,26 @@ def command_convert(args):
         return
 
     if 'json' in ext:
-        if prompt_yes_no('convert to <%s> to yaml?' % (fullfile)):
+        if args.answer_yes or prompt_yes_no('convert to <%s> to yaml?' % (fullfile)):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
             newfile = fullfile.replace(ext, '.yaml')
             newconfig = configparser.export(
                 'yaml', indent=2, default_flow_style=False
             )
-            if prompt_yes_no('write config to %s?' % (newfile)):
+            if args.answer_yes or prompt_yes_no('write config to %s?' % (newfile)):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
                 print('written new config to %s' % (newfile))
     elif 'yaml' in ext:
-        if prompt_yes_no('convert to <%s> to json?' % (fullfile)):
+        if args.answer_yes or prompt_yes_no('convert to <%s> to json?' % (fullfile)):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
             newfile = fullfile.replace(ext, '.json')
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
-            if prompt_yes_no('write config to <%s>?' % (newfile)):
+            if args.answer_yes or prompt_yes_no('write config to <%s>?' % (newfile)):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
@@ -717,6 +717,14 @@ def get_parser():
         default=None,
         help='socket path of tmux server. Same as tmux.',
         metavar='socket-path'
+    )
+
+    server_parser.add_argument(
+        '-y',
+        dest='answer_yes',
+        default=None,
+        help='Always answer yes.',
+        action='store_true'
     )
 
     parser = argparse.ArgumentParser(
