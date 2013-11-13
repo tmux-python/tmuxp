@@ -48,8 +48,8 @@ Explore:
 
     about
     quickstart
-    cli
     examples
+    cli
     internals
     developing
     api
