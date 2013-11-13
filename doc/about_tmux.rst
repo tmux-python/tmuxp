@@ -434,7 +434,14 @@ Short cut             Action
 ===================   ====================================================
 
 
-Recipe (todo): tmux conf to ``hjkl`` commands
+Recipe: tmux conf to ``hjkl`` commands, add this to your
+``~/.tmux.conf``::
+
+    # hjkl pane traversal
+    bind h select-pane -L
+    bind j select-pane -D
+    bind k select-pane -U
+    bind l select-pane -R
 
 Kill window
 -----------
@@ -504,6 +511,33 @@ Depending on your tmux version, there is different options available.
 
 - Status lines
 - Short cuts
+
+Vi copypaste
+------------
+
+.. code-block:: ini
+
+    # Vi copypaste mode
+    set-window-option -g mode-keys vi
+    bind-key -t vi-copy 'v' begin-selection
+    bind-key -t vi-copy 'y' copy-selection
+
+Aggressive resizing for clients
+-------------------------------
+
+.. code-block:: ini
+
+    setw -g aggressive-resize on
+
+Reload config
+-------------
+
+``<Prefix>`` + ``r``.
+
+.. code-block:: ini
+
+    bind r source-file ~/.tmux.conf \; display-message "Config reloaded."
+
 
 
 Reference
