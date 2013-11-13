@@ -47,8 +47,8 @@ Explore:
     :maxdepth: 2
 
     about
-    cli
     quickstart
+    cli
     examples
     internals
     developing
