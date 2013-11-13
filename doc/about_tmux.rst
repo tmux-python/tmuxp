@@ -303,7 +303,7 @@ Short cut       ``Prefix`` + ``$``
 Window Name
 -----------
 
-Windows can be *named upon creation*
+Windows can be *named upon creation*.
 
 .. code-block:: bash
 
@@ -321,8 +321,6 @@ Command         .. code-block:: bash
 Short cut       ``Prefix`` + ``,``
 =============== =========================================================
 
-
-
 Creating new windows
 --------------------
 
@@ -336,8 +334,6 @@ Short cut       ``Prefix`` + ``c``
                 You may then :ref:`Rename window`.
 =============== =========================================================
 
-
-
 Traverse windows
 ----------------
 
@@ -345,6 +341,21 @@ By number
 
 Next,
 Previous
+
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
+``n``                 Change to the next window.
+``p``                 Change to the previous window.
+``w``                 Choose the current window interactively.
+``0 to 9``            Select windows 0 to 9.
+
+``M-n``               Move to the next window with a bell or activity
+                      marker.
+``M-p``               Move to the previous window with a bell or activity
+                      marker.
+
+===================   ====================================================
 
 Move windows
 ------------
@@ -354,10 +365,23 @@ Move windows
 
 ``$ tmux swap-window``  Swaps the window
 
+
+``.``                 Prompt for an index to move the current window.
+===================   ====================================================
+
+
 Move panes
 ----------
 
 ``$ tmux move-panes``
+
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
+``C-o``               Rotate the panes in the current window forwards.
+``{``                 Swap the current pane with the previous pane.
+``}``                 Swap the current pane with the next pane.
+===================   ====================================================
 
 
 Traverse panes
@@ -365,8 +389,35 @@ Traverse panes
 
 Shortcut to move between panes.
 
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
+``Up, Down``          Change to the pane above, below, to the left, or to
+``Left, Right``       the right of the current pane.
+===================   ====================================================
 
-tmux conf to ``hjkl`` commands
+
+Recipe (todo): tmux conf to ``hjkl`` commands
+
+Kill window
+-----------
+
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
+``&``                 Kill the current window.
+===================   ====================================================
+
+
+Kill pane
+---------
+
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
+``x``                 Kill the current pane.
+===================   ====================================================
+
 
 Splitting windows into panes
 ----------------------------
