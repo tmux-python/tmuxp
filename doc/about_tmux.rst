@@ -5,8 +5,7 @@ The Tao of tmux
 ===============
 
 .. figure:: _static/tao-tmux-screenshot.png
-    :scale: 100%
-    :width: 100%
+    :scale: 60%
     :align: center
 
     BSD-licensed terminal multiplexer.
