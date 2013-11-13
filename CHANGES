@@ -6,6 +6,14 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-13
+''''''''''
+
+- [cli] accept ``-y`` argument to answer yes to questions. `#19`_
+- [docs] ongoing work on :ref:`about_tmux`.
+
+.. _#19: https://github.com/tony/tmuxp/pull/19
+
 2013-11-09
 ''''''''''
 
