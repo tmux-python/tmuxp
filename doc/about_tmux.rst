@@ -360,12 +360,21 @@ Short cut             Action
 Move windows
 ------------
 
-Move windows
-``$ tmux move-window`` Move the window
+Move window
 
-``$ tmux swap-window``  Swaps the window
+.. code-block:: bash
 
+    $ tmux move-window [-t dst-window]
 
+Swap the window
+
+.. code-block:: bash
+
+    $ tmux swap-window [-t dst-window]
+
+===================   ====================================================
+Short cut             Action
+-------------------   ----------------------------------------------------
 ``.``                 Prompt for an index to move the current window.
 ===================   ====================================================
 
@@ -373,7 +382,9 @@ Move windows
 Move panes
 ----------
 
-``$ tmux move-panes``
+.. code-block:: bash
+
+    $ tmux move-panes
 
 ===================   ====================================================
 Short cut             Action
