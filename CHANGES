@@ -10,9 +10,12 @@ Here you can find the recent changes to tmuxp.
 ''''''''''
 
 - [cli] accept ``-y`` argument to answer yes to questions. `#19`_
+- [cli] :meth:`cli.SessionCompleter` no longer allows a duplicate session
+  after one is added.
 - [docs] ongoing work on :ref:`about_tmux`.
 
 .. _#19: https://github.com/tony/tmuxp/pull/19
+.. _#20: https://github.com/tony/tmuxp/issues/19
 
 2013-11-09
 ''''''''''

@@ -165,9 +165,12 @@ class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
         )
 
         tmuxinator_configs = config.in_dir(
-            tmuxinator_config_dir, extensions='yml')
-        completion += [os.path.join(tmuxinator_config_dir, f)
-                       for f in tmuxinator_configs]
+            tmuxinator_config_dir, extensions='yml'
+        )
+        completion += [
+            os.path.join(tmuxinator_config_dir, f)
+            for f in tmuxinator_configs
+        ]
 
         return completion
 
@@ -182,8 +185,10 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
         )
 
         teamocil_configs = config.in_dir(teamocil_config_dir, extensions='yml')
-        completion += [os.path.join(teamocil_config_dir, f)
-                       for f in teamocil_configs]
+        completion += [
+            os.path.join(teamocil_config_dir, f)
+            for f in teamocil_configs
+        ]
 
         return completion
 
@@ -196,8 +201,18 @@ def SessionCompleter(prefix, parsed_args, **kwargs):
         socket_path=parsed_args.socket_path
     )
 
-    return [s.get('session_name') for s in t._sessions
-            if s.get('session_name').startswith(prefix)]
+    sessions_available = [
+        s.get('session_name') for s in t._sessions
+        if s.get('session_name').startswith(' '.join(prefix))
+    ]
+
+    if parsed_args.session_name and sessions_available:
+        return []
+
+    return [
+        s.get('session_name') for s in t._sessions
+        if s.get('session_name').startswith(prefix)
+    ]
 
 
 def setup_logger(logger=None, level='INFO'):
