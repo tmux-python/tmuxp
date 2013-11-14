@@ -40,7 +40,7 @@ Text-based window manager
 ------------------- ---------------------- -------------------------------
 Multiplexer         Multi-tasking          Multiple applications
                                            simulataneously.
-Sessio              Desktop                Applications are visible here
+Session             Desktop                Applications are visible here
 Window              Virtual Desktop or     A desktop that stores it own
                     applications           screen
 Pane                Application            Performs operations
