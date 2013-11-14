@@ -221,7 +221,7 @@ For the freshest results on how to get tmux installed on your system,
 "How to install tmux on <my distro>" will do, as directions change and are
 slightly different between distributions.
 
-This documentation is writtenf for version **1.8**. It's important that
+This documentation is written for version **1.8**. It's important that
 you have the latest stable release of tmux. The latest stable version is
 viewable on the `tmux homepage`_.
 
