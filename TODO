@@ -14,6 +14,7 @@ TODO
 - example of accessing a current tmux session from object
 - example of loading a tmux session from a :py:obj:``dict``. example of
   the schema.
+- code examples in docs
 - remove duplicated code in :mod:`tmuxp.cli`.
 - Determine the workflow for ``$ tmuxp load filename`` for sure. Document
   it.
