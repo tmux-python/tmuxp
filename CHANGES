@@ -6,6 +6,12 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-15
+''''''''''
+
+- [tests] Travis now tests python 2.6 as requirement and not allowed to
+  fail.
+
 2013-11-13
 ''''''''''
 

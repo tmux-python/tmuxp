@@ -4,9 +4,6 @@ python:
   - 2.6
   - 2.7
   - 3.3
-matrix:
-  allow_failures:
-    - python: 2.6
 env:
   - TMUX_VERSION=master
   - TMUX_VERSION=1.8
@@ -23,5 +20,4 @@ before_script:
   - ./configure && make && sudo make install
   - cd ..
   - tmux -V
-#script: python run_tests.py
 script: python setup.py test
