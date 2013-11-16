@@ -50,9 +50,9 @@ Done
 - Assure ``$ tmuxp freeze`` works with ``start_directory`` and does not
   return commands with dir and no CD's. (esp with zsh).
 
-
-Future
-------
+.. _0.2 milestone:
+0.2 milestone
+-------------
 
 - Automatically grab ``[-L socket-name]`` and ``[-S socket-path]``
   from where tmuxp was ran. ``os.environ.get('$TMUX')``.
@@ -61,6 +61,35 @@ Future
 
   Or, As an alternative, create a mapping that pipes commands right into
   tmux like a layer cake.
+- $ tmuxp shortened CLI completion:
+  - <session-name>
+  - <config-file (minus extension)> yaml, json
+    
+    - current dir
+    - config dir
+
+   Will be able to attach sessions, load configs without an additional
+   command.  If ``~/.tmuxp/hello.yaml`` exists,
+
+   ``tmuxp <tab>`` will tab-complete and allow ``$ tmuxp hello`` to load
+   the yaml config.
+
+   If ``~/.tmuxp/hello.json`` exists also, 'hello.json' and 'hello.yaml'
+   will be available.
+
+   If ``.tmuxp.yaml`` exists in current directory, ``.`` will be an
+   option. If ``.tmuxp.json`` exists also, ``.tmuxp.json`` and
+   ``.tmuxp.yaml`` will have to be entered.
+
+   If ``hello.json`` exists in config directory and ``hello`` is a session
+   name, autocomplete will offer both, ``hello`` attaches that session,
+   ``hello.json`` will attempt to load the file (which may have a
+   different ``session_name``. If the filename and session name are the
+   same, it will still offer to attach.
+
+   ``$ tmuxp .<tab>`` will start autocompletion searching for YAML and
+   JSON configs in cwd, as will ``$ tmuxp ..<tab>`` and ``$ tmuxp /``.
+
 
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
