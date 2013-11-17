@@ -9,13 +9,13 @@ Installation
 
 Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
 
-.. code-block::
+.. code-block:: bash
 
     $ pip install tmuxp
 
 You can upgrade to the latest release with:
 
-.. code-block::
+.. code-block:: bash
 
     $ pip install tmuxp -U
 
