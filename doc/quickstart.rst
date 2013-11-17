@@ -4,12 +4,29 @@
 Quickstart
 ==========
 
+Installation
+------------
+
+Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
+
+.. code-block::
+
+    $ pip install tmuxp
+
+You can upgrade to the latest release with:
+
+.. code-block::
+
+    $ pip install tmuxp -U
+
+Then install :ref:`bash_completion`.
+
 CLI
 ---
 
 .. seealso:: :ref:`examples`, :ref:`cli`, :ref:`bash_completion`.
 
-tmuxp launches sessions from a configuration file.
+tmuxp launches workspaces / sessions from JSON and YAML files.
 
 Configuration files can be stored in ``$HOME/.tmuxp`` or in project
 directories as ``.tmuxp.py``, ``.tmuxp.json`` or ``.tmuxp.yaml``.
