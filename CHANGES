@@ -6,6 +6,11 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-17
+''''''''''
+
+- [cli] fix a bug where missing tmux didn't show correct warning.
+
 2013-11-15
 ''''''''''
 
