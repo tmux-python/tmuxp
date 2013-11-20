@@ -216,11 +216,11 @@ class WorkspaceBuilder(object):
                     #target=w.list_panes()[-1].get('pane_index')
                 )
                 assert(isinstance(p, Pane))
-                assert(p.get('pane_index'), pane_base_index)
+                assert int(p.get('pane_index')) == int(pane_base_index + pindex)
             else:
                 p = w.attached_pane()
                 assert(isinstance(p, Pane))
-                assert(p.get('pane_index'), pindex)
+                assert int(p.get('pane_index')) == int(pane_base_index)
 
             if 'layout' in wconf:
                 w.select_layout(wconf['layout'])
