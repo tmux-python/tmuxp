@@ -55,11 +55,13 @@ sampleconfigdict = {
 
 class ImportExportTest(TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
 
-        return cls
+    def tearDown(self):
+        if os.path.isdir(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
+        logging.debug('wiped %s' % TMUXP_DIR)
 
     def test_export_json(self):
         json_config_file = os.path.join(self.tmp_dir, 'config.json')
@@ -123,12 +125,6 @@ class ImportExportTest(TestCase):
             self.assertIn(os.path.join(self.tmp_dir, 'config.ini'), configs)
 
         self.assertEqual(len(configs), files)
-
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.isdir(cls.tmp_dir):
-            shutil.rmtree(cls.tmp_dir)
-        logging.debug('wiped %s' % TMUXP_DIR)
 
 
 class ExpandTest(TestCase):
