@@ -6,7 +6,8 @@ import sys
 import logging
 import time
 import kaptan
-from .. import Window, config, exc, util
+from .. import Window, config, exc
+from ..util import unicode
 from ..workspacebuilder import WorkspaceBuilder
 from .helpers import TmuxTestCase
 
