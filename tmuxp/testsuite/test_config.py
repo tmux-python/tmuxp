@@ -59,6 +59,8 @@ class ImportExportTest(TestCase):
     def setUpClass(cls):
         cls.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
 
+        return cls
+
     def test_export_json(self):
         json_config_file = os.path.join(self.tmp_dir, 'config.json')
 
