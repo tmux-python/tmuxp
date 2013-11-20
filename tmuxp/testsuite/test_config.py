@@ -124,8 +124,8 @@ class ImportExportTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # if os.path.isdir(TMUXP_DIR):
-        #    shutil.rmtree(TMUXP_DIR)
+        if os.path.isdir(TMUXP_DIR):
+            shutil.rmtree(TMUXP_DIR)
         logging.debug('wiped %s' % TMUXP_DIR)
 
 
