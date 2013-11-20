@@ -18,7 +18,7 @@ Here you can find the recent changes to tmuxp.
 - [tests] WorkspaceBuilder tests have been improved to use async better.
 
 .. _Issue #15: https://github.com/tony/tmuxp/issues/15
-
+.. _Issue #21: https://github.com/tony/tmuxp/issues/21
 
 2013-11-17
 ''''''''''
