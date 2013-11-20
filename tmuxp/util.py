@@ -64,7 +64,9 @@ class tmux(object):
             )
             self.process.wait()
             stdout = self.process.stdout.read()
+            self.process.stdout.close()
             stderr = self.process.stderr.read()
+            self.process.stderr.close()
         except Exception as e:
             logger.error(
                 'Exception for %s: \n%s' % (
