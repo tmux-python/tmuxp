@@ -68,9 +68,8 @@ class ImportExportTest(TestCase):
 
         json_config_data = configparser.export('json', indent=2)
 
-        buf = open(json_config_file, 'w')
-        buf.write(json_config_data)
-        buf.close()
+        with open(json_config_file, 'w') as buf:
+            buf.write(json_config_data)
 
         new_config = kaptan.Kaptan()
         new_config_data = new_config.import_config(json_config_file).get()
@@ -86,9 +85,8 @@ class ImportExportTest(TestCase):
         yaml_config_data = configparser.export(
             'yaml', indent=2, default_flow_style=False)
 
-        buf = open(yaml_config_file, 'w')
-        buf.write(yaml_config_data)
-        buf.close()
+        with open(yaml_config_file, 'w') as buf:
+            buf.write(yaml_config_data)
 
         new_config = kaptan.Kaptan()
         new_config_data = new_config.import_config(yaml_config_file).get()
@@ -98,9 +96,8 @@ class ImportExportTest(TestCase):
         configs = []
 
         garbage_file = os.path.join(TMUXP_DIR, 'config.psd')
-        buf = open(garbage_file, 'w')
-        buf.write('wat')
-        buf.close()
+        with open(garbage_file, 'w') as buf:
+            buf.write('wat')
 
         if os.path.exists(TMUXP_DIR):
             for r, d, f in os.walk(TMUXP_DIR):
