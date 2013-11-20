@@ -352,3 +352,57 @@ class StartDirectoryTest(TmuxTestCase):
             for window in self.session.windows:
                 for p in window.panes:
                     self.assertTrue(p.get('pane_start_path', path))
+
+
+class PaneOrderingTest(TmuxTestCase):
+
+    """Pane ordering based on position in config and ``pane_index``.
+
+    Regression test for https://github.com/tony/tmuxp/issues/15.
+
+    """
+
+    yaml_config = """
+    session_name: sampleconfig
+    start_directory: '~'
+    windows:
+    - options:
+      - automatic_rename: on
+      panes:
+      - cd /var/log
+      - cd /sys
+      - cd /sbin
+      - cd /tmp
+    """
+
+    def test_pane_order(self):
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        window_count = len(self.session._windows)  # current window count
+        self.assertEqual(len(s._windows), window_count)
+        for w, wconf in builder.iter_create_windows(s):
+            window_pane_count = len(w._panes)
+            for p in builder.iter_create_panes(w, wconf):
+                p = p
+                self.assertEqual(len(s._windows), window_count)
+
+            self.assertIsInstance(w, Window)
+
+            self.assertEqual(len(s._windows), window_count)
+            window_count += 1
+
+        for w in self.session.windows:
+            import time
+            time.sleep(.5)
+            #for p_index, p in enumerate(w.list_panes(), start=w.show_window_option(''):
+            for p in w.list_panes():
+                logger.error(p.get('pane_current_path'))
+                logger.error(p.get('pane_index'))
+                logger.error(w.show_window_option('pane-base-index', g=True))
+                logger.error(w.show_window_option('pane-base-index'))
