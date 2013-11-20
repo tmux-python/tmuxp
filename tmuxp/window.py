@@ -153,7 +153,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                 process.stderr
             )
 
-    def show_window_options(self, option=None):
+    def show_window_options(self, option=None, g=False):
         """Return a dict of options for the window.
 
         For familiarity with tmux, the option ``option`` param forwards to pick
@@ -161,15 +161,23 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :param option: optional. show a single option.
         :type option: string
+        :param g: Pass ``-g`` flag for global variable
+        :type g: bool
         :rtype: :py:obj:`dict`
 
         """
 
+        tmux_args = tuple()
+
+        if g:
+            tmux_args += ('-g',)
+
         if option:
-            return self.show_window_option(option)
+            return self.show_window_option(option, g=g)
         else:
+            tmux_args += ('show-window-options',)
             window_options = self.tmux(
-                'show-window-options'
+                *tmux_args
             ).stdout
 
         window_options = [tuple(item.split(' ')) for item in window_options]
@@ -182,19 +190,28 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return window_options
 
-    def show_window_option(self, option):
+    def show_window_option(self, option, g=False):
         """Return a list of options for the window.
 
         todo: test and return True/False for on/off string
 
         :param option: option to return.
         :type option: string
+        :param g: Pass ``-g`` flag, global.
+        :type g: bool
         :rtype: string, int
 
         """
 
+        tmux_args = tuple()
+
+        if g:
+            tmux_args += ('-g',)
+
+        tmux_args += (option,)
+
         window_option = self.tmux(
-            'show-window-options', option
+            'show-window-options', *tmux_args
         ).stdout
 
         if window_option:
