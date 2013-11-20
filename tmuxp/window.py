@@ -287,6 +287,18 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         self.server._update_windows()
 
+    def select_window(self):
+        """Select window. Return ``self``.
+
+        To select a window object asynchrously. If a ``window`` object exists
+        and is no longer longer the current window, ``w.select_window()``
+        will make ``w`` the current window.
+
+        :rtype: :class:`Window`
+
+        """
+        return self.session.select_window(self.get('window_id'))
+
     def select_pane(self, target_pane):
         """Return selected :class:`Pane` through ``$ tmux select-pane``.
 
@@ -306,6 +318,10 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise exc.TmuxpException(proc.stderr)
 
         return self.attached_pane()
+
+    def last_pane(self):
+        """Return last pane."""
+        return self.select_pane('-l')
 
     def split_window(self, target=None, attach=True):
         """Split window and return the created :class:`Pane`.

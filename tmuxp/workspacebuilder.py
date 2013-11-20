@@ -132,6 +132,7 @@ class WorkspaceBuilder(object):
 
         assert(isinstance(session, Session))
 
+        focus = None
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
             for p in self.iter_create_panes(w, wconf):
@@ -140,6 +141,12 @@ class WorkspaceBuilder(object):
 
                 if 'layout' in wconf:
                     w.select_layout(wconf['layout'])
+
+            if 'focus' in wconf and wconf['focus']:
+                focus = w
+
+        if focus:
+            focus.select_window()
 
     def iter_create_windows(self, s):
         """Return :class:`Window` iterating through session config dict.
@@ -200,13 +207,20 @@ class WorkspaceBuilder(object):
         """
         assert(isinstance(w, Window))
 
-        for pindex, pconf in enumerate(wconf['panes'], start=1):
-            if pindex != int(1):
-                p = w.split_window(attach=False)
+        pane_base_index = int(w.show_window_option('pane-base-index', g=True))
+
+        for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
+            if pindex != int(pane_base_index):
+                p = w.split_window(
+                    attach=True,
+                    #target=w.list_panes()[-1].get('pane_index')
+                )
                 assert(isinstance(p, Pane))
+                assert(p.get('pane_index'), pane_base_index)
             else:
                 p = w.attached_pane()
                 assert(isinstance(p, Pane))
+                assert(p.get('pane_index'), pindex)
 
             if 'layout' in wconf:
                 w.select_layout(wconf['layout'])

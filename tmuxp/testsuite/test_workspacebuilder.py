@@ -2,10 +2,11 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
+import sys
 import logging
 import time
 import kaptan
-from .. import Window, config, exc
+from .. import Window, config, exc, util
 from ..workspacebuilder import WorkspaceBuilder
 from .helpers import TmuxTestCase
 
@@ -132,7 +133,6 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
-        import sys
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
@@ -247,24 +247,34 @@ class WindowAutomaticRename(TmuxTestCase):
             window_count += 1
             w.select_layout(wconf['layout'])
 
-        w = s.attached_window()
+        self.assertNotEqual(s.get('session_name'), 'tmuxp')
+        w = s.windows[0]
 
         for i in range(30):
-            w = s.attached_window()
-            if w['window_name'] == 'man':
-                break
-            time.sleep(.2)
-
-        self.assertEqual(w.get('window_name'), 'man')
-
-        w.select_pane('-D')
-        for i in range(30):
-            w = s.attached_window()
-            if w['window_name'] != 'man':
+            if w.get('window_name') != 'man':
                 break
             time.sleep(.2)
 
         self.assertNotEqual(w.get('window_name'), 'man')
+
+        pane_base_index = w.show_window_option('pane-base-index', g=True)
+        w.select_pane(pane_base_index)
+
+        for i in range(30):
+            self.session.server._update_windows()
+            if w.get('window_name') == 'man':
+                break
+            time.sleep(.2)
+
+        self.assertEqual(w.get('window_name'), unicode('man'))
+
+        w.select_pane('-D')
+        for i in range(30):
+            if w['window_name'] != 'man':
+                break
+            time.sleep(.2)
+
+        self.assertEqual(w.get('window_name'), unicode('man'))
 
 
 class BlankPaneTest(TmuxTestCase):
@@ -342,8 +352,6 @@ class StartDirectoryTest(TmuxTestCase):
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
 
-        logger.error(sconfig)
-
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
 
@@ -376,6 +384,14 @@ class PaneOrderingTest(TmuxTestCase):
     """
 
     def test_pane_order(self):
+
+        # test order of `panes` (and pane_index) above aganist pane_dirs
+        pane_paths = [
+            '/var/log',
+            '/sys',
+            '/sbin',
+            '/tmp'
+        ]
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
@@ -399,11 +415,19 @@ class PaneOrderingTest(TmuxTestCase):
 
         for w in self.session.windows:
             import time
-            time.sleep(.5)
-            for p_index, p in enumerate(w.list_panes(), start=w.show_window_option('pane-base-index', g=True)):
-            #for p in w.list_panes():
-                logger.error(p.get('pane_current_path'))
+            time.sleep(1)
+            pane_base_index = w.show_window_option('pane-base-index', g=True)
+            for p_index, p in enumerate(w.list_panes(), start=pane_base_index):
                 self.assertEqual(int(p_index), int(p.get('pane_index')))
-                logger.error('pane-base-index: %s, p_index: %s, pane_index: %s' % (
-                    w.show_window_option('pane-base-index', g=True), p_index, p.get('pane_index')
-                ))
+
+                # pane-base-index start at base-index, pane_paths always start
+                # at 0 since python list.
+                pane_path = pane_paths[p_index - pane_base_index]
+
+                for i in range(30):
+                    p.server._update_panes()
+                    if p.get('pane_current_path') == pane_path:
+                        break
+                    time.sleep(.2)
+
+                self.assertEqual(p.get('pane_current_path'), pane_path)
