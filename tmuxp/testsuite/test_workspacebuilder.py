@@ -400,9 +400,10 @@ class PaneOrderingTest(TmuxTestCase):
         for w in self.session.windows:
             import time
             time.sleep(.5)
-            #for p_index, p in enumerate(w.list_panes(), start=w.show_window_option(''):
-            for p in w.list_panes():
+            for p_index, p in enumerate(w.list_panes(), start=w.show_window_option('pane-base-index', g=True)):
+            #for p in w.list_panes():
                 logger.error(p.get('pane_current_path'))
-                logger.error(p.get('pane_index'))
-                logger.error(w.show_window_option('pane-base-index', g=True))
-                logger.error(w.show_window_option('pane-base-index'))
+                self.assertEqual(int(p_index), int(p.get('pane_index')))
+                logger.error('pane-base-index: %s, p_index: %s, pane_index: %s' % (
+                    w.show_window_option('pane-base-index', g=True), p_index, p.get('pane_index')
+                ))
