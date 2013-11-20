@@ -6,13 +6,12 @@ TODO
 Milestone 0.1
 -------------
 
-- `Issue #15`_ - Pane ordering
-
-.. _Issue #15: https://github.com/tony/tmuxp/issues/15
 
 Done
 """"
 
+- `Issue #15`_ - Pane ordering
+- `Issue #21`_ - Python 2.6 errors with directories in unit tests
 - ``shell_command_before`` for `teamocil`_.
 - `teamocil`_ and `tmuxinator`_ import support for blank panes
 - Add help docs to CLI commands and options.
@@ -32,6 +31,9 @@ Done
   - Remove -zsh command, python, etc if just in shell.
 - Assure ``$ tmuxp freeze`` works with ``start_directory`` and does not
   return commands with dir and no CD's. (esp with zsh).
+
+.. _Issue #15: https://github.com/tony/tmuxp/issues/15
+.. _Issue #21: https://github.com/tony/tmuxp/issues/21
 
 .. _milestone 0.2:
 

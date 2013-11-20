@@ -11,8 +11,10 @@ Here you can find the recent changes to tmuxp.
 
 - [internal] :meth:`Window.show_window_options`,
   :meth:`Window.show_window_option` now accept ``g`` to pass in ``-g``.
-- [internal] Behavioral changes in the WorkspaceBuilder to fix pane
+- [internal] [bug] Behavioral changes in the WorkspaceBuilder to fix pane
   ordering `Issue #15`_.
+- [internal] [bug] `Issue #21`_ - Error with unit testing python 2.6
+  python configuration tests. Use :py:mod:`tempfile` instead.
 - [tests] WorkspaceBuilder tests have been improved to use async better.
 
 .. _Issue #15: https://github.com/tony/tmuxp/issues/15
