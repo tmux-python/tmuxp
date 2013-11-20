@@ -2,6 +2,7 @@ session_name: tmuxp
 start_directory: ./ # load session relative to config location (project root).
 windows:
 - window_name: tmuxp
+  focus: True
   layout: main-horizontal
   options:
     main-pane-height: 35

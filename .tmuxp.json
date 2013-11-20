@@ -23,16 +23,17 @@
           ]
         }
       ], 
+      "options": {
+        "main-pane-height": 35
+      }, 
+      "layout": "main-horizontal", 
       "shell_command_before": [
         "command -v virtualenv >/dev/null 2>&1 || { pip install virtualenv; }", 
         "[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env", 
         "[ ! -d .env/build ] || rm -rf .env/build"
       ], 
-      "layout": "main-horizontal", 
-      "window_name": "tmuxp", 
-      "options": {
-        "main-pane-height": 35
-      }
+      "focus": true, 
+      "window_name": "tmuxp"
     }, 
     {
       "panes": [
@@ -50,7 +51,7 @@
           "shell_command": [
             "command -v sphinx-quickstart >/dev/null 2>&1 || { pip install -r requirements.pip; }", 
             "command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }", 
-            "watching_testrunner --basepath ./ --pattern=\"*.rst\" 'make html'", 
+            "watching_testrunner --basepath ./ --pattern=\"*.rst\" 'make html'"
           ]
         }
       ], 
