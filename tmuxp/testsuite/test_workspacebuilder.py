@@ -264,7 +264,7 @@ class WindowAutomaticRename(TmuxTestCase):
         for i in range(30):
             if w.get('window_name') != 'man':
                 break
-            time.sleep(.5)
+            time.sleep(.2)
 
         self.assertNotEqual(w.get('window_name'), 'man')
 
@@ -275,7 +275,7 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w.get('window_name') == 'man':
                 break
-            time.sleep(.5)
+            time.sleep(.2)
 
         self.assertEqual(w.get('window_name'), unicode('man'))
 
@@ -283,7 +283,7 @@ class WindowAutomaticRename(TmuxTestCase):
         for i in range(30):
             if w['window_name'] != 'man':
                 break
-            time.sleep(.5)
+            time.sleep(.2)
 
         self.assertEqual(w.get('window_name'), unicode('man'))
 
@@ -425,8 +425,6 @@ class PaneOrderingTest(TmuxTestCase):
             window_count += 1
 
         for w in self.session.windows:
-            import time
-            time.sleep(1)
             pane_base_index = w.show_window_option('pane-base-index', g=True)
             for p_index, p in enumerate(w.list_panes(), start=pane_base_index):
                 self.assertEqual(int(p_index), int(p.get('pane_index')))
@@ -439,6 +437,6 @@ class PaneOrderingTest(TmuxTestCase):
                     p.server._update_panes()
                     if p.get('pane_current_path') == pane_path:
                         break
-                    time.sleep(.5)
+                    time.sleep(.2)
 
                 self.assertEqual(p.get('pane_current_path'), pane_path)
