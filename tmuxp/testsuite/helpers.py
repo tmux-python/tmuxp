@@ -75,9 +75,11 @@ class TmuxTestCase(TestCase):
             )
         ]
 
-        # assert session_list == t.sessions
+        while True:
+            TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 9999999))
+            if not t.has_session(TEST_SESSION_NAME):
+                break
 
-        TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 13370))
         try:
             session = t.new_session(
                 session_name=TEST_SESSION_NAME,
