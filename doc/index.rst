@@ -58,7 +58,7 @@ Explore:
     internals
     developing
     api
-    changes
+    history
     roadmap
     about_tmux
     glossary

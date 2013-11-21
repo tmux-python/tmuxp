@@ -33,7 +33,7 @@ config support  yaml, json, python dict
 Travis          http://travis-ci.org/tony/tmuxp
 Docs            http://tmuxp.rtfd.org
 API             http://tmuxp.readthedocs.org/en/latest/api.html
-Changelog       http://tmuxp.readthedocs.org/en/latest/changes.html
+Changelog       http://tmuxp.readthedocs.org/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
 Source          https://github.com/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp

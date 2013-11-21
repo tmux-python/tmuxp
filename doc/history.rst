@@ -1,8 +1,8 @@
-.. _changelog:
+.. _history:
 
-=========
-Changelog
-=========
+=======
+History
+=======
 
 .. module:: tmuxp
 
