@@ -138,7 +138,8 @@ class Server(TmuxRelationalObject):
 
         # clear up empty dict
         sessions = [
-            dict((k, v) for k, v in session.items() if v) for session in sessions
+            dict((k, v) for k, v in session.items() if v)
+            for session in sessions
         ]
 
         return sessions
@@ -237,8 +238,11 @@ class Server(TmuxRelationalObject):
 
         """
 
-        pformats = ['session_name', 'session_id',
-                    'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
+        pformats = [
+            'session_name', 'session_id',
+            'window_index', 'window_id',
+            'window_name'
+        ] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
         proc = self.tmux(
@@ -252,8 +256,10 @@ class Server(TmuxRelationalObject):
 
         panes = proc.stdout
 
-        pformats = ['session_name', 'session_id',
-                    'window_index', 'window_id', 'window_name'] + formats.PANE_FORMATS
+        pformats = [
+            'session_name', 'session_id',
+            'window_index', 'window_id', 'window_name'
+        ] + formats.PANE_FORMATS
 
         # combine format keys with values returned from ``tmux list-panes``
         panes = [dict(zip(
