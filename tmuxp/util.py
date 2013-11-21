@@ -37,7 +37,9 @@ class tmux(object):
         proc = tmux('new-session', '-s%' % 'my session')
 
         if proc.stderr:
-            raise exc.TmuxpException('Command: %s returned error: %s' % (proc.cmd, proc.stderr))
+            raise exc.TmuxpException(
+                'Command: %s returned error: %s' % (proc.cmd, proc.stderr)
+            )
 
         print('tmux command returned %s' % proc.stdout)
 
@@ -113,6 +115,7 @@ class TmuxMappingObject(collections.MutableMapping):
         self.dirty = True
 
     def keys(self):
+        """Return list of keys."""
         return self._TMUX.keys()
 
     def __iter__(self):
@@ -281,7 +284,10 @@ def oh_my_zsh_auto_title():
     if 'SHELL' in os.environ and 'zsh' in os.environ.get('SHELL'):
         if os.path.exists(os.path.expanduser('~/.oh-my-zsh')):
             # oh-my-zsh exists
-            if 'DISABLE_AUTO_TITLE' not in os.environ or os.environ.get('DISABLE_AUTO_TITLE') == "false":
+            if (
+                'DISABLE_AUTO_TITLE' not in os.environ or
+                os.environ.get('DISABLE_AUTO_TITLE') == "false"
+            ):
                 print('Please set:\n\n'
                       '\texport DISABLE_AUTO_TITLE = \'true\'\n\n'
                       'in ~/.zshrc or where your zsh profile is stored.\n'
