@@ -62,6 +62,7 @@ Issues          https://github.com/tony/tmuxp/issues
 Source          https://github.com/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
 Crate.io        https://crate.io/packages/tmuxp/
+Ohloh           https://www.ohloh.net/p/tmuxp
 License         `BSD`_.
 git repo        .. code-block:: bash
 
