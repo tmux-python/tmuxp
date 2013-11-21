@@ -8,8 +8,8 @@ About
 
 tmuxp helps you manage tmux workspaces.
 
-tmuxp is build upon an object relational mapper for tmux. End-users may
-use YAML, JSON and :py:obj:`dict` configurations to launch workspaces like
+Built on a object relational mapper for tmux. tmux users can reload common
+workspaces from YAML, JSON and :py:obj:`dict` configurations like
 `tmuxinator`_ and `teamocil`_.
 
 To jump right in, see :ref:`quickstart` and :ref:`examples`.
@@ -17,8 +17,8 @@ To jump right in, see :ref:`quickstart` and :ref:`examples`.
 Interested in some kung-fu or joining the effort? :ref:`api` and
 :ref:`developing`
 
-License  is `BSD-licensed`_. Code can be found at github at
-http://github.com/tony/tmuxp.
+`BSD-licensed`_. Code can be found on `github
+<http://github.com/tony/tmuxp.>`_
 
 Differences from tmuxinator / teamocil
 --------------------------------------

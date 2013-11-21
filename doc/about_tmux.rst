@@ -308,17 +308,15 @@ Windows can be *named upon creation*.
 
     $ tmuxp new-window [-n window-name]
 
-.. _Rename window:
-
 Windows can be *renamed after creation*.
 
-=============== =========================================================
+=============== ==========================================================
 Command         .. code-block:: bash
 
                     $ tmux rename-window <new-name>
 
 Short cut       ``Prefix`` + ``,``
-=============== =========================================================
+=============== ==========================================================
 
 Creating new windows
 --------------------
@@ -330,7 +328,7 @@ Command         .. code-block:: bash
 
 Short cut       ``Prefix`` + ``c``
 
-                You may then :ref:`Rename window`.
+                You may then rename window.
 =============== =========================================================
 
 Traverse windows

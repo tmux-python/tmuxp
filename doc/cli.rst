@@ -4,6 +4,32 @@
 Command Line Interface
 ======================
 
+.. _bash_completion:
+
+Bash completion
+"""""""""""""""
+
+For bash, ``.bashrc``:
+
+.. code-block:: bash
+
+    $ source tmuxp.bash
+
+For tcsh, ``.tcshrc``:
+
+.. code-block:: bash
+
+    $ complete tmuxp 'p/*/`tmuxp.tcsh`/'
+
+For zsh, ``.zshrc``:
+
+.. code-block:: bash
+
+    $ source tmuxp.zsh
+
+.. _commands:
+
+
 .. _cli_freeze:
 
 Freeze sessions
@@ -88,31 +114,6 @@ Convert between YAML and JSON
 
     tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
     ``.json`` to  ``.yaml``.
-
-.. _bash_completion:
-
-Bash completion
-"""""""""""""""
-
-For bash, ``.bashrc``:
-
-.. code-block:: bash
-
-    $ source tmuxp.bash
-
-For tcsh, ``.tcshrc``:
-
-.. code-block:: bash
-
-    $ complete tmuxp 'p/*/`tmuxp.tcsh`/'
-
-For zsh, ``.zshrc``:
-
-.. code-block:: bash
-
-    $ source tmuxp.zsh
-
-.. _commands:
 
 Other commands
 """"""""""""""
