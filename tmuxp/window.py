@@ -141,7 +141,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if process.stderr:
-            if isinstance(process.stderr, list) and len(process.stderr) == int(1):
+            if isinstance(process.stderr, list) and len(process.stderr):
                 process.stderr = process.stderr[0]
             raise ValueError(
                 'tmux set-window-option -t%s:%s %s %s\n' % (
@@ -226,14 +226,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return window_option[1]
 
     def rename_window(self, new_name):
-
         """Return :class:`Window` object ``$ tmux rename-window <new_name>``.
 
         :param new_name: name of the window
         :type new_name: string
 
         """
-        # new_name = pipes.quote(new_name)
 
         import shlex
         lex = shlex.shlex(new_name)
@@ -310,7 +308,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         """
 
         if target_pane in ['-l', '-U', '-D', '-L', '-R']:
-            proc = self.tmux('select-pane', '-t%s' % self.get('window_id'), target_pane)
+            proc = self.tmux(
+                'select-pane',
+                '-t%s' % self.get('window_id'),
+                target_pane
+            )
         else:
             proc = self.tmux('select-pane', '-t%s' % target_pane)
 
