@@ -7,13 +7,13 @@ Here you can find the recent changes to tmuxp.
 -------
 
 2013-11-21
-''''''''''
+""""""""""
 
 - [internal] :meth:`Session.show_options`, :meth:`Session.show_option` now
   accept ``g`` to pass in ``-g``.
 
 2013-11-20
-''''''''''
+""""""""""
 
 - [internal] :meth:`Window.show_window_options`,
   :meth:`Window.show_window_option` now accept ``g`` to pass in ``-g``.
@@ -27,18 +27,18 @@ Here you can find the recent changes to tmuxp.
 .. _Issue #21: https://github.com/tony/tmuxp/issues/21
 
 2013-11-17
-''''''''''
+""""""""""
 
 - [cli] fix a bug where missing tmux didn't show correct warning.
 
 2013-11-15
-''''''''''
+""""""""""
 
 - [tests] Travis now tests python 2.6 as requirement and not allowed to
   fail.
 
 2013-11-13
-''''''''''
+""""""""""
 
 - [cli] accept ``-y`` argument to answer yes to questions. `#19`_
 - [cli] :meth:`cli.SessionCompleter` no longer allows a duplicate session
@@ -49,7 +49,7 @@ Here you can find the recent changes to tmuxp.
 .. _#20: https://github.com/tony/tmuxp/issues/19
 
 2013-11-09
-''''''''''
+""""""""""
 
 - [docs] [translation] `documentation in Chinese`_ from `wrongwaycn`_.
 - [docs] More work done on the :ref:`about_tmux` page.
@@ -60,7 +60,7 @@ Here you can find the recent changes to tmuxp.
 .. _wrongwaycn: https://github.com/wrongwaycn
 
 2013-11-08
-''''''''''
+""""""""""
 
 - [cli] [freeze] - ``$ tmuxp freeze`` will now freeze a window with a
   ``start_directory`` when all panes in a window are inside the same
@@ -81,7 +81,7 @@ Here you can find the recent changes to tmuxp.
     This will improve ``$ tmuxp freeze``
 
 2013-11-07
-''''''''''
+""""""""""
 
 - [internal] Remove old logger (based on `tornado's log.py`_), replace
   with new, simpler one.
@@ -92,7 +92,7 @@ Here you can find the recent changes to tmuxp.
 .. _tornado's log.py: https://github.com/facebook/tornado/blob/master/tornado/log.py
 
 2013-11-06
-''''''''''
+""""""""""
 
 - [cli] [tests] tagged v0.0.37. Many fixes. Python 2.6 support. Will
   switch to per-version changelog after 0.1 release..
@@ -104,7 +104,7 @@ Here you can find the recent changes to tmuxp.
   interpreter. 
 
 2013-11-05
-''''''''''
+""""""""""
 
 - [cli] Support for ``[-L socket-name]`` and ``[-S socket-path]`` in
   autocompletion and when loading. Note, switching client into another
@@ -114,13 +114,13 @@ Here you can find the recent changes to tmuxp.
 - `pep257`_, `pep8`_.
 
 2013-11-04
-''''''''''
+""""""""""
 
 - [internal] [docs] - `pep257`_, `pep8`_.
 - tagged version ``v0.0.36``.
 
 2013-11-02
-''''''''''
+""""""""""
 
 - [docs] Many documentation, `pep257`_, `pep8`_ fixes
 - [internal] move old :class:`Server` methods ``__list_panes()``,
@@ -132,7 +132,7 @@ Here you can find the recent changes to tmuxp.
   update config in *Start Directory* on :ref:`examples`.
 
 2013-11-01
-''''''''''
+""""""""""
 
 - [internal] [tests] New servers for :class:`Server` arguments ``socket_name``,
   ``socket_path``, ``config_file``.
@@ -148,7 +148,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] Allow saving with ``~`` in file destination.
 
 2013-10-31
-''''''''''
+""""""""""
 
 - [internal] :meth:`util.is_version()`
 - [config] [tests]: correctly :meth:`config.trickle()` the ``start_directory``.
@@ -161,7 +161,7 @@ Here you can find the recent changes to tmuxp.
 - [docs] major doc overhaul. front page, renamed orm_al.rst to internals.rst.
 
 2013-10-30
-''''''''''
+""""""""""
 
 - [cli] fix bug where if inside tmux, loading a workspace via switch_client
   wouldn't work.
@@ -174,7 +174,7 @@ Here you can find the recent changes to tmuxp.
 - [internal] support for ``start_directory`` (work in progress)
 
 2013-10-29
-''''''''''
+""""""""""
 
 - [internal] :meth:`Window.select_pane` now accepts ``-l``, ``-U``, ``-D``,
   ``-L``, ``-R``.
@@ -199,7 +199,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] [config] support loading ``.yml``.
 
 2013-10-28
-''''''''''
+""""""""""
 
 - [cli] fix ``tmuxp load .`` fixed
 - [cli] fix ``tmuxp convert <file>`` fixed.
@@ -212,7 +212,7 @@ Here you can find the recent changes to tmuxp.
   their ``{window/pane}_id`` if one isn't specific.
 
 2013-10-27
-''''''''''
+""""""""""
 
 - [cli] `argcomplete`_ overhaul for CLI bash completion.
 - [cli] ``tmuxp load``, ``tmuxp convert`` and ``tmuxp import`` now support
@@ -220,7 +220,7 @@ Here you can find the recent changes to tmuxp.
   directory.
 
 2013-10-26
-''''''''''
+""""""""""
 
 - [import] [tests] initial version of `tmuxinator`_ and `teamocil`_
   config importer. it does not support all options and it not guaranteed
@@ -233,7 +233,7 @@ Here you can find the recent changes to tmuxp.
   ``$ tmuxp load filename``.
 
 2013-10-25
-''''''''''
+""""""""""
 
 - [cli] fix bug where ``-v`` and ``--version`` wouldn't print version.
 - [cli] property handle case where no tmux server exists when
@@ -242,7 +242,7 @@ Here you can find the recent changes to tmuxp.
   `tmuxinator`_ and `teamocil`_ configs
 
 2013-10-24
-''''''''''
+""""""""""
 
 - [internal] clean out old code for ``automatic-rename`` option. it will
   be reimplemented fresh.
@@ -260,7 +260,7 @@ Here you can find the recent changes to tmuxp.
 
 
 2013-10-23
-''''''''''
+""""""""""
 
 - [cli] zsh/bash/tcsh completion improvements for tab-completion options
 - [cli] tmuxp ``kill-session`` with tab-completion.
@@ -270,7 +270,7 @@ Here you can find the recent changes to tmuxp.
 - [tests] unit test fixes.
 
 2013-10-21
-''''''''''
+""""""""""
 
 - [cli] Make 1.8 the official minimym version, give warning notice to
   upgrade tmux if out of date
@@ -281,7 +281,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] [internal] ``$ tmuxp -v`` will print the version info.
 
 2013-10-19
-''''''''''
+""""""""""
 
 - [internal] tmuxp will now give warning and sys.exit() with a message if
   ``tmux`` not found in system PATH
@@ -307,7 +307,7 @@ Here you can find the recent changes to tmuxp.
     to return a list of dicts without making objects.
 
 2013-10-18
-''''''''''
+""""""""""
 
 - [internal] major internal overhaul of :class:`Server`, :class:`Session`,
   :class:`Window`, and :class:`Pane`. 
@@ -326,7 +326,7 @@ Here you can find the recent changes to tmuxp.
 - [internal] python 3 support
 
 2013-10-17
-''''''''''
+""""""""""
 
 - [docs] updated README docs with new project details, screenshots
 - [dev] [docs] - new example ``.tmuxp.yaml`` file updated to include
@@ -336,7 +336,7 @@ Here you can find the recent changes to tmuxp.
   after the the session is built and if session already exists.
 
 2013-10-16
-''''''''''
+""""""""""
 
 - [cli] use :meth:`util.which()` from salt.util to find tmux binary.
 - [pypi / packaging] add MANIFEST.in, fix issue where package would not
@@ -366,7 +366,7 @@ Here you can find the recent changes to tmuxp.
 .. _.findWhere(): http://underscorejs.org/#findWhere
 
 2013-10-15
-''''''''''
+""""""""""
 
 - [docs] new theme
 - [docs] initial examples, misc. updates, front page update.
@@ -387,7 +387,7 @@ Here you can find the recent changes to tmuxp.
 - [cli] If session name is already exists, prompt to attach.
 
 2013-10-14
-''''''''''
+""""""""""
 
 - [cli] can now -l to list configs in current directory and $HOME/.tmuxp
 - [cli] tmuxp can now launch configs and build sessions
@@ -400,7 +400,7 @@ Here you can find the recent changes to tmuxp.
 - [config] [tests] :meth:`config.in_cwd()`
 
 2013-10-13
-''''''''''
+""""""""""
 
 - [cli] [tests]  :meth:`config.inline()` to produce far far better looking
   config exports and tests.
@@ -412,7 +412,7 @@ Here you can find the recent changes to tmuxp.
   :meth:`Window.find()`.
 
 2013-10-12
-''''''''''
+""""""""""
 
 - [tests] Test documentation updates
 - [internal] [tests] Builder is now :class:`WorkspaceBuilder` + tests.
@@ -424,7 +424,7 @@ Here you can find the recent changes to tmuxp.
   :meth:`Session.show_option()`, :meth:`Session.set_option()`
 
 2013-10-11
-''''''''''
+""""""""""
 
 - [builder] More preparation for builder / session maker utility.
 - [tests] Major test runner and test suite overhaul.
@@ -437,22 +437,16 @@ Here you can find the recent changes to tmuxp.
 - [cli] move beginnings of cli to tmuxp.cli
 
 2013-10-09
-''''''''''
+""""""""""
 
 - New logging module
 - Removed dependency logutils
 - Removed dependency sh
 
 2013-10-08
-''''''''''
+""""""""""
 
 - switch to semver
-
-born
-''''
-
-- changedlog added
-- sphinx documentation
 
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
