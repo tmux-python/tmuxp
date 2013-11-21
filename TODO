@@ -113,6 +113,9 @@ Milestone 0.3
    ``$ tmuxp .<tab>`` will start autocompletion searching for YAML and
    JSON configs in cwd, as will ``$ tmuxp ..<tab>`` and ``$ tmuxp /``.
 
+   ``$ tmuxp path/to/dir`` should scan for loading .tmuxp.yaml and
+   .tmuxp.json files.
+
 
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
