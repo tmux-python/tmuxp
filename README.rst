@@ -26,36 +26,6 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 
 Ready to begin? See the `Quickstart`_.
 
-==============  ==========================================================
-tmux support    1.8, 1.9-dev
-python support  2.7, >= 3.3
-config support  yaml, json, python dict
-Travis          http://travis-ci.org/tony/tmuxp
-Docs            http://tmuxp.rtfd.org
-API             http://tmuxp.readthedocs.org/en/latest/api.html
-Changelog       http://tmuxp.readthedocs.org/en/latest/history.html
-Issues          https://github.com/tony/tmuxp/issues
-Source          https://github.com/tony/tmuxp
-pypi            https://pypi.python.org/pypi/tmuxp
-License         `BSD`_.
-git repo        .. code-block:: bash
-
-                    $ git clone https://github.com/tony/tmuxp.git
-install dev     .. code-block:: bash
-
-                    $ git clone https://github.com/tony/tmuxp.git tmuxp
-                    $ cd ./tmuxp
-                    $ virtualenv .env
-                    $ source .env/bin/activate
-                    $ pip install -e .
-
-                See the `developing and testing`_ page in the docs for
-                more.
-tests           .. code-block:: bash
-
-                    $ python ./run_tests.py
-==============  ==========================================================
-
 .. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
 .. _Documentation: http://tmuxp.rtfd.org/
 .. _Source: https://github.com/tony/tmuxp
@@ -76,6 +46,40 @@ tests           .. code-block:: bash
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _Internals: http://tmuxp.readthedocs.org/en/latest/internals.html
 .. _Commands: http://tmuxp.readthedocs.org/en/latest/cli.html
+
+Project details
+---------------
+
+==============  ==========================================================
+tmux support    1.8, 1.9-dev
+python support  2.7, >= 3.3
+config support  yaml, json, python dict
+Travis          http://travis-ci.org/tony/tmuxp
+Docs            http://tmuxp.rtfd.org
+API             http://tmuxp.readthedocs.org/en/latest/api.html
+Changelog       http://tmuxp.readthedocs.org/en/latest/history.html
+Issues          https://github.com/tony/tmuxp/issues
+Source          https://github.com/tony/tmuxp
+pypi            https://pypi.python.org/pypi/tmuxp
+Crate.io        https://crate.io/packages/tmuxp/
+License         `BSD`_.
+git repo        .. code-block:: bash
+
+                    $ git clone https://github.com/tony/tmuxp.git
+install dev     .. code-block:: bash
+
+                    $ git clone https://github.com/tony/tmuxp.git tmuxp
+                    $ cd ./tmuxp
+                    $ virtualenv .env
+                    $ source .env/bin/activate
+                    $ pip install -e .
+
+                See the `developing and testing`_ page in the docs for
+                more.
+tests           .. code-block:: bash
+
+                    $ python ./run_tests.py
+==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html

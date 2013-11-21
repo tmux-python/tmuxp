@@ -99,6 +99,12 @@ Minor tweaks
 - ``$ tmuxp -L<socket-name>``, ``$ tmuxp -S<socket-path>`` for sockets and
   ``$ tmuxp -f<config-file>`` for config file.
 
+More details
+------------
+
+.. include:: ../README.rst
+    :start-after: ---------------
+
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
 .. _unittest: http://docs.python.org/2/library/unittest.html
