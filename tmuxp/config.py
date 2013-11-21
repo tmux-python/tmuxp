@@ -40,7 +40,9 @@ def validate_schema(sconf):
 
         if not 'panes' in window:
             raise exc.ConfigError(
-                'config window %s requires list of panes' % window['window_name'])
+                'config window %s requires list of panes' %
+                window['window_name']
+            )
 
     return True
 
@@ -61,7 +63,10 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
     return any(filename.endswith(e) for e in extensions)
 
 
-def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml', '.json']):
+def in_dir(
+    config_dir=os.path.expanduser('~/.tmuxp'),
+    extensions=['.yml', '.yaml', '.json']
+):
     """Return a list of configs in ``config_dir``.
 
     :param config_dir: directory to search
@@ -74,7 +79,8 @@ def in_dir(config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml
     configs = []
 
     for filename in os.listdir(config_dir):
-        if is_config_file(filename, extensions) and not filename.startswith('.'):
+        if is_config_file(filename, extensions) and \
+           not filename.startswith('.'):
             configs.append(filename)
 
     return configs
@@ -106,12 +112,20 @@ def inline(sconf):
 
     """
 
-    if ('shell_command' in sconf and isinstance(sconf['shell_command'], list) and len(sconf['shell_command']) == 1):
+    if (
+        'shell_command' in sconf and
+        isinstance(sconf['shell_command'], list) and
+        len(sconf['shell_command']) == 1
+    ):
         sconf['shell_command'] = sconf['shell_command'][0]
 
         if len(sconf.keys()) == int(1):
             sconf = sconf['shell_command']
-    if ('shell_command_before' in sconf and isinstance(sconf['shell_command_before'], list) and len(sconf['shell_command_before']) == 1):
+    if (
+        'shell_command_before' in sconf and
+        isinstance(sconf['shell_command_before'], list) and
+        len(sconf['shell_command_before']) == 1
+    ):
         sconf['shell_command_before'] = sconf['shell_command_before'][0]
 
     # recurse into window and pane config items
@@ -153,22 +167,28 @@ def expand(sconf, cwd=None):
     if not cwd:
         cwd = os.getcwd()
 
-
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:
-        if any(sconf['start_directory'].startswith(a) for a in ['.', './']):
-            sconf['start_directory'] = os.path.normpath(os.path.join(cwd, sconf['start_directory']))
-        elif any(sconf['start_directory'] == a for a in ['.', './']):
-            sconf['start_directory'] = os.path.normpath(os.path.join(cwd, sconf['start_directory']))
+        if (
+            any(sconf['start_directory'].startswith(a) for a in ['.', './']) or
+            any(sconf['start_directory'] == a for a in ['.', './'])
+        ):
+            start_path = os.path.normpath(
+                os.path.join(cwd, sconf['start_directory'])
+            )
+            sconf['start_directory'] = start_path
 
-    if ('shell_command' in sconf and isinstance(sconf['shell_command'], basestring)):
+    if (
+        'shell_command' in sconf and
+        isinstance(sconf['shell_command'], basestring)
+    ):
         sconf['shell_command'] = [sconf['shell_command']]
-    # elif not 'windows' in sconf and not 'panes' in sconf and isinstance(sconf, basestring):  # probable pane
-        # logger.error(sconf)
-        # sconf = {'shell_command': [sconf]}
 
-    if ('shell_command_before' in sconf and isinstance(sconf['shell_command_before'], basestring)):
+    if (
+        'shell_command_before' in sconf and
+        isinstance(sconf['shell_command_before'], basestring)
+    ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
 
     # recurse into window and pane config items
@@ -181,12 +201,12 @@ def expand(sconf, cwd=None):
         for p in sconf['panes']:
             p_index = sconf['panes'].index(p)
 
-            if not isinstance(p, dict) and not isinstance(p, list):  # probable pane
+            if not isinstance(p, dict) and not isinstance(p, list):
                 p = sconf['panes'][p_index] = {
                     'shell_command': [p]
                 }
 
-            if isinstance (p, dict) and not len(p):
+            if isinstance(p, dict) and not len(p):
                 p = sconf['panes'][p_index] = {
                     'shell_command': []
                 }
@@ -208,11 +228,16 @@ def expand(sconf, cwd=None):
                     p = sconf['panes'][p_index] = {
                         'shell_command': []
                     }
-                elif isinstance(p['shell_command'], list) and \
-                    len(p['shell_command']) == int(1) and (
-                        any(a in p['shell_command'] for a in [None, 'blank', 'pane']) or \
-                        p['shell_command'][0] is None
-                    ):
+                elif (
+                    isinstance(p['shell_command'], list) and (
+                        len(p['shell_command']) == int(1) and (
+                            any(
+                                a in p['shell_command']
+                                for a in [None, 'blank', 'pane']
+                            ) or p['shell_command'][0] is None
+                        )
+                    )
+                ):
                         p = sconf['panes'][p_index] = {
                             'shell_command': []
                         }
@@ -253,9 +278,14 @@ def trickle(sconf):
             if not 'start_directory' in windowconfig:
                 windowconfig['start_directory'] = session_start_directory
             else:
-                if not any(windowconfig['start_directory'].startswith(a) for a in ['~', '/']):
-                    windowconfig['start_directory'] = os.path.join(
-                        session_start_directory, windowconfig['start_directory'])
+                if not any(
+                    windowconfig['start_directory'].startswith(a)
+                    for a in ['~', '/']
+                ):
+                    window_start_path = os.path.join(
+                        session_start_directory, windowconfig['start_directory']
+                    )
+                    windowconfig['start_directory'] = window_start_path
 
         for paneconfig in windowconfig['panes']:
             commands_before = []
