@@ -6,6 +6,12 @@ Here you can find the recent changes to tmuxp.
 0.1-dev
 -------
 
+2013-11-21
+''''''''''
+
+- [internal] :meth:`Session.show_options`, :meth:`Session.show_option` now
+  accept ``g`` to pass in ``-g``.
+
 2013-11-20
 ''''''''''
 

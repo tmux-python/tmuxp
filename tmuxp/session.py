@@ -331,7 +331,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                 proc.stderr = proc.stderr[0]
             raise ValueError('tmux set-option stderr: %s' % proc.stderr)
 
-    def show_options(self, option=None):
+    def show_options(self, option=None, g=False):
         """Return a dict of options for the window.
 
         For familiarity with tmux, the option ``option`` param forwards to pick
@@ -339,15 +339,23 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :param option: optional. show a single option.
         :type option: string
+        :param g: Pass ``-g`` flag for global variable
+        :type g: bool
         :rtype: :py:obj:`dict`
 
         """
 
+        tmux_args = tuple()
+
+        if g:
+            tmux_args += ('-g',)
+
         if option:
-            return self.show_option(option)
+            return self.show_option(option, g=g)
         else:
+            tmux_args += ('show-options',)
             session_options = self.tmux(
-                'show-options'
+                *tmux_args
             ).stdout
 
         session_options = [tuple(item.split(' ')) for item in session_options]
@@ -360,7 +368,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return session_options
 
-    def show_option(self, option):
+    def show_option(self, option, g=False):
         """Return a list of options for the window.
 
         :todo: test and return True/False for on/off string
@@ -371,8 +379,13 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         """
 
+        tmux_args = tuple()
+
+        if g:
+            tmux_args += ('-g',)
+
         window_option = self.tmux(
-            'show-options', option
+            'show-options', option, *tmux_args
         ).stdout
         window_option = [tuple(item.split(' ')) for item in window_option][0]
 
