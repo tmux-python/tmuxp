@@ -29,7 +29,7 @@ class WorkspaceBuilder(object):
     The normal phase of loading is:
 
         1.  :term:`kaptan` imports json/yaml/ini. ``.get()`` returns python
-        :class:`dict`::
+            :class:`dict`::
 
                 import kaptan
                 sconf = kaptan.Kaptan(handler='yaml')
