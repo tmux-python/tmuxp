@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""Helper methods for tmuxp unittests.
+
+tmuxp.tests.helpers
+~~~~~~~~~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+"""
 from __future__ import absolute_import, division, print_function, with_statement
 
 import time
@@ -76,10 +85,10 @@ class TmuxTestCase(TestCase):
         except exc.TmuxpException as e:
             raise e
 
-        '''
-        Make sure that tmuxp can :ref:`test_builder_visually` and switches to the
-        newly created session for that testcase.
-        '''
+        """
+        Make sure that tmuxp can :ref:`test_builder_visually` and switches to
+        the newly created session for that testcase.
+        """
         try:
             t.switch_client(session.get('session_id'))
             pass
@@ -88,8 +97,10 @@ class TmuxTestCase(TestCase):
             pass
 
         for old_test_session in old_test_sessions:
-            logger.debug('Old test test session %s found. Killing it.' %
-                        old_test_session)
+            logger.debug(
+                'Old test test session %s found. Killing it.' %
+                old_test_session
+            )
             t.kill_session(old_test_session)
         assert TEST_SESSION_NAME == session.get('session_name')
         assert TEST_SESSION_NAME != 'tmuxp'

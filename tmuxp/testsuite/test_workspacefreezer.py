@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""Test for tmuxp workspacefreezer.
+
+tmuxp.tests.test_workspacefreezer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+"""
+
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os

@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""Test for tmuxp Pane object.
+
+tmuxp.tests.test_pane
+~~~~~~~~~~~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+"""
 from __future__ import absolute_import, division, print_function, with_statement
 
 from . import t

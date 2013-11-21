@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""Test for tmuxp TmuxRelationalObject and TmuxMappingObject.
+
+tmuxp.tests.test_tmuxobject
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+"""
 from __future__ import absolute_import, division, print_function, with_statement
 
 import random

@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""Test for tmuxp teamocil configuration..
+
+tmuxp.tests.test_config_teamocil
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+"""
+
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os

@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""Test for tmuxp configuration import, inlining, expanding and export.
+
+tmuxp.tests.test_config
+~~~~~~~~~~~~~~~~~~~~~~~
+
+:copyright: Copyright 2013 Tony Narlock.
+:license: BSD, see LICENSE for details
+
+"""
+
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
