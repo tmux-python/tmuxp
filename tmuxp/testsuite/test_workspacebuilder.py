@@ -276,7 +276,7 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w.get('window_name') == 'man':
                 break
-            time.sleep(.2)
+            time.sleep(.25)
 
         self.assertEqual(w.get('window_name'), unicode('man'))
 
@@ -285,9 +285,9 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w['window_name'] != 'man':
                 break
-            time.sleep(.2)
+            time.sleep(.25)
 
-        self.assertEqual(w.get('window_name'), unicode('man'))
+        self.assertNotEqual(w.get('window_name'), unicode('man'))
 
 
 class BlankPaneTest(TmuxTestCase):
