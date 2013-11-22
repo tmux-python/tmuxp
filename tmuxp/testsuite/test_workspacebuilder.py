@@ -235,7 +235,7 @@ class WindowAutomaticRename(TmuxTestCase):
     """
 
     def test_automatic_rename_option(self):
-        """ with option automatic-rename: on. """
+        """With option automatic-rename: on."""
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
@@ -262,6 +262,7 @@ class WindowAutomaticRename(TmuxTestCase):
         w = s.windows[0]
 
         for i in range(30):
+            self.session.server._update_windows()
             if w.get('window_name') != 'man':
                 break
             time.sleep(.2)
@@ -281,6 +282,7 @@ class WindowAutomaticRename(TmuxTestCase):
 
         w.select_pane('-D')
         for i in range(30):
+            self.session.server._update_windows()
             if w['window_name'] != 'man':
                 break
             time.sleep(.2)
@@ -304,7 +306,9 @@ class BlankPaneTest(TmuxTestCase):
         window1 = self.session.findWhere({'window_name': 'Blank pane test'})
         self.assertEqual(len(window1._panes), 6)
 
-        window1 = self.session.findWhere({'window_name': 'Empty string (return)'})
+        window1 = self.session.findWhere(
+            {'window_name': 'Empty string (return)'}
+        )
         self.assertEqual(len(window1._panes), 3)
 
         self.assertEqual(self.session, builder.session)
