@@ -94,13 +94,14 @@ class TmuxinatorTest(TestCase):
 
 class TmuxinatorDeprecationsTest(TestCase):
 
-    """ tmuxinator uses `tabs` instead of `windows` in older versions
+    """Tmuxinator uses `tabs` instead of `windows` in older versions.
 
     https://github.com/aziz/tmuxinator/blob/master/lib/tmuxinator/project.rb#L18
 
     https://github.com/aziz/tmuxinator/blob/master/spec/fixtures/sample.deprecations.yml
 
     LICENSE: https://github.com/aziz/tmuxinator/blob/master/LICENSE
+
     """
 
     tmuxinator_yaml = """\
@@ -149,7 +150,10 @@ class TmuxinatorDeprecationsTest(TestCase):
             {
                 'editor': {
                     'pre': [
-                        'echo "I get run in each pane, before each pane command!"',
+                        (
+                            'echo "I get run in each pane,',
+                            'before each pane command!"'
+                        ),
                         None
                     ],
                     'layout': 'main-vertical',
@@ -279,9 +283,12 @@ class TmuxinatorDeprecationsTest(TestCase):
 
 class TmuxinatoriSampleTest(TestCase):
 
-    """https://github.com/aziz/tmuxinator/blob/master/spec/fixtures/sample.yml
+    """Tests against tmuxinator's <spec/fixtures/sample.yml>.
+
+    https://github.com/aziz/tmuxinator/blob/master/spec/fixtures/sample.yml
 
     LICENSE: https://github.com/aziz/tmuxinator/blob/master/LICENSE
+
     """
 
     tmuxinator_yaml = """\
@@ -335,7 +342,10 @@ class TmuxinatoriSampleTest(TestCase):
             {
                 'editor': {
                     'pre': [
-                        'echo "I get run in each pane, before each pane command!"',
+                        (
+                            'echo "I get run in each pane, ',
+                            'before each pane command!"'
+                        ),
                         None
                     ],
                     'layout': 'main-vertical',

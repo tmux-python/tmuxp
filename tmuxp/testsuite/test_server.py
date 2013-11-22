@@ -68,6 +68,3 @@ class ServerTest(TmuxTestCase):
 
         self.assertIn('-8', proc.cmd)
         self.assertNotIn('-2', proc.cmd)
-
-if __name__ == '__main__':
-    unittest.main()
