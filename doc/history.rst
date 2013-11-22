@@ -7,4 +7,4 @@ History
 .. module:: tmuxp
 
 .. include:: ../CHANGES
-    :start-line: 3
+    :start-line: 4
