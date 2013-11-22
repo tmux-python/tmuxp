@@ -8,7 +8,8 @@ Here you can find the recent changes to tmuxp.
 -------
 
 - [internal] `pep8`_ and `pep257`_ in unit tests.
-- Changelog will now be updated on a version basis.
+- Changelog will now be updated on a version basis, use `pep440`_
+  versioning.
 
 0.1-dev
 -------
@@ -460,5 +461,6 @@ Here you can find the recent changes to tmuxp.
 .. _argcomplete: https://github.com/kislyuk/argcomplete
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
+.. _pep440: http://www.python.org/dev/peps/pep-0440/
 
 .. todo:: # vim: set filetype=rst:
