@@ -7,6 +7,8 @@ Here you can find the recent changes to tmuxp.
 0.1-rc1
 -------
 
+- [cli] - removed ``$ tmuxp load --list`` functionality. Update
+  :ref:`quickstart` accordingly.
 - [internal] `pep8`_ and `pep257`_ in unit tests.
 - Changelog will now be updated on a version basis, use `pep440`_
   versioning.
