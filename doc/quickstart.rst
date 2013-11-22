@@ -42,15 +42,6 @@ Create a file, ``~/.tmuxp/example.yaml``:
 .. literalinclude:: ../examples/2-pane-vertical.yaml
     :language: yaml
 
-with tmuxp:
-
-.. code-block:: bash
-
-    $ tmuxp load -l
-
-It will list configs available in the current directory and
-``$HOME/.tmuxp``. ``example.yaml`` is detected by tmuxp. 
-
 .. code-block:: bash
 
     $ tmuxp load example.yaml
