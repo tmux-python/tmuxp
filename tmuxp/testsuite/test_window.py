@@ -93,9 +93,6 @@ class NewTest(TmuxTestCase):
 class NewTest2(TmuxTestCase):
 
     def test_newest_pane_data(self):
-        # self.session.select_window(1)
-        #
-        #
         window = self.session.new_window(window_name='test', attach=True)
         self.assertIsInstance(window, Window)
         self.assertEqual(1, len(window.panes))
@@ -111,7 +108,7 @@ class NewTest2(TmuxTestCase):
 class NewTest3(TmuxTestCase):
 
     def test_attached_pane(self):
-        """Window.attached_window() returns active Pane"""
+        """Window.attached_window() returns active Pane."""
 
         window = self.session.attached_window()  # current window
         self.assertIsInstance(window.attached_pane(), Pane)
@@ -134,7 +131,7 @@ class RenameTest(TmuxTestCase):
     window_name_after = 'ha ha ha fjewlkjflwef'
 
     def test_window_rename(self):
-        """Window.rename_window.rename_window()"""
+        """Window.rename_window()."""
         self.session.set_option('automatic-rename', 'off')
         window = self.session.new_window(
             window_name=self.window_name_before, attach=True)
@@ -183,8 +180,7 @@ class Options(TmuxTestCase):
         self.assertIsInstance(options, dict)
 
     def test_set_show_window_options(self):
-        """Set option then Window.show_window_options(key)
-        """
+        """Set option then Window.show_window_options(key)."""
         window = self.session.new_window(window_name='test_window')
 
         window.set_window_option('main-pane-height', 20)
@@ -196,8 +192,7 @@ class Options(TmuxTestCase):
         self.assertEqual(40, window.show_window_options()['main-pane-height'])
 
     def test_show_window_option(self):
-        """Set option then Window.show_window_option(key)
-        """
+        """Set option then Window.show_window_option(key)."""
         window = self.session.new_window(window_name='test_window')
 
         window.set_window_option('main-pane-height', 20)
@@ -209,7 +204,7 @@ class Options(TmuxTestCase):
         self.assertEqual(40, window.show_window_option('main-pane-height'))
 
     def test_set_window_option_bad(self):
-        """Window.set_window_option raises ValueError for bad option key"""
+        """Window.set_window_option raises ValueError for bad option key."""
 
         window = self.session.new_window(window_name='test_window')
 

@@ -25,15 +25,18 @@ class TmuxObjectTest(TmuxTestCase):
     """Test the :class:`TmuxRelationalObject` base class object."""
 
     def test_findWhere(self):
-        """findWhere."""
+        """Test that findWhere() retrieves single matching object."""
         self.maxDiff = None
         # server.findWhere
         for session in t.sessions:
             session_id = session.get('session_id')
 
             self.assertEqual(t.findWhere({'session_id': session_id}), session)
-            self.assertIsInstance(t.findWhere({
-                                  'session_id': session_id}), Session)
+            self.assertIsInstance(
+                t.findWhere({
+                    'session_id': session_id
+                }), Session
+            )
 
             # session.findWhere
             for window in session.windows:
@@ -96,7 +99,7 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsInstance(find_where, Pane)
 
     def test_where(self):
-        """.where"""
+        """Test self.where() returns matching objects."""
 
         window = self.session.attached_window()
         window.split_window()  # create second pane
@@ -145,7 +148,7 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsInstance(where[0], Pane)
 
     def test_getById(self):
-        """.getById"""
+        """Test self.getById() retrieves child object."""
 
         window = self.session.attached_window()
 

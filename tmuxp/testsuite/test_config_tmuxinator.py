@@ -150,10 +150,8 @@ class TmuxinatorDeprecationsTest(TestCase):
             {
                 'editor': {
                     'pre': [
-                        (
-                            'echo "I get run in each pane,',
-                            'before each pane command!"'
-                        ),
+                        'echo "I get run in each pane, '
+                        'before each pane command!"',
                         None
                     ],
                     'layout': 'main-vertical',
@@ -283,7 +281,7 @@ class TmuxinatorDeprecationsTest(TestCase):
 
 class TmuxinatoriSampleTest(TestCase):
 
-    """Tests against tmuxinator's <spec/fixtures/sample.yml>.
+    """Test importing <spec/fixtures/sample.yml>.
 
     https://github.com/aziz/tmuxinator/blob/master/spec/fixtures/sample.yml
 
@@ -342,10 +340,8 @@ class TmuxinatoriSampleTest(TestCase):
             {
                 'editor': {
                     'pre': [
-                        (
-                            'echo "I get run in each pane, ',
-                            'before each pane command!"'
-                        ),
+                        'echo "I get run in each pane, '
+                        'before each pane command!"',
                         None
                     ],
                     'layout': 'main-vertical',
