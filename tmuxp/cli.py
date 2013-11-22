@@ -393,49 +393,29 @@ def command_freeze(args):
 
 def command_load(args):
     """Load a session from a tmuxp session file."""
-    if args.list:
-        startup(config_dir)
-        configs_in_user = config.in_dir(config_dir)
-        configs_in_cwd = config.in_cwd()
 
-        sys.exit()
+    if isinstance(args.config, list):
+        args.config = ' '.join(args.config)
 
-        output = ''
-
-        if not configs_in_user:
-            output += '# %s: \n\tNone found.\n' % config_dir
+    if '.' == args.config:
+        if config.in_cwd():
+            configfile = config.in_cwd()[0]
+            print(configfile)
         else:
-            output += '# %s: \n\t%s\n' % (
-                config_dir, ', '.join(configs_in_user)
-            )
+            sys.exit('No tmuxp configs found in current directory.')
+    else:
+        configfile = args.config
 
-        if configs_in_cwd:
-            output += '# current directory:\n\t%s' % (
-                ', '.join(configs_in_cwd)
-            )
+    file_user = os.path.join(config_dir, configfile)
+    file_cwd = os.path.join(cwd_dir, configfile)
 
-        print(output)
-        return
-
-    elif args.config:
-        if '.' == args.config:
-            if config.in_cwd():
-                configfile = config.in_cwd()[0]
-                print(configfile)
-            else:
-                sys.exit('No tmuxp configs found in current directory.')
-        else:
-            configfile = args.config
-        file_user = os.path.join(config_dir, configfile)
-        file_cwd = os.path.join(cwd_dir, configfile)
-
-        if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-            print('load %s' % file_cwd)
-            load_workspace(file_cwd, args)
-        elif os.path.exists(file_user) and os.path.isfile(file_user):
-            load_workspace(file_user, args)
-        else:
-            logger.error('%s not found.' % configfile)
+    if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
+        print('load %s' % file_cwd)
+        load_workspace(file_cwd, args)
+    elif os.path.exists(file_user) and os.path.isfile(file_user):
+        load_workspace(file_user, args)
+    else:
+        logger.error('%s not found.' % configfile)
 
 
 def command_import_teamocil(args):
@@ -847,16 +827,10 @@ def get_parser():
              'already exists, offer to attach instead.'
     )
 
-    loadgroup = load.add_mutually_exclusive_group(required=True)
-    loadgroup.add_argument(
-        '--list', dest='list', action='store_true',
-        help='List config files available',
-    )
-
-    loadgroup.add_argument(
+    load.add_argument(
         dest='config',
         type=str,
-        nargs='?',
+        nargs='+',
         help='List config available in working directory and config folder.'
     ).completer = ConfigFileCompleter(
         allowednames=('.yaml', '.json'), directories=False
