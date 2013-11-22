@@ -115,7 +115,9 @@ class ImportExportTest(TestCase):
 
         if os.path.exists(self.tmp_dir):
             for r, d, f in os.walk(self.tmp_dir):
-                for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
+                for filela in (
+                    x for x in f if x.endswith(('.json', '.ini', 'yaml'))
+                ):
                     configs.append(os.path.join(
                         self.tmp_dir, filela))
 
@@ -144,23 +146,25 @@ class ExpandTest(TestCase):
     before_config = {
         'session_name': 'sampleconfig',
         'start_directory': '~',
-        'windows': [{
-            'window_name': 'editor',
-            'panes': [
-                {
-                    'shell_command': [
-                        'vim',
-                        'top'
-                    ]
-                },
-                {
-                    'shell_command': ['vim'],
-                },
-                {
-                    'shell_command': 'cowsay "hey"'
-                },
-            ],
-            'layout': 'main-verticle'},
+        'windows': [
+            {
+                'window_name': 'editor',
+                'panes': [
+                    {
+                        'shell_command': [
+                            'vim',
+                            'top'
+                        ]
+                    },
+                    {
+                        'shell_command': ['vim'],
+                    },
+                    {
+                        'shell_command': 'cowsay "hey"'
+                    }
+                ],
+                'layout': 'main-verticle'
+            },
             {
                 'window_name': 'logging',
                 'panes': [
@@ -197,7 +201,6 @@ class ExpandTest(TestCase):
                     'pwd'
                 ]
             },
-
             {
                 'panes': [
                     'top'
@@ -344,7 +347,7 @@ class InlineTest(TestCase):
     }
 
     def test_config(self):
-        """:meth:`config.inline()` shell commands list to string where applicable."""
+        """:meth:`config.inline()` shell commands list to string."""
 
         self.maxDiff = None
         test_config = config.inline(self.before_config)
@@ -609,7 +612,10 @@ class ShellCommandBeforeTest(TestCase):
                 'window_name': 'logging',
                 'panes': [
                     {
-                        'shell_command': ['rbenv local 2.0.0-p0', 'tail -F /var/log/syslog'],
+                        'shell_command': [
+                            'rbenv local 2.0.0-p0',
+                            'tail -F /var/log/syslog'
+                        ],
                     },
                     {
                         'shell_command': ['rbenv local 2.0.0-p0']
@@ -867,7 +873,9 @@ class ConfigConsistency(TestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
-        with self.assertRaisesRegexp(exc.ConfigError, 'requires "session_name"'):
+        with self.assertRaisesRegexp(
+            exc.ConfigError, 'requires "session_name"'
+        ):
             config.validate_schema(sconfig)
 
     def test_no_windows(self):

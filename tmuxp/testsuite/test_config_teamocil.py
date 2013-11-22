@@ -93,13 +93,6 @@ class TeamocilTest(TestCase):
             )
         )
 
-    def test_config_to_yaml(self):
-        """teamocil yaml to tmuxp yaml config
-
-        use validate_schema to assert against
-        """
-        pass
-
 
 class Teamocil2Test(TestCase):
 
@@ -220,7 +213,10 @@ class Teamocil3Test(TestCase):
                 'layout': 'even-vertical',
                 'start_directory': "~/Projects/foo-www",
                 'shell_command_before': 'rbenv local 2.0.0-p0',
-                'shell_command_after': 'echo \'I am done initializing this pane.\'',
+                'shell_command_after': (
+                    'echo '
+                    '\'I am done initializing this pane.\''
+                ),
                 'panes': [
                     {
                         'shell_command': 'git status'
@@ -316,11 +312,12 @@ class Teamocil4Test(TestCase):
 
 class TeamocilLayoutsTest(TestCase):
 
-    """
+    """Import configurations from teamocil's <fixtures/layout.yml>.
 
     https://github.com/remiprev/teamocil/blob/master/spec/fixtures/layouts.yml
 
     LICENSE: https://github.com/remiprev/teamocil/blob/master/LICENSE
+
     """
 
     teamocil_yaml = """\
