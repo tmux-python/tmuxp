@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-master
-------
+0.1-rc2
+-------
 
 - [cli] [tests] - fix `Issue #23`_ where workspace would not build with
   pane-base-index set to 1. Update tests to fix if ``pane-base-index`` is
