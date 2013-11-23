@@ -1,0 +1,358 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../about.rst:4
+# f0f287676fa34a44891214a477bacb93
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../about.rst:16
+# cce956444fbd4d58936150d41e4dbac8
+msgid "About"
+msgstr ""
+
+#: ../../about.rst:18
+# 4d3f9b0be74048e884657ab47bf3a21d
+msgid "tmuxp helps you manage tmux workspaces."
+msgstr ""
+
+#: ../../about.rst:20
+# aed0f77fcbc844f499a7ba9c30e4e826
+msgid "Built on a object relational mapper for tmux. tmux users can reload common workspaces from YAML, JSON and :py:obj:`dict` configurations like `tmuxinator`_ and `teamocil`_."
+msgstr ""
+
+#: ../../about.rst:24
+# edc5fdb0cb4c444abdde986fe9f7184e
+msgid "To jump right in, see :ref:`quickstart` and :ref:`examples`."
+msgstr ""
+
+#: ../../about.rst:26
+# c2c420ede2334d95a01e839d75c6f104
+msgid "Interested in some kung-fu or joining the effort? :ref:`api` and :ref:`developing`"
+msgstr ""
+
+#: ../../about.rst:29
+# 27f4ba52316a430faef63eff8b8215bf
+msgid "`BSD-licensed`_. Code can be found on `github <http://github.com/tony/tmuxp.>`_"
+msgstr ""
+
+#: ../../about.rst:33
+# 5013af9c2a9f4ce2888ef761139aa4dc
+msgid "Differences from tmuxinator / teamocil"
+msgstr ""
+
+#: ../../about.rst:37
+# 9f7f4c7bc9764ba583b5d86779c65394
+msgid "If you use teamocil / tmuxinator and can clarify or add differences, please free to `edit this page`_ on github."
+msgstr ""
+
+#: ../../about.rst:41
+# 847457d4896a462589cbae5da0de4187
+msgid "Similarities"
+msgstr ""
+
+#: ../../about.rst:43
+# 4279fb73c99049e39c9a36ad7ea76ce7
+msgid "**Load sessions** Loads tmux sessions from config"
+msgstr ""
+
+#: ../../about.rst:45
+# 543c3c2552b146e49d23710348a110b0
+msgid "**YAML** Supports YAML format"
+msgstr ""
+
+#: ../../about.rst:47
+# 875fa2410b254b9f95229b7c6dcd87c3
+msgid "**Inlining / shorthand configuration** All three support short-hand and simplified markup for panes that have one command."
+msgstr ""
+
+#: ../../about.rst:51
+# 0d2ef7fc85e149c6aac2aa8db905af18
+msgid "Missing"
+msgstr ""
+
+#: ../../about.rst:53
+# 2580df1fe8264f36b7f0c8c5fd1d36f5
+msgid "**Stability** tmuxinator and teamocil are far more stable and well-developed than tmuxp."
+msgstr ""
+
+#: ../../about.rst:56
+# a3d8dbebca2149d19f34f7feb404035a
+msgid "**ERB / Template support** teamocil supports `ERB`_ markup."
+msgstr ""
+
+#: ../../about.rst:58
+# 17905b23aef441008d729c8400f6d13f
+msgid "**Version support** tmuxp only supports ``tmux >= 1.8``. Teamocil and tmuxinator may have support for earlier versions."
+msgstr ""
+
+#: ../../about.rst:62
+# 43d781d6f17b425c89bc8d4c3647bb75
+msgid "Differences"
+msgstr ""
+
+#: ../../about.rst:64
+# 30bdc6dbdf374adc99c3426c5d68c424
+msgid "**Programming Language** python. teamocil and tmuxinator uses ruby."
+msgstr ""
+
+#: ../../about.rst:66
+# d33c262b3ce34210b6047bec3f9cf685
+msgid "**Workspace building process** teamocil and tmuxinator process configs directly shell commands. tmuxp processes configuration via ORM layer."
+msgstr ""
+
+#: ../../about.rst:70
+# 83c7f93510df432ab8ceab1e0a7a6475
+msgid "Additional Features"
+msgstr ""
+
+#: ../../about.rst:72
+# 220e7b04602b43ff8616df6c8a4e107c
+msgid "**CLI** tmuxp's CLI can attach and kill sessions with tab-completion support. See :ref:`commands`."
+msgstr ""
+
+#: ../../about.rst:75
+# b8f47cd58a964e01b52aae772a7da45e
+msgid "**Import config** import configs from Teamocil / Tmuxinator [1]_. See :ref:`cli_import`."
+msgstr ""
+
+#: ../../about.rst:78
+# 6a6c8d939bd84426a9d143d32f028cec
+msgid "**Session freezing** Supports session freezing into YAML and JSON format [1]_. See :ref:`cli_freeze`."
+msgstr ""
+
+#: ../../about.rst:81
+# 61deb9492644437aa1c9043fc87559f8
+msgid "**JSON config** JSON config support. See :ref:`Examples`."
+msgstr ""
+
+#: ../../about.rst:83
+# 462bbcabe6e8410cae18d416630f930f
+msgid "**ORM-based API** - Utilitizes tmux >= 1.8's unique ID's for panes, windows and sessions to create an object relational view of the tmux :class:`Server` and its' :class:`Session`, :class:`Window`, :class:`Pane`. See :ref:`Internals`."
+msgstr ""
+
+#: ../../about.rst:88
+# b2ce2331824048e18a577a7f5f127e68
+msgid "**Conversion** ``$ tmuxp convert <filename>`` can convert files to and from JSON and YAML."
+msgstr ""
+
+#: ../../about.rst:91
+# 3d89b71ea6a8467ab9e73aa3e45fbdc9
+msgid "While freezing and importing sessions is a great way to save time, tweaking will probably be required - There is no substitute to a config made with love."
+msgstr ""
+
+#: ../../about.rst:96
+# 63d5e259c4a74403b96dcd93196ccc26
+msgid "Minor tweaks"
+msgstr ""
+
+#: ../../about.rst:98
+# f1dcf65e8f524f8eb54ef6b54b97b81c
+msgid "Unit tests against live tmux version to test statefulness of tmux sessions, windows and panes. See :ref:`travis`."
+msgstr ""
+
+#: ../../about.rst:100
+# c7dc8af683774bfda7513fc3fd16b7de
+msgid "Load + switch to new session from inside tmux."
+msgstr ""
+
+#: ../../about.rst:101
+# f17ae0420db2463cba60b7dcb8724363
+msgid "Resume session if config loaded."
+msgstr ""
+
+#: ../../about.rst:102
+# 73f8033856b74a378490d68b69cd5e1b
+msgid "Pre-commands virtualenv / rvm / any other commands."
+msgstr ""
+
+#: ../../about.rst:103
+# 638a95d9f1b946de80ab8c5e97898439
+msgid "Load config from anywhere ``$ tmuxp load /full/file/path.json``."
+msgstr ""
+
+#: ../../about.rst:104
+# 30178db0b8f24e1caaa7f0eedf1d36c4
+msgid "Load config ``.tmuxp.yaml`` or ``.tmuxp.json`` from current working directory with ``$ tmuxp load .``."
+msgstr ""
+
+#: ../../about.rst:106
+# 6851f1ac7d5e4f288a6d217758269b92
+msgid "``$ tmuxp -2``, ``$ tmuxp -8`` for forcing term colors a la :term:`tmux(1)`."
+msgstr ""
+
+#: ../../about.rst:108
+# 0dbbc70895234fdcb5e7411d44bb9765
+msgid "``$ tmuxp -L<socket-name>``, ``$ tmuxp -S<socket-path>`` for sockets and ``$ tmuxp -f<config-file>`` for config file."
+msgstr ""
+
+#: ../../about.rst:112
+# 0ad17991d4174f1dbde28fb8957b677c
+msgid "More details"
+msgstr ""
+
+#: ../../../README.rst:4
+# ecf5d74165754e70b2bd55b0a347adb1
+msgid "tmux support"
+msgstr ""
+
+#: ../../../README.rst:4
+# 4557b11650d6435ab4be92096be19b37
+msgid "1.8, 1.9-dev"
+msgstr ""
+
+#: ../../../README.rst:5
+# d7635cbf72714b6b877c835fbef40199
+msgid "python support"
+msgstr ""
+
+#: ../../../README.rst:5
+# 066feeedf754426f8298de13297d0026
+msgid "2.7, >= 3.3"
+msgstr ""
+
+#: ../../../README.rst:6
+# 980a972c691742f8bdf06b33875db1eb
+msgid "config support"
+msgstr ""
+
+#: ../../../README.rst:6
+# 28ec7a4fb15741468914b428991d4134
+msgid "yaml, json, python dict"
+msgstr ""
+
+#: ../../../README.rst:7
+# 666e8446d720450aacf32851b2f3ab45
+msgid "Travis"
+msgstr ""
+
+#: ../../../README.rst:7
+# 9db9e7fea9004c2cb8bef8db6da4495d
+msgid "http://travis-ci.org/tony/tmuxp"
+msgstr ""
+
+#: ../../../README.rst:8
+# b0ad4f290edd46158bc7e19d5d1ba5af
+msgid "Docs"
+msgstr ""
+
+#: ../../../README.rst:8
+# c6fda76242874fbab1af8dc8cdf8d4dd
+msgid "http://tmuxp.rtfd.org"
+msgstr ""
+
+#: ../../../README.rst:9
+# d2ff1008ec7b41aa9a7d75078478bfd5
+msgid "API"
+msgstr ""
+
+#: ../../../README.rst:9
+# ce8b43731a0345f9b1c0b933a37cd45c
+msgid "http://tmuxp.readthedocs.org/en/latest/api.html"
+msgstr ""
+
+#: ../../../README.rst:10
+# c7439c085c704aae884e7cc3cad47f47
+msgid "Changelog"
+msgstr ""
+
+#: ../../../README.rst:10
+# bc12ffdd6ab84c81aedc09d2b91a1cab
+msgid "http://tmuxp.readthedocs.org/en/latest/history.html"
+msgstr ""
+
+#: ../../../README.rst:11
+# d9de6007a16843f2aa1288d630522fa9
+msgid "Issues"
+msgstr ""
+
+#: ../../../README.rst:11
+# 6ea0cd9f4ce44fdc999b7f6591215a4d
+msgid "https://github.com/tony/tmuxp/issues"
+msgstr ""
+
+#: ../../../README.rst:12
+# ee0ebbdba18143bbb6557d4e6e9b6456
+msgid "Source"
+msgstr ""
+
+#: ../../../README.rst:12
+# dc8c226f4bf54c2196cf7885a2d53425
+msgid "https://github.com/tony/tmuxp"
+msgstr ""
+
+#: ../../../README.rst:13
+# cd317533fc444aecae9c1ec1c0ca5829
+msgid "pypi"
+msgstr ""
+
+#: ../../../README.rst:13
+# 06e183571d744524a7fa52bef4f6569c
+msgid "https://pypi.python.org/pypi/tmuxp"
+msgstr ""
+
+#: ../../../README.rst:14
+# 9090cb4b7b3046ed8070e7c992739497
+msgid "Crate.io"
+msgstr ""
+
+#: ../../../README.rst:14
+# 8459bf282e0d40f98cf24270c847f495
+msgid "https://crate.io/packages/tmuxp/"
+msgstr ""
+
+#: ../../../README.rst:15
+# 0d678c5926e64fdf8acd168885f0bc54
+msgid "Ohloh"
+msgstr ""
+
+#: ../../../README.rst:15
+# 4bba1ab8e8a64a15899fc13d2fd32fff
+msgid "https://www.ohloh.net/p/tmuxp"
+msgstr ""
+
+#: ../../../README.rst:16
+# c48d62b6c20c4cb796cdb6ecc6787ff2
+msgid "License"
+msgstr ""
+
+#: ../../../README.rst:16
+# 25d39048a5444b94963f2f3d3d275084
+msgid "`BSD`_."
+msgstr ""
+
+#: ../../../README.rst:17
+# 2481a5cc8fa64970a4b05f33fcaa53ed
+msgid "git repo"
+msgstr ""
+
+#: ../../../README.rst:20
+# 65e909dade7940a49ff0d94da3a364e4
+msgid "install dev"
+msgstr ""
+
+#: ../../../README.rst:28
+# 15526c15172141c39703cec45c01a935
+msgid "See the `developing and testing`_ page in the docs for more."
+msgstr ""
+
+#: ../../../README.rst:30
+# ebdbf8b60af94c5fa04acebf2e83fed7
+msgid "tests"
+msgstr ""
+

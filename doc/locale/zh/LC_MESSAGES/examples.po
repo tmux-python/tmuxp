@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../examples.rst:4
+# b201ad0213234d9091d316011bcae13a
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../examples.rst:14
+# 21562e1d290e43b58a1459cc1bda5373
+msgid "Examples"
+msgstr ""
+
+#: ../../examples.rst:17
+# 5b8155935d414b7bacf35ec448efa041
+msgid "Short hand / inline"
+msgstr ""
+
+#: ../../examples.rst:19
+# 357b91e37e154eecb0f157760d801ae5
+msgid "tmuxp has a short-hand syntax to for those who wish to keep their configs punctual."
+msgstr ""
+
+#: ../../examples.rst:39
+#: ../../examples.rst:59
+#: ../../examples.rst:76
+#: ../../examples.rst:146
+#: ../../examples.rst:175
+#: ../../examples.rst:191
+#: ../../examples.rst:206
+#: ../../examples.rst:224
+# 78622aee5a744f02a40d13ff4e1efcfb
+# 38d2bb6c2d1345a3916c1a5c9d62e9ce
+# b4f4815485344364870ce30bb31ac1c4
+# b79742fee6b64106a165ace1510b8ef4
+# a973de6a3a4646a29defc8aa2b8accbe
+# 293f9c4590bc4bebb3da63895e8d347a
+# 5380045846d34bfb86587d99889a3dee
+# 5b674e2b24144e5ebad00afc958d1f43
+msgid "YAML"
+msgstr ""
+
+#: ../../examples.rst:45
+#: ../../examples.rst:65
+#: ../../examples.rst:82
+#: ../../examples.rst:152
+#: ../../examples.rst:181
+#: ../../examples.rst:197
+#: ../../examples.rst:212
+#: ../../examples.rst:230
+# 703c94a808ac4d9f8505e1787236aa4e
+# f046ef9b2b6d40b6b606f2a659659289
+# 484c5e1773874b70b3e151ff95796637
+# 837a2a84d5b0449ab5e15fb8a82b7f86
+# 11332f3cd5eb48d493f75ca1c8f6ba20
+# 59db5ffdba4949deb78c76e67f1760ce
+# 5b883443f11c4ebebf93662e4975ce03
+# 9029e45f56ca4aadb64180099b17a78a
+msgid "JSON"
+msgstr ""
+
+#: ../../examples.rst:51
+# 77c57f51467e4748888a271fb64d467e
+msgid "Blank panes"
+msgstr ""
+
+#: ../../examples.rst:53
+# 7d6ba1d8a995486f8b1bf3ca1d036923
+msgid "No need to repeat ``pwd`` or a dummy command. A ``null``, ``'blank'``, ``'pane'`` are valid."
+msgstr ""
+
+#: ../../examples.rst:56
+# 921d27a2d9914a629676571cca04e8fc
+msgid "Note ``''`` counts as an empty carriage return."
+msgstr ""
+
+#: ../../examples.rst:71
+# b9d7cea39223457dada746ede8bf8cf1
+msgid "Start Directory"
+msgstr ""
+
+#: ../../examples.rst:73
+# e1fc0d490c4e4031b312ee72da1351fb
+msgid "Equivalent to ``tmux new-window -c <start-directory>``."
+msgstr ""
+
+#: ../../examples.rst:88
+# 61a535112729459b8aedf4bc01ea020e
+msgid "2 split panes"
+msgstr ""
+
+#: ../../examples.rst:105
+# f586f2ae57e2458fb5f6d950d60e4285
+msgid "YAML - Short form"
+msgstr ""
+
+#: ../../examples.rst:111
+# 85d4a14726b6415ca82caad35a6010a3
+msgid "JSON - Short form"
+msgstr ""
+
+#: ../../examples.rst:117
+# 1fa1c2e224f3434bb7b548aaf3b5e337
+msgid "YAML - Christmas Tree"
+msgstr ""
+
+#: ../../examples.rst:123
+# 6c5721f4ad564149b372707c9ca92ffb
+msgid "JSON - Christmas Tree"
+msgstr ""
+
+#: ../../examples.rst:129
+# 826f11f9ebb345b98f69641a5a9064fa
+msgid "3 panes"
+msgstr ""
+
+#: ../../examples.rst:158
+# 7636abadb8c54d4ab1b5572587e57167
+msgid "4 panes"
+msgstr ""
+
+#: ../../examples.rst:188
+# 6830f61d1be44fc6a6878aabc6116c9e
+msgid "Automatic Rename"
+msgstr ""
+
+#: ../../examples.rst:203
+# be76977fe4a14da4aae3a6a26296cf04
+msgid "Main pane height"
+msgstr ""
+
+#: ../../examples.rst:218
+# 206328e9008042a58ae09ebbafa3858d
+msgid "Super-advanced dev environment"
+msgstr ""
+
+#: ../../examples.rst:236
+# 7e63ee0d4d1d4532bff2343d321254c3
+msgid "Project configs"
+msgstr ""
+
+#: ../../examples.rst:238
+# 0c46b98144be47b5b20d0a1bfa0ddf78
+msgid "tmuxp supports loading configs via absolute filename with ``tmuxp load`` and via ``$ tmuxp load .`` if config is in directory."
+msgstr ""
+
+#: ../../examples.rst:241
+# dc7915feda88473da68c2ea5dc3f05c4
+msgid "To make a per-project config, use ``.tmuxp.yaml`` and ``.tmuxp.json`` in the root of your project directory."
+msgstr ""
+
+#: ../../examples.rst:244
+# ca57235454514e5cae20c62523e20aad
+msgid "See examples of ``tmuxp`` in the wild. Have a project config to show off? Edit this page."
+msgstr ""
+
+#: ../../examples.rst:247
+# 20937d00324e4e15a61a7f9d17a1dce4
+msgid "https://github.com/tony/dockerfiles/blob/master/.tmuxp.yaml"
+msgstr ""
+
+#: ../../examples.rst:248
+# c859085da376480f847f65b287634987
+msgid "https://github.com/tony/pullv/blob/master/.tmuxp.yaml"
+msgstr ""
+
+#: ../../examples.rst:249
+# 44eaf0f7b7434cb38d4a3ac918b7d5f8
+msgid "https://github.com/tony/sphinxcontrib-github/blob/master/.tmuxp.yaml"
+msgstr ""
+
+#: ../../examples.rst:251
+# d3c1ac0ae41d4067a2eabcd860a13650
+msgid "You can use ``start_directory: ./`` to make the directories relative to the config file / project root."
+msgstr ""
+
+#: ../../examples.rst:255
+# a64deab8f007478395de6ebd59a01d93
+msgid "Kung fu"
+msgstr ""
+
+#: ../../examples.rst:259
+# 7e938492e73947908098bf0cf0ef02ed
+msgid "tmuxp sessions can be scripted in python. The first way is to use the ORM in the :ref:`API`. The second is to pass a :py:obj:`dict` into :class:`tmuxp.WorkspaceBuilder` with a correct schema. See: :meth:`tmuxp.config.validate_schema`."
+msgstr ""
+
+#: ../../examples.rst:264
+# ae5f79e4ecd64f5ebd5dcf7657a663e7
+msgid "Add yours? Submit a pull request to the `github`_ site!"
+msgstr ""
+

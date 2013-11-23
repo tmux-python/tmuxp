@@ -284,3 +284,6 @@ aafig_default_options = dict(
     proportional=True,
     #linewidth=.5,
 )
+
+locale_dirs = ['locale/']
+gettest_compact = False

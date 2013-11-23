@@ -1,0 +1,128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../glossary.rst:4
+# cd7788caf8664ac5ae684a37f25f1a26
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../glossary.rst:14
+# 5c069a6c9dc94ec2a1745d781f971568
+msgid "Glossary"
+msgstr ""
+
+#: ../../glossary.rst:20
+# 5a6430a1f9f54ca39656f2c0d9d468d5
+msgid "A tool to manage workspaces with tmux. A pythonic abstraction of tmux."
+msgstr ""
+
+#: ../../glossary.rst:24
+# b10279ba3eb34610b3e47f126a1716ce
+msgid "The tmux binary. Used internally to distinguish tmuxp is only a layer on top of tmux."
+msgstr ""
+
+#: ../../glossary.rst:28
+# 0daf5d034234439a830344ba8e0e177d
+msgid "configuration management library, see `kaptan on github`_."
+msgstr ""
+
+#: ../../glossary.rst:31
+# e6ed3bb3431d44c78b46c41346ca8814
+msgid "Tmux runs in the background of your system as a process."
+msgstr ""
+
+#: ../../glossary.rst:33
+# e3257b699dc64b029b15523fbaff486b
+msgid "The server holds multiple :term:`Session`. By default, tmux automatically starts the server the first time ``$ tmux`` is ran."
+msgstr ""
+
+#: ../../glossary.rst:36
+# 10bfd35036d647108ea15eb2ca3ff5f5
+msgid "A server contains :term:`session`'s."
+msgstr ""
+
+#: ../../glossary.rst:38
+# 0a096db7a0b64e8aad2ffd155206aa06
+msgid "tmux starts the server automatically if it's not running."
+msgstr ""
+
+#: ../../glossary.rst:40
+# aa1bac5c1ac043f4b67934c1ba79a0b7
+msgid "Advanced cases: multiple can be run by specifying ``[-L socket-name]`` and ``[-S socket-path]``."
+msgstr ""
+
+#: ../../glossary.rst:44
+# 2cee257a07414b9a839ae70e340ae9e0
+msgid "Attaches to a tmux :term:`server`.  When you use tmux through CLI, you are using tmux as a client."
+msgstr ""
+
+#: ../../glossary.rst:48
+# 4410c052d8b24e3a8354a1d4bdcba729
+msgid "Inside a tmux :term:`server`."
+msgstr ""
+
+#: ../../glossary.rst:50
+# ece2bbc5e30e47209a80b4b3d6f6f321
+msgid "The session has 1 or more :term:`window`. The bottom bar in tmux show a list of windows. Normally they can be navigated with ``Ctrl-a [0-9]``, ``Ctrl-a n`` and ``Ctrl-a p``."
+msgstr ""
+
+#: ../../glossary.rst:54
+# 52c1bfb32f9342c9a0b52c8084d97897
+msgid "Sessions can have a ``session_name``."
+msgstr ""
+
+#: ../../glossary.rst:56
+# 2c4300efacf141599cf20534b3b4ade0
+msgid "Uniquely identified by ``session_id``."
+msgstr ""
+
+#: ../../glossary.rst:59
+# 52a0cc4eb3414246af7f7d6dcf955a83
+msgid "Entity of a :term:`session`."
+msgstr ""
+
+#: ../../glossary.rst:61
+# 7ef805ca0e964d469c306ba1f6c46ad9
+msgid "Can have 1 or more :term:`pane`."
+msgstr ""
+
+#: ../../glossary.rst:63
+# d5d33a024a4e4dc2b6f491789af33251
+msgid "Panes can be organized with a layouts."
+msgstr ""
+
+#: ../../glossary.rst:65
+# a70637ef62a94041bc70978fab46f8ee
+msgid "Windows can have names."
+msgstr ""
+
+#: ../../glossary.rst:68
+# 25f9a7a7fa054eb4b2c8ace03cee4cf0
+msgid "Linked to a :ref:`window`."
+msgstr ""
+
+#: ../../glossary.rst:70
+# 4bf4f530a1474a0e94518639286ccf37
+msgid "a pseudoterminal."
+msgstr ""
+
+#: ../../glossary.rst:73
+# dfee89015a924da687deaac6be5a4b02
+msgid "A target, cited in the manual as ``[-t target]`` can be a session, window or pane."
+msgstr ""
+

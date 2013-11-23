@@ -1,0 +1,113 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../cli.rst:4
+# 4c2d2c39929b44399742bf1fe8c4a0d7
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../cli.rst:14
+# 1b79f8d1e20f4108b4c9174151edb548
+msgid "Command Line Interface"
+msgstr ""
+
+#: ../../cli.rst:19
+# c0769e5219b64dd39f3dfa496166e178
+msgid "Bash completion"
+msgstr ""
+
+#: ../../cli.rst:21
+# cac374d5d32b42309ece8db5d6b098f0
+msgid "For bash, ``.bashrc``:"
+msgstr ""
+
+#: ../../cli.rst:27
+# cc655c3283244bfbb5045b7975b79c79
+msgid "For tcsh, ``.tcshrc``:"
+msgstr ""
+
+#: ../../cli.rst:33
+# 90cf84c375824ea1b684252bbe9a5203
+msgid "For zsh, ``.zshrc``:"
+msgstr ""
+
+#: ../../cli.rst:45
+# dff6b0c2e86d4053ae1b7a74d975bf48
+msgid "Freeze sessions"
+msgstr ""
+
+#: ../../cli.rst:54
+# 9de02e99fbbc405c8803440cfe98ef14
+msgid "You can save the state of your tmux session by freezing it."
+msgstr ""
+
+#: ../../cli.rst:56
+# 7e461c8ec0fe46559cc6e828605306bf
+msgid "Tmuxp will offer to save your session state to ``.json`` or ``.yaml``."
+msgstr ""
+
+#: ../../cli.rst:61
+# 9a40ec6d08174489b6d1112e6fd0789b
+msgid "Load session"
+msgstr ""
+
+#: ../../cli.rst:69
+# 3cdd1da3d30e4a6eb233d709ebeb66c0
+msgid "Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by :ref:`bash_completion`."
+msgstr ""
+
+#: ../../cli.rst:72
+# 731a055e43ec4d87909aa9510deba6e1
+msgid "Files also may be loaded by absolute path."
+msgstr ""
+
+#: ../../cli.rst:78
+# bba7e3a1eac145e9b0cd177fb6ef8e96
+msgid "Files named ``.tmuxp.yaml`` or ``.tmuxp.json`` in the current working directory may be loaded with:"
+msgstr ""
+
+#: ../../cli.rst:88
+# db0585b1f4cd47228d4b79c28f5b76b2
+msgid "Import"
+msgstr ""
+
+#: ../../cli.rst:93
+# 00701d0ee14c46bd96062f10721f6fad
+msgid "From teamocil"
+msgstr ""
+
+#: ../../cli.rst:104
+# c664a3c72c49471398b0e5c961cde970
+msgid "From tmuxinator"
+msgstr ""
+
+#: ../../cli.rst:115
+# 4038dc643dc94d4fa16fa55c4e60e3bb
+msgid "Convert between YAML and JSON"
+msgstr ""
+
+#: ../../cli.rst:124
+# f0de7bca6cc446feb5a52e939771e308
+msgid "tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and ``.json`` to  ``.yaml``."
+msgstr ""
+
+#: ../../cli.rst:128
+# af2ecb90a32f40569b64db02da217cb1
+msgid "Other commands"
+msgstr ""
+

@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../index.rst:4
+# 3cc1c9b1c29d49daa2e4355af16546bb
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../index.rst:14
+# 62e4ea70b263484897f8859efc234d22
+msgid "tmuxp"
+msgstr ""
+
+#: ../../../README.rst:1
+# 4b3a76058a534642ab16591ac8e4fbab
+msgid "tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through `python objects`_."
+msgstr ""
+
+#: ../../../README.rst:4
+# e90b8b93e7a949b6a8a01b44cea54db3
+msgid "Basic support for `freezing live sessions`_."
+msgstr ""
+
+#: ../../../README.rst:5
+# 1d550cbfcecb414fa02f6e876664306b
+msgid "`Importing`_ from `teamocil`_ and `tmuxinator`_."
+msgstr ""
+
+#: ../../../README.rst:6
+# abb7425e06e948f7bf7937818b6c8321
+msgid "JSON or YAML for `simple`_ or `very elaborate`_ configurations."
+msgstr ""
+
+#: ../../../README.rst:7
+# 072013faef15485498b1f065ec8e09e1
+msgid "`bash, zsh and tcsh`_ completion."
+msgstr ""
+
+#: ../../../README.rst:8
+# f8605357200b434782e62f3517292041
+msgid "Unit tested against live tmux (1.8 and git). See `travis.yml`_ file, `tmuxp on Travis CI`_ and `testing`_ page."
+msgstr ""
+
+#: ../../../README.rst:10
+# 0b1160affc514fb0912ef210b2755623
+msgid "`Documentation`_ (also in `中文`_), `Examples`_, `Source`_, `Commands`_, `Internals`_."
+msgstr ""
+
+#: ../../../README.rst:12
+# 87a5733912664406924a370cc5b7949e
+msgid "and `much, much more`_."
+msgstr ""
+
+#: ../../../README.rst:14
+# 9d3c7cdef1e24458a5a0ba1e13641b32
+msgid "Ready to begin? See the `Quickstart`_."
+msgstr ""
+
+#: ../../../README.rst:38
+# c0a2ee323fc9477d9a50e8558376cdbe
+msgid "Project details"
+msgstr ""
+
+#: ../../index.rst:25
+# b6d71480fdfc4aea9d621536abf9f29b
+msgid "Explore:"
+msgstr ""
+

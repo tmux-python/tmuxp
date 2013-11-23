@@ -1,0 +1,223 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../quickstart.rst:4
+# 10e84304d70d463b91529a4cc9a8ecf2
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../quickstart.rst:14
+# 32a5c01e1b8e4a2b9824900b969774b6
+msgid "Quickstart"
+msgstr ""
+
+#: ../../quickstart.rst:17
+# c8ed74f06f2443d5800592aabbf467bc
+msgid "Installation"
+msgstr ""
+
+#: ../../quickstart.rst:19
+# 62060374eda34257ad34c61b97f1dcbe
+msgid "Assure you have at least tmux **>= 1.8** and python **>= 2.6**."
+msgstr ""
+
+#: ../../quickstart.rst:25
+# 694bb2ae4a7d4472805f89e9a7d39d89
+msgid "You can upgrade to the latest release with:"
+msgstr ""
+
+#: ../../quickstart.rst:31
+# 874a88e13db34d0895c3163ab88d6916
+msgid "Then install :ref:`bash_completion`."
+msgstr ""
+
+#: ../../quickstart.rst:34
+# 80dae66ef6de4814920789dcc45940f9
+msgid "CLI"
+msgstr ""
+
+#: ../../quickstart.rst:38
+# b9624e68df3a4b21a743499523ccbaae
+msgid "tmuxp launches workspaces / sessions from JSON and YAML files."
+msgstr ""
+
+#: ../../quickstart.rst:40
+# e43a540624eb4080840c98f3ccc668ec
+msgid "Configuration files can be stored in ``$HOME/.tmuxp`` or in project directories as ``.tmuxp.py``, ``.tmuxp.json`` or ``.tmuxp.yaml``."
+msgstr ""
+
+#: ../../quickstart.rst:43
+# 0eafdc69dad6424c8913309b906a7ec4
+msgid "Every configuration is required to have:"
+msgstr ""
+
+#: ../../quickstart.rst:45
+# 248250562dbc406986ce035c5982a8e6
+msgid "``session_name``"
+msgstr ""
+
+#: ../../quickstart.rst:46
+# c716dddfca3847cf861e03887c7e592e
+msgid "list of ``windows``"
+msgstr ""
+
+#: ../../quickstart.rst:47
+# 09a62256b97740c088f927e3b7dd0bd9
+msgid "list of ``panes`` for every window in ``windows``"
+msgstr ""
+
+#: ../../quickstart.rst:49
+# 92f564be5121426986e89da1142f0c5a
+msgid "Create a file, ``~/.tmuxp/example.yaml``:"
+msgstr ""
+
+#: ../../quickstart.rst:58
+# 6d579b85798a47338c67cb8efd99878f
+msgid "This creates your tmuxp session."
+msgstr ""
+
+#: ../../quickstart.rst:62
+# 6037869b499641d7a9405610b480768f
+msgid "Pythonics"
+msgstr ""
+
+#: ../../quickstart.rst:69
+# 0ea07b35e31b4ec2ab189d13f6187898
+msgid "ORM - `Object Relational Mapper`_"
+msgstr ""
+
+#: ../../quickstart.rst:71
+# c2810a2cf3f14c65b6b6efeeafb3958f
+msgid "AL - `Abstraction Layer`_"
+msgstr ""
+
+#: ../../quickstart.rst:77
+# d2024818f44046a78e593c4732a16748
+msgid "python abstraction layer"
+msgstr ""
+
+#: ../../quickstart.rst:82
+# c8831353a43d4e8b95b8b7b740a7f5ce
+msgid ":ref:`tmuxp python api <api>`"
+msgstr ""
+
+#: ../../quickstart.rst:82
+# d2cd2f89c0c841878ec378d866d494ad
+msgid ":term:`tmux(1)` equivalent"
+msgstr ""
+
+#: ../../quickstart.rst:84
+# 289da439934d4dc1a6e6df7318cb44af
+msgid ":class:`Server.new_session()`"
+msgstr ""
+
+#: ../../quickstart.rst:84
+# 44dfede6c3134f0cbc2ea09dc524e104
+msgid "``$ tmux new-session``"
+msgstr ""
+
+#: ../../quickstart.rst:85
+# c9c21c52c20d4438823c5a2e73257fc7
+msgid ":class:`Server.list_sessions()`"
+msgstr ""
+
+#: ../../quickstart.rst:85
+# b22e6d194b634256955f8bf7fd796468
+msgid "``$ tmux list-sessions``"
+msgstr ""
+
+#: ../../quickstart.rst:86
+# c95360993bb345e2b7f9116d5a1e75f6
+msgid ":class:`Session.list_windows()`"
+msgstr ""
+
+#: ../../quickstart.rst:86
+# baacdbc49335449ea0382afabdb95a02
+msgid "``$ tmux list-windows``"
+msgstr ""
+
+#: ../../quickstart.rst:87
+# 5e72d66dbc6f447aac26217bf1da00ab
+msgid ":class:`Session.new_window()`"
+msgstr ""
+
+#: ../../quickstart.rst:87
+# 26aab77d514e454ebcb938ac8c156364
+msgid "``$ tmux new-window``"
+msgstr ""
+
+#: ../../quickstart.rst:88
+# 91d05dc0fb35468abb462694a7dec3ae
+msgid ":class:`Window.list_panes()`"
+msgstr ""
+
+#: ../../quickstart.rst:88
+# 3f3b9613163b47f48a0471e8924bc1a1
+msgid "``$ tmux list-panes``"
+msgstr ""
+
+#: ../../quickstart.rst:89
+# cd5c698e6f1746648b5052751c8fbb1b
+msgid ":class:`Window.split_window()`"
+msgstr ""
+
+#: ../../quickstart.rst:89
+# c212feadcb9a4314950ffab1261748ea
+msgid "``$ tmux split-window``"
+msgstr ""
+
+#: ../../quickstart.rst:90
+# aa266e7f938b4ab19fbc56ae73bc2ac7
+msgid ":class:`Pane.send_keys()`"
+msgstr ""
+
+#: ../../quickstart.rst:90
+# 46794306ad8d4fed86a98dea66eeee5f
+msgid "``$ tmux send-keys``"
+msgstr ""
+
+#: ../../quickstart.rst:94
+# 2385780f7efb4c3ab098f35f51a24fe0
+msgid "tmux ORM"
+msgstr ""
+
+#: ../../quickstart.rst:96
+# a78f8d375dfd41b08f456eb409971b88
+msgid "tmuxp's core internal feature is the object relation and orchestration of the tmux server (think an `engine`_ in `SQLAlchemy`_) and the server's sessions, so on..."
+msgstr ""
+
+#: ../../quickstart.rst:100
+# e2fec12a94e7409cba75e11bcd4a16eb
+msgid ":class:`Server` holds :class:`Session` objects."
+msgstr ""
+
+#: ../../quickstart.rst:101
+# d621aa26ae8744a597f73152c0dbf067
+msgid ":class:`Session` holds :class:`Window` objects."
+msgstr ""
+
+#: ../../quickstart.rst:102
+# 6c15a12b06314e3bade0f95620a5dd60
+msgid ":class:`Window` holds :class:`Pane` objects."
+msgstr ""
+
+#: ../../quickstart.rst:104
+# db7ee3d8e90b4cfe9d2c1eceafeb8180
+msgid "instances of tmux objects use tmux `1.8`_'s ``pane_id``, ``window_id`` and ``session_id`` to build create python objects to build workspaces with the freshest data."
+msgstr ""
+

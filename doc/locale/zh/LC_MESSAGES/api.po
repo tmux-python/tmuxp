@@ -1,0 +1,1154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../api.rst:4
+# e8ef0b11907f428e8f7cc06cd2c4155e
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../api.rst:14
+# 963ed4bd1dac45babe3dff4f3ecdeec7
+msgid "API Reference"
+msgstr ""
+
+#: ../../api.rst:19
+# e31495b913c04bd8a26da2ca96a49166
+msgid "Server Object"
+msgstr ""
+
+#: ../../<autodoc>:1
+# e0cfbab4793f4436bec27aafd54912af
+msgid "Bases: :class:`tmuxp.util.TmuxRelationalObject`"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server:1
+# a8174ae4f4f546319012e7d7a0476581
+msgid "The :term:`tmux(1)` server."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server:3
+# c032f8b0f78441459f467d9667158da6
+msgid ":attr:`Server._sessions` [:class:`Session`, ...]"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server:5
+# bc3cc37bb9bf475784ddf6e49ca52833
+msgid ":attr:`Session._windows` [:class:`Window`, ...]"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server:7
+# 5c1781728262490ca146e4f36cb77232
+msgid ":attr:`Window._panes` [:class:`Pane`, ...]"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server:9
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:16
+# 846d7c3f5ba44834bfc77708ac02add7
+# 4a7522dfca9a4aa2a060483412a5ec74
+msgid ":class:`Pane`"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server:11
+# badeb2b0803d43138ab916b01c394636
+msgid "When instantiated, provides the ``t`` global. stores information on live, running tmux server."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.childIdAttribute:1
+# 3cc5345a7c604a3eb77b8726f2544f23
+msgid "unique child ID key"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.socket_name:1
+# 2934f6532a144544a3d7827881d1c7cc
+msgid "``[-L socket-name]``"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.socket_path:1
+# 6ec9cda81c6b4256b8908436c12efea9
+msgid "``[-S socket-path]``"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.config_file:1
+# 316d6e0eae104d078063e2c777d2ae75
+msgid "``[-f file]``"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.colors:1
+# f6514c6377bb49b4ab5a20198a64ef1d
+msgid "``-2`` or ``-8``"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.tmux:1
+# 528a0758436b445d95eed5f13201200f
+msgid "Return :class:`util.tmux` send tmux commands with sockets, colors."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_sessions:1
+# 9f3ddc8f2102414e9cfba7c8967995a4
+msgid "Return list of sessions in :py:obj:`dict` form."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_sessions:3
+# 81591692421047589e714763c3ed09ce
+msgid "Retrieved from ``$ tmux(1) list-sessions`` stdout."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_sessions:5
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_windows:5
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_panes:5
+# 68a0cb6e9073458fa816daea43f0840e
+# 297e27d784e244e9adb12c98c2083e1b
+# 32c799cf64b144a3ae11ecc5249dcaa2
+msgid "The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux` which wraps :py:meth:`Subprocess.Popen`."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._sessions:1
+# ec001131986e4abea13209758fdc974a
+msgid "Property / alias to return :meth:`~._list_sessions`."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.list_sessions:1
+# a4edd0786da642868b91a635a5915685
+msgid "Return list of :class:`Session` from the ``tmux(1)`` session."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.sessions:1
+# 11cf71ed77ec4b179be15e1fe949f538
+msgid "Property / alias to return :meth:`~.list_sessions`."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.children:1
+# 68b2e477d4324d7681a20d451e3c0e9a
+msgid "Alias of :attr:`sessions`."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_windows:1
+# e974da14def645f6b918bfb1efb19172
+msgid "Return list of windows in :py:obj:`dict` form."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_windows:3
+# 9a5afa6b1b644572b847e0be54cc7ee0
+msgid "Retrieved from ``$ tmux(1) list-windows`` stdout."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._update_windows:1
+# 0f79fe1e07b64289abeae5563ba9c5d5
+msgid "Update internal window data and return ``self`` for chainability."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_panes:1
+# fb15767388974547b9dc40e3b02d0092
+msgid "Return list of panes in :py:obj:`dict` form."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._list_panes:3
+# 5de6d3545e304e8c984b1abb74711147
+msgid "Retrieved from ``$ tmux(1) list-panes`` stdout."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server._update_panes:1
+# 993e2cc9757149cfaba56540d2c70736
+msgid "Update internal pane data and return ``self`` for chainability."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.attached_sessions:1
+# 9f709c35185243c5b2d336633a56a7c2
+msgid "Return active :class:`Session` object."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.attached_sessions:3
+# 425ddd98b4644d649180cda291d28cb5
+msgid "This will not work where multiple tmux sessions are attached."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.has_session:1
+# 6328800213904546b93706172e7d210b
+msgid "Return True if session exists. ``$ tmux has-session``."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.has_session:3
+# f94b4ca0ba214b6ea9bfd9f1f80e8ab8
+msgid "target_session: str of session name."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.kill_server:1
+# ea4837872618443d827d7c90e7b4f8f1
+msgid "``$ tmux kill-server``."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.findWhere:1
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.findWhere:1
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.findWhere:1
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.findWhere:1
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject.findWhere:1
+# 38004f55106b4bc5a1962e92fab329ed
+# 1c131a60874c41cc8003df9852151a84
+# cffff649770e4fdea3852d87766d7c04
+# 609d7aad71f742a4a76b2b2f08931dba
+# a92fbfb5838f4e8c8d7e0a52acbe2511
+msgid "Return object on first match."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.findWhere:3
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.findWhere:3
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.findWhere:3
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.findWhere:3
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject.findWhere:3
+# 76b5021262ba45cca7ac43e44478d1fd
+# ce988d371b41446aa70eafd6295722c7
+# efdd285f028847edaa4283290c01458d
+# acb66080e27d4be2b3d02c3f4c2c5180
+# cf25561e337b4348a8e1d9a8acc8eb08
+msgid "Based on `.findWhere()`_ from `underscore.js`_."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.getById:1
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.getById:1
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.getById:1
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.getById:1
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject.getById:1
+# 799e515b72f8474694e53661d7afcf9b
+# 39b292e30a974b678d161c9ea0471608
+# f4689007a48149f19a873cb9482a4262
+# 0033e7701580443796534128f250f600
+# 90a220a1dd68486fa6d2e80639f35d70
+msgid "Return object based on `.get()`_ from `backbone.js`_."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.kill_session:1
+# 32dd2b4ee26149f197f16fea36dff50b
+msgid "Kill the tmux session with ``$ tmux kill-session``, return ``self``."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.kill_session:3
+# c6713e72b03341619f66475aa9c6b94e
+msgid "target_session: str. note this accepts ``fnmatch(3)``. 'asdf' will kill 'asdfasd'."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.where:1
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.where:1
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.where:1
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.where:1
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject.where:1
+# 9cbb95f5c44149e6be72052a47da85f3
+# 7ba463bea0fc4c409e31405662abf950
+# 00a607b1c38c4017ad216e735d5694a5
+# 09a8c60c7e294238a784ee46efce134f
+# d35e3a0bcb0b49679698103f92a6c60e
+msgid "Return objects matching child objects properties."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.where:3
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.where:3
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.where:3
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.where:3
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject.where:3
+# 4da5b393c88e4ca88dc62bc48f72cc0e
+# 4ebb6815e1d640ff88c41a926e519109
+# e9387e1fe19640268ec18558b3bc29ff
+# 43f2cc95238943069d7cd42d624b4a79
+# b1866a3e29e24bd89a415b321e259404
+msgid "Based on `.where()`_ from `underscore.js`_."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.switch_client:1
+# fc02e3c818334d1d82938ff01769de74
+msgid "``$ tmux switch-client``."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.switch_client:3
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.attach_session:3
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.attach_session:3
+# 56dea07b88e1444db40620a90e549d0d
+# b0d107327a664fc592eae137508a0d0e
+# 86d4f64c08a748be9ae0797fab733669
+msgid "target_session: str. name of the session. fnmatch(3) works."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.attach_session:1
+# abb61842143241029d9e1492200db699
+msgid "``$ tmux attach-session`` aka alias: ``$ tmux attach``."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.new_session:1
+# e24ac3539a9d432b897850feb852e4ba
+msgid "Return :class:`Session` from  ``$ tmux new-session``."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.new_session:3
+# 2bf36e3551a34658914aa3f60593797c
+msgid "Uses ``-P`` flag to print session info, ``-F`` for return formatting returns new Session object."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.new_session:6
+# 75c0bc6d82eb4c818c404340edd56c2a
+msgid "``$ tmux new-session -d`` will create the session in the background ``$ tmux new-session -Ad`` will move to the session name if it already exists. todo: make an option to handle this."
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.new_session:10
+# 0256a52e694b4f39ba3e5bc2ccbf4777
+msgid "session name::"
+msgstr ""
+
+#: ../../../tmuxp/server.py:docstring of tmuxp.Server.new_session:15
+# 9d4f69d7126d453580e1c5aca08473c7
+msgid "create session background::"
+msgstr ""
+
+#: ../../api.rst:29
+# 92a6202e426a4455af56b9e4a5e4f5b0
+msgid "Session Object"
+msgstr ""
+
+#: ../../<autodoc>:1
+#: ../../<autodoc>:1
+#: ../../<autodoc>:1
+# b12ac31cb0574fc787808c97a593cc82
+# aa0e080a1b9d45cc8089f7515ef087eb
+# 23e425e57215410ea1b0ec156252ed7a
+msgid "Bases: :class:`tmuxp.util.TmuxMappingObject`, :class:`tmuxp.util.TmuxRelationalObject`"
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session:1
+# 32b87eb498cd4226b3c82d3324ba1df7
+msgid ":term:`tmux(1)` session."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session:3
+# 1a3eb2fe1b5342088f617b0e0b2cf101
+msgid "Holds :class:`Window` objects."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.tmux:1
+# 907ab21ac91c4b319c6881d05cd7229c
+msgid "Return :meth:`Server.tmux`."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.attach_session:1
+# 215f00e8ca57450a86a8637bb29c8622
+msgid "Return ``$ tmux attach-session`` aka alias: ``$ tmux attach``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.kill_session:1
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.switch_client:1
+# a618a20952f34bbfa6d3183094456c4b
+# df9de6b0947f4874b7e7171cf699b54b
+msgid "``$ tmux kill-session``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.switch_client:3
+# 31466d196cd2453b82dd35863ec5d50e
+msgid "target_session: str. note this accepts fnmatch(3). 'asdf' will kill asdfasd"
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.rename_session:1
+# dc6c129da0c24f68bb63476965c7c62c
+msgid "Rename session and return new :class:`Session` object."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.new_window:1
+# 930914b433404676a158c840e26e759a
+msgid "Return :class:`Window` from ``$ tmux new-window``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.new_window:5
+# 3a0d6cd174764e09a6e0d4b3c3ab433c
+msgid "By default, this will make the window active. For the new window to be created and not set to current, pass in ``attach=False``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.kill_window:1
+# 7f41aa30e3ec469f9757d91bf246a72f
+msgid "``$ tmux kill-window``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.kill_window:3
+# 50cc3bf343d042978bd120a584d5f428
+msgid "Kill the current window or the window at ``target-window``. removing it from any sessions to which it is linked."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session._windows:1
+# 9d58a199c6324bcca415aa375b844ec5
+msgid "Property / alias to return :meth:`~._list_windows`."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.list_windows:1
+# e466098e1e85457f9596a32331425d6a
+msgid "Return a list of :class:`Window` from the ``tmux(1)`` session."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.windows:1
+# 9ec231c14d564c4ba01e1b0baa916d16
+msgid "Property / alias to return :meth:`~.list_windows`."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.children:1
+# df6ecee17a154525a594be1a250b6b81
+msgid "Alias of :attr:`windows`."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.attached_window:1
+# ba0a03668789475e9ab933280cc93c60
+msgid "Return active :class:`Window` object."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.select_window:1
+# bbafbcf9592543a29797dc18075c6178
+msgid "Return :class:`Window` selected via ``$ tmux select-window``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.select_window:3
+# 05a89f9da695465b85e96f2fbcfa44b0
+msgid "window: ``target_window`` also 'last-window' (``-l``), 'next-window' (``-n``), or 'previous-window' (``-p``)"
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.select_window:8
+# f9a2defe4c0d48a6b7495f45632ade97
+msgid "assure ``-l``, ``-n``, ``-p`` work."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.attached_pane:1
+# 06750810612d461da2b1ed441b5f0ca4
+msgid "Return active :class:`Pane` object."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.set_option:1
+# ba8df25d50254ce8894741786a1c0415
+msgid "Set option ``$ tmux set-option <option> <value>``."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.set_option:3
+# 10319df35be74682b43757fddc9c8b59
+msgid "todo: needs tests"
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.show_options:1
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.show_window_options:1
+# 6270703c1d55408080a26abc6932446d
+# 62e4afb37c8c4142840e58021ea3170e
+msgid "Return a dict of options for the window."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.show_options:3
+# a166f7bcf2c14cf6acca0ed860910bd4
+msgid "For familiarity with tmux, the option ``option`` param forwards to pick a single option, forwarding to :meth:`Session.show_option`."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.show_option:1
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.show_window_option:1
+# 3c3f3f406d614da483e200308a0d728d
+# 104107dfe0ba46c190e0c844c02034dd
+msgid "Return a list of options for the window."
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.show_option:3
+# 364b309dc3cd4267b2fa61bc2cb6218b
+msgid "test and return True/False for on/off string"
+msgstr ""
+
+#: ../../../tmuxp/session.py:docstring of tmuxp.Session.keys:1
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.keys:1
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.keys:1
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxMappingObject.keys:1
+# 4b96bf15b0ff4573b11f9b4eb4188b5f
+# d985d0793e30438397fd03a098a574ea
+# bb5d06e9e6014361a8f6b0ac3be22f93
+# c3e6900c7d054fdfbbccbe96e983d7da
+msgid "Return list of keys."
+msgstr ""
+
+#: ../../api.rst:39
+# 1bc9841fb4f34400b04e60051c0681a6
+msgid "Window Object"
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window:1
+# b498b9bc71e744ccbb733b4cf02fa8f2
+msgid ":term:`tmux(1)` window."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.tmux:1
+# dcf4d59e052c4b448afe60d5fce4780b
+msgid "Return :meth:`Server.tmux` defaulting ``target_window`` as target."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.tmux:3
+# 4e406a58074747f68ad4452c64752f5e
+msgid "Send command to tmux with :attr:`window_id` as ``target-window``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.tmux:5
+# b6c96fdd36e34ccf9487076bed4ccdc0
+msgid "Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in ``args`` will override using the object's ``window_id`` as target."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:1
+# 9d7a0f2bc70d49e0960652dc394abcac
+msgid "Wrapper for ``$ tmux select-layout <layout>``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:3
+# 1fccfbc942d1493db28444470f40d682
+msgid "even-horizontal: Panes are spread out evenly from left to right across the window."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:6
+# d44b8bc1640d47ccbfbc3a3f85dbc5a0
+msgid "even-vertical: Panes are spread evenly from top to bottom."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:8
+# d18462b85d8c4d26ac32c29953c10b31
+msgid "main-horizontal: A large (main) pane is shown at the top of the window and the remaining panes are spread from left to right in the leftover space at the bottom."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:12
+# d54b3f27223e4ef1a37f630c63a7b301
+msgid "main-vertical: Similar to main-horizontal but the large pane is placed on the left and the others spread from top to bottom along the right."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:15
+# 852847b7734442c099399222604010b7
+msgid "tiled: Panes are spread out as evenly as possible over the window in both rows and columns."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_layout:18
+# 2d42e0b16ff647a284a57d3b2b1283a2
+msgid "custom: custom dimensions (see :term:`tmux(1)` manpages)."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.set_window_option:1
+# 2c9317cccf8e4d8fbec8f992157942ba
+msgid "Wrapper for ``$ tmux set-window-option <option> <value>``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.show_window_options:3
+# fa0535e144c9412e9ff4554ad26e1c02
+msgid "For familiarity with tmux, the option ``option`` param forwards to pick a single option, forwarding to :meth:`Window.show_window_option`."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.show_window_option:3
+# a98b4eadee3348338742c58c40ae67fb
+msgid "todo: test and return True/False for on/off string"
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.rename_window:1
+# 9abca7ce9f0643e59592499bb1e97427
+msgid "Return :class:`Window` object ``$ tmux rename-window <new_name>``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.kill_window:1
+# da5ab19f5fb44d9e9aee23a028193ddb
+msgid "Kill the current :class:`Window` object. ``$ tmux kill-window``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.move_window:1
+# e39f890250894360ab6c8ac398c87257
+msgid "Move the current :class:`Window` object ``$ tmux move-window``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_window:1
+# f1cc21785c424fa0940a7d96eee92f41
+msgid "Select window. Return ``self``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_window:3
+# 63579d32ccfe40dc8e0e2f66ddbf911d
+msgid "To select a window object asynchrously. If a ``window`` object exists and is no longer longer the current window, ``w.select_window()`` will make ``w`` the current window."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.select_pane:1
+# 9f4c9996b601472883878e9f2617791c
+msgid "Return selected :class:`Pane` through ``$ tmux select-pane``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.last_pane:1
+# da1ba511751a4c46922a2e642b6f554b
+msgid "Return last pane."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.split_window:1
+# b4692d02abe04c8ab011c9697bdea3ee
+msgid "Split window and return the created :class:`Pane`."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.split_window:5
+# 43873b840fff44a69eb09bb0459ea1a1
+msgid ":term:`tmux(1)` will move window to the new pane if the ``split-window`` target is off screen. tmux handles the ``-d`` the same way as ``new-window`` and ``attach`` in :class:`Session.new_window`."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.split_window:10
+# 41021cf717354f3caf7e65817729398d
+msgid "By default, this will make the window the pane is created in active. To remain on the same window and split the pane in another target window, pass in ``attach=False``."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.split_window:15
+# 0b84b78bfad9484cbcf45b2ea858650c
+msgid "Used for splitting window and holding in a python object."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.attached_pane:1
+# 7c3380a232a84ae5af9cc5efb1fe8bab
+msgid "Return the attached :class:`Pane`."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window._panes:1
+# 27a9729be361426e9d12c523e0f0314d
+msgid "Property / alias to return :meth:`~._list_panes`."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.list_panes:1
+# d5fc0ce567b54a12b7bd3fbe094a2767
+msgid "Return list of :class:`Pane` for the window."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.panes:1
+# 5df7654e6a7d454b94b2a1b00e3dfed3
+msgid "Property / alias to return :meth:`~.list_panes`."
+msgstr ""
+
+#: ../../../tmuxp/window.py:docstring of tmuxp.Window.children:1
+# 96b1e20914004a8fa2dd17524ec3af59
+msgid "Alias of :attr:`panes`."
+msgstr ""
+
+#: ../../api.rst:49
+# 70e866e7e85540639c0712c5c6fb2034
+msgid "Pane Object"
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane:1
+# 505ee387d8ec4855a0a2fb54020df3b8
+msgid ":term:`tmux(1)` :ref:`pane`."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.tmux:1
+# 05d63c0dc70145ab9b86394035b47a98
+msgid "Return :meth:`Server.tmux` defaulting to ``target_pane`` as target."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.tmux:3
+# 397c4aa60c924a92b86fa7cbdc7000fe
+msgid "Send command to tmux with :attr:`pane_id` as ``target-pane``."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.tmux:5
+# 74b8e85650fd4e858f8eb85c8db43e00
+msgid "Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in ``args`` will override using the object's ``pane_id`` as target."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.send_keys:1
+# a8074ebe10ec4795bb22a7c0b158f2d1
+msgid "``$ tmux send-keys`` to the pane."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.clear:1
+# 0855241d0756448cabca501cd8dd2598
+msgid "Clear pane."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.reset:1
+# 2890eed1766f4130a8f856f33820c53c
+msgid "Reset and clear pane history."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.split_window:1
+# 5da77852faae4b27aa472639793eaf4a
+msgid "Split window at pane and return newly created :class:`Pane`."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.set_width:1
+# 47bc6b67700b4a4aad64d7f22f675e26
+msgid "Set width of pane."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.set_height:1
+# 6bf9af40ce804a3cba68dbbd6a05d6da
+msgid "Set height of pane."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.resize_pane:1
+# 8d627990c6cc4ebabb597cc5fe85abc9
+msgid "``$ tmux resize-pane`` of pane and return ``self``."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.enter:1
+# 7d75b7c92fcc4eaf8b34aec50fda1cf1
+msgid "Send carriage return to pane."
+msgstr ""
+
+#: ../../../tmuxp/pane.py:docstring of tmuxp.Pane.enter:3
+# 4c92c01cae58453f86e3c35278611d97
+msgid "``$ tmux send-keys`` send Enter to the pane."
+msgstr ""
+
+#: ../../api.rst:59
+# 01aed599491a4c9ab97ffbdabdda21a4
+msgid "Internals"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:1
+# 082dae68e45742eca6ebeb6a30ca8fd7
+msgid "Base Class for managing tmux object child entities."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:3
+# 020c1aa971df422ea53e70df8a6d6b0b
+msgid "Manages collection of child objects  (a :class:`Server` has a collection of :class:`Session` objects, a :class:`Session` has collection of :class:`Window`)"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:7
+# bb29944d7e6746ad95cf07f2e1b99d3c
+msgid "Children of :class:`TmuxRelationalObject` are going to have a ``self.children``, ``self.childIdAttribute`` and ``self.list_children``."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:11
+# de145024e19249e4894dc6e3bf6fa0cf
+msgid "Object"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:11
+# 5122ae421b1941bca717ba50bc117405
+msgid "``.children``"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:11
+# 7b7a11a86596459ea0b8660b0cccfdc8
+msgid "``.childIdAttribute``"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:11
+# 184921f04c6a4edd8c20e8cd8617d2bb
+msgid "method"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:13
+# 180eaa10278d43e692995dd3a9f7f79a
+msgid ":class:`Server`"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:13
+# ef9eb3b8ff814e47b9163461e2e573de
+msgid "``self._sessions``"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:13
+# 1d2b8f5c8c1d437da826ae9f55d02dad
+msgid "'session_id'"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:13
+# 063067929ec64853ab2030705a2082b7
+msgid ":meth:`Server.list_sessions`"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:14
+# c146b87246284ae38d8cfa72cdb1d79e
+msgid ":class:`Session`"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:14
+# 01e2334ba62846b9841cb5cdf7b1fc1c
+msgid "``self._windows``"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:14
+# 915ab55762354a5e89f6108c33d9df2d
+msgid "'window_id'"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:14
+# 3ae37529595e49cfbb2a60415495c826
+msgid ":meth:`Session.list_windows`"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:15
+# bb0b1071787b4c958d6fb73a2d049d42
+msgid ":class:`Window`"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:15
+# 7a5ab87dbc3a4797adad9c2e4e047465
+msgid "``self._panes``"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:15
+# 9fc4f73aae1a4f7e9ed322e085327c63
+msgid "'pane_id'"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxRelationalObject:15
+# 46748f3f10ce4db79848100647a41cf8
+msgid ":meth:`Window.list_panes`"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxMappingObject:1
+# 8c53c870e72943d082bea1d373609e9d
+msgid "Base: :py:class:`collections.MutableMapping`."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxMappingObject:3
+# 4e99c3135494436095ab2dd2005d7af9
+msgid "Convenience container. Base class for :class:`Pane`, :class:`Window`, :class:`Session` and :class:`Server`."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.TmuxMappingObject:6
+# 4b6b36f6263343cba9071f45f0579647
+msgid "Instance attributes for useful information :term:`tmux(1)` uses for Session, Window, Pane, stored :attr:`self._TMUX`. For example, a :class:`Window` will have a ``window_id`` and ``window_name``."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.tmux:1
+# 7df5273b011e4822b1aee19b8df2b260
+msgid ":py:mod:`subprocess` for :term:`tmux(1)`."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.tmux:3
+# a65e464f46af48db9e56350bdeacc248
+msgid "Usage::"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.tmux:14
+# 8101afe9cede4510a5c5ae5879cd8e08
+msgid "Equivalent to:"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.has_required_tmux_version:1
+# 1509fe85e882458286a4c82e28841763
+msgid "Return if tmux meets version requirement. Version >1.8 or above."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.oh_my_zsh_auto_title:1
+# 0ae40ef4538b44ccb01514f74577ce5e
+msgid "Give warning and offer to fix ``DISABLE_AUTO_TITLE``."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.oh_my_zsh_auto_title:3
+# 6c4801f1c5ad4618901aee77232f9e62
+msgid "see: https://github.com/robbyrussell/oh-my-zsh/pull/257"
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.which:1
+# 08f39e78c02049738173d5b733acaf6c
+msgid "Return path of bin. Python clone of /usr/bin/which."
+msgstr ""
+
+#: ../../../tmuxp/util.py:docstring of tmuxp.util.which:3
+# 67c3bbdaa615448cb755f4fe9511cfff
+msgid "from salt.util - https://www.github.com/saltstack/salt - license apache"
+msgstr ""
+
+#: ../../api.rst:76
+# 0296cb2cd2b1460593d233a11fc6f934
+msgid "Command Line"
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.startup:1
+# a9a6fd93aea542a09d4429edb1b49c60
+msgid "Initialize CLI."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.prompt:1
+# b2ecc082a4904eae98b3e920d5c39fe8
+msgid "Return user input from command line."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.prompt:3
+# 9b9f1ae9502a41919e4d66de2616cde0
+msgid ":meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from `flask-script`_. See the `flask-script license`_."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.prompt_bool:1
+# 22b17a8ea7554b7da5e300171e2ba887
+msgid "Return user input from command line and converts to boolean value."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.prompt_choices:1
+# 3f83b19cca4b4b4f8f2337cfb00ade53
+msgid "Return user input from command line from set of provided choices."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.setup_logger:1
+# 8e54f0627d5f4ff5bf4db571eb972990
+msgid "Setup logging for CLI use."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.get_parser:1
+# ca52aa5d93d24cae9bc1444d0c8f3b35
+msgid "Return :py:class:`argparse.ArgumentParser` instance for CLI."
+msgstr ""
+
+#: ../../../tmuxp/cli.py:docstring of tmuxp.cli.load_workspace:1
+# 8613457af50b41dcb787bebed50f72b7
+msgid "Build config workspace."
+msgstr ""
+
+#: ../../api.rst:90
+# c7ea53179ab647c3abeb63a17bb3d3bb
+msgid "Configuration"
+msgstr ""
+
+#: ../../api.rst:93
+# 8cc6d71180fb4226a153e2622a3b78fa
+msgid "Finding"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.is_config_file:1
+# 5a85234f1ccf40b7a8f462742805d1b0
+msgid "Return True if file has a valid config file type."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.in_dir:1
+# ed58f951364644dba5858b8842abcacc
+msgid "Return a list of configs in ``config_dir``."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.in_cwd:1
+# 25e3844af81141349e74758675de012e
+msgid "Return list of configs in current working directory."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.in_cwd:3
+# 32d4e392471f45918cf4e9f73ef9505f
+msgid "If filename is ``.tmuxp.py``, ``.tmuxp.json``, ``.tmuxp.yaml``."
+msgstr ""
+
+#: ../../api.rst:102
+# 46e1b39ce727428c880ec43e75407490
+msgid "Import and export"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.validate_schema:1
+# 1b0c03b2ba6a45f3a6a669ad73e82103
+msgid "Return True if config schema is correct."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.expand:1
+# 2b45d11becdb49a58abd1557a6c97ac5
+msgid "Return config with shorthand and inline properties expanded."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.expand:3
+# fddae0510e914e18b6293667cee1fdc7
+msgid "This is necessary to keep the code in the :class:`WorkspaceBuilder` clean and also allow for neat, short-hand configurations."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.expand:6
+# 9287003659aa4cccaecf99ed543230db
+msgid "As a simple example, internally, tmuxp expects that config options like ``shell_command`` are a list (array)::"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.expand:11
+# a7718fe346da4ddb9117bba595430cd3
+msgid "tmuxp configs allow for it to be simply a string::"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.expand:15
+# 93c745e972224b4988c5568079c1898b
+msgid "Kaptan will load JSON/YAML files into python dicts for you."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.inline:1
+# b623c97594ff4d76ac25d84d6fd46b10
+msgid "Return config in inline form, opposite of :meth:`config.expand`."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.trickle:1
+# b8b0da2f597a48399586526ba631ceae
+msgid "Return a dict with \"trickled down\" / inherited config values."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.trickle:3
+# f5b5b77699d9414ba8f08b87ff7fd1e5
+msgid "This will only work if config has been expanded to full form with :meth:`config.expand`."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.trickle:6
+# 8dd1cbf378c043b8bdc5509192d28186
+msgid "tmuxp allows certain commands to be default at the session, window level. shell_command_before trickles down and prepends the ``shell_command`` for the pane."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_teamocil:1
+# bd71075d402e4ff19b93ecbf9d67ede9
+msgid "Return tmuxp config from a `teamocil`_ yaml config."
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_teamocil:5
+# 68d556d537cf4893be1d4006b91f6c5b
+msgid "change  'root' to a cd or start_directory"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_teamocil:6
+# 0cc6c9b21bdc429bb490f6e05d7e6948
+msgid "width in pane -> main-pain-width"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_teamocil:7
+# 7e6b0dd24f5f4070a42a7b8c13d49831
+msgid "with_env_var"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_teamocil:8
+# ae72b234ea0e4559ab9bc6d2cd719230
+msgid "clear"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_teamocil:9
+# 4960c55ff6c74082a83aed5103c2a202
+msgid "cmd_separator"
+msgstr ""
+
+#: ../../../tmuxp/config.py:docstring of tmuxp.config.import_tmuxinator:1
+# 400a77a0a30c458b9a7a28d11f65e3ce
+msgid "Return tmuxp config from a `tmuxinator`_ yaml config."
+msgstr ""
+
+#: ../../api.rst:117
+# 7a37bb1e6e2d4b5f9f291f11d3bb4709
+msgid "Workspace Builder"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:1
+# b2e2e7b5420040be9d56a387d685a563
+msgid "Load workspace from session :py:obj:`dict`."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:3
+# 1677a4061b21487b9b4292cbbd59a7b0
+msgid "Build tmux workspace from a configuration. Creates and names windows, sets options, splits windows into panes."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:6
+# 66be1583a207444ca2f1bd05804a4d58
+msgid "The normal phase of loading is:"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:8
+# c61b1a4e121c4db6b4454ee2035b0642
+msgid ":term:`kaptan` imports json/yaml/ini. ``.get()`` returns python :class:`dict`::"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:15
+# fa03c1e72bab4590b8c0b0baf4474cd6
+msgid "or from config file with extension::"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:21
+# e50bd260c42c4f24bc0868750f074da6
+msgid "kaptan automatically detects the handler from filenames."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:23
+# 258fbd87fd0549648a2e81d7c40b5c5d
+msgid ":meth:`config.expand` sconf inline shorthand::"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:28
+# 03f59737c3c44339816fb067e6d7bebf
+msgid ":meth:`config.trickle` passes down default values from session -> window -> pane if applicable::"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:33
+# 8f510f8c8d8e4057a7ad0bd8ef88d07b
+msgid "(You are here) We will create a :class:`Session` (a real ``tmux(1)`` session) and iterate through the list of windows, and their panes, returning full :class:`Window` and :class:`Pane` objects each step of the way::"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder:40
+# 7c4351b25d734984a9dfa9f59d929143
+msgid "It handles the magic of cases where the user may want to start a session inside tmux (when `$TMUX` is in the env variables)."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.build:1
+# 0ccb8e2059b5467d9dee98e97574ebee
+msgid "Build tmux workspace in session."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.build:3
+# c78901bd45f144a49e58a925bbe08c08
+msgid "Optionally accepts ``session`` to build with only session object."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.build:5
+# 3afd30139a2e41f19d03ea9d845c3d27
+msgid "Without ``session``, it will use :class:`Server` at ``self.server`` passed in on initialization to create a new Session object."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.build:8
+# c2da13a4bb4e4e73a94ca83804c2f5e8
+msgid "session to build workspace in"
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.iter_create_panes:1
+# c106e51ff05147da8cf091e1dda32b46
+msgid "Return :class:`Pane` iterating through window config dict."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.iter_create_panes:3
+# 8932c6f4a97d4a63919f0cbda7d62e34
+msgid "Run ``shell_command`` with ``$ tmux send-keys``."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.iter_create_windows:1
+# 235b0e2219af45c2847bccf0d42f518f
+msgid "Return :class:`Window` iterating through session config dict."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.iter_create_windows:3
+# 477ed5077a30428191f52c81400b8f55
+msgid "Generator yielding :class:`Window` by iterating through ``sconf['windows']``."
+msgstr ""
+
+#: ../../../tmuxp/workspacebuilder.py:docstring of tmuxp.WorkspaceBuilder.iter_create_windows:6
+# b94522079bdc45f19e982f841afc7ed2
+msgid "Applies ``window_options`` to window."
+msgstr ""
+
+#: ../../api.rst:123
+# 75b23a0495e34d25b488f996569bbf2e
+msgid "Exceptions"
+msgstr ""
+
+#: ../../../tmuxp/exc.py:docstring of tmuxp.exc.TmuxpException:1
+# 90bc41f5462a4ca594bdada9e24c38c7
+msgid "Base Exception for Tmuxp Errors."
+msgstr ""
+
+#: ../../../tmuxp/exc.py:docstring of tmuxp.exc.TmuxpException:3
+# 4f1f2291e3a84ae2a20884038fbd6788
+msgid "Also for Python 2.6 compat:"
+msgstr ""
+
+#: ../../../tmuxp/exc.py:docstring of tmuxp.exc.TmuxpException:4
+# 6ca30b6335174d359b719bb2160cafa1
+msgid "http://stackoverflow.com/a/6029838"
+msgstr ""
+
+#: ../../../tmuxp/exc.py:docstring of tmuxp.exc.TmuxSessionExists:1
+# 621db07528734188bf6d9d440353fc60
+msgid "Session does not exist in the server."
+msgstr ""
+
+#: ../../../tmuxp/exc.py:docstring of tmuxp.exc.EmptyConfigException:1
+# 9f52f3a96ce24f87b52f5c587108c880
+msgid "Configuration is empty."
+msgstr ""
+
+#: ../../../tmuxp/exc.py:docstring of tmuxp.exc.ConfigError:1
+# 8160faabf12e470c8734a42ff21fe145
+msgid "Error parsing tmuxp configuration dict."
+msgstr ""
+

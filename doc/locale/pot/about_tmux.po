@@ -1,0 +1,1210 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../about_tmux.rst:4
+# d55ef5ded91940ee9807a7394fe2febe
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../about_tmux.rst:14
+# f48671fb64e844d2bf32a5dc2e730783
+msgid "The Tao of tmux"
+msgstr ""
+
+#: ../../about_tmux.rst:20
+# 0e54bba673dd4fe88e0a7fd143fafbe7
+msgid "BSD-licensed terminal multiplexer."
+msgstr ""
+
+#: ../../about_tmux.rst:22
+# 8a7b4e6d84e1472ba4486cb57b603cc8
+msgid "tmux is geared for developers and admins who interact regularly with CLI (text-only interfaces)"
+msgstr ""
+
+#: ../../about_tmux.rst:25
+# afe8dcf4aa954084bb981e967020064d
+msgid "In the world of computers, there are 2 realms:"
+msgstr ""
+
+#: ../../about_tmux.rst:27
+# 14add3fc487745debe29da3e614393c8
+msgid "The text realm"
+msgstr ""
+
+#: ../../about_tmux.rst:28
+# ca7b8bf950ab46d59debc46fe21bb897
+msgid "The graphical realm"
+msgstr ""
+
+#: ../../about_tmux.rst:30
+# 2320df8118144d5381676e39d1eafe33
+msgid "Tmux resides in the text realm. This is about fixed-width fonts and that old fashioned black terminal."
+msgstr ""
+
+#: ../../about_tmux.rst:33
+# fd98f9ad3eb14b92aa556698d3958644
+msgid "tmux is to the console what a desktop is to gui apps. It's a world inside the text dimension. Inside tmux you can:"
+msgstr ""
+
+#: ../../about_tmux.rst:36
+# 18d31d67d3ac49bab42931d9168f24ce
+msgid "multitask inside the terminal, run multiple applications."
+msgstr ""
+
+#: ../../about_tmux.rst:37
+# 9031c3fc243d4d3f95c126f92058ff38
+msgid "have multiple command lines (pane) in the same window"
+msgstr ""
+
+#: ../../about_tmux.rst:38
+# 80a440b6970148cbb3e1f6308355aa5c
+msgid "have multiple windows (window) in the workspace (session)"
+msgstr ""
+
+#: ../../about_tmux.rst:39
+# da8c5ab811e649aa9b536b1d09d0cbbb
+msgid "switch between multiple workspaces, like virtual desktops"
+msgstr ""
+
+#: ../../about_tmux.rst:42
+# b486cd9d44ad4e1c98f21dfdcbe25c48
+msgid "Thinking Tmux"
+msgstr ""
+
+#: ../../about_tmux.rst:45
+# f30ae2e9967d4053922d3493009b8b25
+msgid "Text-based window manager"
+msgstr ""
+
+#: ../../about_tmux.rst:48
+# 297f4f600ed24949b8dc31b881205f5f
+msgid "**tmux**"
+msgstr ""
+
+#: ../../about_tmux.rst:48
+# 7a786d67eb5c4c2aa7030adf436ca6d7
+msgid "**\"Desktop\"-Speak**"
+msgstr ""
+
+#: ../../about_tmux.rst:48
+# 55a9d3a2286141cea261e521bb26a37a
+msgid "**Plain English**"
+msgstr ""
+
+#: ../../about_tmux.rst:50
+# ceef2c3f8d5f4847a8923445f3bd2210
+msgid "Multiplexer"
+msgstr ""
+
+#: ../../about_tmux.rst:50
+# 57e766aa965f469c90e3212f4697d796
+msgid "Multi-tasking"
+msgstr ""
+
+#: ../../about_tmux.rst:50
+# 3eefd1c3f41e42a18fd786bf94e19a9d
+msgid "Multiple applications simulataneously."
+msgstr ""
+
+#: ../../about_tmux.rst:52
+# 2362880668f0495d98dd5a738206390d
+msgid "Session"
+msgstr ""
+
+#: ../../about_tmux.rst:52
+# b87e4cc2a4a240d9a2e41af9a268328d
+msgid "Desktop"
+msgstr ""
+
+#: ../../about_tmux.rst:52
+# ba945f4982b940828244b0f581b93551
+msgid "Applications are visible here"
+msgstr ""
+
+#: ../../about_tmux.rst:53
+# 800e50c831374da4895d4fa2fda05499
+msgid "Window"
+msgstr ""
+
+#: ../../about_tmux.rst:53
+# d8f71cdfdd4b47399f53e2b8c05f75f1
+msgid "Virtual Desktop or applications"
+msgstr ""
+
+#: ../../about_tmux.rst:53
+# 30382cdcfb7f4b0bbcd1105c53d9b1bb
+msgid "A desktop that stores it own screen"
+msgstr ""
+
+#: ../../about_tmux.rst:55
+# b4d434bfb4b641d7b7c393cbaefb61eb
+msgid "Pane"
+msgstr ""
+
+#: ../../about_tmux.rst:55
+# ee8a8850973d40cf89b5dac22bd462ae
+msgid "Application"
+msgstr ""
+
+#: ../../about_tmux.rst:55
+# f7464522bac94119aea0b0809ad7b6aa
+msgid "Performs operations"
+msgstr ""
+
+#: ../../about_tmux.rst:77
+# 71e69a2178734cf5a0ae1bf8301532f3
+msgid "1 :term:`Server`."
+msgstr ""
+
+#: ../../about_tmux.rst:79
+# 3be5a0a117234831ba800c88f0ec3d85
+msgid "has 1 or more :term:`Session`."
+msgstr ""
+
+#: ../../about_tmux.rst:81
+# 2a08ff2507014f3eb8897fee0ff00144
+msgid "has 1 or more :term:`Window`."
+msgstr ""
+
+#: ../../about_tmux.rst:83
+# 51ab16258e2e427a8d1f4a0587bd3851
+msgid "has 1 or more :term:`Pane`."
+msgstr ""
+
+#: ../../about_tmux.rst:88
+# 0ad8d617691f43aea1c7e9e4b50a3764
+msgid "CLI Power Tool"
+msgstr ""
+
+#: ../../about_tmux.rst:90
+# 0e486768c3954030bb13cc4b73394f0e
+msgid "Multiple applications or terminals to run on the same screen by splitting up 1 terminal into multiple."
+msgstr ""
+
+#: ../../about_tmux.rst:93
+# 3f9ac4ac2b554641918df4fa6dc37be7
+msgid "One screen can be used to edit a file, and another may be used to ``$ tail -F`` a logfile."
+msgstr ""
+
+#: ../../about_tmux.rst:120
+# 79111709c4954d1782767f3a08d14b37
+msgid "tmux supports as manys terminals as you want."
+msgstr ""
+
+#: ../../about_tmux.rst:152
+# e6326b0dfc2b4d7e95517a85a289656c
+msgid "You can switch between the windows you create."
+msgstr ""
+
+#: ../../about_tmux.rst:155
+# 5f0a7276bdfb4ffaab6daeab5e1633ad
+msgid "Resume everything later"
+msgstr ""
+
+#: ../../about_tmux.rst:157
+# 932f17dc4003458cb519905f03cc2f8e
+msgid "You can leave tmux and all applications running (detach), log out, make a sandwich, and re-(attach), all applications are still running!"
+msgstr ""
+
+#: ../../about_tmux.rst:211
+# a5ac18ce735f489dafda580853ca0b01
+msgid "Manage workflow"
+msgstr ""
+
+#: ../../about_tmux.rst:213
+# 90835f1f0dc0432b8fdb9e5f5e572681
+msgid "System administrators monitor logs and services."
+msgstr ""
+
+#: ../../about_tmux.rst:214
+# 43ec7641bd4744b1a95c456fd86daa4f
+msgid "Programmers like to have an editor open with a CLI nearby."
+msgstr ""
+
+#: ../../about_tmux.rst:216
+# 6af78e8fc56d48abbc1586928bf1e4c9
+msgid "Applications running on a remote server can be launched inside of a tmux session, detached, and reattached next timeyour `\"train of thought\"`_ and work."
+msgstr ""
+
+#: ../../about_tmux.rst:220
+# b710a8b3ed2645c8ba4a61a892943a87
+msgid "Multitasking. Preserving the thinking you have."
+msgstr ""
+
+#: ../../about_tmux.rst:225
+# e7ef2635241e428493fdc80c4218a2d8
+msgid "Installing tmux"
+msgstr ""
+
+#: ../../about_tmux.rst:227
+# cc8784d7e66b4c669498eb2147b0cbf2
+msgid "Tmux is packaged on most Linux and BSD systems."
+msgstr ""
+
+#: ../../about_tmux.rst:229
+# 5d2934708c9c4b5dabf43a89074f0fc2
+msgid "For the freshest results on how to get tmux installed on your system, \"How to install tmux on <my distro>\" will do, as directions change and are slightly different between distributions."
+msgstr ""
+
+#: ../../about_tmux.rst:233
+# 95587deeba2146579727cc0ec4a3f0e9
+msgid "This documentation is written for version **1.8**. It's important that you have the latest stable release of tmux. The latest stable version is viewable on the `tmux homepage`_."
+msgstr ""
+
+#: ../../about_tmux.rst:237
+# 23a529b6f907413ca1e9b68098f39efa
+msgid "**Mac OS X** users may install that latest stable version of tmux through `MacPorts`_, `fink`_ or `Homebrew`_ (aka brew)."
+msgstr ""
+
+#: ../../about_tmux.rst:240
+# 0c6d1aad9ea8421bb309a4d4bdce2d50
+msgid "If **compiling from source**, the dependencies are `libevent`_ and `ncurses`_."
+msgstr ""
+
+#: ../../about_tmux.rst:251
+# 9a93af97f6744679a7495ff5c4f8ae6c
+msgid "Using tmux"
+msgstr ""
+
+#: ../../about_tmux.rst:254
+# e7e128ffd6da4404861df22209038e2d
+msgid "Start a new session"
+msgstr ""
+
+#: ../../about_tmux.rst:260
+# e117bda375dd4d5b969815a49afb7a2c
+msgid "That's all it takes to launch yourself into a tmux session."
+msgstr ""
+
+#: ../../about_tmux.rst:262
+# 4c879f9041b74c19849f50cb2b76c0af
+msgid "Common pitfall"
+msgstr ""
+
+#: ../../about_tmux.rst:264
+# 1c74d2d8ef1d4ea29bc9e3e54e86ea25
+msgid "Running ``$ tmux list-sessions`` or any other command for listing tmux entities (such as ``$ tmux list-windows`` or ``$ tmux list-panes``). This can generate the error \"failed to connect to server\"."
+msgstr ""
+
+#: ../../about_tmux.rst:268
+# 0b2b88553723400090ab05eac267ccfc
+msgid "This could be because:"
+msgstr ""
+
+#: ../../about_tmux.rst:270
+# dc50bb520f534ae1b97fedb293dba774
+msgid "tmux server has killed its' last session, killing the server."
+msgstr ""
+
+#: ../../about_tmux.rst:271
+# 53948b6b8792452a8a2d9ce974c9ba06
+msgid "tmux server has encountered a crash. (tmux is highly stable, this will rarely happen)"
+msgstr ""
+
+#: ../../about_tmux.rst:273
+# f708e1327bd54853bd51a8ec6471d3be
+msgid "tmux has not be launched yet at all."
+msgstr ""
+
+#: ../../about_tmux.rst:278
+# b884e42d3bc747fcacb0c54175c46d87
+msgid "The prefix key"
+msgstr ""
+
+#: ../../about_tmux.rst:280
+# bf676afc3ebe4c7fb6a6516993aeb9f7
+msgid "Tmux hot keys have to be pressed in a special way. **Read this carefully**, then try it yourself."
+msgstr ""
+
+#: ../../about_tmux.rst:283
+# ea03c40927a34ea3bf50825639f94e24
+msgid "First, you press the *prefix* key. This is ``C-b`` by default."
+msgstr ""
+
+#: ../../about_tmux.rst:285
+# c64f2257e8ad43f7a1adccf2b5b40601
+msgid "Release. Then pause. For less than second. Then type what's next."
+msgstr ""
+
+#: ../../about_tmux.rst:287
+# 5c03b975b9ee41e49c32845bfe69b741
+msgid "``C-b o`` means: Press ``Ctrl`` and ``b`` at the same time. Release, Then press ``o``."
+msgstr ""
+
+#: ../../about_tmux.rst:290
+# c4cf3384209c419ba9d9ec540e4a5c72
+msgid "**Remember, prefix + short cut!** ``C`` is ``Ctrl`` key."
+msgstr ""
+
+#: ../../about_tmux.rst:293
+# c9568bab39d3408ebb7f0d490362fe1f
+msgid "Session Name"
+msgstr ""
+
+#: ../../about_tmux.rst:295
+# 8de50f88f91840d5a65222783fe2764b
+msgid "Sessions can be *named upon creation*."
+msgstr ""
+
+#: ../../about_tmux.rst:301
+# d9132158cbac483fb54724dd2f9d79ac
+msgid "Sessions can be *renamed after creation*."
+msgstr ""
+
+#: ../../about_tmux.rst:304
+#: ../../about_tmux.rst:323
+#: ../../about_tmux.rst:334
+# 29f8b05466b2466e9b7aa7eeaff69d90
+# 0f4dcfe4a86c411b9c77c4c82fd811a6
+# 0309fea6db744794be2d49353577faab
+msgid "Command"
+msgstr ""
+
+#: ../../about_tmux.rst:308
+#: ../../about_tmux.rst:327
+#: ../../about_tmux.rst:338
+#: ../../about_tmux.rst:371
+#: ../../about_tmux.rst:401
+#: ../../about_tmux.rst:415
+#: ../../about_tmux.rst:437
+#: ../../about_tmux.rst:461
+#: ../../about_tmux.rst:475
+#: ../../about_tmux.rst:488
+#: ../../about_tmux.rst:503
+#: ../../about_tmux.rst:585
+# 0a9465f46d124d939052575f49ee5788
+# 808410e206ea46208278c41c0efd43cc
+# 7759690548604229bccf7918636c9e74
+# c73103e89ddd4452a2206c94cb75495f
+# c2118d00c0674819b95b607a28dfbcfe
+# fa4faf67f7884179b47f07c0ab39b0b0
+# f2394ca51103414ebb487f200aa484d4
+# 14a7f1e6356742e1a0c1df1e1d06ad1a
+# 0bae643d1cd444c6aec32b238d5db38d
+# 142ac6b7d3904dabb8caf78b86f00754
+# 018eb1a416794049a8bd067e03f96cca
+# 0c53853e155e4e1d80bd03c428cae5ce
+msgid "Short cut"
+msgstr ""
+
+#: ../../about_tmux.rst:308
+# 0458846dbc624ee3a1e4b04644573c11
+msgid "``Prefix`` + ``$``"
+msgstr ""
+
+#: ../../about_tmux.rst:312
+# e2db78e57b6c4f709e090aa6de75b0ef
+msgid "Window Name"
+msgstr ""
+
+#: ../../about_tmux.rst:314
+# 53f3e5c5301440349f320912a05d7c85
+msgid "Windows can be *named upon creation*."
+msgstr ""
+
+#: ../../about_tmux.rst:320
+# a1f45ee657044251b1f07720bc282b19
+msgid "Windows can be *renamed after creation*."
+msgstr ""
+
+#: ../../about_tmux.rst:327
+# 72df81a391d848daa88ab17190bb9799
+msgid "``Prefix`` + ``,``"
+msgstr ""
+
+#: ../../about_tmux.rst:331
+# cfc1246df5654611ae7d7b66a4971b50
+msgid "Creating new windows"
+msgstr ""
+
+#: ../../about_tmux.rst:338
+# 7a88b52c652b4b038daed222ee9c8f7c
+msgid "``Prefix`` + ``c``"
+msgstr ""
+
+#: ../../about_tmux.rst:340
+# 759d223ca905426d8220d136bc671b0e
+msgid "You may then rename window."
+msgstr ""
+
+#: ../../about_tmux.rst:344
+# d215b23bbb9349ba8da06169dfb7ea7f
+msgid "Traverse windows"
+msgstr ""
+
+#: ../../about_tmux.rst:346
+# 061eb6395e2b43d78a8511aea19cb276
+msgid "By number"
+msgstr ""
+
+#: ../../about_tmux.rst:352
+# 36ec09dc183540539d84e78687da9e03
+msgid "Next"
+msgstr ""
+
+#: ../../about_tmux.rst:358
+# 95f8115bd9414e7fb050e0be34615053
+msgid "Previous"
+msgstr ""
+
+#: ../../about_tmux.rst:364
+# da4bea0a58da4ec0976ccfc3ad73558a
+msgid "Last-window"
+msgstr ""
+
+#: ../../about_tmux.rst:371
+#: ../../about_tmux.rst:401
+#: ../../about_tmux.rst:415
+#: ../../about_tmux.rst:437
+#: ../../about_tmux.rst:461
+#: ../../about_tmux.rst:475
+#: ../../about_tmux.rst:488
+#: ../../about_tmux.rst:503
+#: ../../about_tmux.rst:585
+# aa2897988c174f9b8d4314c0c432c441
+# 4f90686ae3f742b99d85240de8e60c8b
+# 2434dcb3ff5448e2abbaca0eb79dd777
+# 6aaec160b2a149b38fa3fe621a4e7762
+# 4be34064a1914e058239729ee1aa3fb2
+# 3d2822276530459cac54c0710fde2d2d
+# 0affbc006dfe44bbb7c0d0cd990cd017
+# 175f51222b71436bb9b09af5974004b7
+# 078f7b83eb0246298ad0733d18f2e368
+msgid "Action"
+msgstr ""
+
+#: ../../about_tmux.rst:373
+#: ../../about_tmux.rst:615
+# e821d6c3f0244404b4763ea7e6712518
+# f10041beedbc47c6a1412c3a8a4e6b29
+msgid "``n``"
+msgstr ""
+
+#: ../../about_tmux.rst:373
+#: ../../about_tmux.rst:615
+# c988c8ff072340d8b1abfcdcf4eb0003
+# 744ec3ed7d2141cdaa3b7ce43323b947
+msgid "Change to the next window."
+msgstr ""
+
+#: ../../about_tmux.rst:374
+#: ../../about_tmux.rst:617
+# 293d39ebe3bc46fb8821df7829916a9b
+# 2a246a3ea43942ecbfbea6e9c128c635
+msgid "``p``"
+msgstr ""
+
+#: ../../about_tmux.rst:374
+#: ../../about_tmux.rst:617
+# 8d069214072f49469a678acc3b036f8c
+# 645f79b7211b47f6a08c1d3abdb02889
+msgid "Change to the previous window."
+msgstr ""
+
+#: ../../about_tmux.rst:375
+#: ../../about_tmux.rst:624
+# 4c61a271298142cfbb0785796c382c12
+# 3abf6766efca4fadb64bea8d666010b2
+msgid "``w``"
+msgstr ""
+
+#: ../../about_tmux.rst:375
+#: ../../about_tmux.rst:624
+# 302090f3db9a4b85969b581716750371
+# 7946c904a0f94b6482aadd38425fade8
+msgid "Choose the current window interactively."
+msgstr ""
+
+#: ../../about_tmux.rst:376
+#: ../../about_tmux.rst:601
+# 93d573b09aa74911a22a48e8e88eb411
+# 75c49f6d91c3412488a846714bfa300d
+msgid "``0 to 9``"
+msgstr ""
+
+#: ../../about_tmux.rst:376
+#: ../../about_tmux.rst:601
+# f8bfcb8b1a9c44bc985f7e63592ec267
+# e69ae7026986465e97fc1fbe6df4547d
+msgid "Select windows 0 to 9."
+msgstr ""
+
+#: ../../about_tmux.rst:378
+#: ../../about_tmux.rst:635
+# 9f0665ca891c4b2e878d86dde61caee4
+# ab059da99d3b44dfafb5337311ca57be
+msgid "``M-n``"
+msgstr ""
+
+#: ../../about_tmux.rst:378
+#: ../../about_tmux.rst:635
+# 1353233e6caa46b2a33ab9bafcb003ee
+# 6b3a68f0ce6b4a0d88fc496945dba04e
+msgid "Move to the next window with a bell or activity marker."
+msgstr ""
+
+#: ../../about_tmux.rst:380
+#: ../../about_tmux.rst:638
+# a3b0e19eb3b44cdc93684f9bf8313e4c
+# c5bfb3802d1a4f48b7162c3bc75c52ff
+msgid "``M-p``"
+msgstr ""
+
+#: ../../about_tmux.rst:380
+#: ../../about_tmux.rst:638
+# a0ea4c8c88c645e08defd58cd0250029
+# 42e44e60e51b439090db8b1d09fabd4b
+msgid "Move to the previous window with a bell or activity marker."
+msgstr ""
+
+#: ../../about_tmux.rst:386
+# 0bed24a14c8f40e9ba1fe95d573bd9c2
+msgid "Move windows"
+msgstr ""
+
+#: ../../about_tmux.rst:388
+# 6e0301b1cd0a43d2857a99e23e311fc0
+msgid "Move window"
+msgstr ""
+
+#: ../../about_tmux.rst:394
+# 62cad8bbe0504560a954461bea8c8002
+msgid "Swap the window"
+msgstr ""
+
+#: ../../about_tmux.rst:403
+#: ../../about_tmux.rst:600
+# 3c6af7ff09634757ab12ee9ddab53fe9
+# 7ee12f0c87a248bbac0f409c6713f2f5
+msgid "``.``"
+msgstr ""
+
+#: ../../about_tmux.rst:403
+#: ../../about_tmux.rst:600
+# 0088f26ce7e34ff1b67ac4e8f93e3611
+# d00c62170e9c4149ab24afe2f644fe34
+msgid "Prompt for an index to move the current window."
+msgstr ""
+
+#: ../../about_tmux.rst:408
+# c90338f2d369431b804df817c688e782
+msgid "Move panes"
+msgstr ""
+
+#: ../../about_tmux.rst:417
+#: ../../about_tmux.rst:589
+# 7b632b3f0ca94fc2924910a6b8879f8e
+# 060fa1af45104658afa4b2dfddb04322
+msgid "``C-o``"
+msgstr ""
+
+#: ../../about_tmux.rst:417
+#: ../../about_tmux.rst:589
+# e01fb95f816c4034ae251c9c66812755
+# 74e08e2b0a8a46d0b5f1673442db8236
+msgid "Rotate the panes in the current window forwards."
+msgstr ""
+
+#: ../../about_tmux.rst:418
+#: ../../about_tmux.rst:626
+# d00a0561f3964134a98d91e4dad582dc
+# c9e594399f3848a3ac25a2fc90762b2a
+msgid "``{``"
+msgstr ""
+
+#: ../../about_tmux.rst:418
+#: ../../about_tmux.rst:626
+# e364d09e1df646bb92fdc2692a91f8be
+# 4239fefe827d4b97a7b7571348dfe94c
+msgid "Swap the current pane with the previous pane."
+msgstr ""
+
+#: ../../about_tmux.rst:419
+#: ../../about_tmux.rst:627
+# 45a9f76a3ec64d0cbe2916d7d3dbe478
+# 11a122f08086496087793e943e0ff609
+msgid "``}``"
+msgstr ""
+
+#: ../../about_tmux.rst:419
+#: ../../about_tmux.rst:627
+# 9744ccfcf5804ffead2c94e4a7ce9085
+# b0f1b2d376134134b3332f2526f389d9
+msgid "Swap the current pane with the next pane."
+msgstr ""
+
+#: ../../about_tmux.rst:424
+# d4dbffd0bde0449285847ebdc3290be1
+msgid "Traverse panes"
+msgstr ""
+
+#: ../../about_tmux.rst:426
+# f6da0136fa094893903081c8ed1ceb3c
+msgid "Shortcut to move between panes."
+msgstr ""
+
+#: ../../about_tmux.rst:439
+#: ../../about_tmux.rst:630
+# 4d7b6df8e28f4b24b03dcf30b6555e33
+# cbfe6a99b68b4c22b5ad416d62972d6f
+msgid "``Up, Down``"
+msgstr ""
+
+#: ../../about_tmux.rst:439
+#: ../../about_tmux.rst:630
+# 14269d3c35fb4ff5b19d7521d9e3e10e
+# b65a1744516e4c27afdf7ac8e59590f2
+msgid "Change to the pane above, below, to the left, or to"
+msgstr ""
+
+#: ../../about_tmux.rst:440
+#: ../../about_tmux.rst:631
+# 48b3882f56d148c28eb2f0709a622f41
+# 632f38a16b4e4ba9bd8b82634327b3ff
+msgid "``Left, Right``"
+msgstr ""
+
+#: ../../about_tmux.rst:440
+#: ../../about_tmux.rst:631
+# df2e6660fc7f47a5a6c6e17e5dd2e4f7
+# 73d36c044a49427c96354f1f1154645c
+msgid "the right of the current pane."
+msgstr ""
+
+#: ../../about_tmux.rst:444
+# ceb9764002c342b88c93a28a82b73608
+msgid "Recipe: tmux conf to ``hjkl`` commands, add this to your ``~/.tmux.conf``::"
+msgstr ""
+
+#: ../../about_tmux.rst:454
+#: ../../about_tmux.rst:481
+# 58871dbbeeb54fa192b7434be7fd949a
+# dc86588c70c1443098c91b6cad845060
+msgid "Kill window"
+msgstr ""
+
+#: ../../about_tmux.rst:463
+#: ../../about_tmux.rst:490
+#: ../../about_tmux.rst:596
+# ab27c243983e4bcf92e2f196985b0090
+# 3bdad30a92ab471a82d4a300ec29d96c
+# 02a1f902a18e4189a72010d6d7255466
+msgid "``&``"
+msgstr ""
+
+#: ../../about_tmux.rst:463
+#: ../../about_tmux.rst:490
+#: ../../about_tmux.rst:596
+# 6a4ede4624844ac981bcafda280a3669
+# 23b6903d2c0d418b996fdbda10f59c28
+# c4d66267940d4e078cf94eb11d0b8152
+msgid "Kill the current window."
+msgstr ""
+
+#: ../../about_tmux.rst:468
+# 643a70e7dcb74ee1844abc5da9ec9d55
+msgid "Kill pane"
+msgstr ""
+
+#: ../../about_tmux.rst:477
+#: ../../about_tmux.rst:625
+# aed19a9ea5e440c9ae10e1112e2d0367
+# 1e2be260ba464c89ba79f0383b03bc10
+msgid "``x``"
+msgstr ""
+
+#: ../../about_tmux.rst:477
+#: ../../about_tmux.rst:625
+# df861e6cda354937a3f6ad7c9cfccfae
+# 0ccd80a0a71a41c9b87d403a70ce9081
+msgid "Kill the current pane."
+msgstr ""
+
+#: ../../about_tmux.rst:494
+# 333d9a17edaf4147a8cae79888f8bff1
+msgid "Splitting windows into panes"
+msgstr ""
+
+#: ../../about_tmux.rst:500
+# 28cd43f356ba4507bad7d6bff8fb393b
+msgid "Tmux windows can be split into multiple panes."
+msgstr ""
+
+#: ../../about_tmux.rst:505
+#: ../../about_tmux.rst:595
+# 10e51c24908b47fab8b829a9ebcbeb47
+# fa86d2de4edc47448303dfda7f4d8e6c
+msgid "``%``"
+msgstr ""
+
+#: ../../about_tmux.rst:505
+#: ../../about_tmux.rst:595
+# b78836eb3007443f985def4074fc6a7c
+# 8e2f48dffa4840ff8920542a0e1d1b79
+msgid "Split the current pane into two, left and right."
+msgstr ""
+
+#: ../../about_tmux.rst:506
+#: ../../about_tmux.rst:592
+# fe8fc40887ae4b37aa7948221c9e0ae7
+# a5adf9412a974aa1b883ffe6483edadc
+msgid "``\"``"
+msgstr ""
+
+#: ../../about_tmux.rst:506
+#: ../../about_tmux.rst:592
+# 05a82eabe1154e9f950dbe412a3a916f
+# c6851ccfa94d45788ad552b44513f2ca
+msgid "Split the current pane into two, top and bottom."
+msgstr ""
+
+#: ../../about_tmux.rst:510
+# 7b47b5b4c992439096c0189147f60486
+msgid "Tmux configuration"
+msgstr ""
+
+#: ../../about_tmux.rst:512
+# 752433a184d44bfc8c7e0f4f831a2df9
+msgid "Tmux can be configured via a configuration at ``~/.tmux.conf``."
+msgstr ""
+
+#: ../../about_tmux.rst:514
+# e277341f2b8d453da079e7717dc31ad5
+msgid "Depending on your tmux version, there is different options available."
+msgstr ""
+
+#: ../../about_tmux.rst:517
+# 2f4adb94b5054c33b4e42259123fcb00
+msgid "Vi copypaste"
+msgstr ""
+
+#: ../../about_tmux.rst:527
+# 9387ea68f8ab4343a55f69a8deeb44f6
+msgid "Aggressive resizing for clients"
+msgstr ""
+
+#: ../../about_tmux.rst:534
+# 6a3886b1190044448cc68167ef8243f5
+msgid "Reload config"
+msgstr ""
+
+#: ../../about_tmux.rst:536
+# 2dd097416f1148c9bdd0a98cf413b672
+msgid "``<Prefix>`` + ``r``."
+msgstr ""
+
+#: ../../about_tmux.rst:543
+# b18fc830d471486889b6f93db99759b0
+msgid "Status lines"
+msgstr ""
+
+#: ../../about_tmux.rst:545
+# 8d69070094bc46a59a8f7278150b4091
+msgid "Tmux allows configuring a status line that displays system information, window list, and even pipe in the ``stdout`` of an application."
+msgstr ""
+
+#: ../../about_tmux.rst:548
+# 65a36a30166648028af3070360250d86
+msgid "You can use `tmux-mem-cpu-load`_ to get stats (requires compilation) and `basic-cpu-and-memory.tmux`_. You can pipe in a bash command to a tmux status line like:"
+msgstr ""
+
+#: ../../about_tmux.rst:556
+# 1c461d5c13c24502882c3e5986fe329f
+msgid "So if ``/usr/local/bin/tmux-mem-cpu-load`` outputs stats to ``stdout``, then ``$(tmux-mem-cpu-load)`` is going to output the first line to the status line.  The interval is determined by the ``status-interval``::"
+msgstr ""
+
+#: ../../about_tmux.rst:567
+# 73cab0d1ae3f419f85c5931108ea0a2a
+msgid "Examples"
+msgstr ""
+
+#: ../../about_tmux.rst:569
+# 4e3bb327921948b58ed863304b505ccc
+msgid "https://github.com/tony/tmux-config - works with tmux 1.5+. Supports screen's ``ctrl-a`` :ref:`Prefix key`. Support for system cpu, memory, uptime stats."
+msgstr ""
+
+#: ../../about_tmux.rst:572
+# 1227a54455d143b282921d001b0092ec
+msgid "Add yours, edit this page on github."
+msgstr ""
+
+#: ../../about_tmux.rst:575
+# e32a3c691aa84b248b846e6e1ccbe052
+msgid "Reference"
+msgstr ""
+
+#: ../../about_tmux.rst:578
+# ebdfe7c6248543c88afdd7428c217746
+msgid "Short cuts"
+msgstr ""
+
+#: ../../about_tmux.rst:582
+# 80055ecba9714440ada54084181c2187
+msgid ":ref:`Prefix key` is pressed before a short cut!"
+msgstr ""
+
+#: ../../about_tmux.rst:587
+# acfe1aa49418495c8714c487b4fe86ec
+msgid "``C-b``"
+msgstr ""
+
+#: ../../about_tmux.rst:587
+# 35de4aff98874e8d9f447115b2ece76a
+msgid "Send the prefix key (C-b) through to the application."
+msgstr ""
+
+#: ../../about_tmux.rst:590
+# f96d649974d647a78de23efafdebc790
+msgid "``C-z``"
+msgstr ""
+
+#: ../../about_tmux.rst:590
+# 9037c2c02d564667b16b4bf84753b48c
+msgid "Suspend the tmux client."
+msgstr ""
+
+#: ../../about_tmux.rst:591
+# 9eed1935d53745edaed044ae41b49f5c
+msgid "``!``"
+msgstr ""
+
+#: ../../about_tmux.rst:591
+# eb5c431a9afa42cebf44a07873505e69
+msgid "Break the current pane out of the window."
+msgstr ""
+
+#: ../../about_tmux.rst:593
+# 66b11f926c2946318454891986c1d50a
+msgid "``#``"
+msgstr ""
+
+#: ../../about_tmux.rst:593
+# ec8197bdfdaf4dada56f86cd94b5d2fd
+msgid "List all paste buffers."
+msgstr ""
+
+#: ../../about_tmux.rst:594
+# d4a3b66efb344715988d428197dc3027
+msgid "``$``"
+msgstr ""
+
+#: ../../about_tmux.rst:594
+# 16f8138f8f714ddf935b1bf44d7b84a9
+msgid "Rename the current session."
+msgstr ""
+
+#: ../../about_tmux.rst:597
+# 04cd9f7cf2994f2690a1c711cc5f9748
+msgid "``'``"
+msgstr ""
+
+#: ../../about_tmux.rst:597
+# de9de87755e24393853ffb427ef71748
+msgid "Prompt for a window index to select."
+msgstr ""
+
+#: ../../about_tmux.rst:598
+# 8f47e59904c54c029884d11d55ac6356
+msgid "``,``"
+msgstr ""
+
+#: ../../about_tmux.rst:598
+# 4e4c43ca6a9d44c3a121675754bb8a6c
+msgid "Rename the current window."
+msgstr ""
+
+#: ../../about_tmux.rst:599
+# 2aae5466f325457cae4283291cbcad3e
+msgid "``-``"
+msgstr ""
+
+#: ../../about_tmux.rst:599
+# cec2d236b9b041628f02d59b16d22bf3
+msgid "Delete the most recently copied buffer of text."
+msgstr ""
+
+#: ../../about_tmux.rst:602
+# f86514eaa9f6476d99c412a29ee58bcf
+msgid "``:``"
+msgstr ""
+
+#: ../../about_tmux.rst:602
+# 03046bca5b614598b60a78bb475db369
+msgid "Enter the tmux command prompt."
+msgstr ""
+
+#: ../../about_tmux.rst:603
+# 157a3e243a3b40819285d80cb1f42fd0
+msgid "``;``"
+msgstr ""
+
+#: ../../about_tmux.rst:603
+# f2086c61a93945b29244a067c5e1abc0
+msgid "Move to the previously active pane."
+msgstr ""
+
+#: ../../about_tmux.rst:604
+# 792af44341654f4487c093c82260af13
+msgid "``=``"
+msgstr ""
+
+#: ../../about_tmux.rst:604
+# dd4f35f14e004d76844df45cefe3ed39
+msgid "Choose which buffer to paste interactively from a list."
+msgstr ""
+
+#: ../../about_tmux.rst:606
+# 69e5de1e93ff4ebab680daac8a00e44e
+msgid "``?``"
+msgstr ""
+
+#: ../../about_tmux.rst:606
+# a9326f15152748738ad10198e1c24a13
+msgid "List all key bindings."
+msgstr ""
+
+#: ../../about_tmux.rst:607
+# 97905920e0de444daf863cf846b26ce9
+msgid "``D``"
+msgstr ""
+
+#: ../../about_tmux.rst:607
+# bc6eb70c9cc94966bec62b25a752288d
+msgid "Choose a client to detach."
+msgstr ""
+
+#: ../../about_tmux.rst:608
+# ba9a1bc60d4946698271dbc9740797bd
+msgid "``[``"
+msgstr ""
+
+#: ../../about_tmux.rst:608
+# bd8e66a3653c4491b42752dab9332b99
+msgid "Enter copy mode to copy text or view the history."
+msgstr ""
+
+#: ../../about_tmux.rst:609
+# 21e7cea41e29408eb71dc06fd4716565
+msgid "``]``"
+msgstr ""
+
+#: ../../about_tmux.rst:609
+# ff01d1aeeb6a4498a95c0557dba5579c
+msgid "Paste the most recently copied buffer of text."
+msgstr ""
+
+#: ../../about_tmux.rst:610
+# 7518cc29773e4c7d8909eedbf8abca8b
+msgid "``c``"
+msgstr ""
+
+#: ../../about_tmux.rst:610
+# 375a54f572804c7494d5852f4386f96c
+msgid "Create a new window."
+msgstr ""
+
+#: ../../about_tmux.rst:611
+# 4b0f0ff817c74bb5b6deff2a5ecc4acf
+msgid "``d``"
+msgstr ""
+
+#: ../../about_tmux.rst:611
+# fc59f7157026490f9b21a6a17d9dc5a3
+msgid "Detach the current client."
+msgstr ""
+
+#: ../../about_tmux.rst:612
+# ea1fd57f404f46b19b16d1d91ec6053a
+msgid "``f``"
+msgstr ""
+
+#: ../../about_tmux.rst:612
+# 92276643a78b45ae98feeefa02aa678f
+msgid "Prompt to search for text in open windows."
+msgstr ""
+
+#: ../../about_tmux.rst:613
+# a46843717e114f62a09e2610efbf5560
+msgid "``i``"
+msgstr ""
+
+#: ../../about_tmux.rst:613
+# 64f05d05a6274c69a6d9fab5657e61e3
+msgid "Display some information about the current window."
+msgstr ""
+
+#: ../../about_tmux.rst:614
+# 878154f4d29d4cf1a8210921abb19ebb
+msgid "``l``"
+msgstr ""
+
+#: ../../about_tmux.rst:614
+# 0fcd06e63baa446dbc7e7c562a3c99cf
+msgid "Move to the previously selected window."
+msgstr ""
+
+#: ../../about_tmux.rst:616
+# c63b0fb9edc14e7f85c8468a689448f4
+msgid "``o``"
+msgstr ""
+
+#: ../../about_tmux.rst:616
+# 0e73bb00ca214a4ca9bf319019dfbcd5
+msgid "Select the next pane in the current window."
+msgstr ""
+
+#: ../../about_tmux.rst:618
+# 39b3bdaf683b47ffb202c39c36133e7f
+msgid "``q``"
+msgstr ""
+
+#: ../../about_tmux.rst:618
+# 991a9b217c9449cd872b7a1099568e91
+msgid "Briefly display pane indexes."
+msgstr ""
+
+#: ../../about_tmux.rst:619
+# 48ef0c0814f54754b01edee484971ed7
+msgid "``r``"
+msgstr ""
+
+#: ../../about_tmux.rst:619
+# c9331357a5864a84b63153faf27a7344
+msgid "Force redraw of the attached client."
+msgstr ""
+
+#: ../../about_tmux.rst:620
+# 60617eca7903443b8e0d3df9dbd14790
+msgid "``s``"
+msgstr ""
+
+#: ../../about_tmux.rst:620
+# 33f58812ba9d4c8481e7c4b83f164d4b
+msgid "Select a new session for the attached client interactively."
+msgstr ""
+
+#: ../../about_tmux.rst:622
+# f1bf903896e14072bdecdc1e66cb3218
+msgid "``L``"
+msgstr ""
+
+#: ../../about_tmux.rst:622
+# 5d8007a8de294a9d80c7fcd1cdba6b0f
+msgid "Switch the attached client back to the last session."
+msgstr ""
+
+#: ../../about_tmux.rst:623
+# a122225049294dddb70eaaf30e17445d
+msgid "``t``"
+msgstr ""
+
+#: ../../about_tmux.rst:623
+# 1f053108ca674ef0a825955caaea3f7b
+msgid "Show the time."
+msgstr ""
+
+#: ../../about_tmux.rst:628
+# 0996169bafb54e3a9283c1169a6ad9f9
+msgid "``~``"
+msgstr ""
+
+#: ../../about_tmux.rst:628
+# 57263e6539404b81804849c5f8a3212e
+msgid "Show previous messages from tmux, if any."
+msgstr ""
+
+#: ../../about_tmux.rst:629
+# 7406e216dc83481987dd4dac76815266
+msgid "``Page Up``"
+msgstr ""
+
+#: ../../about_tmux.rst:629
+# ad6591d47b81459dba8a895b78d282b0
+msgid "Enter copy mode and scroll one page up."
+msgstr ""
+
+#: ../../about_tmux.rst:632
+# 127b74dbb0364879a3db0376d0ddf46f
+msgid "``M-1 to M-5``"
+msgstr ""
+
+#: ../../about_tmux.rst:632
+# ad110960e0ae427a9423f900c344f016
+msgid "Arrange panes in one of the five preset layouts: even-horizontal, even-vertical, main-horizontal, main-vertical, or tiled."
+msgstr ""
+
+#: ../../about_tmux.rst:637
+# c275e2ad31eb467eb5d2b4ec0e9357b5
+msgid "``M-o``"
+msgstr ""
+
+#: ../../about_tmux.rst:637
+# ae839d65c3854813959d4f145313c788
+msgid "Rotate the panes in the current window backwards."
+msgstr ""
+
+#: ../../about_tmux.rst:640
+# 2819d994f3ab41b49dac41079f0c885a
+msgid "``C-Up, C-Down``"
+msgstr ""
+
+#: ../../about_tmux.rst:640
+# 2ba012a06b814caea7b26811247120fb
+msgid "Resize the current pane in steps of one cell."
+msgstr ""
+
+#: ../../about_tmux.rst:641
+# 16deeae6f34f4618b4bc6d55b503826e
+msgid "``C-Left, C-Right``"
+msgstr ""
+
+#: ../../about_tmux.rst:642
+# 7c05b27b44574989b855796215272c85
+msgid "``M-Up, M-Down``"
+msgstr ""
+
+#: ../../about_tmux.rst:642
+# 2d563bb7d2de480598a436016b929fd4
+msgid "Resize the current pane in steps of five cells."
+msgstr ""
+
+#: ../../about_tmux.rst:643
+# 07dde2811c7943fd94b4393632760b2c
+msgid "``M-Left, M-Right``"
+msgstr ""
+
+#: ../../about_tmux.rst:646
+# 5d1429fe52e04a3c834f58f52298989d
+msgid "Source: tmux manpage [1]_."
+msgstr ""
+
+#: ../../about_tmux.rst:648
+# 1bdbc2dbf2354b9d8c65386d0b5f88d2
+msgid "See the ``tmux.1`` at http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1 and use"
+msgstr ""
+
+#: ../../about_tmux.rst:656
+# 174d0451776f45b59794eda3a3811107
+msgid "License"
+msgstr ""
+
+#: ../../about_tmux.rst:658
+# 448bffd334ee4d9590f736a89b70f616
+msgid "This page is licensed `Creative Commons BY-NC-ND 3.0 US`_."
+msgstr ""
+

@@ -1,0 +1,1023 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../history.rst:4
+# 0943118d682446f8965542061f4ea931
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../history.rst:14
+# a51f352a456046c7854f54696f3baee0
+msgid "History"
+msgstr ""
+
+#: ../../../CHANGES:1
+# 5978e592d059461c8113bed4597567ac
+msgid "Here you can find the recent changes to tmuxp."
+msgstr ""
+
+#: ../../../CHANGES:4
+# 4e6cb1c0fe0e4373aac11e239676b8e4
+msgid "0.1-rc2"
+msgstr ""
+
+#: ../../../CHANGES:6
+# 7c6b9fa6da234f48a195f04dd2e9bad5
+msgid "[cli] [tests] - fix `Issue #23`_ where workspace would not build with pane-base-index set to 1. Update tests to fix if ``pane-base-index`` is not 0."
+msgstr ""
+
+#: ../../../CHANGES:9
+# 18b2e9d3f26f42bda0dac8ceb63c34af
+msgid "[cli] - removed ``$ tmuxp load --list`` functionality. Update :ref:`quickstart` accordingly."
+msgstr ""
+
+#: ../../../CHANGES:15
+# 7c609c87d1084890bd30ed5c7c5952da
+msgid "0.1-rc1"
+msgstr ""
+
+#: ../../../CHANGES:17
+# fb81904eb3ab46f496233d4d7d99708d
+msgid "[internal] `pep8`_ and `pep257`_ in unit tests."
+msgstr ""
+
+#: ../../../CHANGES:18
+# 5ee6c39ada1a49c286ffbd119e764b97
+msgid "Changelog will now be updated on a version basis, use `pep440`_ versioning."
+msgstr ""
+
+#: ../../../CHANGES:22
+# adfdb440e2cf455ba592c6a95d0b0712
+msgid "0.1-dev"
+msgstr ""
+
+#: ../../../CHANGES:25
+# 058736b464904141a75a78bd8d6e525c
+msgid "2013-11-21"
+msgstr ""
+
+#: ../../../CHANGES:27
+# 7d24547c2c2f421ebada1f219f42ff91
+msgid "[internal] :meth:`Session.show_options`, :meth:`Session.show_option` now accept ``g`` to pass in ``-g``."
+msgstr ""
+
+#: ../../../CHANGES:31
+# af9cc8171a8d4d89a1ffdb9fd160f6ad
+msgid "2013-11-20"
+msgstr ""
+
+#: ../../../CHANGES:33
+# 5f44d1ae99304b9baef1bcd009ecd54c
+msgid "[internal] :meth:`Window.show_window_options`, :meth:`Window.show_window_option` now accept ``g`` to pass in ``-g``."
+msgstr ""
+
+#: ../../../CHANGES:35
+# ccecb0200c244bffbf224e7056b27128
+msgid "[internal] [bug] Behavioral changes in the WorkspaceBuilder to fix pane ordering `Issue #15`_."
+msgstr ""
+
+#: ../../../CHANGES:37
+# cb843d8e68f946e881aaa0673d70e372
+msgid "[internal] [bug] `Issue #21`_ - Error with unit testing python 2.6 python configuration tests. Use :py:mod:`tempfile` instead."
+msgstr ""
+
+#: ../../../CHANGES:39
+# 5fcf1fab633442838bac0fb30f0b8ff1
+msgid "[tests] WorkspaceBuilder tests have been improved to use async better."
+msgstr ""
+
+#: ../../../CHANGES:45
+# 354e2df6f71e450b911a0ad5a2c00397
+msgid "2013-11-17"
+msgstr ""
+
+#: ../../../CHANGES:47
+# acaf55c652254737a67d7b2654a86ab8
+msgid "[cli] fix a bug where missing tmux didn't show correct warning."
+msgstr ""
+
+#: ../../../CHANGES:50
+# 2902846aa55f4f98a22f6e4bed6cef14
+msgid "2013-11-15"
+msgstr ""
+
+#: ../../../CHANGES:52
+# 7d7963c5f4494b36ac9b1e9cec225d7f
+msgid "[tests] Travis now tests python 2.6 as requirement and not allowed to fail."
+msgstr ""
+
+#: ../../../CHANGES:56
+# f1d463e2dc504d5b874448f1e7dc04c6
+msgid "2013-11-13"
+msgstr ""
+
+#: ../../../CHANGES:58
+# a6b59b248f7e453fb1c01293f10a76ba
+msgid "[cli] accept ``-y`` argument to answer yes to questions. `#19`_"
+msgstr ""
+
+#: ../../../CHANGES:59
+# 79fb1f004dac4b5db75a1ba9c010f341
+msgid "[cli] :meth:`cli.SessionCompleter` no longer allows a duplicate session after one is added."
+msgstr ""
+
+#: ../../../CHANGES:61
+# a235ed7c45a44b7ba5acd2719fc63a5c
+msgid "[docs] ongoing work on :ref:`about_tmux`."
+msgstr ""
+
+#: ../../../CHANGES:67
+# 6242cbe603044d72bad29584c79dac63
+msgid "2013-11-09"
+msgstr ""
+
+#: ../../../CHANGES:69
+# 739419f1fc1a468dbdc921d6373f61d6
+msgid "[docs] [translation] `documentation in Chinese`_ from `wrongwaycn`_."
+msgstr ""
+
+#: ../../../CHANGES:70
+# 76cc64ec403b42eba204acf64f06f875
+msgid "[docs] More work done on the :ref:`about_tmux` page."
+msgstr ""
+
+#: ../../../CHANGES:71
+# 7980768cf5d64a2bbd8e777583a6ea51
+msgid "[cli] :meth:`Pane.split_window()` for splitting :class:`Window` at ``target-pane`` location."
+msgstr ""
+
+#: ../../../CHANGES:78
+# 533f7efa99a242b89444bf23ddfef499
+msgid "2013-11-08"
+msgstr ""
+
+#: ../../../CHANGES:80
+# 20719c9277114f70b3976789726272f2
+msgid "[cli] [freeze] - ``$ tmuxp freeze`` will now freeze a window with a ``start_directory`` when all panes in a window are inside the same directory."
+msgstr ""
+
+#: ../../../CHANGES:83
+# 5fbd7697abab4c298dc0d4688f231d89
+msgid "[cli] [config] [tests] :meth:`config.inline` will now turn panes with no other attributes and 1 command into a single item value."
+msgstr ""
+
+#: ../../../CHANGES:99
+# bf17b71e7b6a4a4a9635b32dc0fdb46b
+msgid "2013-11-07"
+msgstr ""
+
+#: ../../../CHANGES:101
+# 7e46608f06774e77857671c1ca77c5ff
+msgid "[internal] Remove old logger (based on `tornado's log.py`_), replace with new, simpler one."
+msgstr ""
+
+#: ../../../CHANGES:103
+# 0c2bd96f0d324770b205ac40c0e89c0d
+msgid "[cli] [import] fix `teamocil`_ import."
+msgstr ""
+
+#: ../../../CHANGES:104
+# 33bd9a860a96408d9a0e1cd4a2549e21
+msgid "[import] [tests]: support import teamocil ``root`` to ``start_directory``."
+msgstr ""
+
+#: ../../../CHANGES:110
+# 2d02a66d15264c14b5b2dda20bbae602
+msgid "2013-11-06"
+msgstr ""
+
+#: ../../../CHANGES:112
+# ca1ad958b54746b28ef62af721782564
+msgid "[cli] [tests] tagged v0.0.37. Many fixes. Python 2.6 support. Will switch to per-version changelog after 0.1 release.."
+msgstr ""
+
+#: ../../../CHANGES:114
+# e9f7d8413c954e20bc73eaf2202db15c
+msgid "[config] support for blank panes (null, ``pane``, ``blank``) and panes with empty strings."
+msgstr ""
+
+#: ../../../CHANGES:116
+# 11581d77e3d44c15b655c6ab86a37442
+msgid "[freeze] tmuxp freeze supports exporting to blank panes."
+msgstr ""
+
+#: ../../../CHANGES:117
+# 7a87d21e38444b879f48efb29c9145db
+msgid "[freeze] tmuxp freeze will now return a blank pane for panes that would previously return a duplicate shell command, or generic python, node interpreter."
+msgstr ""
+
+#: ../../../CHANGES:122
+# 856f329741a24694803ddae769e9c41e
+msgid "2013-11-05"
+msgstr ""
+
+#: ../../../CHANGES:124
+# c38024ee13bf40af9724c5f57982ef91
+msgid "[cli] Support for ``[-L socket-name]`` and ``[-S socket-path]`` in autocompletion and when loading. Note, switching client into another socket may cause an error."
+msgstr ""
+
+#: ../../../CHANGES:127
+# 368d4d36467f405bb808c9d59a570e33
+msgid "Documentation tweaking to :ref:`API`, :ref:`about_tmux`."
+msgstr ""
+
+#: ../../../CHANGES:128
+# c0c70046fbe245e1aefe3651df14a446
+msgid "New :ref:`roadmap`."
+msgstr ""
+
+#: ../../../CHANGES:129
+# f2b93308e85a4f81bdd2ab000ab9288e
+msgid "`pep257`_, `pep8`_."
+msgstr ""
+
+#: ../../../CHANGES:132
+# 147913ca88684bdea4dd2db031a2f24d
+msgid "2013-11-04"
+msgstr ""
+
+#: ../../../CHANGES:134
+# 61d3910810d749b6894b07564e375632
+msgid "[internal] [docs] - `pep257`_, `pep8`_."
+msgstr ""
+
+#: ../../../CHANGES:135
+# 5fb509dec93a40c083a70784d3a6eeff
+msgid "tagged version ``v0.0.36``."
+msgstr ""
+
+#: ../../../CHANGES:138
+# 0b426e6e70b541a8bfbd274817d27808
+msgid "2013-11-02"
+msgstr ""
+
+#: ../../../CHANGES:140
+# 9f7a837b46834d31a4f4e780ca288bae
+msgid "[docs] Many documentation, `pep257`_, `pep8`_ fixes"
+msgstr ""
+
+#: ../../../CHANGES:141
+# 5e4d4b8e1c5d4532bcc25dfe0163f943
+msgid "[internal] move old :class:`Server` methods ``__list_panes()``, ``__list_windows`` and ``__list_sessions`` into the single underscore."
+msgstr ""
+
+#: ../../../CHANGES:143
+# e691f10356354b3dbc88d768867b306e
+msgid "[cli] #12 bug fix for ``$ tmuxp freeze`` by @finder."
+msgstr ""
+
+#: ../../../CHANGES:144
+# 4439719d9bcc41efbdae5e9266214b7c
+msgid "[cli] Support for spaces in ``$ tmuxp attach-session`` and ``$ tmuxp kill-session``, and ``$ tmuxp freeze``."
+msgstr ""
+
+#: ../../../CHANGES:146
+# cf45418812384d1aad5e95b47346590c
+msgid "[config] [tests] support for relative paths of ``start_directory``. Add an update config in *Start Directory* on :ref:`examples`."
+msgstr ""
+
+#: ../../../CHANGES:150
+# f0562890d7eb4cfab8422d68726c8ce9
+msgid "2013-11-01"
+msgstr ""
+
+#: ../../../CHANGES:152
+# 72a01bd7cd57409caabc823ac25eb421
+msgid "[internal] [tests] New servers for :class:`Server` arguments ``socket_name``, ``socket_path``, ``config_file``."
+msgstr ""
+
+#: ../../../CHANGES:154
+# d924e4463eb24c7781248d9ab03d9935
+msgid "[internal] :class:`Server` support for ``-2`` with ``colors=256`` and ``colors=8``."
+msgstr ""
+
+#: ../../../CHANGES:156
+# 300ffa26391d45c6a5834ed3dc8ddd8d
+msgid "[cli] ``$ tmuxp -2`` for forcing 256 colors and ``tmuxp -8`` for forcing 88."
+msgstr ""
+
+#: ../../../CHANGES:157
+# ffa81696322d4e5f9f8f5ffe9c2620ff
+msgid "[config] [tests] Concatenation with ``start_directory`` via :meth:`config.trickle()` if window ``start_directory`` is alphanumeric / relative (doesn't start with ``/``). See :ref:`Examples` in *start directory*."
+msgstr ""
+
+#: ../../../CHANGES:160
+# 66ecd0e802e9444891034e6208f4059c
+msgid "[import] Fix bug with import teamocil and tmuxinator"
+msgstr ""
+
+#: ../../../CHANGES:161
+# 1ea36f1a5ad94615a4494efe6191ed73
+msgid "[import] Improve quality of tmuxinator imports. Especially ``session_name`` and ``start_directory``."
+msgstr ""
+
+#: ../../../CHANGES:163
+# c01eb75b2f8747ffbd0685ded9709b4a
+msgid "[cli] Allow saving with ``~`` in file destination."
+msgstr ""
+
+#: ../../../CHANGES:166
+# 3497caf3e9cc41e796b3fde72cbcca6e
+msgid "2013-10-31"
+msgstr ""
+
+#: ../../../CHANGES:168
+# 8b932e6b9b4843458af32e818051a3aa
+msgid "[internal] :meth:`util.is_version()`"
+msgstr ""
+
+#: ../../../CHANGES:169
+# 18f095bcff6243a4806acd12d40f7eb0
+msgid "[config] [tests]: correctly :meth:`config.trickle()` the ``start_directory``."
+msgstr ""
+
+#: ../../../CHANGES:170
+# b980363d52114be5bc6d969ce501b1f2
+msgid "[config] [tests]: get ``start_directory`` working for configs"
+msgstr ""
+
+#: ../../../CHANGES:171
+# a05d6ec770714b14905060fd8dbf47fc
+msgid "[internal]: fix :meth:``Window.kill_window()`` target to ``session_id:window_index`` for compatibility and pass tests."
+msgstr ""
+
+#: ../../../CHANGES:173
+# 86fd9d594479446bb9c6d57234546d6a
+msgid "[docs] [examples]: Example for ``start_directory``."
+msgstr ""
+
+#: ../../../CHANGES:174
+# 2b9a56531eb047139d6b43977a306d0e
+msgid "[internal] fix bug where first and second window would load in mixed order"
+msgstr ""
+
+#: ../../../CHANGES:175
+# d4ffd6c3922241c5a6abb869985167e4
+msgid "[internal] :class:`Window.move_window()` for moving window."
+msgstr ""
+
+#: ../../../CHANGES:176
+# 0bccd4e72f5246008279adc70710d54c
+msgid "[docs] major doc overhaul. front page, renamed orm_al.rst to internals.rst."
+msgstr ""
+
+#: ../../../CHANGES:179
+# eb024b1664da4df2ba13be54e91babcd
+msgid "2013-10-30"
+msgstr ""
+
+#: ../../../CHANGES:181
+# 52f2b457f25e4be89789498c84b7866b
+msgid "[cli] fix bug where if inside tmux, loading a workspace via switch_client wouldn't work."
+msgstr ""
+
+#: ../../../CHANGES:183
+# d48ebf481f034caf97cff334654833e6
+msgid "[cli] fix bug where ``tmuxp load .`` would return an error instead of a notice."
+msgstr ""
+
+#: ../../../CHANGES:185
+# f62a1115dc9c47f6aad9823d5e404d56
+msgid "[cli] ``tmuxp freeze <filename>`` experimental"
+msgstr ""
+
+#: ../../../CHANGES:186
+# 5a81eba871e840cea761eb6809d92d66
+msgid "[freeze] [tests] tmuxp now has experimental support for freezing live sessions."
+msgstr ""
+
+#: ../../../CHANGES:188
+# 3ab63843e78946ba8c817d373388ab91
+msgid "[internal] :meth:`Window.kill_window()`"
+msgstr ""
+
+#: ../../../CHANGES:189
+# dad06cea79984d1599e6b17963fb4dd5
+msgid "[internal] support for ``start_directory`` (work in progress)"
+msgstr ""
+
+#: ../../../CHANGES:192
+# 4c5c8bd399c3416a8403ab2522e44987
+msgid "2013-10-29"
+msgstr ""
+
+#: ../../../CHANGES:194
+# 7d88477fd04c488cb1524b0eea6e26aa
+msgid "[internal] :meth:`Window.select_pane` now accepts ``-l``, ``-U``, ``-D``, ``-L``, ``-R``."
+msgstr ""
+
+#: ../../../CHANGES:196
+# ba67786b8b9a4d3aaf10aad74e6c56f4
+msgid "[internal] [tests] support for ``automatic-rename`` option."
+msgstr ""
+
+#: ../../../CHANGES:197
+# cdb05b63ffbb47ffba94ec0e848ad5cc
+msgid "[docs] 3 new :ref:`examples`, 'main-pane-height', 'automatic-rename', and 'shorthands'."
+msgstr ""
+
+#: ../../../CHANGES:199
+# c1466ad8f72d42a6809c81201af48c14
+msgid "[cli] enhancements to prompts"
+msgstr ""
+
+#: ../../../CHANGES:200
+# 616baf2ebb074a619c79d353518d2748
+msgid "[cli] ``tmuxp import`` for teamocil and tmuxinator now has a wizard and offers to save in JSON or YAML format."
+msgstr ""
+
+#: ../../../CHANGES:202
+# a9a0e8007e3d4791b86f47574298c569
+msgid "[cli] [bug] [b6c2e84] Fix bug where tmuxp load w/ session already loaded would switch/attach even if no was entered"
+msgstr ""
+
+#: ../../../CHANGES:204
+# 07effbb896764b6fae1c01639fc57eb6
+msgid "[cli] when workspace loader crashes, give option to kill session, attach it or detach it."
+msgstr ""
+
+#: ../../../CHANGES:206
+# 24c3a89d68984ec2bb05cc8ee7d0ca9f
+msgid "[cli] tmux 1.8  ``set-option`` / ``set-window-options`` command ``target-window`` fix."
+msgstr ""
+
+#: ../../../CHANGES:208
+# f6cefea3d2844ffca709bd53bd4ad4a7
+msgid "[internal] :class:`WorkspaceBuilder` now has ``.session`` attribute accessible publicly."
+msgstr ""
+
+#: ../../../CHANGES:210
+# f028e436d6bd4a90beb212b614b98226
+msgid "[cli] tmux will now use :meth:`Session.switch_client` and :meth:`Session.attach_session` to open new sessions instead of ``os.exec``."
+msgstr ""
+
+#: ../../../CHANGES:212
+# 2b55ed902fb54c28bb7778e0349054ed
+msgid "[config] tmuxp now allows a new shorter form for panes. Panes can just be a string. See the shorthand form in the :ref:`examples` section."
+msgstr ""
+
+#: ../../../CHANGES:214
+# ec36216eaf4a43c19277357a54309f6b
+msgid "[cli] [config] support loading ``.yml``."
+msgstr ""
+
+#: ../../../CHANGES:217
+# 3330596434564564864a45e8801b2198
+msgid "2013-10-28"
+msgstr ""
+
+#: ../../../CHANGES:219
+# 8a7382e5bcba4e1c874a010aca2a4a2d
+msgid "[cli] fix ``tmuxp load .`` fixed"
+msgstr ""
+
+#: ../../../CHANGES:220
+# f8ba8187aeaa4b3ca84f919d36534d63
+msgid "[cli] fix ``tmuxp convert <file>`` fixed."
+msgstr ""
+
+#: ../../../CHANGES:221
+# cc40294ef00746d7bbef3a2a69ba03c5
+msgid "[internal] `pep257`_ fixes."
+msgstr ""
+
+#: ../../../CHANGES:222
+# 90201cb68e6249cdab8b667aea1d1b5c
+msgid "[internal] [tests] - :class:`Pane` now has :meth:`Pane.set_width` and :meth:`Pane.set_height`."
+msgstr ""
+
+#: ../../../CHANGES:224
+# d1af5c18a317448d970c4550be8d7d8c
+msgid "[tests] ``./run_tests.py --tests`` now automatically prepends ``tmuxp.testsuite`` to names."
+msgstr ""
+
+#: ../../../CHANGES:226
+# fc0c15acca19499c8e7e04a5be998ea7
+msgid "[internal] :meth:`Window.tmux` and :meth:`Pane.tmux` will automatically add their ``{window/pane}_id`` if one isn't specific."
+msgstr ""
+
+#: ../../../CHANGES:230
+# 77a354889bc249119cee32bea4e79956
+msgid "2013-10-27"
+msgstr ""
+
+#: ../../../CHANGES:232
+# 0f348db5e89342ffb035b0a38f20bd47
+msgid "[cli] `argcomplete`_ overhaul for CLI bash completion."
+msgstr ""
+
+#: ../../../CHANGES:233
+# 6ed7f942b7df4338a959882c92b44631
+msgid "[cli] ``tmuxp load``, ``tmuxp convert`` and ``tmuxp import`` now support relative and full filenames in addition to searching the config directory."
+msgstr ""
+
+#: ../../../CHANGES:238
+# bd119728b66b44d9b014928a1910fa8a
+msgid "2013-10-26"
+msgstr ""
+
+#: ../../../CHANGES:240
+# cce60a963a924d8a9229dfba680d3768
+msgid "[import] [tests] initial version of `tmuxinator`_ and `teamocil`_ config importer. it does not support all options and it not guaranteed to fully convert window/pane size and state."
+msgstr ""
+
+#: ../../../CHANGES:243
+# 14e719b557d541eda4a3aaa58027eeab
+msgid "[internal] :meth:`config.in_dir` supports a list of ``extensions`` for filetypes to search, i.e. ``['.yaml', '.json']``."
+msgstr ""
+
+#: ../../../CHANGES:245
+# 71994cfe28634888a6d5fd06510d46d1
+msgid "[internal] :meth:`config.is_config_file` now supports ``extensions`` argument as a string also."
+msgstr ""
+
+#: ../../../CHANGES:247
+# 86a21d52b5f6415ab0ff843e59eaeb6b
+msgid "[cli] fix ``$ tmuxp load -l`` to work correctly alongside ``$ tmuxp load filename``."
+msgstr ""
+
+#: ../../../CHANGES:251
+# 61fc7945bd764817999613ff25e4b2a8
+msgid "2013-10-25"
+msgstr ""
+
+#: ../../../CHANGES:253
+# f6bdbdf11927435c920aa7534146a519
+msgid "[cli] fix bug where ``-v`` and ``--version`` wouldn't print version."
+msgstr ""
+
+#: ../../../CHANGES:254
+# ce618799e343488aaabd7d5d6dc475f8
+msgid "[cli] property handle case where no tmux server exists when ``attach-session`` or ``kill-session`` is used."
+msgstr ""
+
+#: ../../../CHANGES:256
+# 78daa754e5f74707b0d9c01a1542a629
+msgid "[import] [tests] test fixtures and inital work for importing `tmuxinator`_ and `teamocil`_ configs"
+msgstr ""
+
+#: ../../../CHANGES:260
+# 3764e59d1dfe497eb7af916d65b8915a
+msgid "2013-10-24"
+msgstr ""
+
+#: ../../../CHANGES:262
+# 3d8e542054b84ce0842a5cdc6cdd3418
+msgid "[internal] clean out old code for ``automatic-rename`` option. it will be reimplemented fresh."
+msgstr ""
+
+#: ../../../CHANGES:264
+# 62bd1fa3a12244ca8bae5fce79bdd21f
+msgid "[cli] check for ``oh-my-zsh`` when using ``$SHELL`` ``zsh``. Prompt if ``DISABLE_AUTO_TITLE`` is unset or set to ``true``."
+msgstr ""
+
+#: ../../../CHANGES:266
+# 6116911d367148b5aab7b65854e8558c
+msgid "[cli] tmuxp can now ``$ tmuxp convert <file>`` from JSON <=> YAML, back and forth."
+msgstr ""
+
+#: ../../../CHANGES:268
+# a52d65e102d7429d9bf8817e87f79183
+msgid "[docs] New examples in JSON. Update the :ref:`examples` page in the docs."
+msgstr ""
+
+#: ../../../CHANGES:270
+# 7128069f711a44d68ff6789adc11ded4
+msgid "[dev] ``.tmuxp.json`` now exists as a config for tmuxp development and as an example."
+msgstr ""
+
+#: ../../../CHANGES:272
+# 6d623720549c487cbc1aece8c95e6995
+msgid "[cli] Fix bug where ``tmuxp kill-session`` would give bad output"
+msgstr ""
+
+#: ../../../CHANGES:273
+# 695d8f7b500c46b2abab1af0da49eb09
+msgid "[cli] Fix bug in tab completion for listing sessions with no tmux server is active."
+msgstr ""
+
+#: ../../../CHANGES:278
+# 57a35c91c13042449659298c8e09fbe5
+msgid "2013-10-23"
+msgstr ""
+
+#: ../../../CHANGES:280
+# c433800f72814547946df53c94e01d2b
+msgid "[cli] zsh/bash/tcsh completion improvements for tab-completion options"
+msgstr ""
+
+#: ../../../CHANGES:281
+# 5a3696ff31174589be30da1c292acd0f
+msgid "[cli] tmuxp ``kill-session`` with tab-completion."
+msgstr ""
+
+#: ../../../CHANGES:282
+# b040b3855cf2448f99bf375f9a5c3d67
+msgid "[cli] tmuxp ``attach-session`` with tab-completion. Attach session will ``switch-client`` for you if you are inside of of a tmux client."
+msgstr ""
+
+#: ../../../CHANGES:284
+# dc96c233d05a444bbba503e1027f7b11
+msgid "[cli] tmuxp ``load`` for loading configs."
+msgstr ""
+
+#: ../../../CHANGES:285
+# 424ed8115d02445895c2a6d0d3a4ac70
+msgid "[tests] unit test fixes."
+msgstr ""
+
+#: ../../../CHANGES:288
+# 1e3460c45dad43dd805ed3e86b889b0f
+msgid "2013-10-21"
+msgstr ""
+
+#: ../../../CHANGES:290
+# c8456d49cb624d919f45dcd466c22562
+msgid "[cli] Make 1.8 the official minimym version, give warning notice to upgrade tmux if out of date"
+msgstr ""
+
+#: ../../../CHANGES:292
+# 4e93c44f8fa44af0b5583e29767ae629
+msgid "Fix regression causing unexpected build behavior due to unremoved code supporting old tmux versions."
+msgstr ""
+
+#: ../../../CHANGES:294
+# b60c19e1b4fa4a5bac33b3883b8c5f36
+msgid "[docs] Added 2 new examples to the :ref:`examples` page."
+msgstr ""
+
+#: ../../../CHANGES:295
+# 564dab77a7b64b4dac73b0082eabeb3f
+msgid "[docs] Examples now have graphics"
+msgstr ""
+
+#: ../../../CHANGES:296
+# 1587a676f19e4f6f92a820f320455ca8
+msgid "[cli] [internal] ``$ tmuxp -v`` will print the version info."
+msgstr ""
+
+#: ../../../CHANGES:299
+# 6bf73ef78e684c1994fd5e0d454f4ff3
+msgid "2013-10-19"
+msgstr ""
+
+#: ../../../CHANGES:301
+# 4a83af5645b24765ad2c224b40abef23
+msgid "[internal] tmuxp will now give warning and sys.exit() with a message if ``tmux`` not found in system PATH"
+msgstr ""
+
+#: ../../../CHANGES:303
+# bb13a36f53ad46db9845d6d1244e76b9
+msgid "[internal] major internal overhaul of :class:`Server`, :class:`Session` , :class:`Window`, and :class:`Pane` continues."
+msgstr ""
+
+#: ../../../CHANGES:306
+# 6b23e03742d2434ca867417b1171fd5e
+msgid ":class:`Server` has @property :meth:`Server.sessions`, which is forward to :meth:`Server.list_sessions()` (kept to keep tmux commands in serendipty with api), :meth:`Server._list_sessions()` returns dict object from :meth:`Server.__list_sessions()` tmux command. :meth:`Server.__list_sessions()` exists to keep the command layered so it can be tested against in a matrix with travis and compatibility methods can be made."
+msgstr ""
+
+#: ../../../CHANGES:314
+# 5eed6a360ddc4c7ca8ce8ce2fab327d9
+msgid ":class:`Session` now has @proprety :meth:`Session.windows` returning a list of  :class:`Window` objects via :meth:`Session.list_windows()`. @property :meth:`Session._windows` to :meth:`Session._list_windows()` to return a list of dicts without making objects."
+msgstr ""
+
+#: ../../../CHANGES:319
+# d4ba0434d1384904b2b03aa7d475645e
+msgid ":class:`Window` now has @proprety :meth:`Window.panes` returning a list of :class:`Pane` objects via :meth:`Window.list_panes()`. @property :meth:`Window._panes` to :meth:`Window._list_panes()` to return a list of dicts without making objects."
+msgstr ""
+
+#: ../../../CHANGES:325
+# 9b9caf700e5541928d7ddf04f6ee15b0
+msgid "2013-10-18"
+msgstr ""
+
+#: ../../../CHANGES:327
+# 070c98743866421ea881235bf450d37f
+msgid "[internal] major internal overhaul of :class:`Server`, :class:`Session`, :class:`Window`, and :class:`Pane`."
+msgstr ""
+
+#: ../../../CHANGES:330
+# 8a49742fc46049e19f5e62d3446b6d9e
+msgid "``Session``, ``Window`` and ``Pane`` now refer to a data object in :class:`Server` internally and always pull the freshest data."
+msgstr ""
+
+#: ../../../CHANGES:333
+# 520ee483e95b49459c54818aa355c7ad
+msgid "A lot of code and complexity regarding setting new data for objects has been reduced since objects use their unique key identifier to filter their objects through the windows and panes in ``Server`` object."
+msgstr ""
+
+#: ../../../CHANGES:338
+# 6356759cf76542b79833c9215dee7cde
+msgid "``Server`` object is what does the updating now."
+msgstr ""
+
+#: ../../../CHANGES:339
+# 9c3176dd908246c89f07b09ba739a1f3
+msgid "[project] some research into supporting legacy tmux versions. tmux 1.6 and 1.7 support seem likely eventually if there is enough demand."
+msgstr ""
+
+#: ../../../CHANGES:341
+# 35f8a83e913b48338c451fb679c3fe8b
+msgid "[internal] python 3 support"
+msgstr ""
+
+#: ../../../CHANGES:344
+# 38219574c6d44b66973ff37c228cbeb2
+msgid "2013-10-17"
+msgstr ""
+
+#: ../../../CHANGES:346
+# b5eacde532ee48feb0019728df5ca97a
+msgid "[docs] updated README docs with new project details, screenshots"
+msgstr ""
+
+#: ../../../CHANGES:347
+# 35d283870ba44298ae5a0531ed158b9b
+msgid "[dev] [docs] - new example ``.tmuxp.yaml`` file updated to include development workflow. Removed nodemon as the tool for checking files for now."
+msgstr ""
+
+#: ../../../CHANGES:350
+# 6f45b5e468c34418b67b35bae34fbca3
+msgid "[cli] Support for switching sessions from within tmux. In both cases after the the session is built and if session already exists."
+msgstr ""
+
+#: ../../../CHANGES:354
+# 043ce1a0b4644813ba1c8fc748767ecf
+msgid "2013-10-16"
+msgstr ""
+
+#: ../../../CHANGES:356
+# 0daf78d7a0544895be957fcf959bc201
+msgid "[cli] use :meth:`util.which()` from salt.util to find tmux binary."
+msgstr ""
+
+#: ../../../CHANGES:357
+# bf1e9548bda14519b941a0cb27fed0cb
+msgid "[pypi / packaging] add MANIFEST.in, fix issue where package would not install because missing file"
+msgstr ""
+
+#: ../../../CHANGES:359
+# 6e257e46c075442d9630f10d55ba95b0
+msgid "[cli] bash / zsh completion."
+msgstr ""
+
+#: ../../../CHANGES:360
+# 21dc18be2d584672a53e060951d1d27a
+msgid "[docs] New page on :ref:`internals`."
+msgstr ""
+
+#: ../../../CHANGES:361
+# 942c29637b734ee0abf95e2dbad9fbd8
+msgid "[docs] Updates to :ref:`about_tmux` page."
+msgstr ""
+
+#: ../../../CHANGES:362
+# d8f524c08f86492c880ec22a664716db
+msgid "[docs] add vim modeline for rst to bottom of this page"
+msgstr ""
+
+#: ../../../CHANGES:363
+# 1380327f37814b23b1e410c3dd1c7620
+msgid "[internal] [tests] Server is now a subclass of :class:`util.TmuxObject`."
+msgstr ""
+
+#: ../../../CHANGES:364
+# b4b44ec143e74c5ab20cb3dd57fabc10
+msgid "[internal] [tests] subclasses of :class:`util.TmuxRelationalObject`, :class:`Server`, :class:`Session`, :class:`Window`, :class:`Pane` now have :meth:`util.TmuxRelationalObject.getById` (similar to `.get()`_ in `backbone.js`_ collection), :meth:`util.TmuxRelationalObject.where` and :meth:`util.TmuxRelationalObject.findWhere` (`.where()`_ and `.findWhere()`_ in `underscore.js`_), to easily find child objects."
+msgstr ""
+
+#: ../../../CHANGES:370
+# 3b3af1ceb6074980841787fa083908e8
+msgid "[internal] tmux object mapping has been split into :class:`util.TmuxMappingObject`. The mapping and the relational has been decoupled to allow :class:`Server` to have children while not being a dict-like object."
+msgstr ""
+
+#: ../../../CHANGES:374
+# 19e77127ac4746d3b9fd26aacfe2b0ed
+msgid "[internal] :class:`Server`, :class:`Session`, :class:`Window`, :class:`Pane` now explicitly mixin subclasses."
+msgstr ""
+
+#: ../../../CHANGES:384
+# dec0d0c017264ee1b4c7a41253d62df2
+msgid "2013-10-15"
+msgstr ""
+
+#: ../../../CHANGES:386
+# 4d009bcc628341c68664297cc8ac396a
+msgid "[docs] new theme"
+msgstr ""
+
+#: ../../../CHANGES:387
+# 384cdd21fc994e7d9f5737a801349dc7
+msgid "[docs] initial examples, misc. updates, front page update."
+msgstr ""
+
+#: ../../../CHANGES:388
+# 12c363a31aa24672847b94edb0d5ae49
+msgid "[cli] support for ``$ tmux .`` to load ``.tmuxp.{yaml/json/py}`` in current working directory."
+msgstr ""
+
+#: ../../../CHANGES:390
+# 7db3bef108054039801d0036b27d617c
+msgid "[cli] support for ``socket-name`` (``-L``) and ``socket-path`` (``socket-path``)"
+msgstr ""
+
+#: ../../../CHANGES:392
+# 28ab2da4d58b42bb8304f425e6167599
+msgid "[config] [builder] Support for 1-command pane items."
+msgstr ""
+
+#: ../../../CHANGES:402
+# bd72ce2c5a714bb0a1462924f0d75ac8
+msgid "[cli] If session name is already exists, prompt to attach."
+msgstr ""
+
+#: ../../../CHANGES:405
+# 3b7f310fe6184a8f8a9daa3d2a585a80
+msgid "2013-10-14"
+msgstr ""
+
+#: ../../../CHANGES:407
+# 22c36ced6b9f44dbb9226a42ec116beb
+msgid "[cli] can now -l to list configs in current directory and $HOME/.tmuxp"
+msgstr ""
+
+#: ../../../CHANGES:408
+# 9a64f6ab082349639bb684a0d5edcb98
+msgid "[cli] tmuxp can now launch configs and build sessions"
+msgstr ""
+
+#: ../../../CHANGES:409
+# 61c0d9433baa4007a3906648b9b53565
+msgid "[internal] new exceptions"
+msgstr ""
+
+#: ../../../CHANGES:410
+# 3ac27bb51a614775bca88ad250bf9e7e
+msgid "[config] [tests] :meth:`config.check_consistency()` to verify and diagnose issues with config files."
+msgstr ""
+
+#: ../../../CHANGES:412
+# 883d95c4583941c289eda15465338be5
+msgid "[cli] [tests] :meth:`cli.startup()`"
+msgstr ""
+
+#: ../../../CHANGES:413
+# 1d5dfa1cc94140bb944e388d3bf187de
+msgid "[config] [tests] :meth:`config.is_config_file()`"
+msgstr ""
+
+#: ../../../CHANGES:414
+# 4bc802a639ef4d5daa389e01889852eb
+msgid "[config] [tests] :meth:`config.in_dir()`"
+msgstr ""
+
+#: ../../../CHANGES:415
+# d2640569619b4d568515b22ff9415b1f
+msgid "[config] [tests] :meth:`config.in_cwd()`"
+msgstr ""
+
+#: ../../../CHANGES:418
+# e732b8824d8746ab924015430df9a7d7
+msgid "2013-10-13"
+msgstr ""
+
+#: ../../../CHANGES:420
+# c7df112ce48f4ee3bcfcb1f07acf1cc4
+msgid "[cli] [tests]  :meth:`config.inline()` to produce far far better looking config exports and tests."
+msgstr ""
+
+#: ../../../CHANGES:422
+# 5d7ceac609c947ca8af1ec1365547885
+msgid ":meth:`Pane.resize_pane()` and tests"
+msgstr ""
+
+#: ../../../CHANGES:423
+# d6b4c032ec3d43f795c08fe456c7540d
+msgid "documentation fixes and updates"
+msgstr ""
+
+#: ../../../CHANGES:424
+# a31e3e7abdee47f1b6f1f8dc502a3e13
+msgid "[internal] :meth:`Session.refresh()`, :meth:`Window.refresh()`, :meth:`Pane.refresh()`."
+msgstr ""
+
+#: ../../../CHANGES:426
+# 89255a06a31b4b83808a8fde451e12a2
+msgid "[internal] :meth:`Server.find()`, :meth:`Session.find()`, :meth:`Window.find()`."
+msgstr ""
+
+#: ../../../CHANGES:430
+# 4880d5e0ae6d459c925d25000ccffeb1
+msgid "2013-10-12"
+msgstr ""
+
+#: ../../../CHANGES:432
+# c14d8395fbac4e3cb200500b8a100ced
+msgid "[tests] Test documentation updates"
+msgstr ""
+
+#: ../../../CHANGES:433
+# 03a0528a3c8c4cf0bb404c4c1424501e
+msgid "[internal] [tests] Builder is now :class:`WorkspaceBuilder` + tests. - WorkspaceBuilder can build panes - WorkspaceBuilder can build windows and set options"
+msgstr ""
+
+#: ../../../CHANGES:436
+# f4a9dd66088542abb8cfe482f5823729
+msgid "[internal] [tests] :meth:`Window.show_window_options()`, :meth:`Window.show_window_option()`, :meth:`Window.set_window_option()`"
+msgstr ""
+
+#: ../../../CHANGES:438
+# 10393c7eef074d9bad5e56e09ff94e68
+msgid "[internal] [tests] :meth:`Session.show_options()`, :meth:`Session.show_option()`, :meth:`Session.set_option()`"
+msgstr ""
+
+#: ../../../CHANGES:442
+# fe683b7a574e4db69dd8f369dcf9bd64
+msgid "2013-10-11"
+msgstr ""
+
+#: ../../../CHANGES:444
+# e183769dc55243baac68608463c1c51c
+msgid "[builder] More preparation for builder / session maker utility."
+msgstr ""
+
+#: ../../../CHANGES:445
+# c7f3eb0ea0e74ea7a8fd480625483b4d
+msgid "[tests] Major test runner and test suite overhaul."
+msgstr ""
+
+#: ../../../CHANGES:446
+# e5ad8d36b4414d129a1bda6757d5be5f
+msgid "[docs] Documentation for development environment and test runner updated."
+msgstr ""
+
+#: ../../../CHANGES:447
+# fa1da58bb6c04fa491b900efd6d31ee3
+msgid "[tests] Travis now tests against tmux 1.8 and latest source. Door open for future testing against python 3 and earlier tmux versions in the future."
+msgstr ""
+
+#: ../../../CHANGES:449
+# 9647868c46084ee58a54e90ba5a2e542
+msgid "[internal] Quiet logger down in some areas"
+msgstr ""
+
+#: ../../../CHANGES:450
+# 24adcf4be71146d3a749e9e4c8bbe71f
+msgid "[internal] __future__ imports for future python 3 compatibility"
+msgstr ""
+
+#: ../../../CHANGES:451
+# 53f8db81f4b94f3dae782764fccdbbba
+msgid "[internal] setup.py import __version__ via regex from tmuxp package"
+msgstr ""
+
+#: ../../../CHANGES:452
+# e42d0ac42c31417abc1ec7bc2a3db87d
+msgid "[cli] move beginnings of cli to tmuxp.cli"
+msgstr ""
+
+#: ../../../CHANGES:455
+# 85bacbc3bdd54f3aba5a9d0fa00de4d0
+msgid "2013-10-09"
+msgstr ""
+
+#: ../../../CHANGES:457
+# 2958c5c2c049405194c3b1f5f79a0b03
+msgid "New logging module"
+msgstr ""
+
+#: ../../../CHANGES:458
+# 0d0d214ad4bf4bb2b3b67b6f83f943e6
+msgid "Removed dependency logutils"
+msgstr ""
+
+#: ../../../CHANGES:459
+# d3f4d77282e544ba90ab55e3a171b7b8
+msgid "Removed dependency sh"
+msgstr ""
+
+#: ../../../CHANGES:462
+# 49057de1b3f6403c876ee1905994a499
+msgid "2013-10-08"
+msgstr ""
+
+#: ../../../CHANGES:464
+# 901d416a00084c5aa79fe365ee3a5803
+msgid "switch to semver"
+msgstr ""
+

@@ -1,0 +1,253 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../developing.rst:4
+# b3d6722653c946e0b9fd50c3021da31f
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../developing.rst:16
+# 3366cd01fc2d4827a40312eee7624b4f
+msgid "Developing and Testing"
+msgstr ""
+
+#: ../../developing.rst:21
+# b82be7589f024a6b9671fbbb2c8b35e7
+msgid "Our tests are inside ``./tmuxp/testsuite``. Tests are implemented using :py:mod:`unittest`."
+msgstr ""
+
+#: ../../developing.rst:24
+# 1bab12758912400390bfcd0ebb5dfe9c
+msgid "``./run_tests.py`` will create a tmux server on a separate ``socket_name`` using ``$ tmux -L test_case``."
+msgstr ""
+
+#: ../../developing.rst:30
+# d6051d971d8e4b249c37348c5548987e
+msgid "Install the latest code from git"
+msgstr ""
+
+#: ../../developing.rst:32
+# 2210590dae434efdab2a8a0502a392a8
+msgid "To begin developing, check out the code from github:"
+msgstr ""
+
+#: ../../developing.rst:39
+# 1caa71fcd8f446e7acdedb0acc6bc455
+msgid "Now create a virtualenv, if you don't know how to, you can create a virtualenv with:"
+msgstr ""
+
+#: ../../developing.rst:46
+# 4a2a3748bb0943dca4be5d6d5c616824
+msgid "Then activate it to your current tty / terminal session with:"
+msgstr ""
+
+#: ../../developing.rst:52
+# 5a935be15c3240ad8c6557f1b30a94c2
+msgid "Good! Now let's run this:"
+msgstr ""
+
+#: ../../developing.rst:58
+# e64336356d064dbc9b758ab5790dbc54
+msgid "This has ``pip``, a python package manager install the python package in the current directory. ``-e`` means ``--editable``, which means you can adjust the code and the installed software will reflect the changes."
+msgstr ""
+
+#: ../../developing.rst:67
+# 5fd22b4698764b44be79fed8c0cde088
+msgid "Test Runner"
+msgstr ""
+
+#: ../../developing.rst:69
+# 59e62cf6fe2c4597b283f5e6e692482c
+msgid "As you seen above, the ``tmuxp`` command will now be available to you, since you are in the virtual environment, your `PATH` environment was updated to include a special version of ``python`` inside your ``.env`` folder with its own packages."
+msgstr ""
+
+#: ../../developing.rst:78
+# 838e1d33a5724285856c4f7e21c341b5
+msgid "You probably didn't see anything but tests scroll by."
+msgstr ""
+
+#: ../../developing.rst:80
+# e973c9c9c9b6498cad189c603bc3f678
+msgid "If you found a problem or are trying to write a test, you can file an `issue on github`_."
+msgstr ""
+
+#: ../../developing.rst:86
+# c76571051c3d412284c56d68611653db
+msgid "Test runner options"
+msgstr ""
+
+#: ../../developing.rst:90
+# b9da8a93ade34c3aa968fb17c10418e9
+msgid "As of v0.0.20, ``--tests`` automatically assume the namespace of ``tmuxp.testsuite``."
+msgstr ""
+
+#: ../../developing.rst:97
+# ddd459ef3f0f464f813dabffc3016f5d
+msgid "Is now equivalent to:"
+msgstr ""
+
+#: ../../developing.rst:103
+# 80b4f30bf09a4dd38be051cfbc4cf2f8
+msgid "Testing specific TestSuites, TestCase and tests"
+msgstr ""
+
+#: ../../developing.rst:109
+# 0ab5704b704540e881a81fda243fac18
+msgid "Will give you an output of ways you can choose to run tests. Example for ``test_config`` TestSuite:"
+msgstr ""
+
+#: ../../developing.rst:112
+# 7f7b87c9a73348f59644e5aa9e9c35d4
+msgid "By :py:class:`unittest.TestSuite` / module:"
+msgstr ""
+
+#: ../../developing.rst:118
+# e24ef801be224d22b91c163f0815e69c
+msgid "by :py:class:`unittest.TestCase`:"
+msgstr ""
+
+#: ../../developing.rst:124
+# fc838565690d46fa9924fee1f6247353
+msgid "individual tests:"
+msgstr ""
+
+#: ../../developing.rst:130
+# 114f9d5c7e3f43ff91565c5a411d42d9
+msgid "Multiple can be separated by spaces:"
+msgstr ""
+
+#: ../../developing.rst:140
+# 222e35640cd545c296e9a5468a5aac23
+msgid "Visual testing"
+msgstr ""
+
+#: ../../developing.rst:142
+# e7ced5c2b3c243c5af5ce250dd494ed3
+msgid "You can watch tmux testsuite build sessions visually by keeping a client open in a separate terminal."
+msgstr ""
+
+#: ../../developing.rst:145
+# 7ecac250e8ca4753b58f35718208407a
+msgid "Create two terminals:"
+msgstr ""
+
+#: ../../developing.rst:147
+# 6042e192e2944cf197945f927a675961
+msgid "Terminal 1: ``$ tmux -L test_case``"
+msgstr ""
+
+#: ../../developing.rst:148
+# 9fdbfc9cff8d4114bc452ed9cdfe78be
+msgid "Terminal 2: ``$ cd`` into the tmuxp project and into the ``virtualenv`` if you are using one, see details on installing the dev version of tmuxp above. Then:"
+msgstr ""
+
+#: ../../developing.rst:156
+# 39f8baf04db54b65a4796b4312f2888e
+msgid "Terminal 1 should have flickered and built the session before your eyes. tmuxp hides this building from normal users."
+msgstr ""
+
+#: ../../developing.rst:160
+# 8e08c53b872d4b5eaacd540fcad67837
+msgid "Verbosity and logging"
+msgstr ""
+
+#: ../../developing.rst:162
+# fe0e6e632c464c1cbbbbb91cabf32e53
+msgid "``./run_tests.py`` supports two options, these are *optional* flags that may be added to for :ref:`test_specific_tests` and :ref:`test_builder_visually`."
+msgstr ""
+
+#: ../../developing.rst:166
+# 415e68fa833b4bc79b66860d0a23d1b0
+msgid "log level: ``-l`` aka ``--log-level``, with the options of ``debug``, ``info``, ``warn``, ``error``, ``fatal``. Default is ``INFO``."
+msgstr ""
+
+#: ../../developing.rst:173
+# ab8393dfdd984108b5ea42614e4243f3
+msgid "short form:"
+msgstr ""
+
+#: ../../developing.rst:179
+# 46f33b391f1441fcbee1c71380514c49
+msgid "unit test verbosity:"
+msgstr ""
+
+#: ../../developing.rst:181
+# 3f69af3f3f8f4d179e5ddf2cf9e2eb5c
+msgid "``--verbosity`` may be set to ``0``, ``1`` and ``2``.  Default: ``2``."
+msgstr ""
+
+#: ../../developing.rst:188
+# fb39f89b35a34add83bf6e7fd8b5a444
+msgid "Run tests on save"
+msgstr ""
+
+#: ../../developing.rst:190
+# e34abac352a148ebabd045af3938c1f6
+msgid "You can re-run tests automatically on file edit."
+msgstr ""
+
+#: ../../developing.rst:193
+# 31fc57a5dde44a2082a6b2082c8d984c
+msgid "This requires and installation of ``watching_testrunner`` from pypi."
+msgstr ""
+
+#: ../../developing.rst:195
+# d12ec4ad73824d2f9e652199c604e554
+msgid "Install `watching_testrunner`_ from `pypi`_:"
+msgstr ""
+
+#: ../../developing.rst:201
+# d31c0e99f0264954b5118ab8d8662336
+msgid "To run all tests upon editing any ``.py`` file:"
+msgstr ""
+
+#: ../../developing.rst:207
+# b67d4298ddef477b95c8c8e50550dac2
+msgid "To run test where :ref:`test_builder_visually` you may:"
+msgstr ""
+
+#: ../../developing.rst:219
+# 57e4e6a95e634c21a1d9eec8405173a5
+msgid "tmuxp developer config"
+msgstr ""
+
+#: ../../developing.rst:226
+# a61fa0a809bb41789b089e559259f8a2
+msgid "After you :ref:`install_dev_env`, when inside the tmuxp checkout:"
+msgstr ""
+
+#: ../../developing.rst:232
+# ae031b7bb68044d6982b1255eb6d538e
+msgid "this will load the ``.tmuxp.yaml`` in the root of the project."
+msgstr ""
+
+#: ../../developing.rst:240
+# 404f91a7c67040339173d879f9b61fea
+msgid "Travis CI"
+msgstr ""
+
+#: ../../developing.rst:242
+# 0de882bd58364652aee6b82385a4f4b3
+msgid "tmuxp uses `travis-ci`_ for continuous integration / automatic unit testing."
+msgstr ""
+
+#: ../../developing.rst:245
+# b84c9cd4bc7f427cbe7e145c9cee89c5
+msgid "travis allows for testing against multiple scenarios. Currently tmuxp is tested against 1.8 and latest in addition to python 2.7. The `travis build site`_ uses this `.travis.yml`_ configuration:"
+msgstr ""
+

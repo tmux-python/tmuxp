@@ -1,0 +1,262 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2013, Tony Narlock
+# This file is distributed under the same license as the tmuxp package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: tmuxp 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 03:22\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../internals.rst:4
+# 7020795567b34063b5b86f90848c1ac7
+msgid "tmuxp is usable but still needs your help reporting errors, bugs and usability feedback. If you encounter an error, please post on the `Issue tracker`_."
+msgstr ""
+
+#: ../../internals.rst:14
+# 37d0d649d17c418c9af083060d9d9b45
+msgid "Internals"
+msgstr ""
+
+#: ../../internals.rst:20
+# 4209f0c72261413cb04dbf8641bb9440
+msgid "tmuxp is an *abstraction layer* against tmux' command line arguments."
+msgstr ""
+
+#: ../../internals.rst:22
+# 7b3c142fde8d4f66bbeef16358f60fd1
+msgid ":class:`util.TmuxRelationalObject` acts as a container to connect the relations of :class:`Server`, :class:`Session`, :class:`Window` and :class:`Pane`."
+msgstr ""
+
+#: ../../internals.rst:27
+#: ../../internals.rst:48
+# 47d303830f4e47a9b205862aee67dbb3
+# 655a54e661cf44c488a127c5ca6cb720
+msgid "Object"
+msgstr ""
+
+#: ../../internals.rst:27
+# e9193ba1513740228842a3c5d17884e2
+msgid "Child"
+msgstr ""
+
+#: ../../internals.rst:27
+# 030920afbdf04fd5b6970c88254c1bed
+msgid "Parent"
+msgstr ""
+
+#: ../../internals.rst:29
+#: ../../internals.rst:30
+#: ../../internals.rst:50
+# c69aa53522d143d19b2cc824938f91ab
+# 172cfcfe53b747c99c1c27ed985626ee
+# cb52a77c03594ffab5e7c44f7cb7472f
+msgid ":class:`Server`"
+msgstr ""
+
+#: ../../internals.rst:29
+#: ../../internals.rst:30
+#: ../../internals.rst:31
+#: ../../internals.rst:52
+# d945fcf5d6dc4100950b69e4192221d6
+# db9834697702454a8e8788e807bde02f
+# 61a4e1f1dbbe4342b817524fbfdb356d
+# e239483e545b4874a700f7548cced77f
+msgid ":class:`Session`"
+msgstr ""
+
+#: ../../internals.rst:29
+#: ../../internals.rst:32
+# a3651534e8dd434198c9a6f20e816215
+# a5263666528449ebbf18191d9a5848d4
+msgid "None"
+msgstr ""
+
+#: ../../internals.rst:30
+#: ../../internals.rst:31
+#: ../../internals.rst:32
+#: ../../internals.rst:53
+# dbd141677b2a455986113273c51a8035
+# 6b814de37bd04da6b2c9ace62d25bfc2
+# fd23e49783884119b8d296632d23d6a6
+# efa8173164d643dba096575ec4ca9b6b
+msgid ":class:`Window`"
+msgstr ""
+
+#: ../../internals.rst:31
+#: ../../internals.rst:32
+#: ../../internals.rst:54
+# 626427fe80bd4f609c4d686c12ef7b89
+# f86a3b7ae8764423a2525cc05742725c
+# 9299f7edd9be41a48532d144224da1c7
+msgid ":class:`Pane`"
+msgstr ""
+
+#: ../../internals.rst:35
+# ec8047c2c73e4fc392e6e92cfff0f56e
+msgid "Internally, tmux allows multiple servers to be ran on a system. Each one uses a socket. Most users worry since tmux will communicate to a default server automatically. If one doesn't exist, tmux does it for you."
+msgstr ""
+
+#: ../../internals.rst:39
+# a1a635259ed84a10afbdce7f8005c93f
+msgid "A server can have multiple sessions. ``Ctrl-a s`` can be used to switch between sessions running on the server."
+msgstr ""
+
+#: ../../internals.rst:42
+# db714ba033154d24bfa9a29976c89e37
+msgid "Sessions, Windows and Panes all have their own unique identifier for internal purposes. :class:`util.TmuxMappingObject` will make use of the unique identifiers (``session_id``, ``window_id``, ``pane_id`` ) to look up the data stored in the :class:`Server` object."
+msgstr ""
+
+#: ../../internals.rst:48
+# e6bc43db88c14c3f90a210b320a07d9e
+msgid "Prefix"
+msgstr ""
+
+#: ../../internals.rst:48
+# 15ae39c31b9e4a49b9308e637175eb6b
+msgid "Example"
+msgstr ""
+
+#: ../../internals.rst:50
+# cff69eaece234b64898192205f515ae9
+msgid "N/A"
+msgstr ""
+
+#: ../../internals.rst:50
+# 72c6fd77718743139cf9ba3990f4ef3a
+msgid "N/A, uses ``socket-name`` and ``socket-path``"
+msgstr ""
+
+#: ../../internals.rst:52
+# e928066cbdaa4a78988068e87b3fcb84
+msgid "``$``"
+msgstr ""
+
+#: ../../internals.rst:52
+# 1b8056f9e3724a48bfc87b4a52c945e1
+msgid "``$13``"
+msgstr ""
+
+#: ../../internals.rst:53
+# b4e74a7222f24278af5eef062720d2ac
+msgid "``@``"
+msgstr ""
+
+#: ../../internals.rst:53
+# a086d7c0d87f40018c6035de6b3e4dc2
+msgid "``@3243``"
+msgstr ""
+
+#: ../../internals.rst:54
+# 6f20d1c6fa324dfd9fcdc2059d623a77
+msgid "``%``"
+msgstr ""
+
+#: ../../internals.rst:54
+# d96a5ed449324dea9ac2eae6ab9b5b82
+msgid "``%5433``"
+msgstr ""
+
+#: ../../internals.rst:58
+# 37063365d3ba42df8b0ead307c072b7a
+msgid "Similarities to Tmux and Pythonics"
+msgstr ""
+
+#: ../../internals.rst:60
+# 7fee58c0f30640e38b516e6866523083
+msgid "tmuxp is was built in the spirit of understanding how tmux operates and how python objects and tools can abstract the API's in a pleasant way."
+msgstr ""
+
+#: ../../internals.rst:63
+# f2134ed987a44285b6ee7f1568ff1033
+msgid "tmuxp uses ``FORMATTERS`` in tmux to give identity attributes to :class:`Session`, :class:`Window` and :class:`Pane` objects. See `formatters.c`_."
+msgstr ""
+
+#: ../../internals.rst:69
+# a9b08584d5c7408ca6378e1a640e8003
+msgid "How is tmuxp able to keep references to panes, windows and sessions?"
+msgstr ""
+
+#: ../../internals.rst:71
+# a6490ce54a9f4953ae43a7b43c004109
+msgid "Tmux has unique ID's for sessions, windows and panes."
+msgstr ""
+
+#: ../../internals.rst:73
+# a90cca2f5bfb448da119e606fa5bb1e2
+msgid "panes use ``%``, such as ``%1234``"
+msgstr ""
+
+#: ../../internals.rst:75
+# 55bf03ba970e463dbee828f5071a31ec
+msgid "windows use ``@``, such as ``@2345``"
+msgstr ""
+
+#: ../../internals.rst:77
+# 4acc93fffb574093a7dbbfe771951ed0
+msgid "sessions use ``$``, for money, such as ``$``"
+msgstr ""
+
+#: ../../internals.rst:79
+# 786dcda100db4fbba09035039a2a97a0
+msgid "How is tmuxp able to handle windows with no names?"
+msgstr ""
+
+#: ../../internals.rst:81
+# d702606041b74f79a258b9ec860db34b
+msgid "Tmux provides ``window_id`` as a unique identifier."
+msgstr ""
+
+#: ../../internals.rst:83
+# 98d3fa15eeb042668106b866fd57f90c
+msgid "What is a {pane,window}_index vs a {pane,window,session}_id?"
+msgstr ""
+
+#: ../../internals.rst:85
+# a604de72693042ac9b1b3c72c02038ad
+msgid "Pane index refers to the order of a pane on the screen."
+msgstr ""
+
+#: ../../internals.rst:87
+# 0db809104dd74bb49c0a72d09778ef28
+msgid "Window index refers to the # of the pane in the session."
+msgstr ""
+
+#: ../../internals.rst:89
+# c31ddbb9aead49ca8d5dc6c0c919344f
+msgid "To assert pane, window and session data, tmuxp will use :meth:`Server.list_sessions()`, :meth:`Session.list_windows()`, :meth:`Window.list_panes()` to update objects."
+msgstr ""
+
+#: ../../internals.rst:94
+# 768b20b5c41c472d8e137f353c273126
+msgid "Idiosyncrasies"
+msgstr ""
+
+#: ../../internals.rst:96
+# 2244fdb35ae046b3b970b48cfb4e7e90
+msgid "Because this is a python abstraction and commands like ``new-window`` have dashes (-) replaced with underscores (_)."
+msgstr ""
+
+#: ../../internals.rst:100
+# 7299e1cceb6d4f22bed40779644ce452
+msgid "Reference"
+msgstr ""
+
+#: ../../internals.rst:102
+# 63f8724a73b049deb13e116925da62cd
+msgid "tmux docs http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&sektion=1"
+msgstr ""
+
+#: ../../internals.rst:103
+# e88bb50feef54dd8912aa3c038d5fe00
+msgid "tmux source code http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/"
+msgstr ""
+
