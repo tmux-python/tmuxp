@@ -210,18 +210,18 @@ class WorkspaceBuilder(object):
         pane_base_index = int(w.show_window_option('pane-base-index', g=True))
 
         for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
-            if pindex != int(pane_base_index):
+
+            if pindex == int(pane_base_index):
+                p = w.attached_pane()
+
+            else:
                 p = w.split_window(
                     attach=True,
                     #target=w.list_panes()[-1].get('pane_index')
                 )
-                assert(isinstance(p, Pane))
-                assert int(p.get('pane_index')) == int(pane_base_index + pindex)
-            else:
-                p = w.attached_pane()
-                assert(isinstance(p, Pane))
-                assert int(p.get('pane_index')) == int(pane_base_index)
 
+            assert(isinstance(p, Pane))
+            assert(int(p.get('pane_index')) == int(pindex))
             if 'layout' in wconf:
                 w.select_layout(wconf['layout'])
 

@@ -7,8 +7,13 @@ Here you can find the recent changes to tmuxp.
 master
 ------
 
+- [cli] [tests] - fix `Issue #23`_ where workspace would not build with
+  pane-base-index set to 1. Update tests to fix if ``pane-base-index`` is
+  not 0.
 - [cli] - removed ``$ tmuxp load --list`` functionality. Update
   :ref:`quickstart` accordingly.
+
+.. _Issue #23: https://github.com/tony/tmuxp/issues/23
 
 0.1-rc1
 -------

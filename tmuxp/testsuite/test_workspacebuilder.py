@@ -154,9 +154,9 @@ class FocusAndPaneIndexTest(TmuxTestCase):
             'focused window'
         )
 
-        pane_base_index = self.session.attached_window().show_window_option(
-            'pane-base-index'
-        )
+        pane_base_index = int(self.session.attached_window().show_window_option(
+            'pane-base-index', g=True
+        ))
 
         if not pane_base_index:
             pane_base_index = 0

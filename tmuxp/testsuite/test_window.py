@@ -52,8 +52,11 @@ class SelectTest(TmuxTestCase):
 class NewTest(TmuxTestCase):
 
     def test_zfresh_window_data(self):
-        # self.session.select_window(1)
-        #
+
+        pane_base_index = int(self.session.attached_window().show_window_option(
+            'pane-base-index', g=True
+        ))
+
         self.assertEqual(len(self.session.windows), 1)
 
         self.assertEqual(len(self.session.attached_window().panes), 1)
@@ -73,9 +76,9 @@ class NewTest(TmuxTestCase):
         self.assertIsInstance(window, Window)
         self.assertEqual(len(self.session.attached_window().panes), 1)
         pane = window.split_window()
-        self.session.attached_window().select_pane(0)
+        self.session.attached_window().select_pane(pane_base_index)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
-        self.session.attached_window().select_pane(1)
+        self.session.attached_window().select_pane(pane_base_index + 1)
         self.session.attached_pane().send_keys('source .env/bin/activate')
         self.session.new_window(window_name='second')
         current_windows += 1
