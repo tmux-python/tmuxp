@@ -11,7 +11,7 @@ tmuxp
 
 .. include:: ../README.rst
     :start-line: 13
-    :end-before: ==============
+    :end-before: Project details
 
 Explore:
 
