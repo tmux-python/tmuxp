@@ -233,9 +233,9 @@ Travis CI
 tmuxp uses `travis-ci`_ for continuous integration / automatic unit
 testing.
 
-travis allows for testing against multiple scenarios. Currently tmuxp
-is tested against 1.8 and latest in addition to python 2.7. The
-`travis build site`_ uses this `.travis.yml`_ configuration:
+tmuxp is tested against tmux 1.8 and the latest git source. Tnterpretters
+tested are 2.6, 2.7 and 3.3. The `travis build site`_ uses this
+`.travis.yml`_ configuration:
 
 .. literalinclude:: ../.travis.yml
     :language: yaml
