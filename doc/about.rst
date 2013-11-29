@@ -15,10 +15,10 @@ workspaces from YAML, JSON and :py:obj:`dict` configurations like
 To jump right in, see :ref:`quickstart` and :ref:`examples`.
 
 Interested in some kung-fu or joining the effort? :ref:`api` and
-:ref:`developing`
+:ref:`developing`.
 
-`BSD-licensed`_. Code can be found on `github
-<http://github.com/tony/tmuxp.>`_
+`BSD-licensed`_. Code on `github 
+<http://github.com/tony/tmuxp>`_.
 
 Differences from tmuxinator / teamocil
 --------------------------------------
