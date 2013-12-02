@@ -116,6 +116,12 @@ Milestone 0.3
 
    ``$ tmuxp path/to/dir`` should scan for loading .tmuxp.yaml and
    .tmuxp.json files.
+- ``/path/to/project/.tmuxp/*.yaml`` for projects with multiple
+  workspaces.
+- Support for session, window, pane ``requires`` that supports path to
+  shell script returning an exit code and ``only_if``. Will verify before
+  creation of session, window, pane. Can be used for assuring a tmuxp
+  workspace sets up a development environment.
 
 
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
