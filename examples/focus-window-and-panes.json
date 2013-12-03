@@ -1,0 +1,38 @@
+{
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "pwd", 
+            "echo 'this pane should be selected on load'"
+          ], 
+          "focus": true
+        }, 
+        {
+          "shell_command": [
+            "cd /var/log", 
+            "pwd"
+          ]
+        }
+      ], 
+      "window_name": "attached window on load", 
+      "focus": true
+    }, 
+    {
+      "panes": [
+        "pane", 
+        {
+          "shell_command": [
+            "echo 'this pane should be focused, when window switched to first time'"
+          ], 
+          "focus": true
+        }, 
+        "pane"
+      ], 
+      "shell_command_before": "cd /var/www", 
+      "window_name": "second window"
+    }
+  ], 
+  "session_name": "focus window and pane when loading sessions"
+}

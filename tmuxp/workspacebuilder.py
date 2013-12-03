@@ -196,7 +196,7 @@ class WorkspaceBuilder(object):
                     w.set_window_option(key, val)
 
             if 'focus' in wconf and wconf['focus']:
-                s.select_window(w['window_id'])
+                w.select_window()
 
             s.server._update_windows()
 

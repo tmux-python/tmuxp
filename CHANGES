@@ -4,12 +4,19 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1-rc4
+-------
+
+- [bug] fix bug were ``focus: true`` would not launch sessions when using
+  ``$ tmuxp load`` in a tmux session.
+
 0.1-rc3
 -------
 
 - [bug] [tests] `Issue #25`_ - ``focus: true`` not working in panes. Add
   tests for focusing panes in config.
 - [internal] :meth:`Pane.select_pane()`.
+- [docs] add new example for ``focus: true``.
 
 .. _Issue #25: https://github.com/tony/tmuxp/issues/25
 

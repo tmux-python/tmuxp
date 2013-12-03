@@ -58,25 +58,8 @@ JSON
 .. literalinclude:: ../examples/blank-panes.json
     :language: json
 
-Start Directory
----------------
-
-Equivalent to ``tmux new-window -c <start-directory>``.
-
-YAML
-""""
-
-.. literalinclude:: ../examples/start-directory.yaml
-    :language: yaml
-
-JSON
-""""
-
-.. literalinclude:: ../examples/start-directory.json
-    :language: json
-
-2 split panes
--------------
+2 panes
+-------
 
 .. sidebar:: 2 pane
 
@@ -92,28 +75,16 @@ JSON
         |                 |
         +-----------------+
 
-YAML - Short form
-"""""""""""""""""
+YAML
+""""
 
 .. literalinclude:: ../examples/2-pane-vertical.yaml
     :language: yaml
 
-JSON - Short form
-"""""""""""""""""
+JSON
+""""
 
 .. literalinclude:: ../examples/2-pane-vertical.json
-    :language: json
-
-YAML - Christmas Tree
-"""""""""""""""""""""
-
-.. literalinclude:: ../examples/2-pane-vertical-long.yaml
-    :language: yaml
-
-JSON - Christmas Tree
-"""""""""""""""""""""
-
-.. literalinclude:: ../examples/2-pane-vertical-long.json
     :language: json
 
 3 panes
@@ -174,7 +145,41 @@ JSON
 .. literalinclude:: ../examples/4-pane.json
     :language: json
 
+Start Directory
+---------------
 
+Equivalent to ``tmux new-window -c <start-directory>``.
+
+YAML
+""""
+
+.. literalinclude:: ../examples/start-directory.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/start-directory.json
+    :language: json
+
+Focusing
+--------
+
+tmuxp allows ``focus: true`` for assuring windows and panes are attached /
+selected upon loading.
+
+YAML
+""""
+
+.. literalinclude:: ../examples/focus-window-and-panes.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/focus-window-and-panes.json
+    :language: json
+ 
 Automatic Rename
 ----------------
 

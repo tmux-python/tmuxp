@@ -295,7 +295,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Window`
 
         """
-        return self.session.select_window(self.get('window_id'))
+        target = '%s:%s' % (self.get('session_id'), self.get('window_index')),
+        return self.session.select_window(target)
 
     def select_pane(self, target_pane):
         """Return selected :class:`Pane` through ``$ tmux select-pane``.
