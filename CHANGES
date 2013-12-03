@@ -11,6 +11,8 @@ Here you can find the recent changes to tmuxp.
   tests for focusing panes in config.
 - [internal] :meth:`Pane.select_pane()`.
 
+.. _Issue #25: https://github.com/tony/tmuxp/issues/25
+
 0.1-rc2
 -------
 
