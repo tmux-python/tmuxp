@@ -12,7 +12,6 @@ tmuxp.tests.test_workspacefreezer
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
-import sys
 import logging
 import time
 import kaptan
@@ -43,8 +42,8 @@ class FreezeTest(TmuxTestCase):
       window_name: editor
     - panes:
       - shell_command:
-        - tail -F /var/log/syslog
-        start_directory: /var/log
+        - pane
+        start_directory: /usr/bin
       window_name: logging
     - window_name: test
       panes:
@@ -86,6 +85,3 @@ class FreezeTest(TmuxTestCase):
             default_flow_style=False,
             safe=True
         )
-
-        #logger.error(json)
-        #logger.error(yaml)
