@@ -3,11 +3,12 @@ windows:
   # Emptiness will simply open a blank pane, if no shell_command_before.
   # All these are equivalent
   - window_name: Blank pane test
-    layout: tiled
     panes:
     -
     - pane
     - blank
+  - window_name: More blank panes
+    panes:
     - null
     - shell_command: 
     - shell_command:

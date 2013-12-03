@@ -195,15 +195,11 @@ class WindowOptions(TmuxTestCase):
     windows:
     - layout: main-horizontal
       options:
-        main-pane-height: 30
+        main-pane-height: 5
       panes:
-      - shell_command:
-        - vim
-        start_directory: '~'
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
+      - pane
+      - pane
+      - pane
       window_name: editor
     """
 
@@ -211,6 +207,7 @@ class WindowOptions(TmuxTestCase):
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
@@ -223,7 +220,7 @@ class WindowOptions(TmuxTestCase):
                 p = p
                 self.assertEqual(len(s._windows), window_count)
             self.assertIsInstance(w, Window)
-            self.assertEqual(w.show_window_option('main-pane-height'), 30)
+            self.assertEqual(w.show_window_option('main-pane-height'), 5)
 
             self.assertEqual(len(s._windows), window_count)
             window_count += 1
@@ -315,18 +312,23 @@ class BlankPaneTest(TmuxTestCase):
 
         test_config = kaptan.Kaptan().import_config(self.yaml_config_file).get()
         test_config = config.expand(test_config)
+        # for window in test_config['windows']:
+            # window['layout'] = 'tiled'
         builder = WorkspaceBuilder(sconf=test_config)
         builder.build(session=self.session)
 
-        window1 = self.session.findWhere({'window_name': 'Blank pane test'})
-        self.assertEqual(len(window1._panes), 6)
+        self.assertEqual(self.session, builder.session)
 
-        window1 = self.session.findWhere(
-            {'window_name': 'Empty string (return)'}
-        )
+        window1 = self.session.findWhere({'window_name': 'Blank pane test'})
         self.assertEqual(len(window1._panes), 3)
 
-        self.assertEqual(self.session, builder.session)
+        window2 = self.session.findWhere({'window_name': 'More blank panes'})
+        self.assertEqual(len(window2._panes), 3)
+
+        window3 = self.session.findWhere(
+            {'window_name': 'Empty string (return)'}
+        )
+        self.assertEqual(len(window3._panes), 3)
 
 
 class StartDirectoryTest(TmuxTestCase):
@@ -406,6 +408,7 @@ class PaneOrderingTest(TmuxTestCase):
     windows:
     - options:
       - automatic_rename: on
+      layout: tiled
       panes:
       - cd /var/log
       - cd /sys

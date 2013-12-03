@@ -747,7 +747,6 @@ class ConfigBlankPanes(TestCase):
         'windows': [
             {
                 'window_name': 'Blank pane test',
-                'layout': 'tiled',
                 'panes': [
                     {
                         'shell_command': [],
@@ -757,7 +756,12 @@ class ConfigBlankPanes(TestCase):
                     },
                     {
                         'shell_command': [],
-                    },
+                    }
+                ]
+            },
+            {
+                'window_name': 'More blank panes',
+                'panes': [
                     {
                         'shell_command': [],
                     },

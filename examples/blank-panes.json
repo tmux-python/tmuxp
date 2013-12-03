@@ -4,7 +4,12 @@
       "panes": [
         null, 
         "pane", 
-        "blank", 
+        "blank"
+      ], 
+      "window_name": "Blank pane test"
+    }, 
+    {
+      "panes": [
         null, 
         {
           "shell_command": null
@@ -15,8 +20,7 @@
           ]
         }
       ], 
-      "layout": "tiled", 
-      "window_name": "Blank pane test"
+      "window_name": "More blank panes"
     }, 
     {
       "panes": [
