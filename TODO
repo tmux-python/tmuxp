@@ -7,6 +7,7 @@ TODO
 Milestone 0.1
 -------------
 
+- `Issue #25`_ - ``focus: true`` not working in panes.
 
 Done
 """"
@@ -35,6 +36,7 @@ Done
 
 .. _Issue #15: https://github.com/tony/tmuxp/issues/15
 .. _Issue #21: https://github.com/tony/tmuxp/issues/21
+.. _Issue #25: https://github.com/tony/tmuxp/issues/25
 
 .. _milestone 0.2:
 
