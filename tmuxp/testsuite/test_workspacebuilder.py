@@ -42,7 +42,7 @@ class TwoPaneTest(TmuxTestCase):
       window_name: editor
     - panes:
       - shell_command:
-        - tail -F /var/log/syslog
+        - tail | echo 'hi'
       window_name: logging
     - window_name: test
       panes:
@@ -123,7 +123,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
       - shell_command:
         - cd ~
       - shell_command:
-        - cd /var
+        - cd /usr
         focus: true
       - shell_command:
         - cd ~
@@ -176,7 +176,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
         self.assertNotEqual(w.get('window_name'), 'man')
 
-        pane_path = '/var'
+        pane_path = '/usr'
         for i in range(60):
             p = w.attached_pane()
             p.server._update_panes()
@@ -334,10 +334,10 @@ class BlankPaneTest(TmuxTestCase):
 class StartDirectoryTest(TmuxTestCase):
     yaml_config = """
     session_name: sampleconfig
-    start_directory: '/var'
+    start_directory: '/usr'
     windows:
-    - window_name: supposed to be /var/log
-      start_directory: '/var/log'
+    - window_name: supposed to be /usr/bin
+      start_directory: '/usr/bin'
       layout: main-horizontal
       options:
           main-pane-height: 50
@@ -388,7 +388,7 @@ class StartDirectoryTest(TmuxTestCase):
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        for path in ['/var/log', '/dev/', '/var/', os.getcwd()]:
+        for path in ['/usr/bin', '/dev/', '/usr/', os.getcwd()]:
             for window in self.session.windows:
                 for p in window.panes:
                     self.assertTrue(p.get('pane_start_path', path))
@@ -410,8 +410,8 @@ class PaneOrderingTest(TmuxTestCase):
       - automatic_rename: on
       layout: tiled
       panes:
-      - cd /var/log
-      - cd /sys
+      - cd /usr/bin
+      - cd /usr
       - cd /sbin
       - cd /tmp
     """
@@ -420,8 +420,8 @@ class PaneOrderingTest(TmuxTestCase):
 
         # test order of `panes` (and pane_index) above aganist pane_dirs
         pane_paths = [
-            '/var/log',
-            '/sys',
+            '/usr/bin',
+            '/usr',
             '/sbin',
             '/tmp'
         ]
