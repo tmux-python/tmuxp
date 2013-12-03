@@ -7,11 +7,10 @@ TODO
 Milestone 0.1
 -------------
 
-- `Issue #25`_ - ``focus: true`` not working in panes.
-
 Done
 """"
 
+- `Issue #25`_ - ``focus: true`` not working in panes.
 - `Issue #15`_ - Pane ordering
 - `Issue #21`_ - Python 2.6 errors with directories in unit tests
 - ``shell_command_before`` for `teamocil`_.

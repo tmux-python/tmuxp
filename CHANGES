@@ -4,6 +4,13 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1-rc3
+-------
+
+- [bug] [tests] `Issue #25`_ - ``focus: true`` not working in panes. Add
+  tests for focusing panes in config.
+- [internal] :meth:`Pane.select_pane()`.
+
 0.1-rc2
 -------
 

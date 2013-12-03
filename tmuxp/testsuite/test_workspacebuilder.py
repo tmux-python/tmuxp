@@ -121,18 +121,19 @@ class FocusAndPaneIndexTest(TmuxTestCase):
       focus: true
       panes:
       - shell_command:
-        - vim
+        - cd ~
       - shell_command:
-        - echo "hey"
+        - cd /var
+        focus: true
       - shell_command:
+        - cd ~
         - echo "moo"
         - top
-        focus: true
     - window_name: window 2
       panes:
       - shell_command:
-        - vim
-        rocus: true
+        - top
+        1ocus: true
       - shell_command:
         - echo "hey"
       - shell_command:
@@ -170,6 +171,20 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
         pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
         self.assertListEqual(pane_indexes_should_be, pane_base_indexes)
+
+        w = self.session.attached_window()
+
+        self.assertNotEqual(w.get('window_name'), 'man')
+
+        pane_path = '/var'
+        for i in range(30):
+            p = w.attached_pane()
+            p.server._update_panes()
+            if p.get('pane_current_path') == pane_path:
+                break
+            time.sleep(.2)
+
+        self.assertEqual(p.get('pane_current_path'), pane_path)
 
 
 class WindowOptions(TmuxTestCase):

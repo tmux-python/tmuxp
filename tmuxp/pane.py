@@ -157,6 +157,18 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         """
         self.tmux('send-keys', 'Enter')
 
+    def select_pane(self):
+        """Select pane. Return ``self``.
+
+        To select a window object asynchrously. If a ``pane`` object exists
+        and is no longer longer the current window, ``w.select_pane()``
+        will make ``p`` the current pane.
+
+        :rtype: :class:`pane`
+
+        """
+        return self.window.select_pane(self.get('pane_id'))
+
     def __repr__(self):
         return "%s(%s %s)" % (
             self.__class__.__name__,

@@ -133,17 +133,26 @@ class WorkspaceBuilder(object):
         assert(isinstance(session, Session))
 
         focus = None
+
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
-            for p in self.iter_create_panes(w, wconf):
+
+            focus_pane = None
+            for p, pconf in self.iter_create_panes(w, wconf):
                 assert(isinstance(p, Pane))
                 p = p
 
                 if 'layout' in wconf:
                     w.select_layout(wconf['layout'])
 
+                if 'focus' in pconf and pconf['focus']:
+                    focus_pane = p
+
             if 'focus' in wconf and wconf['focus']:
                 focus = w
+
+            if focus_pane:
+                focus_pane.select_pane()
 
         if focus:
             focus.select_window()
@@ -157,7 +166,7 @@ class WorkspaceBuilder(object):
         Applies ``window_options`` to window.
 
         :param session: :class:`Session` from the config
-        :rtype: :class:`Window`
+        :rtype: tuple(:class:`Window`, ``wconf``)
 
         """
         for i, wconf in enumerate(self.sconf['windows'], start=1):
@@ -202,7 +211,7 @@ class WorkspaceBuilder(object):
         :type w: :class:`Window`
         :param wconf: config section for window
         :type wconf: :py:obj:`dict`
-        :rtype: :class:`Pane`
+        :rtype: tuple(:class:`Pane`, ``pconf``)
 
         """
         assert(isinstance(w, Window))
@@ -233,7 +242,7 @@ class WorkspaceBuilder(object):
 
             w.server._update_panes()
 
-            yield p
+            yield p, pconf
 
 
 def freeze(session):
