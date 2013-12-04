@@ -13,7 +13,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 import random
 from .. import Pane, Window, Session
 from . import t
-from .helpers import TmuxTestCase
+from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 
 import logging
 
@@ -57,6 +57,21 @@ class TmuxObjectTest(TmuxTestCase):
                         {'pane_id': pane_id}), pane)
                     self.assertIsInstance(window.findWhere(
                         {'pane_id': pane_id}), Pane)
+
+    def test_findWhere_None(self):
+        """.findWhere returns None if no results found."""
+
+        while True:
+            nonexistant_session = TEST_SESSION_PREFIX + str(
+                random.randint(0, 9999)
+            )
+
+            if not t.has_session(nonexistant_session):
+                break
+
+        self.assertIsNone(t.findWhere({
+            'session_name': nonexistant_session
+        }))
 
     def test_findWhere_multiple_attrs(self):
         """.findWhere returns objects with multiple attributes."""
