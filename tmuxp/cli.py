@@ -332,9 +332,16 @@ def command_freeze(args):
         colors=args.colors
     )
 
-    session = t.findWhere({
-        'session_name': ctext
-    })
+    try:
+        session = t.findWhere({
+            'session_name': ctext
+        })
+
+        if not session:
+            raise exc.TmuxpException('Session not found.')
+    except exc.TmuxpException as e:
+        print(e)
+        return
 
     sconf = freeze(session)
     configparser = kaptan.Kaptan()
