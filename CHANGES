@@ -9,7 +9,7 @@ Here you can find the recent changes to tmuxp.
 
 - [tests] [config] [builder] Fix `Issue #28`_ - shell_command_before in
   session scope of config causing duplication. New test.
-- [bug] Fix `Issue #26`_ and `Issue #29` for OS X tests. Thanks
+- [bug] Fix `Issue #26`_ and `Issue #29`_ for OS X tests. Thanks
   stratoukos.
 - [bug] Fix `Issue #27`_ where ``$ tmuxp freeze`` raises unhelpful message
   if session doesn't exist.
