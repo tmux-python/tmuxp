@@ -413,7 +413,7 @@ class PaneOrderingTest(TmuxTestCase):
       - cd /usr/bin
       - cd /usr
       - cd /sbin
-      - cd /tmp
+      - cd /home
     """
 
     def test_pane_order(self):
@@ -423,7 +423,7 @@ class PaneOrderingTest(TmuxTestCase):
             '/usr/bin',
             '/usr',
             '/sbin',
-            '/tmp'
+            '/home'
         ]
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
