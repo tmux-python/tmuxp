@@ -203,14 +203,18 @@ def SessionCompleter(prefix, parsed_args, **kwargs):
 
     sessions_available = [
         s.get('session_name') for s in t._sessions
-        if s.get('session_name').startswith(' '.join(prefix))
+        if s.get('session_name').startswith(prefix)
+        #if s.get('session_name').startswith(' '.join(prefix))
     ]
 
     if parsed_args.session_name and sessions_available:
         return []
-
+    import pipes
+    import re
+    #ctext = pipes.quote(args.session_name)
     return [
-        s.get('session_name') for s in t._sessions
+        #pipes.quote(s.get('session_name')) for s in t._sessions
+        re.escape(s.get('session_name')) for s in t._sessions
         if s.get('session_name').startswith(prefix)
     ]
 
@@ -324,7 +328,10 @@ def load_workspace(config_file, args):
 def command_freeze(args):
     """Import teamocil config to tmuxp format."""
 
-    ctext = ' '.join(args.session_name)
+    #ctext = ' '.join(args.session_name)
+    import pipes
+    #ctext = pipes.quote(args.session_name)
+    ctext = args.session_name
 
     t = Server(
         socket_name=args.socket_name,
@@ -338,7 +345,7 @@ def command_freeze(args):
         })
 
         if not session:
-            raise exc.TmuxpException('Session not found.')
+            raise exc.TmuxpException("Session '%s' not found." % ctext)
     except exc.TmuxpException as e:
         print(e)
         return
@@ -662,7 +669,7 @@ def command_convert(args):
 def command_attach_session(args):
     """Command to attach / switch client to a tmux session."""
     commands = []
-    ctext = ' '.join(args.session_name)
+    ctext = args.session_name
 
     t = Server(
         socket_name=args.socket_name,
@@ -674,7 +681,7 @@ def command_attach_session(args):
         session = next((s for s in t.sessions if s.get(
             'session_name') == ctext), None)
         if not session:
-            raise exc.TmuxpException('Session not found.')
+            raise exc.TmuxpException("Session '%s' not found." % ctext)
     except exc.TmuxpException as e:
         print(e)
         return
@@ -792,7 +799,6 @@ def get_parser():
     kill_session.add_argument(
         dest='session_name',
         type=str,
-        nargs='+',
         default=None,
         help='Name of session',
     ).completer = SessionCompleter
@@ -808,7 +814,6 @@ def get_parser():
 
     attach_session.add_argument(
         dest='session_name',
-        nargs='+',
         type=str,
         help='Name of session',
     ).completer = SessionCompleter
@@ -823,7 +828,6 @@ def get_parser():
     freeze.add_argument(
         dest='session_name',
         type=str,
-        nargs='+',
         help='Name of session',
     ).completer = SessionCompleter
 
@@ -837,7 +841,6 @@ def get_parser():
     load.add_argument(
         dest='config',
         type=str,
-        nargs='+',
         help='List config available in working directory and config folder.'
     ).completer = ConfigFileCompleter(
         allowednames=('.yaml', '.json'), directories=False
