@@ -238,9 +238,9 @@ def expand(sconf, cwd=None):
                         )
                     )
                 ):
-                        p = sconf['panes'][p_index] = {
-                            'shell_command': []
-                        }
+                    p = sconf['panes'][p_index] = {
+                        'shell_command': []
+                    }
 
         sconf['panes'] = [expand(pane) for pane in sconf['panes']]
 
@@ -292,18 +292,18 @@ def trickle(sconf):
 
             # Prepend shell_command_before to commands
             if 'shell_command_before' in sconf:
-                commands_before = sconf['shell_command_before']
+                commands_before.extend(sconf['shell_command_before'])
             if 'shell_command_before' in windowconfig:
                 commands_before.extend(windowconfig['shell_command_before'])
             if 'shell_command_before' in paneconfig:
                 commands_before.extend(paneconfig['shell_command_before'])
-            if 'shell_command' not in paneconfig:
-                paneconfig['shell_command'] = list()
 
-            if paneconfig['shell_command']:
+            if 'shell_command' in paneconfig:
                 commands_before.extend(paneconfig['shell_command'])
 
-            paneconfig['shell_command'] = commands_before
+            p_index = windowconfig['panes'].index(paneconfig)
+            windowconfig['panes'][p_index]['shell_command'] = commands_before
+            #paneconfig['shell_command'] = commands_before
 
     return sconf
 

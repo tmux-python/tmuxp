@@ -664,6 +664,75 @@ class ShellCommandBeforeTest(TestCase):
         self.assertDictEqual(test_config, self.config_after)
 
 
+class ShellCommandBeforeSession(TestCase):
+
+    def test_in_session_scope(self):
+
+        yaml_config = """
+        shell_command_before:
+          - 'echo "hi"'
+        session_name: 'test'
+        windows:
+        - window_name: editor
+          panes:
+          - shell_command:
+            - vim
+            - :Ex
+          - pane
+          - cd /usr
+        - window_name: logging
+          panes:
+          - shell_command:
+            -
+          - shell_command:
+            - top
+            - emacs
+        """
+
+        yaml_final_config = """
+        shell_command_before:
+          - 'echo "hi"'
+        session_name: 'test'
+        windows:
+        - window_name: editor
+          panes:
+          - shell_command:
+            - 'echo "hi"'
+            - vim
+            - :Ex
+          - shell_command:
+            - 'echo "hi"'
+          - shell_command:
+            - 'echo "hi"'
+            - cd /usr
+        - window_name: logging
+          panes:
+          - shell_command:
+            - 'echo "hi"'
+          - shell_command:
+            - 'echo "hi"'
+            - top
+            - emacs
+        """
+
+        self.maxDiff = None
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+
+        config.validate_schema(sconfig)
+
+        self.assertDictEqual(config.expand(sconfig), sconfig)
+
+        self.assertDictEqual(
+            config.expand(config.trickle(sconfig)),
+            self.yaml_to_dict(yaml_final_config)
+        )
+
+    def yaml_to_dict(self, yaml):
+        return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
+
+
 class TrickleRelativeStartDirectory(TestCase):
 
     config_expanded = {  # shell_command_before is string in some areas
