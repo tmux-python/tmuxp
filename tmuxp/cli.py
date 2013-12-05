@@ -192,6 +192,31 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
 
         return completion
 
+def escape_shell(string):
+    if 'SHELL' in os.environ:
+        shell = os.environ.get('SHELL')
+
+    if shell:
+        if 'zsh' in shell:
+            string = util.escape(string)
+        elif 'bash' in shell:
+            string = string
+            # string = util.escape(string)
+            #import pipes
+            #string = pipes.quote(string)
+            if "$" in string:
+                # string = util.escape(string)
+                # string = string.replace('$', '\$')
+                string = '"%s"' % string
+            # del pipes
+    else:
+        string = string
+
+    print(shell)
+    return string
+
+print(escape_shell('hi'))
+
 
 def SessionCompleter(prefix, parsed_args, **kwargs):
     """Return list of session names for argcomplete completer."""
@@ -204,17 +229,14 @@ def SessionCompleter(prefix, parsed_args, **kwargs):
     sessions_available = [
         s.get('session_name') for s in t._sessions
         if s.get('session_name').startswith(prefix)
-        #if s.get('session_name').startswith(' '.join(prefix))
     ]
 
     if parsed_args.session_name and sessions_available:
         return []
-    import pipes
-    import re
-    #ctext = pipes.quote(args.session_name)
     return [
+        #util.escape(s.get('session_name')) for s in t._sessions
         #pipes.quote(s.get('session_name')) for s in t._sessions
-        re.escape(s.get('session_name')) for s in t._sessions
+        escape_shell(s.get('session_name')) for s in t._sessions
         if s.get('session_name').startswith(prefix)
     ]
 
@@ -407,9 +429,6 @@ def command_freeze(args):
 
 def command_load(args):
     """Load a session from a tmuxp session file."""
-
-    if isinstance(args.config, list):
-        args.config = ' '.join(args.config)
 
     if '.' == args.config:
         if config.in_cwd():

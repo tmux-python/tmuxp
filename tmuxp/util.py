@@ -14,11 +14,11 @@ from __future__ import absolute_import, division, print_function, with_statement
 from __future__ import unicode_literals
 
 from distutils.version import StrictVersion
-import unittest
 import collections
 import subprocess
 import os
 import sys
+import string
 from . import exc
 
 import logging
@@ -300,6 +300,23 @@ def oh_my_zsh_auto_title():
                       'Then create a new shell or type:\n\n'
                       '\t$ source ~/.zshrc')
 
+
+_safechars = frozenset(string.whitespace + '@%_-+=:,./\\')
+
+
+def escape(pattern):
+    """Escape all non-alphanumeric characters in pattern.
+
+    Adapted from cpython Lib/re.py"""
+    s = list(pattern)
+    safechars = _safechars
+    for i, c in enumerate(pattern):
+        if c in safechars:
+            if c == "\000":
+                s[i] = "\\000"
+            else:
+                s[i] = "\\" + c
+    return pattern[:0].join(s)
 
 # http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3/
 try:
