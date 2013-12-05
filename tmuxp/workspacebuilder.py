@@ -184,7 +184,8 @@ class WorkspaceBuilder(object):
                 window_name=window_name,
                 start_directory=wconf[
                     'start_directory'] if 'start_directory' in wconf else None,
-                attach=False  # do not move to the new window
+                attach=False,  # do not move to the new window
+                window_index=wconf.get('window_index', ''),
             )
 
             if i == int(1) and w1:  # if first window, use window 1

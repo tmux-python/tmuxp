@@ -462,3 +462,40 @@ class PaneOrderingTest(TmuxTestCase):
                     time.sleep(.2)
 
                 self.assertEqual(p.get('pane_current_path'), pane_path)
+
+
+class WindowIndexTest(TmuxTestCase):
+    yaml_config = """
+    session_name: sampleconfig
+    windows:
+    - window_name: zero
+      panes:
+      - echo 'zero'
+    - window_name: five
+      panes:
+      - echo 'five'
+      window_index: 5
+    - window_name: one
+      panes:
+      - echo 'one'
+    """
+
+    def test_window_index(self):
+        proc = self.session.tmux('show-option', '-gv', 'base-index')
+        base_index = int(proc.stdout[0])
+        name_index_map = {
+            'zero': 0 + base_index,
+            'one': 1 + base_index,
+            'five': 5,
+        }
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        for window, wconf in builder.iter_create_windows(self.session):
+            expected_index = name_index_map[window['window_name']]
+            self.assertEqual(int(window['window_index']), expected_index)

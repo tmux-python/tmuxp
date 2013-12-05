@@ -1,0 +1,12 @@
+session_name: Window index example
+windows:
+  - window_name: zero
+    panes:
+      - echo "this window's index will be zero"
+  - window_name: five
+    panes:
+      - echo "this window's index will be five"
+    window_index: 5
+  - window_name: one
+    panes:
+      - echo "this window's index will be one"
