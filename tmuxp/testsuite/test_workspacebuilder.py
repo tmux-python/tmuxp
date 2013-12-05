@@ -481,10 +481,12 @@ class WindowIndexTest(TmuxTestCase):
     """
 
     def test_window_index(self):
+        proc = self.session.tmux('show-option', '-gv', 'base-index')
+        base_index = int(proc.stdout[0])
         name_index_map = {
-            'zero': '0',
-            'one': '1',
-            'five': '5',
+            'zero': 0 + base_index,
+            'one': 1 + base_index,
+            'five': 5,
         }
 
         sconfig = kaptan.Kaptan(handler='yaml')
@@ -494,7 +496,6 @@ class WindowIndexTest(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-
         for window, wconf in builder.iter_create_windows(self.session):
             expected_index = name_index_map[window['window_name']]
-            self.assertEqual(window['window_index'], expected_index)
+            self.assertEqual(int(window['window_index']), expected_index)
