@@ -2,6 +2,7 @@
 
 _python_argcomplete() {
     local IFS='\013'
+
     COMPREPLY=( $(IFS="$IFS" \
                   COMP_LINE="$COMP_LINE" \
                   COMP_POINT="$COMP_POINT" \

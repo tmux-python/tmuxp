@@ -195,6 +195,7 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
 def escape_shell(string):
     if 'SHELL' in os.environ:
         shell = os.environ.get('SHELL')
+    return string
 
     if shell:
         if 'zsh' in shell:
