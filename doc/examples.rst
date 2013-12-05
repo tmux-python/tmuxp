@@ -179,7 +179,25 @@ JSON
 
 .. literalinclude:: ../examples/focus-window-and-panes.json
     :language: json
- 
+
+Window Index
+------------
+
+You can specify a window's index using the ``window_index`` property. Windows
+without ``window_index`` will use the lowest available window index.
+
+YAML
+""""
+
+.. literalinclude:: ../examples/window-index.yaml
+    :language: yaml
+
+JSON
+""""
+
+.. literalinclude:: ../examples/window-index.json
+    :language: json
+
 Automatic Rename
 ----------------
 
