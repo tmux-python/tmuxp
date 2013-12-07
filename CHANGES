@@ -9,6 +9,7 @@ dev
 
 - [config] [tests] [bug] `Issue #33`_ bug. Partial rewrite of
   :meth:`config.expand`.
+- [cli] tmuxp will exit silently with ``Ctrl-c``.
 
 .. _Issue #31: https://github.com/tony/tmuxp/issues/31
 
