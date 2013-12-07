@@ -11,7 +11,7 @@ Here you can find the recent changes to tmuxp.
   :meth:`config.expand`.
 - [cli] tmuxp will exit silently with ``Ctrl-c``.
 
-.. _Issue #31: https://github.com/tony/tmuxp/issues/31
+.. _Issue #33: https://github.com/tony/tmuxp/issues/33
 
 0.1-rc6
 -------
