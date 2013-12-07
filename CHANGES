@@ -4,6 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+dev
+---
+
+- [config] [tests] [bug] `Issue #33`_ bug. Partial rewrite of
+  :meth:`config.expand`.
+
+.. _Issue #31: https://github.com/tony/tmuxp/issues/31
+
 0.1-rc6
 -------
 
