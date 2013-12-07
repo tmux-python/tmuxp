@@ -11,6 +11,7 @@ tmuxp.config
 
 from __future__ import absolute_import, division, print_function, with_statement
 import os
+import copy
 import logging
 from . import exc
 from .util import basestring
@@ -198,50 +199,38 @@ def expand(sconf, cwd=None):
         ]
     elif 'panes' in sconf:
 
-        for p in sconf['panes']:
-            p_index = sconf['panes'].index(p)
+        for pconf in sconf['panes']:
+            p_index = sconf['panes'].index(pconf)
+            p = copy.deepcopy(pconf)
+            pconf = sconf['panes'][p_index] = {}
 
-            if not isinstance(p, dict) and not isinstance(p, list):
-                p = sconf['panes'][p_index] = {
+            if isinstance(p, basestring):
+                p = {
                     'shell_command': [p]
                 }
-
-            if isinstance(p, dict) and not len(p):
-                p = sconf['panes'][p_index] = {
+            elif not p:
+                p = {
                     'shell_command': []
                 }
 
-            if isinstance(p, basestring):
-
-                p = sconf['panes'][p_index] = {
-                    'shell_command': [p]
-                }
-
+            assert isinstance(p, dict)
+            assert 'shell_command' in p
             if 'shell_command' in p:
+                cmd = p['shell_command']
 
                 if isinstance(p['shell_command'], basestring):
-                    p = sconf['panes'][p_index] = {
-                        'shell_command': [p['shell_command']]
-                    }
+                    cmd = [cmd]
 
-                if p['shell_command'] is None:
-                    p = sconf['panes'][p_index] = {
-                        'shell_command': []
-                    }
-                elif (
-                    isinstance(p['shell_command'], list) and (
-                        len(p['shell_command']) == int(1) and (
-                            any(
-                                a in p['shell_command']
-                                for a in [None, 'blank', 'pane']
-                            ) or p['shell_command'][0] is None
-                        )
-                    )
-                ):
-                    p = sconf['panes'][p_index] = {
-                        'shell_command': []
-                    }
+                if not cmd or any(a == cmd for a in [None, 'blank', 'pane']):
+                    cmd = []
 
+                if isinstance(cmd, list) and len(cmd) == int(1):
+                    if any(a in cmd for a in [None, 'blank', 'pane']):
+                        cmd = []
+
+                p['shell_command'] = cmd
+
+            pconf.update(p)
         sconf['panes'] = [expand(pane) for pane in sconf['panes']]
 
     return sconf

@@ -277,6 +277,91 @@ class ExpandTest(TestCase):
         test_config = config.expand(self.before_config)
         self.assertDictEqual(test_config, self.after_config)
 
+    def test_no_window_name(self):
+        """Expand shell commands from string to list."""
+
+        unexpanded_yaml = """
+        session_name: sampleconfig
+        start_directory: '~'
+        windows:
+        - window_name: focused window
+          layout: main-horizontal
+          focus: true
+          panes:
+          - shell_command:
+            - cd ~
+          - shell_command:
+            - cd /usr
+            focus: true
+          - shell_command:
+            - cd ~
+            - echo "moo"
+            - top
+        - window_name: window 2
+          panes:
+          - shell_command:
+            - top
+            focus: true
+          - shell_command:
+            - echo "hey"
+          - shell_command:
+            - echo "moo"
+          - window_name: window 3
+          panes:
+          - shell_command: cd /
+            focus: true
+          - pane
+          - pane
+        """
+
+        expanded_yaml = """
+        session_name: sampleconfig
+        start_directory: '~'
+        windows:
+        - window_name: focused window
+          layout: main-horizontal
+          focus: true
+          panes:
+          - shell_command:
+            - cd ~
+          - shell_command:
+            - cd /usr
+            focus: true
+          - shell_command:
+            - cd ~
+            - echo "moo"
+            - top
+        - window_name: window 2
+          panes:
+          - shell_command:
+            - top
+            focus: true
+          - shell_command:
+            - echo "hey"
+          - shell_command:
+            - echo "moo"
+          - window_name: window 3
+          panes:
+          - shell_command:
+            - cd /
+            focus: true
+          - shell_command: []
+          - shell_command: []
+        """
+
+        self.maxDiff = None
+
+        unexpanded_dict = kaptan.Kaptan(handler='yaml'). \
+            import_config(unexpanded_yaml).get()
+
+        expanded_dict = kaptan.Kaptan(handler='yaml'). \
+            import_config(expanded_yaml).get()
+
+        self.assertDictEqual(
+            config.expand(unexpanded_dict),
+            expanded_dict
+        )
+
 
 class InlineTest(TestCase):
 

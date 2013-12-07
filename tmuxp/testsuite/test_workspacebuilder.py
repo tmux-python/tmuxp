@@ -133,18 +133,25 @@ class FocusAndPaneIndexTest(TmuxTestCase):
       panes:
       - shell_command:
         - top
-        1ocus: true
+        focus: true
       - shell_command:
         - echo "hey"
       - shell_command:
         - echo "moo"
-
+    - window_name: window 3
+      panes:
+      - shell_command: cd /
+        focus: true
+      - pane
+      - pane
     """
 
-    def test_split_windows(self):
+    def test_focus_pane_index(self):
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
@@ -179,6 +186,26 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         pane_path = '/usr'
         for i in range(60):
             p = w.attached_pane()
+            p.server._update_panes()
+            if p.get('pane_current_path') == pane_path:
+                break
+            time.sleep(.2)
+
+        self.assertEqual(p.get('pane_current_path'), pane_path)
+
+        proc = self.session.tmux('show-option', '-gv', 'base-index')
+        base_index = int(proc.stdout[0])
+        self.session.server._update_windows()
+        for w in self.session._windows:
+            logger.error(w['window_index'])
+
+        window3 = self.session.findWhere({'window_index': str(base_index + 2)})
+        self.assertIsInstance(window3, Window)
+
+        p = None
+        pane_path = '/'
+        for i in range(60):
+            p = window3.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
                 break
