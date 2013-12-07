@@ -171,13 +171,10 @@ def expand(sconf, cwd=None):
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:
-        if (
-            any(sconf['start_directory'].startswith(a) for a in ['.', './']) or
-            any(sconf['start_directory'] == a for a in ['.', './'])
-        ):
-            start_path = os.path.normpath(
-                os.path.join(cwd, sconf['start_directory'])
-            )
+        start_path = sconf['start_directory']
+        if any(start_path.startswith(a) for a in ['.', './']):
+            start_path = os.path.normpath(os.path.join(cwd, start_path))
+
             sconf['start_directory'] = start_path
 
     if (

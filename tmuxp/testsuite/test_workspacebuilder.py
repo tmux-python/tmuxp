@@ -196,8 +196,6 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         proc = self.session.tmux('show-option', '-gv', 'base-index')
         base_index = int(proc.stdout[0])
         self.session.server._update_windows()
-        for w in self.session._windows:
-            logger.error(w['window_index'])
 
         window3 = self.session.findWhere({'window_index': str(base_index + 2)})
         self.assertIsInstance(window3, Window)
