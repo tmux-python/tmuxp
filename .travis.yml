@@ -22,6 +22,7 @@ before_script:
   - ./configure && make && sudo make install
   - cd ..
   - tmux -V
-script: python setup.py test
+script: coverage run --source=tmuxp setup.py test
+# script: python setup.py test
 after_success:
   - coveralls

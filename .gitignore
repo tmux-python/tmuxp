@@ -8,3 +8,4 @@ dist
 doc/_build
 tmuxp/testsuite/.tmuxp
 core.*
+.coverage
