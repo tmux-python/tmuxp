@@ -12,14 +12,15 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import time
 from random import randint
-
+import logging
 try:
     import unittest2 as unittest
 except ImportError:  # Python 2.7
     import unittest
+
 from . import t
 from .. import Server, log, exc
-import logging
+
 logger = logging.getLogger(__name__)
 
 TEST_SESSION_PREFIX = 'tmuxp_'

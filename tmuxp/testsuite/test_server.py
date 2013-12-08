@@ -12,11 +12,11 @@ tmuxp.tests.test_server
 from __future__ import absolute_import, division, print_function, with_statement
 
 from random import randint
+import logging
+
 from .. import Server
 from .helpers import TmuxTestCase
 from . import t
-
-import logging
 
 logger = logging.getLogger(__name__)
 

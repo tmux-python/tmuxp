@@ -12,12 +12,13 @@ tmuxp.tests.test_config_teamocil
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
+import logging
+
 import kaptan
+
 from .. import config, exc
 from ..util import tmux
 from .helpers import TestCase
-
-import logging
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')

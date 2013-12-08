@@ -13,9 +13,11 @@ tmuxp helps you manage tmux workspaces.
 from __future__ import absolute_import, division, print_function, with_statement
 
 import pipes
+import logging
+
 from .window import Window
 from . import util, formats, exc
-import logging
+
 logger = logging.getLogger(__name__)
 
 

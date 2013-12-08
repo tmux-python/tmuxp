@@ -12,8 +12,10 @@ tmuxp helps you manage tmux workspaces.
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
-import logging
+
 import os
+import logging
+
 from . import exc, config, Window, Pane, Session, Server
 
 logger = logging.getLogger(__name__)

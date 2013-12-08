@@ -15,9 +15,11 @@ import os
 import sys
 import logging
 import time
+
 import kaptan
+
 from .. import Window, config, exc
-from ..util import unicode
+from .._compat import text_type
 from ..workspacebuilder import WorkspaceBuilder
 from .helpers import TmuxTestCase
 
@@ -315,7 +317,7 @@ class WindowAutomaticRename(TmuxTestCase):
                 break
             time.sleep(.25)
 
-        self.assertEqual(w.get('window_name'), unicode('man'))
+        self.assertEqual(w.get('window_name'), text_type('man'))
 
         w.select_pane('-D')
         for i in range(60):
@@ -324,7 +326,7 @@ class WindowAutomaticRename(TmuxTestCase):
                 break
             time.sleep(.25)
 
-        self.assertNotEqual(w.get('window_name'), unicode('man'))
+        self.assertNotEqual(w.get('window_name'), text_type('man'))
 
 
 class BlankPaneTest(TmuxTestCase):

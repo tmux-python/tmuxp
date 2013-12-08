@@ -11,11 +11,12 @@ tmuxp.tests.test_window
 
 from __future__ import absolute_import, division, print_function, with_statement
 
-from .. import Pane, Window, Server
-from .helpers import TmuxTestCase
-from . import t
-
 import logging
+
+from .. import Pane, Window, Server
+from . import t
+from .helpers import TmuxTestCase
+
 
 logger = logging.getLogger(__name__)
 

@@ -10,18 +10,19 @@ tmuxp helps you manage tmux workspaces.
 :license: BSD, see LICENSE for details
 
 """
-from __future__ import absolute_import, division, print_function, with_statement
-from __future__ import unicode_literals
+from __future__ import absolute_import, division, print_function, \
+    with_statement, unicode_literals
 
-from distutils.version import StrictVersion
 import unittest
 import collections
 import subprocess
 import os
 import sys
-from . import exc
-
 import logging
+
+from distutils.version import StrictVersion
+
+from . import exc
 
 logger = logging.getLogger(__name__)
 
@@ -299,28 +300,3 @@ def oh_my_zsh_auto_title():
                       'Remember the "export" at the beginning!\n\n'
                       'Then create a new shell or type:\n\n'
                       '\t$ source ~/.zshrc')
-
-
-# http://www.rfk.id.au/blog/entry/preparing-pyenchant-for-python-3/
-try:
-    unicode = unicode
-except NameError:
-    # 'unicode' is undefined, must be Python 3
-    str = str
-    unicode = str
-    bytes = bytes
-    basestring = (str, bytes)
-else:
-    # 'unicode' exists, must be Python 2
-    str = str
-    unicode = unicode
-    bytes = str
-    basestring = basestring
-
-
-if not PY2:
-    input = input
-    from string import ascii_lowercase
-else:
-    input = raw_input
-    from string import lower as ascii_lowercase

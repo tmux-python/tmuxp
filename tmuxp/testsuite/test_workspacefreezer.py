@@ -14,7 +14,9 @@ from __future__ import absolute_import, division, print_function, with_statement
 import os
 import logging
 import time
+
 import kaptan
+
 from .. import Window, config, exc
 from ..workspacebuilder import WorkspaceBuilder, freeze
 from .helpers import TmuxTestCase

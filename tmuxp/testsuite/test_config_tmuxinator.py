@@ -12,9 +12,13 @@ tmuxp.tests.test_config_tmuxinator
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
+import logging
+
 import kaptan
+
 from .. import config, exc
-from ..util import tmux, basestring
+from ..util import tmux
+from .._compat import string_types
 from .helpers import TestCase
 
 import logging

@@ -12,16 +12,19 @@ tmuxp.cli
 import os
 import sys
 import argparse
-import argcomplete
+import re
 import logging
-import kaptan
-from . import log, util, exc, WorkspaceBuilder, Server, config
-from .util import ascii_lowercase, input
-from .workspacebuilder import freeze
+
 from distutils.util import strtobool
 
+import argcomplete
+import kaptan
 
-import re
+from . import log, util, exc, WorkspaceBuilder, Server, config
+from ._compat import ascii_lowercase, input
+from .workspacebuilder import freeze
+
+
 VERSIONFILE = os.path.join(
     os.path.abspath(os.path.dirname(__file__)), '__init__.py'
 )

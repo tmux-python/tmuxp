@@ -10,10 +10,10 @@ tmuxp.tests.test_pane
 """
 from __future__ import absolute_import, division, print_function, with_statement
 
+import logging
+
 from . import t
 from .helpers import TmuxTestCase
-
-import logging
 
 logger = logging.getLogger(__name__)
 

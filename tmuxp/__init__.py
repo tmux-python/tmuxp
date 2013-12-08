@@ -20,5 +20,3 @@ from .window import Window
 from .pane import Pane
 from .workspacebuilder import WorkspaceBuilder
 from . import config, util, cli
-
-import logging

@@ -10,11 +10,13 @@ tmuxp.config
 """
 
 from __future__ import absolute_import, division, print_function, with_statement
+
 import os
 import copy
 import logging
+
 from . import exc
-from .util import basestring
+from ._compat import string_types
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +62,7 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
     """
 
     extensions = [extensions] if isinstance(
-        extensions, basestring) else extensions
+        extensions, string_types) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
@@ -174,18 +176,17 @@ def expand(sconf, cwd=None):
         start_path = sconf['start_directory']
         if any(start_path.startswith(a) for a in ['.', './']):
             start_path = os.path.normpath(os.path.join(cwd, start_path))
-
             sconf['start_directory'] = start_path
 
     if (
         'shell_command' in sconf and
-        isinstance(sconf['shell_command'], basestring)
+        isinstance(sconf['shell_command'], string_types)
     ):
         sconf['shell_command'] = [sconf['shell_command']]
 
     if (
         'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], basestring)
+        isinstance(sconf['shell_command_before'], string_types)
     ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
 
@@ -201,7 +202,7 @@ def expand(sconf, cwd=None):
             p = copy.deepcopy(pconf)
             pconf = sconf['panes'][p_index] = {}
 
-            if isinstance(p, basestring):
+            if isinstance(p, string_types):
                 p = {
                     'shell_command': [p]
                 }
@@ -215,7 +216,7 @@ def expand(sconf, cwd=None):
             if 'shell_command' in p:
                 cmd = p['shell_command']
 
-                if isinstance(p['shell_command'], basestring):
+                if isinstance(p['shell_command'], string_types):
                     cmd = [cmd]
 
                 if not cmd or any(a == cmd for a in [None, 'blank', 'pane']):
@@ -343,12 +344,12 @@ def import_tmuxinator(sconf):
     if 'pre' in sconf and 'pre_window' in sconf:
         tmuxp_config['shell_command'] = sconf['pre']
 
-        if isinstance(sconf['pre'], basestring):
+        if isinstance(sconf['pre'], string_types):
             tmuxp_config['shell_command_before'] = [sconf['pre_window']]
         else:
             tmuxp_config['shell_command_before'] = sconf['pre_window']
     elif 'pre' in sconf:
-        if isinstance(sconf['pre'], basestring):
+        if isinstance(sconf['pre'], string_types):
             tmuxp_config['shell_command_before'] = [sconf['pre']]
         else:
             tmuxp_config['shell_command_before'] = sconf['pre']
@@ -367,7 +368,7 @@ def import_tmuxinator(sconf):
 
             windowdict['window_name'] = k
 
-            if isinstance(v, basestring) or v is None:
+            if isinstance(v, string_types) or v is None:
                 windowdict['panes'] = [v]
                 tmuxp_config['windows'].append(windowdict)
                 continue
