@@ -8,8 +8,8 @@ tmuxp.log
 :license: BSD, see LICENSE for details
 
 """
-
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function, \
+    with_statement, unicode_literals
 
 import logging
 import time
