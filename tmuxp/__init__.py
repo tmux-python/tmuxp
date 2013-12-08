@@ -12,6 +12,8 @@ tmuxp
 
 from __future__ import absolute_import, division, print_function, with_statement
 
+__version__ = '0.1.0rc7'
+
 from .session import Session
 from .server import Server
 from .window import Window
@@ -20,5 +22,3 @@ from .workspacebuilder import WorkspaceBuilder
 from . import config, util, cli
 
 import logging
-
-__version__ = '0.1.0rc7'
