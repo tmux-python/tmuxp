@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-dev
----
+0.1-rc8
+-------
 
 - [internal] ``unicode_literals``
 - [internal] Move py2/py3 compliancy code to ``_compat``.
