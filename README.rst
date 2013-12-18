@@ -6,6 +6,9 @@
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
 
+.. image:: https://coveralls.io/repos/tony/tmuxp/badge.png?branch=master
+    :target: https://coveralls.io/r/tony/tmuxp?branch=master
+
 .. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
     :scale: 100%
     :width: 45%
@@ -60,6 +63,7 @@ API             http://tmuxp.readthedocs.org/en/latest/api.html
 Changelog       http://tmuxp.readthedocs.org/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
 Travis          http://travis-ci.org/tony/tmuxp
+Test Coverage   https://coveralls.io/r/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
 Ohloh           https://www.ohloh.net/p/tmuxp
 License         `BSD`_.
