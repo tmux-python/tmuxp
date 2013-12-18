@@ -52,7 +52,7 @@ Project details
 
 ==============  ==========================================================
 tmux support    1.8, 1.9-dev
-python support  2.7, >= 3.3
+python support  2.6, 2.7, >= 3.3
 config support  yaml, json, python dict
 Source          https://github.com/tony/tmuxp
 Docs            http://tmuxp.rtfd.org
@@ -61,7 +61,6 @@ Changelog       http://tmuxp.readthedocs.org/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
 Travis          http://travis-ci.org/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
-Crate.io        https://crate.io/packages/tmuxp/
 Ohloh           https://www.ohloh.net/p/tmuxp
 License         `BSD`_.
 git repo        .. code-block:: bash
