@@ -412,7 +412,6 @@ def command_load(args):
     if '.' == args.config:
         if config.in_cwd():
             configfile = config.in_cwd()[0]
-            print(configfile)
         else:
             sys.exit('No tmuxp configs found in current directory.')
     else:

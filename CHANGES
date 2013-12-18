@@ -4,6 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1
+---
+
+- [cli] fix duplicate print out of filename with using ``tmuxp load .``.
+- version to 0.1. No ``--pre`` needed. Future versions will not use rc.
+
 0.1-rc8
 -------
 
