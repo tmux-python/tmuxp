@@ -1,10 +1,11 @@
-`tmuxp` solves the panes / pains of managing workspaces.
-
-.. image:: https://travis-ci.org/tony/tmuxp.png?branch=master
-   :target: https://travis-ci.org/tony/tmuxp
+tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
+`python objects`_, JSON or YAML.
 
 .. image:: https://badge.fury.io/py/tmuxp.png
     :target: http://badge.fury.io/py/tmuxp
+
+.. image:: https://travis-ci.org/tony/tmuxp.png?branch=master
+   :target: https://travis-ci.org/tony/tmuxp
 
 .. image:: https://coveralls.io/repos/tony/tmuxp/badge.png?branch=master
     :target: https://coveralls.io/r/tony/tmuxp?branch=master
@@ -13,9 +14,6 @@
     :scale: 100%
     :width: 45%
     :align: center
-
-tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
-`python objects`_.
 
 - Basic support for `freezing live sessions`_.
 - `Importing`_ from `teamocil`_ and `tmuxinator`_.

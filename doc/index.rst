@@ -10,7 +10,7 @@ tmuxp
     :align: right
 
 .. include:: ../README.rst
-    :start-line: 15
+    :start-line: 16
     :end-before: Project details
 
 Explore:
