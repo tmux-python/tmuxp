@@ -68,6 +68,9 @@ License         `BSD`_.
 git repo        .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git
+install stable  .. code-block:: bash
+
+                    $ sudo pip install tmuxp
 install dev     .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git tmuxp
@@ -80,7 +83,7 @@ install dev     .. code-block:: bash
                 more.
 tests           .. code-block:: bash
 
-                    $ python ./run_tests.py
+                    $ python ./run-tests.py
 ==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
