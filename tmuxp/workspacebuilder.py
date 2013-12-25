@@ -183,10 +183,11 @@ class WorkspaceBuilder(object):
                 w1 = s.attached_window()
                 w1.move_window(99)
                 pass
+
+            sd = wconf['start_directory'] if 'start_directory' in wconf else None
             w = s.new_window(
                 window_name=window_name,
-                start_directory=wconf[
-                    'start_directory'] if 'start_directory' in wconf else None,
+                start_directory=sd,
                 attach=False,  # do not move to the new window
                 window_index=wconf.get('window_index', ''),
             )
