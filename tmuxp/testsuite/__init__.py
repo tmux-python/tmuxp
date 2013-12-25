@@ -18,6 +18,7 @@ t.socket_name = 'tmuxp_test'
 
 from .. import log
 import logging
+logger = logging.getLogger()
 
 
 if not logger.handlers:
