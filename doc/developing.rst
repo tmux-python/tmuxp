@@ -12,7 +12,7 @@ Developing and Testing
 Our tests are inside ``./tmuxp/testsuite``. Tests are implemented using
 :py:mod:`unittest`.
 
-``./run_tests.py`` will create a tmux server on a separate ``socket_name``
+``./run-tests.py`` will create a tmux server on a separate ``socket_name``
 using ``$ tmux -L test_case``.
 
 .. _install_dev_env:
@@ -64,7 +64,7 @@ folder with its own packages.
 
 .. code-block:: bash
 
-    $ ./run_tests.py
+    $ ./run-tests.py
 
 You probably didn't see anything but tests scroll by.
 
@@ -83,19 +83,19 @@ Test runner options
 
     .. code-block:: bash
 
-        $ ./run_tests.py --tests test_config.ImportExportTest
+        $ ./run-tests.py --tests test_config.ImportExportTest
 
     Is now equivalent to:
 
     .. code-block:: bash
 
-        $ ./run_tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
+        $ ./run-tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
 
 Testing specific TestSuites, TestCase and tests
 
 .. code-block:: bash
 
-    $ ./run_tests.py --help
+    $ ./run-tests.py --help
 
 Will give you an output of ways you can choose to run tests. Example for
 ``test_config`` TestSuite:
@@ -104,25 +104,25 @@ By :py:class:`unittest.TestSuite` / module:
 
 .. code-block:: bash
 
-    $ ./run_tests.py test_config
+    $ ./run-tests.py test_config
 
 by :py:class:`unittest.TestCase`:
 
 .. code-block:: bash
 
-    $ ./run_tests.py --tests test_config.ImportExportTest
+    $ ./run-tests.py --tests test_config.ImportExportTest
 
 individual tests:
 
 .. code-block:: bash
 
-    $ ./run_tests.py --tests test_config.ImportExportTest.test_export_json
+    $ ./run-tests.py --tests test_config.ImportExportTest.test_export_json
 
 Multiple can be separated by spaces:
 
 .. code-block:: bash
 
-    $ ./run_tests.py --tests ImportExportTest.test_export_json \
+    $ ./run-tests.py --tests ImportExportTest.test_export_json \
         ImportExportTest.test_window
 
 .. _test_builder_visually:
@@ -142,7 +142,7 @@ Create two terminals:
 
     .. code-block:: bash
     
-        $ python ./run_tests.py --tests tests_workspacebuilder
+        $ python ./run-tests.py --tests tests_workspacebuilder
 
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users.
@@ -150,7 +150,7 @@ tmuxp hides this building from normal users.
 Verbosity and logging
 '''''''''''''''''''''
 
-``./run_tests.py`` supports two options, these are *optional* flags that
+``./run-tests.py`` supports two options, these are *optional* flags that
 may be added to for :ref:`test_specific_tests` and
 :ref:`test_builder_visually`.
 
@@ -159,13 +159,13 @@ may be added to for :ref:`test_specific_tests` and
 
     .. code-block:: bash
 
-        $ ./run_tests.py --log-level debug
+        $ ./run-tests.py --log-level debug
 
     short form:
 
     .. code-block:: bash
 
-        $ ./run_tests.py -l debug
+        $ ./run-tests.py -l debug
 
 2.  unit test verbosity:
 
@@ -173,7 +173,7 @@ may be added to for :ref:`test_specific_tests` and
 
     .. code-block:: bash
 
-        $ ./run_tests.py --verbosity 0
+        $ ./run-tests.py --verbosity 0
 
 Run tests on save
 -----------------
@@ -193,13 +193,13 @@ To run all tests upon editing any ``.py`` file:
 
 .. code-block:: bash
 
-    $ watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py
+    $ watching_testrunner --basepath ./ --pattern="*.py" python run-tests.py
 
 To run test where :ref:`test_builder_visually` you may:
 
 .. code-block:: bash
 
-    $ watching_testrunner --basepath ./ --pattern="*.py" python run_tests.py --visual
+    $ watching_testrunner --basepath ./ --pattern="*.py" python run-tests.py --visual
 
 .. _watching_testrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
 .. _pypi: https://pypi.python.org/pypi

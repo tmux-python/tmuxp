@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Test runner for tmuxp project. ``$ ./run_tests.py --help`` for more."""
+"""Test runner for tmuxp project. ``$ ./run-tests.py --help`` for more."""
 
 from __future__ import absolute_import, division, print_function, with_statement
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         Run tests suite for tmuxp. With no arguments, runs all test suites in tmuxp.testsuite.
 
         Default usage:
-            $ ./run_tests.py
+            $ ./run-tests.py
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
@@ -46,24 +46,24 @@ if __name__ == '__main__':
         Test individual, TestCase or TestSuites, or multiple. Example for test_config TestSuite:
 
         by TestSuite (module):
-            $ ./run_tests.py test_config
+            $ ./run-tests.py test_config
 
         by TestCase:
-            $ ./run_tests.py test_config.ImportExportTest
+            $ ./run-tests.py test_config.ImportExportTest
         individual tests:
-            $ ./run_tests.py test_config.ImportExportTest.test_export_json
+            $ ./run-tests.py test_config.ImportExportTest.test_export_json
 
         Multiple can be separated by spaces:
-            $ ./run_tests.py test_config.ImportExportTest.test_export_json \\
+            $ ./run-tests.py test_config.ImportExportTest.test_export_json \\
                 test_config.ImportExportTest.test_window
 
-        ./run_tests will automatically assume the package namespace ``tmuxp.testsuite``.
+        ./run-tests will automatically assume the package namespace ``tmuxp.testsuite``.
 
-            $ ./run_tests.py test_config.ImportExportTest
+            $ ./run-tests.py test_config.ImportExportTest
 
         is the same as:
 
-            $ ./run_tests.py tmuxp.testsuite.test_config.ImportExportTest
+            $ ./run-tests.py tmuxp.testsuite.test_config.ImportExportTest
         '''
     )
     parser.add_argument('-l', '--log-level', dest='log_level', default='INFO',
