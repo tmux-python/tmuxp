@@ -4,6 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1.1
+-----
+
+- [builder] [freezer] [bug] Fix `Issue #32`_ where special characters
+  caused unicode caused unexpected outcomes loading and freezing sessions.
+
+.. _Issue #32: https://github.com/tony/tmuxp/issues/32
+
 0.1
 ---
 
@@ -11,13 +19,13 @@ Here you can find the recent changes to tmuxp.
 - version to 0.1. No ``--pre`` needed. Future versions will not use rc.
 
 0.1-rc8
--------
+"""""""
 
 - [internal] ``unicode_literals``
 - [internal] Move py2/py3 compliancy code to ``_compat``.
 
 0.1-rc7
--------
+"""""""
 
 - [config] [tests] [bug] `Issue #33`_ bug. Partial rewrite of
   :meth:`config.expand`.
@@ -26,7 +34,7 @@ Here you can find the recent changes to tmuxp.
 .. _Issue #33: https://github.com/tony/tmuxp/issues/33
 
 0.1-rc6
--------
+"""""""
 
 - [config] [tests] [examples] Add `Issue #31`_ from stratoukos -
   ``window_index`` option, and add example.
@@ -34,7 +42,7 @@ Here you can find the recent changes to tmuxp.
 .. _Issue #31: https://github.com/tony/tmuxp/issues/31
 
 0.1-rc5
--------
+"""""""
 
 - [tests] [config] [builder] Fix `Issue #28`_ - shell_command_before in
   session scope of config causing duplication. New test.
@@ -49,13 +57,13 @@ Here you can find the recent changes to tmuxp.
 .. _Issue #29: https://github.com/tony/tmuxp/issues/29
 
 0.1-rc4
--------
+"""""""
 
 - [bug] fix bug were ``focus: true`` would not launch sessions when using
   ``$ tmuxp load`` in a tmux session.
 
 0.1-rc3
--------
+"""""""
 
 - [bug] [tests] `Issue #25`_ - ``focus: true`` not working in panes. Add
   tests for focusing panes in config.
@@ -65,7 +73,7 @@ Here you can find the recent changes to tmuxp.
 .. _Issue #25: https://github.com/tony/tmuxp/issues/25
 
 0.1-rc2
--------
+"""""""
 
 - [cli] [tests] - fix `Issue #23`_ where workspace would not build with
   pane-base-index set to 1. Update tests to fix if ``pane-base-index`` is
@@ -76,7 +84,7 @@ Here you can find the recent changes to tmuxp.
 .. _Issue #23: https://github.com/tony/tmuxp/issues/23
 
 0.1-rc1
--------
+"""""""
 
 - [internal] `pep8`_ and `pep257`_ in unit tests.
 - Changelog will now be updated on a version basis, use `pep440`_
