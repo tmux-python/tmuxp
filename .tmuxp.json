@@ -10,11 +10,7 @@
           ], 
           "focus": true
         }, 
-        {
-          "shell_command": [
-            "echo hi"
-          ]
-        }, 
+        "pane",
         {
           "shell_command": [
             "command -v .env/bin/tmuxp >/dev/null 2>&1 || { pip install -e .; }", 
