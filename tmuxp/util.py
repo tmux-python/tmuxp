@@ -24,6 +24,8 @@ from distutils.version import StrictVersion
 
 from . import exc
 
+from ._compat import console_to_str
+
 logger = logging.getLogger(__name__)
 
 PY2 = sys.version_info[0] == 2
@@ -77,10 +79,13 @@ class tmux(object):
                     e
                 )
             )
-        self.stdout = stdout.decode().split('\n')
+
+        self.stdout = console_to_str(stdout)
+        self.stdout = self.stdout.split('\n')
         self.stdout = list(filter(None, self.stdout))  # filter empty values
 
-        self.stderr = stderr.decode().split('\n')
+        self.stderr = console_to_str(stderr)
+        self.stderr = self.stderr.split('\n')
         self.stderr = list(filter(None, self.stderr))  # filter empty values
 
         if 'has-session' in cmd and len(self.stderr):

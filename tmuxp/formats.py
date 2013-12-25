@@ -11,6 +11,10 @@ For reference: http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
 
 """
 
+from __future__ import absolute_import, division, print_function, \
+    with_statement, unicode_literals
+
+
 SESSION_FORMATS = [
     'session_name',
     'session_windows',

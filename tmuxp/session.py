@@ -10,7 +10,8 @@ tmuxp helps you manage tmux workspaces.
 :license: BSD, see LICENSE for details
 
 """
-from __future__ import absolute_import, division, print_function, with_statement
+from __future__ import absolute_import, division, print_function, \
+    with_statement, unicode_literals
 
 import pipes
 import logging
@@ -61,7 +62,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             return list(filter(by, self.server._sessions))[0]
         except IndexError as e:
             logger.error(e)
-            logger.error(self.server._sessions)
 
     def tmux(self, *args, **kwargs):
         """Return :meth:`Server.tmux`.
