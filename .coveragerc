@@ -4,6 +4,7 @@ omit =
     */_vendor/*
     */_*
     pkg/*
+    */log.py
 
 [report]
 exclude_lines =
