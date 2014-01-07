@@ -6,9 +6,6 @@ tmuxp.formats
 
 For reference: http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
 
-:copyright: Copyright 2013 Tony Narlock.
-:license: BSD, see LICENSE for details
-
 """
 
 from __future__ import absolute_import, division, print_function, \

@@ -4,9 +4,6 @@
 tmuxp.tests.test_config_tmuxinator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:copyright: Copyright 2013 Tony Narlock.
-:license: BSD, see LICENSE for details
-
 """
 
 from __future__ import absolute_import, division, print_function, \
