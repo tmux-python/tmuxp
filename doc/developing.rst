@@ -78,52 +78,33 @@ Test runner options
 
 .. note::
 
-    As of v0.0.20, ``--tests`` automatically assume the namespace of
-    ``tmuxp.testsuite``.
+    As of v0.1.1, the old way of using ``--tests`` is now deprecated.
 
-    .. code-block:: bash
-
-        $ ./run-tests.py --tests test_config.ImportExportTest
-
-    Is now equivalent to:
-
-    .. code-block:: bash
-
-        $ ./run-tests.py --tests tmuxp.testsuite.test_config.ImportExportTest
-
-Testing specific TestSuites, TestCase and tests
+Testing specific TestSuites and TestCase.
 
 .. code-block:: bash
 
-    $ ./run-tests.py --help
+    $ ./run-tests.py config
 
-Will give you an output of ways you can choose to run tests. Example for
-``test_config`` TestSuite:
-
-By :py:class:`unittest.TestSuite` / module:
+will test the ``testsuite.config`` :py:class:`unittest.TestSuite`.
 
 .. code-block:: bash
 
-    $ ./run-tests.py test_config
+    $ ./run-tests.py config.ImportExportTest
 
-by :py:class:`unittest.TestCase`:
-
-.. code-block:: bash
-
-    $ ./run-tests.py --tests test_config.ImportExportTest
+tests ``testsuite.config.ImportExportTest`` :py:class:`unittest.TestCase`.
 
 individual tests:
 
 .. code-block:: bash
 
-    $ ./run-tests.py --tests test_config.ImportExportTest.test_export_json
+    $ ./run-tests.py config.ImportExportTest.test_export_json
 
 Multiple can be separated by spaces:
 
 .. code-block:: bash
 
-    $ ./run-tests.py --tests ImportExportTest.test_export_json \
-        ImportExportTest.test_window
+    $ ./run-tests.py window pane config.ImportExportTest
 
 .. _test_builder_visually:
 
