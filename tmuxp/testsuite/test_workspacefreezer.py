@@ -11,6 +11,7 @@ from __future__ import absolute_import, division, print_function, \
 
 import os
 import logging
+import unittest
 import time
 
 import kaptan
@@ -85,3 +86,9 @@ class FreezeTest(TmuxTestCase):
             default_flow_style=False,
             safe=True
         )
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(FreezeTest))
+    return suite

@@ -10,6 +10,7 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 import logging
+import unittest
 
 from .. import Pane, Window, Server
 from . import t
@@ -212,3 +213,17 @@ class Options(TmuxTestCase):
 
         with self.assertRaises(ValueError):
             window.set_window_option('afewewfew', 43)
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(KillWindow))
+    suite.addTest(unittest.makeSuite(NewTest))
+    suite.addTest(unittest.makeSuite(NewTest2))
+    suite.addTest(unittest.makeSuite(NewTest3))
+    suite.addTest(unittest.makeSuite(NewTest4))
+    suite.addTest(unittest.makeSuite(Options))
+    suite.addTest(unittest.makeSuite(RenameTest))
+    suite.addTest(unittest.makeSuite(RenameSpacesTest))
+    suite.addTest(unittest.makeSuite(SelectTest))
+    return suite

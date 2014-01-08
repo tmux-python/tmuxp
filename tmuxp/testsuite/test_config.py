@@ -13,6 +13,7 @@ import os
 import shutil
 import tempfile
 import logging
+import unittest
 
 import kaptan
 
@@ -1067,3 +1068,16 @@ class ConfigConsistency(TestCase):
 
         with self.assertRaisesRegexp(exc.ConfigError, 'missing "window_name"'):
             config.validate_schema(sconfig)
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(ConfigBlankPanes))
+    suite.addTest(unittest.makeSuite(ConfigConsistency))
+    suite.addTest(unittest.makeSuite(ExpandTest))
+    suite.addTest(unittest.makeSuite(ImportExportTest))
+    suite.addTest(unittest.makeSuite(InlineTest))
+    suite.addTest(unittest.makeSuite(ShellCommandBeforeTest))
+    suite.addTest(unittest.makeSuite(ShellCommandBeforeSession))
+    suite.addTest(unittest.makeSuite(TrickleRelativeStartDirectory))
+    return suite

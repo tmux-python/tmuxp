@@ -9,6 +9,7 @@ tmuxp.tests.test_pane
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
+import unittest
 import logging
 
 from . import t
@@ -60,3 +61,9 @@ class ResizeTest(TmuxTestCase):
         self.assertEqual(int(pane1['pane_width']), 10)
 
         pane1.reset()
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(ResizeTest))
+    return suite

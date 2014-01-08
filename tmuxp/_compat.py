@@ -19,6 +19,7 @@ if not PY2:
 
     from io import StringIO, BytesIO
     import pickle
+    import configparser
 
     izip = zip
     imap = map
@@ -30,6 +31,8 @@ if not PY2:
     from string import ascii_lowercase
     import urllib.parse as urllib
     import urllib.parse as urlparse
+
+    exec('def reraise(tp, value, tb=None):\n raise(tp, value, tb)')
 
     console_encoding = sys.__stdout__.encoding
 
@@ -54,6 +57,7 @@ else:
     from cStringIO import StringIO as BytesIO
     from StringIO import StringIO
     import cPickle as pickle
+    import ConfigParser as configparser
 
     from itertools import izip, imap
     range_type = xrange
@@ -66,6 +70,11 @@ else:
 
     def console_to_str(s):
         return s.decode('utf_8')
+
+    def reraise(tp, value, tb=None):
+        if value.__traceback__ is not tb:
+            raise(value.with_traceback(tb))
+        raise value
 
 
 number_types = integer_types + (float,)

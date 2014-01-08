@@ -10,6 +10,8 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 from random import randint
+
+import unittest
 import logging
 
 from .. import Server
@@ -66,3 +68,9 @@ class ServerTest(TmuxTestCase):
 
         self.assertIn('-8', proc.cmd)
         self.assertNotIn('-2', proc.cmd)
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(ServerTest))
+    return suite

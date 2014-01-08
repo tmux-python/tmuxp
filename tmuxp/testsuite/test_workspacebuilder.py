@@ -12,6 +12,7 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import sys
 import logging
+import unittest
 import time
 
 import kaptan
@@ -524,3 +525,17 @@ class WindowIndexTest(TmuxTestCase):
         for window, wconf in builder.iter_create_windows(self.session):
             expected_index = name_index_map[window['window_name']]
             self.assertEqual(int(window['window_index']), expected_index)
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(BlankPaneTest))
+    suite.addTest(unittest.makeSuite(FocusAndPaneIndexTest))
+    suite.addTest(unittest.makeSuite(PaneOrderingTest))
+    suite.addTest(unittest.makeSuite(StartDirectoryTest))
+    suite.addTest(unittest.makeSuite(ThreePaneTest))
+    suite.addTest(unittest.makeSuite(TwoPaneTest))
+    suite.addTest(unittest.makeSuite(WindowAutomaticRename))
+    suite.addTest(unittest.makeSuite(WindowIndexTest))
+    suite.addTest(unittest.makeSuite(WindowOptions))
+    return suite

@@ -11,6 +11,7 @@ from __future__ import absolute_import, division, print_function, \
 
 import os
 import logging
+import unittest
 
 import kaptan
 
@@ -475,3 +476,11 @@ class TmuxinatoriSampleTest(TestCase):
             config.import_tmuxinator(self.tmuxinator_dict),
             self.tmuxp_dict
         )
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TmuxinatorTest))
+    suite.addTest(unittest.makeSuite(TmuxinatorDeprecationsTest))
+    suite.addTest(unittest.makeSuite(TmuxinatoriSampleTest))
+    return suite

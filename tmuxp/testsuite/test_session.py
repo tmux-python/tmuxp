@@ -10,6 +10,8 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 from random import randint
+
+import unittest
 import logging
 
 from .. import Session, Window, Pane
@@ -139,3 +141,11 @@ class Options(TmuxTestCase):
         """Session.set_option raises ValueError for bad option key."""
         with self.assertRaises(ValueError):
             self.session.set_option('afewewfew', 43)
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(Options))
+    suite.addTest(unittest.makeSuite(SessionNewTest))
+    suite.addTest(unittest.makeSuite(SessionTest))
+    return suite

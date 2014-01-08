@@ -13,6 +13,7 @@ import os
 import shutil
 import tempfile
 import logging
+import unittest
 
 import kaptan
 
@@ -179,3 +180,10 @@ sampleconfigdict = {
         }
     ]
 }
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(FindConfigsTest))
+    suite.addTest(unittest.makeSuite(StartupTest))
+    return suite

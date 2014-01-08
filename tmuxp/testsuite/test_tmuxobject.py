@@ -11,6 +11,7 @@ from __future__ import absolute_import, division, print_function, \
 
 import random
 import logging
+import unittest
 
 from .. import Pane, Window, Session
 from . import t
@@ -206,3 +207,9 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsNone(window.getById(
                         '%' + str(random.randint(50000, 90000))
                     ))
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TmuxObjectTest))
+    return suite
