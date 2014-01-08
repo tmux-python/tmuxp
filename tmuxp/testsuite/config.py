@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp configuration import, inlining, expanding and export.
 
-tmuxp.tests.test_config
-~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.config
+~~~~~~~~~~~~~~~~~~
 
 """
 

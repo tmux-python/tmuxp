@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp Session object.
 
-tmuxp.tests.test_session
-~~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.session
+~~~~~~~~~~~~~~~~~~~
 
 """
 

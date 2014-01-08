@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp tmuxinator configuration.
 
-tmuxp.tests.test_config_tmuxinator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.config_tmuxinator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 """
 

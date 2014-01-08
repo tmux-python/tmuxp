@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp TmuxRelationalObject and TmuxMappingObject.
 
-tmuxp.tests.test_tmuxobject
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.tmuxobject
+~~~~~~~~~~~~~~~~~~~~~~
 
 """
 

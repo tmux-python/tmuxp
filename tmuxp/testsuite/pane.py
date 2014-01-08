@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp Pane object.
 
-tmuxp.tests.test_pane
-~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.pane
+~~~~~~~~~~~~~~~~
 
 """
 

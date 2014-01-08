@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp Server object.
 
-tmuxp.tests.test_server
-~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.server
+~~~~~~~~~~~~~~~~~~
 
 """
 

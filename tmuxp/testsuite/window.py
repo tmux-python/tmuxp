@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp Window object.
 
-tmuxp.tests.test_window
-~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.window
+~~~~~~~~~~~~~~~~~~
 
 """
 

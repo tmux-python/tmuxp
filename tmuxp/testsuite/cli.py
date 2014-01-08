@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp command line interface.
 
-tmuxp.tests.test_cli
-~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.cli
+~~~~~~~~~~~~~~~
 
 """
 

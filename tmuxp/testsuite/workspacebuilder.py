@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp workspacebuilder.
 
-tmuxp.tests.test_workspacebuilder
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.workspacebuilder
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 """
 

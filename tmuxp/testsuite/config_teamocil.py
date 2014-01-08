@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp teamocil configuration..
 
-tmuxp.tests.test_config_teamocil
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.tests.config_teamocil
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 """
 
