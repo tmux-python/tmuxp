@@ -254,7 +254,6 @@ def load_workspace(config_file, args):
     :param type: string
 
     """
-    logger.info('Loading %s.' % config_file)
 
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
@@ -276,12 +275,13 @@ def load_workspace(config_file, args):
     tmux_bin = util.which('tmux')
 
     try:
+        logger.info('Loading %s.' % config_file)
         builder.build()
 
         if 'TMUX' in os.environ:
-            if args.answer_yes or prompt_yes_no(
+            if not args.detached and (args.answer_yes or prompt_yes_no(
                 'Already inside TMUX, switch to session?'
-            ):
+            )):
                 tmux_env = os.environ.pop('TMUX')
                 builder.session.switch_client()
 
@@ -293,7 +293,9 @@ def load_workspace(config_file, args):
         if not args.detached:
             builder.session.attach_session()
     except exc.TmuxSessionExists as e:
-        if args.answer_yes or prompt_yes_no('%s Attach?' % e):
+        if not args.detached and (
+            args.answer_yes or prompt_yes_no('%s Attach?' % e)
+        ):
             if 'TMUX' in os.environ:
                 builder.session.switch_client()
 
