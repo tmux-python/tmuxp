@@ -4,10 +4,15 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-next
-----
+0.1.2
+-----
 
 - [tests] now using werkzeug / flask style testsuites.
+- [cli] Merge `Issue #43`_ - ``tmuxp -d`` for loading in detached mode.
+  Thanks `roxit`_.
+
+.. _Issue #43: https://github.com/tony/tmuxp/issues/43
+.. _roxit: https://github.com/roxit
 
 0.1.1
 -----
