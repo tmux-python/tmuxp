@@ -290,7 +290,8 @@ def load_workspace(config_file, args):
             else:
                 sys.exit('Session created in detached state.')
 
-        builder.session.attach_session()
+        if not args.detached:
+            builder.session.attach_session()
     except exc.TmuxSessionExists as e:
         if args.answer_yes or prompt_yes_no('%s Attach?' % e):
             if 'TMUX' in os.environ:
@@ -844,6 +845,14 @@ def get_parser():
         allowednames=('.yaml', '.json'), directories=False
     )
     load.set_defaults(callback=command_load)
+
+    load.add_argument(
+        '-d',
+        dest='detached',
+        default=None,
+        help='Load a session without attaching to it.',
+        action='store_true'
+    )
 
     convert = subparsers.add_parser(
         'convert',
