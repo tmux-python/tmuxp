@@ -265,12 +265,14 @@ def freeze(session):
         wconf['layout'] = w.get('window_layout')
         wconf['panes'] = []
 
-        if (
-            all(
-                w.panes[0].get('pane_current_path') ==
-                p.get('pane_current_path') for p in w.panes
-            )
-        ):
+        # If all panes have same path, set 'start_directory' instead
+        # of using 'cd' shell commands.
+        pane_has_same_path = lambda p: (
+            w.panes[0].get('pane_current_path') ==
+            p.get('pane_current_path')
+        )
+
+        if (all(pane_has_same_path(p) for p in w.panes)):
             wconf['start_directory'] = w.panes[0].get('pane_current_path')
 
         for p in w.panes:
@@ -284,14 +286,17 @@ def freeze(session):
 
             current_cmd = p.get('pane_current_command')
 
-            if (
-                current_cmd.startswith('-') or
-                any(
-                    current_cmd.endswith(cmd)
-                    for cmd in ['python', 'ruby', 'node']
+            def filter_interpretters_and_shells():
+                return (
+                    current_cmd.startswith('-') or
+                    any(
+                        current_cmd.endswith(cmd)
+                        for cmd in ['python', 'ruby', 'node']
+                    )
                 )
-            ):
-                    current_cmd = None
+
+            if (filter_interpretters_and_shells()):
+                current_cmd = None
 
             if current_cmd:
                 pconf['shell_command'].append(current_cmd)
