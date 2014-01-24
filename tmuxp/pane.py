@@ -81,7 +81,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type enter: bool
 
         """
-        self.tmux('send-keys', cmd)
+        self.tmux('send-keys', ' ' + cmd)
 
         if enter:
             self.enter()
