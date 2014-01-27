@@ -965,7 +965,9 @@ def main():
     )
 
     try:
-        if args.callback is command_load:
+        if not hasattr(args, 'callback'):
+            parser.print_help()
+        elif args.callback is command_load:
             command_load(args)
         elif args.callback is command_convert:
             command_convert(args)
@@ -979,7 +981,5 @@ def main():
             command_attach_session(args)
         elif args.callback is command_kill_session:
             command_kill_session(args)
-        else:
-            parser.print_help()
     except KeyboardInterrupt:
         pass
