@@ -106,8 +106,7 @@ def prompt_yes_no(name, default=True):
     return prompt_bool(name, default=default)
 
 
-def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
-                   no_choice=('none',)):
+def prompt_choices(name, choices, default=None, no_choice=('none',)):
     """Return user input from command line from set of provided choices.
 
     :param name: prompt text
@@ -123,7 +122,7 @@ def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
     options = []
 
     for choice in choices:
-        if isinstance(choice, basestring):
+        if type(choice) is str:
             options.append(choice)
         else:
             options.append("%s [%s]" % (choice[1], choice[0]))
@@ -134,7 +133,7 @@ def prompt_choices(name, choices, default=None, resolve=ascii_lowercase,
         rv = prompt(name + ' - (%s)' % ', '.join(options), default)
         if not rv:
             return default
-        rv = resolve(rv)
+        rv = rv.lower()
         if rv in no_choice:
             return None
         if rv in _choices:
