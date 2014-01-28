@@ -12,7 +12,7 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 __title__ = 'tmuxp'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __author__ = 'Tony Narlock'
 __license__ = 'BSD'
 __copyright__ = 'Copyright 2013 Tony Narlock'
