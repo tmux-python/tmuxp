@@ -4,6 +4,15 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1.4
+-----
+
+- [cli] Fix ``$ tmuxp freeze`` CLI output.
+- [internals] Update ``_compat`` support module.
+- [internals] Fix extra space in `PEP 263`_.
+
+.. _PEP 263: http://www.python.org/dev/peps/pep-0263/
+
 0.1.3
 -----
 
