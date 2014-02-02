@@ -21,6 +21,8 @@ Here you can find the recent changes to tmuxp.
 - [builder] - Add space before send-keys to not populate bash and zsh
   history.
 
+.. _Issue #48: https://github.com/tony/tmuxp/issues/43
+
 0.1.2
 -----
 
