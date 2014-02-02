@@ -1,4 +1,4 @@
-# -*- coding: utf8 - *-
+# -*- coding: utf-8 -*-
 """Pythonization of the :ref:`tmux(1)` pane.
 
 tmuxp.pane

@@ -1,4 +1,4 @@
-# -*- coding: utf8 - *-
+# -*- coding: utf-8 -*-
 """Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
 
 tmuxp

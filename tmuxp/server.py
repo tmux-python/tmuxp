@@ -1,4 +1,4 @@
-# -*- coding: utf8 - *-
+# -*- coding: utf-8 -*-
 """Pythonization of the :term:`tmux(1)` server.
 
 tmuxp.server

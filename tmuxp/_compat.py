@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 import sys
 
 PY2 = sys.version_info[0] == 2
@@ -5,50 +6,14 @@ PY2 = sys.version_info[0] == 2
 _identity = lambda x: x
 
 
-if not PY2:
-    text_type = str
-    string_types = (str,)
-    integer_types = (int, )
-    unichr = chr
-
-    text_to_native = lambda s, enc: s
-
-    iterkeys = lambda d: iter(d.keys())
-    itervalues = lambda d: iter(d.values())
-    iteritems = lambda d: iter(d.items())
-
-    from io import StringIO, BytesIO
-    import pickle
-    import configparser
-
-    izip = zip
-    imap = map
-    range_type = range
-
-    cmp = lambda a, b: (a > b) - (a < b)
-
-    input = input
-    from string import ascii_lowercase
-    import urllib.parse as urllib
-    import urllib.parse as urlparse
-
-    exec('def reraise(tp, value, tb=None):\n raise(tp, value, tb)')
-
-    console_encoding = sys.__stdout__.encoding
-
-    def console_to_str(s):
-        """ From pypa/pip project, pip.backwardwardcompat. License MIT. """
-        try:
-            return s.decode(console_encoding)
-        except UnicodeDecodeError:
-            return s.decode('utf_8')
-else:
+if PY2:
+    unichr = unichr
     text_type = unicode
     string_types = (str, unicode)
     integer_types = (int, long)
+    from urllib import urlretrieve
 
     text_to_native = lambda s, enc: s.encode(enc)
-    unichr = unichr
 
     iterkeys = lambda d: d.iterkeys()
     itervalues = lambda d: d.itervalues()
@@ -70,6 +35,45 @@ else:
 
     def console_to_str(s):
         return s.decode('utf_8')
+
+    exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
+
+else:
+    unichr = chr
+    text_type = str
+    string_types = (str,)
+    integer_types = (int, )
+
+    text_to_native = lambda s, enc: s
+
+    iterkeys = lambda d: iter(d.keys())
+    itervalues = lambda d: iter(d.values())
+    iteritems = lambda d: iter(d.items())
+
+    from io import StringIO, BytesIO
+    import pickle
+    import configparser
+
+    izip = zip
+    imap = map
+    range_type = range
+
+    cmp = lambda a, b: (a > b) - (a < b)
+
+    input = input
+    from string import ascii_lowercase
+    import urllib.parse as urllib
+    import urllib.parse as urlparse
+    from urllib.request import urlretrieve
+
+    console_encoding = sys.__stdout__.encoding
+
+    def console_to_str(s):
+        """ From pypa/pip project, pip.backwardwardcompat. License MIT. """
+        try:
+            return s.decode(console_encoding)
+        except UnicodeDecodeError:
+            return s.decode('utf_8')
 
     def reraise(tp, value, tb=None):
         if value.__traceback__ is not tb:

@@ -1,4 +1,4 @@
-# -*- coding: utf8 - *-
+# -*- coding: utf-8 -*-
 """Utility and helper methods for tmuxp.
 
 tmuxp.util

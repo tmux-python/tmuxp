@@ -1,4 +1,4 @@
-# -*- coding: utf8 - *-
+# -*- coding: utf-8 -*-
 """Command line tool for managing tmux workspaces and tmuxp configurations.
 
 tmuxp.cli
