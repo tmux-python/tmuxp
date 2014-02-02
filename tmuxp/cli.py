@@ -20,7 +20,7 @@ import argcomplete
 import kaptan
 
 from . import log, util, exc, WorkspaceBuilder, Server, config
-from ._compat import ascii_lowercase, input
+from ._compat import ascii_lowercase, input, string_types
 from .workspacebuilder import freeze
 
 
@@ -122,10 +122,10 @@ def prompt_choices(name, choices, default=None, no_choice=('none',)):
     options = []
 
     for choice in choices:
-        if type(choice) is str:
+        if isinstance(choice, string_types):
             options.append(choice)
         else:
-            options.append("%s [%s]" % (choice[1], choice[0]))
+            options.append("%s [%s]" % (choice, choice[0]))
             choice = choice[0]
         _choices.append(choice)
 
@@ -721,14 +721,6 @@ def get_parser():
     """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 
     server_parser = argparse.ArgumentParser(add_help=False)
-
-    # server_parser.add_argument(
-        # '--log-level',
-        # dest='log_level',
-        # default='INFO',
-        # metavar='log-level',
-        # help='Log level e.g. INFO, DEBUG, ERROR'
-    # )
 
     server_parser.add_argument(
         '-L', dest='socket_name',
