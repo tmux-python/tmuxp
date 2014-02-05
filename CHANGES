@@ -4,12 +4,13 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-current
--------
+0.1.5-dev
+---------
 
 - [docs] section heading normalization.
 - [docs] tao of tmux section now treated as a chatper. tao of tmux may be
   split off into its own project.
+- [internals] use conventions from `tony/cookiecutter-pypackage`_
 
 0.1.4
 -----
@@ -577,5 +578,6 @@ current
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
 .. _pep440: http://www.python.org/dev/peps/pep-0440/
+.. _tony/cookiecutter-pypackage: https://github.com/tony/cookiecutter-pypackage.
 
 .. todo:: # vim: set filetype=rst:

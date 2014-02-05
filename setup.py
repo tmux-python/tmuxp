@@ -6,8 +6,14 @@ tmuxp
 Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
 
 """
+import os
 import sys
+
 from setuptools import setup
+
+sys.path.insert(0, os.getcwd())  # we want to grab this:
+from package_metadata import p
+
 
 with open('requirements.pip') as f:
     install_reqs = [line for line in f.read().split('\n') if line]
@@ -17,28 +23,19 @@ if sys.version_info < (2, 7):
     install_reqs += ['argparse']
     tests_reqs += ['unittest2']
 
-import re
-VERSIONFILE = "tmuxp/__init__.py"
-verstrline = open(VERSIONFILE, "rt").read()
-VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
-mo = re.search(VSRE, verstrline, re.M)
-if mo:
-    __version__ = mo.group(1)
-else:
-    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
-
+readme = open('README.rst').read()
+history = open('CHANGES').read().replace('.. :changelog:', '')
 
 setup(
-    name='tmuxp',
-    version=__version__,
+    name=p.title,
+    version=p.version,
     url='http://github.com/tony/tmuxp/',
     download_url='https://pypi.python.org/pypi/tmuxp',
-    license='BSD',
-    author='Tony Narlock',
-    author_email='tony@git-pull.com',
-    description='Manage tmux workspaces from JSON and YAML, pythonic API, '
-                'shell completion',
-    long_description=open('README.rst').read(),
+    license=p.license,
+    author=p.author,
+    author_email=p.email,
+    description=p.description,
+    long_description=readme,
     packages=['tmuxp', 'tmuxp.testsuite',
               'tmuxp._vendor', 'tmuxp._vendor.colorama'],
     include_package_data=True,
@@ -46,6 +43,7 @@ setup(
     tests_require=tests_reqs,
     test_suite='tmuxp.testsuite',
     zip_safe=False,
+    keywords=p.title,
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.main']),
     classifiers=[

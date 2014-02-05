@@ -29,7 +29,7 @@ Differences from tmuxinator / teamocil
     please free to `edit this page`_ on github.
 
 Similarities
-""""""""""""
+~~~~~~~~~~~~
 
 **Load sessions** Loads tmux sessions from config
 
@@ -39,7 +39,7 @@ Similarities
 simplified markup for panes that have one command.
 
 Missing
-"""""""
+~~~~~~~
 
 **Stability** tmuxinator and teamocil are far more stable and
 well-developed than tmuxp.
@@ -50,7 +50,7 @@ well-developed than tmuxp.
 tmuxinator may have support for earlier versions.
 
 Differences
-"""""""""""
+~~~~~~~~~~~
 
 **Programming Language** python. teamocil and tmuxinator uses ruby.
 
