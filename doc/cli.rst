@@ -7,7 +7,7 @@ Command Line Interface
 .. _bash_completion:
 
 Bash completion
-"""""""""""""""
+---------------
 
 For bash, ``.bashrc``:
 
@@ -33,7 +33,7 @@ For zsh, ``.zshrc``:
 .. _cli_freeze:
 
 Freeze sessions
-"""""""""""""""
+---------------
 
 .. argparse::
     :module: tmuxp.cli
@@ -49,7 +49,7 @@ Freeze sessions
 .. _cli_load:
 
 Load session
-""""""""""""
+------------
 
 .. argparse::
     :module: tmuxp.cli
@@ -76,12 +76,12 @@ Load session
 .. _cli_import:
 
 Import
-""""""
+------
 
 .. _import_teamocil:
 
 From teamocil
-'''''''''''''
+~~~~~~~~~~~~~
 
 .. argparse::
     :module: tmuxp.cli
@@ -92,7 +92,7 @@ From teamocil
 .. _import_tmuxinator:
 
 From tmuxinator
-'''''''''''''''
+~~~~~~~~~~~~~~~
 
 .. argparse::
     :module: tmuxp.cli
@@ -103,7 +103,7 @@ From tmuxinator
 .. _convert_config:
 
 Convert between YAML and JSON
-"""""""""""""""""""""""""""""
+-----------------------------
 
 .. argparse::
     :module: tmuxp.cli
@@ -116,7 +116,7 @@ Convert between YAML and JSON
     ``.json`` to  ``.yaml``.
 
 Other commands
-""""""""""""""
+--------------
 
 .. argparse::
     :module: tmuxp.cli

@@ -74,7 +74,7 @@ If you found a problem or are trying to write a test, you can file an
 .. _test_specific_tests:
 
 Test runner options
-"""""""""""""""""""
+~~~~~~~~~~~~~~~~~~~
 
 .. note::
 
@@ -109,7 +109,7 @@ Multiple can be separated by spaces:
 .. _test_builder_visually:
 
 Visual testing
-''''''''''''''
+~~~~~~~~~~~~~~
 
 You can watch tmux testsuite build sessions visually by keeping a client
 open in a separate terminal.
@@ -127,34 +127,6 @@ Create two terminals:
 
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users.
-
-Verbosity and logging
-'''''''''''''''''''''
-
-``./run-tests.py`` supports two options, these are *optional* flags that
-may be added to for :ref:`test_specific_tests` and
-:ref:`test_builder_visually`.
-
-1.  log level: ``-l`` aka ``--log-level``, with the options of ``debug``,
-    ``info``, ``warn``, ``error``, ``fatal``. Default is ``INFO``.
-
-    .. code-block:: bash
-
-        $ ./run-tests.py --log-level debug
-
-    short form:
-
-    .. code-block:: bash
-
-        $ ./run-tests.py -l debug
-
-2.  unit test verbosity:
-
-    ``--verbosity`` may be set to ``0``, ``1`` and ``2``.  Default: ``2``.
-
-    .. code-block:: bash
-
-        $ ./run-tests.py --verbosity 0
 
 Run tests on save
 -----------------
@@ -188,7 +160,7 @@ To run test where :ref:`test_builder_visually` you may:
 .. _tmuxp developer config:
 
 tmuxp developer config
-""""""""""""""""""""""
+----------------------
 
 .. image:: _static/tmuxp-dev-screenshot.png
     :scale: 100%
@@ -209,7 +181,7 @@ this will load the ``.tmuxp.yaml`` in the root of the project.
 .. _travis:
 
 Travis CI
-"""""""""
+~~~~~~~~~
 
 tmuxp uses `travis-ci`_ for continuous integration / automatic unit
 testing.

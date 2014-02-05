@@ -1,8 +1,8 @@
 .. _about_tmux:
 
-===============
+###############
 The Tao of tmux
-===============
+###############
 
 .. figure:: _static/tao-tmux-screenshot.png
     :scale: 60%
@@ -29,6 +29,7 @@ the text dimension. Inside tmux you can:
 - have multiple windows (window) in the workspace (session)
 - switch between multiple workspaces, like virtual desktops
 
+=============
 Thinking Tmux
 =============
 
@@ -212,6 +213,7 @@ Multitasking. Preserving the thinking you have.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
 
+===============
 Installing tmux
 ===============
 
@@ -238,6 +240,7 @@ If **compiling from source**, the dependencies are `libevent`_ and
 .. _Fink: http://fink.thetis.ig42.org/
 .. _Homebrew: http://www.brew.sh
 
+==========
 Using tmux
 ==========
 
@@ -497,15 +500,16 @@ Short cut             Action
 ``"``                 Split the current pane into two, top and bottom.
 ===================   ====================================================
 
-Tmux configuration
-==================
+================
+Configuring Tmux
+================
 
 Tmux can be configured via a configuration at ``~/.tmux.conf``.
 
 Depending on your tmux version, there is different options available.
 
-Vi copypaste
-------------
+Vi-style copy and paste
+-----------------------
 
 .. code-block:: ini
 
@@ -562,6 +566,7 @@ Examples
   uptime stats.
 - Add yours, edit this page on github.
 
+=========
 Reference
 =========
 
@@ -643,8 +648,9 @@ Source: tmux manpage [1]_.
    
        $ nroff -mdoc tmux.1|less
 
+=======
 License
--------
+=======
 
 This page is licensed `Creative Commons BY-NC-ND 3.0 US`_.
 

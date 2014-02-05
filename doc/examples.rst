@@ -27,13 +27,13 @@ punctual.
         +-------------------+
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/shorthands.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/shorthands.json
     :language: json
@@ -47,13 +47,13 @@ No need to repeat ``pwd`` or a dummy command. A ``null``, ``'blank'``,
 Note ``''`` counts as an empty carriage return.
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/blank-panes.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/blank-panes.json
     :language: json
@@ -76,13 +76,13 @@ JSON
         +-----------------+
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/2-pane-vertical.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/2-pane-vertical.json
     :language: json
@@ -105,13 +105,13 @@ JSON
         +--------+--------+
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/3-pane.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/3-pane.json
     :language: json
@@ -134,13 +134,13 @@ JSON
         +--------+--------+
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/4-pane.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/4-pane.json
     :language: json
@@ -151,13 +151,13 @@ Start Directory
 Equivalent to ``tmux new-window -c <start-directory>``.
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/start-directory.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/start-directory.json
     :language: json
@@ -169,13 +169,13 @@ tmuxp allows ``focus: true`` for assuring windows and panes are attached /
 selected upon loading.
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/focus-window-and-panes.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/focus-window-and-panes.json
     :language: json
@@ -187,13 +187,13 @@ You can specify a window's index using the ``window_index`` property. Windows
 without ``window_index`` will use the lowest available window index.
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/window-index.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/window-index.json
     :language: json
@@ -202,13 +202,13 @@ Automatic Rename
 ----------------
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/automatic-rename.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/automatic-rename.json
     :language: json
@@ -217,13 +217,13 @@ Main pane height
 ----------------
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../examples/main-pane-height.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../examples/main-pane-height.json
     :language: json
@@ -235,13 +235,13 @@ Super-advanced dev environment
     :ref:`tmuxp developer config` in the :ref:`developing` section.
 
 YAML
-""""
+~~~~
 
 .. literalinclude:: ../.tmuxp.yaml
     :language: yaml
 
 JSON
-""""
+~~~~
 
 .. literalinclude:: ../.tmuxp.json
     :language: json

@@ -1,8 +1,8 @@
 .. _tmuxp:
 
-=====
+#####
 tmuxp
-=====
+#####
 
 .. image:: _static/tmuxp-dev-screenshot.png
     :scale: 35%
