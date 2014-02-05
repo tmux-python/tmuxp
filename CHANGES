@@ -4,6 +4,13 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+current
+-------
+
+- [docs] section heading normalization.
+- [docs] tao of tmux section now treated as a chatper. tao of tmux may be
+  split off into its own project.
+
 0.1.4
 -----
 
