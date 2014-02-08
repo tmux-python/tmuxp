@@ -180,21 +180,12 @@ class WorkspaceBuilder(object):
                 pass
 
             sd = wconf['start_directory'] if 'start_directory' in wconf else None
-            try:
-                w = s.new_window(
-                    window_name=window_name,
-                    start_directory=sd,
-                    attach=False,  # do not move to the new window
-                    window_index=wconf.get('window_index', ''),
-                )
-            except exc.TmuxpException as e:
-                error_params = '\n'.join([
-                    'window_name: %s' % window_name,
-                    'start_directory=%s' % sd,
-                    'attach=False,',
-                    'window_index=%s' % wconf.get('window_index', '')
-                ])
-                raise('\n'.join([e, error_params]))
+            w = s.new_window(
+                window_name=window_name,
+                start_directory=sd,
+                attach=False,  # do not move to the new window
+                window_index=wconf.get('window_index', ''),
+            )
 
             if i == int(1) and w1:  # if first window, use window 1
                 w1.kill_window()
