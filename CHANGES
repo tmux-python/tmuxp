@@ -4,6 +4,20 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1.6
+-----
+
+- [internals]: :meth:`Window.split_window()` now allows ``-c
+  start_directory``.
+- [builder] `Issue #35`_ - Builder will now use ``-c start_directory`` to
+  create new windows and panes.
+  
+  This removes a hack where ``default-path`` would be set for new pane and
+  window creations. This would bleed into tmux user sessions after
+  creations.
+
+.. _Issue #35: https://github.com/tony/tmuxp/issues/35
+
 0.1.5.1
 -------
 
