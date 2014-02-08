@@ -7,7 +7,7 @@ Here you can find the recent changes to tmuxp.
 0.1.6
 -----
 
-- [internals]: :meth:`Window.split_window()` now allows ``-c
+- [internals] :meth:`Window.split_window()` now allows ``-c
   start_directory``.
 - [builder] `Issue #35`_ - Builder will now use ``-c start_directory`` to
   create new windows and panes.
