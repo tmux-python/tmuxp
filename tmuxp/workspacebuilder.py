@@ -194,7 +194,7 @@ class WorkspaceBuilder(object):
                     'attach=False,',
                     'window_index=%s' % wconf.get('window_index', '')
                 ])
-                raise('\n'.join(e, error_params))
+                raise('\n'.join([e, error_params]))
 
             if i == int(1) and w1:  # if first window, use window 1
                 w1.kill_window()
