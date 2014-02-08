@@ -11,6 +11,7 @@ from __future__ import absolute_import, division, print_function, \
 
 import os
 import logging
+import collections
 
 from . import exc, config, Window, Pane, Session, Server
 
@@ -267,11 +268,12 @@ def freeze(session):
 
     sconf['windows'] = []
     for w in session.windows:
-        wconf = {}
-        wconf['options'] = w.show_window_options()
-        wconf['window_name'] = w.get('window_name')
-        wconf['layout'] = w.get('window_layout')
-        wconf['panes'] = []
+        wconf = {
+            'window_name': w.get('window_name'),
+            'options': w.show_window_options(),
+            'layout': w.get('window_layout'),
+            'panes': []
+        }
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
@@ -316,4 +318,6 @@ def freeze(session):
 
         sconf['windows'].append(wconf)
 
+        # Return Frozen configure as an OrderedDict.
+        sconf = collections.OrderedDict(sorted(sconf.items()))
     return sconf

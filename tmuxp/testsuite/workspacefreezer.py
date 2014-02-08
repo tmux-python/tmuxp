@@ -80,11 +80,13 @@ class FreezeTest(TmuxTestCase):
             'json',
             indent=2
         )
+        from .._vendor import ordered_yaml
         yaml = kaptanconf.export(
             'yaml',
             indent=2,
             default_flow_style=False,
-            safe=True
+            safe=True,
+            Dumper=ordered_yaml.OrderedDumper
         )
 
 
