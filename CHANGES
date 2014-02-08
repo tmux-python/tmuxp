@@ -10,7 +10,7 @@ Here you can find the recent changes to tmuxp.
 - [packaging] fix `Issue #49`_ bug where ``package_manifest.py`` missing
   from ``MANIFEST.in`` would cause error installing.
 
-.. _Issue #48: https://github.com/tony/tmuxp/issues/49
+.. _Issue #49: https://github.com/tony/tmuxp/issues/49
 
 0.1.5
 -----
