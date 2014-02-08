@@ -8,6 +8,7 @@ tmuxp.window
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
+import os
 import pipes
 import logging
 
@@ -322,7 +323,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         """Return last pane."""
         return self.select_pane('-l')
 
-    def split_window(self, target=None, attach=True):
+    def split_window(
+        self,
+        target=None,
+        start_directory=None,
+        attach=True
+    ):
         """Split window and return the created :class:`Pane`.
 
         .. note::
@@ -342,6 +348,9 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param attach: make new window the current window after creating it,
                        default True.
         :type attach: bool
+        :param start_directory: specifies the working directory in which the
+            new created.
+        :type start_directory: string
         :param target: ``target_pane`` to split.
         :type target: bool
 
@@ -365,6 +374,12 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         tmux_args += (
             '-P', '-F%s' % ''.join(tmux_formats)     # output
         )
+
+        if start_directory:
+            # as of 2014-02-08 tmux 1.9-dev doesn't expand ~ in new-window -c.
+            start_directory = os.path.expanduser(start_directory)
+            start_directory = pipes.quote(start_directory)
+            tmux_args += ('-c%s' % start_directory,)
 
         if not attach:
             tmux_args += ('-d',)

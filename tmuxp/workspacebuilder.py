@@ -224,9 +224,17 @@ class WorkspaceBuilder(object):
                 p = w.attached_pane()
 
             else:
+                def get_pane_start_directory():
+
+                    if 'start_directory' in pconf:
+                        return pconf['start_directory']
+                    elif 'start_directory' in wconf:
+                        return wconf['start_directory']
+                    else:
+                        return None
                 p = w.split_window(
                     attach=True,
-                    #target=w.list_panes()[-1].get('pane_index')
+                    start_directory=get_pane_start_directory(),
                 )
 
             assert(isinstance(p, Pane))
