@@ -600,6 +600,6 @@ Here you can find the recent changes to tmuxp.
 .. _pep257: http://www.python.org/dev/peps/pep-0257/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
 .. _pep440: http://www.python.org/dev/peps/pep-0440/
-.. _tony/cookiecutter-pypackage: https://github.com/tony/cookiecutter-pypackage.
+.. _tony/cookiecutter-pypackage: https://github.com/tony/cookiecutter-pypackage
 
 .. todo:: # vim: set filetype=rst:
