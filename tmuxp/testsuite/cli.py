@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
+class CLIVersion(TestCase):
+
+    pass
+
+
 class StartupTest(TestCase):
 
     """test startup_cli()."""

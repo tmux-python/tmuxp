@@ -11,6 +11,7 @@ from __future__ import absolute_import, division, print_function, \
 import unittest
 import collections
 import subprocess
+import re
 import os
 import sys
 import logging
@@ -263,14 +264,25 @@ def is_version(version):
     return StrictVersion(installed_version) == StrictVersion(version)
 
 
-def has_required_tmux_version():
-    """Return if tmux meets version requirement. Version >1.8 or above."""
-    proc = tmux('-V')
+def has_required_tmux_version(version=None):
+    """Return if tmux meets version requirement. Version >1.8 or above.
 
-    if proc.stderr:
-        raise exc.TmuxpException(proc.stderr)
+    :versionchanged: 0.1.7
+        Versions will now remove trailing letters per `Issue 55`_.
 
-    version = proc.stdout[0].split('tmux ')[1]
+        .. _Issue 55: https://github.com/tony/tmuxp/issues/55.
+
+    """
+
+    if not version:
+        proc = tmux('-V')
+
+        if proc.stderr:
+            raise exc.TmuxpException(proc.stderr)
+
+        version = proc.stdout[0].split('tmux ')[1]
+
+    version = re.sub(r'[a-z]', '', version)
 
     if StrictVersion(version) <= StrictVersion("1.7"):
         raise exc.TmuxpException(

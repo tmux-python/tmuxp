@@ -4,6 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1.7
+-----
+
+- [cli] [test]:  Fix `Issue #55`_ where tmuxp would crash with letter
+  numbers in version. Write tests.
+
+.. _Issue #55: https://github.com/tony/tmuxp/issues/55
+
 0.1.6
 -----
 
