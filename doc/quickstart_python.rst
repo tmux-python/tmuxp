@@ -268,6 +268,7 @@ object:
 And kill:
 
 .. code-block:: python
+
     >>> window.kill_window()
 
 And of course, you can use :meth:`Session.list_windows()` and :meth:`Session.findWhere()`
