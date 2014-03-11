@@ -165,7 +165,7 @@ tmux sessions use the ``$[0-9]`` convention as a way to identify sessions.
 
 You may ``session = getById('$<yourId>')`` to use the session object.
 
-Get session by nane / other properties
+Get session by name / other properties
 --------------------------------------
 
 I really like `Backbone`_'s approach to handling collections of structured
