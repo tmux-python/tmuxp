@@ -230,8 +230,101 @@ Method 1: Use passthrough to tmux's ``target`` system.
 
     >>> session.kill_window("ha in")
 
-.. code-block::
+The window in the bg dissapeared. This was the equivalent of ``$ tmux kill-window -t'ha in'``
+
+Internally, tmux uses ``target``. It's specific behavior depends on what the target is, view
+the manpage for tmux for more.
+
+    This section contains a list of the commands supported by tmux.  Most commands accept the
+    optional -t argument with one of target-client, target-session target-window, or target-pane. 
+
+In this case, you can also go back in time an recreate the window again. The CLI should have history,
+so press the up arrow key should work.
+
+.. code-block:: python
+
+    >>> session.new_window(attach=False, window_name="ha in the bg")
+    Window(@11 3:ha in the bg, Session($3 a_tmuxp_session))
+
+Try to kill by the ``@[0-9999]`` the created window gave you.
+
+.. code-block:: python
+
+    >>> session.new_window(attach=False, window_name="ha in the bg")
+    Window(@12 3:ha in the bg, Session($3 a_tmuxp_session))
+
+
+.. code-block:: python
+
+    >>> session.kill_window('@12')
+
+In addition, you could also ``.kill_window`` direction from the :class:`Window`
+object:
+
+.. code-block:: python
+
+    >>> window = session.new_window(attach=False, window_name="check this out")
+
+And kill:
+
+.. code-block:: python
+    >>> window.kill_window()
+
+And of course, you can use :meth:`Session.list_windows()` and :meth:`Session.findWhere()`
+to list and sort through active :class:`Window`'s.
+
+Manipulating windows
+--------------------
+
+Now that we know how to create windows, let's use one. Let's use :meth:`Session.attached_window()`
+to grab our current window.
+
+.. code-block:: python
+
+    >>> window = session.attached_window()
+
+``window`` now has access to all of the objects inside of :class:`Window`.
+
+Let's create a pane, :meth:`Window.split_window`:
+
+.. code-block:: python
+
+    >>> window.split_window(attach=False)
+    Pane(%23 Window(@10 1:tmuxp_wins, Session($3 a_tmuxp_session)))
+
+Powered up. Let's have a break down:
+
+1. ``window = session.attached_window()`` gave us the :class:`Window` of the current attached to window.
+2. ``attach=False`` assures the cursor didn't switch to the newly created pane.
+3. Returned the created :class:`Pane`.
+
+Also, since you are aware of this power, let's commemorate the experience:
+
+.. code-block:: python
+
+    >>> window.rename_window('tmuxpower')
+    Window(@10 1:tmuxpower, Session($3 a_tmuxp_session))
+
+You should have noticed :meth:`Window.rename_window` renamed the window.
+
+Final notes
+-----------
+
+These objects created use tmux's internal usage of ID's to make servers,
+sessions, windows and panes accessible at the object level. 
+
+You don't have to see the tmux session to be able to orchestrate it. After
+all, :class:`WorkspaceBuilder` uses these same internals to build your
+sessions in the background. :)
+
+.. seealso::
+
+    If you want to dig deeper, check out :ref:`API`, the code for
+    `workspacebuilder.py`_ and our `testsuite`_ (see :ref:`developing`.)
+
 
 .. _sliderepl: http://discorporate.us/projects/sliderepl/
 .. _backbone: http:/ /backbonejs.org
 .. _Backbone.Collection.prototype.findWhere: http://backbonejs.org/#Collection-findWhere
+.. _workspacebuilder.py: https://github.com/tony/tmuxp/blob/master/tmuxp/workspacebuilder.py
+.. _testsuite: https://github.com/tony/tmuxp/tree/master/tmuxp/testsuite
