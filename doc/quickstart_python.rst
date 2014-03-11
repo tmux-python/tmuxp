@@ -307,6 +307,54 @@ Also, since you are aware of this power, let's commemorate the experience:
 
 You should have noticed :meth:`Window.rename_window` renamed the window.
 
+Moving cursor across windows and panes
+--------------------------------------
+
+You have to ways you can move your cursor to new sessions, windows and panes.
+
+For one, arguments such as ``attach=False`` can be omittted.
+
+.. code-block:: python
+
+    >>> pane = window.split_window()
+
+This gives you the :class:`Pane` along with moving the cursor to a new window. You
+can also use the ``.select_*`` available on the object. In this case, pane has
+:meth:`Pane.select_pane()`.
+
+.. code-block:: python
+
+    >>> pane = window.split_window(attach=False)
+    >>> pane.select_pane()
+
+.. note:: There is much, much more. Take a look at the :ref:`API` and the `testsuite`_.
+
+.. todo:: create a ``kill_pane()`` method.
+.. todo:: have a ``.kill()`` and ``.select()`` proxy for Server, Session, Window and Pane objects.
+
+Sending commands to tmux panes remotely
+---------------------------------------
+
+You may send commands to panes, windows and sessions **without** them being visible.
+As long as you have the object, or are iterating through a list of them, you can ``.send_keys``.
+
+.. code-block:: python
+
+    >>> window = session.new_window(attach=False, window_name="test")
+    >>> pane = window.split_window(attach=False)
+    >>> pane.send_keys('echo hey', enter=False)
+
+See the other window, notice that :meth:`Pane.send_keys` has ``echo hey`` written,
+*still in the prompt*.
+
+``enter=False`` can be used to send keys without pressing return. In this case,
+you may  leave it to the user to press return themselves, or complete a command
+using :meth:`Pane.enter()`:
+
+.. code-block:: python
+
+    >>> pane.enter()
+
 Final notes
 -----------
 
@@ -321,7 +369,6 @@ sessions in the background. :)
 
     If you want to dig deeper, check out :ref:`API`, the code for
     `workspacebuilder.py`_ and our `testsuite`_ (see :ref:`developing`.)
-
 
 .. _sliderepl: http://discorporate.us/projects/sliderepl/
 .. _backbone: http:/ /backbonejs.org
