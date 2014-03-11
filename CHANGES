@@ -4,6 +4,13 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+CURRENT
+-------
+
+- [docs]: :ref:`python_api_quickstart` per `Issue #56`_.
+
+.. _Issue #56: https://github.com/tony/tmuxp/issues/56
+
 0.1.7
 -----
 

@@ -4,6 +4,10 @@
 API Reference
 =============
 
+.. seealso::
+    :ref:`python_api_quickstart` to see how you can control tmux via
+    python API calls.
+
 .. module:: tmuxp
 
 Server Object
