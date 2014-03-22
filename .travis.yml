@@ -7,6 +7,7 @@ python:
 env:
   - TMUX_VERSION=master
   - TMUX_VERSION=1.8
+  - TMUX_VERSION=1.9a
 before_install:
   - sudo apt-get update -qq
   - export PIP_USE_MIRRORS=true
