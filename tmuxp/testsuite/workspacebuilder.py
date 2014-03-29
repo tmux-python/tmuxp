@@ -303,7 +303,7 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w.get('window_name') != 'man':
                 break
-            time.sleep(.2)
+            time.sleep(.1)
 
         self.assertNotEqual(w.get('window_name'), 'man')
 
@@ -314,7 +314,7 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w.get('window_name') == 'man':
                 break
-            time.sleep(.25)
+            time.sleep(.1)
 
         self.assertEqual(w.get('window_name'), text_type('man'))
 
@@ -323,7 +323,7 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w['window_name'] != 'man':
                 break
-            time.sleep(.25)
+            time.sleep(.1)
 
         self.assertNotEqual(w.get('window_name'), text_type('man'))
 

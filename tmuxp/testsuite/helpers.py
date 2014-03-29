@@ -29,6 +29,10 @@ class TestCase(unittest.TestCase):
 
     """Base TestClass so we don't have to try: unittest2 every module. """
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestCase, cls).setUpClass()  # for python 2.6 unittest2
+
 
 class TmuxTestCase(TestCase):
 
@@ -41,6 +45,7 @@ class TmuxTestCase(TestCase):
 
     def setUp(self):
         """Run bootstrap if :attr:`~.session` is not set."""
+
         if not self.TEST_SESSION_NAME or not self.session:
             self.bootstrap()
 
@@ -95,7 +100,7 @@ class TmuxTestCase(TestCase):
             t.switch_client(session.get('session_id'))
             pass
         except exc.TmuxpException as e:
-            #t.attach_session(session.get('session_id'))
+            # t.attach_session(session.get('session_id'))
             pass
 
         for old_test_session in old_test_sessions:

@@ -49,7 +49,7 @@ class FreezeTest(TmuxTestCase):
     - window_name: test
       panes:
       - shell_command:
-        - htop
+        - top
     """
 
     def test_focus(self):
@@ -64,8 +64,7 @@ class FreezeTest(TmuxTestCase):
         builder.build(session=self.session)
         assert(self.session == builder.session)
 
-        import time
-        time.sleep(1)
+        time.sleep(.50)
 
         session = self.session
         sconf = freeze(session)
