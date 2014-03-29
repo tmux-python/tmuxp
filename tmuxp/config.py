@@ -267,8 +267,8 @@ def trickle(sconf):
                     for a in ['~', '/']
                 ):
                     window_start_path = os.path.join(
-                        session_start_directory, windowconfig['start_directory']
-                    )
+                        session_start_directory, windowconfig
+                        ['start_directory'])
                     windowconfig['start_directory'] = window_start_path
 
         for paneconfig in windowconfig['panes']:

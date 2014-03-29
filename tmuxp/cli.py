@@ -520,32 +520,32 @@ def command_import_teamocil(args):
 def command_import_tmuxinator(args):
     """Import tmuxinator config to tmuxp format."""
     if args.list:
-            try:
-                configs_in_user = config.in_dir(
-                    tmuxinator_config_dir, extensions='yml')
-            except OSError:
-                configs_in_user = []
-            configs_in_cwd = config.in_dir(
-                config_dir=cwd_dir, extensions='yml')
+        try:
+            configs_in_user = config.in_dir(
+                tmuxinator_config_dir, extensions='yml')
+        except OSError:
+            configs_in_user = []
+        configs_in_cwd = config.in_dir(
+            config_dir=cwd_dir, extensions='yml')
 
-            output = ''
+        output = ''
 
-            if not os.path.exists(tmuxinator_config_dir):
-                output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                    tmuxinator_config_dir
-            elif not configs_in_user:
-                output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir
-            else:
-                output += '# %s: \n\t%s\n' % (
-                    config_dir, ', '.join(configs_in_user)
-                )
+        if not os.path.exists(tmuxinator_config_dir):
+            output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
+                tmuxinator_config_dir
+        elif not configs_in_user:
+            output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir
+        else:
+            output += '# %s: \n\t%s\n' % (
+                config_dir, ', '.join(configs_in_user)
+            )
 
-            if configs_in_cwd:
-                output += '# current directory:\n\t%s' % (
-                    ', '.join(configs_in_cwd)
-                )
+        if configs_in_cwd:
+            output += '# current directory:\n\t%s' % (
+                ', '.join(configs_in_cwd)
+            )
 
-            print(output)
+        print(output)
 
     if args.config:
         configfile = os.path.abspath(os.path.relpath(
@@ -905,8 +905,7 @@ def get_parser():
         required=True)
     import_tmuxinatorgroup.add_argument(
         '--list', dest='list', action='store_true',
-        help='List yaml configs in ~/.tmuxinator and current working directory.'
-    )
+        help='List yaml configs in ~/.tmuxinator and current working directory.')
 
     import_tmuxinatorgroup.add_argument(
         dest='config',

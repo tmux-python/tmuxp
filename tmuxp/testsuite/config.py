@@ -39,7 +39,7 @@ sampleconfigdict = {
                 {
                     'start_directory': '~',
                     'shell_command': ['vim'],
-                },  {
+                }, {
                     'shell_command': ['cowsay "hey"']
                 },
             ],
@@ -378,7 +378,7 @@ class InlineTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['vim'],
-                    },  {
+                    }, {
                         'shell_command': ['cowsay "hey"']
                     },
                 ],
@@ -500,7 +500,7 @@ class InheritanceTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['vim'],
-                    },  {
+                    }, {
                         'shell_command': ['cowsay "hey"'],
                     },
                 ],

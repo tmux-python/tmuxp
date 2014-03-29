@@ -25,7 +25,8 @@ from .helpers import TmuxTestCase
 logger = logging.getLogger(__name__)
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
-example_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'examples'))
+example_dir = os.path.abspath(
+    os.path.join(current_dir, '..', '..', 'examples'))
 
 
 class TwoPaneTest(TmuxTestCase):
@@ -163,9 +164,9 @@ class FocusAndPaneIndexTest(TmuxTestCase):
             'focused window'
         )
 
-        pane_base_index = int(self.session.attached_window().show_window_option(
-            'pane-base-index', g=True
-        ))
+        pane_base_index = int(
+            self.session.attached_window().show_window_option(
+                'pane-base-index', g=True))
 
         if not pane_base_index:
             pane_base_index = 0
@@ -336,7 +337,8 @@ class BlankPaneTest(TmuxTestCase):
 
     def test_blank_pane_count(self):
 
-        test_config = kaptan.Kaptan().import_config(self.yaml_config_file).get()
+        test_config = kaptan.Kaptan().import_config(
+            self.yaml_config_file).get()
         test_config = config.expand(test_config)
         # for window in test_config['windows']:
             # window['layout'] = 'tiled'

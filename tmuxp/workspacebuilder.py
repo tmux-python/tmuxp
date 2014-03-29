@@ -179,7 +179,8 @@ class WorkspaceBuilder(object):
                 w1.move_window(99)
                 pass
 
-            sd = wconf['start_directory'] if 'start_directory' in wconf else None
+            sd = wconf[
+                'start_directory'] if 'start_directory' in wconf else None
             w = s.new_window(
                 window_name=window_name,
                 start_directory=sd,

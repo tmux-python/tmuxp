@@ -53,9 +53,9 @@ class NewTest(TmuxTestCase):
 
     def test_zfresh_window_data(self):
 
-        pane_base_index = int(self.session.attached_window().show_window_option(
-            'pane-base-index', g=True
-        ))
+        pane_base_index = int(
+            self.session.attached_window().show_window_option(
+                'pane-base-index', g=True))
 
         self.assertEqual(len(self.session.windows), 1)
 
