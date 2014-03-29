@@ -9,12 +9,16 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 import logging
-import unittest
 import sys
 
 from .. import log
 from .._compat import string_types, PY2, reraise
 from ..server import Server
+
+try:
+    import unittest2 as unittest
+except ImportError:  # Python 2.7
+    import unittest
 
 import pkgutil
 
@@ -91,7 +95,7 @@ def import_string(import_name, silent=False):
                    `None` is returned instead.
     :return: imported object
     """
-    #XXX: py3 review needed
+    # XXX: py3 review needed
     assert isinstance(import_name, string_types)
     # force the import name to automatically convert to strings
     import_name = str(import_name)
