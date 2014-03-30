@@ -384,6 +384,16 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
+    - window_name: cwd containing a space
+      start_directory: /tmp/foo bar
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
     - window_name: testsa3
       layout: main-horizontal
       panes:
@@ -416,7 +426,7 @@ class StartDirectoryTest(TmuxTestCase):
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        dirs = ['/usr/bin', '/dev', '/usr', os.getcwd()]
+        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/usr', os.getcwd()]
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
                 self.assertEqual(p.get('pane_start_path'), path)
