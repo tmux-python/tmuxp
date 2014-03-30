@@ -7,6 +7,8 @@ Here you can find the recent changes to tmuxp.
 CURRENT
 -------
 
+- [cli] [freezer]: `Issue #72`_: Create destination directory if it
+  doesn't exist. Thanks `ThiefMaster`_.
 - [tests]: New context manager for tests, ``temp_session``.
 - [tests]: New testsuite, ``testsuite.test_utils`` for testing testsuite
   tools.
@@ -16,6 +18,8 @@ CURRENT
 - [docs]: :ref:`python_api_quickstart` per `Issue #56`_.
 
 .. _Issue #56: https://github.com/tony/tmuxp/issues/56
+.. _Issue #72: https://github.com/tony/tmuxp/issues/72
+.. _@ThiefMaster: https://github.com/ThiefMaster
 
 0.1.7
 -----
