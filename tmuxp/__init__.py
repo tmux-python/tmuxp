@@ -13,7 +13,7 @@ from __future__ import absolute_import, division, print_function, \
 
 __title__ = 'tmuxp'
 __package_name__ = 'tmuxp'
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 __description__ = 'Manage tmux sessions thru JSON, YAML configs. Features Python API'
 __email__ = 'tony@git-pull.com'
 __author__ = 'Tony Narlock'

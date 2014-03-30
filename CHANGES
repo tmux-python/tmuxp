@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
--------
+v0.1.8
+------
 
 - [cli] [freezer]: `Issue #72`_: Create destination directory if it
   doesn't exist. Thanks `ThiefMaster`_.
