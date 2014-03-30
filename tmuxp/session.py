@@ -108,7 +108,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Session`
 
         """
-        new_name = pipes.quote(new_name)
         proc = self.tmux(
             'rename-session',
             '-t%s' % self.get('session_id'),
