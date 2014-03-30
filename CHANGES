@@ -8,7 +8,7 @@ v0.1.8
 ------
 
 - [cli] [freezer]: `Issue #72`_: Create destination directory if it
-  doesn't exist. Thanks `ThiefMaster`_.
+  doesn't exist. Thanks `@ThiefMaster`_.
 - [tests]: New context manager for tests, ``temp_session``.
 - [tests]: New testsuite, ``testsuite.test_utils`` for testing testsuite
   tools.
