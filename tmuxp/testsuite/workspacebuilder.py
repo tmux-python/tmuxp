@@ -13,6 +13,7 @@ import os
 import sys
 import logging
 import unittest
+import subprocess
 import time
 
 import kaptan
@@ -20,12 +21,13 @@ import kaptan
 from .. import Window, config, exc
 from .._compat import text_type
 from ..workspacebuilder import WorkspaceBuilder
-from .helpers import TmuxTestCase
+from .helpers import TestCase, TmuxTestCase, temp_session
 
 logger = logging.getLogger(__name__)
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 example_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'examples'))
+fixtures_dir = os.path.abspath(os.path.join(current_dir, 'fixtures'))
 
 
 class TwoPaneTest(TmuxTestCase):
@@ -339,7 +341,7 @@ class BlankPaneTest(TmuxTestCase):
         test_config = kaptan.Kaptan().import_config(self.yaml_config_file).get()
         test_config = config.expand(test_config)
         # for window in test_config['windows']:
-            # window['layout'] = 'tiled'
+        #     window['layout'] = 'tiled'
         builder = WorkspaceBuilder(sconf=test_config)
         builder.build(session=self.session)
 
@@ -527,8 +529,133 @@ class WindowIndexTest(TmuxTestCase):
             self.assertEqual(int(window['window_index']), expected_index)
 
 
+class BeforeLoadScript(TmuxTestCase):
+
+    config_script_not_exists = """
+    session_name: sampleconfig
+    before_script: {fixtures_dir}/script_not_exists.sh
+    windows:
+    - panes:
+      - pane
+    """
+
+    config_script_fails = """
+    session_name: sampleconfig
+    before_script: {fixtures_dir}/script_failed.sh
+    windows:
+    - panes:
+      - pane
+    """
+
+    config_script_completes = """
+    session_name: sampleconfig
+    before_script: {fixtures_dir}/script_complete.sh
+    windows:
+    - panes:
+      - pane
+    """
+
+    def test_throw_error_if_retcode_false(self):
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        yaml = self.config_script_fails.format(
+            fixtures_dir=fixtures_dir
+        )
+        sconfig = sconfig.import_config(yaml).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        with temp_session(self.server) as sess:
+            session_name = sess.get('session_name')
+
+            with self.assertRaises(subprocess.CalledProcessError):
+                builder.build(session=sess)
+
+            result = self.server.has_session(session_name)
+            self.assertFalse(
+                result,
+                msg="Kills session if before_script exits with errcode"
+            )
+
+    def test_throw_error_if_file_not_exists(self):
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        yaml = self.config_script_not_exists.format(
+            fixtures_dir=fixtures_dir
+        )
+        sconfig = sconfig.import_config(yaml).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        with temp_session(self.server) as sess:
+            session_name = sess.get('session_name')
+            temp_session_exists = self.server.has_session(sess.get('session_name'))
+            self.assertTrue(temp_session_exists)
+            with self.assertRaisesRegexp(
+                (BeforeLoadScriptNotExists, OSError),
+                'No such file or directory'
+            ):
+                builder.build(session=sess)
+            result = self.server.has_session(session_name)
+            self.assertFalse(
+                result,
+                msg="Kills session if before_script doesn't exist"
+            )
+
+    def test_true_if_test_passes(self):
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        yaml = self.config_script_completes.format(
+            fixtures_dir=fixtures_dir
+        )
+        sconfig = sconfig.import_config(yaml).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        with temp_session(self.session.server) as session:
+            builder.build(session=self.session)
+
+
+from ..workspacebuilder import run_before_script, BeforeLoadScriptNotExists, \
+    BeforeLoadScriptFailed
+
+
+class RunBeforeScript(TestCase):
+
+    def test_raise_BeforeLoadScriptNotExists_if_not_exists(self):
+        script_file = os.path.join(fixtures_dir, 'script_noexists.sh')
+
+        with self.assertRaises(BeforeLoadScriptNotExists):
+            run_before_script(script_file)
+
+        with self.assertRaises(OSError):
+            run_before_script(script_file)
+
+    def test_raise_BeforeLoadScriptFailed_if_retcode(self):
+        script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+
+        with self.assertRaises(BeforeLoadScriptFailed):
+            run_before_script(script_file)
+
+        with self.assertRaises(subprocess.CalledProcessError):
+            run_before_script(script_file)
+
+    def test_return_stdout_if_exits_zero(self):
+        script_file = os.path.join(fixtures_dir, 'script_complete.sh')
+
+        run_before_script(script_file)
+
+
 def suite():
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(BeforeLoadScript))
+    suite.addTest(unittest.makeSuite(RunBeforeScript))
     suite.addTest(unittest.makeSuite(BlankPaneTest))
     suite.addTest(unittest.makeSuite(FocusAndPaneIndexTest))
     suite.addTest(unittest.makeSuite(PaneOrderingTest))

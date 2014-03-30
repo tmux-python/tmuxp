@@ -7,6 +7,12 @@ Here you can find the recent changes to tmuxp.
 CURRENT
 -------
 
+- [tests]: New context manager for tests, ``temp_session``.
+- [tests]: New testsuite, ``testsuite.test_utils`` for testing testsuite
+  tools.
+- [config] [builder]: New command, ``before_script``, which is a file to
+  be executed with a return code. It can be a bash, perl, python etc.
+  script.
 - [docs]: :ref:`python_api_quickstart` per `Issue #56`_.
 
 .. _Issue #56: https://github.com/tony/tmuxp/issues/56
