@@ -388,6 +388,9 @@ def command_freeze(args):
 
         dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
         if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
+            destdir = os.path.dirname(dest)
+            if not os.path.isdir(destdir):
+                os.makedirs(destdir)
             buf = open(dest, 'w')
             buf.write(newconfig)
             buf.close()
