@@ -281,6 +281,7 @@ Run a shell script + check for return code on an absolute path. (Windows
 and panes omitted in this example)
 
 .. code-block:: yaml
+
     session_name: another example
     before_script: /absolute/path/this.sh # abs path to shell script
     # ... the rest of your config
