@@ -164,7 +164,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if start_directory:
             # as of 2014-02-08 tmux 1.9-dev doesn't expand ~ in new-window -c.
             start_directory = os.path.expanduser(start_directory)
-            start_directory = pipes.quote(start_directory)
             window_args += ('-c%s' % start_directory,)
 
         window_args += (
