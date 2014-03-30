@@ -260,6 +260,8 @@ A successful script will exit with a status of ``0``.
 You can use this for things like bootstrapping ruby / python environments
 for a project (or checking to verify their installation).
 
+Important: the script file must be chmod executable ``+x`` or ``755``.
+
 Run a python script (and check for it's return code), the script is
 *relative to the ``.tmuxp.yaml``'s root* (Windows and panes omitted in 
 this example):
@@ -267,14 +269,14 @@ this example):
 .. code-block:: yaml
 
     session_name: my session
-    before_script: bootstrap.py
+    before_script: ./bootstrap.py
     # ... the rest of your config
 
 .. code-block:: json
 
     {
         "session_name": "my session",
-        "before_script": "bootstrap.py"
+        "before_script": "./bootstrap.py"
     }
 
 Run a shell script + check for return code on an absolute path. (Windows
