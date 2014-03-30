@@ -246,6 +246,54 @@ JSON
 .. literalinclude:: ../.tmuxp.json
     :language: json
 
+Run script before launch
+------------------------
+
+You can use ``before_script`` to run a script before the tmux session
+starts building.
+
+It works by using the `Exit Status`_ code returned by a script. Your
+script can be any type, including bash, python, ruby, etc.
+
+A successful script will exit with a status of ``0``.
+
+You can use this for things like bootstrapping ruby / python environments
+for a project (or checking to verify their installation).
+
+Run a python script (and check for it's return code), the script is
+*relative to the ``.tmuxp.yaml``'s root* (Windows and panes omitted in 
+this example):
+
+.. code-block:: yaml
+
+    session_name: my session
+    before_script: bootstrap.py
+    # ... the rest of your config
+
+.. code-block:: json
+
+    {
+        "session_name": "my session",
+        "before_script": "bootstrap.py"
+    }
+
+Run a shell script + check for return code on an absolute path. (Windows
+and panes omitted in this example)
+
+.. code-block:: yaml
+    session_name: another example
+    before_script: /absolute/path/this.sh # abs path to shell script
+    # ... the rest of your config
+
+.. code-block:: json
+
+    {
+        "session_name": "my session",
+        "before_script": "/absolute/path/this.sh"
+    }
+
+.. _Exit Status: http://tldp.org/LDP/abs/html/exit-status.html
+
 Project configs
 ---------------
 

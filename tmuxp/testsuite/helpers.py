@@ -10,12 +10,15 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 import time
-from random import randint
 import logging
+import contextlib
+
 try:
     import unittest2 as unittest
 except ImportError:  # Python 2.7
     import unittest
+
+from random import randint
 
 from . import t
 from .. import Server, log, exc
@@ -23,6 +26,28 @@ from .. import Server, log, exc
 logger = logging.getLogger(__name__)
 
 TEST_SESSION_PREFIX = 'tmuxp_'
+
+
+def get_test_session_name(server, prefix='tmuxp_'):
+    while True:
+        session_name = prefix + str(randint(0, 9999999))
+        if not t.has_session(session_name):
+            break
+    return session_name
+
+
+@contextlib.contextmanager
+def temp_session(server, session_name=None):
+    if not session_name:
+        session_name = get_test_session_name(server)
+
+    session = server.new_session(session_name)
+    try:
+        yield session
+    finally:
+        if server.has_session(session_name):
+            session.kill_session()
+    return
 
 
 class TestCase(unittest.TestCase):
@@ -80,10 +105,7 @@ class TmuxTestCase(TestCase):
             )
         ]
 
-        while True:
-            TEST_SESSION_NAME = TEST_SESSION_PREFIX + str(randint(0, 9999999))
-            if not t.has_session(TEST_SESSION_NAME):
-                break
+        TEST_SESSION_NAME = get_test_session_name(server=t)
 
         try:
             session = t.new_session(
@@ -113,4 +135,5 @@ class TmuxTestCase(TestCase):
         assert TEST_SESSION_NAME != 'tmuxp'
 
         self.TEST_SESSION_NAME = TEST_SESSION_NAME
+        self.server = t
         self.session = session

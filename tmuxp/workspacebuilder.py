@@ -11,10 +11,48 @@ from __future__ import absolute_import, division, print_function, \
 
 import os
 import logging
+import subprocess
 
 from . import exc, config, Window, Pane, Session, Server
+from ._compat import PY2
 
 logger = logging.getLogger(__name__)
+
+
+class BeforeLoadScriptNotExists(OSError):
+
+    def __init__(self, *args, **kwargs):
+        super(BeforeLoadScriptNotExists, self).__init__(*args, **kwargs)
+
+        self.strerror = "before_script file '%s' doesn't exist." % self.strerror
+
+
+class BeforeLoadScriptFailed(subprocess.CalledProcessError):
+
+    def __init__(self, *args, **kwargs):
+        super(BeforeLoadScriptFailed, self).__init__(*args, **kwargs)
+
+    def __unicode__(self):
+        return "before_script failed (%s): %s. Output: \n%s" % (
+            self.returncode, self.cmd, self.output
+        )
+
+    if PY2:
+        def __str__(self):
+            return self.__unicode__().encode('utf-8')
+
+
+def run_before_script(script_file):
+    """Function to wrap try/except for subprocess.check_call()."""
+    try:
+        return subprocess.check_call(script_file, stdout=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        raise BeforeLoadScriptFailed(e.returncode, e.cmd)
+    except OSError as e:
+        if e.errno == 2:
+            raise BeforeLoadScriptNotExists(e, script_file)
+        else:
+            raise(e)
 
 
 class WorkspaceBuilder(object):
@@ -127,10 +165,22 @@ class WorkspaceBuilder(object):
             assert(len(self.sconf['session_name']) > 0)
 
         self.session = session
+        self.server = session.server
+
+        self.server._list_sessions()
+        assert self.server.has_session(session.get('session_name'))
+        assert session.get('session_id')
 
         assert(isinstance(session, Session))
 
         focus = None
+
+        if 'before_script' in self.sconf:
+            try:
+                run_before_script(self.sconf['before_script'])
+            except Exception as e:
+                self.session.kill_session()
+                raise(e)
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
@@ -287,7 +337,7 @@ def freeze(session):
             pconf = {}
             pconf['shell_command'] = []
 
-            if not 'start_directory' in wconf:
+            if 'start_directory' not in wconf:
                 pconf['shell_command'].append(
                     'cd ' + p.get('pane_current_path')
                 )
