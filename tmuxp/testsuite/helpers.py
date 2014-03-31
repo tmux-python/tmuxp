@@ -36,6 +36,14 @@ def get_test_session_name(server, prefix='tmuxp_'):
     return session_name
 
 
+def get_test_window_name(session, prefix='tmuxp_'):
+    while True:
+        window_name = prefix + str(randint(0, 9999999))
+        if not session.findWhere(window_name=window_name):
+            break
+    return window_name
+
+
 @contextlib.contextmanager
 def temp_session(server, session_name=None):
     if not session_name:
@@ -47,6 +55,81 @@ def temp_session(server, session_name=None):
     finally:
         if server.has_session(session_name):
             session.kill_session()
+    return
+
+
+@contextlib.contextmanager
+def temp_session(server, *args, **kwargs):
+    """Return a context manager with a temporary session.
+
+    e.g.::
+
+        with temp_session(server) as session:
+            session.new_window(window_name='my window')
+
+    The session will destroy itself upon closing with :meth:`Session.
+    kill_session()`.
+
+    If no ``session_name`` is entered, :func:`get_test_session_name` will make
+    an unused session name.
+
+    :args: Same arguments as :meth:`Server.new_session`
+    :yields: Temporary session
+    :rtype: :class:`Session`
+    """
+
+    if 'session_name' in kwargs:
+        session_name = kwargs.pop('session_name')
+    else:
+        session_name = get_test_session_name(server)
+
+    print(kwargs)
+
+    session = server.new_session(session_name, *args, **kwargs)
+
+    try:
+        yield session
+    finally:
+        if server.has_session(session_name):
+            session.kill_session()
+    return
+
+
+@contextlib.contextmanager
+def temp_window(session, *args, **kwargs):
+    """Return a context manager with a temporary window.
+
+    e.g.::
+
+        with temp_window(session) as window:
+            my_pane = window.split_window()
+
+    The window will destroy itself upon closing with :meth:`window.
+    kill_window()`.
+
+    If no ``window_name`` is entered, :func:`get_test_window_name` will make
+    an unused window name.
+
+    :args: Same arguments as :meth:`Session.new_window`
+    :yields: Temporary window
+    :rtype: :class:`Window`
+    """
+
+    if 'window_name' not in kwargs:
+        window_name = get_test_window_name(session)
+    else:
+        window_name = kwargs.pop('window_name')
+
+    window = session.new_window(window_name, *args, **kwargs)
+
+    # Get ``window_id`` before returning it, it may be killed within context.
+    window_id = window.get('window_id')
+
+    try:
+        yield session
+    finally:
+        if session.findWhere(window_id=window_id):
+            window.kill_window()
     return
 
 
@@ -67,6 +150,9 @@ class TmuxTestCase(TestCase):
     session = None
     #: Session name for the TestCase.
     TEST_SESSION_NAME = None
+
+    def temp_session(self, session_name=None):
+        return temp_session(self.server, session_name)
 
     def setUp(self):
         """Run bootstrap if :attr:`~.session` is not set."""

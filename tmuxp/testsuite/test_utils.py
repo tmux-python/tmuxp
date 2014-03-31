@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 from .helpers import get_test_session_name, temp_session, TestCase, \
-    TmuxTestCase, unittest
+    TmuxTestCase, unittest  # , temp_window, temp_pane
 
 
 class TempSession(TmuxTestCase):
@@ -36,6 +36,10 @@ class TempSession(TmuxTestCase):
 
         # really dead?
         self.assertFalse(server.has_session(session_name))
+
+    def test_if_session_name_works(self):
+        """should allow custom ``session_name``."""
+        pass
 
 
 def suite():

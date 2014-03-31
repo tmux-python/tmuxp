@@ -125,4 +125,17 @@ Exceptions
 
 .. autoexception:: tmuxp.exc.ConfigError
 
+Test tools
+----------
 
+.. automethod:: tmuxp.testsuite.helpers.get_test_session_name
+
+.. automethod:: tmuxp.testsuite.helpers.get_test_window_name
+
+.. automethod:: tmuxp.testsuite.helpers.get_test_pane_name
+
+.. automethod:: tmuxp.testsuite.helpers.temp_session
+
+.. automethod:: tmuxp.testsuite.helpers.temp_window
+
+.. automethod:: tmuxp.testsuite.helpers.temp_pane

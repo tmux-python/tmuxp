@@ -10,22 +10,26 @@ from __future__ import absolute_import, division, print_function, \
 
 import logging
 import sys
-
-from .. import log
-from .._compat import string_types, PY2, reraise
-from ..server import Server
+import pkgutil
 
 try:
     import unittest2 as unittest
 except ImportError:  # Python 2.7
     import unittest
 
-import pkgutil
-
-logger = logging.getLogger()
+from .. import log
+from .._compat import string_types, PY2, reraise
+from ..server import Server
 
 t = Server()
 t.socket_name = 'tmuxp_test'
+
+from . import helpers
+
+
+# Logger functionality
+
+logger = logging.getLogger()
 
 if not logger.handlers:
     channel = logging.StreamHandler()

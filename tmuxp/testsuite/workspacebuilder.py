@@ -567,7 +567,7 @@ class BeforeLoadScript(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-        with temp_session(self.server) as sess:
+        with self.temp_session() as sess:
             session_name = sess.get('session_name')
 
             with self.assertRaises(subprocess.CalledProcessError):
@@ -591,7 +591,7 @@ class BeforeLoadScript(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-        with temp_session(self.server) as sess:
+        with self.temp_session() as sess:
             session_name = sess.get('session_name')
             temp_session_exists = self.server.has_session(sess.get('session_name'))
             self.assertTrue(temp_session_exists)
@@ -618,7 +618,7 @@ class BeforeLoadScript(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-        with temp_session(self.session.server) as session:
+        with self.temp_session() as session:
             builder.build(session=self.session)
 
 
