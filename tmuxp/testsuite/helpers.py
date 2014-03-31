@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Helper methods for tmuxp unittests.
-
-tmuxp.tests.helpers
-~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Helper methods for tmuxp unittests."""
 
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
@@ -82,8 +77,6 @@ def temp_session(server, *args, **kwargs):
         session_name = kwargs.pop('session_name')
     else:
         session_name = get_test_session_name(server)
-
-    print(kwargs)
 
     session = server.new_session(session_name, *args, **kwargs)
 
