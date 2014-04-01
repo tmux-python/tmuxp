@@ -429,7 +429,7 @@ class StartDirectoryTest(TmuxTestCase):
         dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/usr', os.getcwd()]
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
-                self.assertEqual(p.get('pane_start_path'), path)
+                self.assertEqual(p.get('pane_current_path'), path)
 
 
 class PaneOrderingTest(TmuxTestCase):
