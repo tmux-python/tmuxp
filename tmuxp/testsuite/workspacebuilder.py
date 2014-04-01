@@ -415,6 +415,19 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "moo3"
     """
 
+    def setUp(self):
+        super(StartDirectoryTest, self).setUp()
+        if not os.path.exists('/tmp/foo bar'):
+            os.mkdir('/tmp/foo bar')
+            self._temp_dir_created = True
+        else:
+            self._temp_dir_created = False
+
+    def tearDown(self):
+        super(StartDirectoryTest, self).tearDown()
+        if self._temp_dir_created:
+            os.rmdir('/tmp/foo bar')
+
     def test_start_directory(self):
 
         sconfig = kaptan.Kaptan(handler='yaml')
