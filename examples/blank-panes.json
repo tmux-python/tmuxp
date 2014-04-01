@@ -35,6 +35,17 @@
         }
       ], 
       "window_name": "Empty string (return)"
+    },
+    {
+      "panes": [
+        {
+          "focus": true
+        },
+        {
+          "start_directory": "/tmp"
+        }
+      ],
+      "window_name": "Blank with options"
     }
   ], 
   "session_name": "Blank pane test"

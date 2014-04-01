@@ -209,7 +209,6 @@ def expand(sconf, cwd=None):
                 }
 
             assert isinstance(p, dict)
-            assert 'shell_command' in p
             if 'shell_command' in p:
                 cmd = p['shell_command']
 
@@ -224,6 +223,8 @@ def expand(sconf, cwd=None):
                         cmd = []
 
                 p['shell_command'] = cmd
+            else:
+                p['shell_command'] = []
 
             pconf.update(p)
         sconf['panes'] = [expand(pane) for pane in sconf['panes']]

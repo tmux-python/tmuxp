@@ -358,6 +358,9 @@ class BlankPaneTest(TmuxTestCase):
         )
         self.assertEqual(len(window3._panes), 3)
 
+        window4 = self.session.findWhere({'window_name': 'Blank with options'})
+        self.assertEqual(len(window4._panes), 2)
+
 
 class StartDirectoryTest(TmuxTestCase):
     yaml_config = """
