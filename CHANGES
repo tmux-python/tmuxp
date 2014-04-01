@@ -4,8 +4,25 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-v0.1.8
-------
+0.1.9
+-----
+
+2 bug fixes and allow panes with no shell commands to accept options,
+thanks for these 3 patches, `@ThiefMaster`_:
+
+- [builder]: `Issue #73`_: Fix an error caused by spaces in 
+  ``start_directory``.
+- [builder]: `Issue #77`_: Fix bug where having a ``-`` in a
+  ``shell_command`` would cauesd a build error.
+- [config]: `Issue #76`_: Don't require ``shell_command`` to
+  pass options to panes (like ``focus: true``).
+
+.. _Issue #73: https://github.com/tony/tmuxp/issues/73
+.. _Issue #76: https://github.com/tony/tmuxp/issues/76
+.. _Issue #77: https://github.com/tony/tmuxp/issues/77
+
+0.1.8
+-----
 
 - [cli] [freezer]: `Issue #72`_: Create destination directory if it
   doesn't exist. Thanks `@ThiefMaster`_.
