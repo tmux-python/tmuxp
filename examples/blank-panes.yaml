@@ -20,3 +20,8 @@ windows:
     - shell_command: ''
     - shell_command:
       - ''
+  # a pane can have other options but still be blank
+  - window_name: Blank with options
+    panes:
+    - focus: true
+    - start_directory: /tmp

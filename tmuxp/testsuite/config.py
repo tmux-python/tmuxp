@@ -947,6 +947,19 @@ class ConfigBlankPanes(TestCase):
                         ],
                     }
                 ]
+            },
+            {
+                'window_name': 'Blank with options',
+                'panes': [
+                    {
+                        'shell_command': [],
+                        'focus': True,
+                    },
+                    {
+                        'shell_command': [],
+                        'start_directory': '/tmp',
+                    }
+                ]
             }
         ]
     }
