@@ -20,7 +20,7 @@ from .. import Server, log, exc
 
 logger = logging.getLogger(__name__)
 
-TEST_SESSION_PREFIX = 'tmuxp_'
+TEST_SESSION_PREFIX = 'test tmuxp_'
 
 
 def get_test_session_name(server, prefix='tmuxp_'):

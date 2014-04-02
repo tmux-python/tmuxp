@@ -387,6 +387,16 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
+    - window_name: cwd containing a space
+      start_directory: /tmp/foo bar
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
     - window_name: testsa3
       layout: main-horizontal
       panes:
@@ -408,6 +418,19 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "moo3"
     """
 
+    def setUp(self):
+        super(StartDirectoryTest, self).setUp()
+        if not os.path.exists('/tmp/foo bar'):
+            os.mkdir('/tmp/foo bar')
+            self._temp_dir_created = True
+        else:
+            self._temp_dir_created = False
+
+    def tearDown(self):
+        super(StartDirectoryTest, self).tearDown()
+        if self._temp_dir_created:
+            os.rmdir('/tmp/foo bar')
+
     def test_start_directory(self):
 
         sconfig = kaptan.Kaptan(handler='yaml')
@@ -419,10 +442,10 @@ class StartDirectoryTest(TmuxTestCase):
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        for path in ['/usr/bin', '/dev/', '/usr/', os.getcwd()]:
-            for window in self.session.windows:
-                for p in window.panes:
-                    self.assertTrue(p.get('pane_start_path', path))
+        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/usr', os.getcwd()]
+        for path, window in zip(dirs, self.session.windows):
+            for p in window.panes:
+                self.assertEqual(p.get('pane_current_path'), path)
 
 
 class PaneOrderingTest(TmuxTestCase):
