@@ -76,7 +76,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Server.tmux`
 
         """
-        if not len([arg for arg in args if '-t' in str(arg)]):
+        if not any(arg.startswith('-t') for arg in args):
             args = ('-t', self.get('window_id')) + args
 
         return self.server.tmux(cmd, *args, **kwargs)
