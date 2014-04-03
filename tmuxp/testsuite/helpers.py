@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 TEST_SESSION_PREFIX = 'test tmuxp_'
 
 
-def get_test_session_name(server, prefix='tmuxp_'):
+def get_test_session_name(server, prefix=TEST_SESSION_PREFIX):
     while True:
         session_name = prefix + str(randint(0, 9999999))
         if not t.has_session(session_name):
@@ -31,7 +31,7 @@ def get_test_session_name(server, prefix='tmuxp_'):
     return session_name
 
 
-def get_test_window_name(session, prefix='tmuxp_'):
+def get_test_window_name(session, prefix=TEST_SESSION_PREFIX):
     while True:
         window_name = prefix + str(randint(0, 9999999))
         if not session.findWhere(window_name=window_name):
