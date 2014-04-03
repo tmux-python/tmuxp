@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-0.1.9
------
+0.1.10
+------
 
 2 bug fixes and allow panes with no shell commands to accept options,
 thanks for these 3 patches, `@ThiefMaster`_:
@@ -20,6 +20,11 @@ thanks for these 3 patches, `@ThiefMaster`_:
 .. _Issue #73: https://github.com/tony/tmuxp/issues/73
 .. _Issue #76: https://github.com/tony/tmuxp/issues/76
 .. _Issue #77: https://github.com/tony/tmuxp/issues/77
+
+0.1.9
+-----
+
+The ``--force`` was not with us.
 
 0.1.8
 -----
