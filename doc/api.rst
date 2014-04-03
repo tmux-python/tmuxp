@@ -125,6 +125,10 @@ Exceptions
 
 .. autoexception:: tmuxp.exc.ConfigError
 
+.. autoexception:: tmuxp.exc.BeforeLoadScriptFailed
+
+.. autoexception:: tmuxp.exc.BeforeLoadScriptNotExists
+
 Test tools
 ----------
 

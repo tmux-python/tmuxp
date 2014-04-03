@@ -4,6 +4,17 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+CURRENT
+-------
+
+- [internal]: Improvements to :func:`util.run_script_before`,
+  :class:`exc.BeforeLoadScriptFailed` behavior to print ``stdout`` and
+  return ``stderr`` is a non-zero exit is returned.
+- [internal]: ``run_script_before`` has moved to ``util``.
+- [internal]: ``BeforeLoadScriptFailed`` and ``BeforeLoadScriptNotExists``
+  has moved to the ``exc`` module.
+- [internal]: Tests for ``run_script_before`` refactored.
+
 0.1.10
 ------
 

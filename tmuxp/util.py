@@ -27,6 +27,35 @@ logger = logging.getLogger(__name__)
 PY2 = sys.version_info[0] == 2
 
 
+def run_before_script(script_file):
+    """Function to wrap try/except for subprocess.check_call()."""
+    try:
+        proc = subprocess.Popen(
+            script_file,
+            # stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        proc.wait()
+
+        if proc.returncode:
+            stderr = proc.stderr.read()
+            proc.stderr.close()
+            stderr = console_to_str(stderr).split('\n')
+            stderr = '\n'.join(list(filter(None, stderr)))  # filter empty values
+
+            # python 2.6 doesn't have a third "output" argument.
+            error = exc.BeforeLoadScriptFailed(proc.returncode, script_file)
+            error.output = stderr
+
+            raise(error)
+        return proc.returncode
+    except OSError as e:
+        if e.errno == 2:
+            raise exc.BeforeLoadScriptNotExists(e, script_file)
+        else:
+            raise(e)
+
+
 class tmux(object):
 
     """:py:mod:`subprocess` for :term:`tmux(1)`.

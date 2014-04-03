@@ -14,45 +14,10 @@ import logging
 import subprocess
 
 from . import exc, config, Window, Pane, Session, Server
-from ._compat import PY2
+from ._compat import PY2, console_to_str
+from .util import run_before_script
 
 logger = logging.getLogger(__name__)
-
-
-class BeforeLoadScriptNotExists(OSError):
-
-    def __init__(self, *args, **kwargs):
-        super(BeforeLoadScriptNotExists, self).__init__(*args, **kwargs)
-
-        self.strerror = "before_script file '%s' doesn't exist." % self.strerror
-
-
-class BeforeLoadScriptFailed(subprocess.CalledProcessError):
-
-    def __init__(self, *args, **kwargs):
-        super(BeforeLoadScriptFailed, self).__init__(*args, **kwargs)
-
-    def __unicode__(self):
-        return "before_script failed (%s): %s. Output: \n%s" % (
-            self.returncode, self.cmd, self.output
-        )
-
-    if PY2:
-        def __str__(self):
-            return self.__unicode__().encode('utf-8')
-
-
-def run_before_script(script_file):
-    """Function to wrap try/except for subprocess.check_call()."""
-    try:
-        return subprocess.check_call(script_file, stdout=subprocess.PIPE)
-    except subprocess.CalledProcessError as e:
-        raise BeforeLoadScriptFailed(e.returncode, e.cmd)
-    except OSError as e:
-        if e.errno == 2:
-            raise BeforeLoadScriptNotExists(e, script_file)
-        else:
-            raise(e)
 
 
 class WorkspaceBuilder(object):

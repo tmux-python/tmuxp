@@ -12,13 +12,20 @@ from __future__ import absolute_import, division, print_function, \
 import random
 import logging
 import unittest
+import subprocess
+import os
 
 from .. import exc
-from ..util import has_required_tmux_version
+from ..util import has_required_tmux_version, run_before_script
+from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptFailed
 
-from .helpers import TmuxTestCase
+
+from .helpers import TmuxTestCase, TestCase
 
 logger = logging.getLogger(__name__)
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+fixtures_dir = os.path.abspath(os.path.join(current_dir, 'fixtures'))
 
 
 class TmuxVersionTest(TmuxTestCase):
@@ -54,7 +61,47 @@ class TmuxVersionTest(TmuxTestCase):
         has_required_tmux_version('1.9a')
 
 
+class RunBeforeScript(TestCase):
+
+    def test_raise_BeforeLoadScriptNotExists_if_not_exists(self):
+        script_file = os.path.join(fixtures_dir, 'script_noexists.sh')
+
+        with self.assertRaises(BeforeLoadScriptNotExists):
+            run_before_script(script_file)
+
+        with self.assertRaises(OSError):
+            run_before_script(script_file)
+
+    def test_raise_BeforeLoadScriptFailed_if_retcode(self):
+        script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+
+        with self.assertRaises(BeforeLoadScriptFailed):
+            run_before_script(script_file)
+
+    def test_return_stdout_if_ok(self):
+        script_file = os.path.join(fixtures_dir, 'script_complete.sh')
+
+        run_before_script(script_file)
+
+
+class BeforeLoadScriptFailedTestCase(TestCase):
+
+    def test_returncode(self):
+        script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+
+        with self.assertRaisesRegexp(subprocess.CalledProcessError, "113"):
+            run_before_script(script_file)
+
+    def test_returns_stderr_messages(self):
+        script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+
+        with self.assertRaisesRegexp(subprocess.CalledProcessError, "An error has occured"):
+            run_before_script(script_file)
+
+
 def suite():
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(BeforeLoadScriptFailedTestCase))
+    suite.addTest(unittest.makeSuite(RunBeforeScript))
     suite.addTest(unittest.makeSuite(TmuxVersionTest))
     return suite

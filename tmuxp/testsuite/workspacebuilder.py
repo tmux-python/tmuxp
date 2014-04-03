@@ -587,7 +587,7 @@ class BeforeLoadScript(TmuxTestCase):
       - pane
     """
 
-    def test_throw_error_if_retcode_false(self):
+    def test_throw_error_if_retcode_error(self):
 
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_fails.format(
@@ -602,7 +602,7 @@ class BeforeLoadScript(TmuxTestCase):
         with self.temp_session() as sess:
             session_name = sess.get('session_name')
 
-            with self.assertRaises(subprocess.CalledProcessError):
+            with self.assertRaises((exc.BeforeLoadScriptFailed, subprocess.CalledProcessError)):
                 builder.build(session=sess)
 
             result = self.server.has_session(session_name)
@@ -628,7 +628,7 @@ class BeforeLoadScript(TmuxTestCase):
             temp_session_exists = self.server.has_session(sess.get('session_name'))
             self.assertTrue(temp_session_exists)
             with self.assertRaisesRegexp(
-                (BeforeLoadScriptNotExists, OSError),
+                (exc.BeforeLoadScriptNotExists, OSError),
                 'No such file or directory'
             ):
                 builder.build(session=sess)
@@ -654,40 +654,9 @@ class BeforeLoadScript(TmuxTestCase):
             builder.build(session=self.session)
 
 
-from ..workspacebuilder import run_before_script, BeforeLoadScriptNotExists, \
-    BeforeLoadScriptFailed
-
-
-class RunBeforeScript(TestCase):
-
-    def test_raise_BeforeLoadScriptNotExists_if_not_exists(self):
-        script_file = os.path.join(fixtures_dir, 'script_noexists.sh')
-
-        with self.assertRaises(BeforeLoadScriptNotExists):
-            run_before_script(script_file)
-
-        with self.assertRaises(OSError):
-            run_before_script(script_file)
-
-    def test_raise_BeforeLoadScriptFailed_if_retcode(self):
-        script_file = os.path.join(fixtures_dir, 'script_failed.sh')
-
-        with self.assertRaises(BeforeLoadScriptFailed):
-            run_before_script(script_file)
-
-        with self.assertRaises(subprocess.CalledProcessError):
-            run_before_script(script_file)
-
-    def test_return_stdout_if_exits_zero(self):
-        script_file = os.path.join(fixtures_dir, 'script_complete.sh')
-
-        run_before_script(script_file)
-
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BeforeLoadScript))
-    suite.addTest(unittest.makeSuite(RunBeforeScript))
     suite.addTest(unittest.makeSuite(BlankPaneTest))
     suite.addTest(unittest.makeSuite(FocusAndPaneIndexTest))
     suite.addTest(unittest.makeSuite(PaneOrderingTest))

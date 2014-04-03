@@ -33,10 +33,15 @@ if PY2:
     from string import lower as ascii_lowercase
     import urlparse
 
+    exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
+
+    def implements_to_string(cls):
+        cls.__unicode__ = cls.__str__
+        cls.__str__ = lambda x: x.__unicode__().encode('utf-8')
+        return cls
+
     def console_to_str(s):
         return s.decode('utf_8')
-
-    exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 
 else:
     unichr = chr
@@ -67,6 +72,8 @@ else:
     from urllib.request import urlretrieve
 
     console_encoding = sys.__stdout__.encoding
+
+    implements_to_string = _identity
 
     def console_to_str(s):
         """ From pypa/pip project, pip.backwardwardcompat. License MIT. """
