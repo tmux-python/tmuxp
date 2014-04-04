@@ -13,7 +13,6 @@ import os
 import sys
 import logging
 import unittest
-import subprocess
 import time
 
 import kaptan
@@ -602,7 +601,7 @@ class BeforeLoadScript(TmuxTestCase):
         with self.temp_session() as sess:
             session_name = sess.get('session_name')
 
-            with self.assertRaises((exc.BeforeLoadScriptFailed, subprocess.CalledProcessError)):
+            with self.assertRaises(exc.BeforeLoadScriptError):
                 builder.build(session=sess)
 
             result = self.server.has_session(session_name)

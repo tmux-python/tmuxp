@@ -54,17 +54,22 @@ class BeforeLoadScriptNotExists(OSError):
 
 
 @implements_to_string
-class BeforeLoadScriptFailed(subprocess.CalledProcessError):
+class BeforeLoadScriptError(Exception):
 
-    """Exception extending :py:class:`subprocess.CalledProcessError` for
+    """Exception replacing :py:class:`subprocess.CalledProcessError` for
     :meth:`util.run_before_script`.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(BeforeLoadScriptFailed, self).__init__(*args, **kwargs)
+    def __init__(self, returncode, cmd, output=None):
+        self.returncode = returncode
+        self.cmd = cmd
+        self.output = output
+        self.message = (
+            'before_script failed with returncode {returncode}.\n'
+            'command: {cmd}\n'
+            'Error output:\n'
+            '{output}'
+        ).format(returncode=self.returncode, cmd=self.cmd, output=self.output)
 
     def __str__(self):
-        return "before_script failed (%s): %s." \
-            "\nError Output: \n%s" % (
-                self.returncode, self.cmd, self.output
-            )
+        return self.message

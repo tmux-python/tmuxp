@@ -43,11 +43,8 @@ def run_before_script(script_file):
             stderr = console_to_str(stderr).split('\n')
             stderr = '\n'.join(list(filter(None, stderr)))  # filter empty values
 
-            # python 2.6 doesn't have a third "output" argument.
-            error = exc.BeforeLoadScriptFailed(proc.returncode, script_file)
-            error.output = stderr
+            raise exc.BeforeLoadScriptError(proc.returncode, script_file, stderr)
 
-            raise(error)
         return proc.returncode
     except OSError as e:
         if e.errno == 2:

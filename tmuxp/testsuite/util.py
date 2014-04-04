@@ -17,7 +17,7 @@ import os
 
 from .. import exc
 from ..util import has_required_tmux_version, run_before_script
-from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptFailed
+from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
 
 
 from .helpers import TmuxTestCase, TestCase
@@ -72,10 +72,10 @@ class RunBeforeScript(TestCase):
         with self.assertRaises(OSError):
             run_before_script(script_file)
 
-    def test_raise_BeforeLoadScriptFailed_if_retcode(self):
+    def test_raise_BeforeLoadScriptError_if_retcode(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaises(BeforeLoadScriptFailed):
+        with self.assertRaises(BeforeLoadScriptError):
             run_before_script(script_file)
 
     def test_return_stdout_if_ok(self):
@@ -84,24 +84,24 @@ class RunBeforeScript(TestCase):
         run_before_script(script_file)
 
 
-class BeforeLoadScriptFailedTestCase(TestCase):
+class BeforeLoadScriptErrorTestCase(TestCase):
 
     def test_returncode(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaisesRegexp(subprocess.CalledProcessError, "113"):
+        with self.assertRaisesRegexp(exc.BeforeLoadScriptError, "113"):
             run_before_script(script_file)
 
     def test_returns_stderr_messages(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaisesRegexp(subprocess.CalledProcessError, "An error has occured"):
+        with self.assertRaisesRegexp(exc.BeforeLoadScriptError, "failed with returncode"):
             run_before_script(script_file)
 
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BeforeLoadScriptFailedTestCase))
+    suite.addTest(unittest.makeSuite(BeforeLoadScriptErrorTestCase))
     suite.addTest(unittest.makeSuite(RunBeforeScript))
     suite.addTest(unittest.makeSuite(TmuxVersionTest))
     return suite
