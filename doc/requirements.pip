@@ -1,6 +1,6 @@
 -r ../requirements.pip
 docutils==0.11
-sphinx
+sphinx<1.2.1
 sphinxcontrib-aafig
 reportlab
 Pillow
