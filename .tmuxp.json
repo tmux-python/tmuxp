@@ -1,32 +1,20 @@
 {
+  "before_script": "./bootstrap_env.py", 
   "windows": [
     {
       "panes": [
         {
-          "shell_command": [
-            "reset", 
-            "vim", 
-            ":Ex"
-          ], 
           "focus": true
         }, 
-        "pane",
-        {
-          "shell_command": [
-            "command -v .env/bin/tmuxp >/dev/null 2>&1 || { pip install -e .; }", 
-            "command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }", 
-            "watching_testrunner --basepath ./ --pattern=\"*.py\" 'python run-tests.py'"
-          ]
-        }
+        "pane", 
+        "watching_testrunner --basepath ./ --pattern=\"*.py\" 'python run-tests.py'"
       ], 
       "options": {
         "main-pane-height": 35
       }, 
       "layout": "main-horizontal", 
       "shell_command_before": [
-        "command -v virtualenv >/dev/null 2>&1 || { pip install virtualenv; }", 
-        "[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env", 
-        "[ ! -d .env/build ] || rm -rf .env/build"
+        "[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate"
       ], 
       "focus": true, 
       "window_name": "tmuxp"
@@ -34,35 +22,21 @@
     {
       "panes": [
         {
-          "shell_command": [
-            "reset", 
-            "vim", 
-            ":Ex"
-          ], 
           "focus": true
         }, 
-        "pwd", 
+        "pane", 
         "echo 'docs built to <http://0.0.0.0:8003/_build/html>'; python -m SimpleHTTPServer 8003", 
-        {
-          "shell_command": [
-            "command -v sphinx-quickstart >/dev/null 2>&1 || { pip install -r requirements.pip; }", 
-            "command -v watching_testrunner >/dev/null 2>&1 || { pip install watching_testrunner; }", 
-            "watching_testrunner --basepath ./ --pattern=\"*.rst\" 'make html'"
-          ]
-        }
+        "watching_testrunner --basepath ./ --pattern=\"*.rst\" 'make html'"
       ], 
-      "shell_command_before": [
-        "command -v virtualenv >/dev/null 2>&1 || { pip install virtualenv; }", 
-        "[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env", 
-        "[ ! -d .env/build ] || rm -rf .env/build", 
-        "command -v .env/bin/tmuxp >/dev/null 2>&1 || { pip install -e .; }", 
-        "cd ./doc"
-      ], 
+      "start_directory": "doc/", 
       "layout": "main-horizontal", 
-      "window_name": "docs", 
+      "shell_command_before": [
+        "[ -d ../.env -a -f ../.env/bin/activate ] && source ../.env/bin/activate"
+      ], 
       "options": {
         "main-pane-height": 35
-      }
+      }, 
+      "window_name": "docs"
     }
   ], 
   "session_name": "tmuxp", 
