@@ -256,6 +256,7 @@ def load_workspace(config_file, args):
 
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
+    # expands configurations relative to config / profile file location
     sconfig = config.expand(sconfig, os.path.dirname(config_file))
     sconfig = config.trickle(sconfig)
 

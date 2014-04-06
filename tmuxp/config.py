@@ -164,6 +164,8 @@ def expand(sconf, cwd=None):
 
     """
 
+    # Note: cli.py will expand configs relative to project's config directory
+    # for the first cwd argument.
     if not cwd:
         cwd = os.getcwd()
 
@@ -174,6 +176,12 @@ def expand(sconf, cwd=None):
         if any(start_path.startswith(a) for a in ['.', './']):
             start_path = os.path.normpath(os.path.join(cwd, start_path))
             sconf['start_directory'] = start_path
+
+    if 'before_script' in sconf:
+        before_script = sconf['before_script']
+        if any(before_script.startswith(a) for a in ['.', './']):
+            before_script = os.path.normpath(os.path.join(cwd, before_script))
+            sconf['before_script'] = before_script
 
     if (
         'shell_command' in sconf and
