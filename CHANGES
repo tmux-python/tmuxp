@@ -4,9 +4,13 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
--------
+0.1.11
+------
 
+- [config]: ``before_script`` now loads relative to project directory with
+  ``./``.
+- [development]: Use ``bootstrap_env.py`` in tmuxp's ``.tmuxp.yaml`` and
+  ``.tmuxp.json`` project files.
 - [internal]: Improvements to :func:`util.run_script_before`,
   :class:`exc.BeforeLoadScriptFailed` behavior to print ``stdout`` and
   return ``stderr`` is a non-zero exit is returned.
