@@ -20,7 +20,7 @@ from distutils.version import StrictVersion
 
 from . import exc
 
-from ._compat import console_to_str
+from ._compat import console_to_str, string_types, text_type
 
 logger = logging.getLogger(__name__)
 
@@ -78,16 +78,40 @@ class tmux(object):
     def __init__(self, *args, **kwargs):
         cmd = [which('tmux')]
         cmd += args  # add the command arguments to cmd
-        cmd = [str(c) for c in cmd]
+        cmd = [text_type(c) for c in cmd]
 
         self.cmd = cmd
+        if any('hey' in cmdpart for cmdpart in self.cmd):
+            print(self.cmd)
+            print(' '.join(self.cmd))
+            import locale
+            print(' '.join(self.cmd).encode(locale.getpreferredencoding()))
+
+            localenc = locale.getpreferredencoding()
+            print(localenc)
+            print(locale.getlocale())
+
+            #self.cmd = ' '.join(self.cmd).decode(localenc)
+            cmd = self.cmd
 
         try:
-            self.process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+            if any('hey' in cmdpart for cmdpart in self.cmd):
+                print(locale.getpreferredencoding())
+                cmd = [c.encode(locale.getpreferredencoding()) for c in cmd]
+                cmd = ' '.join(cmd).encode(locale.getpreferredencoding())
+                print(cmd)
+                self.process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=True
+                )
+            else:
+                self.process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
             self.process.wait()
             stdout = self.process.stdout.read()
             self.process.stdout.close()
@@ -101,7 +125,12 @@ class tmux(object):
                 )
             )
 
-        self.stdout = console_to_str(stdout)
+        try:
+            #self.stdout = stdout
+            self.stdout = console_to_str(stdout)
+        except Exception as e:
+            print(e)
+            sys.exit(stdout)
         self.stdout = self.stdout.split('\n')
         self.stdout = list(filter(None, self.stdout))  # filter empty values
 
@@ -109,12 +138,18 @@ class tmux(object):
         self.stderr = self.stderr.split('\n')
         self.stderr = list(filter(None, self.stderr))  # filter empty values
 
-        if 'has-session' in cmd and len(self.stderr):
-            if not self.stdout:
-                self.stdout = self.stderr[0]
+        try:
+            if 'has-session' in cmd and len(self.stderr):
+                if not self.stdout:
+                    self.stdout = self.stderr[0]
+        except UnicodeDecodeError as e:
+            print(cmd)
+            print(self.stderr)
+            print(e)
+            raise(e)
 
-        logging.debug('self.stdout for %s: \n%s' %
-                      (' '.join(cmd), self.stdout))
+        # logging.debug('self.stdout for %s: \n%s' %
+                      # (' '.join(cmd), self.stdout))
 
 
 class TmuxMappingObject(collections.MutableMapping):

@@ -41,7 +41,7 @@ if PY2:
         return cls
 
     def console_to_str(s):
-        return s.decode('utf_8')
+        return s
 
 else:
     unichr = chr

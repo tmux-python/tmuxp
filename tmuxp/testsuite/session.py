@@ -143,9 +143,40 @@ class Options(TmuxTestCase):
             self.session.set_option('afewewfew', 43)
 
 
+class TestUnicode(TmuxTestCase):
+    """Tests for making sure unicode CLI responses are parsed correctly."""
+
+    def test_unicode_session_name(self):
+        pass
+
+    def test_unicode_window_name(self):
+        pass
+
+    def test_pane_title(self):
+        with self.temp_session() as session:
+            window = session.new_window()
+            pane = window.attached_pane()
+            assert len(window.panes) == 1
+            test_title = '你好 hey it\'s kugou'
+            command = 'printf "\\033]2;{tmux_pane_title}\\033\\\\"'.format(
+                tmux_pane_title=test_title
+            )
+
+            import time
+            pane.send_keys(command)
+            self.server._update_panes()
+
+            for i in range(60):
+                self.server._update_panes()
+                if pane.get('pane_title') == test_title:
+                    break
+                time.sleep(.2)
+            self.assertEqual(pane.get('pane_title'), test_title)
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Options))
     suite.addTest(unittest.makeSuite(SessionNewTest))
     suite.addTest(unittest.makeSuite(SessionTest))
+    suite.addTest(unittest.makeSuite(TestUnicode))
     return suite
