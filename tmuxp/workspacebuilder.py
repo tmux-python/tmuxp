@@ -287,6 +287,8 @@ def freeze(session):
         wconf['window_name'] = w.get('window_name')
         wconf['layout'] = w.get('window_layout')
         wconf['panes'] = []
+        if w.get('window_active', '0') == '1':
+            wconf['focus']='true'
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
