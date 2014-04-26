@@ -306,6 +306,9 @@ def freeze(session):
                 pconf['shell_command'].append(
                     'cd ' + p.get('pane_current_path')
                 )
+                
+            if p.get('pane_active', '0') == '1':
+                pconf['focus']='true'
 
             current_cmd = p.get('pane_current_command')
 
