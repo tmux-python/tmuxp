@@ -234,6 +234,13 @@ def startup(config_dir):
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
 
+def get_sconfig(config_file):
+    sconfig = kaptan.Kaptan()
+    sconfig = sconfig.import_config(config_file).get()
+    # expands configurations relative to config / profile file location
+    sconfig = config.expand(sconfig, os.path.dirname(config_file))
+    sconfig = config.trickle(sconfig)
+    return sconfig
 
 def load_workspace(config_file, args):
     """Build config workspace.
@@ -339,23 +346,10 @@ def command_freeze(args):
 
     sconf = freeze(session)
     configparser = kaptan.Kaptan()
-    newconfig = config.inline(sconf)
-    configparser.import_config(newconfig)
     config_format = prompt_choices('Convert to', choices=[
         'yaml', 'json'], default='yaml')
 
-    if config_format == 'yaml':
-        newconfig = configparser.export(
-            'yaml', indent=2, default_flow_style=False, safe=True
-        )
-    elif config_format == 'json':
-        newconfig = configparser.export('json', indent=2)
-    else:
-        sys.exit('Unknown config format.')
 
-    print(newconfig)
-    print(
-        '---------------------------------------------------------------')
     print(
         'Configuration import does its best to convert teamocil files.\n')
     if args.answer_yes or prompt_yes_no(
@@ -371,9 +365,43 @@ def command_freeze(args):
             )
             dest_prompt = prompt('Save to: ', save_to)
             if os.path.exists(dest_prompt):
-                print('%s exists. Pick a new filename.' % dest_prompt)
-                continue
+                print('%s exists' % dest_prompt)
+                if prompt_yes_no('Resave to %s?' % dest_prompt):
+                    prev_sconf = get_sconfig(save_to)
+                    existing_windows = {}
+                    for s in prev_sconf['windows']:
+                        existing_windows[s['window_name']] = s
 
+                    newPanes = []
+                    for s in sconf['windows']:
+                        window_name = s['window_name']
+                        if not window_name in existing_windows:
+                            newPanes.append(s)
+                        else:
+                            existing_windows[window_name]['layout'] = s['layout']
+                            newPanes.append(existing_windows[window_name])
+
+                    sconf['windows'] = newPanes
+                    newconfig = config.inline(sconf)
+                else:
+                    print('Pick a new filename')
+                    continue
+
+            else:
+                newconfig = config.inline(sconf)
+
+            configparser.import_config(newconfig)
+            if config_format == 'yaml':
+                newconfig = configparser.export(
+                    'yaml', indent=2, default_flow_style=False, safe=True
+                )
+            elif config_format == 'json':
+                newconfig = configparser.export('json', indent=2)
+            else:
+                sys.exit('Unknown config format.')
+            print(newconfig)
+            print(
+                '---------------------------------------------------------------')
             dest = dest_prompt
 
         dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
