@@ -75,7 +75,7 @@ What is a {pane,window}_index vs a {pane,window,session}_id?
 
     Pane index refers to the order of a pane on the screen.
 
-    Window index refers to the # of the pane in the session.
+    Window index refers to the # of the window in the session.
 
 To assert pane, window and session data, tmuxp will use
 :meth:`Server.list_sessions()`, :meth:`Session.list_windows()`,

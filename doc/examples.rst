@@ -246,19 +246,18 @@ JSON
 .. literalinclude:: ../.tmuxp.json
     :language: json
 
-Run script before launch
-------------------------
+Bootstrap project before launch
+-------------------------------
 
 You can use ``before_script`` to run a script before the tmux session
-starts building.
+starts building. This can be used to start a script to create a virtualenv
+or download a virtualenv/rbenv/package.json's dependency files before
+tmuxp even begins building the session.
 
 It works by using the `Exit Status`_ code returned by a script. Your
 script can be any type, including bash, python, ruby, etc.
 
 A successful script will exit with a status of ``0``.
-
-You can use this for things like bootstrapping ruby / python environments
-for a project (or checking to verify their installation).
 
 Important: the script file must be chmod executable ``+x`` or ``755``.
 
@@ -297,14 +296,18 @@ and panes omitted in this example)
 
 .. _Exit Status: http://tldp.org/LDP/abs/html/exit-status.html
 
-Project configs
----------------
+Per-project tmux config
+-----------------------
+
+You can load your software project in tmux by placing a ``.tmuxp.yaml`` or
+``.tmuxp.json`` in the project's config and loading it.
 
 tmuxp supports loading configs via absolute filename with ``tmuxp load``
 and via ``$ tmuxp load .`` if config is in directory.
 
-To make a per-project config, use ``.tmuxp.yaml`` and ``.tmuxp.json`` in
-the root of your project directory.
+.. bash::
+
+    $ tmuxp load ~/workspaces/myproject.yaml
 
 See examples of ``tmuxp`` in the wild. Have a project config to show off?
 Edit this page.
