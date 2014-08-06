@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
-    """:term:`tmux(1)` :ref:`pane`.
+    """:term:`tmux(1)` :term:`pane`.
 
     :param window: :class:`Window`
 

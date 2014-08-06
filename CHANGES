@@ -4,6 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.1.12
+------
+
+- [config] :meth:`config.expand` now resolves directories in configuration
+  via :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`.
+
 0.1.11
 ------
 
