@@ -212,7 +212,7 @@ class ExpandTest(TestCase):
 
     after_config = {
         'session_name': 'sampleconfig',
-        'start_directory': '~',
+        'start_directory': os.path.expanduser('~'),
         'windows': [
             {
                 'window_name': 'editor',
@@ -246,19 +246,19 @@ class ExpandTest(TestCase):
                 ]
             },
             {
-                'start_directory': os.path.abspath('./'),
+                'start_directory': os.path.normpath(os.path.join(os.path.join(os.path.expanduser('~'), './'))),
                 'panes': [
                     {'shell_command': ['pwd']}
                 ]
             },
             {
-                'start_directory': os.path.abspath('./asdf/'),
+                'start_directory': os.path.normpath(os.path.join(os.path.join(os.path.expanduser('~'), './asdf'))),
                 'panes': [
                     {'shell_command': ['pwd']}
                 ]
             },
             {
-                'start_directory': os.path.abspath('../'),
+                'start_directory': os.path.normpath(os.path.join(os.path.expanduser('~'), '../')),
                 'panes': [
                     {'shell_command': ['pwd']}
                 ]
@@ -317,7 +317,7 @@ class ExpandTest(TestCase):
 
         expanded_yaml = """
         session_name: sampleconfig
-        start_directory: '~'
+        start_directory: {HOME}
         windows:
         - window_name: focused window
           layout: main-horizontal
@@ -348,7 +348,9 @@ class ExpandTest(TestCase):
             focus: true
           - shell_command: []
           - shell_command: []
-        """
+        """.format(
+            HOME=os.path.expanduser('~')
+        )
 
         self.maxDiff = None
 
@@ -622,7 +624,7 @@ class ShellCommandBeforeTest(TestCase):
         'windows': [
             {
                 'window_name': 'editor',
-                'start_directory': '~',
+                'start_directory': os.path.expanduser('~'),
                 'shell_command_before': ['source .env/bin/activate'],
                 'panes': [
                     {
@@ -676,7 +678,7 @@ class ShellCommandBeforeTest(TestCase):
         'windows': [
             {
                 'window_name': 'editor',
-                'start_directory': '~',
+                'start_directory': os.path.expanduser('~'),
                 'shell_command_before': ['source .env/bin/activate'],
                 'panes': [
                     {

@@ -432,6 +432,8 @@ class StartDirectoryTest(TmuxTestCase):
 
     def test_start_directory(self):
 
+        start_directory = os.getcwd()
+
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
         sconfig = config.expand(sconfig)
@@ -441,7 +443,117 @@ class StartDirectoryTest(TmuxTestCase):
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/usr', os.getcwd()]
+        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/usr', '/usr']
+        for path, window in zip(dirs, self.session.windows):
+            for p in window.panes:
+                for i in range(60):
+                    p.server._update_panes()
+                    if p.get('pane_current_path') == path:
+                        break
+                    time.sleep(.2)
+
+                self.assertEqual(p.get('pane_current_path'), path)
+
+
+class StartDirectoryRelativeTest(TmuxTestCase):
+    """Same as above test, but with relative start directory, mimicing
+    loading it from a location of project file. Like::
+
+    $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
+
+    instead of::
+
+    $ cd ~/workspace/myproject/.tmuxp.yaml
+    $ tmuxp load .
+
+    """
+
+    yaml_config = """
+    session_name: sampleconfig
+    start_directory: ./
+    windows:
+    - window_name: supposed to be /usr/bin
+      start_directory: '/usr/bin'
+      layout: main-horizontal
+      options:
+          main-pane-height: 50
+      panes:
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
+    - window_name: support to be /dev
+      start_directory: '/dev'
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
+    - window_name: cwd containing a space
+      start_directory: /tmp/foo bar
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo"
+    - window_name: testsa3
+      layout: main-horizontal
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo3"
+    - window_name: cwd relative to config file
+      layout: main-horizontal
+      start_directory: ./
+      panes:
+      - shell_command:
+        - pwd
+      - shell_command:
+        - echo "hey"
+      - shell_command:
+        - echo "moo3"
+    """
+
+    def setUp(self):
+        super(StartDirectoryRelativeTest, self).setUp()
+        if not os.path.exists('/tmp/foo bar') and not os.path.exists('/tmp/testRelConfigDir'):
+            os.mkdir('/tmp/foo bar')
+            os.mkdir('/tmp/testRelConfigDir')
+            self._temp_dir_created = True
+        else:
+            self._temp_dir_created = False
+
+    def tearDown(self):
+        super(StartDirectoryRelativeTest, self).tearDown()
+        if self._temp_dir_created:
+            os.rmdir('/tmp/foo bar')
+            os.rmdir('/tmp/testRelConfigDir')
+
+    def test_start_directory(self):
+
+        start_directory = os.getcwd()
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+        # the second argument of os.getcwd() mimics the behavior
+        # the CLI loader will do, but it passes in the config file's location.
+        sconfig = config.expand(sconfig, '/tmp/testRelConfigDir')
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+        builder.build(session=self.session)
+
+        assert(self.session == builder.session)
+        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/tmp/testRelConfigDir']
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
                 for i in range(60):
@@ -660,6 +772,7 @@ def suite():
     suite.addTest(unittest.makeSuite(FocusAndPaneIndexTest))
     suite.addTest(unittest.makeSuite(PaneOrderingTest))
     suite.addTest(unittest.makeSuite(StartDirectoryTest))
+    suite.addTest(unittest.makeSuite(StartDirectoryRelativeTest))
     suite.addTest(unittest.makeSuite(ThreePaneTest))
     suite.addTest(unittest.makeSuite(TwoPaneTest))
     suite.addTest(unittest.makeSuite(WindowAutomaticRename))

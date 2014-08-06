@@ -98,6 +98,8 @@ Import and export
 
 .. automethod:: tmuxp.config.validate_schema
 
+.. automethod:: tmuxp.config.expandpath
+
 .. automethod:: tmuxp.config.expand
 
 .. automethod:: tmuxp.config.inline
