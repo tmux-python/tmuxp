@@ -134,27 +134,21 @@ Run tests on save
 You can re-run tests automatically on file edit.
 
 .. note::
-    This requires and installation of ``watching_testrunner`` from pypi.
+    This requires and installation of ``sniffer`` from pypi.
 
-Install `watching_testrunner`_ from `pypi`_:
+Install `sniffer`_ from `pypi`_:
 
 .. code-block:: bash
 
-    $ pip install watching_testrunner
+    $ pip install sniffer
 
 To run all tests upon editing any ``.py`` file:
 
 .. code-block:: bash
 
-    $ watching_testrunner --basepath ./ --pattern="*.py" python run-tests.py
+    $ sniffer
 
-To run test where :ref:`test_builder_visually` you may:
-
-.. code-block:: bash
-
-    $ watching_testrunner --basepath ./ --pattern="*.py" python run-tests.py --visual
-
-.. _watching_testrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
+.. _sniffer: https://github.com/jeffh/sniffer
 .. _pypi: https://pypi.python.org/pypi
 
 .. _tmuxp developer config:

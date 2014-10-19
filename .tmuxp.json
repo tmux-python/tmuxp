@@ -7,7 +7,7 @@
           "focus": true
         }, 
         "pane", 
-        "watching_testrunner --basepath ./ --pattern=\"*.py\" 'python run-tests.py'"
+        "sniffer"
       ], 
       "options": {
         "main-pane-height": 35

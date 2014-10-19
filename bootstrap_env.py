@@ -121,6 +121,11 @@ def main():
             [pip_bin, 'install', 'watching-testrunner']
         )
 
+    if not os.path.isfile(os.path.join(env_dir, 'bin', 'sniffer')):
+        subprocess.check_call(
+            [pip_bin, 'install', 'sniffer']
+        )
+
     if not os.path.isfile(os.path.join(env_dir, 'bin', 'sphinx-quickstart')):
         subprocess.check_call(
             [pip_bin, 'install', '-r', sphinx_requirements_filepath]

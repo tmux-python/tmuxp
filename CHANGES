@@ -7,8 +7,16 @@ Here you can find the recent changes to tmuxp.
 CURRENT
 -------
 
-- [tests] testsuite for cli uses :py:func:`tempfile.mkdirtemp()` instead
+- [tests] testsuite for cli uses :py:func:`tempfile.mkdtemp()` instead
   ``TMP_DIR`` (which resolved to ``.tmuxp`` in the testsuite directory.
+- [tests] replace `watchingtestrunner`_ with `sniffer`_ in examples.
+  ``.tmuxp.conf`` and ``.tmux.json`` updated
+- [docs] updates to doc links
+- [docs] ``make checkbuild`` for verifying internal / intersphinx doc
+  references.
+
+.. _sniffer: https://github.com/jeffh/sniffer
+.. _watchingtestrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
 
 0.1.12
 ------
@@ -32,7 +40,7 @@ CURRENT
   ``./``.
 - [development]: Use ``bootstrap_env.py`` in tmuxp's ``.tmuxp.yaml`` and
   ``.tmuxp.json`` project files.
-- [internal]: Improvements to :func:`util.run_script_before`,
+- [internal]: Improvements to :meth:`util.run_before_script()`,
   :class:`exc.BeforeLoadScriptFailed` behavior to print ``stdout`` and
   return ``stderr`` is a non-zero exit is returned.
 - [internal]: ``run_script_before`` has moved to ``util``.
@@ -574,7 +582,7 @@ The ``--force`` was not with us.
 - [docs] New page on :ref:`internals`.
 - [docs] Updates to :ref:`about_tmux` page.
 - [docs] add vim modeline for rst to bottom of this page
-- [internal] [tests] Server is now a subclass of :class:`util.TmuxObject`.
+- [internal] [tests] Server is now a subclass of ``util.TmuxObject``.
 - [internal] [tests] subclasses of :class:`util.TmuxRelationalObject`,
   :class:`Server`, :class:`Session`, :class:`Window`, :class:`Pane` now
   have :meth:`util.TmuxRelationalObject.getById` (similar to `.get()`_ in
@@ -663,7 +671,7 @@ The ``--force`` was not with us.
 - [internal] Quiet logger down in some areas
 - [internal] __future__ imports for future python 3 compatibility 
 - [internal] setup.py import __version__ via regex from tmuxp package
-- [cli] move beginnings of cli to tmuxp.cli
+- [cli] move beginnings of cli to ``tmuxp.cli``
 
 2013-10-09
 """"""""""

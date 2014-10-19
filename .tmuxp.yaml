@@ -12,7 +12,7 @@ windows:
   panes:
   - focus: true
   - pane 
-  - watching_testrunner --basepath ./ --pattern="*.py" 'python run-tests.py'
+  - sniffer
 - window_name: docs
   layout: main-horizontal
   options:
