@@ -28,11 +28,10 @@ class StartupTest(TestCase):
 
     """test startup_cli()."""
 
-    @classmethod
-    def setUpClass(cls):
-        cls.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
-        if os.path.isdir(cls.tmp_dir):
-            shutil.rmtree(cls.tmp_dir)
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+        if os.path.isdir(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
 
     def test_creates_config_dir_not_exists(self):
         """cli.startup() creates config dir if not exists."""
@@ -42,22 +41,20 @@ class StartupTest(TestCase):
 
         self.assertTrue(os.path.exists(self.tmp_dir))
 
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.isdir(cls.tmp_dir):
-            shutil.rmtree(cls.tmp_dir)
-        logger.debug('wiped %s' % cls.tmp_dir)
+    def tearDown(self):
+        if os.path.isdir(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
+        logger.debug('wiped %s' % self.tmp_dir)
 
 
 class FindConfigsTest(TestCase):
 
     """test in_dir() test."""
 
-    @classmethod
-    def setUpClass(cls):
-        cls.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
-        if os.path.isdir(cls.tmp_dir):
-            shutil.rmtree(cls.tmp_dir)
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+        if os.path.isdir(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
 
     def test_in_dir_from_config_dir(self):
         """config.in_dir() finds configs config dir."""
@@ -143,11 +140,10 @@ class FindConfigsTest(TestCase):
         if os.path.isdir(tmp_dir):
             shutil.rmtree(tmp_dir)
 
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.isdir(cls.tmp_dir):
-            shutil.rmtree(cls.tmp_dir)
-        logger.debug('wiped %s' % cls.tmp_dir)
+    def tearDown(self):
+        if os.path.isdir(self.tmp_dir):
+            shutil.rmtree(self.tmp_dir)
+        logger.debug('wiped %s' % self.tmp_dir)
 
 
 def suite():
