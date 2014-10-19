@@ -11,7 +11,6 @@ from __future__ import absolute_import, division, print_function, \
 
 import os
 import logging
-import subprocess
 
 from . import exc, config, Window, Pane, Session, Server
 from ._compat import PY2, console_to_str
@@ -308,7 +307,7 @@ def freeze(session):
                 pconf['shell_command'].append(
                     'cd ' + p.get('pane_current_path')
                 )
-                
+
             if p.get('pane_active', '0') == '1':
                 pconf['focus']='true'
 
