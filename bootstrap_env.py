@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import sys
 import subprocess
+import platform
 
 
 def warning(*objs):
@@ -119,6 +120,19 @@ def main():
     if not os.path.isfile(os.path.join(env_dir, 'bin', 'sniffer')):
         subprocess.check_call(
             [pip_bin, 'install', 'sniffer']
+        )
+
+    if platform.system() == 'Linux':
+        subprocess.check_call(
+            [pip_bin, 'install', 'pyinotify']
+        )
+    elif platform.system() == 'Darwin':
+        subprocess.check_call(
+            [pip_bin, 'install', 'MacFSEvents']
+        )
+    elif platform.system() == 'Windows':
+        subprocess.check_call(
+            [pip_bin, 'install', 'pywin32']
         )
 
     if not os.path.isfile(os.path.join(env_dir, 'bin', 'sphinx-quickstart')):

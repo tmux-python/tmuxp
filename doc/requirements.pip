@@ -1,5 +1,5 @@
 -r ../requirements.pip
-docutils==0.11
+docutils==0.12
 sphinx<1.2.1
 reportlab
 sphinxcontrib-aafig
