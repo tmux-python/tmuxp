@@ -11,9 +11,9 @@ import sys
 
 from setuptools import setup
 
-sys.path.insert(0, os.getcwd())  # we want to grab this:
-from package_metadata import p
-
+about = {}
+with open("tmuxp/__about__.py") as fp:
+    exec(fp.read(), about)
 
 with open('requirements.pip') as f:
     install_reqs = [line for line in f.read().split('\n') if line]
@@ -27,14 +27,14 @@ readme = open('README.rst').read()
 history = open('CHANGES').read().replace('.. :changelog:', '')
 
 setup(
-    name=p.title,
-    version=p.version,
+    name=about['__title__'],
+    version=about['__version__'],
     url='http://github.com/tony/tmuxp/',
     download_url='https://pypi.python.org/pypi/tmuxp',
-    license=p.license,
-    author=p.author,
-    author_email=p.email,
-    description=p.description,
+    license=about['__license__'],
+    author=about['__author__'],
+    author_email=about['__email__'],
+    description=about['__description__'],
     long_description=readme,
     packages=['tmuxp', 'tmuxp.testsuite',
               'tmuxp._vendor', 'tmuxp._vendor.colorama'],
@@ -43,7 +43,7 @@ setup(
     tests_require=tests_reqs,
     test_suite='tmuxp.testsuite',
     zip_safe=False,
-    keywords=p.title,
+    keywords=about['__title__'],
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.main']),
     classifiers=[

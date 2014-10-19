@@ -11,14 +11,8 @@ tmuxp
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-__title__ = 'tmuxp'
-__package_name__ = 'tmuxp'
-__version__ = '0.1.12'
-__description__ = 'Manage tmux sessions thru JSON, YAML configs. Features Python API'
-__email__ = 'tony@git-pull.com'
-__author__ = 'Tony Narlock'
-__license__ = 'BSD'
-__copyright__ = 'Copyright 2013 Tony Narlock'
+from .__about__ import __title__, __package_name__, __version__, \
+    __description__, __email__, __author__, __license__, __copyright__
 
 from .session import Session
 from .server import Server

@@ -19,19 +19,11 @@ from distutils.util import strtobool
 import argcomplete
 import kaptan
 
+from .__about__ import __version__
 from . import log, util, exc, WorkspaceBuilder, Server, config
 from ._compat import ascii_lowercase, input, string_types
 from .workspacebuilder import freeze
 
-
-VERSIONFILE = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), '__init__.py'
-)
-verstrline = open(VERSIONFILE, "rt").read()
-VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
-mo = re.search(VSRE, verstrline, re.M)
-if mo:
-    __version__ = mo.group(1)
 
 logger = logging.getLogger(__name__)
 

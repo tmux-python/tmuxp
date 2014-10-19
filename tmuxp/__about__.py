@@ -1,0 +1,8 @@
+__title__ = 'tmuxp'
+__package_name__ = 'tmuxp'
+__version__ = '0.1.12'
+__description__ = 'Manage tmux sessions thru JSON, YAML configs. Features Python API'
+__email__ = 'tony@git-pull.com'
+__author__ = 'Tony Narlock'
+__license__ = 'BSD'
+__copyright__ = 'Copyright 2013 Tony Narlock'
