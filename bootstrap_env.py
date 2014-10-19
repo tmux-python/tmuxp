@@ -116,11 +116,6 @@ def main():
             [pip_bin, 'install', '-e', project_dir]
         )
 
-    if not os.path.isfile(os.path.join(env_dir, 'bin', 'watching_testrunner')):
-        subprocess.check_call(
-            [pip_bin, 'install', 'watching-testrunner']
-        )
-
     if not os.path.isfile(os.path.join(env_dir, 'bin', 'sniffer')):
         subprocess.check_call(
             [pip_bin, 'install', 'sniffer']
