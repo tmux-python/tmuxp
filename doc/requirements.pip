@@ -2,6 +2,5 @@
 docutils==0.11
 sphinx<1.2.1
 reportlab
-Pillow
 sphinxcontrib-aafig
 sphinx-argparse

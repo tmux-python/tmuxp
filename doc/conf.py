@@ -285,7 +285,7 @@ texinfo_documents = [
 intersphinx_mapping = {'http://docs.python.org/': None}
 
 # aafig format, try to get working with pdf
-aafig_format = dict(latex='pdf', html='png')
+aafig_format = dict(latex='pdf', html='svg')
 
 aafig_default_options = dict(
     scale=.75,
