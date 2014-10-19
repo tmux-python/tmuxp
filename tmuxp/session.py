@@ -309,8 +309,9 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :param option: the window option. such as 'default-shell'.
         :type option: string
-        :param value: window value. True/False will turn in 'on' and 'off'.
-        :type value: string or bool
+        :param value: window value. True/False will turn in 'on' and 'off'. You
+            can also enter 'on' or 'off' directly.
+        :type value: bool
 
         """
 

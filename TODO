@@ -62,7 +62,7 @@ Major
 - example of loading a tmux session from a :py:obj:``dict``. example of
   the schema.
 - code examples in docs
-- remove duplicated code in :mod:`tmuxp.cli`.
+- remove duplicated code in ``tmuxp.cli``.
 - Determine the workflow for ``$ tmuxp load filename`` for sure. Document
   it.
 - Handle case where switching client via ``$ tmuxp load`` or
@@ -72,7 +72,7 @@ Major
 - If session name for ``$ tmuxp freeze`` has spaces, replace whitespace
   with dashes.
 - Test and ensure correct pane. https://github.com/tony/tmuxp/issues/15.
-- :ref:`about tmux` page.
+- :ref:`about_tmux` page.
 
 .. _milestone 0.3:
 

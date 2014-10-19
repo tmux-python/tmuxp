@@ -117,8 +117,9 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def set_window_option(self, option, value):
         """Wrapper for ``$ tmux set-window-option <option> <value>``.
 
-        :param value: window value. True/False will turn in 'on' and 'off'.
-        :type value: string or bool
+        :param value: window value. True/False will turn in 'on' and 'off', also
+            accepts string of 'on' or 'off' directly.
+        :type value: bool
 
         """
 

@@ -99,7 +99,7 @@ class Server(TmuxRelationalObject):
         Retrieved from ``$ tmux(1) list-sessions`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
-        which wraps :py:meth:`Subprocess.Popen`.
+        which wraps :py:class:`subprocess.Popen`.
 
         :rtype: :py:obj:`list` of :py:obj:`dict`
 
@@ -170,7 +170,7 @@ class Server(TmuxRelationalObject):
         Retrieved from ``$ tmux(1) list-windows`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
-        which wraps :py:meth:`Subprocess.Popen`.
+        which wraps :py:class:`subprocess.Popen`.
 
         :rtype: list
 
@@ -229,7 +229,7 @@ class Server(TmuxRelationalObject):
         Retrieved from ``$ tmux(1) list-panes`` stdout.
 
         The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
-        which wraps :py:meth:`Subprocess.Popen`.
+        which wraps :py:class:`subprocess.Popen`.
 
         :rtype: list
 

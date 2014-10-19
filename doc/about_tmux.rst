@@ -641,12 +641,13 @@ Short cut             Action
 
 Source: tmux manpage [1]_.
 
-.. [1] See the ``tmux.1`` at
-   http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1 and use
-   
-   .. code-block:: bash
-   
-       $ nroff -mdoc tmux.1|less
+To get the text documentation of a ``.1`` manual file:
+
+.. code-block:: bash
+
+    $ nroff -mdoc tmux.1|less
+
+.. [1] http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1
 
 =======
 License

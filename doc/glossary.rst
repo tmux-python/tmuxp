@@ -38,7 +38,7 @@ Glossary
     Session
         Inside a tmux :term:`server`.
             
-        The session has 1 or more :term:`window`. The bottom bar in tmux
+        The session has 1 or more :term:`Window`. The bottom bar in tmux
         show a list of windows. Normally they can be navigated with
         ``Ctrl-a [0-9]``, ``Ctrl-a n`` and ``Ctrl-a p``.
 
@@ -56,7 +56,7 @@ Glossary
         Windows can have names.
 
     Pane
-        Linked to a :ref:`window`.
+        Linked to a :term:`Window`.
 
         a pseudoterminal.
 

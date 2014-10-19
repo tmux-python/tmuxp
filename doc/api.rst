@@ -67,6 +67,10 @@ Internals
 
 .. automethod:: tmuxp.util.which
 
+.. automethod:: tmuxp.util.run_before_script
+
+.. automethod:: tmuxp.util.is_version
+
 Command Line
 ------------
 
