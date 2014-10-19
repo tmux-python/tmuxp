@@ -22,99 +22,97 @@ from ..util import tmux
 from .helpers import TestCase
 
 logger = logging.getLogger(__name__)
-TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
-
-
-class CLIVersion(TestCase):
-
-    pass
 
 
 class StartupTest(TestCase):
 
     """test startup_cli()."""
 
-    def setUp(self):
-        if os.path.isdir(TMUXP_DIR):
-            shutil.rmtree(TMUXP_DIR)
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+        if os.path.isdir(cls.tmp_dir):
+            shutil.rmtree(cls.tmp_dir)
 
     def test_creates_config_dir_not_exists(self):
         """cli.startup() creates config dir if not exists."""
 
-        self.assertFalse(os.path.exists(TMUXP_DIR))
-        cli.startup(TMUXP_DIR)
+        self.assertFalse(os.path.exists(self.tmp_dir))
+        cli.startup(self.tmp_dir)
 
-        self.assertTrue(os.path.exists(TMUXP_DIR))
+        self.assertTrue(os.path.exists(self.tmp_dir))
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.isdir(TMUXP_DIR):
-            shutil.rmtree(TMUXP_DIR)
-        logger.debug('wiped %s' % TMUXP_DIR)
+        if os.path.isdir(cls.tmp_dir):
+            shutil.rmtree(cls.tmp_dir)
+        logger.debug('wiped %s' % cls.tmp_dir)
 
 
 class FindConfigsTest(TestCase):
 
     """test in_dir() test."""
 
-    def setUp(self):
-        if os.path.isdir(TMUXP_DIR):
-            shutil.rmtree(TMUXP_DIR)
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+        if os.path.isdir(cls.tmp_dir):
+            shutil.rmtree(cls.tmp_dir)
 
     def test_in_dir_from_config_dir(self):
         """config.in_dir() finds configs config dir."""
 
-        cli.startup(TMUXP_DIR)
+        cli.startup(self.tmp_dir)
         config1 = tempfile.NamedTemporaryFile(
-            dir=TMUXP_DIR,
+            dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.yaml'
         )
 
         config2 = tempfile.NamedTemporaryFile(
-            dir=TMUXP_DIR,
+            dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.json'
         )
-        configs_found = config.in_dir(TMUXP_DIR)
+        configs_found = config.in_dir(self.tmp_dir)
 
         self.assertEqual(len(configs_found), 2)
 
     def test_in_dir_from_current_dir(self):
         """config.in_dir() find configs config dir."""
 
-        cli.startup(TMUXP_DIR)
+        cli.startup(self.tmp_dir)
         config1 = tempfile.NamedTemporaryFile(
-            dir=TMUXP_DIR,
+            dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.yaml'
         )
 
         config2 = tempfile.NamedTemporaryFile(
-            dir=TMUXP_DIR,
+            dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.json'
         )
-        configs_found = config.in_dir(TMUXP_DIR)
+        configs_found = config.in_dir(self.tmp_dir)
 
         self.assertEqual(len(configs_found), 2)
 
     def test_ignore_non_configs_from_current_dir(self):
         """cli.in_dir() ignore non-config from config dir."""
 
-        cli.startup(TMUXP_DIR)
+        cli.startup(self.tmp_dir)
         badconfig = tempfile.NamedTemporaryFile(
-            dir=TMUXP_DIR,
+            dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.psd'
         )
 
         config1 = tempfile.NamedTemporaryFile(
-            dir=TMUXP_DIR,
+            dir=self.tmp_dir,
             prefix='watmyconfig',
             suffix='.json'
         )
-        configs_found = config.in_dir(TMUXP_DIR)
+        configs_found = config.in_dir(self.tmp_dir)
 
         self.assertEqual(len(configs_found), 1)
 
@@ -147,9 +145,9 @@ class FindConfigsTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.isdir(TMUXP_DIR):
-            shutil.rmtree(TMUXP_DIR)
-        logger.debug('wiped %s' % TMUXP_DIR)
+        if os.path.isdir(cls.tmp_dir):
+            shutil.rmtree(cls.tmp_dir)
+        logger.debug('wiped %s' % cls.tmp_dir)
 
 
 def suite():

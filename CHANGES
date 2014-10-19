@@ -4,6 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+CURRENT
+-------
+
+- [tests] testsuite for cli uses :py:func:`tempfile.mkdirtemp()` instead
+  ``TMP_DIR`` (which resolved to ``.tmuxp`` in the testsuite directory.
+
 0.1.12
 ------
 
