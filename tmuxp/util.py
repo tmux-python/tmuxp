@@ -303,6 +303,10 @@ def has_required_tmux_version(version=None):
         proc = tmux('-V')
 
         if proc.stderr:
+            if proc.stderr[0] == 'tmux: unknown option -- V':
+                raise exc.TmuxpException(
+                    'tmuxp supports tmux 1.8 and greater. This system'
+                    ' is running tmux 1.3 or earlier.')
             raise exc.TmuxpException(proc.stderr)
 
         version = proc.stdout[0].split('tmux ')[1]
