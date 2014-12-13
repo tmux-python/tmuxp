@@ -44,8 +44,6 @@ Missing
 **Stability** tmuxinator and teamocil are far more stable and
 well-developed than tmuxp.
 
-**ERB / Template support** teamocil supports `ERB`_ markup.
-
 **Version support** tmuxp only supports ``tmux >= 1.8``. Teamocil and
 tmuxinator may have support for earlier versions.
 
