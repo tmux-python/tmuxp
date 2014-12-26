@@ -188,12 +188,12 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         self.assertNotEqual(w.get('window_name'), 'man')
 
         pane_path = '/usr'
-        for i in range(60):
+        for i in range(10):
             p = w.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
                 break
-            time.sleep(.2)
+            time.sleep(.4)
 
         self.assertEqual(p.get('pane_current_path'), pane_path)
 
@@ -206,12 +206,12 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
         p = None
         pane_path = '/'
-        for i in range(60):
+        for i in range(10):
             p = window3.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
                 break
-            time.sleep(.2)
+            time.sleep(.4)
 
         self.assertEqual(p.get('pane_current_path'), pane_path)
 
@@ -308,31 +308,31 @@ class WindowAutomaticRename(TmuxTestCase):
         if 'BSD' in platform.system():
             man_window_name = 'less'
 
-        for i in range(60):
+        for i in range(10):
             self.session.server._update_windows()
             if w.get('window_name') != man_window_name:
                 break
-            time.sleep(.1)
+            time.sleep(.2)
 
         self.assertNotEqual(w.get('window_name'), man_window_name)
 
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         w.select_pane(pane_base_index)
 
-        for i in range(60):
+        for i in range(10):
             self.session.server._update_windows()
             if w.get('window_name') == man_window_name:
                 break
-            time.sleep(.1)
+            time.sleep(.2)
 
         self.assertEqual(w.get('window_name'), text_type(man_window_name))
 
         w.select_pane('-D')
-        for i in range(60):
+        for i in range(10):
             self.session.server._update_windows()
             if w['window_name'] != man_window_name:
                 break
-            time.sleep(.1)
+            time.sleep(.2)
 
         self.assertNotEqual(w.get('window_name'), text_type(man_window_name))
 
@@ -375,9 +375,9 @@ class StartDirectoryTest(TmuxTestCase):
     start_directory: '/usr'
     windows:
     - window_name: supposed to be /usr/bin
-      start_directory: '/usr/bin'
-      layout: main-horizontal
       window_index: 1
+      start_directory: /usr/bin
+      layout: main-horizontal
       options:
           main-pane-height: 50
       panes:
@@ -386,9 +386,9 @@ class StartDirectoryTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: support to be /dev
-      start_directory: '/dev'
-      layout: main-horizontal
       window_index: 2
+      start_directory: /dev
+      layout: main-horizontal
       panes:
       - shell_command:
         - pwd
@@ -397,9 +397,9 @@ class StartDirectoryTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: cwd containing a space
+      window_index: 3
       start_directory: {TEST_DIR}
       layout: main-horizontal
-      window_index: 3
       panes:
       - shell_command:
         - pwd
@@ -408,8 +408,8 @@ class StartDirectoryTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: testsa3
-      layout: main-horizontal
       window_index: 4
+      layout: main-horizontal
       panes:
       - shell_command:
         - pwd
@@ -417,10 +417,10 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo3"
-    - window_name: cwd relative to config file
+    - window_name: cwd relative to start_directory since no rel dir entered
+      window_index: 5
       layout: main-horizontal
       start_directory: ./
-      window_index: 5
       panes:
       - shell_command:
         - pwd
@@ -466,22 +466,23 @@ class StartDirectoryTest(TmuxTestCase):
         dirs = [
             '/usr/bin', '/dev', self.test_dir,
             '/usr',
-            os.getcwd(),
+            '/usr'
         ]
 
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
                 for i in range(60):
                     p.server._update_panes()
-                    if p.get('pane_current_path') is None:
+                    pane_path = p.get('pane_current_path')
+                    if pane_path is None:
                         pass
                     elif (
-                        path in p.get('pane_current_path') or
-                        p.get('pane_current_path') == path
+                        path in pane_path or
+                        pane_path == path
                     ):
                         result = (
-                            path in p.get('pane_current_path') or
-                            p.get('pane_current_path') == path
+                            path == pane_path or
+                            path in pane_path
                         )
                         break
                     time.sleep(.2)
@@ -516,7 +517,6 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
-      window_index: 1
     - window_name: support to be /dev
       start_directory: '/dev'
       layout: main-horizontal
@@ -527,7 +527,6 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
-      window_index: 2
     - window_name: cwd containing a space
       start_directory: {TEST_DIR}
       layout: main-horizontal
@@ -538,8 +537,7 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
-      window_index: 3
-    - window_name: testsa3
+    - window_name: inherit start_directory which is rel to config file
       layout: main-horizontal
       panes:
       - shell_command:
@@ -548,7 +546,6 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo3"
-      window_index: 4
     - window_name: cwd relative to config file
       layout: main-horizontal
       start_directory: ./
@@ -559,7 +556,6 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo3"
-      window_index: 5
     """
 
     def setUp(self):
@@ -613,15 +609,16 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         assert(self.session == builder.session)
 
         dirs = [
-            '/usr/bin', '/dev',
+            '/usr/bin',
+            '/dev',
             self.test_dir,
-            os.getcwd(),
+            self.config_dir,
             self.config_dir,
         ]
 
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
-                for i in range(10):
+                for i in range(60):
                     p.server._update_panes()
                     # Handle case where directories resolve to /private/ in OSX
                     pane_path = p.get('pane_current_path')
@@ -665,7 +662,6 @@ class PaneOrderingTest(TmuxTestCase):
     """.format(
         HOME=os.path.realpath(os.path.expanduser('~'))
     )
-
 
     def test_pane_order(self):
 
@@ -784,9 +780,9 @@ class BeforeLoadScript(TmuxTestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_fails.format(
             fixtures_dir=fixtures_dir,
-            script_failed=os.path.join(fixtures_dir,'script_failed.sh')
+            script_failed=os.path.join(fixtures_dir, 'script_failed.sh')
         )
-        print(fixtures_dir)
+
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
@@ -810,7 +806,7 @@ class BeforeLoadScript(TmuxTestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_not_exists.format(
             fixtures_dir=fixtures_dir,
-            script_not_exists=os.path.join(fixtures_dir,'script_not_exists.sh')
+            script_not_exists=os.path.join(fixtures_dir, 'script_not_exists.sh')
         )
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
@@ -833,13 +829,12 @@ class BeforeLoadScript(TmuxTestCase):
                 msg="Kills session if before_script doesn't exist"
             )
 
-
     def test_true_if_test_passes(self):
-        assert(os.path.exists(os.path.join(fixtures_dir,'script_complete.sh')))
+        assert(os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh')))
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_completes.format(
             fixtures_dir=fixtures_dir,
-            script_complete=os.path.join(fixtures_dir,'script_complete.sh')
+            script_complete=os.path.join(fixtures_dir, 'script_complete.sh')
         )
 
         sconfig = sconfig.import_config(yaml).get()
