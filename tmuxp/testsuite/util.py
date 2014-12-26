@@ -24,8 +24,8 @@ from .helpers import TmuxTestCase, TestCase
 
 logger = logging.getLogger(__name__)
 
-current_dir = os.path.abspath(os.path.dirname(__file__))
-fixtures_dir = os.path.abspath(os.path.join(current_dir, 'fixtures'))
+current_dir = os.path.realpath(os.path.dirname(__file__))
+fixtures_dir = os.path.realpath(os.path.join(current_dir, 'fixtures'))
 
 
 class TmuxVersionTest(TmuxTestCase):

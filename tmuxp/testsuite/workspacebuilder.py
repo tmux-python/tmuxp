@@ -10,6 +10,7 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 import os
+import platform
 import sys
 import logging
 import unittest
@@ -24,9 +25,9 @@ from .helpers import TestCase, TmuxTestCase, temp_session
 
 logger = logging.getLogger(__name__)
 
-current_dir = os.path.abspath(os.path.dirname(__file__))
-example_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'examples'))
-fixtures_dir = os.path.abspath(os.path.join(current_dir, 'fixtures'))
+current_dir = os.path.realpath(os.path.dirname(__file__))
+example_dir = os.path.realpath(os.path.join(current_dir, '..', '..', 'examples'))
+fixtures_dir = os.path.realpath(os.path.join(current_dir, 'fixtures'))
 
 
 class TwoPaneTest(TmuxTestCase):
@@ -300,33 +301,39 @@ class WindowAutomaticRename(TmuxTestCase):
         self.assertNotEqual(s.get('session_name'), 'tmuxp')
         w = s.windows[0]
 
+        man_window_name = 'man'
+
+        # BSD operating systems will wrap manual pages in less
+        if 'BSD' in platform.system():
+            man_window_name = 'less'
+
         for i in range(60):
             self.session.server._update_windows()
-            if w.get('window_name') != 'man':
+            if w.get('window_name') != man_window_name:
                 break
             time.sleep(.1)
 
-        self.assertNotEqual(w.get('window_name'), 'man')
+        self.assertNotEqual(w.get('window_name'), man_window_name)
 
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         w.select_pane(pane_base_index)
 
         for i in range(60):
             self.session.server._update_windows()
-            if w.get('window_name') == 'man':
+            if w.get('window_name') == man_window_name:
                 break
             time.sleep(.1)
 
-        self.assertEqual(w.get('window_name'), text_type('man'))
+        self.assertEqual(w.get('window_name'), text_type(man_window_name))
 
         w.select_pane('-D')
         for i in range(60):
             self.session.server._update_windows()
-            if w['window_name'] != 'man':
+            if w['window_name'] != man_window_name:
                 break
             time.sleep(.1)
 
-        self.assertNotEqual(w.get('window_name'), text_type('man'))
+        self.assertNotEqual(w.get('window_name'), text_type(man_window_name))
 
 
 class BlankPaneTest(TmuxTestCase):
@@ -575,7 +582,7 @@ class PaneOrderingTest(TmuxTestCase):
 
     yaml_config = """
     session_name: sampleconfig
-    start_directory: '~'
+    start_directory: {HOME}
     windows:
     - options:
       - automatic_rename: on
@@ -584,8 +591,11 @@ class PaneOrderingTest(TmuxTestCase):
       - cd /usr/bin
       - cd /usr
       - cd /sbin
-      - cd /home
-    """
+      - cd {HOME}
+    """.format(
+        HOME=os.path.realpath(os.path.expanduser('~'))
+    )
+
 
     def test_pane_order(self):
 
@@ -594,8 +604,9 @@ class PaneOrderingTest(TmuxTestCase):
             '/usr/bin',
             '/usr',
             '/sbin',
-            '/home'
+            os.path.realpath(os.path.expanduser('~'))
         ]
+
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
@@ -676,7 +687,7 @@ class BeforeLoadScript(TmuxTestCase):
 
     config_script_not_exists = """
     session_name: sampleconfig
-    before_script: {fixtures_dir}/script_not_exists.sh
+    before_script: {script_not_exists}
     windows:
     - panes:
       - pane
@@ -684,7 +695,7 @@ class BeforeLoadScript(TmuxTestCase):
 
     config_script_fails = """
     session_name: sampleconfig
-    before_script: {fixtures_dir}/script_failed.sh
+    before_script: {script_failed}
     windows:
     - panes:
       - pane
@@ -692,7 +703,7 @@ class BeforeLoadScript(TmuxTestCase):
 
     config_script_completes = """
     session_name: sampleconfig
-    before_script: {fixtures_dir}/script_complete.sh
+    before_script: {script_complete}
     windows:
     - panes:
       - pane
@@ -702,8 +713,10 @@ class BeforeLoadScript(TmuxTestCase):
 
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_fails.format(
-            fixtures_dir=fixtures_dir
+            fixtures_dir=fixtures_dir,
+            script_failed=os.path.join(fixtures_dir,'script_failed.sh')
         )
+        print(fixtures_dir)
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
@@ -726,7 +739,8 @@ class BeforeLoadScript(TmuxTestCase):
 
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_not_exists.format(
-            fixtures_dir=fixtures_dir
+            fixtures_dir=fixtures_dir,
+            script_not_exists=os.path.join(fixtures_dir,'script_not_exists.sh')
         )
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
@@ -749,12 +763,15 @@ class BeforeLoadScript(TmuxTestCase):
                 msg="Kills session if before_script doesn't exist"
             )
 
-    def test_true_if_test_passes(self):
 
+    def test_true_if_test_passes(self):
+        assert(os.path.exists(os.path.join(fixtures_dir,'script_complete.sh')))
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_completes.format(
-            fixtures_dir=fixtures_dir
+            fixtures_dir=fixtures_dir,
+            script_complete=os.path.join(fixtures_dir,'script_complete.sh')
         )
+
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
