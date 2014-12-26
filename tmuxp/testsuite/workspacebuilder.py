@@ -14,6 +14,7 @@ import platform
 import sys
 import logging
 import unittest
+import tempfile
 import time
 
 import kaptan
@@ -187,12 +188,12 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         self.assertNotEqual(w.get('window_name'), 'man')
 
         pane_path = '/usr'
-        for i in range(60):
+        for i in range(10):
             p = w.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
                 break
-            time.sleep(.2)
+            time.sleep(.4)
 
         self.assertEqual(p.get('pane_current_path'), pane_path)
 
@@ -205,12 +206,12 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
         p = None
         pane_path = '/'
-        for i in range(60):
+        for i in range(10):
             p = window3.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
                 break
-            time.sleep(.2)
+            time.sleep(.4)
 
         self.assertEqual(p.get('pane_current_path'), pane_path)
 
@@ -307,31 +308,31 @@ class WindowAutomaticRename(TmuxTestCase):
         if 'BSD' in platform.system():
             man_window_name = 'less'
 
-        for i in range(60):
+        for i in range(10):
             self.session.server._update_windows()
             if w.get('window_name') != man_window_name:
                 break
-            time.sleep(.1)
+            time.sleep(.2)
 
         self.assertNotEqual(w.get('window_name'), man_window_name)
 
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         w.select_pane(pane_base_index)
 
-        for i in range(60):
+        for i in range(10):
             self.session.server._update_windows()
             if w.get('window_name') == man_window_name:
                 break
-            time.sleep(.1)
+            time.sleep(.2)
 
         self.assertEqual(w.get('window_name'), text_type(man_window_name))
 
         w.select_pane('-D')
-        for i in range(60):
+        for i in range(10):
             self.session.server._update_windows()
             if w['window_name'] != man_window_name:
                 break
-            time.sleep(.1)
+            time.sleep(.2)
 
         self.assertNotEqual(w.get('window_name'), text_type(man_window_name))
 
@@ -374,7 +375,8 @@ class StartDirectoryTest(TmuxTestCase):
     start_directory: '/usr'
     windows:
     - window_name: supposed to be /usr/bin
-      start_directory: '/usr/bin'
+      window_index: 1
+      start_directory: /usr/bin
       layout: main-horizontal
       options:
           main-pane-height: 50
@@ -384,7 +386,8 @@ class StartDirectoryTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: support to be /dev
-      start_directory: '/dev'
+      window_index: 2
+      start_directory: /dev
       layout: main-horizontal
       panes:
       - shell_command:
@@ -394,7 +397,8 @@ class StartDirectoryTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: cwd containing a space
-      start_directory: /tmp/foo bar
+      window_index: 3
+      start_directory: {TEST_DIR}
       layout: main-horizontal
       panes:
       - shell_command:
@@ -404,6 +408,7 @@ class StartDirectoryTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: testsa3
+      window_index: 4
       layout: main-horizontal
       panes:
       - shell_command:
@@ -412,7 +417,8 @@ class StartDirectoryTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo3"
-    - window_name: cwd relative to config file
+    - window_name: cwd relative to start_directory since no rel dir entered
+      window_index: 5
       layout: main-horizontal
       start_directory: ./
       panes:
@@ -426,8 +432,12 @@ class StartDirectoryTest(TmuxTestCase):
 
     def setUp(self):
         super(StartDirectoryTest, self).setUp()
-        if not os.path.exists('/tmp/foo bar'):
-            os.mkdir('/tmp/foo bar')
+
+        self.tempdir = tempfile.gettempdir()
+        self.test_dir = os.path.join(self.tempdir, 'foo bar')
+
+        if not os.path.exists(self.test_dir):
+            os.mkdir(self.test_dir)
             self._temp_dir_created = True
         else:
             self._temp_dir_created = False
@@ -435,14 +445,17 @@ class StartDirectoryTest(TmuxTestCase):
     def tearDown(self):
         super(StartDirectoryTest, self).tearDown()
         if self._temp_dir_created:
-            os.rmdir('/tmp/foo bar')
+            os.rmdir(self.test_dir)
 
     def test_start_directory(self):
 
-        start_directory = os.getcwd()
+        test_config = self.yaml_config.format(
+            TMP_DIR=self.tempdir,
+            TEST_DIR=self.test_dir
+        )
 
         sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = sconfig.import_config(test_config).get()
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
 
@@ -450,16 +463,32 @@ class StartDirectoryTest(TmuxTestCase):
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/usr', '/usr']
+        dirs = [
+            '/usr/bin', '/dev', self.test_dir,
+            '/usr',
+            '/usr'
+        ]
+
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
                 for i in range(60):
                     p.server._update_panes()
-                    if p.get('pane_current_path') == path:
+                    pane_path = p.get('pane_current_path')
+                    if pane_path is None:
+                        pass
+                    elif (
+                        path in pane_path or
+                        pane_path == path
+                    ):
+                        result = (
+                            path == pane_path or
+                            path in pane_path
+                        )
                         break
                     time.sleep(.2)
 
-                self.assertEqual(p.get('pane_current_path'), path)
+                # handle case with OS X adding /private/ to /tmp/ paths
+                self.assertTrue(result)
 
 
 class StartDirectoryRelativeTest(TmuxTestCase):
@@ -481,7 +510,6 @@ class StartDirectoryRelativeTest(TmuxTestCase):
     windows:
     - window_name: supposed to be /usr/bin
       start_directory: '/usr/bin'
-      layout: main-horizontal
       options:
           main-pane-height: 50
       panes:
@@ -500,7 +528,7 @@ class StartDirectoryRelativeTest(TmuxTestCase):
       - shell_command:
         - echo "moo"
     - window_name: cwd containing a space
-      start_directory: /tmp/foo bar
+      start_directory: {TEST_DIR}
       layout: main-horizontal
       panes:
       - shell_command:
@@ -509,7 +537,7 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         - echo "hey"
       - shell_command:
         - echo "moo"
-    - window_name: testsa3
+    - window_name: inherit start_directory which is rel to config file
       layout: main-horizontal
       panes:
       - shell_command:
@@ -532,44 +560,83 @@ class StartDirectoryRelativeTest(TmuxTestCase):
 
     def setUp(self):
         super(StartDirectoryRelativeTest, self).setUp()
-        if not os.path.exists('/tmp/foo bar') and not os.path.exists('/tmp/testRelConfigDir'):
-            os.mkdir('/tmp/foo bar')
-            os.mkdir('/tmp/testRelConfigDir')
+
+        self.tempdir = tempfile.gettempdir()
+
+        self.test_dir = os.path.join(self.tempdir, 'foo bar')
+        self.config_dir = os.path.join(self.tempdir, 'testRelConfigDir')
+
+        if (
+            not os.path.exists(self.test_dir) or
+            not os.path.exists(self.config_dir)
+        ):
+            os.mkdir(self.test_dir)
+            os.mkdir(self.config_dir)
             self._temp_dir_created = True
         else:
             self._temp_dir_created = False
 
+        assert(os.path.exists(self.config_dir))
+        assert(os.path.exists(self.test_dir))
+
     def tearDown(self):
         super(StartDirectoryRelativeTest, self).tearDown()
         if self._temp_dir_created:
-            os.rmdir('/tmp/foo bar')
-            os.rmdir('/tmp/testRelConfigDir')
+            os.rmdir(self.test_dir)
+            os.rmdir(self.config_dir)
 
     def test_start_directory(self):
+
+        test_config = self.yaml_config.format(
+            TEST_DIR=self.test_dir,
+        )
 
         start_directory = os.getcwd()
 
         sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = sconfig.import_config(test_config).get()
         # the second argument of os.getcwd() mimics the behavior
         # the CLI loader will do, but it passes in the config file's location.
-        sconfig = config.expand(sconfig, '/tmp/testRelConfigDir')
+        sconfig = config.expand(sconfig, self.config_dir)
+
         sconfig = config.trickle(sconfig)
 
+        assert(os.path.exists(self.config_dir))
+        assert(os.path.exists(self.test_dir))
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
 
         assert(self.session == builder.session)
-        dirs = ['/usr/bin', '/dev', '/tmp/foo bar', '/tmp/testRelConfigDir']
+
+        dirs = [
+            '/usr/bin',
+            '/dev',
+            self.test_dir,
+            self.config_dir,
+            self.config_dir,
+        ]
+
         for path, window in zip(dirs, self.session.windows):
             for p in window.panes:
                 for i in range(60):
                     p.server._update_panes()
-                    if p.get('pane_current_path') == path:
+                    # Handle case where directories resolve to /private/ in OSX
+                    pane_path = p.get('pane_current_path')
+                    if pane_path is None:
+                        pass
+                    elif (
+                        path in pane_path or
+                        pane_path == path
+                    ):
+                        result = (
+                            path == pane_path or
+                            path in pane_path
+                        )
+
                         break
                     time.sleep(.2)
 
-                self.assertEqual(p.get('pane_current_path'), path)
+                self.assertTrue(result)
 
 
 class PaneOrderingTest(TmuxTestCase):
@@ -595,7 +662,6 @@ class PaneOrderingTest(TmuxTestCase):
     """.format(
         HOME=os.path.realpath(os.path.expanduser('~'))
     )
-
 
     def test_pane_order(self):
 
@@ -714,9 +780,9 @@ class BeforeLoadScript(TmuxTestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_fails.format(
             fixtures_dir=fixtures_dir,
-            script_failed=os.path.join(fixtures_dir,'script_failed.sh')
+            script_failed=os.path.join(fixtures_dir, 'script_failed.sh')
         )
-        print(fixtures_dir)
+
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
         sconfig = config.trickle(sconfig)
@@ -740,7 +806,7 @@ class BeforeLoadScript(TmuxTestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_not_exists.format(
             fixtures_dir=fixtures_dir,
-            script_not_exists=os.path.join(fixtures_dir,'script_not_exists.sh')
+            script_not_exists=os.path.join(fixtures_dir, 'script_not_exists.sh')
         )
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
@@ -763,13 +829,12 @@ class BeforeLoadScript(TmuxTestCase):
                 msg="Kills session if before_script doesn't exist"
             )
 
-
     def test_true_if_test_passes(self):
-        assert(os.path.exists(os.path.join(fixtures_dir,'script_complete.sh')))
+        assert(os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh')))
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_completes.format(
             fixtures_dir=fixtures_dir,
-            script_complete=os.path.join(fixtures_dir,'script_complete.sh')
+            script_complete=os.path.join(fixtures_dir, 'script_complete.sh')
         )
 
         sconfig = sconfig.import_config(yaml).get()
