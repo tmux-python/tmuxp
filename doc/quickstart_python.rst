@@ -107,7 +107,8 @@ First, we can grab a :class:`Server`.
 
 .. code-block:: python
 
-    server = tmuxp.Server()
+    >>> import tmuxp
+    >>> server = tmuxp.Server()
     >>> server
     <tmuxp.server.Server object at 0x7fbd622c1dd0>
 
