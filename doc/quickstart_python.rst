@@ -345,11 +345,13 @@ As long as you have the object, or are iterating through a list of them, you can
     >>> pane = window.split_window(attach=False)
     >>> pane.send_keys('echo hey', enter=False)
 
-See the other window, notice that :meth:`Pane.send_keys` has ``echo hey`` written,
-*still in the prompt*.
+See the other window, notice that :meth:`Pane.send_keys` has " ``echo hey``" written,
+*still in the prompt*. Note the leading space character so the command won't be added
+to the user's history. Use `pane.tmux('send-keys', text)` to send keys without this
+leading space.
 
 ``enter=False`` can be used to send keys without pressing return. In this case,
-you may  leave it to the user to press return themselves, or complete a command
+you may leave it to the user to press return themselves, or complete a command
 using :meth:`Pane.enter()`:
 
 .. code-block:: python

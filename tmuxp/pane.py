@@ -75,6 +75,9 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
     def send_keys(self, cmd, enter=True):
         """``$ tmux send-keys`` to the pane.
 
+        A leading space character is added to cmd to avoid polluting the
+        user's history.
+
         :param cmd: Text or input into pane
         :type cmd: str
         :param enter: Send enter after sending the input.
