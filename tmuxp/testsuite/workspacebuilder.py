@@ -846,6 +846,23 @@ class BeforeLoadScript(TmuxTestCase):
         with self.temp_session() as session:
             builder.build(session=self.session)
 
+    def test_true_if_test_passes_with_args(self):
+        assert(os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh')))
+        sconfig = kaptan.Kaptan(handler='yaml')
+        yaml = self.config_script_completes.format(
+            fixtures_dir=fixtures_dir,
+            script_complete=os.path.join(fixtures_dir, 'script_complete.sh') + ' -v'
+        )
+
+        sconfig = sconfig.import_config(yaml).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        with self.temp_session() as session:
+            builder.build(session=self.session)
+
 
 def suite():
     suite = unittest.TestSuite()
