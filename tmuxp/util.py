@@ -32,7 +32,7 @@ def run_before_script(script_file):
     """Function to wrap try/except for subprocess.check_call()."""
     try:
         proc = subprocess.Popen(
-            shlex.split(script_file),
+            shlex.split(script_file.encode('ascii')),
             stderr=subprocess.PIPE
         )
         proc.wait()
