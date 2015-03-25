@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
--------
+0.1.13
+------
 
 - [internal] Remove ``package_metadata.py`` in favor of ``__about__.py``.
 - [docs] ``scent.py`` for building docs
