@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
--------
+0.1.13
+------
 
 - [internal] Remove ``package_metadata.py`` in favor of ``__about__.py``.
 - [docs] ``scent.py`` for building docs
@@ -19,9 +19,16 @@ CURRENT
 - [docs] updates to doc links
 - [docs] ``make checkbuild`` for verifying internal / intersphinx doc
   references.
+- [internal] Add Warning tmux versions less than 1.4 from `@techtonik`_.
+- [internal] [docs] Add documentation on leading space in ``send_keys``
+  from `@thomasballinger`_.
+- [docs] Update about page from teamocil and erb support from `@raine`_.
 
 .. _sniffer: https://github.com/jeffh/sniffer
 .. _watchingtestrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
+.. _@raine: https://github.com/raine
+.. _@thomasballinger: https://github.com/thomasballinger
+.. _@techtonik: https://github.com/techtonik
 
 0.1.12
 ------

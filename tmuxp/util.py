@@ -14,6 +14,7 @@ import subprocess
 import re
 import os
 import sys
+import shlex
 import logging
 
 from distutils.version import StrictVersion
@@ -31,7 +32,7 @@ def run_before_script(script_file):
     """Function to wrap try/except for subprocess.check_call()."""
     try:
         proc = subprocess.Popen(
-            script_file,
+            shlex.split(str(script_file)),
             stderr=subprocess.PIPE
         )
         proc.wait()
