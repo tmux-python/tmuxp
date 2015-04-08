@@ -63,7 +63,7 @@ Issues          https://github.com/tony/tmuxp/issues
 Travis          http://travis-ci.org/tony/tmuxp
 Test Coverage   https://coveralls.io/r/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
-Ohloh           https://www.ohloh.net/p/tmuxp
+Open Hub        https://www.openhub.net/p/tmuxp
 License         `BSD`_.
 git repo        .. code-block:: bash
 
