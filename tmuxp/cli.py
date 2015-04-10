@@ -915,7 +915,6 @@ def get_parser():
 
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
 
-    # http://stackoverflow.com/questions/8521612/argparse-optional-subparser
     parser.add_argument(
         '-v', '--version', action='version',
         version='tmuxp %s' % __version__,

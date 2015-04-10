@@ -207,7 +207,6 @@ class Server(TmuxRelationalObject):
                 w['window_id'] = w['window_name']
 
         if self._windows:
-            # http://stackoverflow.com/a/14465359
             self._windows[:] = []
 
         self._windows.extend(windows)
@@ -268,7 +267,6 @@ class Server(TmuxRelationalObject):
         ]
 
         if self._panes:
-            # http://stackoverflow.com/a/14465359
             self._panes[:] = []
 
         self._panes.extend(panes)

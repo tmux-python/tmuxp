@@ -16,12 +16,7 @@ from ._compat import implements_to_string
 
 class TmuxpException(Exception):
 
-    """Base Exception for Tmuxp Errors.
-
-    Also for Python 2.6 compat:
-        http://stackoverflow.com/a/6029838
-
-    """
+    """Base Exception for Tmuxp Errors."""
 
 
 class TmuxSessionExists(TmuxpException):
