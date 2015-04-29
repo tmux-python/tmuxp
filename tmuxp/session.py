@@ -88,11 +88,9 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             raise exc.TmuxpException(proc.stderr)
 
     def switch_client(self, target_session=None):
-        """``$ tmux kill-session``.
+        """``$ tmux switch-client``.
 
-        :param: target_session: str. note this accepts fnmatch(3). 'asdf' will
-                                kill asdfasd
-
+        :param: target_session: str. note this accepts fnmatch(3).
         """
         proc = self.tmux('switch-client', '-t%s' % self.get('session_id'))
 

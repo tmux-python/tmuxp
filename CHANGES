@@ -4,6 +4,11 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+CURRENT
+-------
+
+- [internal]: Fix documentation for :meth:``Session.switch_client()``.
+  
 0.1.13
 ------
 
