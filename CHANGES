@@ -8,6 +8,7 @@ CURRENT
 -------
 
 - [internal]: Fix documentation for :meth:``Session.switch_client()``.
+- [cli]: Add ``--log-level`` argument.
   
 0.1.13
 ------

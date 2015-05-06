@@ -916,6 +916,12 @@ def get_parser():
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
 
     parser.add_argument(
+        '--log-level', dest='log_level',
+        default=None,
+        help='Level of debug verbosity. DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+    )
+
+    parser.add_argument(
         '-v', '--version', action='version',
         version='tmuxp %s' % __version__,
         help='Prints the tmuxp version',
