@@ -939,8 +939,12 @@ def main():
 
     args = parser.parse_args()
 
+    log_level = 'INFO'
+    if 'log_level' in args and isinstance(args.log_level, string_types):
+        log_level = args.log_level.upper()
+
     setup_logger(
-        level=args.log_level.upper() if 'log_level' in args else 'INFO'
+        level=log_level
     )
 
     try:
