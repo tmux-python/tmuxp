@@ -15,8 +15,6 @@ import unittest
 import logging
 
 from .. import Session, Window, Pane
-from ..util import tmux
-
 from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 from . import t
 

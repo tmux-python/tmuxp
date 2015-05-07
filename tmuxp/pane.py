@@ -22,6 +22,9 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
     :param window: :class:`Window`
 
+    :versionchanged: 0.8
+        Renamed from ``.tmux`` to ``.cmd``.
+
     """
 
     def __init__(self, window=None, **kwargs):
@@ -56,21 +59,21 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return list(filter(by, self.server._panes))[0]
 
-    def tmux(self, cmd, *args, **kwargs):
-        """Return :meth:`Server.tmux` defaulting to ``target_pane`` as target.
+    def cmd(self, cmd, *args, **kwargs):
+        """Return :meth:`Server.cmd` defaulting to ``target_pane`` as target.
 
         Send command to tmux with :attr:`pane_id` as ``target-pane``.
 
         Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
         ``args`` will override using the object's ``pane_id`` as target.
 
-        :rtype: :class:`Server.tmux`
+        :rtype: :class:`Server.cmd`
 
         """
         if not any(arg.startswith('-t') for arg in args):
             args = ('-t', self.get('pane_id')) + args
 
-        return self.server.tmux(cmd, *args, **kwargs)
+        return self.server.cmd(cmd, *args, **kwargs)
 
     def send_keys(self, cmd, enter=True):
         """``$ tmux send-keys`` to the pane.
@@ -84,7 +87,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type enter: bool
 
         """
-        self.tmux('send-keys', ' ' + cmd)
+        self.cmd('send-keys', ' ' + cmd)
 
         if enter:
             self.enter()
@@ -96,7 +99,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
     def reset(self):
         """Reset and clear pane history. """
 
-        self.tmux('send-keys', '-R \; clear-history')
+        self.cmd('send-keys', '-R \; clear-history')
 
     def split_window(self, attach=False):
         """Split window at pane and return newly created :class:`Pane`.
@@ -139,11 +142,11 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         """
 
         if 'height' in kwargs:
-            proc = self.tmux('resize-pane', '-y%s' % int(kwargs['height']))
+            proc = self.cmd('resize-pane', '-y%s' % int(kwargs['height']))
         elif 'width' in kwargs:
-            proc = self.tmux('resize-pane', '-x%s' % int(kwargs['width']))
+            proc = self.cmd('resize-pane', '-x%s' % int(kwargs['width']))
         else:
-            proc = self.tmux('resize-pane', args[0])
+            proc = self.cmd('resize-pane', args[0])
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -157,7 +160,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         ``$ tmux send-keys`` send Enter to the pane.
 
         """
-        self.tmux('send-keys', 'Enter')
+        self.cmd('send-keys', 'Enter')
 
     def select_pane(self):
         """Select pane. Return ``self``.

@@ -64,21 +64,24 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return list(filter(by, self.server._windows))[0]
 
-    def tmux(self, cmd, *args, **kwargs):
-        """Return :meth:`Server.tmux` defaulting ``target_window`` as target.
+    def cmd(self, cmd, *args, **kwargs):
+        """Return :meth:`Server.cmd` defaulting ``target_window`` as target.
 
         Send command to tmux with :attr:`window_id` as ``target-window``.
 
         Specifying ``('-t', 'custom-target')`` or ``('-tcustom_target')`` in
         ``args`` will override using the object's ``window_id`` as target.
 
-        :rtype: :class:`Server.tmux`
+        :rtype: :class:`Server.cmd`
+
+        :versionchanged: 0.8
+            Renamed from ``.tmux`` to ``.cmd``.
 
         """
         if not any(arg.startswith('-t') for arg in args):
             args = ('-t', self.get('window_id')) + args
 
-        return self.server.tmux(cmd, *args, **kwargs)
+        return self.server.cmd(cmd, *args, **kwargs)
 
     def select_layout(self, layout=None):
         """Wrapper for ``$ tmux select-layout <layout>``.
@@ -105,7 +108,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         """
 
-        proc = self.tmux(
+        proc = self.cmd(
             'select-layout',
             '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
             layout
@@ -130,7 +133,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         elif isinstance(value, bool) and not value:
             value = 'off'
 
-        process = self.tmux(
+        process = self.cmd(
             'set-window-option',
             '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
             #'-t%s' % self.get('window_id'),
@@ -173,7 +176,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             return self.show_window_option(option, g=g)
         else:
             tmux_args += ('show-window-options',)
-            window_options = self.tmux(
+            window_options = self.cmd(
                 *tmux_args
             ).stdout
 
@@ -207,7 +210,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         tmux_args += (option,)
 
-        window_option = self.tmux(
+        window_option = self.cmd(
             'show-window-options', *tmux_args
         ).stdout
 
@@ -236,7 +239,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         lex.whitespace_split = False
 
         try:
-            self.tmux(
+            self.cmd(
                 'rename-window',
                 new_name
             )
@@ -251,7 +254,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def kill_window(self):
         """Kill the current :class:`Window` object. ``$ tmux kill-window``."""
 
-        proc = self.tmux(
+        proc = self.cmd(
             'kill-window',
             #'-t:%s' % self.get('window_id')
             '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
@@ -271,7 +274,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         """
 
-        proc = self.tmux(
+        proc = self.cmd(
             'move-window',
             '-s%s:%s' % (self.get('session_id'), self.get('window_index')),
             '-t%s:%s' % (self.get('session_id'), destination),
@@ -306,13 +309,13 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         """
 
         if target_pane in ['-l', '-U', '-D', '-L', '-R']:
-            proc = self.tmux(
+            proc = self.cmd(
                 'select-pane',
                 '-t%s' % self.get('window_id'),
                 target_pane
             )
         else:
-            proc = self.tmux('select-pane', '-t%s' % target_pane)
+            proc = self.cmd('select-pane', '-t%s' % target_pane)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -383,7 +386,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         if not attach:
             tmux_args += ('-d',)
 
-        pane = self.tmux(
+        pane = self.cmd(
             'split-window',
             *tmux_args
         )

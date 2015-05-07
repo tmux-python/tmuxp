@@ -53,13 +53,13 @@ def run_before_script(script_file):
             raise(e)
 
 
-class tmux(object):
+class tmux_cmd(object):
 
-    """:py:mod:`subprocess` for :term:`tmux(1)`.
+    """:term:`tmux(1)` command via :py:mod:`subprocess`.
 
     Usage::
 
-        proc = tmux('new-session', '-s%' % 'my session')
+        proc = tmux_cmd('new-session', '-s%' % 'my session')
 
         if proc.stderr:
             raise exc.TmuxpException(
@@ -73,6 +73,9 @@ class tmux(object):
     .. code-block:: bash
 
         $ tmux new-session -s my session
+
+    :versionchanged: 0.8
+        Renamed from ``tmux`` to ``tmux_cmd``.
 
     """
 
@@ -280,7 +283,7 @@ def is_version(version):
     :rtype: bool
 
     """
-    proc = tmux('-V')
+    proc = tmux_cmd('-V')
 
     if proc.stderr:
         raise exc.TmuxpException(proc.stderr)
@@ -301,7 +304,7 @@ def has_required_tmux_version(version=None):
     """
 
     if not version:
-        proc = tmux('-V')
+        proc = tmux_cmd('-V')
 
         if proc.stderr:
             if proc.stderr[0] == 'tmux: unknown option -- V':

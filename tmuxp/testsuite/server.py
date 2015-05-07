@@ -55,7 +55,7 @@ class ServerTest(TmuxTestCase):
         myserver = Server(colors=256)
         self.assertEqual(myserver.colors, 256)
 
-        proc = myserver.tmux('list-servers')
+        proc = myserver.cmd('list-servers')
 
         self.assertIn('-2', proc.cmd)
         self.assertNotIn('-8', proc.cmd)
@@ -64,7 +64,7 @@ class ServerTest(TmuxTestCase):
         myserver = Server(colors=88)
         self.assertEqual(myserver.colors, 88)
 
-        proc = myserver.tmux('list-servers')
+        proc = myserver.cmd('list-servers')
 
         self.assertIn('-8', proc.cmd)
         self.assertNotIn('-2', proc.cmd)

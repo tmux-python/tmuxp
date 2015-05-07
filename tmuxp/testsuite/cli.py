@@ -18,7 +18,6 @@ import unittest
 import kaptan
 
 from .. import config, cli
-from ..util import tmux
 from .helpers import TestCase
 
 logger = logging.getLogger(__name__)

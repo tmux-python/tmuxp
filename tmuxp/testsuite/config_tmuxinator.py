@@ -16,7 +16,6 @@ import unittest
 import kaptan
 
 from .. import config, exc
-from ..util import tmux
 from .._compat import string_types
 from .helpers import TestCase
 

@@ -11,7 +11,7 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import logging
 
-from .util import tmux, TmuxRelationalObject
+from .util import tmux_cmd, TmuxRelationalObject
 from .session import Session
 from . import formats, exc
 
@@ -69,10 +69,13 @@ class Server(TmuxRelationalObject):
         if colors:
             self.colors = colors
 
-    def tmux(self, *args, **kwargs):
-        """Return :class:`util.tmux` send tmux commands with sockets, colors.
+    def cmd(self, *args, **kwargs):
+        """Return :class:`util.tmux_cmd` send tmux commands with sockets, colors.
 
-        :rtype: :class:`util.tmux`
+        :rtype: :class:`util.tmux_cmd`
+
+        :versionchanged: 0.8
+            Renamed from ``.tmux`` to ``.cmd``.
 
         """
 
@@ -91,14 +94,14 @@ class Server(TmuxRelationalObject):
             else:
                 raise ValueError('Server.colors must equal 88 or 256')
 
-        return tmux(*args, **kwargs)
+        return tmux_cmd(*args, **kwargs)
 
     def _list_sessions(self):
         """Return list of sessions in :py:obj:`dict` form.
 
         Retrieved from ``$ tmux(1) list-sessions`` stdout.
 
-        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
+        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux_cmd`
         which wraps :py:class:`subprocess.Popen`.
 
         :rtype: :py:obj:`list` of :py:obj:`dict`
@@ -112,7 +115,7 @@ class Server(TmuxRelationalObject):
             '-F%s' % '\t'.join(tmux_formats),   # output
         )
 
-        proc = self.tmux(
+        proc = self.cmd(
             'list-sessions',
             *tmux_args
         )
@@ -169,7 +172,7 @@ class Server(TmuxRelationalObject):
 
         Retrieved from ``$ tmux(1) list-windows`` stdout.
 
-        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
+        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux_cmd`
         which wraps :py:class:`subprocess.Popen`.
 
         :rtype: list
@@ -179,7 +182,7 @@ class Server(TmuxRelationalObject):
         wformats = ['session_name', 'session_id'] + formats.WINDOW_FORMATS
         tmux_formats = ['#{%s}' % format for format in wformats]
 
-        proc = self.tmux(
+        proc = self.cmd(
             'list-windows',                     # ``tmux list-windows``
             '-a',
             '-F%s' % '\t'.join(tmux_formats),   # output
@@ -227,7 +230,7 @@ class Server(TmuxRelationalObject):
 
         Retrieved from ``$ tmux(1) list-panes`` stdout.
 
-        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux`
+        The :py:obj:`list` is derived from ``stdout`` in :class:`util.tmux_cmd`
         which wraps :py:class:`subprocess.Popen`.
 
         :rtype: list
@@ -241,7 +244,7 @@ class Server(TmuxRelationalObject):
         ] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
-        proc = self.tmux(
+        proc = self.cmd(
             'list-panes',
             '-a',
             '-F%s' % ''.join(tmux_formats),     # output
@@ -314,7 +317,7 @@ class Server(TmuxRelationalObject):
 
         """
 
-        proc = self.tmux('has-session', '-t%s' % target_session)
+        proc = self.cmd('has-session', '-t%s' % target_session)
 
         if 'failed to connect to server' in proc.stdout:
             return False
@@ -327,7 +330,7 @@ class Server(TmuxRelationalObject):
 
     def kill_server(self):
         """``$ tmux kill-server``."""
-        self.tmux('kill-server')
+        self.cmd('kill-server')
 
     def kill_session(self, target_session=None):
         """Kill the tmux session with ``$ tmux kill-session``, return ``self``.
@@ -338,7 +341,7 @@ class Server(TmuxRelationalObject):
         :rtype: :class:`Server`
 
         """
-        proc = self.tmux('kill-session', '-t%s' % target_session)
+        proc = self.cmd('kill-session', '-t%s' % target_session)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -352,8 +355,7 @@ class Server(TmuxRelationalObject):
 
         """
 
-        # tmux('switch-client', '-t', target_session)
-        proc = self.tmux('switch-client', '-t%s' % target_session)
+        proc = self.cmd('switch-client', '-t%s' % target_session)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -368,7 +370,7 @@ class Server(TmuxRelationalObject):
         if target_session:
             tmux_args += ('-t%s' % target_session,)
 
-        proc = self.tmux('attach-session', *tmux_args)
+        proc = self.cmd('attach-session', *tmux_args)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -412,7 +414,7 @@ class Server(TmuxRelationalObject):
 
         if self.has_session(session_name):
             if kill_session:
-                self.tmux('kill-session', '-t%s' % session_name)
+                self.cmd('kill-session', '-t%s' % session_name)
                 logger.info('session %s exists. killed it.' % session_name)
             else:
                 raise exc.TmuxSessionExists(
@@ -437,7 +439,7 @@ class Server(TmuxRelationalObject):
         if not attach:
             tmux_args += ('-d',)
 
-        proc = self.tmux(
+        proc = self.cmd(
             'new-session',
             *tmux_args
         )
