@@ -348,7 +348,7 @@ As long as you have the object, or are iterating through a list of them, you can
 
 See the other window, notice that :meth:`Pane.send_keys` has " ``echo hey``" written,
 *still in the prompt*. Note the leading space character so the command won't be added
-to the user's history. Use `pane.tmux('send-keys', text)` to send keys without this
+to the user's history. Use `pane.cmd('send-keys', text)` to send keys without this
 leading space.
 
 ``enter=False`` can be used to send keys without pressing return. In this case,

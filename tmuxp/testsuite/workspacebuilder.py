@@ -197,7 +197,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
         self.assertEqual(p.get('pane_current_path'), pane_path)
 
-        proc = self.session.tmux('show-option', '-gv', 'base-index')
+        proc = self.session.cmd('show-option', '-gv', 'base-index')
         base_index = int(proc.stdout[0])
         self.session.server._update_windows()
 
@@ -729,7 +729,7 @@ class WindowIndexTest(TmuxTestCase):
     """
 
     def test_window_index(self):
-        proc = self.session.tmux('show-option', '-gv', 'base-index')
+        proc = self.session.cmd('show-option', '-gv', 'base-index')
         base_index = int(proc.stdout[0])
         name_index_map = {
             'zero': 0 + base_index,

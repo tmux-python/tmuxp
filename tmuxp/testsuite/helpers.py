@@ -169,7 +169,7 @@ class TmuxTestCase(TestCase):
 
         session_name = 'tmuxp'
         if not t.has_session(session_name):
-            t.tmux('new-session', '-d', '-s', session_name)
+            t.cmd('new-session', '-d', '-s', session_name)
 
         # find current sessions prefixed with tmuxp
         old_test_sessions = [

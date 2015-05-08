@@ -9,6 +9,15 @@ CURRENT
 
 - [internal]: Fix documentation for :meth:``Session.switch_client()``.
 - [cli]: Add ``--log-level`` argument.
+- [internal]: Refactor ``{Server,Session,Window,Pane}.tmux`` into:
+  
+  - :meth:`Server.cmd()`
+  - :meth:`Session.cmd()`
+  - :meth:`Window.cmd()`
+  - :meth:`Pane.cmd()`
+    
+  (See conversation at https://github.com/bitprophet/dotfiles/issues/5)
+- [internal]: Refactor ``util.tmux`` into :meth:`util.tmux_cmd`.
   
 0.1.13
 ------

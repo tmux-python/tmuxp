@@ -58,15 +58,18 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         except IndexError as e:
             logger.error(e)
 
-    def tmux(self, *args, **kwargs):
-        """Return :meth:`Server.tmux`.
+    def cmd(self, *args, **kwargs):
+        """Return :meth:`server.cmd`.
 
-        :rtype: :class:`Server.tmux`
+        :rtype: :class:`server.cmd`
+
+        :versionchanged: 0.8
+            Renamed from ``.tmux`` to ``.cmd``.
 
         """
         if '-t' not in kwargs:
             kwargs['-t'] = self.get('session_id')
-        return self.server.tmux(*args, **kwargs)
+        return self.server.cmd(*args, **kwargs)
 
     def attach_session(self, target_session=None):
         """Return ``$ tmux attach-session`` aka alias: ``$ tmux attach``.
@@ -74,7 +77,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :param: target_session: str. name of the session. fnmatch(3) works.
 
         """
-        proc = self.tmux('attach-session', '-t%s' % self.get('session_id'))
+        proc = self.cmd('attach-session', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -82,7 +85,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     def kill_session(self):
         """``$ tmux kill-session``."""
 
-        proc = self.tmux('kill-session', '-t%s' % self.get('session_id'))
+        proc = self.cmd('kill-session', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -92,7 +95,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         :param: target_session: str. note this accepts fnmatch(3).
         """
-        proc = self.tmux('switch-client', '-t%s' % self.get('session_id'))
+        proc = self.cmd('switch-client', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -105,7 +108,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         :rtype: :class:`Session`
 
         """
-        proc = self.tmux(
+        proc = self.cmd(
             'rename-session',
             '-t%s' % self.get('session_id'),
             new_name
@@ -173,7 +176,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             '-t%s:%s' % (self.get('session_id'), window_index),
         )
 
-        proc = self.tmux('new-window', *window_args)
+        proc = self.cmd('new-window', *window_args)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -209,7 +212,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             else:
                 target = '-t%s' % target_window
 
-        proc = self.tmux('kill-window', target)
+        proc = self.cmd('kill-window', target)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -288,7 +291,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         target = '-t%s' % target_window
 
-        proc = self.tmux('select-window', target)
+        proc = self.cmd('select-window', target)
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
@@ -318,7 +321,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         elif isinstance(value, bool) and not value:
             value = 'off'
 
-        proc = self.tmux(
+        proc = self.cmd(
             'set-option', option, value
         )
 
@@ -350,7 +353,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             return self.show_option(option, g=g)
         else:
             tmux_args += ('show-options',)
-            session_options = self.tmux(
+            session_options = self.cmd(
                 *tmux_args
             ).stdout
 
@@ -380,7 +383,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
         if g:
             tmux_args += ('-g',)
 
-        window_option = self.tmux(
+        window_option = self.cmd(
             'show-options', option, *tmux_args
         ).stdout
         window_option = [tuple(item.split(' ')) for item in window_option][0]

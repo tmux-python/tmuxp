@@ -59,7 +59,7 @@ Internals
 .. autoclass:: tmuxp.util.TmuxMappingObject
     :members:
 
-.. autoclass:: tmuxp.util.tmux
+.. autoclass:: tmuxp.util.tmux_cmd
 
 .. automethod:: tmuxp.util.has_required_tmux_version
 
