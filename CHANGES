@@ -4,9 +4,11 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
--------
+0.8.0
+-----
 
+- [version]: version bump 0.1.13 -> 0.8.0
+- [internal]: tmux 2.0 support
 - [internal]: Fix documentation for :meth:``Session.switch_client()``.
 - [cli]: Add ``--log-level`` argument.
 - [internal]: Refactor ``{Server,Session,Window,Pane}.tmux`` into:
