@@ -5,9 +5,7 @@ tmuxp
 #####
 
 .. image:: _static/tmuxp-demo.gif
-    :scale: 35%
     :width: 100%
-    :align: right
 
 .. include:: ../README.rst
     :start-line: 16
