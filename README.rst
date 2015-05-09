@@ -10,7 +10,7 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 .. image:: https://coveralls.io/repos/tony/tmuxp/badge.png?branch=master
     :target: https://coveralls.io/r/tony/tmuxp?branch=master
 
-.. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-dev-screenshot.png
+.. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-demo.gif
     :scale: 100%
     :width: 45%
     :align: center
