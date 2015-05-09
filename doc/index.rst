@@ -8,7 +8,7 @@ tmuxp
     :width: 100%
 
 .. include:: ../README.rst
-    :start-line: 16
+    :start-line: 18
     :end-before: Project details
 
 Explore:
