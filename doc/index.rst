@@ -4,7 +4,7 @@
 tmuxp
 #####
 
-.. image:: _static/tmuxp-dev-screenshot.png
+.. image:: _static/tmuxp-demo.gif
     :scale: 35%
     :width: 100%
     :align: right
