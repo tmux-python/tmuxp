@@ -4,6 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.8.1
+-----
+
+- [internal] [testing]: fix sniffer test runner in python 3
+- [docs] new animated image demo for RTD and README
+
 0.8.0
 -----
 
