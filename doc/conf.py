@@ -24,17 +24,13 @@ project_root = os.path.dirname(cwd)
 # This lets us ensure that the source package is imported, and that its
 # version is used.
 sys.path.insert(0, project_root)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "_ext")))
 
 # package data
 about = {}
 with open("../tmuxp/__about__.py") as fp:
     exec(fp.read(), about)
 
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -47,8 +43,8 @@ with open("../tmuxp/__about__.py") as fp:
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
-              'sphinxcontrib.aafig',
               'sphinxarg.ext',
+              'aafig',
               ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -129,7 +125,12 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     html_theme = 'default'
 else:
-    html_theme = 'pyramid'
+    try:
+        import sphinx_rtd_theme
+        html_theme = "sphinx_rtd_theme"
+        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    except ImportError:
+        html_theme = 'pyramid'
 
 #html_theme = 'sphinx_rtd_theme'
 
