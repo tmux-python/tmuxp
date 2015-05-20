@@ -46,7 +46,7 @@ setup(
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.main']),
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX",
         'Environment :: Web Environment',
