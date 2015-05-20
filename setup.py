@@ -49,6 +49,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX",
+        "Operating System :: MacOS :: MacOS X",
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'Programming Language :: Python',
