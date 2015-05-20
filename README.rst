@@ -1,16 +1,7 @@
 tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
 `python objects`_, JSON or YAML.
 
-.. image:: https://img.shields.io/pypi/v/tmuxp.svg
-    :target: http://badge.fury.io/py/tmuxp
-
-.. image:: https://img.shields.io/travis/tony/tmuxp.svg
-   :target: https://travis-ci.org/tony/tmuxp
-
-.. image:: https://img.shields.io/coveralls/tony/tmuxp.svg
-    :target: https://coveralls.io/r/tony/tmuxp?branch=master
-    
-.. image:: https://img.shields.io/github/license/tony/tmuxp.svg
+|pypi| |docs| |build-status| |coverage| |license|
 
 .. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-demo.gif
     :scale: 100%
@@ -93,3 +84,23 @@ tests           .. code-block:: bash
 .. _installing bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
 .. _Developing and Testing: http://tmuxp.readthedocs.org/en/latest/developing.html
 .. _Issues tracker: https://github.com/tony/tmuxp/issues
+
+.. |pypi| image:: https://img.shields.io/pypi/v/tmuxp.svg
+    :alt: Python Package
+    :target: http://badge.fury.io/py/tmuxp
+
+.. |build-status| image:: https://img.shields.io/travis/tony/tmuxp.svg
+   :alt: Build Status
+   :target: https://travis-ci.org/tony/tmuxp
+
+.. |coverage| image:: https://img.shields.io/coveralls/tony/tmuxp.svg
+    :alt: Code Coverage
+    :target: https://coveralls.io/r/tony/tmuxp?branch=master
+    
+.. |license| image:: https://img.shields.io/github/license/tony/tmuxp.svg
+    :alt: License 
+
+.. |docs| image:: https://readthedocs.org/projects/tmuxp/badge/?version=latest
+    :alt: Documentation Status
+    :scale: 100%
+    :target: https://readthedocs.org/projects/tmuxp/
