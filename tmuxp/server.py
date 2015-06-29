@@ -307,7 +307,9 @@ class Server(TmuxRelationalObject):
                 else:
                     continue
 
-        return attached_sessions or None
+        return [
+                   Session(server=self, **s) for s in attached_sessions
+               ] or None
 
     def has_session(self, target_session):
         """Return True if session exists. ``$ tmux has-session``.
