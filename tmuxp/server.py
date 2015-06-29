@@ -286,11 +286,11 @@ class Server(TmuxRelationalObject):
         return self
 
     def attached_sessions(self):
-        """Return active :class:`Session` object.
+        """Return active :class:`Session` objects.
 
         This will not work where multiple tmux sessions are attached.
 
-        :rtype: :class:`Server`
+        :rtype: :py:obj:`list` of :class:`Session`
 
         """
 
