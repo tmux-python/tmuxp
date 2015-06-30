@@ -11,3 +11,8 @@ core.*
 .coverage
 
 .tox
+
+.ropeproject
+
+# vim swap files
+*.swp
