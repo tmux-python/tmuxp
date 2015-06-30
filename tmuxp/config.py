@@ -171,7 +171,11 @@ def expand(sconf, cwd=None, parent=None):
     :param sconf: the configuration for the session
     :type sconf: dict
     :param cwd: directory to expand relative paths against. should be the dir
-                of the config directory.
+        of the config directory.
+    :type cwd: string
+    :param parent: (used on recursive entries) start_directory of parent window
+        or session object.
+    :type parent: str
     :rtype: dict
 
     """
