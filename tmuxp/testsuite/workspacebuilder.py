@@ -11,7 +11,6 @@ from __future__ import absolute_import, division, print_function, \
 
 import os
 import platform
-import sys
 import logging
 import unittest
 import tempfile
@@ -750,7 +749,7 @@ class WindowIndexTest(TmuxTestCase):
 
 
 class BeforeLoadScript(TmuxTestCase):
-
+    config = 'HI'
     config_script_not_exists = """
     session_name: sampleconfig
     before_script: {script_not_exists}

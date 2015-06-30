@@ -9,11 +9,9 @@ tmuxp.workspacebuilder
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import os
 import logging
 
-from . import exc, config, Window, Pane, Session, Server
-from ._compat import PY2, console_to_str
+from . import exc, Window, Pane, Session, Server
 from .util import run_before_script
 
 logger = logging.getLogger(__name__)
@@ -193,7 +191,11 @@ class WorkspaceBuilder(object):
                 w1.move_window(99)
                 pass
 
-            sd = wconf['start_directory'] if 'start_directory' in wconf else None
+            if 'start_directory' in wconf:
+                sd = wconf['start_directory']
+            else:
+                sd = None
+
             w = s.new_window(
                 window_name=window_name,
                 start_directory=sd,
@@ -287,7 +289,7 @@ def freeze(session):
         wconf['layout'] = w.get('window_layout')
         wconf['panes'] = []
         if w.get('window_active', '0') == '1':
-            wconf['focus']='true'
+            wconf['focus'] = 'true'
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.

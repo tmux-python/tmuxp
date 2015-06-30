@@ -77,7 +77,6 @@ class ImportExportTest(TestCase):
         json_config_file = os.path.join(self.tmp_dir, 'config.json')
 
         configparser = kaptan.Kaptan()
-        sampleconfig = config.inline(sampleconfigdict)
         configparser.import_config(sampleconfigdict)
 
         json_config_data = configparser.export('json', indent=2)
@@ -544,6 +543,7 @@ class InheritanceTest(TestCase):
 
         for windowconfitem in config['windows']:
             window_start_directory = None
+            # TODO: Look at verifying window_start_directory
             if 'start_directory' in windowconfitem:
                 window_start_directory = windowconfitem['start_directory']
             elif session_start_directory:
