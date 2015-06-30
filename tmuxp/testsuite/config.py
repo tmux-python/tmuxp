@@ -1006,29 +1006,6 @@ class ConfigBlankPanes(TestCase):
 
 class ConfigConsistency(TestCase):
 
-    delete_this = """
-    session_name: sampleconfig
-    start_directory: '~'
-    windows:
-    - layout: main-vertical
-    panes:
-    - shell_command:
-        - vim
-        start_directory: '~'
-    - shell_command:
-        - cowsay "hey"
-    window_name: editor
-    - panes:
-    - shell_command:
-        - tail -F /var/log/syslog
-        start_directory: /var/log
-    window_name: logging
-    - automatic_rename: true
-    panes:
-    - shell_command:
-        - htop
-    """
-
     def test_no_session_name(self):
         yaml_config = """
         - window_name: editor
