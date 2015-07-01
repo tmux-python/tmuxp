@@ -105,7 +105,7 @@ def in_cwd():
 def expandshell(_path):
     """Return expanded path based on user's ``$HOME`` and ``env``.
 
-    :py:func:`os.path.expanduser` and :py:func:`os.path.expandshell`
+    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`
 
     :param _path: path to expand
     :type _path: string
@@ -113,7 +113,7 @@ def expandshell(_path):
     :rtype: string
 
     """
-    return os.path.expandshell(os.path.expanduser(_path))
+    return os.path.expandvars(os.path.expanduser(_path))
 
 def inline(sconf):
     """ Return config in inline form, opposite of :meth:`config.expand`.
