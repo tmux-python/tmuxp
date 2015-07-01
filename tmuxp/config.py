@@ -102,10 +102,10 @@ def in_cwd():
 
     return configs
 
-def expandvars(_path):
+def expandshell(_path):
     """Return expanded path based on user's ``$HOME`` and ``env``.
 
-    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`
+    :py:func:`os.path.expanduser` and :py:func:`os.path.expandshell`
 
     :param _path: path to expand
     :type _path: string
@@ -113,7 +113,7 @@ def expandvars(_path):
     :rtype: string
 
     """
-    return os.path.expandvars(os.path.expanduser(_path))
+    return os.path.expandshell(os.path.expanduser(_path))
 
 def inline(sconf):
     """ Return config in inline form, opposite of :meth:`config.expand`.
@@ -188,7 +188,7 @@ def expand(sconf, cwd=None, parent=None):
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:
-        sconf['start_directory'] = expandvars(sconf['start_directory'])
+        sconf['start_directory'] = expandshell(sconf['start_directory'])
         start_path = sconf['start_directory']
         if any(start_path.startswith(a) for a in ['.', './']):
             # if window has a session, or pane has a window with a
