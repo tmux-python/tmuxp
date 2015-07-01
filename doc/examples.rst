@@ -162,6 +162,50 @@ JSON
 .. literalinclude:: ../examples/start-directory.json
     :language: json
 
+Environment variables
+---------------------
+
+tmuxp will replace environment variables wrapped in curly brackets
+for the following variables:
+
+- ``start_directory``
+- ``before_script``
+- ``session_name``
+- ``window_name``
+- ``before_shell_command``
+
+tmuxp replaces these variables before-hand with variables in the
+terminal ``tmuxp`` invokes in.
+
+In this case of this example, assuming the username "user"::
+
+    $ MY_ENV_VAR=foo tmuxp load examples/env-variables.yaml
+
+and your session name will be ``session - user (foo)``. 
+
+Shell variables in ``shell_command`` do not support this type of 
+concatenation. ``shell_command`` and ``before_shell_command`` both
+support normal shell variables, since they are sent into panes
+automatically via ``send-key`` in ``tmux(1)``. See ``ls $PWD`` in 
+example.
+
+If you have a special case and would like to see behavior changed,
+please make a ticket on the `issue tracker`_.
+
+.. _issue tracker: https://github.com/tony/tmuxp/issues
+
+YAML
+~~~~
+
+.. literalinclude:: ../examples/env-variables.yaml
+    :language: yaml
+
+JSON
+~~~~
+
+.. literalinclude:: ../examples/env-variables.json
+    :language: json
+
 Focusing
 --------
 

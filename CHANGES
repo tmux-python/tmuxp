@@ -8,6 +8,13 @@ CURRENT
 -------
 
 - [internal]: Renamed ``config.expandpath`` to ``config.expandshell``.
+- [internal] [tests]: compat 2.7/3.3 wrapper for ``EnvironmentVarGuard`` for
+  testing.
+- [shell_command_before]: You can now use environment variables inside of
+  ``start_directory``, ``before_script``, ``shell_command_before``,
+  ``session_name`` and ``window_name``.
+- [docs] [examples]: add example for environmental variables,
+  ``examples/env-variables.json`` and ``examples/env-variables.yaml``.
 
 0.8.1
 -----

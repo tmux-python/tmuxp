@@ -185,6 +185,11 @@ def expand(sconf, cwd=None, parent=None):
     if not cwd:
         cwd = os.getcwd()
 
+    if 'session_name' in sconf:
+        sconf['session_name'] = expandshell(sconf['session_name'])
+    if 'window_name' in sconf:
+        sconf['window_name'] = expandshell(sconf['window_name'])
+
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:
@@ -202,12 +207,12 @@ def expand(sconf, cwd=None, parent=None):
             start_path = os.path.normpath(os.path.join(cwd, start_path))
             sconf['start_directory'] = start_path
 
-
     if 'before_script' in sconf:
-        before_script = sconf['before_script']
-        if any(before_script.startswith(a) for a in ['.', './']):
-            before_script = os.path.normpath(os.path.join(cwd, before_script))
-            sconf['before_script'] = before_script
+        sconf['before_script'] = expandshell(sconf['before_script'])
+        if any(sconf['before_script'].startswith(a) for a in ['.', './']):
+            sconf['before_script'] = os.path.normpath(
+                os.path.join(cwd, sconf['before_script'])
+            )
 
     if (
         'shell_command' in sconf and
@@ -220,6 +225,14 @@ def expand(sconf, cwd=None, parent=None):
         isinstance(sconf['shell_command_before'], string_types)
     ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
+
+    if (
+        'shell_command_before' in sconf and
+        isinstance(sconf['shell_command_before'], list)
+    ):
+        sconf['shell_command_before'] = [
+            expandshell(scmd) for scmd in sconf['shell_command_before']
+        ]
 
     # recurse into window and pane config items
     if 'windows' in sconf:
