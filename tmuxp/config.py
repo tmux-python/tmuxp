@@ -102,7 +102,7 @@ def in_cwd():
 
     return configs
 
-def expandpath(_path):
+def expandvars(_path):
     """Return expanded path based on user's ``$HOME`` and ``env``.
 
     :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`
@@ -188,7 +188,7 @@ def expand(sconf, cwd=None, parent=None):
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:
-        sconf['start_directory'] = expandpath(sconf['start_directory'])
+        sconf['start_directory'] = expandvars(sconf['start_directory'])
         start_path = sconf['start_directory']
         if any(start_path.startswith(a) for a in ['.', './']):
             # if window has a session, or pane has a window with a

@@ -102,7 +102,7 @@ Import and export
 
 .. automethod:: tmuxp.config.validate_schema
 
-.. automethod:: tmuxp.config.expandpath
+.. automethod:: tmuxp.config.expandvars
 
 .. automethod:: tmuxp.config.expand
 
