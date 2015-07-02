@@ -18,7 +18,9 @@ import unittest
 import kaptan
 
 from .. import config, exc
+from .._compat import support
 from .helpers import TestCase
+
 
 
 logger = logging.getLogger(__name__)
@@ -1061,6 +1063,42 @@ class ConfigConsistency(TestCase):
             config.validate_schema(sconfig)
 
 
+class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
+    def test_replaces_start_directory(self):
+        env_key = "TESTHEY92"
+        env_value = "HEYO1"
+        yaml_config = """
+        start_directory: {TEST_VAR}/test
+        shell_command_before: {TEST_VAR}/test2
+        before_script: {TEST_VAR}/test3
+        session_name: hi - {TEST_VAR}
+        windows:
+        - window_name: editor
+          panes:
+          - shell_command:
+            - tail -F /var/log/syslog
+          start_directory: /var/log
+        - window_name: logging @ {TEST_VAR}
+          automatic_rename: true
+          panes:
+          - shell_command:
+            - htop
+        """.format(
+            TEST_VAR="${%s}" % env_key
+        )
+
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+
+        with support.EnvironmentVarGuard() as env:
+            env.set(env_key, env_value)
+            sconfig = config.expand(sconfig)
+            self.assertEqual("%s/test" % env_value, sconfig['start_directory'])
+            self.assertIn("%s/test2" % env_value, sconfig['shell_command_before'])
+            self.assertEqual("%s/test3" % env_value, sconfig['before_script'])
+            self.assertEqual("hi - %s" % env_value, sconfig['session_name'])
+            self.assertEqual("logging @ %s" % env_value, sconfig['windows'][1]['window_name'])
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ConfigBlankPanes))
@@ -1071,4 +1109,5 @@ def suite():
     suite.addTest(unittest.makeSuite(ShellCommandBeforeTest))
     suite.addTest(unittest.makeSuite(ShellCommandBeforeSession))
     suite.addTest(unittest.makeSuite(TrickleRelativeStartDirectory))
+    suite.addTest(unittest.makeSuite(ConfigExpandEnvironmentVariables))
     return suite
