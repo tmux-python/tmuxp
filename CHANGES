@@ -15,6 +15,23 @@ CURRENT
   ``session_name`` and ``window_name``.
 - [docs] [examples]: add example for environmental variables,
   ``examples/env-variables.json`` and ``examples/env-variables.yaml``.
+- [internal] de-vendorize `colorama`_. Thanks `@marbu`_. `#110`_
+- [tests] fix failure of test_pane_order on fedora machines `#109`_ from
+  `@marbu`_
+- [manuals]: append ``.txt`` extension to manuals (repo ony) `#105`_
+  from `@yegortimoshenko`_.
+- [internal] Fix Server.attached_sessions return type `#107`_ by
+  `@thomasballinger`_.
+- [internal]: update travis to use new tmux git repository.
+
+.. _colorama: https://pypi.python.org/pypi/colorama
+.. _@marbu: https://github.com/marbu
+.. _#110: https://github.com/tony/tmuxp/pull/110
+.. _#109: https://github.com/tony/tmuxp/pull/109
+.. _#105: https://github.com/tony/tmuxp/pull/105
+.. _#107: https://github.com/tony/tmuxp/pull/107
+.. _@yegortimoshenko: https://github.com/yegortimoshenko
+.. _@thomasballinger: https://github.com/thomasballinger
 
 0.8.1
 -----
