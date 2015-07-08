@@ -1,6 +1,6 @@
 __title__ = 'tmuxp'
 __package_name__ = 'tmuxp'
-__version__ = '0.8.1'
+__version__ = '0.9.0'
 __description__ = 'Save and load tmux sessions thru JSON, YAML configs. Control tmux through Python objects.'
 __email__ = 'tony@git-pull.com'
 __author__ = 'Tony Narlock'

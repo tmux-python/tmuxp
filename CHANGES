@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
--------
+0.9.0
+-----
 
 - [internal]: Renamed ``config.expandpath`` to ``config.expandshell``.
 - [internal] [tests]: compat 2.7/3.3 wrapper for ``EnvironmentVarGuard`` for
