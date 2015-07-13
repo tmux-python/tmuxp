@@ -21,6 +21,36 @@ You can upgrade to the latest release with:
 
 Then install :ref:`bash_completion`.
 
+Known issue on RHEL/CentOS/Fedora
+---------------------------------
+
+For all RedHat-based distros there might be an issue with starting tmuxp. 
+
+    $ tmuxp
+    Traceback (most recent call last):
+      File "/usr/bin/tmuxp", line 5, in <module>
+        from pkg_resources import load_entry_point
+      File "/usr/lib/python2.6/site-packages/pkg_resources.py", line 2655, in <module>
+        working_set.require(__requires__)
+      File "/usr/lib/python2.6/site-packages/pkg_resources.py", line 648, in require
+        needed = self.resolve(parse_requirements(requirements))
+      File "/usr/lib/python2.6/site-packages/pkg_resources.py", line 546, in resolve
+        raise DistributionNotFound(req)
+    pkg_resources.DistributionNotFound: argparse
+
+Try upgrading setuptools, has been proven to solve the problem on Fedora 22, CentOS 7 and RHEL 6. 
+
+    sudo pip install -U setuptools
+
+Can be tested in the Python REPL like this. 
+
+    >>> import pkg_resources
+    >>> pkg_resources.get_distribution('argparse')
+    argparse 1.3.0 (/usr/lib/python2.6/site-packages)
+
+The above operation would give the same exception (DistributionNotFound) before setuptools was upgraded. 
+
+
 CLI
 ---
 
