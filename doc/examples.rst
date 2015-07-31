@@ -172,7 +172,7 @@ for the following variables:
 - ``before_script``
 - ``session_name``
 - ``window_name``
-- ``before_shell_command``
+- ``shell_command_before``
 
 tmuxp replaces these variables before-hand with variables in the
 terminal ``tmuxp`` invokes in.
@@ -184,7 +184,7 @@ In this case of this example, assuming the username "user"::
 and your session name will be ``session - user (foo)``. 
 
 Shell variables in ``shell_command`` do not support this type of 
-concatenation. ``shell_command`` and ``before_shell_command`` both
+concatenation. ``shell_command`` and ``shell_command_before`` both
 support normal shell variables, since they are sent into panes
 automatically via ``send-key`` in ``tmux(1)``. See ``ls $PWD`` in 
 example.
