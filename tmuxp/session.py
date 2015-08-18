@@ -393,6 +393,10 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return window_option[1]
 
+    @property
+    def name(self):
+        return self.get('session_name')
+
     def __repr__(self):
         return "%s(%s %s)" % (
             self.__class__.__name__,
