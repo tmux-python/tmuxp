@@ -4,6 +4,17 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.9.1
+-----
+
+- [packaging] Add fix python 3 for `sysutils/pytmuxp`_ on FreeBSD ports.
+  See `#119`_ GH and `#201564`_ @ FreeBSD Bugzilla. Thanks Ruslan 
+  Makhmatkhanov.
+
+.. _sysutils/pytmuxp: http://www.freshports.org/sysutils/py-tmuxp/
+.. _#119: https://github.com/tony/tmuxp/pull/119#discussion_r37709814
+.. _#201564: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=201564
+
 0.9.0
 -----
 
