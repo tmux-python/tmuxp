@@ -22,7 +22,11 @@ if sys.version_info < (2, 7):
     install_reqs += ['argparse']
     tests_reqs += ['unittest2']
 
-readme = open('README.rst').read()
+if sys.version_info[0] > 2:
+    readme = open('README.rst', encoding='utf-8').read()
+else:
+    readme = open('README.rst').read()
+
 history = open('CHANGES').read().replace('.. :changelog:', '')
 
 setup(
