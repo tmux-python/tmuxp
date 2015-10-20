@@ -327,6 +327,8 @@ class Server(TmuxRelationalObject):
             return False
         elif 'session not found' in proc.stdout:
             return False
+        elif 'can\'t find session' in proc.stdout:
+            return False
         else:
             return True
 
