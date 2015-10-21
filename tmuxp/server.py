@@ -325,9 +325,9 @@ class Server(TmuxRelationalObject):
             return False
         elif 'no server running' in proc.stdout:  # tmux 2.0
             return False
-        elif 'session not found' in proc.stdout:
+        elif 'can\'t find session' in proc.stdout: # tmux 2.1
             return False
-        elif 'can\'t find session' in proc.stdout:
+        elif 'session not found' in proc.stdout:
             return False
         else:
             return True
