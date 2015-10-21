@@ -1,5 +1,6 @@
 language: python
 
+sudo: false
 python:
   - 2.6
   - 2.7
@@ -11,21 +12,24 @@ env:
   - TMUX_VERSION=1.8
   - TMUX_VERSION=1.9a
 before_install:
-  - sudo apt-get update -qq
   - export PIP_USE_MIRRORS=true
   - pip install coveralls
 install:
-  - "pip install -e ."
+  - pip install -e .
 before_script:
-  - sudo apt-get install -qq libevent-dev libncurses-dev
   - git clone https://github.com/tmux/tmux.git tmux
   - cd tmux
   - git checkout $TMUX_VERSION
   - sh autogen.sh
-  - ./configure && make && sudo make install
+  - ./configure --prefix=$HOME/tmux && make && make install
+  - export PATH=$PATH:$HOME/tmux/bin
   - cd ..
   - tmux -V
 script: coverage run --source=tmuxp setup.py test
-# script: python setup.py test
+addons:
+  apt:
+    packages:
+      - libevent-dev
+      - libncurses-dev
 after_success:
   - coveralls
