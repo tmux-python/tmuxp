@@ -4,6 +4,17 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+0.9.2
+-----
+
+- [internal] Update to support tmux 2.1 via `#122`_, thank you `@estin`_.
+- [internal] use travis container infrastructure for faster tests
+- [tests] change test in workspace builder test to use ``top(1)`` instead of
+  ``man(1)``. ``man(1)`` caused errors on some systems where ``PAGER`` is set.
+
+.. _#122: https://github.com/tony/tmuxp/issues/122
+.. _@estin: https://github.com/estin
+
 0.9.1
 -----
 
