@@ -266,7 +266,7 @@ class WindowAutomaticRename(TmuxTestCase):
         automatic-rename: on
       panes:
       - shell_command:
-        - man echo
+        - top
         start_directory: '~'
       - shell_command:
         - echo "hey"
@@ -301,39 +301,33 @@ class WindowAutomaticRename(TmuxTestCase):
         self.assertNotEqual(s.get('session_name'), 'tmuxp')
         w = s.windows[0]
 
-        man_window_name = 'man'
-
-        # BSD operating systems will wrap manual pages in less
-        if 'BSD' in platform.system():
-            man_window_name = 'less'
-
         for i in range(10):
             self.session.server._update_windows()
-            if w.get('window_name') != man_window_name:
+            if w.get('window_name') != 'top':
                 break
             time.sleep(.2)
 
-        self.assertNotEqual(w.get('window_name'), man_window_name)
+        self.assertNotEqual(w.get('window_name'), 'top')
 
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         w.select_pane(pane_base_index)
 
         for i in range(10):
             self.session.server._update_windows()
-            if w.get('window_name') == man_window_name:
+            if w.get('window_name') == 'top':
                 break
             time.sleep(.2)
 
-        self.assertEqual(w.get('window_name'), text_type(man_window_name))
+        self.assertEqual(w.get('window_name'), text_type('top'))
 
         w.select_pane('-D')
         for i in range(10):
             self.session.server._update_windows()
-            if w['window_name'] != man_window_name:
+            if w['window_name'] != 'top':
                 break
             time.sleep(.2)
 
-        self.assertNotEqual(w.get('window_name'), text_type(man_window_name))
+        self.assertNotEqual(w.get('window_name'), text_type('top'))
 
 
 class BlankPaneTest(TmuxTestCase):
