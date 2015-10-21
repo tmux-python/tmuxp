@@ -6,6 +6,7 @@ python:
   - 3.3
   - 3.4
 env:
+  - TMUX_VERSION=2.1
   - TMUX_VERSION=2.0
   - TMUX_VERSION=1.8
   - TMUX_VERSION=1.9a
