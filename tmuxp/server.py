@@ -321,11 +321,16 @@ class Server(TmuxRelationalObject):
 
         proc = self.cmd('has-session', '-t%s' % target_session)
 
-        if 'failed to connect to server' in proc.stdout:
+        if proc.stdout == []:
+            return True
+        if any(
+            x in proc.stdout for x in
+            ['failed to connect to server', 'error connecting to']
+        ):
             return False
         elif 'no server running' in proc.stdout:  # tmux 2.0
             return False
-        elif 'can\'t find session' in proc.stdout: # tmux 2.1
+        elif 'can\'t find session' in proc.stdout:  # tmux 2.1
             return False
         elif 'session not found' in proc.stdout:
             return False
