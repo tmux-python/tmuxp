@@ -12,7 +12,7 @@ windows:
   panes:
   - focus: true
   - pane 
-  - sniffer
+  - find . -type f -not -path '*/\.*' | grep -i '.*[.]py$' | entr -c ./run-tests.py
 - window_name: docs
   layout: main-horizontal
   options:
@@ -24,4 +24,4 @@ windows:
   - focus: true
   - pane
   - echo 'docs built to <http://0.0.0.0:8003/_build/html>'; python -m SimpleHTTPServer 8003
-  - sniffer
+  - find .. -print | grep -i '.*[.]rst' | entr -c make html
