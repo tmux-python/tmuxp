@@ -1,7 +1,7 @@
 *.pyc
 *.pyo
-.env
-.env3
+.venv
+.venv3
 dist
 *.egg
 *.egg-info

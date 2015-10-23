@@ -575,7 +575,7 @@ class ShellCommandBeforeTest(TestCase):
             {
                 'window_name': 'editor',
                 'start_directory': '~',
-                'shell_command_before': 'source .env/bin/activate',
+                'shell_command_before': 'source .venv/bin/activate',
                 'panes': [
                     {
                         'shell_command': ['vim'],
@@ -626,7 +626,7 @@ class ShellCommandBeforeTest(TestCase):
             {
                 'window_name': 'editor',
                 'start_directory': os.path.expanduser('~'),
-                'shell_command_before': ['source .env/bin/activate'],
+                'shell_command_before': ['source .venv/bin/activate'],
                 'panes': [
                     {
                         'shell_command': ['vim'],
@@ -680,15 +680,15 @@ class ShellCommandBeforeTest(TestCase):
             {
                 'window_name': 'editor',
                 'start_directory': os.path.expanduser('~'),
-                'shell_command_before': ['source .env/bin/activate'],
+                'shell_command_before': ['source .venv/bin/activate'],
                 'panes': [
                     {
-                        'shell_command': ['source .env/bin/activate', 'vim'],
+                        'shell_command': ['source .venv/bin/activate', 'vim'],
                     },
                     {
                         'shell_command_before': ['rbenv local 2.0.0-p0'],
                         'shell_command': [
-                            'source .env/bin/activate',
+                            'source .venv/bin/activate',
                             'rbenv local 2.0.0-p0', 'cowsay "hey"'
                         ]
                     },

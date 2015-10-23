@@ -79,7 +79,7 @@ class NewTest(TmuxTestCase):
         self.session.attached_window().select_pane(pane_base_index)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(pane_base_index + 1)
-        self.session.attached_pane().send_keys('source .env/bin/activate')
+        self.session.attached_pane().send_keys('source .venv/bin/activate')
         self.session.new_window(window_name='second')
         current_windows += 1
         self.assertEqual(current_windows, len(self.session._windows))
