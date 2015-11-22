@@ -23,7 +23,7 @@ has some awesome CLI features, or setup vanilla :py:mod:`readline` support.
 """""""""""""""""""""""""""
 
 .. seealso::
-    Source: `How do I add tab-completion to the python shell`_ on 
+    Source: `How do I add tab-completion to the python shell`_ on
     `StackOverflow`_.
 
 Create ``~.pythonrc`` in ``$HOME`` folder:
@@ -40,7 +40,7 @@ Create ``~.pythonrc`` in ``$HOME`` folder:
         import rlcompleter
         readline.parse_and_bind("tab: complete")
 
-Then to your ``.bashrc`` or ``.zshrc`` file, add:
+Then in your ``.bashrc`` or ``.zshrc`` file, add:
 
 .. code-block:: bash
 
@@ -130,7 +130,7 @@ Find your :class:`Session`
     and allow a quick option to grab the current tmux's environment's
     :class:`Server`, :class:`Window` and :class:`Pane` via CLI.
 
-If you have multiple tmux session's open. You can see that all of the
+If you have multiple tmux sessions open, you can see that all of the
 methods in :class:`Server` are available.
 
 We can list sessions with :meth:`Server.list_sessions`:
@@ -140,16 +140,16 @@ We can list sessions with :meth:`Server.list_sessions`:
     >>> server.list_sessions()
     [Session($3 a_tmuxp_session), Session($1 tmuxp)]
 
-This returns a list of :class:`Session` objects you can grab. You could
-our current session with:
+This returns a list of :class:`Session` objects you can grab. We can
+find our current session with:
 
 .. code-block:: python
 
     >>> server.list_sessions()[0]
 
-That's not guaranteed. tmuxp works against current tmux information, the
-session's name could be changed, or another tmux session may be created, 
-so :meth:`Server.getById` and :meth:`Server.findWhere` exists as a lookup:
+However, this isn't guaranteed, tmuxp works against current tmux information, the
+session's name could be changed, or another tmux session may be created,
+so :meth:`Server.getById` and :meth:`Server.findWhere` exists as a lookup.
 
 Get session by ID
 -----------------
@@ -197,8 +197,8 @@ Playing with our tmux session
 .. todo::
 
   Consider migrating tmuxp to use a ``.execute`` sqlalchemy style and have
-  commands such as ``new_window()`` return CLI output. Also tmuxp could use
-  use "engine" as a way to control if it's using socket's or shell commands
+  commands such as ``new_window()`` return CLI output. Also tmuxp could
+  use "engine" as a way to control if it's using a socket or shell commands
   to handle tmux.
 
 We now have access to ``session`` from above with all of the methods
@@ -231,23 +231,20 @@ Method 1: Use passthrough to tmux's ``target`` system.
 
     >>> session.kill_window("ha in")
 
-The window in the bg dissapeared. This was the equivalent of ``$ tmux kill-window -t'ha in'``
+The window in the bg dissappeared. This was the equivalent of ``$ tmux kill-window -t'ha in'``
 
-Internally, tmux uses ``target``. It's specific behavior depends on what the target is, view
-the manpage for tmux for more.
+Internally, tmux uses ``target``. Its specific behavior depends on what the target is, view the tmux manpage for more information.
 
-    This section contains a list of the commands supported by tmux.  Most commands accept the
-    optional -t argument with one of target-client, target-session target-window, or target-pane. 
+    This section contains a list of the commands supported by tmux.  Most commands accept the optional -t argument with one of target-client, target-session target-window, or target-pane.
 
-In this case, you can also go back in time an recreate the window again. The CLI should have history,
-so press the up arrow key should work.
+In this case, you can also go back in time and recreate the window again. The CLI should have history, so navigate up with the arrow key.
 
 .. code-block:: python
 
     >>> session.new_window(attach=False, window_name="ha in the bg")
     Window(@11 3:ha in the bg, Session($3 a_tmuxp_session))
 
-Try to kill by the ``@[0-9999]`` the created window gave you.
+Try to kill the window by the matching id ``@[0-9999]``.
 
 .. code-block:: python
 
@@ -312,7 +309,7 @@ You should have noticed :meth:`Window.rename_window` renamed the window.
 Moving cursor across windows and panes
 --------------------------------------
 
-You have to ways you can move your cursor to new sessions, windows and panes.
+You have two ways you can move your cursor to new sessions, windows and panes.
 
 For one, arguments such as ``attach=False`` can be omittted.
 
@@ -321,7 +318,7 @@ For one, arguments such as ``attach=False`` can be omittted.
     >>> pane = window.split_window()
 
 This gives you the :class:`Pane` along with moving the cursor to a new window. You
-can also use the ``.select_*`` available on the object. In this case, pane has
+can also use the ``.select_*`` available on the object, in this case the pane has
 :meth:`Pane.select_pane()`.
 
 .. code-block:: python
@@ -338,7 +335,7 @@ Sending commands to tmux panes remotely
 ---------------------------------------
 
 You may send commands to panes, windows and sessions **without** them being visible.
-As long as you have the object, or are iterating through a list of them, you can ``.send_keys``.
+As long as you have the object, or are iterating through a list of them, you can use ``.send_keys``.
 
 .. code-block:: python
 
@@ -347,12 +344,10 @@ As long as you have the object, or are iterating through a list of them, you can
     >>> pane.send_keys('echo hey', enter=False)
 
 See the other window, notice that :meth:`Pane.send_keys` has " ``echo hey``" written,
-*still in the prompt*. Note the leading space character so the command won't be added
-to the user's history. Use `pane.cmd('send-keys', text)` to send keys without this
-leading space.
+*still in the prompt*. Note the leading space character so the command won't be added to the user's history. Use `pane.cmd('send-keys', text)` to send keys without this leading space.
 
 ``enter=False`` can be used to send keys without pressing return. In this case,
-you may leave it to the user to press return themselves, or complete a command
+you may leave it to the user to press return himself, or complete a command
 using :meth:`Pane.enter()`:
 
 .. code-block:: python
@@ -363,7 +358,7 @@ Final notes
 -----------
 
 These objects created use tmux's internal usage of ID's to make servers,
-sessions, windows and panes accessible at the object level. 
+sessions, windows and panes accessible at the object level.
 
 You don't have to see the tmux session to be able to orchestrate it. After
 all, :class:`WorkspaceBuilder` uses these same internals to build your
