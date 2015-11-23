@@ -404,15 +404,11 @@ class Server(TmuxRelationalObject):
             $ tmux new-session -s <session_name>
         :type session_name: string
 
-        :param detach: create session background::
+        :param attach: create session in the foreground. ``attach=False`` is
+        equivalent to::
 
             $ tmux new-session -d
-        :type detach: bool
-
-        :param attach_if_exists: if the session_name exists, attach it.
-                                 if False, this method will raise a
-                                 :exc:`tmuxp.exc.TmuxSessionExists` exception
-        :type attach_if_exists: bool
+        :type attach: bool
 
         :param kill_session: Kill current session if ``$ tmux has-session``
                              Useful for testing workspaces.
