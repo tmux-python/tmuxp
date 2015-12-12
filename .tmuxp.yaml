@@ -8,7 +8,7 @@ windows:
   options:
     main-pane-height: 35
   shell_command_before:
-    - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate'
+    - '[ -d .venv -a -f .venv/bin/activate ] && source .venv/bin/activate'
   panes:
   - focus: true
   - pane 
@@ -19,7 +19,7 @@ windows:
     main-pane-height: 35
   start_directory: doc/
   shell_command_before: 
-    - '[ -d ../.env -a -f ../.env/bin/activate ] && source ../.env/bin/activate'
+    - '[ -d ../.venv -a -f ../.venv/bin/activate ] && source ../.venv/bin/activate'
   panes:
   - focus: true
   - pane

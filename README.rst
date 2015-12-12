@@ -68,8 +68,8 @@ install dev     .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git tmuxp
                     $ cd ./tmuxp
-                    $ virtualenv .env
-                    $ source .env/bin/activate
+                    $ virtualenv .venv
+                    $ source .venv/bin/activate
                     $ pip install -e .
 
                 See the `developing and testing`_ page in the docs for

@@ -75,7 +75,7 @@ def which(exe=None, throw=True):
 
 
 project_dir = os.path.dirname(os.path.realpath(__file__))
-env_dir = os.path.join(project_dir, '.env')
+env_dir = os.path.join(project_dir, '.venv')
 pip_bin = os.path.join(env_dir, 'bin', 'pip')
 python_bin = os.path.join(env_dir, 'bin', 'python')
 virtualenv_bin = which('virtualenv', throw=False)

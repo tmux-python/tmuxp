@@ -14,7 +14,7 @@
       }, 
       "layout": "main-horizontal", 
       "shell_command_before": [
-        "[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate"
+        "[ -d .venv -a -f .venv/bin/activate ] && source .venv/bin/activate"
       ], 
       "focus": true, 
       "window_name": "tmuxp"
@@ -31,7 +31,7 @@
       "start_directory": "doc/", 
       "layout": "main-horizontal", 
       "shell_command_before": [
-        "[ -d ../.env -a -f ../.env/bin/activate ] && source ../.env/bin/activate"
+        "[ -d ../.venv -a -f ../.venv/bin/activate ] && source ../.venv/bin/activate"
       ], 
       "options": {
         "main-pane-height": 35
