@@ -4,6 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+CURRENT
+-------
+
+- [internal] switch to ``.venv`` for virtualenv directory to not conflict
+  with ``.env`` (used by `autoenv`_).
+
+.. _autoenv: https://github.com/kennethreitz/autoenv
+
 0.9.2
 -----
 
