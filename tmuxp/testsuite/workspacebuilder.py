@@ -9,19 +9,18 @@ tmuxp.tests.workspacebuilder
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import os
-import platform
 import logging
-import unittest
+import os
 import tempfile
 import time
+import unittest
 
 import kaptan
 
+from .helpers import TmuxTestCase
 from .. import Window, config, exc
 from .._compat import text_type
 from ..workspacebuilder import WorkspaceBuilder
-from .helpers import TestCase, TmuxTestCase, temp_session
 
 logger = logging.getLogger(__name__)
 

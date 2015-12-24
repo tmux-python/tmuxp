@@ -8,12 +8,12 @@ tmuxp.server
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import os
 import logging
+import os
 
-from .util import tmux_cmd, TmuxRelationalObject
-from .session import Session
 from . import formats, exc
+from .session import Session
+from .util import tmux_cmd, TmuxRelationalObject
 
 logger = logging.getLogger(__name__)
 

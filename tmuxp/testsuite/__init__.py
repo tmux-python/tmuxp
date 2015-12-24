@@ -9,8 +9,8 @@ from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
 import logging
-import sys
 import pkgutil
+import sys
 
 try:
     import unittest2 as unittest

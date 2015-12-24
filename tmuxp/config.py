@@ -8,9 +8,9 @@ tmuxp.config
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import os
 import copy
 import logging
+import os
 
 from . import exc
 from ._compat import string_types

@@ -9,17 +9,17 @@ tmuxp.tests.config
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
+import logging
 import os
 import shutil
 import tempfile
-import logging
 import unittest
 
 import kaptan
 
+from .helpers import TestCase
 from .. import config, exc
 from .._compat import support
-from .helpers import TestCase
 
 
 

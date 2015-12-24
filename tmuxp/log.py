@@ -12,8 +12,7 @@ from __future__ import absolute_import, division, print_function, \
 import logging
 import time
 
-from colorama import init
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
 LEVEL_COLORS = {
     'DEBUG': Fore.BLUE,  # Blue

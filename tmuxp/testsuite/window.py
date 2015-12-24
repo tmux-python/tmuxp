@@ -12,9 +12,8 @@ from __future__ import absolute_import, division, print_function, \
 import logging
 import unittest
 
-from .. import Pane, Window, Server
-from . import t
 from .helpers import TmuxTestCase
+from .. import Pane, Window, Server
 
 
 logger = logging.getLogger(__name__)

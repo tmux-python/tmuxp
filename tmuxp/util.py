@@ -8,19 +8,16 @@ tmuxp.util
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import unittest
 import collections
-import subprocess
-import re
-import os
-import sys
-import shlex
 import logging
-
+import os
+import re
+import shlex
+import subprocess
+import sys
 from distutils.version import StrictVersion
 
 from . import exc
-
 from ._compat import console_to_str
 
 logger = logging.getLogger(__name__)

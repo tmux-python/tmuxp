@@ -8,20 +8,17 @@ tmuxp.cli
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
+import argparse
+import logging
 import os
 import sys
-import argparse
-import re
-import logging
-
-from distutils.util import strtobool
 
 import argcomplete
 import kaptan
 
-from .__about__ import __version__
 from . import log, util, exc, WorkspaceBuilder, Server, config
-from ._compat import ascii_lowercase, input, string_types
+from .__about__ import __version__
+from ._compat import input, string_types
 from .workspacebuilder import freeze
 
 

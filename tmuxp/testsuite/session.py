@@ -9,14 +9,13 @@ tmuxp.tests.session
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
+import logging
+import unittest
 from random import randint
 
-import unittest
-import logging
-
-from .. import Session, Window, Pane
-from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
 from . import t
+from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
+from .. import Session, Window, Pane
 
 logger = logging.getLogger(__name__)
 

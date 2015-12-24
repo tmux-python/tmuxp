@@ -4,8 +4,7 @@
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-from .helpers import get_test_session_name, temp_session, TestCase, \
-    TmuxTestCase, unittest  # , temp_window, temp_pane
+from .helpers import get_test_session_name, temp_session, TmuxTestCase, unittest
 
 
 class TempSession(TmuxTestCase):
