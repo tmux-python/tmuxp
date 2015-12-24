@@ -134,22 +134,25 @@ Run tests on save
 You can re-run tests automatically on file edit.
 
 .. note::
-    This requires and installation of ``sniffer`` from pypi.
+    This requires ``entr(1)``.
 
-Install `sniffer`_ from `pypi`_:
-
-.. code-block:: bash
-
-    $ pip install sniffer
+Install `entr`_.  Packages are available available on most Linux and BSD
+variants, including Debian, Ubuntu, FreeBSD, OS X.
 
 To run all tests upon editing any ``.py`` file:
 
 .. code-block:: bash
 
-    $ sniffer
+    $ find . -type f -not -path '*/\.*' | grep -i '.*[.]py$' | entr -c ./run-tests.py
 
-.. _sniffer: https://github.com/jeffh/sniffer
-.. _pypi: https://pypi.python.org/pypi
+.. _entr: http://entrproject.org/
+
+Rebuild the documentation when an ``.rst`` file is edited:
+
+.. code-block:: bash
+
+   $ cd doc
+   $ find .. -print | grep -i '.*[.]rst' | entr -c make html
 
 .. _tmuxp developer config:
 
