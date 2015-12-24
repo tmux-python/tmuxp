@@ -9,16 +9,14 @@ tmuxp.tests.cli
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
+import logging
 import os
 import shutil
 import tempfile
-import logging
 import unittest
 
-import kaptan
-
-from .. import config, cli
 from .helpers import TestCase
+from .. import config, cli
 
 logger = logging.getLogger(__name__)
 

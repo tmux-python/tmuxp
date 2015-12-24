@@ -4,9 +4,8 @@
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import time
-import logging
 import contextlib
+import logging
 
 try:
     import unittest2 as unittest
@@ -16,7 +15,7 @@ except ImportError:  # Python 2.7
 from random import randint
 
 from . import t
-from .. import Server, log, exc
+from .. import exc
 
 logger = logging.getLogger(__name__)
 

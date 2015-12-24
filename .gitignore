@@ -12,6 +12,7 @@ core.*
 
 .tox
 
+.idea
 .ropeproject
 
 # vim swap files

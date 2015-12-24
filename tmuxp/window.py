@@ -8,8 +8,8 @@ tmuxp.window
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import os
 import logging
+import os
 
 from . import util, formats, exc
 from .pane import Pane

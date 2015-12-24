@@ -9,18 +9,14 @@ tmuxp.tests.util
 from __future__ import absolute_import, division, print_function, \
     with_statement, unicode_literals
 
-import random
 import logging
-import unittest
-import subprocess
 import os
-
-from .. import exc
-from ..util import has_required_tmux_version, run_before_script
-from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
-
+import unittest
 
 from .helpers import TmuxTestCase, TestCase
+from .. import exc
+from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
+from ..util import has_required_tmux_version, run_before_script
 
 logger = logging.getLogger(__name__)
 

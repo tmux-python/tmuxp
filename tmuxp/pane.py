@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function, \
 
 import logging
 
-from . import util, formats, exc
+from . import util, exc
 
 
 logger = logging.getLogger(__name__)
