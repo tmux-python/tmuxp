@@ -12,7 +12,8 @@ windows:
   panes:
   - focus: true
   - pane 
-  - find . -type f -not -path '*/\.*' | grep -i '.*[.]py$' | entr -c ./run-tests.py
+  - if command -v entr > /dev/null; then find . -type f -not -path '*/\.*' | grep -i '.*[.]py$' | entr -c ./run-tests.py; else ./run-tests.py; echo "\nInstall entr(1) to automatically run tests on file change.\n See http://entrproject.org/"; fi
+
 - window_name: docs
   layout: main-horizontal
   options:
@@ -24,4 +25,4 @@ windows:
   - focus: true
   - pane
   - echo 'docs built to <http://0.0.0.0:8003/_build/html>'; python -m SimpleHTTPServer 8003
-  - find .. -print | grep -i '.*[.]rst' | entr -c make html
+  - if command -v entr > /dev/null; then find .. -print | grep -i '.*[.]rst' | entr -c make html; else make html; echo "\nInstall entr(1) to automatically rebuild documentation when files change. \nSee http://entrproject.org/"; fi

@@ -108,11 +108,12 @@ except ImportError:
 def main():
     if not which('entr', throw=False):
         message = (
-            'entr(1) is used in this app as a cross platform file watcher.'
+            '\nentr(1) is used in this app as a cross platform file watcher.'
             'You can install it via your package manager on most POSIX '
-            'systems. See the site at http://entrproject.org/'
+            'systems. See the site at http://entrproject.org/\n'
         )
-        fail(message)
+        print(message)
+
     if not virtualenv_exists:
         virtualenv_bin = which('virtualenv', throw=False)
 
