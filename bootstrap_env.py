@@ -106,6 +106,14 @@ except ImportError:
 
 
 def main():
+    if not which('entr', throw=False):
+        message = (
+            '\nentr(1) is used in this app as a cross platform file watcher.'
+            'You can install it via your package manager on most POSIX '
+            'systems. See the site at http://entrproject.org/\n'
+        )
+        print(message)
+
     if not virtualenv_exists:
         virtualenv_bin = which('virtualenv', throw=False)
 
@@ -115,24 +123,6 @@ def main():
 
         subprocess.check_call(
             [pip_bin, 'install', '-e', project_dir]
-        )
-
-    if not os.path.isfile(os.path.join(env_dir, 'bin', 'sniffer')):
-        subprocess.check_call(
-            [pip_bin, 'install', 'sniffer']
-        )
-
-    if platform.system() == 'Linux':
-        subprocess.check_call(
-            [pip_bin, 'install', 'pyinotify']
-        )
-    elif platform.system() == 'Darwin':
-        subprocess.check_call(
-            [pip_bin, 'install', 'MacFSEvents']
-        )
-    elif platform.system() == 'Windows':
-        subprocess.check_call(
-            [pip_bin, 'install', 'pywin32']
         )
 
     if not os.path.isfile(os.path.join(env_dir, 'bin', 'sphinx-quickstart')):
