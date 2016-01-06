@@ -33,8 +33,6 @@ if PY2:
     from string import lower as ascii_lowercase
     import urlparse
 
-    from test import test_support as support
-
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
 
     def implements_to_string(cls):
@@ -72,8 +70,6 @@ else:
     import urllib.parse as urllib
     import urllib.parse as urlparse
     from urllib.request import urlretrieve
-
-    from test import support
 
     console_encoding = sys.__stdout__.encoding
 

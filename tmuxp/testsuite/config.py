@@ -18,9 +18,8 @@ import unittest
 import kaptan
 
 from .helpers import TestCase
+from .util import EnvironmentVarGuard
 from .. import config, exc
-from .._compat import support
-
 
 
 logger = logging.getLogger(__name__)
@@ -1090,7 +1089,7 @@ class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
-        with support.EnvironmentVarGuard() as env:
+        with EnvironmentVarGuard() as env:
             env.set(env_key, env_value)
             sconfig = config.expand(sconfig)
             self.assertEqual("%s/test" % env_value, sconfig['start_directory'])
