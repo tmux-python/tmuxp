@@ -9,8 +9,10 @@ CURRENT
 
 - [internal] switch to ``.venv`` for virtualenv directory to not conflict
   with ``.env`` (used by `autoenv`_).
+- [internal] move to `entr(1)`_ for file watching in tests. update docs.
 
 .. _autoenv: https://github.com/kennethreitz/autoenv
+.. _entr(1): http://entrproject.org/
 
 0.9.2
 -----
