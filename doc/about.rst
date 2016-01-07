@@ -38,11 +38,11 @@ Similarities
 **Inlining / shorthand configuration** All three support short-hand and
 simplified markup for panes that have one command.
 
+**Maturity and stability** As of 2016, all three are considered stable,
+well tested and adopted.
+
 Missing
 ~~~~~~~
-
-**Stability** tmuxinator and teamocil are far more stable and
-well-developed than tmuxp.
 
 **Version support** tmuxp only supports ``tmux >= 1.8``. Teamocil and
 tmuxinator may have support for earlier versions.
