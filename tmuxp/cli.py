@@ -399,7 +399,11 @@ def command_load(args):
     """Load a session from a tmuxp session file."""
 
     if isinstance(args.config, list):
-        args.config = ' '.join(args.config)
+        for config in args.config:
+            new_args = argparse.Namespace(**args.__dict__)
+            new_args.config = config
+            command_load(new_args)
+        return
 
     if '.' == args.config:
         if config.in_cwd():
