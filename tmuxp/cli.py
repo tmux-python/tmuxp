@@ -400,10 +400,10 @@ def command_load(args):
 
     if isinstance(args.config, list):
         # Load each configuration but the last to the background
-        for config in args.config[:-1]:
+        for cfg in args.config[:-1]:
             new_args = argparse.Namespace(**args.__dict__)
             new_args.detached = True
-            new_args.config = config
+            new_args.config = cfg
             command_load(new_args)
 
         # The last one will be detached if specified on the command line
