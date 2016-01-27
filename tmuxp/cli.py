@@ -829,8 +829,9 @@ def get_parser():
     load = subparsers.add_parser(
         'load',
         parents=[server_parser, client_parser],
-        help='Load a configuration from file. Attach the session. If session '
-             'already exists, offer to attach instead.'
+        help='Load configurations from one or more files. '
+             'Attach to the session described by the last file. '
+             'If it already exists, offer to attach instead.'
     )
 
     load.add_argument(
@@ -847,7 +848,7 @@ def get_parser():
         '-d',
         dest='detached',
         default=None,
-        help='Load a session without attaching to it.',
+        help='Load the last session without attaching to it.',
         action='store_true'
     )
 
