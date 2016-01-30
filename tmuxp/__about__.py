@@ -5,4 +5,4 @@ __description__ = 'Save and load tmux sessions thru JSON, YAML configs. Control 
 __email__ = 'tony@git-pull.com'
 __author__ = 'Tony Narlock'
 __license__ = 'BSD'
-__copyright__ = 'Copyright 2013 Tony Narlock'
+__copyright__ = 'Copyright 2013-2016 Tony Narlock'
