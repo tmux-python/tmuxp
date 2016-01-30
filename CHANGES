@@ -4,12 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
-CURRENT
+0.10.0
 -------
 
-- Load multiple tmux sessions at once, thanks `@madprog`_. `#135`_.
+- [cli] Load multiple tmux sessions at once, thanks `@madprog`_, `#135`_.
+- [docs] README and Documentation fixes `#133`_ `#131`_.
 
-
+.. _#131: https://github.com/tony/tmuxp/pull/131
+.. _#133: https://github.com/tony/tmuxp/pull/133
 .. _#135: https://github.com/tony/tmuxp/pull/135
 .. _@madprog: https://github.com/madprog
 
