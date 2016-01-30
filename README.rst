@@ -26,7 +26,7 @@ How tmuxp helps you tmux:
 - Load multiple tmux configurations ``tmuxp load config1.yaml
   config2.yaml``.
 - Switch sessions from inside a current tmux session. tmuxp will detect
-  if you're in a session and offer to ``switch-session`` for you.
+  if you're in a session and offer to ``switch-client`` for you.
 - Offer to re-attach a tmux session if your config is already loaded.
 - For more things you can do with tmuxp, see `Examples`_.
 - CLI auto-completion with `bash, zsh and tcsh`_.
