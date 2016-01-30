@@ -4,6 +4,15 @@ Changelog
 
 Here you can find the recent changes to tmuxp.
 
+CURRENT
+-------
+
+- Load multiple tmux sessions at once, thanks `@madprog`_. `#135`_.
+
+
+.. _#135: https://github.com/tony/tmuxp/pull/135
+.. _@madprog: https://github.com/madprog
+
 0.9.3
 -----
 
