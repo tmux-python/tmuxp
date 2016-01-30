@@ -3,6 +3,9 @@
 #####
 tmuxp
 #####
+====================
+tmux session manager
+====================
 
 .. image:: _static/tmuxp-demo.gif
     :width: 100%
