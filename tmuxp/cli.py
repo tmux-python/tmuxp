@@ -399,7 +399,18 @@ def command_load(args):
     """Load a session from a tmuxp session file."""
 
     if isinstance(args.config, list):
-        args.config = ' '.join(args.config)
+        # Load each configuration but the last to the background
+        for cfg in args.config[:-1]:
+            new_args = argparse.Namespace(**args.__dict__)
+            new_args.detached = True
+            new_args.config = cfg
+            command_load(new_args)
+
+        # The last one will be detached if specified on the command line
+        new_args = argparse.Namespace(**args.__dict__)
+        new_args.config = args.config[-1]
+        command_load(new_args)
+        return
 
     if '.' == args.config:
         if config.in_cwd():
@@ -818,8 +829,9 @@ def get_parser():
     load = subparsers.add_parser(
         'load',
         parents=[server_parser, client_parser],
-        help='Load a configuration from file. Attach the session. If session '
-             'already exists, offer to attach instead.'
+        help='Load configurations from one or more files. '
+             'Attach to the session described by the last file. '
+             'If it already exists, offer to attach instead.'
     )
 
     load.add_argument(
@@ -836,7 +848,7 @@ def get_parser():
         '-d',
         dest='detached',
         default=None,
-        help='Load a session without attaching to it.',
+        help='Load the last session without attaching to it.',
         action='store_true'
     )
 

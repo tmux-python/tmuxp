@@ -73,6 +73,14 @@ Load session
 
         $ tmuxp load .
 
+    Multiple sessions can be loaded at once. The first ones will be created
+    without being attached. The last one will be attached if there is no
+    ``-d`` flag on the command line.
+
+    .. code-block:: bash
+
+        $ tmuxp load <filename1> <filename2> ...
+
 .. _cli_import:
 
 Import
