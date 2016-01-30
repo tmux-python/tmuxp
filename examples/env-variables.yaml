@@ -1,14 +1,14 @@
-start_directory: "{PWD}/test"
-shell_command_before: "echo {PWD}"
-before_script: "{MY_ENV_VAR}/test3.sh"
-session_name: session - {USER} ({MY_ENV_VAR})
+start_directory: "${PWD}/test"
+shell_command_before: "echo ${PWD}"
+before_script: "${MY_ENV_VAR}/test3.sh"
+session_name: session - ${USER} (${MY_ENV_VAR})
 windows:
 - window_name: editor
   panes:
   - shell_command:
     - tail -F /var/log/syslog
   start_directory: /var/log
-- window_name: logging for {USER}
+- window_name: logging for ${USER}
   automatic_rename: true
   panes:
   - shell_command:
