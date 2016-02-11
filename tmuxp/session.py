@@ -330,6 +330,27 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
                 proc.stderr = proc.stderr[0]
             raise ValueError('tmux set-option stderr: %s' % proc.stderr)
 
+    def set_environment(self, name, value):
+        """Set environment ``$ tmux set-environment <name> <value>``.
+
+        todo: needs tests
+
+        :param name: the environment variable name. such as 'PATH'.
+        :type option: string
+        :param value: environment value.
+        :type value: string
+
+        """
+
+        proc = self.cmd(
+            'set-environment', name, value
+        )
+
+        if proc.stderr:
+            if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
+                proc.stderr = proc.stderr[0]
+            raise ValueError('tmux set-environment stderr: %s' % proc.stderr)
+
     def show_options(self, option=None, g=False):
         """Return a dict of options for the window.
 

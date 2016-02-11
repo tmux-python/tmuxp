@@ -186,7 +186,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         self.assertNotEqual(w.get('window_name'), 'man')
 
         pane_path = '/usr'
-        for i in range(10):
+        for i in range(20):
             p = w.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
