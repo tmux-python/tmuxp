@@ -87,7 +87,7 @@ class EnvironmentMixin(object):
         if name:
             tmux_args += [name]
         vars = self.cmd(*tmux_args).stdout
-        vars = [tuple(item.split('=')) for item in vars]
+        vars = [tuple(item.split('=', 1)) for item in vars]
         vars_dict = {}
         for t in vars:
             if len(t) == 2:
