@@ -162,8 +162,8 @@ JSON
 .. literalinclude:: ../examples/start-directory.json
     :language: json
 
-Environment variables
----------------------
+Environment variable replacing
+------------------------------
 
 tmuxp will replace environment variables wrapped in curly brackets
 for the following variables:
@@ -204,6 +204,23 @@ JSON
 ~~~~
 
 .. literalinclude:: ../examples/env-variables.json
+    :language: json
+
+Environment variables
+---------------------
+
+tmuxp will set session environment variables.
+
+YAML
+~~~~
+
+.. literalinclude:: ../examples/session-environment.yaml
+    :language: yaml
+
+JSON
+~~~~
+
+.. literalinclude:: ../examples/session-environment.json
     :language: json
 
 Focusing
