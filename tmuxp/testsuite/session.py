@@ -140,9 +140,50 @@ class Options(TmuxTestCase):
             self.session.set_option('afewewfew', 43)
 
 
+class Environment(TmuxTestCase):
+
+    def test_show_environment(self):
+        """Session.show_environment() returns dict."""
+
+        vars = self.session.show_environment()
+        self.assertIsInstance(vars, dict)
+
+    def test_set_show_environment_single(self):
+        """Set environment then Session.show_environment(key)."""
+
+        self.session.set_environment('FOO', 'BAR')
+        self.assertEqual('BAR', self.session.show_environment('FOO'))
+
+        self.session.set_environment('FOO', 'DAR')
+        self.assertEqual('DAR', self.session.show_environment('FOO'))
+
+        self.assertEqual('DAR', self.session.show_environment()['FOO'])
+
+    def test_show_environment_not_set(self):
+        """Not set environment variable returns None."""
+        self.assertEqual(None, self.session.show_environment('BAR'))
+
+    def test_remove_environment(self):
+        """Remove environment variable."""
+        self.assertEqual(None, self.session.show_environment('BAM'))
+        self.session.set_environment('BAM', 'OK')
+        self.assertEqual('OK', self.session.show_environment('BAM'))
+        self.session.remove_environment('BAM')
+        self.assertEqual(None, self.session.show_environment('BAM'))
+
+    def test_unset_environment(self):
+        """Unset environment variable."""
+        self.assertEqual(None, self.session.show_environment('BAM'))
+        self.session.set_environment('BAM', 'OK')
+        self.assertEqual('OK', self.session.show_environment('BAM'))
+        self.session.unset_environment('BAM')
+        self.assertEqual(None, self.session.show_environment('BAM'))
+
+        
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Options))
+    suite.addTest(unittest.makeSuite(Environment))
     suite.addTest(unittest.makeSuite(SessionNewTest))
     suite.addTest(unittest.makeSuite(SessionTest))
     return suite

@@ -67,6 +67,29 @@ class ServerTest(TmuxTestCase):
         self.assertIn('-8', proc.cmd)
         self.assertNotIn('-2', proc.cmd)
 
+class Environment(TmuxTestCase):
+
+    def test_show_environment(self):
+        """Server.show_environment() returns dict."""
+
+        vars = self.server.show_environment()
+        self.assertIsInstance(vars, dict)
+
+    def test_set_show_environment_single(self):
+        """Set environment then Server.show_environment(key)."""
+
+        self.server.set_environment('FOO', 'BAR')
+        self.assertEqual('BAR', self.server.show_environment('FOO'))
+
+        self.server.set_environment('FOO', 'DAR')
+        self.assertEqual('DAR', self.server.show_environment('FOO'))
+
+        self.assertEqual('DAR', self.server.show_environment()['FOO'])
+
+    def test_show_environment_not_set(self):
+        """Unset environment variable returns None."""
+        self.assertEqual(None, self.server.show_environment('BAR'))
+
 
 def suite():
     suite = unittest.TestSuite()

@@ -14,11 +14,12 @@ import os
 from . import formats, exc
 from .session import Session
 from .util import tmux_cmd, TmuxRelationalObject
+from .common import EnvironmentMixin
 
 logger = logging.getLogger(__name__)
 
 
-class Server(TmuxRelationalObject):
+class Server(TmuxRelationalObject, EnvironmentMixin):
 
     """The :term:`tmux(1)` server.
 
@@ -54,6 +55,7 @@ class Server(TmuxRelationalObject):
         colors=None,
         **kwargs
     ):
+        EnvironmentMixin.__init__(self, '-g')
         self._windows = []
         self._panes = []
 
@@ -383,7 +385,7 @@ class Server(TmuxRelationalObject):
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
-
+        
     def new_session(self,
                     session_name=None,
                     kill_session=False,
