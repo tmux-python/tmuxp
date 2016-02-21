@@ -13,11 +13,12 @@ import os
 
 from . import util, formats, exc
 from .window import Window
+from .common import EnvironmentMixin
 
 logger = logging.getLogger(__name__)
 
 
-class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
+class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixin):
 
     """:term:`tmux(1)` session.
 
@@ -28,7 +29,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     childIdAttribute = 'window_id'
 
     def __init__(self, server=None, **kwargs):
-
+        EnvironmentMixin.__init__(self)
         self.server = server
 
         if not 'session_id' in kwargs:
@@ -329,27 +330,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
             if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
                 proc.stderr = proc.stderr[0]
             raise ValueError('tmux set-option stderr: %s' % proc.stderr)
-
-    def set_environment(self, name, value):
-        """Set environment ``$ tmux set-environment <name> <value>``.
-
-        todo: needs tests
-
-        :param name: the environment variable name. such as 'PATH'.
-        :type option: string
-        :param value: environment value.
-        :type value: string
-
-        """
-
-        proc = self.cmd(
-            'set-environment', name, value
-        )
-
-        if proc.stderr:
-            if isinstance(proc.stderr, list) and len(proc.stderr) == int(1):
-                proc.stderr = proc.stderr[0]
-            raise ValueError('tmux set-environment stderr: %s' % proc.stderr)
 
     def show_options(self, option=None, g=False):
         """Return a dict of options for the window.
