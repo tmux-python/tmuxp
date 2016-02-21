@@ -1,0 +1,15 @@
+{
+  "environment": {
+    "EDITOR": "/usr/bin/vim",
+    "HOME": "/tmp/hm",
+  },  
+  "windows": [
+    {
+      "panes": [
+        null, 
+      ], 
+      "window_name": "Blank pane test"
+    }, 
+  ], 
+  "session_name": "Environment variables test"
+}
