@@ -309,7 +309,7 @@ Windows can be *named upon creation*.
 
 .. code-block:: bash
 
-    $ tmuxp new-window [-n window-name]
+    $ tmux new-window [-n window-name]
 
 Windows can be *renamed after creation*.
 
