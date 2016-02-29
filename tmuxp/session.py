@@ -13,11 +13,12 @@ import os
 
 from . import util, formats, exc
 from .window import Window
+from .common import EnvironmentMixin
 
 logger = logging.getLogger(__name__)
 
 
-class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
+class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixin):
 
     """:term:`tmux(1)` session.
 
@@ -28,7 +29,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject):
     childIdAttribute = 'window_id'
 
     def __init__(self, server=None, **kwargs):
-
+        EnvironmentMixin.__init__(self)
         self.server = server
 
         if not 'session_id' in kwargs:

@@ -186,7 +186,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
         self.assertNotEqual(w.get('window_name'), 'man')
 
         pane_path = '/usr'
-        for i in range(10):
+        for i in range(20):
             p = w.attached_pane()
             p.server._update_panes()
             if p.get('pane_current_path') == pane_path:
@@ -254,6 +254,32 @@ class WindowOptions(TmuxTestCase):
             w.select_layout(wconf['layout'])
 
 
+class EnvironmentVariables(TmuxTestCase):
+
+    yaml_config = """
+    session_name: test env vars
+    start_directory: '~'
+    environment:
+      FOO: BAR
+      PATH: /tmp
+    windows:
+    - layout: main-horizontal
+      panes:
+      - pane
+      window_name: editor
+    """
+
+    def test_environment_variables(self):
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+        builder.build(self.session)
+
+        self.assertEqual('BAR', self.session.show_environment('FOO'))
+        self.assertEqual('/tmp', self.session.show_environment('PATH'))
+        
 class WindowAutomaticRename(TmuxTestCase):
 
     yaml_config = """
@@ -869,4 +895,5 @@ def suite():
     suite.addTest(unittest.makeSuite(WindowAutomaticRename))
     suite.addTest(unittest.makeSuite(WindowIndexTest))
     suite.addTest(unittest.makeSuite(WindowOptions))
+    suite.addTest(unittest.makeSuite(EnvironmentVariables))
     return suite

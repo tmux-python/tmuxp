@@ -189,7 +189,13 @@ def expand(sconf, cwd=None, parent=None):
         sconf['session_name'] = expandshell(sconf['session_name'])
     if 'window_name' in sconf:
         sconf['window_name'] = expandshell(sconf['window_name'])
-
+    if 'environment' in sconf:
+        for key in sconf['environment']:
+            val = sconf['environment'][key]
+            val = expandshell(val)
+            if any(val.startswith(a) for a in ['.', './']):
+                val = os.path.normpath(os.path.join(cwd, val))
+            sconf['environment'][key] = val
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:

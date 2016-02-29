@@ -143,6 +143,9 @@ class WorkspaceBuilder(object):
             except Exception as e:
                 self.session.kill_session()
                 raise(e)
+        if 'environment' in self.sconf:
+            for option, value in self.sconf['environment'].items():
+                self.session.set_environment(option, value)
 
         for w, wconf in self.iter_create_windows(session):
             assert(isinstance(w, Window))
