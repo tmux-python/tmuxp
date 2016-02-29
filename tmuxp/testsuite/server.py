@@ -38,14 +38,12 @@ class ServerTest(TmuxTestCase):
 
     def test_socket_path(self):
         """ ``-S`` socket_path  (alternative path for server socket). """
-
         myserver = Server(socket_path='test')
 
         self.assertEqual(myserver.socket_path, 'test')
 
     def test_config(self):
         """ ``-f`` file for tmux(1) configuration. """
-
         myserver = Server(config_file='test')
         self.assertEqual(myserver.config_file, 'test')
 
@@ -67,17 +65,16 @@ class ServerTest(TmuxTestCase):
         self.assertIn('-8', proc.cmd)
         self.assertNotIn('-2', proc.cmd)
 
-class Environment(TmuxTestCase):
+
+class EnvironmentTest(TmuxTestCase):
 
     def test_show_environment(self):
         """Server.show_environment() returns dict."""
-
         vars = self.server.show_environment()
         self.assertIsInstance(vars, dict)
 
     def test_set_show_environment_single(self):
         """Set environment then Server.show_environment(key)."""
-
         self.server.set_environment('FOO', 'BAR')
         self.assertEqual('BAR', self.server.show_environment('FOO'))
 
@@ -94,4 +91,5 @@ class Environment(TmuxTestCase):
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ServerTest))
+    suite.addTest(unittest.makeSuite(EnvironmentTest))
     return suite
