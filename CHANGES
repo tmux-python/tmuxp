@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-CURRENT
--------
+0.11.0
+------
 
 - [cli] [internal] Support for environment settings in configs,
   thanks `@tasdomas`_ (`#137`_)
