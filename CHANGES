@@ -2,10 +2,21 @@
 Changelog
 =========
 
-Here you can find the recent changes to tmuxp.
+Here you can find the recent changes to tmuxp
+
+CURRENT
+-------
+
+- [cli] [internal] Support for environment settings in configs,
+  thanks `@tasdomas`_ (`#137`_)
+- [docs] Spelling correction, thanks `@sehe`_.
+
+.. _@tasdomas: https://github.com/tasdomas
+.. _#137: https://github.com/tony/tmuxp/pull/137
+.. _@sehe: https://github.com/sehe
 
 0.10.0
--------
+------
 
 - [cli] Load multiple tmux sessions at once, thanks `@madprog`_, `#135`_.
 - [docs] README and Documentation fixes `#133`_ `#131`_.
