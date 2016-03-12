@@ -4,6 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+CURRENT
+-------
+
+- [internal] move doc building, tests and watcher to Makefile
+- [internal] update .tmuxp.yaml and .tmuxp.json for Makefile change
+
 0.11.0
 ------
 
