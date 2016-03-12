@@ -7,7 +7,7 @@
           "focus": true
         }, 
         "pane", 
-        "sniffer"
+        "make watch_test"
       ], 
       "options": {
         "main-pane-height": 35
@@ -25,8 +25,8 @@
           "focus": true
         }, 
         "pane", 
-        "echo 'docs built to <http://0.0.0.0:8003/_build/html>'; python -m SimpleHTTPServer 8003", 
-        "sniffer"
+        "make serve", 
+        "make watch"
       ], 
       "start_directory": "doc/", 
       "layout": "main-horizontal", 
