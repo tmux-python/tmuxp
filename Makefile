@@ -8,4 +8,4 @@ build_docs:
 	cd doc && $(MAKE) html
 
 watch_docs:
-	if command -v entr > /dev/null; then find . -type f -not -path '*/\.*' | grep -i '.*[.]rst' | entr -c make build_docs; else make build_docs; echo "\nInstall entr(1) to automatically run tests on file change.\n See http://entrproject.org/"; fi
+	cd doc && $(MAKE) watch_docs
