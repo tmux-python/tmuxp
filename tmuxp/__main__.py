@@ -20,6 +20,6 @@ def run():
     tmuxp.cli.main()
 
 if __name__ == '__main__':
-    exit = run()
+    _exit = run()
     if exit:
-        sys.exit(exit)
+        sys.exit(_exit)

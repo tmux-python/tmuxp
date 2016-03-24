@@ -47,7 +47,7 @@ def run_before_script(script_file):
         if e.errno == 2:
             raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
         else:
-            raise(e)
+            raise e
 
 
 class tmux_cmd(object):
@@ -255,8 +255,7 @@ def which(exe=None):
             return exe
 
         # default path based on busybox's default
-        default_path = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin'
-        search_path = os.environ.get('PATH', default_path)
+        search_path = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin'
 
         for path in search_path.split(os.pathsep):
             full_path = os.path.join(path, exe)

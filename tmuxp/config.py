@@ -28,17 +28,17 @@ def validate_schema(sconf):
     """
 
     # verify session_name
-    if not 'session_name' in sconf:
+    if 'session_name' not in sconf:
         raise exc.ConfigError('config requires "session_name"')
 
-    if not 'windows' in sconf:
+    if 'windows' not in sconf:
         raise exc.ConfigError('config requires list of "windows"')
 
     for window in sconf['windows']:
-        if not 'window_name' in window:
+        if 'window_name' not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
-        if not 'panes' in window:
+        if 'panes' not in window:
             raise exc.ConfigError(
                 'config window %s requires list of panes' %
                 window['window_name']
@@ -64,8 +64,8 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
 
 
 def in_dir(
-    config_dir=os.path.expanduser('~/.tmuxp'),
-    extensions=['.yml', '.yaml', '.json']
+        config_dir=os.path.expanduser('~/.tmuxp'),
+        extensions=['.yml', '.yaml', '.json']
 ):
     """Return a list of configs in ``config_dir``.
 
@@ -80,7 +80,7 @@ def in_dir(
 
     for filename in os.listdir(config_dir):
         if is_config_file(filename, extensions) and \
-           not filename.startswith('.'):
+                not filename.startswith('.'):
             configs.append(filename)
 
     return configs
@@ -102,6 +102,7 @@ def in_cwd():
 
     return configs
 
+
 def expandshell(_path):
     """Return expanded path based on user's ``$HOME`` and ``env``.
 
@@ -115,6 +116,7 @@ def expandshell(_path):
     """
     return os.path.expandvars(os.path.expanduser(_path))
 
+
 def inline(sconf):
     """ Return config in inline form, opposite of :meth:`config.expand`.
 
@@ -125,18 +127,18 @@ def inline(sconf):
     """
 
     if (
-        'shell_command' in sconf and
-        isinstance(sconf['shell_command'], list) and
-        len(sconf['shell_command']) == 1
+                        'shell_command' in sconf and
+                    isinstance(sconf['shell_command'], list) and
+                    len(sconf['shell_command']) == 1
     ):
         sconf['shell_command'] = sconf['shell_command'][0]
 
         if len(sconf.keys()) == int(1):
             sconf = sconf['shell_command']
     if (
-        'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], list) and
-        len(sconf['shell_command_before']) == 1
+                        'shell_command_before' in sconf and
+                    isinstance(sconf['shell_command_before'], list) and
+                    len(sconf['shell_command_before']) == 1
     ):
         sconf['shell_command_before'] = sconf['shell_command_before'][0]
 
@@ -144,7 +146,7 @@ def inline(sconf):
     if 'windows' in sconf:
         sconf['windows'] = [
             inline(window) for window in sconf['windows']
-        ]
+            ]
     if 'panes' in sconf:
         sconf['panes'] = [inline(pane) for pane in sconf['panes']]
 
@@ -221,30 +223,30 @@ def expand(sconf, cwd=None, parent=None):
             )
 
     if (
-        'shell_command' in sconf and
-        isinstance(sconf['shell_command'], string_types)
+                    'shell_command' in sconf and
+                isinstance(sconf['shell_command'], string_types)
     ):
         sconf['shell_command'] = [sconf['shell_command']]
 
     if (
-        'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], string_types)
+                    'shell_command_before' in sconf and
+                isinstance(sconf['shell_command_before'], string_types)
     ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
 
     if (
-        'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], list)
+                    'shell_command_before' in sconf and
+                isinstance(sconf['shell_command_before'], list)
     ):
         sconf['shell_command_before'] = [
             expandshell(scmd) for scmd in sconf['shell_command_before']
-        ]
+            ]
 
     # recurse into window and pane config items
     if 'windows' in sconf:
         sconf['windows'] = [
             expand(window, parent=sconf) for window in sconf['windows']
-        ]
+            ]
     elif 'panes' in sconf:
 
         for pconf in sconf['panes']:
@@ -322,8 +324,8 @@ def trickle(sconf):
                 windowconfig['start_directory'] = session_start_directory
             else:
                 if not any(
-                    windowconfig['start_directory'].startswith(a)
-                    for a in ['~', '/']
+                        windowconfig['start_directory'].startswith(a)
+                        for a in ['~', '/']
                 ):
                     window_start_path = os.path.join(
                         session_start_directory, windowconfig['start_directory']
@@ -351,7 +353,7 @@ def trickle(sconf):
 
             p_index = windowconfig['panes'].index(paneconfig)
             windowconfig['panes'][p_index]['shell_command'] = commands_before
-            #paneconfig['shell_command'] = commands_before
+            # paneconfig['shell_command'] = commands_before
 
     return sconf
 
@@ -425,9 +427,7 @@ def import_tmuxinator(sconf):
     for w in sconf['windows']:
         for k, v in w.items():
 
-            windowdict = {}
-
-            windowdict['window_name'] = k
+            windowdict = {'window_name': k}
 
             if isinstance(v, string_types) or v is None:
                 windowdict['panes'] = [v]
@@ -482,9 +482,8 @@ def import_teamocil(sconf):
 
     for w in sconf['windows']:
 
-        windowdict = {}
+        windowdict = {'window_name': w['name']}
 
-        windowdict['window_name'] = w['name']
         if 'clear' in w:
             windowdict['clear'] = w['clear']
 

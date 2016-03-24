@@ -46,10 +46,10 @@ def prompt(name, default=None):
 
     """
 
-    prompt = name + (default and ' [%s]' % default or '')
-    prompt += name.endswith('?') and ' ' or ': '
+    _prompt = name + (default and ' [%s]' % default or '')
+    _prompt += name.endswith('?') and ' ' or ': '
     while True:
-        rv = input(prompt)
+        rv = input(_prompt)
         if rv:
             return rv
         if default is not None:
@@ -77,11 +77,11 @@ def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
     else:
         prompt_choice = 'y/N'
 
-    prompt = name + ' [%s]' % prompt_choice
-    prompt += name.endswith('?') and ' ' or ': '
+    _prompt = name + ' [%s]' % prompt_choice
+    _prompt += name.endswith('?') and ' ' or ': '
 
     while True:
-        rv = input(prompt)
+        rv = input(_prompt)
         if not rv:
             return default
         if rv.lower() in yes_choices:
@@ -633,7 +633,7 @@ def command_convert(args):
 
     if 'json' in ext:
         if args.answer_yes or prompt_yes_no(
-            'convert to <%s> to yaml?' % (fullfile)
+            'convert to <%s> to yaml?' % fullfile
         ):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
@@ -642,15 +642,15 @@ def command_convert(args):
                 'yaml', indent=2, default_flow_style=False
             )
             if args.answer_yes or prompt_yes_no(
-                'Save config to %s?' % (newfile)
+                'Save config to %s?' % newfile
             ):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
-                print('New config saved to %s' % (newfile))
+                print('New config saved to %s' % newfile)
     elif 'yaml' in ext:
         if args.answer_yes or prompt_yes_no(
-            'convert to <%s> to json?' % (fullfile)
+            'convert to <%s> to json?' % fullfile
         ):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
@@ -658,12 +658,12 @@ def command_convert(args):
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
             if args.answer_yes or prompt_yes_no(
-                'Save config to <%s>?' % (newfile)
+                'Save config to <%s>?' % newfile
             ):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
-                print('New config saved to <%s>.' % (newfile))
+                print('New config saved to <%s>.' % newfile)
 
 
 def command_attach_session(args):
@@ -898,7 +898,7 @@ def get_parser():
         help='''\
         Checks current ~/.teamocil and current directory for yaml files.
         '''
-    ).completer = TeamocilCompleter(allowednames=('.yml'), directories=False)
+    ).completer = TeamocilCompleter(allowednames='.yml', directories=False)
     import_teamocil.set_defaults(callback=command_import_teamocil)
 
     import_tmuxinator = importsubparser.add_parser(
@@ -920,7 +920,7 @@ def get_parser():
         help='''\
         Checks current ~/.tmuxinator and current directory for yaml files.
         '''
-    ).completer = TmuxinatorCompleter(allowednames=('.yml'), directories=False)
+    ).completer = TmuxinatorCompleter(allowednames='.yml', directories=False)
 
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
 

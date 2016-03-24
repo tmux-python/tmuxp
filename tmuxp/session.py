@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixin):
-
     """:term:`tmux(1)` session.
 
     Holds :class:`Window` objects.
@@ -32,7 +31,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
         EnvironmentMixin.__init__(self)
         self.server = server
 
-        if not 'session_id' in kwargs:
+        if 'session_id' not in kwargs:
             raise ValueError('Session requires a `session_id`')
         self._session_id = kwargs['session_id']
         self.server._update_windows()
@@ -239,7 +238,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
 
         windows = [
             w for w in windows if w['session_id'] == self.get('session_id')
-        ]
+            ]
 
         return windows
 
@@ -257,7 +256,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
         """
         windows = [
             w for w in self._windows if w['session_id'] == self._session_id
-        ]
+            ]
 
         return [Window(session=self, **window) for window in windows]
 
@@ -265,6 +264,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
     def windows(self):
         """Property / alias to return :meth:`~.list_windows`."""
         return self.list_windows()
+
     #: Alias of :attr:`windows`.
     children = windows
 

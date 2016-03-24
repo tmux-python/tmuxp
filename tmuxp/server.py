@@ -208,7 +208,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         # tmux < 1.8 doesn't have window_id, use window_name
         for w in windows:
-            if not 'window_id' in w:
+            if 'window_id' not in w:
                 w['window_id'] = w['window_name']
 
         if self._windows:
@@ -323,7 +323,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         proc = self.cmd('has-session', '-t%s' % target_session)
 
-        if proc.stdout == []:
+        if not proc.stdout:
             return True
         if any(
             x in proc.stdout for x in

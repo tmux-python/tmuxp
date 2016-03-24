@@ -92,7 +92,7 @@ class AafigDirective(images.Image):
         if isinstance(image_node, nodes.system_message):
             return [image_node]
         text = '\n'.join(self.content)
-	image_node.aafig = dict(options = aafig_options, text = text)
+    image_node.aafig = dict(options = aafig_options, text = text)
         return [image_node]
 
 
@@ -187,7 +187,7 @@ def render_aafigure(app, text, options):
 
     try:
         (visitor, output) = aafigure.render(text, outfn, options)
-	output.close()
+    output.close()
     except aafigure.UnsupportedFormatError, e:
         raise AafigError(str(e))
 
