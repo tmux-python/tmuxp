@@ -14,8 +14,8 @@ except ImportError:  # Python 2.7
 
 from random import randint
 
-from . import t
-from .. import exc
+from tmuxp.testsuite import t
+from tmuxp import exc
 
 logger = logging.getLogger(__name__)
 

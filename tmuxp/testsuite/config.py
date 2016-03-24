@@ -17,9 +17,9 @@ import unittest
 
 import kaptan
 
-from .helpers import TestCase
-from .util import EnvironmentVarGuard
-from .. import config, exc
+from tmuxp.testsuite.helpers import TestCase
+from tmuxp.testsuite.util import EnvironmentVarGuard
+from tmuxp import config, exc
 
 
 logger = logging.getLogger(__name__)
@@ -1097,6 +1097,7 @@ class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
             self.assertEqual("%s/test3" % env_value, sconfig['before_script'])
             self.assertEqual("hi - %s" % env_value, sconfig['session_name'])
             self.assertEqual("logging @ %s" % env_value, sconfig['windows'][1]['window_name'])
+
 
 def suite():
     suite = unittest.TestSuite()

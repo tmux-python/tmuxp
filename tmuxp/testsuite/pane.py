@@ -12,7 +12,7 @@ from __future__ import absolute_import, division, print_function, \
 import logging
 import unittest
 
-from .helpers import TmuxTestCase
+from tmuxp.testsuite.helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 

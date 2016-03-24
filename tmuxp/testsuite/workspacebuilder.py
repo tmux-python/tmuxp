@@ -18,10 +18,10 @@ import subprocess
 
 import kaptan
 
-from .helpers import TmuxTestCase
-from .. import Window, config, exc
-from .._compat import text_type, console_to_str
-from ..workspacebuilder import WorkspaceBuilder
+from tmuxp.testsuite.helpers import TmuxTestCase
+from tmuxp import Window, config, exc
+from tmuxp._compat import text_type, console_to_str
+from tmuxp.workspacebuilder import WorkspaceBuilder
 
 logger = logging.getLogger(__name__)
 

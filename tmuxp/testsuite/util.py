@@ -13,10 +13,10 @@ import logging
 import os
 import unittest
 
-from .helpers import TmuxTestCase, TestCase
-from .. import exc
-from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
-from ..util import has_required_tmux_version, run_before_script
+from tmuxp.testsuite.helpers import TmuxTestCase, TestCase
+from tmuxp import exc
+from tmuxp.exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
+from tmuxp.util import has_required_tmux_version, run_before_script
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +57,7 @@ class EnvironmentVarGuard(object):
             self._environ[envvar] = value
         for unset in self._unset:
             del self._environ[unset]
+
 
 class TmuxVersionTest(TmuxTestCase):
 

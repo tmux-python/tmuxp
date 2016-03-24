@@ -12,9 +12,9 @@ from __future__ import absolute_import, division, print_function, \
 import logging
 import unittest
 
-from . import t
-from .helpers import TmuxTestCase
-from .. import Server
+from tmuxp.testsuite import t
+from tmuxp.testsuite.helpers import TmuxTestCase
+from tmuxp import Server
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class EnvironmentTest(TmuxTestCase):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ServerTest))
-    suite.addTest(unittest.makeSuite(EnvironmentTest))
-    return suite
+    _suite = unittest.TestSuite()
+    _suite.addTest(unittest.makeSuite(ServerTest))
+    _suite.addTest(unittest.makeSuite(EnvironmentTest))
+    return _suite

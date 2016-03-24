@@ -16,9 +16,9 @@ import unittest
 
 import kaptan
 
-from .helpers import TmuxTestCase
-from .. import config
-from ..workspacebuilder import WorkspaceBuilder, freeze
+from tmuxp.testsuite.helpers import TmuxTestCase
+from tmuxp import config
+from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
 

@@ -13,9 +13,9 @@ import logging
 import unittest
 from random import randint
 
-from . import t
-from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
-from .. import Session, Window, Pane
+from tmuxp.testsuite import t
+from tmuxp.testsuite.helpers import TmuxTestCase, TEST_SESSION_PREFIX
+from tmuxp import Session, Window, Pane
 
 logger = logging.getLogger(__name__)
 

@@ -17,14 +17,14 @@ try:
 except ImportError:  # Python 2.7
     import unittest
 
-from .. import log
-from .._compat import string_types, PY2, reraise
-from ..server import Server
+from tmuxp import log
+from tmuxp._compat import string_types, PY2, reraise
+from tmuxp.server import Server
 
 t = Server()
 t.socket_name = 'tmuxp_test'
 
-from . import helpers
+from tmuxp.testsuite import helpers
 
 
 # Logger functionality
