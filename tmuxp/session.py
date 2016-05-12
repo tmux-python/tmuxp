@@ -124,7 +124,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
                    window_name=None,
                    start_directory=None,
                    attach=True,
-                   window_index=''):
+                   window_index='',
+                   window_command=None):
         """Return :class:`Window` from ``$ tmux new-window``.
 
         .. note::
@@ -176,6 +177,9 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
             # empty string for window_index will use the first one available
             '-t%s:%s' % (self.get('session_id'), window_index),
         )
+
+        if window_command:
+            window_args += (window_command,)
 
         proc = self.cmd('new-window', *window_args)
 
