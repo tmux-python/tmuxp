@@ -75,7 +75,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         return self.server.cmd(cmd, *args, **kwargs)
 
-    def send_keys(self, cmd, enter=True):
+    def send_keys(self, cmd, enter=True, suppress_history=True):
         """``$ tmux send-keys`` to the pane.
 
         A leading space character is added to cmd to avoid polluting the
@@ -87,7 +87,8 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type enter: bool
 
         """
-        self.cmd('send-keys', ' ' + cmd)
+        prefix = ' ' if suppress_history else ''
+        self.cmd('send-keys', prefix + cmd)
 
         if enter:
             self.enter()

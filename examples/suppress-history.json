@@ -1,0 +1,42 @@
+{
+  "windows": [
+    {
+      "panes": [
+        "echo 'in the history!'"
+      ],
+      "focus": true,
+      "suppress_history": false,
+      "window_name": "appended"
+    },
+    {
+      "panes": [
+        "echo 'not in the history!'"
+      ],
+      "suppress_history": true,
+      "window_name": "suppressed"
+    },
+    {
+      "panes": [
+        "echo 'default not in the history!'"
+      ],
+      "window_name": "default"
+    },
+    {
+      "panes": [
+        {
+          "shell_command": "echo 'in the history!'",
+	  "suppress_history": false
+        },
+	{
+	  "shell_command": "echo 'not in the history!'",
+	  "suppress_history": true
+	},
+	{
+	  "shell_command": "echo 'default not in the history!'"
+	}
+      ],
+      "window_name": "mixed"
+    }
+  ],
+  "session_name": "suppress"
+}
