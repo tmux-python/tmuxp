@@ -253,6 +253,31 @@ class WindowOptions(TmuxTestCase):
             window_count += 1
             w.select_layout(wconf['layout'])
 
+    def test_window_command(self):
+        yaml_config = """
+        session_name: test window options
+        start_directory: '~'
+        windows:
+        - layout: main-horizontal
+          options:
+            main-pane-height: 5
+          panes:
+          - pane
+          - pane
+          - pane
+          window_name: editor
+          window_command: test_command
+        """
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+        sconfig = config.expand(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        wc_config = builder.sconf.get('windows')[0].get('window_command')
+        self.assertEqual(wc_config, 'test_command')
+
 
 class EnvironmentVariables(TmuxTestCase):
 
