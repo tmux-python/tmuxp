@@ -14,12 +14,13 @@ import os
 import tempfile
 import time
 import unittest
+import subprocess
 
 import kaptan
 
 from .helpers import TmuxTestCase
 from .. import Window, config, exc
-from .._compat import text_type
+from .._compat import text_type, console_to_str
 from ..workspacebuilder import WorkspaceBuilder
 
 logger = logging.getLogger(__name__)
@@ -212,6 +213,63 @@ class FocusAndPaneIndexTest(TmuxTestCase):
             time.sleep(.4)
 
         self.assertEqual(p.get('pane_current_path'), pane_path)
+
+
+class SuppressHistoryTest(TmuxTestCase):
+    yaml_config = """
+    session_name: sampleconfig
+    start_directory: '~'
+    suppress_history: false
+    windows:
+    - window_name: inHistory
+      panes:
+      - echo inHistory
+    - window_name: isMissing
+      suppress_history: true
+      panes:
+      - echo isMissing
+    """
+    def test_suppress_history(self):
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(self.yaml_config).get()
+        sconfig = config.expand(sconfig)
+        sconfig = config.trickle(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+        builder.build(session=self.session)
+        time.sleep(0.2) # give .bashrc, etc. time to load
+
+        s.server._update_windows()
+        for w in s.windows:
+            w.server._update_panes()
+            w.select_window()
+            for p in w.panes:
+                p.select_pane()
+
+                # Print the last-in-history command in the pane
+                self.session.cmd('send-keys', ' fc -ln -1')
+                self.session.cmd('send-keys', 'Enter')
+                time.sleep(0.01) # give fc time to run
+
+                # Get the contents of the pane
+                self.session.cmd('capture-pane')
+                captured_pane = self.session.cmd('show-buffer')
+                self.session.cmd('delete-buffer')
+
+                # Parse the sent and last-in-history commands
+                sent_cmd = captured_pane.stdout[0].strip()
+                history_cmd = captured_pane.stdout[-2].strip()
+
+                # If it was in the history, sent == history
+                if 'inHistory' in sent_cmd:
+                    self.assertEqual(sent_cmd, history_cmd)
+                # Otherwise, sent != history
+                elif 'isMissing' in sent_cmd:
+                    self.assertNotEqual(sent_cmd, history_cmd)
+                # Something went wrong
+                else:
+                    self.assertTrue(False)
 
 
 class WindowOptions(TmuxTestCase):
@@ -895,5 +953,6 @@ def suite():
     suite.addTest(unittest.makeSuite(WindowAutomaticRename))
     suite.addTest(unittest.makeSuite(WindowIndexTest))
     suite.addTest(unittest.makeSuite(WindowOptions))
+    suite.addTest(unittest.makeSuite(SuppressHistoryTest))
     suite.addTest(unittest.makeSuite(EnvironmentVariables))
     return suite
