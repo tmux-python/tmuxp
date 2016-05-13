@@ -145,6 +145,13 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
         :type start_directory: string
         :param attach: make new window the current window after creating it,
                        default True.
+        :param window_index: create the new window at the given index position.
+            Default is empty string which will create the window in the next
+            available position.
+        :type window_index: string
+        :param window_command: execute a command on starting the window.  The
+            window will close when the command exits.
+        :type window_command: string
         :param type: bool
         :rtype: :class:`Window`
 
