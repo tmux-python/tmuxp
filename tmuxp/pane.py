@@ -85,6 +85,8 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
         :type cmd: str
         :param enter: Send enter after sending the input.
         :type enter: bool
+        :param suppress_history: Don't add these keys to the shell history
+        :type suppress_history: bool
 
         """
         prefix = ' ' if suppress_history else ''
