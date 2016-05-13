@@ -125,7 +125,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
                    start_directory=None,
                    attach=True,
                    window_index='',
-                   window_command=None):
+                   window_shell=None):
         """Return :class:`Window` from ``$ tmux new-window``.
 
         .. note::
@@ -149,8 +149,11 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
             Default is empty string which will create the window in the next
             available position.
         :type window_index: string
-        :param window_command: execute a command on starting the window.  The
+        :param window_shell: execute a command on starting the window.  The
             window will close when the command exits.
+            NOTE: When this command exits the window will close.  This feature
+            is useful for long-running processes where the closing of the
+            window upon completion is desired.
         :type window_command: string
         :param type: bool
         :rtype: :class:`Window`
@@ -185,8 +188,8 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
             '-t%s:%s' % (self.get('session_id'), window_index),
         )
 
-        if window_command:
-            window_args += (window_command,)
+        if window_shell:
+            window_args += (window_shell,)
 
         proc = self.cmd('new-window', *window_args)
 
