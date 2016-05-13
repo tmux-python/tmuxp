@@ -101,6 +101,8 @@ class tmux_cmd(object):
                     e
                 )
             )
+            # Should this exit at this point?
+
 
         self.stdout = console_to_str(stdout)
         self.stdout = self.stdout.split('\n')
