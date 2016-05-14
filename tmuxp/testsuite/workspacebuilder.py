@@ -277,13 +277,7 @@ class WindowOptions(TmuxTestCase):
 
         for w, wconf in builder.iter_create_windows(s):
             if 'window_shell' in wconf:
-                # I was having trouble testing this.  I would hit an error in
-                # util.py that stdout and stderr were being called before
-                # assignment.  I'm not sure how to handle this and I put a note
-                # in util.py as well.
-
-                #self.assertEqual(wconf['window_shell'], text_type('test_command'))
-                pass
+                self.assertEqual(wconf['window_shell'], text_type('test_command'))
 
 
 class EnvironmentVariables(TmuxTestCase):

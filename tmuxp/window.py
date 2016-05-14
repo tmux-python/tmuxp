@@ -62,7 +62,13 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                     return False
                 return True
 
-        return list(filter(by, self.server._windows))[0]
+        ret = list(filter(by, self.server._windows))
+        # If a window_shell option was configured which results in
+        # a short-lived process, the window id is @0.  Use that instead of
+        # self._window_id
+        if len(ret) == 0 and self.server._windows[0]['window_id'] == '@0':
+            ret = self.server._windows
+        return ret[0]
 
     def cmd(self, cmd, *args, **kwargs):
         """Return :meth:`Server.cmd` defaulting ``target_window`` as target.
