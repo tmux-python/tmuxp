@@ -342,7 +342,7 @@ class WindowOptions(TmuxTestCase):
                     break
                 time.sleep(.2)
 
-            self.assertNotEqual(w.get('window_name', text_type('top')))
+            self.assertNotEqual(w.get('window_name'), text_type('top'))
 
 
 class EnvironmentVariables(TmuxTestCase):
