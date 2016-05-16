@@ -309,6 +309,11 @@ def trickle(sconf):
     else:
         session_start_directory = None
 
+    if 'suppress_history' in sconf:
+        suppress_history = sconf['suppress_history']
+    else:
+        suppress_history = None
+
     for windowconfig in sconf['windows']:
 
         # Prepend start_directory to relative window commands
@@ -324,6 +329,11 @@ def trickle(sconf):
                         session_start_directory, windowconfig['start_directory']
                     )
                     windowconfig['start_directory'] = window_start_path
+
+        # We only need to trickle to the window, workspace builder checks wconf
+        if suppress_history is not None:
+            if not 'suppress_history' in windowconfig:
+                windowconfig['suppress_history'] = suppress_history
 
         for paneconfig in windowconfig['panes']:
             commands_before = []

@@ -241,6 +241,25 @@ JSON
 .. literalinclude:: ../examples/focus-window-and-panes.json
     :language: json
 
+Terminal History
+----------------
+
+tmuxp allows ``suppress_history: false`` to override the default command /
+suppression when building the workspace.
+This will add the ``shell_command`` to the bash history in the pane.
+
+YAML
+~~~~
+
+.. literalinclude:: ../examples/suppress-history.yaml
+    :language: yaml
+
+JSON
+~~~~
+
+.. literalinclude:: ../examples/suppress-history.json
+    :language: json
+
 Window Index
 ------------
 

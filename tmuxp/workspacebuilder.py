@@ -261,8 +261,15 @@ class WorkspaceBuilder(object):
             if 'layout' in wconf:
                 w.select_layout(wconf['layout'])
 
+            if 'suppress_history' in pconf:
+                suppress = pconf['suppress_history']
+            elif 'suppress_history' in wconf:
+                suppress = wconf['suppress_history']
+            else:
+                suppress = True
+
             for cmd in pconf['shell_command']:
-                p.send_keys(cmd)
+                p.send_keys(cmd, suppress_history=suppress)
 
             if 'focus' in pconf and pconf['focus']:
                 w.select_pane(p['pane_id'])

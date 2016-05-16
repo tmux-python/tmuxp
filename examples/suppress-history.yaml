@@ -1,0 +1,29 @@
+session_name: suppress
+suppress_history: false
+windows:
+- window_name: appended
+  focus: true
+  suppress_history: false
+  panes:
+  - echo "window in the history!"
+
+- window_name: suppressed
+  suppress_history: true
+  panes:
+  - echo "window not in the history!"
+
+- window_name: default
+  panes:
+  - echo "session in the history!"
+
+- window_name: mixed
+  suppress_history: false
+  panes:
+  - shell_command:
+    - echo "command in the history!"
+    suppress_history: false
+  - shell_command:
+    - echo "command not in the history!"
+    suppress_history: true
+  - shell_command:
+    - echo "window in the history!"
