@@ -199,11 +199,17 @@ class WorkspaceBuilder(object):
             else:
                 sd = None
 
+            if 'window_shell' in wconf:
+                ws = wconf['window_shell']
+            else:
+                ws = None
+
             w = s.new_window(
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
                 window_index=wconf.get('window_index', ''),
+                window_shell=ws,
             )
 
             if i == int(1) and w1:  # if first window, use window 1

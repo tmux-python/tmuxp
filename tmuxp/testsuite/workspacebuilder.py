@@ -311,6 +311,39 @@ class WindowOptions(TmuxTestCase):
             window_count += 1
             w.select_layout(wconf['layout'])
 
+    def test_window_shell(self):
+        yaml_config = """
+        session_name: test window options
+        start_directory: '~'
+        windows:
+        - layout: main-horizontal
+          options:
+            main-pane-height: 5
+          panes:
+          - pane
+          - pane
+          - pane
+          window_name: editor
+          window_shell: top
+        """
+        s = self.session
+        sconfig = kaptan.Kaptan(handler='yaml')
+        sconfig = sconfig.import_config(yaml_config).get()
+        sconfig = config.expand(sconfig)
+
+        builder = WorkspaceBuilder(sconf=sconfig)
+
+        for w, wconf in builder.iter_create_windows(s):
+            if 'window_shell' in wconf:
+                self.assertEqual(wconf['window_shell'], text_type('top'))
+            for i in range(10):
+                self.session.server._update_windows()
+                if w['window_name'] != 'top':
+                    break
+                time.sleep(.2)
+
+            self.assertNotEqual(w.get('window_name'), text_type('top'))
+
 
 class EnvironmentVariables(TmuxTestCase):
 
@@ -337,7 +370,7 @@ class EnvironmentVariables(TmuxTestCase):
 
         self.assertEqual('BAR', self.session.show_environment('FOO'))
         self.assertEqual('/tmp', self.session.show_environment('PATH'))
-        
+
 class WindowAutomaticRename(TmuxTestCase):
 
     yaml_config = """
