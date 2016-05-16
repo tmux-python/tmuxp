@@ -324,7 +324,7 @@ class WindowOptions(TmuxTestCase):
           - pane
           - pane
           window_name: editor
-          window_shell: test_command
+          window_shell: top
         """
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
@@ -335,7 +335,14 @@ class WindowOptions(TmuxTestCase):
 
         for w, wconf in builder.iter_create_windows(s):
             if 'window_shell' in wconf:
-                self.assertEqual(wconf['window_shell'], text_type('test_command'))
+                self.assertEqual(wconf['window_shell'], text_type('top'))
+            for i in range(10):
+                self.session.server._update_windows()
+                if w['window_name'] != 'top':
+                    break
+                time.sleep(.2)
+
+            self.assertNotEqual(w.get('window_name', text_type('top')))
 
 
 class EnvironmentVariables(TmuxTestCase):
@@ -363,7 +370,7 @@ class EnvironmentVariables(TmuxTestCase):
 
         self.assertEqual('BAR', self.session.show_environment('FOO'))
         self.assertEqual('/tmp', self.session.show_environment('PATH'))
-        
+
 class WindowAutomaticRename(TmuxTestCase):
 
     yaml_config = """
