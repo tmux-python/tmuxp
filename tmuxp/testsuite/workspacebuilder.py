@@ -238,7 +238,7 @@ class SuppressHistoryTest(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
-        time.sleep(0.2) # give .bashrc, etc. time to load
+        time.sleep(0.3) # give .bashrc, etc. time to load
 
         s.server._update_windows()
         for w in s.windows:
@@ -250,7 +250,7 @@ class SuppressHistoryTest(TmuxTestCase):
                 # Print the last-in-history command in the pane
                 self.session.cmd('send-keys', ' fc -ln -1')
                 self.session.cmd('send-keys', 'Enter')
-                time.sleep(0.01) # give fc time to run
+                time.sleep(0.1) # give fc time to run
 
                 # Get the contents of the pane
                 self.session.cmd('capture-pane')
