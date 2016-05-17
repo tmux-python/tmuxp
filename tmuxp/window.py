@@ -30,7 +30,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.session = session
         self.server = self.session.server
 
-        if not 'window_id' in kwargs:
+        if 'window_id' not in kwargs:
             raise ValueError('Window requires a `window_id`')
 
         self._window_id = kwargs['window_id']
@@ -125,8 +125,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def set_window_option(self, option, value):
         """Wrapper for ``$ tmux set-window-option <option> <value>``.
 
-        :param value: window value. True/False will turn in 'on' and 'off', also
-            accepts string of 'on' or 'off' directly.
+        :param value: window value. True/False will turn in 'on' and 'off',
+            also accepts string of 'on' or 'off' directly.
         :type value: bool
 
         """
@@ -435,10 +435,10 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         panes = [
             p for p in panes if p['session_id'] == self.get('session_id')
-            ]
+        ]
         panes = [
             p for p in panes if p['window_id'] == self.get('window_id')
-            ]
+        ]
         return panes
 
     @property

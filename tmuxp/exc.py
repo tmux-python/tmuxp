@@ -43,7 +43,9 @@ class BeforeLoadScriptNotExists(OSError):
     def __init__(self, *args, **kwargs):
         super(BeforeLoadScriptNotExists, self).__init__(*args, **kwargs)
 
-        self.strerror = "before_script file '%s' doesn't exist." % self.strerror
+        self.strerror = (
+            "before_script file '%s' doesn't exist." % self.strerror
+        )
 
 
 @implements_to_string

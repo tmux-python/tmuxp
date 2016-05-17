@@ -83,10 +83,14 @@ class TmuxVersionTest(TmuxTestCase):
         self.assertEqual(result, r'1.8')
 
     def test_error_version_less_1_7(self):
-        with self.assertRaisesRegexp(exc.TmuxpException, 'tmuxp only supports'):
+        with self.assertRaisesRegexp(
+            exc.TmuxpException, 'tmuxp only supports'
+        ):
             has_required_tmux_version('1.7')
 
-        with self.assertRaisesRegexp(exc.TmuxpException, 'tmuxp only supports'):
+        with self.assertRaisesRegexp(
+            exc.TmuxpException, 'tmuxp only supports'
+        ):
             has_required_tmux_version('1.6a')
 
         has_required_tmux_version('1.9a')
@@ -126,7 +130,9 @@ class BeforeLoadScriptErrorTestCase(TestCase):
     def test_returns_stderr_messages(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaisesRegexp(exc.BeforeLoadScriptError, "failed with returncode"):
+        with self.assertRaisesRegexp(
+            exc.BeforeLoadScriptError, "failed with returncode"
+        ):
             run_before_script(script_file)
 
 

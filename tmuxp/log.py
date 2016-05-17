@@ -34,8 +34,7 @@ def default_log_template(self, record):
     reset = Style.RESET_ALL
     levelname = (
         LEVEL_COLORS.get(record.levelname) + Style.BRIGHT +
-        '(%(levelname)s)'
-        + Style.RESET_ALL + ' '
+        '(%(levelname)s)' + Style.RESET_ALL + ' '
     )
     asctime = (
         '[' + Fore.BLACK + Style.DIM + Style.BRIGHT +

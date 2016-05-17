@@ -35,7 +35,7 @@ class SessionTest(TmuxTestCase):
             self.session.attached_window().get('window_index')
         )
 
-        window = self.session.new_window(window_name='test_window')
+        self.session.new_window(window_name='test_window')
         window_count = len(self.session._windows)
 
         self.assertGreaterEqual(window_count, 2)  # 2 or more windows

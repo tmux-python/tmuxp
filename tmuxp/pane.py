@@ -182,4 +182,3 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
             self.get('pane_id'),
             self.window
         )
-

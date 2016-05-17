@@ -296,17 +296,22 @@ def freeze(session):
     sconf = {'session_name': session['session_name'], 'windows': []}
 
     for w in session.windows:
-        wconf = {'options': w.show_window_options(), 'window_name': w.get('window_name'),
-                 'layout': w.get('window_layout'), 'panes': []}
+        wconf = {
+            'options': w.show_window_options(),
+            'window_name': w.get('window_name'),
+            'layout': w.get('window_layout'),
+            'panes': []
+        }
         if w.get('window_active', '0') == '1':
             wconf['focus'] = 'true'
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
-        pane_has_same_path = lambda p: (  # NOQA
-            w.panes[0].get('pane_current_path') ==
-            p.get('pane_current_path')
-        )
+        def pane_has_same_path(p):
+            return (
+                w.panes[0].get('pane_current_path') ==
+                p.get('pane_current_path')
+            )
 
         if all(pane_has_same_path(p) for p in w.panes):
             wconf['start_directory'] = w.panes[0].get('pane_current_path')
@@ -320,7 +325,7 @@ def freeze(session):
                 )
 
             if p.get('pane_active', '0') == '1':
-                pconf['focus'] ='true'
+                pconf['focus'] = 'true'
 
             current_cmd = p.get('pane_current_command')
 

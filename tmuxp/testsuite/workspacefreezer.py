@@ -75,11 +75,11 @@ class FreezeTest(TmuxTestCase):
 
         kaptanconf = kaptan.Kaptan()
         kaptanconf = kaptanconf.import_config(sconf)
-        json = kaptanconf.export(
+        kaptanconf.export(
             'json',
             indent=2
         )
-        yaml = kaptanconf.export(
+        kaptanconf.export(
             'yaml',
             indent=2,
             default_flow_style=False,

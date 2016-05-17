@@ -24,12 +24,9 @@ from tmuxp.server import Server
 t = Server()
 t.socket_name = 'tmuxp_test'
 
-from tmuxp.testsuite import helpers
+from tmuxp.testsuite import helpers  # NOQA
 
-
-# Logger functionality
-
-logger = logging.getLogger()
+logger = logging.getLogger()  # Logger functionality
 
 if not logger.handlers:
     channel = logging.StreamHandler()

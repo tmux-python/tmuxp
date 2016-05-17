@@ -100,4 +100,3 @@ PANE_FORMATS = [
     'mouse_any_flag',
     'mouse_utf8_flag',
 ]
-

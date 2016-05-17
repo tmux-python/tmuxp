@@ -260,7 +260,7 @@ def load_workspace(config_file, args):
         logger.error('%s is empty or parsed no config data' % config_file)
         return
 
-    tmux_bin = util.which('tmux')
+    util.which('tmux')
 
     try:
         logger.info('Loading %s.' % config_file)
@@ -575,11 +575,12 @@ def command_import_tmuxinator(args):
         else:
             sys.exit('Unknown config format.')
 
-        print(newconfig)
         print(
-            '---------------------------------------------------------------')
-        print(
-            'Configuration import does its best to convert tmuxinator files.\n')
+            newconfig,
+            '---------------------------------------------------------------'
+            'Configuration import does its best to convert tmuxinator files.'
+            '\n'
+        )
         if args.answer_yes or prompt_yes_no(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
@@ -667,7 +668,6 @@ def command_convert(args):
 
 def command_attach_session(args):
     """Command to attach / switch client to a tmux session."""
-    commands = []
     ctext = ' '.join(args.session_name)
 
     t = Server(
@@ -696,7 +696,6 @@ def command_attach_session(args):
 
 def command_kill_session(args):
     """Command to kill a tmux session."""
-    commands = []
     ctext = ' '.join(args.session_name)
 
     t = Server(
@@ -909,7 +908,9 @@ def get_parser():
         required=True)
     import_tmuxinatorgroup.add_argument(
         '--list', dest='list', action='store_true',
-        help='List yaml configs in ~/.tmuxinator and current working directory.'
+        help=(
+            'List yaml configs in ~/.tmuxinator and current working directory.'
+        )
     )
 
     import_tmuxinatorgroup.add_argument(
@@ -926,7 +927,9 @@ def get_parser():
     parser.add_argument(
         '--log-level', dest='log_level',
         default=None,
-        help='Level of debug verbosity. DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+        help=(
+            'Level of debug verbosity. DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+        )
     )
 
     parser.add_argument(
@@ -963,7 +966,7 @@ def main():
 
     util.oh_my_zsh_auto_title()
 
-    t = Server(
+    t = Server(  # noqa
         socket_name=args.socket_name,
         socket_path=args.socket_path,
         colors=args.colors
@@ -988,4 +991,3 @@ def main():
             command_kill_session(args)
     except KeyboardInterrupt:
         pass
-

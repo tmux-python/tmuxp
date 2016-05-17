@@ -176,7 +176,7 @@ class Teamocil3Test(TestCase):
         after: "echo 'I am done initializing this pane.'"
       panes:
         - cmd: "git status"
-        - cmd: "bundle exec rails server --port 4000"
+        - cmd: "bundle exec rails server --port 40"
           focus: true
         - cmd:
           - "sudo service memcached start"
@@ -194,7 +194,7 @@ class Teamocil3Test(TestCase):
             },
             'panes': [
                 {'cmd': 'git status'},
-                {'cmd': 'bundle exec rails server --port 4000',
+                {'cmd': 'bundle exec rails server --port 40',
                     'focus': True},
                 {'cmd': [
                     'sudo service memcached start',
@@ -221,7 +221,7 @@ class Teamocil3Test(TestCase):
                         'shell_command': 'git status'
                     },
                     {
-                        'shell_command': 'bundle exec rails server --port 4000',
+                        'shell_command': 'bundle exec rails server --port 40',
                         'focus': True
                     },
                     {

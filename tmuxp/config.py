@@ -127,18 +127,18 @@ def inline(sconf):
     """
 
     if (
-                        'shell_command' in sconf and
-                    isinstance(sconf['shell_command'], list) and
-                    len(sconf['shell_command']) == 1
+        'shell_command' in sconf and
+        isinstance(sconf['shell_command'], list) and
+        len(sconf['shell_command']) == 1
     ):
         sconf['shell_command'] = sconf['shell_command'][0]
 
         if len(sconf.keys()) == int(1):
             sconf = sconf['shell_command']
     if (
-                        'shell_command_before' in sconf and
-                    isinstance(sconf['shell_command_before'], list) and
-                    len(sconf['shell_command_before']) == 1
+        'shell_command_before' in sconf and
+        isinstance(sconf['shell_command_before'], list) and
+        len(sconf['shell_command_before']) == 1
     ):
         sconf['shell_command_before'] = sconf['shell_command_before'][0]
 
@@ -146,7 +146,7 @@ def inline(sconf):
     if 'windows' in sconf:
         sconf['windows'] = [
             inline(window) for window in sconf['windows']
-            ]
+        ]
     if 'panes' in sconf:
         sconf['panes'] = [inline(pane) for pane in sconf['panes']]
 
@@ -223,30 +223,30 @@ def expand(sconf, cwd=None, parent=None):
             )
 
     if (
-                    'shell_command' in sconf and
-                isinstance(sconf['shell_command'], string_types)
+        'shell_command' in sconf and
+        isinstance(sconf['shell_command'], string_types)
     ):
         sconf['shell_command'] = [sconf['shell_command']]
 
     if (
-                    'shell_command_before' in sconf and
-                isinstance(sconf['shell_command_before'], string_types)
+        'shell_command_before' in sconf and
+        isinstance(sconf['shell_command_before'], string_types)
     ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
 
     if (
-                    'shell_command_before' in sconf and
-                isinstance(sconf['shell_command_before'], list)
+        'shell_command_before' in sconf and
+        isinstance(sconf['shell_command_before'], list)
     ):
         sconf['shell_command_before'] = [
             expandshell(scmd) for scmd in sconf['shell_command_before']
-            ]
+        ]
 
     # recurse into window and pane config items
     if 'windows' in sconf:
         sconf['windows'] = [
             expand(window, parent=sconf) for window in sconf['windows']
-            ]
+        ]
     elif 'panes' in sconf:
 
         for pconf in sconf['panes']:
@@ -282,7 +282,9 @@ def expand(sconf, cwd=None, parent=None):
                 p['shell_command'] = []
 
             pconf.update(p)
-        sconf['panes'] = [expand(pane, parent=sconf) for pane in sconf['panes']]
+        sconf['panes'] = [
+            expand(pane, parent=sconf) for pane in sconf['panes']
+        ]
 
     return sconf
 
@@ -320,7 +322,7 @@ def trickle(sconf):
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
-            if not 'start_directory' in windowconfig:
+            if 'start_directory' not in windowconfig:
                 windowconfig['start_directory'] = session_start_directory
             else:
                 if not any(
@@ -328,13 +330,14 @@ def trickle(sconf):
                         for a in ['~', '/']
                 ):
                     window_start_path = os.path.join(
-                        session_start_directory, windowconfig['start_directory']
+                        session_start_directory,
+                        windowconfig['start_directory']
                     )
                     windowconfig['start_directory'] = window_start_path
 
         # We only need to trickle to the window, workspace builder checks wconf
         if suppress_history is not None:
-            if not 'suppress_history' in windowconfig:
+            if 'suppress_history' not in windowconfig:
                 windowconfig['suppress_history'] = suppress_history
 
         for paneconfig in windowconfig['panes']:

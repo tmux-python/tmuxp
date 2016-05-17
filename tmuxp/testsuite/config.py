@@ -38,7 +38,7 @@ sampleconfigdict = {
                 {
                     'start_directory': '~',
                     'shell_command': ['vim'],
-                },  {
+                }, {
                     'shell_command': ['cowsay "hey"']
                 },
             ],
@@ -244,19 +244,25 @@ class ExpandTest(TestCase):
                 ]
             },
             {
-                'start_directory': os.path.normpath(os.path.join(os.path.join(os.path.expanduser('~'), './'))),
+                'start_directory': os.path.normpath(
+                    os.path.join(os.path.expanduser('~'), './')
+                ),
                 'panes': [
                     {'shell_command': ['pwd']}
                 ]
             },
             {
-                'start_directory': os.path.normpath(os.path.join(os.path.join(os.path.expanduser('~'), './asdf'))),
+                'start_directory': os.path.normpath(
+                    os.path.join(os.path.expanduser('~'), './asdf')
+                ),
                 'panes': [
                     {'shell_command': ['pwd']}
                 ]
             },
             {
-                'start_directory': os.path.normpath(os.path.join(os.path.expanduser('~'), '../')),
+                'start_directory': os.path.normpath(
+                    os.path.join(os.path.expanduser('~'), '../')
+                ),
                 'panes': [
                     {'shell_command': ['pwd']}
                 ]
@@ -378,7 +384,8 @@ class InlineTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['vim'],
-                    },  {
+                    },
+                    {
                         'shell_command': ['cowsay "hey"']
                     },
                 ],
@@ -500,7 +507,7 @@ class InheritanceTest(TestCase):
                 'panes': [
                     {
                         'shell_command': ['vim'],
-                    },  {
+                    }, {
                         'shell_command': ['cowsay "hey"'],
                     },
                 ],
@@ -536,27 +543,27 @@ class InheritanceTest(TestCase):
     def test_start_directory(self):
         config = self.config_before
 
-        if 'start_directory' in config:
-            session_start_directory = config['start_directory']
-        else:
-            session_start_directory = None
+        # if 'start_directory' in config:
+        #     session_start_directory = config['start_directory']
+        # else:
+        #     session_start_directory = None
 
-        for windowconfitem in config['windows']:
-            window_start_directory = None
-            # TODO: Look at verifying window_start_directory
-            if 'start_directory' in windowconfitem:
-                window_start_directory = windowconfitem['start_directory']
-            elif session_start_directory:
-                window_start_directory = session_start_directory
-
-            for paneconfitem in windowconfitem['panes']:
-                # if 'start_directory' in paneconfitem:
-                    # pane_start_directory = paneconfitem['start_directory']
-                # elif window_start_directory:
-                    # paneconfitem['start_directory'] = window_start_directory
-                # elif session_start_directory:
-                    # paneconfitem['start_directory'] = session_start_directory
-                pass
+        # TODO: Look at verifying window_start_directory
+        # for windowconfitem in config['windows']:
+        #     window_start_directory = None
+        #
+        #     if 'start_directory' in windowconfitem:
+        #         window_start_directory = windowconfitem['start_directory']
+        #     elif session_start_directory:
+        #         window_start_directory = session_start_directory
+        #
+        #     for paneconfitem in windowconfitem['panes']:
+        #         if 'start_directory' in paneconfitem:
+        #             pane_start_directory = paneconfitem['start_directory']
+        #         elif window_start_directory:
+        #             paneconfitem['start_directory'] = window_start_directory
+        #         elif session_start_directory:
+        #             paneconfitem['start_directory'] = session_start_directory
 
         self.maxDiff = None
         self.assertDictEqual(config, self.config_after)
@@ -1092,10 +1099,15 @@ class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
             env.set(env_key, env_value)
             sconfig = config.expand(sconfig)
             self.assertEqual("%s/test" % env_value, sconfig['start_directory'])
-            self.assertIn("%s/test2" % env_value, sconfig['shell_command_before'])
+            self.assertIn(
+                "%s/test2" % env_value, sconfig['shell_command_before']
+            )
             self.assertEqual("%s/test3" % env_value, sconfig['before_script'])
             self.assertEqual("hi - %s" % env_value, sconfig['session_name'])
-            self.assertEqual("logging @ %s" % env_value, sconfig['windows'][1]['window_name'])
+            self.assertEqual(
+                "logging @ %s" % env_value,
+                sconfig['windows'][1]['window_name']
+            )
 
 
 def suite():

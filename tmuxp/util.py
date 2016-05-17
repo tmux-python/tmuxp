@@ -38,14 +38,18 @@ def run_before_script(script_file):
             stderr = proc.stderr.read()
             proc.stderr.close()
             stderr = console_to_str(stderr).split('\n')
-            stderr = '\n'.join(list(filter(None, stderr)))  # filter empty values
+            stderr = '\n'.join(list(filter(None, stderr)))  # filter empty
 
-            raise exc.BeforeLoadScriptError(proc.returncode, os.path.abspath(script_file), stderr)
+            raise exc.BeforeLoadScriptError(
+                proc.returncode, os.path.abspath(script_file), stderr
+            )
 
         return proc.returncode
     except OSError as e:
         if e.errno == 2:
-            raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
+            raise exc.BeforeLoadScriptNotExists(
+                e, os.path.abspath(script_file)
+            )
         else:
             raise e
 
@@ -155,7 +159,7 @@ class TmuxMappingObject(collections.MutableMapping):
 
 class TmuxRelationalObject(object):
 
-    """Base Class for managing tmux object child entities.
+    """Base Class for managing tmux object child entities.  .. # NOQA
 
     Manages collection of child objects  (a :class:`Server` has a collection of
     :class:`Session` objects, a :class:`Session` has collection of

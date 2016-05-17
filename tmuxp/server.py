@@ -124,11 +124,6 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
-        else:
-            session_info = proc.stdout[0]
-
-        if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
 
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in sformats]
@@ -310,8 +305,8 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
                     continue
 
         return [
-                   Session(server=self, **s) for s in attached_sessions
-               ] or None
+            Session(server=self, **s) for s in attached_sessions
+        ] or None
 
     def has_session(self, target_session):
         """Return True if session exists. ``$ tmux has-session``.

@@ -17,7 +17,6 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-
 logger = logging.getLogger(__name__)
 
 TEST_SESSION_PREFIX = 'test tmuxp_'
@@ -37,20 +36,6 @@ def get_test_window_name(session, prefix=TEST_SESSION_PREFIX):
         if not session.findWhere(window_name=window_name):
             break
     return window_name
-
-
-@contextlib.contextmanager
-def temp_session(server, session_name=None):
-    if not session_name:
-        session_name = get_test_session_name(server)
-
-    session = server.new_session(session_name)
-    try:
-        yield session
-    finally:
-        if server.has_session(session_name):
-            session.kill_session()
-    return
 
 
 @contextlib.contextmanager
@@ -177,13 +162,6 @@ class TmuxTestCase(TestCase):
             if s.get('session_name').startswith(TEST_SESSION_PREFIX)
         ]
 
-        other_sessions = [
-            s.get('session_name') for s in t._sessions
-            if not s.get('session_name').startswith(
-                TEST_SESSION_PREFIX
-            )
-        ]
-
         TEST_SESSION_NAME = get_test_session_name(server=t)
 
         try:
@@ -192,7 +170,6 @@ class TmuxTestCase(TestCase):
             )
         except exc.TmuxpException as e:
             raise e
-
 
         """
         Make sure that tmuxp can :ref:`test_builder_visually` and switches to

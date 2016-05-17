@@ -18,7 +18,11 @@ from .window import Window
 logger = logging.getLogger(__name__)
 
 
-class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixin):
+class Session(
+    util.TmuxMappingObject,
+    util.TmuxRelationalObject,
+    EnvironmentMixin
+):
     """:term:`tmux(1)` session.
 
     Holds :class:`Window` objects.
@@ -218,8 +222,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
 
         """
 
-        tmux_args = list()
-
         if target_window:
             if isinstance(target_window, int):
                 target = '-t%s:%d' % (self.get('session_name'), target_window)
@@ -238,7 +240,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
 
         windows = [
             w for w in windows if w['session_id'] == self.get('session_id')
-            ]
+        ]
 
         return windows
 
@@ -256,7 +258,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
         """
         windows = [
             w for w in self._windows if w['session_id'] == self._session_id
-            ]
+        ]
 
         return [Window(session=self, **window) for window in windows]
 

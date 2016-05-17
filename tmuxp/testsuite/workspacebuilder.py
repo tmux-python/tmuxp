@@ -11,7 +11,6 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import os
-import subprocess
 import tempfile
 import time
 import unittest
@@ -19,14 +18,16 @@ import unittest
 import kaptan
 
 from tmuxp import Window, config, exc
-from tmuxp._compat import console_to_str, text_type
+from tmuxp._compat import text_type
 from tmuxp.testsuite.helpers import TmuxTestCase
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 logger = logging.getLogger(__name__)
 
 current_dir = os.path.realpath(os.path.dirname(__file__))
-example_dir = os.path.realpath(os.path.join(current_dir, '..', '..', 'examples'))
+example_dir = os.path.realpath(
+    os.path.join(current_dir, '..', '..', 'examples')
+)
 fixtures_dir = os.path.realpath(os.path.join(current_dir, 'fixtures'))
 
 
@@ -63,7 +64,6 @@ class TwoPaneTest(TmuxTestCase):
         window_count = len(self.session._windows)  # current window count
         self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
-            window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
                 self.assertEqual(len(s._windows), window_count)
@@ -100,8 +100,6 @@ class ThreePaneTest(TmuxTestCase):
         window_count = len(self.session._windows)  # current window count
         self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
-
-            window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
                 self.assertEqual(len(s._windows), window_count)
@@ -150,7 +148,6 @@ class FocusAndPaneIndexTest(TmuxTestCase):
     """
 
     def test_focus_pane_index(self):
-        s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
         sconfig = config.expand(sconfig)
@@ -165,9 +162,11 @@ class FocusAndPaneIndexTest(TmuxTestCase):
             'focused window'
         )
 
-        pane_base_index = int(self.session.attached_window().show_window_option(
-            'pane-base-index', g=True
-        ))
+        pane_base_index = int(
+            self.session.attached_window().show_window_option(
+                'pane-base-index', g=True
+            )
+        )
 
         if not pane_base_index:
             pane_base_index = 0
@@ -229,8 +228,8 @@ class SuppressHistoryTest(TmuxTestCase):
       panes:
       - echo isMissing
     """
+
     def test_suppress_history(self):
-        s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
         sconfig = config.expand(sconfig)
@@ -243,8 +242,12 @@ class SuppressHistoryTest(TmuxTestCase):
             {'window_name': 'inHistory'}).attached_pane()
         isMissingPane = self.session.findWhere(
             {'window_name': 'isMissing'}).attached_pane()
-        assertHistory = lambda cmd, hist: 'inHistory' in cmd and cmd == hist
-        assertIsMissing = lambda cmd, hist: 'isMissing' in cmd and cmd != hist
+
+        def assertHistory(cmd, hist):
+            return 'inHistory' in cmd and cmd == hist
+
+        def assertIsMissing(cmd, hist):
+            return 'isMissing' in cmd and cmd != hist
 
         for p, assertCase in [
             (inHistoryPane, assertHistory,), (isMissingPane, assertIsMissing,)
@@ -302,8 +305,6 @@ class WindowOptions(TmuxTestCase):
         window_count = len(self.session._windows)  # current window count
         self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
-
-            window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
                 self.assertEqual(len(s._windows), window_count)
@@ -374,6 +375,7 @@ class EnvironmentVariables(TmuxTestCase):
         self.assertEqual('BAR', self.session.show_environment('FOO'))
         self.assertEqual('/tmp', self.session.show_environment('PATH'))
 
+
 class WindowAutomaticRename(TmuxTestCase):
 
     yaml_config = """
@@ -404,8 +406,6 @@ class WindowAutomaticRename(TmuxTestCase):
         window_count = len(self.session._windows)  # current window count
         self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
-
-            window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
                 self.assertEqual(len(s._windows), window_count)
@@ -457,10 +457,9 @@ class BlankPaneTest(TmuxTestCase):
 
     def test_blank_pane_count(self):
 
-        test_config = kaptan.Kaptan().import_config(self.yaml_config_file).get()
+        test_config = kaptan.Kaptan().import_config(
+            self.yaml_config_file).get()
         test_config = config.expand(test_config)
-        # for window in test_config['windows']:
-        #     window['layout'] = 'tiled'
         builder = WorkspaceBuilder(sconf=test_config)
         builder.build(session=self.session)
 
@@ -703,8 +702,6 @@ class StartDirectoryRelativeTest(TmuxTestCase):
             TEST_DIR=self.test_dir,
         )
 
-        start_directory = os.getcwd()
-
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(test_config).get()
         # the second argument of os.getcwd() mimics the behavior
@@ -796,7 +793,6 @@ class PaneOrderingTest(TmuxTestCase):
         window_count = len(self.session._windows)  # current window count
         self.assertEqual(len(s._windows), window_count)
         for w, wconf in builder.iter_create_windows(s):
-            window_pane_count = len(w._panes)
             for p in builder.iter_create_panes(w, wconf):
                 p = p
                 self.assertEqual(len(s._windows), window_count)
@@ -918,7 +914,9 @@ class BeforeLoadScript(TmuxTestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_not_exists.format(
             fixtures_dir=fixtures_dir,
-            script_not_exists=os.path.join(fixtures_dir, 'script_not_exists.sh')
+            script_not_exists=os.path.join(
+                fixtures_dir, 'script_not_exists.sh'
+            )
         )
         sconfig = sconfig.import_config(yaml).get()
         sconfig = config.expand(sconfig)
@@ -928,7 +926,9 @@ class BeforeLoadScript(TmuxTestCase):
 
         with self.temp_session() as sess:
             session_name = sess.get('session_name')
-            temp_session_exists = self.server.has_session(sess.get('session_name'))
+            temp_session_exists = self.server.has_session(
+                sess.get('session_name')
+            )
             self.assertTrue(temp_session_exists)
             with self.assertRaisesRegexp(
                 (exc.BeforeLoadScriptNotExists, OSError),
@@ -942,7 +942,9 @@ class BeforeLoadScript(TmuxTestCase):
             )
 
     def test_true_if_test_passes(self):
-        assert(os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh')))
+        assert(
+            os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
+        )
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_completes.format(
             fixtures_dir=fixtures_dir,
@@ -955,15 +957,19 @@ class BeforeLoadScript(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-        with self.temp_session() as session:
+        with self.temp_session():
             builder.build(session=self.session)
 
     def test_true_if_test_passes_with_args(self):
-        assert(os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh')))
+        assert(
+            os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
+        )
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_completes.format(
             fixtures_dir=fixtures_dir,
-            script_complete=os.path.join(fixtures_dir, 'script_complete.sh') + ' -v'
+            script_complete=os.path.join(
+                fixtures_dir, 'script_complete.sh'
+            ) + ' -v'
         )
 
         sconfig = sconfig.import_config(yaml).get()
@@ -972,7 +978,7 @@ class BeforeLoadScript(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
 
-        with self.temp_session() as session:
+        with self.temp_session():
             builder.build(session=self.session)
 
 

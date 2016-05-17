@@ -57,58 +57,40 @@ class FindConfigsTest(TestCase):
         """config.in_dir() finds configs config dir."""
 
         cli.startup(self.tmp_dir)
-        config1 = tempfile.NamedTemporaryFile(
+        with tempfile.NamedTemporaryFile(
             dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.yaml'
-        )
+        ):
+            with tempfile.NamedTemporaryFile(
+                dir=self.tmp_dir,
+                prefix='myconfig',
+                suffix='.json'
+            ):
+                configs_found = config.in_dir(self.tmp_dir)
 
-        config2 = tempfile.NamedTemporaryFile(
-            dir=self.tmp_dir,
-            prefix='myconfig',
-            suffix='.json'
-        )
-        configs_found = config.in_dir(self.tmp_dir)
-
-        self.assertEqual(len(configs_found), 2)
+                self.assertEqual(len(configs_found), 2)
 
     def test_in_dir_from_current_dir(self):
-        """config.in_dir() find configs config dir."""
-
-        cli.startup(self.tmp_dir)
-        config1 = tempfile.NamedTemporaryFile(
-            dir=self.tmp_dir,
-            prefix='myconfig',
-            suffix='.yaml'
-        )
-
-        config2 = tempfile.NamedTemporaryFile(
-            dir=self.tmp_dir,
-            prefix='myconfig',
-            suffix='.json'
-        )
-        configs_found = config.in_dir(self.tmp_dir)
-
-        self.assertEqual(len(configs_found), 2)
+        """config.in_dir() find configs current dir."""
+        pass  # TODO
 
     def test_ignore_non_configs_from_current_dir(self):
         """cli.in_dir() ignore non-config from config dir."""
 
         cli.startup(self.tmp_dir)
-        badconfig = tempfile.NamedTemporaryFile(
+        with tempfile.NamedTemporaryFile(
             dir=self.tmp_dir,
             prefix='myconfig',
             suffix='.psd'
-        )
-
-        config1 = tempfile.NamedTemporaryFile(
-            dir=self.tmp_dir,
-            prefix='watmyconfig',
-            suffix='.json'
-        )
-        configs_found = config.in_dir(self.tmp_dir)
-
-        self.assertEqual(len(configs_found), 1)
+        ):
+            with tempfile.NamedTemporaryFile(
+                dir=self.tmp_dir,
+                prefix='watmyconfig',
+                suffix='.json'
+            ):
+                configs_found = config.in_dir(self.tmp_dir)
+                self.assertEqual(len(configs_found), 1)
 
     def test_get_configs_cwd(self):
         """config.in_cwd() find config in shell current working directory."""
