@@ -6,21 +6,21 @@ tmuxp.tests.workspacebuilder
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
+import subprocess
 import tempfile
 import time
 import unittest
-import subprocess
 
 import kaptan
 
-from tmuxp.testsuite.helpers import TmuxTestCase
 from tmuxp import Window, config, exc
-from tmuxp._compat import text_type, console_to_str
+from tmuxp._compat import console_to_str, text_type
+from tmuxp.testsuite.helpers import TmuxTestCase
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 logger = logging.getLogger(__name__)

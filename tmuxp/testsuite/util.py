@@ -6,16 +6,16 @@ tmuxp.tests.util
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 import unittest
 
-from tmuxp.testsuite.helpers import TmuxTestCase, TestCase
 from tmuxp import exc
-from tmuxp.exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
+from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
+from tmuxp.testsuite.helpers import TestCase, TmuxTestCase
 from tmuxp.util import has_required_tmux_version, run_before_script
 
 logger = logging.getLogger(__name__)

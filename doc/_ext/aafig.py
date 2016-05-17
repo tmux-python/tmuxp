@@ -14,17 +14,19 @@
 
 import posixpath
 from os import path
+
+from docutils import nodes
+from docutils.parsers.rst.directives import flag, images, nonnegative_int
+from sphinx.errors import SphinxError
+from sphinx.util import ensuredir, relative_uri
+from sphinx.util.compat import Directive
+
 try:
     from hashlib import sha1 as sha
 except ImportError:
     from sha import sha
 
-from docutils import nodes
-from docutils.parsers.rst.directives import images, nonnegative_int, flag
 
-from sphinx.errors import SphinxError
-from sphinx.util import ensuredir, relative_uri
-from sphinx.util.compat import Directive
 
 try:
     import aafigure

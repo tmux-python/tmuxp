@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 """Helper methods for tmuxp unittests."""
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import contextlib
 import logging
+from random import randint
+
+from tmuxp import exc
+from tmuxp.testsuite import t
 
 try:
     import unittest2 as unittest
 except ImportError:  # Python 2.7
     import unittest
 
-from random import randint
 
-from tmuxp.testsuite import t
-from tmuxp import exc
 
 logger = logging.getLogger(__name__)
 
@@ -191,6 +192,7 @@ class TmuxTestCase(TestCase):
             )
         except exc.TmuxpException as e:
             raise e
+
 
         """
         Make sure that tmuxp can :ref:`test_builder_visually` and switches to

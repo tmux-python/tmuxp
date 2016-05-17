@@ -5,13 +5,12 @@ tmuxp.pane
 ~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 
-from . import util, exc
-
+from . import exc, util
 
 logger = logging.getLogger(__name__)
 
@@ -183,3 +182,4 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
             self.get('pane_id'),
             self.window
         )
+

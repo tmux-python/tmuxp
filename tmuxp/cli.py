@@ -5,8 +5,8 @@ tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import argparse
 import logging
@@ -16,11 +16,10 @@ import sys
 import argcomplete
 import kaptan
 
-from . import log, util, exc, WorkspaceBuilder, Server, config
+from . import Server, WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
 from ._compat import input, string_types
 from .workspacebuilder import freeze
-
 
 logger = logging.getLogger(__name__)
 
@@ -989,3 +988,4 @@ def main():
             command_kill_session(args)
     except KeyboardInterrupt:
         pass
+

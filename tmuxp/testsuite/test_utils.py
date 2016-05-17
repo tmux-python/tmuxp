@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tests for tmuxp testsuite's helper and utility functions."""
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
-from tmuxp.testsuite.helpers import get_test_session_name, temp_session, TmuxTestCase, unittest
+from tmuxp.testsuite.helpers import (TmuxTestCase, get_test_session_name,
+                                     temp_session, unittest)
 
 
 class TempSession(TmuxTestCase):

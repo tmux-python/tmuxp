@@ -6,16 +6,16 @@ tmuxp.tests.tmuxobject
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import random
 import unittest
 
+from tmuxp import Pane, Session, Window
 from tmuxp.testsuite import t
-from tmuxp.testsuite.helpers import TmuxTestCase, TEST_SESSION_PREFIX
-from tmuxp import Pane, Window, Session
+from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase
 
 logger = logging.getLogger(__name__)
 

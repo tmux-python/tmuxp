@@ -6,15 +6,15 @@ tmuxp.tests.server
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import unittest
 
+from tmuxp import Server
 from tmuxp.testsuite import t
 from tmuxp.testsuite.helpers import TmuxTestCase
-from tmuxp import Server
 
 logger = logging.getLogger(__name__)
 

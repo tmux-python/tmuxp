@@ -6,8 +6,8 @@ tmuxp.tests.cli
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
@@ -15,8 +15,8 @@ import shutil
 import tempfile
 import unittest
 
+from tmuxp import cli, config
 from tmuxp.testsuite.helpers import TestCase
-from tmuxp import config, cli
 
 logger = logging.getLogger(__name__)
 

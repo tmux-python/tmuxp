@@ -6,16 +6,16 @@ tmuxp.tests.session
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import unittest
 from random import randint
 
+from tmuxp import Pane, Session, Window
 from tmuxp.testsuite import t
-from tmuxp.testsuite.helpers import TmuxTestCase, TEST_SESSION_PREFIX
-from tmuxp import Session, Window, Pane
+from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +179,7 @@ class Environment(TmuxTestCase):
         self.session.unset_environment('BAM')
         self.assertEqual(None, self.session.show_environment('BAM'))
 
-        
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Options))

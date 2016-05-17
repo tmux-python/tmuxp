@@ -5,16 +5,16 @@ tmuxp.server
 ~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 
-from . import formats, exc
-from .session import Session
-from .util import tmux_cmd, TmuxRelationalObject
+from . import exc, formats
 from .common import EnvironmentMixin
+from .session import Session
+from .util import TmuxRelationalObject, tmux_cmd
 
 logger = logging.getLogger(__name__)
 
@@ -385,7 +385,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
-        
+
     def new_session(self,
                     session_name=None,
                     kill_session=False,

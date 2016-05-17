@@ -6,12 +6,12 @@ tmuxp.workspacebuilder
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 
-from . import exc, Window, Pane, Session, Server
+from . import Pane, Server, Session, Window, exc
 from .util import run_before_script
 
 logger = logging.getLogger(__name__)

@@ -5,13 +5,13 @@ tmuxp.window
 ~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 
-from . import util, formats, exc
+from . import exc, formats, util
 from .pane import Pane
 
 logger = logging.getLogger(__name__)

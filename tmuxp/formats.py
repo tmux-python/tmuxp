@@ -8,9 +8,8 @@ For reference: http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
-
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 SESSION_FORMATS = [
     'session_name',
@@ -101,3 +100,4 @@ PANE_FORMATS = [
     'mouse_any_flag',
     'mouse_utf8_flag',
 ]
+
