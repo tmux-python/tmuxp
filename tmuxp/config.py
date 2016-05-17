@@ -5,8 +5,8 @@ tmuxp.config
 ~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import copy
 import logging
@@ -28,17 +28,17 @@ def validate_schema(sconf):
     """
 
     # verify session_name
-    if not 'session_name' in sconf:
+    if 'session_name' not in sconf:
         raise exc.ConfigError('config requires "session_name"')
 
-    if not 'windows' in sconf:
+    if 'windows' not in sconf:
         raise exc.ConfigError('config requires list of "windows"')
 
     for window in sconf['windows']:
-        if not 'window_name' in window:
+        if 'window_name' not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
-        if not 'panes' in window:
+        if 'panes' not in window:
             raise exc.ConfigError(
                 'config window %s requires list of panes' %
                 window['window_name']
@@ -64,8 +64,8 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
 
 
 def in_dir(
-    config_dir=os.path.expanduser('~/.tmuxp'),
-    extensions=['.yml', '.yaml', '.json']
+        config_dir=os.path.expanduser('~/.tmuxp'),
+        extensions=['.yml', '.yaml', '.json']
 ):
     """Return a list of configs in ``config_dir``.
 
@@ -80,7 +80,7 @@ def in_dir(
 
     for filename in os.listdir(config_dir):
         if is_config_file(filename, extensions) and \
-           not filename.startswith('.'):
+                not filename.startswith('.'):
             configs.append(filename)
 
     return configs
@@ -102,6 +102,7 @@ def in_cwd():
 
     return configs
 
+
 def expandshell(_path):
     """Return expanded path based on user's ``$HOME`` and ``env``.
 
@@ -114,6 +115,7 @@ def expandshell(_path):
 
     """
     return os.path.expandvars(os.path.expanduser(_path))
+
 
 def inline(sconf):
     """ Return config in inline form, opposite of :meth:`config.expand`.
@@ -280,7 +282,9 @@ def expand(sconf, cwd=None, parent=None):
                 p['shell_command'] = []
 
             pconf.update(p)
-        sconf['panes'] = [expand(pane, parent=sconf) for pane in sconf['panes']]
+        sconf['panes'] = [
+            expand(pane, parent=sconf) for pane in sconf['panes']
+        ]
 
     return sconf
 
@@ -318,21 +322,22 @@ def trickle(sconf):
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
-            if not 'start_directory' in windowconfig:
+            if 'start_directory' not in windowconfig:
                 windowconfig['start_directory'] = session_start_directory
             else:
                 if not any(
-                    windowconfig['start_directory'].startswith(a)
-                    for a in ['~', '/']
+                        windowconfig['start_directory'].startswith(a)
+                        for a in ['~', '/']
                 ):
                     window_start_path = os.path.join(
-                        session_start_directory, windowconfig['start_directory']
+                        session_start_directory,
+                        windowconfig['start_directory']
                     )
                     windowconfig['start_directory'] = window_start_path
 
         # We only need to trickle to the window, workspace builder checks wconf
         if suppress_history is not None:
-            if not 'suppress_history' in windowconfig:
+            if 'suppress_history' not in windowconfig:
                 windowconfig['suppress_history'] = suppress_history
 
         for paneconfig in windowconfig['panes']:
@@ -351,7 +356,7 @@ def trickle(sconf):
 
             p_index = windowconfig['panes'].index(paneconfig)
             windowconfig['panes'][p_index]['shell_command'] = commands_before
-            #paneconfig['shell_command'] = commands_before
+            # paneconfig['shell_command'] = commands_before
 
     return sconf
 
@@ -425,9 +430,7 @@ def import_tmuxinator(sconf):
     for w in sconf['windows']:
         for k, v in w.items():
 
-            windowdict = {}
-
-            windowdict['window_name'] = k
+            windowdict = {'window_name': k}
 
             if isinstance(v, string_types) or v is None:
                 windowdict['panes'] = [v]
@@ -482,9 +485,8 @@ def import_teamocil(sconf):
 
     for w in sconf['windows']:
 
-        windowdict = {}
+        windowdict = {'window_name': w['name']}
 
-        windowdict['window_name'] = w['name']
         if 'clear' in w:
             windowdict['clear'] = w['clear']
 

@@ -5,21 +5,24 @@ tmuxp.session
 ~~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 
-from . import util, formats, exc
-from .window import Window
+from . import exc, formats, util
 from .common import EnvironmentMixin
+from .window import Window
 
 logger = logging.getLogger(__name__)
 
 
-class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixin):
-
+class Session(
+    util.TmuxMappingObject,
+    util.TmuxRelationalObject,
+    EnvironmentMixin
+):
     """:term:`tmux(1)` session.
 
     Holds :class:`Window` objects.
@@ -32,7 +35,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
         EnvironmentMixin.__init__(self)
         self.server = server
 
-        if not 'session_id' in kwargs:
+        if 'session_id' not in kwargs:
             raise ValueError('Session requires a `session_id`')
         self._session_id = kwargs['session_id']
         self.server._update_windows()
@@ -219,8 +222,6 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
 
         """
 
-        tmux_args = list()
-
         if target_window:
             if isinstance(target_window, int):
                 target = '-t%s:%d' % (self.get('session_name'), target_window)
@@ -265,6 +266,7 @@ class Session(util.TmuxMappingObject, util.TmuxRelationalObject, EnvironmentMixi
     def windows(self):
         """Property / alias to return :meth:`~.list_windows`."""
         return self.list_windows()
+
     #: Alias of :attr:`windows`.
     children = windows
 

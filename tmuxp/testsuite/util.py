@@ -6,17 +6,17 @@ tmuxp.tests.util
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 import unittest
 
-from .helpers import TmuxTestCase, TestCase
-from .. import exc
-from ..exc import BeforeLoadScriptNotExists, BeforeLoadScriptError
-from ..util import has_required_tmux_version, run_before_script
+from tmuxp import exc
+from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
+from tmuxp.testsuite.helpers import TestCase, TmuxTestCase
+from tmuxp.util import has_required_tmux_version, run_before_script
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +58,7 @@ class EnvironmentVarGuard(object):
         for unset in self._unset:
             del self._environ[unset]
 
+
 class TmuxVersionTest(TmuxTestCase):
 
     """Test the :meth:`has_required_tmux_version`."""
@@ -82,10 +83,14 @@ class TmuxVersionTest(TmuxTestCase):
         self.assertEqual(result, r'1.8')
 
     def test_error_version_less_1_7(self):
-        with self.assertRaisesRegexp(exc.TmuxpException, 'tmuxp only supports'):
+        with self.assertRaisesRegexp(
+            exc.TmuxpException, 'tmuxp only supports'
+        ):
             has_required_tmux_version('1.7')
 
-        with self.assertRaisesRegexp(exc.TmuxpException, 'tmuxp only supports'):
+        with self.assertRaisesRegexp(
+            exc.TmuxpException, 'tmuxp only supports'
+        ):
             has_required_tmux_version('1.6a')
 
         has_required_tmux_version('1.9a')
@@ -125,7 +130,9 @@ class BeforeLoadScriptErrorTestCase(TestCase):
     def test_returns_stderr_messages(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaisesRegexp(exc.BeforeLoadScriptError, "failed with returncode"):
+        with self.assertRaisesRegexp(
+            exc.BeforeLoadScriptError, "failed with returncode"
+        ):
             run_before_script(script_file)
 
 

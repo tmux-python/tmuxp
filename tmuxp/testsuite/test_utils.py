@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tests for tmuxp testsuite's helper and utility functions."""
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
-from .helpers import get_test_session_name, temp_session, TmuxTestCase, unittest
+from tmuxp.testsuite.helpers import (TmuxTestCase, get_test_session_name,
+                                     temp_session, unittest)
 
 
 class TempSession(TmuxTestCase):
@@ -13,7 +14,9 @@ class TempSession(TmuxTestCase):
         server = self.server
         session_name = get_test_session_name(server=server)
 
-        with temp_session(server=server, session_name=session_name) as session:
+        with temp_session(
+            server=server, session_name=session_name
+        ):
             result = server.has_session(session_name)
             self.assertTrue(result)
 
@@ -25,7 +28,7 @@ class TempSession(TmuxTestCase):
         server = self.server
         session_name = get_test_session_name(server=server)
 
-        with temp_session(server=server, session_name=session_name) as session:
+        with temp_session(server=server, session_name=session_name):
 
             # an error or an exception within a temp_session kills the session
             server.kill_session(session_name)

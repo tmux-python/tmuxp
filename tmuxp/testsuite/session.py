@@ -6,16 +6,16 @@ tmuxp.tests.session
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import unittest
 from random import randint
 
-from . import t
-from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
-from .. import Session, Window, Pane
+from tmuxp import Pane, Session, Window
+from tmuxp.testsuite import t
+from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class SessionTest(TmuxTestCase):
             self.session.attached_window().get('window_index')
         )
 
-        window = self.session.new_window(window_name='test_window')
+        self.session.new_window(window_name='test_window')
         window_count = len(self.session._windows)
 
         self.assertGreaterEqual(window_count, 2)  # 2 or more windows
@@ -179,7 +179,7 @@ class Environment(TmuxTestCase):
         self.session.unset_environment('BAM')
         self.assertEqual(None, self.session.show_environment('BAM'))
 
-        
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Options))

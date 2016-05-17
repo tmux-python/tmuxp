@@ -5,20 +5,19 @@ tmuxp.window
 ~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 
-from . import util, formats, exc
+from . import exc, formats, util
 from .pane import Pane
 
 logger = logging.getLogger(__name__)
 
 
 class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
-
     """:term:`tmux(1)` window."""
 
     childIdAttribute = 'pane_id'
@@ -31,7 +30,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         self.session = session
         self.server = self.session.server
 
-        if not 'window_id' in kwargs:
+        if 'window_id' not in kwargs:
             raise ValueError('Window requires a `window_id`')
 
         self._window_id = kwargs['window_id']
@@ -126,8 +125,8 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def set_window_option(self, option, value):
         """Wrapper for ``$ tmux set-window-option <option> <value>``.
 
-        :param value: window value. True/False will turn in 'on' and 'off', also
-            accepts string of 'on' or 'off' directly.
+        :param value: window value. True/False will turn in 'on' and 'off',
+            also accepts string of 'on' or 'off' directly.
         :type value: bool
 
         """
@@ -142,7 +141,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         process = self.cmd(
             'set-window-option',
             '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
-            #'-t%s' % self.get('window_id'),
+            # '-t%s' % self.get('window_id'),
             option, value
         )
 
@@ -262,7 +261,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         proc = self.cmd(
             'kill-window',
-            #'-t:%s' % self.get('window_id')
+            # '-t:%s' % self.get('window_id')
             '-t%s:%s' % (self.get('session_id'), self.get('window_index')),
         )
 
@@ -333,10 +332,10 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         return self.select_pane('-l')
 
     def split_window(
-        self,
-        target=None,
-        start_directory=None,
-        attach=True
+            self,
+            target=None,
+            start_directory=None,
+            attach=True
     ):
         """Split window and return the created :class:`Pane`.
 
@@ -371,7 +370,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
                     'window_index', 'window_id'] + formats.PANE_FORMATS
         tmux_formats = ['#{%s}\t' % f for f in pformats]
 
-        #'-t%s' % self.attached_pane().get('pane_id'),
+        # '-t%s' % self.attached_pane().get('pane_id'),
         # 2013-10-18 LOOK AT THIS, rm'd it..
         tmux_args = tuple()
 
@@ -381,7 +380,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             tmux_args += ('-t%s' % self.panes[0].get('pane_id'),)
 
         tmux_args += (
-            '-P', '-F%s' % ''.join(tmux_formats)     # output
+            '-P', '-F%s' % ''.join(tmux_formats)  # output
         )
 
         if start_directory:
@@ -461,5 +460,6 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
     def panes(self):
         """Property / alias to return :meth:`~.list_panes`."""
         return self.list_panes()
+
     #: Alias of :attr:`panes`.
     children = panes

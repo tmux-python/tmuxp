@@ -5,16 +5,16 @@ tmuxp.server
 ~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
 
-from . import formats, exc
-from .session import Session
-from .util import tmux_cmd, TmuxRelationalObject
+from . import exc, formats
 from .common import EnvironmentMixin
+from .session import Session
+from .util import TmuxRelationalObject, tmux_cmd
 
 logger = logging.getLogger(__name__)
 
@@ -124,11 +124,6 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
-        else:
-            session_info = proc.stdout[0]
-
-        if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
 
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in sformats]
@@ -208,7 +203,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         # tmux < 1.8 doesn't have window_id, use window_name
         for w in windows:
-            if not 'window_id' in w:
+            if 'window_id' not in w:
                 w['window_id'] = w['window_name']
 
         if self._windows:
@@ -310,8 +305,8 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
                     continue
 
         return [
-                   Session(server=self, **s) for s in attached_sessions
-               ] or None
+            Session(server=self, **s) for s in attached_sessions
+        ] or None
 
     def has_session(self, target_session):
         """Return True if session exists. ``$ tmux has-session``.
@@ -323,7 +318,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         proc = self.cmd('has-session', '-t%s' % target_session)
 
-        if proc.stdout == []:
+        if not proc.stdout:
             return True
         if any(
             x in proc.stdout for x in
@@ -385,7 +380,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
 
         if proc.stderr:
             raise exc.TmuxpException(proc.stderr)
-        
+
     def new_session(self,
                     session_name=None,
                     kill_session=False,

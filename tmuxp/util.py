@@ -5,8 +5,8 @@ tmuxp.util
 ~~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import collections
 import logging
@@ -38,16 +38,20 @@ def run_before_script(script_file):
             stderr = proc.stderr.read()
             proc.stderr.close()
             stderr = console_to_str(stderr).split('\n')
-            stderr = '\n'.join(list(filter(None, stderr)))  # filter empty values
+            stderr = '\n'.join(list(filter(None, stderr)))  # filter empty
 
-            raise exc.BeforeLoadScriptError(proc.returncode, os.path.abspath(script_file), stderr)
+            raise exc.BeforeLoadScriptError(
+                proc.returncode, os.path.abspath(script_file), stderr
+            )
 
         return proc.returncode
     except OSError as e:
         if e.errno == 2:
-            raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
+            raise exc.BeforeLoadScriptNotExists(
+                e, os.path.abspath(script_file)
+            )
         else:
-            raise(e)
+            raise e
 
 
 class tmux_cmd(object):
@@ -155,7 +159,7 @@ class TmuxMappingObject(collections.MutableMapping):
 
 class TmuxRelationalObject(object):
 
-    """Base Class for managing tmux object child entities.
+    """Base Class for managing tmux object child entities.  .. # NOQA
 
     Manages collection of child objects  (a :class:`Server` has a collection of
     :class:`Session` objects, a :class:`Session` has collection of
@@ -255,8 +259,7 @@ def which(exe=None):
             return exe
 
         # default path based on busybox's default
-        default_path = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin'
-        search_path = os.environ.get('PATH', default_path)
+        search_path = '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin'
 
         for path in search_path.split(os.pathsep):
             full_path = os.path.join(path, exe)

@@ -6,15 +6,14 @@ tmuxp.tests.window
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import unittest
 
-from .helpers import TmuxTestCase
-from .. import Pane, Window, Server
-
+from tmuxp import Pane, Server, Window
+from tmuxp.testsuite.helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +51,11 @@ class NewTest(TmuxTestCase):
 
     def test_zfresh_window_data(self):
 
-        pane_base_index = int(self.session.attached_window().show_window_option(
-            'pane-base-index', g=True
-        ))
+        pane_base_index = int(
+            self.session.attached_window().show_window_option(
+                'pane-base-index', g=True
+            )
+        )
 
         self.assertEqual(len(self.session.windows), 1)
 
@@ -74,7 +75,7 @@ class NewTest(TmuxTestCase):
         window = self.session.attached_window()
         self.assertIsInstance(window, Window)
         self.assertEqual(len(self.session.attached_window().panes), 1)
-        pane = window.split_window()
+        window.split_window()
         self.session.attached_window().select_pane(pane_base_index)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
         self.session.attached_window().select_pane(pane_base_index + 1)

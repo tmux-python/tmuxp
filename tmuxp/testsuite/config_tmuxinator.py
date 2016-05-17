@@ -6,8 +6,8 @@ tmuxp.tests.config_tmuxinator
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
@@ -15,8 +15,8 @@ import unittest
 
 import kaptan
 
-from .helpers import TestCase
-from .. import config
+from tmuxp import config
+from tmuxp.testsuite.helpers import TestCase
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')

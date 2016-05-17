@@ -6,8 +6,8 @@ tmuxp.log
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import time
@@ -34,18 +34,15 @@ def default_log_template(self, record):
     reset = Style.RESET_ALL
     levelname = (
         LEVEL_COLORS.get(record.levelname) + Style.BRIGHT +
-        '(%(levelname)s)'
-        + Style.RESET_ALL + ' '
+        '(%(levelname)s)' + Style.RESET_ALL + ' '
     )
     asctime = (
         '[' + Fore.BLACK + Style.DIM + Style.BRIGHT +
-        '%(asctime)s'
-        + Fore.RESET + Style.RESET_ALL + ']'
+        '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
     )
     name = (
         ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT +
-        '%(name)s'
-        + Fore.RESET + Style.RESET_ALL + ' '
+        '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
     )
 
     tpl = reset + levelname + asctime + name + reset
@@ -54,7 +51,6 @@ def default_log_template(self, record):
 
 
 class LogFormatter(logging.Formatter):
-
     template = default_log_template
 
     def __init__(self, color=True, *args, **kwargs):
@@ -88,18 +84,15 @@ def debug_log_template(self, record):
     reset = Style.RESET_ALL
     levelname = (
         LEVEL_COLORS.get(record.levelname) + Style.BRIGHT +
-        '(%(levelname)1.1s)'
-        + Style.RESET_ALL + ' '
+        '(%(levelname)1.1s)' + Style.RESET_ALL + ' '
     )
     asctime = (
         '[' + Fore.BLACK + Style.DIM + Style.BRIGHT +
-        '%(asctime)s'
-        + Fore.RESET + Style.RESET_ALL + ']'
+        '%(asctime)s' + Fore.RESET + Style.RESET_ALL + ']'
     )
     name = (
         ' ' + Fore.WHITE + Style.DIM + Style.BRIGHT +
-        '%(name)s'
-        + Fore.RESET + Style.RESET_ALL + ' '
+        '%(name)s' + Fore.RESET + Style.RESET_ALL + ' '
     )
     module_funcName = (
         Fore.GREEN + Style.BRIGHT +
@@ -116,7 +109,6 @@ def debug_log_template(self, record):
 
 
 class DebugLogFormatter(LogFormatter):
-
     """Provides greater technical details than standard log Formatter."""
 
     template = debug_log_template

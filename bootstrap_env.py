@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import (
-    absolute_import, division, print_function, with_statement, unicode_literals
-)
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import os
-import sys
-import subprocess
 import platform
+import subprocess
+import sys
 
 
 def warning(*objs):

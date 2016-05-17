@@ -5,8 +5,8 @@ tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import argparse
 import logging
@@ -16,11 +16,10 @@ import sys
 import argcomplete
 import kaptan
 
-from . import log, util, exc, WorkspaceBuilder, Server, config
+from . import Server, WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
 from ._compat import input, string_types
 from .workspacebuilder import freeze
-
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +45,10 @@ def prompt(name, default=None):
 
     """
 
-    prompt = name + (default and ' [%s]' % default or '')
-    prompt += name.endswith('?') and ' ' or ': '
+    _prompt = name + (default and ' [%s]' % default or '')
+    _prompt += name.endswith('?') and ' ' or ': '
     while True:
-        rv = input(prompt)
+        rv = input(_prompt)
         if rv:
             return rv
         if default is not None:
@@ -77,11 +76,11 @@ def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
     else:
         prompt_choice = 'y/N'
 
-    prompt = name + ' [%s]' % prompt_choice
-    prompt += name.endswith('?') and ' ' or ': '
+    _prompt = name + ' [%s]' % prompt_choice
+    _prompt += name.endswith('?') and ' ' or ': '
 
     while True:
-        rv = input(prompt)
+        rv = input(_prompt)
         if not rv:
             return default
         if rv.lower() in yes_choices:
@@ -261,7 +260,7 @@ def load_workspace(config_file, args):
         logger.error('%s is empty or parsed no config data' % config_file)
         return
 
-    tmux_bin = util.which('tmux')
+    util.which('tmux')
 
     try:
         logger.info('Loading %s.' % config_file)
@@ -576,11 +575,12 @@ def command_import_tmuxinator(args):
         else:
             sys.exit('Unknown config format.')
 
-        print(newconfig)
         print(
-            '---------------------------------------------------------------')
-        print(
-            'Configuration import does its best to convert tmuxinator files.\n')
+            newconfig,
+            '---------------------------------------------------------------'
+            'Configuration import does its best to convert tmuxinator files.'
+            '\n'
+        )
         if args.answer_yes or prompt_yes_no(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
@@ -633,7 +633,7 @@ def command_convert(args):
 
     if 'json' in ext:
         if args.answer_yes or prompt_yes_no(
-            'convert to <%s> to yaml?' % (fullfile)
+            'convert to <%s> to yaml?' % fullfile
         ):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
@@ -642,15 +642,15 @@ def command_convert(args):
                 'yaml', indent=2, default_flow_style=False
             )
             if args.answer_yes or prompt_yes_no(
-                'Save config to %s?' % (newfile)
+                'Save config to %s?' % newfile
             ):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
-                print('New config saved to %s' % (newfile))
+                print('New config saved to %s' % newfile)
     elif 'yaml' in ext:
         if args.answer_yes or prompt_yes_no(
-            'convert to <%s> to json?' % (fullfile)
+            'convert to <%s> to json?' % fullfile
         ):
             configparser = kaptan.Kaptan()
             configparser.import_config(configfile)
@@ -658,17 +658,16 @@ def command_convert(args):
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
             if args.answer_yes or prompt_yes_no(
-                'Save config to <%s>?' % (newfile)
+                'Save config to <%s>?' % newfile
             ):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
-                print('New config saved to <%s>.' % (newfile))
+                print('New config saved to <%s>.' % newfile)
 
 
 def command_attach_session(args):
     """Command to attach / switch client to a tmux session."""
-    commands = []
     ctext = ' '.join(args.session_name)
 
     t = Server(
@@ -697,7 +696,6 @@ def command_attach_session(args):
 
 def command_kill_session(args):
     """Command to kill a tmux session."""
-    commands = []
     ctext = ' '.join(args.session_name)
 
     t = Server(
@@ -898,7 +896,7 @@ def get_parser():
         help='''\
         Checks current ~/.teamocil and current directory for yaml files.
         '''
-    ).completer = TeamocilCompleter(allowednames=('.yml'), directories=False)
+    ).completer = TeamocilCompleter(allowednames='.yml', directories=False)
     import_teamocil.set_defaults(callback=command_import_teamocil)
 
     import_tmuxinator = importsubparser.add_parser(
@@ -910,7 +908,9 @@ def get_parser():
         required=True)
     import_tmuxinatorgroup.add_argument(
         '--list', dest='list', action='store_true',
-        help='List yaml configs in ~/.tmuxinator and current working directory.'
+        help=(
+            'List yaml configs in ~/.tmuxinator and current working directory.'
+        )
     )
 
     import_tmuxinatorgroup.add_argument(
@@ -920,14 +920,16 @@ def get_parser():
         help='''\
         Checks current ~/.tmuxinator and current directory for yaml files.
         '''
-    ).completer = TmuxinatorCompleter(allowednames=('.yml'), directories=False)
+    ).completer = TmuxinatorCompleter(allowednames='.yml', directories=False)
 
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
 
     parser.add_argument(
         '--log-level', dest='log_level',
         default=None,
-        help='Level of debug verbosity. DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+        help=(
+            'Level of debug verbosity. DEBUG, INFO, WARNING, ERROR, CRITICAL.',
+        )
     )
 
     parser.add_argument(
@@ -964,7 +966,7 @@ def main():
 
     util.oh_my_zsh_auto_title()
 
-    t = Server(
+    t = Server(  # noqa
         socket_name=args.socket_name,
         socket_path=args.socket_path,
         colors=args.colors

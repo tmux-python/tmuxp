@@ -6,8 +6,8 @@ tmuxp.tests.workspacefreezer
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
@@ -16,9 +16,9 @@ import unittest
 
 import kaptan
 
-from .helpers import TmuxTestCase
-from .. import config
-from ..workspacebuilder import WorkspaceBuilder, freeze
+from tmuxp import config
+from tmuxp.testsuite.helpers import TmuxTestCase
+from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +75,11 @@ class FreezeTest(TmuxTestCase):
 
         kaptanconf = kaptan.Kaptan()
         kaptanconf = kaptanconf.import_config(sconf)
-        json = kaptanconf.export(
+        kaptanconf.export(
             'json',
             indent=2
         )
-        yaml = kaptanconf.export(
+        kaptanconf.export(
             'yaml',
             indent=2,
             default_flow_style=False,

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """Helper methods for tmuxp unittests."""
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import contextlib
 import logging
+from random import randint
+
+from tmuxp import exc
+from tmuxp.testsuite import t
 
 try:
     import unittest2 as unittest
 except ImportError:  # Python 2.7
     import unittest
 
-from random import randint
-
-from . import t
-from .. import exc
 
 logger = logging.getLogger(__name__)
 
@@ -36,20 +36,6 @@ def get_test_window_name(session, prefix=TEST_SESSION_PREFIX):
         if not session.findWhere(window_name=window_name):
             break
     return window_name
-
-
-@contextlib.contextmanager
-def temp_session(server, session_name=None):
-    if not session_name:
-        session_name = get_test_session_name(server)
-
-    session = server.new_session(session_name)
-    try:
-        yield session
-    finally:
-        if server.has_session(session_name):
-            session.kill_session()
-    return
 
 
 @contextlib.contextmanager
@@ -174,13 +160,6 @@ class TmuxTestCase(TestCase):
         old_test_sessions = [
             s.get('session_name') for s in t._sessions
             if s.get('session_name').startswith(TEST_SESSION_PREFIX)
-        ]
-
-        other_sessions = [
-            s.get('session_name') for s in t._sessions
-            if not s.get('session_name').startswith(
-                TEST_SESSION_PREFIX
-            )
         ]
 
         TEST_SESSION_NAME = get_test_session_name(server=t)

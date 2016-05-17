@@ -10,7 +10,7 @@ class EnvironmentMixin(object):
 
     def __init__(self, add_option=None):
         self._add_option = add_option
-    
+
     def set_environment(self, name, value):
         """Set environment ``$ tmux set-environment <name> <value>``.
 
@@ -26,7 +26,7 @@ class EnvironmentMixin(object):
             args += [self._add_option]
 
         args += [name, value]
-            
+
         proc = self.cmd(*args)
 
         if proc.stderr:
@@ -45,7 +45,7 @@ class EnvironmentMixin(object):
         if self._add_option:
             args += [self._add_option]
         args += ['-u', name]
-            
+
         proc = self.cmd(*args)
 
         if proc.stderr:
@@ -64,7 +64,7 @@ class EnvironmentMixin(object):
         if self._add_option:
             args += [self._add_option]
         args += ['-r', name]
-            
+
         proc = self.cmd(*args)
 
         if proc.stderr:

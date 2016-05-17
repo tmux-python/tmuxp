@@ -6,12 +6,12 @@ tmuxp.workspacebuilder
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 
-from . import exc, Window, Pane, Session, Server
+from . import Pane, Server, Session, Window, exc
 from .util import run_before_script
 
 logger = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ class WorkspaceBuilder(object):
                 run_before_script(self.sconf['before_script'])
             except Exception as e:
                 self.session.kill_session()
-                raise(e)
+                raise e
         if 'environment' in self.sconf:
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
@@ -293,33 +293,31 @@ def freeze(session):
     :rtype: dict
 
     """
-    sconf = {}
+    sconf = {'session_name': session['session_name'], 'windows': []}
 
-    sconf['session_name'] = session['session_name']
-
-    sconf['windows'] = []
     for w in session.windows:
-        wconf = {}
-        wconf['options'] = w.show_window_options()
-        wconf['window_name'] = w.get('window_name')
-        wconf['layout'] = w.get('window_layout')
-        wconf['panes'] = []
+        wconf = {
+            'options': w.show_window_options(),
+            'window_name': w.get('window_name'),
+            'layout': w.get('window_layout'),
+            'panes': []
+        }
         if w.get('window_active', '0') == '1':
             wconf['focus'] = 'true'
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
-        pane_has_same_path = lambda p: (
-            w.panes[0].get('pane_current_path') ==
-            p.get('pane_current_path')
-        )
+        def pane_has_same_path(p):
+            return (
+                w.panes[0].get('pane_current_path') ==
+                p.get('pane_current_path')
+            )
 
-        if (all(pane_has_same_path(p) for p in w.panes)):
+        if all(pane_has_same_path(p) for p in w.panes):
             wconf['start_directory'] = w.panes[0].get('pane_current_path')
 
         for p in w.panes:
-            pconf = {}
-            pconf['shell_command'] = []
+            pconf = {'shell_command': []}
 
             if 'start_directory' not in wconf:
                 pconf['shell_command'].append(
@@ -327,7 +325,7 @@ def freeze(session):
                 )
 
             if p.get('pane_active', '0') == '1':
-                pconf['focus']='true'
+                pconf['focus'] = 'true'
 
             current_cmd = p.get('pane_current_command')
 
@@ -340,7 +338,7 @@ def freeze(session):
                     )
                 )
 
-            if (filter_interpretters_and_shells()):
+            if filter_interpretters_and_shells():
                 current_cmd = None
 
             if current_cmd:

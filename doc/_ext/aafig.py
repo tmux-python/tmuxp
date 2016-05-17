@@ -14,17 +14,19 @@
 
 import posixpath
 from os import path
+
+from docutils import nodes
+from docutils.parsers.rst.directives import flag, images, nonnegative_int
+from sphinx.errors import SphinxError
+from sphinx.util import ensuredir, relative_uri
+from sphinx.util.compat import Directive
+
 try:
     from hashlib import sha1 as sha
 except ImportError:
     from sha import sha
 
-from docutils import nodes
-from docutils.parsers.rst.directives import images, nonnegative_int, flag
 
-from sphinx.errors import SphinxError
-from sphinx.util import ensuredir, relative_uri
-from sphinx.util.compat import Directive
 
 try:
     import aafigure
@@ -92,7 +94,7 @@ class AafigDirective(images.Image):
         if isinstance(image_node, nodes.system_message):
             return [image_node]
         text = '\n'.join(self.content)
-	image_node.aafig = dict(options = aafig_options, text = text)
+        image_node.aafig = dict(options = aafig_options, text = text)
         return [image_node]
 
 
@@ -187,7 +189,7 @@ def render_aafigure(app, text, options):
 
     try:
         (visitor, output) = aafigure.render(text, outfn, options)
-	output.close()
+        output.close()
     except aafigure.UnsupportedFormatError, e:
         raise AafigError(str(e))
 

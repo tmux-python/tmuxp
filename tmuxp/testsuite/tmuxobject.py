@@ -6,16 +6,16 @@ tmuxp.tests.tmuxobject
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import random
 import unittest
 
-from . import t
-from .helpers import TmuxTestCase, TEST_SESSION_PREFIX
-from .. import Pane, Window, Session
+from tmuxp import Pane, Session, Window
+from tmuxp.testsuite import t
+from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +171,6 @@ class TmuxObjectTest(TmuxTestCase):
 
         for session in t.sessions:
             session_id = session.get('session_id')
-            session_name = session.get('session_name')
             get_by_id = t.getById(session_id)
 
             self.assertEqual(get_by_id, session)
@@ -183,7 +182,6 @@ class TmuxObjectTest(TmuxTestCase):
             # session.getById
             for window in session.windows:
                 window_id = window.get('window_id')
-                window_index = window.get('window_index')
 
                 get_by_id = session.getById(window_id)
 
@@ -197,7 +195,6 @@ class TmuxObjectTest(TmuxTestCase):
                 # window.getById
                 for pane in window.panes:
                     pane_id = pane.get('pane_id')
-                    pane_tty = pane.get('pane_tty')
 
                     get_by_id = window.getById(pane_id)
 

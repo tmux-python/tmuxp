@@ -6,8 +6,8 @@ tmuxp.tests.config_teamocil
 
 """
 
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import logging
 import os
@@ -15,8 +15,8 @@ import unittest
 
 import kaptan
 
-from .helpers import TestCase
-from .. import config
+from tmuxp import config
+from tmuxp.testsuite.helpers import TestCase
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
@@ -176,7 +176,7 @@ class Teamocil3Test(TestCase):
         after: "echo 'I am done initializing this pane.'"
       panes:
         - cmd: "git status"
-        - cmd: "bundle exec rails server --port 4000"
+        - cmd: "bundle exec rails server --port 40"
           focus: true
         - cmd:
           - "sudo service memcached start"
@@ -194,7 +194,7 @@ class Teamocil3Test(TestCase):
             },
             'panes': [
                 {'cmd': 'git status'},
-                {'cmd': 'bundle exec rails server --port 4000',
+                {'cmd': 'bundle exec rails server --port 40',
                     'focus': True},
                 {'cmd': [
                     'sudo service memcached start',
@@ -221,7 +221,7 @@ class Teamocil3Test(TestCase):
                         'shell_command': 'git status'
                     },
                     {
-                        'shell_command': 'bundle exec rails server --port 4000',
+                        'shell_command': 'bundle exec rails server --port 40',
                         'focus': True
                     },
                     {

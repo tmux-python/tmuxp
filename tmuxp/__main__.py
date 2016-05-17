@@ -5,8 +5,8 @@ tmuxp
 ~~~~~
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals, with_statement)
 
 import os
 import sys
@@ -20,6 +20,6 @@ def run():
     tmuxp.cli.main()
 
 if __name__ == '__main__':
-    exit = run()
+    _exit = run()
     if exit:
-        sys.exit(exit)
+        sys.exit(_exit)
