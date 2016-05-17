@@ -435,7 +435,7 @@ class WindowAutomaticRename(TmuxTestCase):
             self.session.server._update_windows()
             if w.get('window_name') == 'top':
                 break
-            time.sleep(.2)
+            time.sleep(.3)
 
         self.assertEqual(w.get('window_name'), text_type('top'))
 
