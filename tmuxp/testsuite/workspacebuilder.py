@@ -238,19 +238,27 @@ class SuppressHistoryTest(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
-        time.sleep(0.3) # give .bashrc, etc. time to load
 
-        s.server._update_windows()
-        for w in s.windows:
-            w.server._update_panes()
-            w.select_window()
-            for p in w.panes:
-                p.select_pane()
+        inHistoryPane = self.session.findWhere(
+            {'window_name': 'inHistory'}).attached_pane()
+        isMissingPane = self.session.findWhere(
+            {'window_name': 'isMissing'}).attached_pane()
+        assertHistory = lambda cmd, hist: 'inHistory' in cmd and cmd == hist
+        assertIsMissing = lambda cmd, hist: 'isMissing' in cmd and cmd != hist
 
-                # Print the last-in-history command in the pane
-                self.session.cmd('send-keys', ' fc -ln -1')
-                self.session.cmd('send-keys', 'Enter')
-                time.sleep(0.1) # give fc time to run
+        for p, assertCase in [
+            (inHistoryPane, assertHistory,), (isMissingPane, assertIsMissing,)
+        ]:
+            correct = False
+            p.window.select_window()
+            p.select_pane()
+
+            # Print the last-in-history command in the pane
+            self.session.cmd('send-keys', ' fc -ln -1')
+            self.session.cmd('send-keys', 'Enter')
+
+            for i in range(10):
+                time.sleep(0.1)
 
                 # Get the contents of the pane
                 self.session.cmd('capture-pane')
@@ -261,15 +269,10 @@ class SuppressHistoryTest(TmuxTestCase):
                 sent_cmd = captured_pane.stdout[0].strip()
                 history_cmd = captured_pane.stdout[-2].strip()
 
-                # If it was in the history, sent == history
-                if 'inHistory' in sent_cmd:
-                    self.assertEqual(sent_cmd, history_cmd)
-                # Otherwise, sent != history
-                elif 'isMissing' in sent_cmd:
-                    self.assertNotEqual(sent_cmd, history_cmd)
-                # Something went wrong
-                else:
-                    self.fail("Unknown sent command: [%s]" % sent_cmd)
+                if assertCase(sent_cmd, history_cmd):
+                    correct = True
+                    break
+            self.assertTrue(correct, "Unknown sent command: [%s]" % sent_cmd)
 
 
 class WindowOptions(TmuxTestCase):
