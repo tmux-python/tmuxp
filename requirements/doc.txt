@@ -1,4 +1,4 @@
--r ../requirements.pip
+-r ./base.txt
 docutils==0.12
 sphinx
 reportlab

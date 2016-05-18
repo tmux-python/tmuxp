@@ -79,7 +79,7 @@ pip_bin = os.path.join(env_dir, 'bin', 'pip')
 python_bin = os.path.join(env_dir, 'bin', 'python')
 virtualenv_bin = which('virtualenv', throw=False)
 virtualenv_exists = os.path.exists(env_dir) and os.path.isfile(python_bin)
-sphinx_requirements_filepath = os.path.join(project_dir, 'doc', 'requirements.pip')
+sphinx_requirements_filepath = os.path.join(project_dir, 'requirements', 'doc.txt')
 
 
 try:
