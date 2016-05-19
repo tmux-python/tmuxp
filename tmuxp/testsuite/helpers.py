@@ -13,6 +13,7 @@ import functools
 import inspect
 import io
 import logging
+import os
 import sys
 from contextlib import contextmanager
 from random import randint
@@ -331,6 +332,33 @@ def stdouts():
 
     try:
         yield mystdout, mystderr
+    finally:
+        sys.stdout = prev_out
+        sys.stderr = prev_err
+        sys.__stdout__ = prev_rout
+        sys.__stderr__ = prev_rerr
+
+
+@decorator
+def mute():
+    """Redirect `sys.stdout` and `sys.stderr` to /dev/null, silencent them.
+    Decorator example::
+        @mute
+        def test_foo(self):
+            something()
+    Context example::
+        with mute():
+            something()
+    """
+    prev_out, prev_err = sys.stdout, sys.stderr
+    prev_rout, prev_rerr = sys.__stdout__, sys.__stderr__
+    devnull = open(os.devnull, 'w')
+    mystdout, mystderr = devnull, devnull
+    sys.stdout = sys.__stdout__ = mystdout
+    sys.stderr = sys.__stderr__ = mystderr
+
+    try:
+        yield
     finally:
         sys.stdout = prev_out
         sys.stderr = prev_err

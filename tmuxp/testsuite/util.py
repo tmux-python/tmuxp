@@ -113,7 +113,7 @@ class RunBeforeScript(TestCase):
         with self.assertRaises(BeforeLoadScriptError):
             run_before_script(script_file)
 
-    @stdouts()
+    @stdouts
     def test_return_stdout_if_ok(self, stdout, stderr):
         script_file = os.path.join(fixtures_dir, 'script_complete.sh')
 
