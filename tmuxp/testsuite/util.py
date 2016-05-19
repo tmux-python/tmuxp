@@ -15,7 +15,7 @@ import unittest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.testsuite.helpers import TestCase, TmuxTestCase
+from tmuxp.testsuite.helpers import TestCase, TmuxTestCase, stdouts
 from tmuxp.util import has_required_tmux_version, run_before_script
 
 logger = logging.getLogger(__name__)
@@ -113,10 +113,12 @@ class RunBeforeScript(TestCase):
         with self.assertRaises(BeforeLoadScriptError):
             run_before_script(script_file)
 
-    def test_return_stdout_if_ok(self):
+    @stdouts()
+    def test_return_stdout_if_ok(self, stdout, stderr):
         script_file = os.path.join(fixtures_dir, 'script_complete.sh')
 
         run_before_script(script_file)
+        self.assertIn('hello', stdout.getvalue())
 
 
 class BeforeLoadScriptErrorTestCase(TestCase):
