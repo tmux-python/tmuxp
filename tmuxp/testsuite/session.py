@@ -11,11 +11,10 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import unittest
-from random import randint
 
 from tmuxp import Pane, Session, Window
 from tmuxp.testsuite import t
-from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase
+from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +98,7 @@ class SessionNewTest(TmuxTestCase):
 
     def test_new_session(self):
         """Server.new_session creates new session."""
-        new_session_name = TEST_SESSION_PREFIX + str(randint(0, 1337))
+        new_session_name = TEST_SESSION_PREFIX + next(namer)
         new_session = t.new_session(session_name=new_session_name, detach=True)
 
         self.assertIsInstance(new_session, Session)

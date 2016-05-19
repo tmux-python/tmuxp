@@ -15,8 +15,8 @@ import io
 import logging
 import os
 import sys
+import tempfile
 from contextlib import contextmanager
-from random import randint
 
 from tmuxp import exc
 from tmuxp.testsuite import t
@@ -30,10 +30,12 @@ logger = logging.getLogger(__name__)
 
 TEST_SESSION_PREFIX = 'test tmuxp_'
 
+namer = tempfile._RandomNameSequence()
+
 
 def get_test_session_name(server, prefix=TEST_SESSION_PREFIX):
     while True:
-        session_name = prefix + str(randint(0, 9999999))
+        session_name = prefix + next(namer)
         if not t.has_session(session_name):
             break
     return session_name
@@ -41,7 +43,7 @@ def get_test_session_name(server, prefix=TEST_SESSION_PREFIX):
 
 def get_test_window_name(session, prefix=TEST_SESSION_PREFIX):
     while True:
-        window_name = prefix + str(randint(0, 9999999))
+        window_name = prefix + next(namer)
         if not session.findWhere(window_name=window_name):
             break
     return window_name
