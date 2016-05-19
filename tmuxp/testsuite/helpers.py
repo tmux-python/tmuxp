@@ -21,11 +21,10 @@ from random import randint
 from tmuxp import exc
 from tmuxp.testsuite import t
 
-try:
+if sys.version_info < (2, 7):
     import unittest2 as unittest
-except ImportError:  # Python 2.7
+else:
     import unittest
-
 
 logger = logging.getLogger(__name__)
 
