@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp workspacefreezer.
-
-tmuxp.tests.workspacefreezer
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp workspacefreezer."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
@@ -58,7 +53,7 @@ class FreezeTest(TmuxTestCase):
 
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
-        assert(self.session == builder.session)
+        assert self.session == builder.session
 
         time.sleep(.50)
 

@@ -5,6 +5,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
+import pytest
 
 from tmuxp import Pane, Server, Window
 
@@ -19,7 +20,7 @@ class SelectTest(TmuxTestCase):
         window_count = len(self.session._windows)
         # to do, get option for   base-index from tmux
         # for now hoever, let's get the index from the first window.
-        self.assertEqual(window_count, 1)
+        assert window_count == 1
 
         window_base_index = int(
             self.session.attached_window().get('window_index'))
@@ -28,18 +29,17 @@ class SelectTest(TmuxTestCase):
 
         # self.assertEqual(2,
         # int(self.session.attached_window().get('window_index')))
-        self.assertEqual(int(window_base_index) + 1, int(
-            window.get('window_index')))
+        assert int(window_base_index) + 1 == int(window.get('window_index'))
 
         self.session.select_window(window_base_index)
-        self.assertEqual(window_base_index, int(
-            self.session.attached_window().get('window_index')))
+        assert window_base_index == \
+            int(self.session.attached_window().get('window_index'))
 
         self.session.select_window('testing 3')
-        self.assertEqual(int(window_base_index) + 1, int(
-            self.session.attached_window().get('window_index')))
+        assert int(window_base_index) + 1 == \
+            int(self.session.attached_window().get('window_index'))
 
-        self.assertEqual(len(self.session._windows), 2)
+        assert len(self.session._windows) == 2
 
 
 class NewTest(TmuxTestCase):
@@ -52,24 +52,24 @@ class NewTest(TmuxTestCase):
             )
         )
 
-        self.assertEqual(len(self.session.windows), 1)
+        assert len(self.session.windows) == 1
 
-        self.assertEqual(len(self.session.attached_window().panes), 1)
+        assert len(self.session.attached_window().panes) == 1
         current_windows = len(self.session._windows)
-        self.assertNotEqual('@0', self.session.get('session_id'))
-        self.assertEqual(current_windows, 1)
+        assert self.session.get('session_id') != '@0'
+        assert current_windows == 1
 
-        self.assertEqual(len(self.session.attached_window().panes), 1)
-        self.assertIsInstance(self.session.server, Server)
+        assert len(self.session.attached_window().panes) == 1
+        assert isinstance(self.session.server, Server)
         # len(self.session.attached_window().panes))
 
-        self.assertEqual(1, len(self.session.windows))
-        self.assertEqual(len(self.session.attached_window().panes), 1)
+        assert len(self.session.windows), 1
+        assert len(self.session.attached_window().panes) == 1
         for w in self.session.windows:
-            self.assertIsInstance(w, Window)
+            assert isinstance(w, Window)
         window = self.session.attached_window()
-        self.assertIsInstance(window, Window)
-        self.assertEqual(len(self.session.attached_window().panes), 1)
+        assert isinstance(window, Window)
+        assert len(self.session.attached_window().panes) == 1
         window.split_window()
         self.session.attached_window().select_pane(pane_base_index)
         self.session.attached_pane().send_keys('cd /srv/www/flaskr')
@@ -77,30 +77,30 @@ class NewTest(TmuxTestCase):
         self.session.attached_pane().send_keys('source .venv/bin/activate')
         self.session.new_window(window_name='second')
         current_windows += 1
-        self.assertEqual(current_windows, len(self.session._windows))
+        assert current_windows == len(self.session._windows)
         self.session.new_window(window_name='hey')
         current_windows += 1
-        self.assertEqual(current_windows, len(self.session._windows))
+        assert current_windows == len(self.session._windows)
 
         self.session.select_window(1)
         self.session.kill_window(target_window='hey')
         current_windows -= 1
-        self.assertEqual(current_windows, len(self.session._windows))
+        assert current_windows == len(self.session._windows)
 
 
 class NewTest2(TmuxTestCase):
 
     def test_newest_pane_data(self):
         window = self.session.new_window(window_name='test', attach=True)
-        self.assertIsInstance(window, Window)
-        self.assertEqual(1, len(window.panes))
+        assert isinstance(window, Window)
+        assert len(window.panes) == 1
         window.split_window(attach=True)
 
-        self.assertEqual(2, len(window.panes))
+        assert len(window.panes) == 2
         # note: the below used to accept -h, removing because split_window now
         # has attach as its only argument now
         window.split_window(attach=True)
-        self.assertEqual(3, len(window.panes))
+        assert len(window.panes) == 3
 
 
 class NewTest3(TmuxTestCase):
@@ -109,7 +109,7 @@ class NewTest3(TmuxTestCase):
         """Window.attached_window() returns active Pane."""
 
         window = self.session.attached_window()  # current window
-        self.assertIsInstance(window.attached_pane(), Pane)
+        assert isinstance(window.attached_pane(), Pane)
 
 
 class NewTest4(TmuxTestCase):
@@ -119,8 +119,8 @@ class NewTest4(TmuxTestCase):
         window_name = 'test split window'
         window = self.session.new_window(window_name=window_name, attach=True)
         pane = window.split_window()
-        self.assertEqual(2, len(window.panes))
-        self.assertIsInstance(pane, Pane)
+        assert len(window.panes) == 2
+        assert isinstance(pane, Pane)
 
 
 class RenameTest(TmuxTestCase):
@@ -134,18 +134,18 @@ class RenameTest(TmuxTestCase):
         window = self.session.new_window(
             window_name=self.window_name_before, attach=True)
 
-        self.assertEqual(window, self.session.attached_window())
-        self.assertEqual(window.get('window_name'), self.window_name_before)
+        assert window == self.session.attached_window()
+        assert window.get('window_name') == self.window_name_before
 
         window.rename_window(self.window_name_after)
 
         window = self.session.attached_window()
 
-        self.assertEqual(window.get('window_name'), self.window_name_after)
+        assert window.get('window_name') == self.window_name_after
 
         window = self.session.attached_window()
 
-        self.assertEqual(window.get('window_name'), self.window_name_after)
+        assert window.get('window_name') == self.window_name_after
 
 
 class RenameSpacesTest(RenameTest):
@@ -164,7 +164,7 @@ class KillWindow(TmuxTestCase):
         w.get('window_id')
 
         w.kill_window()
-        with self.assertRaises(IndexError):
+        with pytest.raises(IndexError):
             w.get('window_id')
 
 
@@ -175,36 +175,34 @@ class Options(TmuxTestCase):
         window = self.session.new_window(window_name='test_window')
 
         options = window.show_window_options()
-        self.assertIsInstance(options, dict)
+        assert isinstance(options, dict)
 
     def test_set_show_window_options(self):
         """Set option then Window.show_window_options(key)."""
         window = self.session.new_window(window_name='test_window')
 
         window.set_window_option('main-pane-height', 20)
-        self.assertEqual(20, window.show_window_options('main-pane-height'))
+        assert window.show_window_options('main-pane-height') == 20
 
         window.set_window_option('main-pane-height', 40)
-        self.assertEqual(40, window.show_window_options('main-pane-height'))
-
-        self.assertEqual(40, window.show_window_options()['main-pane-height'])
+        assert window.show_window_options('main-pane-height') == 40
+        assert window.show_window_options()['main-pane-height'] == 40
 
     def test_show_window_option(self):
         """Set option then Window.show_window_option(key)."""
         window = self.session.new_window(window_name='test_window')
 
         window.set_window_option('main-pane-height', 20)
-        self.assertEqual(20, window.show_window_option('main-pane-height'))
+        assert window.show_window_option('main-pane-height') == 20
 
         window.set_window_option('main-pane-height', 40)
-        self.assertEqual(40, window.show_window_option('main-pane-height'))
-
-        self.assertEqual(40, window.show_window_option('main-pane-height'))
+        assert window.show_window_option('main-pane-height') == 40
+        assert window.show_window_option('main-pane-height') == 40
 
     def test_set_window_option_bad(self):
         """Window.set_window_option raises ValueError for bad option key."""
 
         window = self.session.new_window(window_name='test_window')
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             window.set_window_option('afewewfew', 43)

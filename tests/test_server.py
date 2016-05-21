@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 class ServerTest(TmuxTestCase):
 
     def test_has_session(self):
-        self.assertTrue(self.t.has_session(self.TEST_SESSION_NAME))
-        self.assertFalse(self.t.has_session('asdf2314324321'))
+        assert self.t.has_session(self.TEST_SESSION_NAME)
+        assert not self.t.has_session('asdf2314324321')
 
     def test_socket_name(self):
         """ ``-L`` socket_name.
@@ -27,36 +27,36 @@ class ServerTest(TmuxTestCase):
         """
         myserver = Server(socket_name='test')
 
-        self.assertEqual(myserver.socket_name, 'test')
+        assert myserver.socket_name == 'test'
 
     def test_socket_path(self):
         """ ``-S`` socket_path  (alternative path for server socket). """
         myserver = Server(socket_path='test')
 
-        self.assertEqual(myserver.socket_path, 'test')
+        assert myserver.socket_path == 'test'
 
     def test_config(self):
         """ ``-f`` file for tmux(1) configuration. """
         myserver = Server(config_file='test')
-        self.assertEqual(myserver.config_file, 'test')
+        assert myserver.config_file == 'test'
 
     def test_256_colors(self):
         myserver = Server(colors=256)
-        self.assertEqual(myserver.colors, 256)
+        assert myserver.colors == 256
 
         proc = myserver.cmd('list-servers')
 
-        self.assertIn('-2', proc.cmd)
-        self.assertNotIn('-8', proc.cmd)
+        assert '-2' in proc.cmd
+        assert '-8' not in proc.cmd
 
     def test_88_colors(self):
         myserver = Server(colors=88)
-        self.assertEqual(myserver.colors, 88)
+        assert myserver.colors == 88
 
         proc = myserver.cmd('list-servers')
 
-        self.assertIn('-8', proc.cmd)
-        self.assertNotIn('-2', proc.cmd)
+        assert '-8' in proc.cmd
+        assert '-2' not in proc.cmd
 
 
 class EnvironmentTest(TmuxTestCase):
@@ -64,18 +64,18 @@ class EnvironmentTest(TmuxTestCase):
     def test_show_environment(self):
         """Server.show_environment() returns dict."""
         vars = self.server.show_environment()
-        self.assertIsInstance(vars, dict)
+        assert isinstance(vars, dict)
 
     def test_set_show_environment_single(self):
         """Set environment then Server.show_environment(key)."""
         self.server.set_environment('FOO', 'BAR')
-        self.assertEqual('BAR', self.server.show_environment('FOO'))
+        assert 'BAR' == self.server.show_environment('FOO')
 
         self.server.set_environment('FOO', 'DAR')
-        self.assertEqual('DAR', self.server.show_environment('FOO'))
+        assert 'DAR' == self.server.show_environment('FOO')
 
-        self.assertEqual('DAR', self.server.show_environment()['FOO'])
+        assert 'DAR' == self.server.show_environment()['FOO']
 
     def test_show_environment_not_set(self):
         """Unset environment variable returns None."""
-        self.assertEqual(None, self.server.show_environment('BAR'))
+        assert self.server.show_environment('BAR') is None

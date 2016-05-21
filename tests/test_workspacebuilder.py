@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp workspacebuilder.
-
-tmuxp.tests.workspacebuilder
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp workspacebuilder."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
@@ -15,6 +10,7 @@ import tempfile
 import time
 
 import kaptan
+import pytest
 from flaky import flaky
 
 from tmuxp import Window, config, exc
@@ -57,14 +53,14 @@ class TwoPaneTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s._windows), window_count)
+        assert len(s._windows) == window_count
         for w, wconf in builder.iter_create_windows(s):
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s._windows), window_count)
-            self.assertIsInstance(w, Window)
+                assert len(s._windows) == window_count
+            assert isinstance(w, Window)
 
-            self.assertEqual(len(s._windows), window_count)
+            assert len(s._windows) == window_count
             window_count += 1
 
 
@@ -93,14 +89,14 @@ class ThreePaneTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s._windows), window_count)
+        assert len(s._windows) == window_count
         for w, wconf in builder.iter_create_windows(s):
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s._windows), window_count)
-            self.assertIsInstance(w, Window)
+                assert len(s._windows) == window_count
+            assert isinstance(w, Window)
 
-            self.assertEqual(len(s._windows), window_count)
+            assert len(s._windows) == window_count
             window_count += 1
             w.set_window_option('main-pane-height', 50)
             w.select_layout(wconf['layout'])
@@ -152,10 +148,8 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
         builder.build(session=self.session)
 
-        self.assertEqual(
-            self.session.attached_window().get('window_name'),
+        assert self.session.attached_window().get('window_name') == \
             'focused window'
-        )
 
         pane_base_index = int(
             self.session.attached_window().show_window_option(
@@ -174,11 +168,11 @@ class FocusAndPaneIndexTest(TmuxTestCase):
             pane_base_indexes.append(int(pane.get('pane_index')))
 
         pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
-        self.assertListEqual(pane_indexes_should_be, pane_base_indexes)
+        assert pane_indexes_should_be == pane_base_indexes
 
         w = self.session.attached_window()
 
-        self.assertNotEqual(w.get('window_name'), 'man')
+        assert w.get('window_name') != 'man'
 
         pane_path = '/usr'
         for i in range(20):
@@ -188,14 +182,14 @@ class FocusAndPaneIndexTest(TmuxTestCase):
                 break
             time.sleep(.4)
 
-        self.assertEqual(p.get('pane_current_path'), pane_path)
+        assert p.get('pane_current_path') == pane_path
 
         proc = self.session.cmd('show-option', '-gv', 'base-index')
         base_index = int(proc.stdout[0])
         self.session.server._update_windows()
 
         window3 = self.session.findWhere({'window_index': str(base_index + 2)})
-        self.assertIsInstance(window3, Window)
+        assert isinstance(window3, Window)
 
         p = None
         pane_path = '/'
@@ -206,7 +200,7 @@ class FocusAndPaneIndexTest(TmuxTestCase):
                 break
             time.sleep(.4)
 
-        self.assertEqual(p.get('pane_current_path'), pane_path)
+        assert p.get('pane_current_path') == pane_path
 
 
 class SuppressHistoryTest(TmuxTestCase):
@@ -271,7 +265,7 @@ class SuppressHistoryTest(TmuxTestCase):
                 if assertCase(sent_cmd, history_cmd):
                     correct = True
                     break
-            self.assertTrue(correct, "Unknown sent command: [%s]" % sent_cmd)
+            assert correct, "Unknown sent command: [%s]" % sent_cmd
 
 
 class WindowOptions(TmuxTestCase):
@@ -299,15 +293,15 @@ class WindowOptions(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s._windows), window_count)
+        assert len(s._windows) == window_count
         for w, wconf in builder.iter_create_windows(s):
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s._windows), window_count)
-            self.assertIsInstance(w, Window)
-            self.assertEqual(w.show_window_option('main-pane-height'), 5)
+                assert len(s._windows) == window_count
+            assert isinstance(w, Window)
+            assert w.show_window_option('main-pane-height') == 5
 
-            self.assertEqual(len(s._windows), window_count)
+            assert len(s._windows) == window_count
             window_count += 1
             w.select_layout(wconf['layout'])
 
@@ -335,14 +329,14 @@ class WindowOptions(TmuxTestCase):
 
         for w, wconf in builder.iter_create_windows(s):
             if 'window_shell' in wconf:
-                self.assertEqual(wconf['window_shell'], text_type('top'))
+                assert wconf['window_shell'] == text_type('top')
             for i in range(10):
                 self.session.server._update_windows()
                 if w['window_name'] != 'top':
                     break
                 time.sleep(.2)
 
-            self.assertNotEqual(w.get('window_name'), text_type('top'))
+            assert w.get('window_name') != text_type('top')
 
 
 class EnvironmentVariables(TmuxTestCase):
@@ -368,8 +362,8 @@ class EnvironmentVariables(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(self.session)
 
-        self.assertEqual('BAR', self.session.show_environment('FOO'))
-        self.assertEqual('/tmp', self.session.show_environment('PATH'))
+        assert self.session.show_environment('FOO') == 'BAR'
+        assert self.session.show_environment('PATH') == '/tmp'
 
 
 class WindowAutomaticRename(TmuxTestCase):
@@ -400,20 +394,20 @@ class WindowAutomaticRename(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s._windows), window_count)
+        assert len(s._windows) == window_count
         for w, wconf in builder.iter_create_windows(s):
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s._windows), window_count)
-            self.assertIsInstance(w, Window)
-            self.assertEqual(w.show_window_option('automatic-rename'), 'on')
+                assert len(s._windows), window_count
+            assert isinstance(w, Window)
+            assert w.show_window_option('automatic-rename') == 'on'
 
-            self.assertEqual(len(s._windows), window_count)
+            assert len(s._windows) == window_count
 
             window_count += 1
             w.select_layout(wconf['layout'])
 
-        self.assertNotEqual(s.get('session_name'), 'tmuxp')
+        assert s.get('session_name') != 'tmuxp'
         w = s.windows[0]
 
         for i in range(10):
@@ -422,7 +416,7 @@ class WindowAutomaticRename(TmuxTestCase):
                 break
             time.sleep(.2)
 
-        self.assertNotEqual(w.get('window_name'), 'sh')
+        assert w.get('window_name') != 'sh'
 
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         w.select_pane(pane_base_index)
@@ -433,7 +427,7 @@ class WindowAutomaticRename(TmuxTestCase):
                 break
             time.sleep(.3)
 
-        self.assertEqual(w.get('window_name'), text_type('sh'))
+        assert w.get('window_name') == text_type('sh')
 
         w.select_pane('-D')
         for i in range(10):
@@ -442,7 +436,7 @@ class WindowAutomaticRename(TmuxTestCase):
                 break
             time.sleep(.2)
 
-        self.assertNotEqual(w.get('window_name'), text_type('sh'))
+        assert w.get('window_name') != text_type('sh')
 
 
 class BlankPaneTest(TmuxTestCase):
@@ -459,21 +453,21 @@ class BlankPaneTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=test_config)
         builder.build(session=self.session)
 
-        self.assertEqual(self.session, builder.session)
+        assert self.session == builder.session
 
         window1 = self.session.findWhere({'window_name': 'Blank pane test'})
-        self.assertEqual(len(window1._panes), 3)
+        assert len(window1._panes) == 3
 
         window2 = self.session.findWhere({'window_name': 'More blank panes'})
-        self.assertEqual(len(window2._panes), 3)
+        assert len(window2._panes) == 3
 
         window3 = self.session.findWhere(
             {'window_name': 'Empty string (return)'}
         )
-        self.assertEqual(len(window3._panes), 3)
+        assert len(window3._panes) == 3
 
         window4 = self.session.findWhere({'window_name': 'Blank with options'})
-        self.assertEqual(len(window4._panes), 2)
+        assert len(window4._panes) == 2
 
 
 class StartDirectoryTest(TmuxTestCase):
@@ -569,7 +563,7 @@ class StartDirectoryTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
 
-        assert(self.session == builder.session)
+        assert self.session == builder.session
         dirs = [
             '/usr/bin', '/dev', self.test_dir,
             '/usr',
@@ -595,7 +589,7 @@ class StartDirectoryTest(TmuxTestCase):
                     time.sleep(.2)
 
                 # handle case with OS X adding /private/ to /tmp/ paths
-                self.assertTrue(result)
+                assert result
 
 
 class StartDirectoryRelativeTest(TmuxTestCase):
@@ -683,8 +677,8 @@ class StartDirectoryRelativeTest(TmuxTestCase):
         else:
             self._temp_dir_created = False
 
-        assert(os.path.exists(self.config_dir))
-        assert(os.path.exists(self.test_dir))
+        assert os.path.exists(self.config_dir)
+        assert os.path.exists(self.test_dir)
 
     def tearDown(self):
         super(StartDirectoryRelativeTest, self).tearDown()
@@ -706,12 +700,12 @@ class StartDirectoryRelativeTest(TmuxTestCase):
 
         sconfig = config.trickle(sconfig)
 
-        assert(os.path.exists(self.config_dir))
-        assert(os.path.exists(self.test_dir))
+        assert os.path.exists(self.config_dir)
+        assert os.path.exists(self.test_dir)
         builder = WorkspaceBuilder(sconf=sconfig)
         builder.build(session=self.session)
 
-        assert(self.session == builder.session)
+        assert self.session == builder.session
 
         dirs = [
             '/usr/bin',
@@ -741,7 +735,7 @@ class StartDirectoryRelativeTest(TmuxTestCase):
                         break
                     time.sleep(.2)
 
-                self.assertTrue(result)
+                assert result
 
 
 class PaneOrderingTest(TmuxTestCase):
@@ -787,21 +781,21 @@ class PaneOrderingTest(TmuxTestCase):
         builder = WorkspaceBuilder(sconf=sconfig)
 
         window_count = len(self.session._windows)  # current window count
-        self.assertEqual(len(s._windows), window_count)
+        assert len(s._windows) == window_count
         for w, wconf in builder.iter_create_windows(s):
             for p in builder.iter_create_panes(w, wconf):
                 p = p
-                self.assertEqual(len(s._windows), window_count)
+                assert len(s._windows) == window_count
 
-            self.assertIsInstance(w, Window)
+            assert isinstance(w, Window)
 
-            self.assertEqual(len(s._windows), window_count)
+            assert len(s._windows) == window_count
             window_count += 1
 
         for w in self.session.windows:
             pane_base_index = w.show_window_option('pane-base-index', g=True)
             for p_index, p in enumerate(w.list_panes(), start=pane_base_index):
-                self.assertEqual(int(p_index), int(p.get('pane_index')))
+                assert int(p_index) == int(p.get('pane_index'))
 
                 # pane-base-index start at base-index, pane_paths always start
                 # at 0 since python list.
@@ -813,7 +807,7 @@ class PaneOrderingTest(TmuxTestCase):
                         break
                     time.sleep(.2)
 
-                self.assertEqual(p.get('pane_current_path'), pane_path)
+                assert p.get('pane_current_path'), pane_path
 
 
 class WindowIndexTest(TmuxTestCase):
@@ -850,7 +844,7 @@ class WindowIndexTest(TmuxTestCase):
 
         for window, wconf in builder.iter_create_windows(self.session):
             expected_index = name_index_map[window['window_name']]
-            self.assertEqual(int(window['window_index']), expected_index)
+            assert int(window['window_index']) == expected_index
 
 
 class BeforeLoadScript(TmuxTestCase):
@@ -896,14 +890,12 @@ class BeforeLoadScript(TmuxTestCase):
         with self.temp_session() as sess:
             session_name = sess.get('session_name')
 
-            with self.assertRaises(exc.BeforeLoadScriptError):
+            with pytest.raises(exc.BeforeLoadScriptError):
                 builder.build(session=sess)
 
             result = self.server.has_session(session_name)
-            self.assertFalse(
-                result,
-                msg="Kills session if before_script exits with errcode"
-            )
+            assert not result, \
+                "Kills session if before_script exits with errcode"
 
     @mute()
     def test_throw_error_if_file_not_exists(self):
@@ -925,23 +917,19 @@ class BeforeLoadScript(TmuxTestCase):
             temp_session_exists = self.server.has_session(
                 sess.get('session_name')
             )
-            self.assertTrue(temp_session_exists)
-            with self.assertRaisesRegexp(
+            assert temp_session_exists
+            with pytest.raises(
                 (exc.BeforeLoadScriptNotExists, OSError),
-                'No such file or directory'
-            ):
+            ) as excinfo:
                 builder.build(session=sess)
+                excinfo.match(r'No such file or directory')
             result = self.server.has_session(session_name)
-            self.assertFalse(
-                result,
-                msg="Kills session if before_script doesn't exist"
-            )
+            assert not result, "Kills session if before_script doesn't exist"
 
     @mute()
     def test_true_if_test_passes(self):
-        assert(
-            os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
-        )
+        assert os.path.exists(
+            os.path.join(fixtures_dir, 'script_complete.sh'))
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_completes.format(
             fixtures_dir=fixtures_dir,

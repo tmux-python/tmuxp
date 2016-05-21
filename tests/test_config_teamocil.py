@@ -74,12 +74,8 @@ class TeamocilTest(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
-
-        self.assertDictEqual(
-            config.import_teamocil(self.teamocil_dict),
-            self.tmuxp_dict
-        )
+        assert yaml_to_dict == self.teamocil_dict
+        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
 
         config.validate_schema(
             config.import_teamocil(
@@ -145,12 +141,9 @@ class Teamocil2Test(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+        assert yaml_to_dict == self.teamocil_dict
 
-        self.assertDictEqual(
-            config.import_teamocil(self.teamocil_dict),
-            self.tmuxp_dict
-        )
+        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
 
         config.validate_schema(
             config.import_teamocil(
@@ -236,12 +229,9 @@ class Teamocil3Test(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+        assert yaml_to_dict == self.teamocil_dict
 
-        self.assertDictEqual(
-            config.import_teamocil(self.teamocil_dict),
-            self.tmuxp_dict
-        )
+        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
 
         config.validate_schema(
             config.import_teamocil(
@@ -290,12 +280,9 @@ class Teamocil4Test(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+        assert yaml_to_dict == self.teamocil_dict
 
-        self.assertDictEqual(
-            config.import_teamocil(self.teamocil_dict),
-            self.tmuxp_dict
-        )
+        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
 
         config.validate_schema(
             config.import_teamocil(
@@ -669,14 +656,10 @@ class TeamocilLayoutsTest(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.teamocil_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.teamocil_dict)
+        assert yaml_to_dict == self.teamocil_dict
 
-        self.assertDictEqual(
-            config.import_teamocil(
-                self.teamocil_dict['two-windows'],
-            ),
+        assert config.import_teamocil(self.teamocil_dict['two-windows']) == \
             self.two_windows
-        )
 
         config.validate_schema(
             config.import_teamocil(
@@ -684,12 +667,9 @@ class TeamocilLayoutsTest(TestCase):
             )
         )
 
-        self.assertDictEqual(
-            config.import_teamocil(
-                self.teamocil_dict['two-windows-with-filters'],
-            ),
-            self.two_windows_with_filters
-        )
+        assert config.import_teamocil(
+            self.teamocil_dict['two-windows-with-filters'],
+        ) == self.two_windows_with_filters
 
         config.validate_schema(
             config.import_teamocil(
@@ -697,12 +677,9 @@ class TeamocilLayoutsTest(TestCase):
             )
         )
 
-        self.assertDictEqual(
-            config.import_teamocil(
-                self.teamocil_dict['two-windows-with-custom-command-options'],
-            ),
-            self.two_windows_with_custom_command_options
-        )
+        assert config.import_teamocil(
+            self.teamocil_dict['two-windows-with-custom-command-options'],
+        ) == self.two_windows_with_custom_command_options
 
         config.validate_schema(
             config.import_teamocil(
@@ -710,18 +687,15 @@ class TeamocilLayoutsTest(TestCase):
             )
         )
 
-        self.assertDictEqual(
-            config.import_teamocil(
-                self.teamocil_dict['three-windows-within-a-session'],
-            ),
-            self.three_windows_within_a_session
-        )
+        assert config.import_teamocil(
+            self.teamocil_dict['three-windows-within-a-session'],
+        ) == self.three_windows_within_a_session
+
         config.validate_schema(
             config.import_teamocil(
                 self.teamocil_dict['three-windows-within-a-session']
             )
         )
 
-        """ this configuration contains multiple sessions in a single file.
-            tmuxp can split them into files, proceed?
-        """
+        # this configuration contains multiple sessions in a single file.
+        # tmuxp can split them into files, proceed?

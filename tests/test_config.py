@@ -11,6 +11,7 @@ import tempfile
 import unittest
 
 import kaptan
+import pytest
 
 from tmuxp import config, exc
 
@@ -77,7 +78,7 @@ class ImportExportTest(TestCase):
 
         new_config = kaptan.Kaptan()
         new_config_data = new_config.import_config(json_config_file).get()
-        self.assertDictEqual(sampleconfigdict, new_config_data)
+        assert sampleconfigdict == new_config_data
 
     def test_export_yaml(self):
         yaml_config_file = os.path.join(self.tmp_dir, 'config.yaml')
@@ -94,7 +95,7 @@ class ImportExportTest(TestCase):
 
         new_config = kaptan.Kaptan()
         new_config_data = new_config.import_config(yaml_config_file).get()
-        self.assertDictEqual(sampleconfigdict, new_config_data)
+        sampleconfigdict == new_config_data
 
     def test_scan_config(self):
         configs = []
@@ -114,19 +115,17 @@ class ImportExportTest(TestCase):
         files = 0
         if os.path.exists(os.path.join(self.tmp_dir, 'config.json')):
             files += 1
-            self.assertIn(os.path.join(
-                self.tmp_dir, 'config.json'), configs)
+            assert os.path.join(self.tmp_dir, 'config.json') in configs
 
         if os.path.exists(os.path.join(self.tmp_dir, 'config.yaml')):
             files += 1
-            self.assertIn(os.path.join(
-                self.tmp_dir, 'config.yaml'), configs)
+            assert os.path.join(self.tmp_dir, 'config.yaml') in configs
 
         if os.path.exists(os.path.join(self.tmp_dir, 'config.ini')):
             files += 1
-            self.assertIn(os.path.join(self.tmp_dir, 'config.ini'), configs)
+            assert os.path.join(self.tmp_dir, 'config.ini') in configs
 
-        self.assertEqual(len(configs), files)
+        assert len(configs) == files
 
 
 class ExpandTest(TestCase):
@@ -271,7 +270,7 @@ class ExpandTest(TestCase):
         """Expand shell commands from string to list."""
         self.maxDiff = None
         test_config = config.expand(self.before_config)
-        self.assertDictEqual(test_config, self.after_config)
+        assert test_config == self.after_config
 
     def test_no_window_name(self):
         """Expand shell commands from string to list."""
@@ -355,10 +354,7 @@ class ExpandTest(TestCase):
         expanded_dict = kaptan.Kaptan(handler='yaml'). \
             import_config(expanded_yaml).get()
 
-        self.assertDictEqual(
-            config.expand(unexpanded_dict),
-            expanded_dict
-        )
+        assert config.expand(unexpanded_dict) == expanded_dict
 
 
 class InlineTest(TestCase):
@@ -435,7 +431,7 @@ class InlineTest(TestCase):
 
         self.maxDiff = None
         test_config = config.inline(self.before_config)
-        self.assertDictEqual(test_config, self.after_config)
+        assert test_config == self.after_config
 
 
 class InheritanceTest(TestCase):
@@ -557,7 +553,7 @@ class InheritanceTest(TestCase):
         #             paneconfitem['start_directory'] = session_start_directory
 
         self.maxDiff = None
-        self.assertDictEqual(config, self.config_after)
+        assert config == self.config_after
 
 
 class ShellCommandBeforeTest(TestCase):
@@ -742,11 +738,11 @@ class ShellCommandBeforeTest(TestCase):
         test_config = self.config_unexpanded
         test_config = config.expand(test_config)
 
-        self.assertDictEqual(test_config, self.config_expanded)
+        assert test_config == self.config_expanded
 
         test_config = config.trickle(test_config)
         self.maxDiff = None
-        self.assertDictEqual(test_config, self.config_after)
+        assert test_config == self.config_after
 
 
 class ShellCommandBeforeSession(TestCase):
@@ -807,12 +803,9 @@ class ShellCommandBeforeSession(TestCase):
 
         config.validate_schema(sconfig)
 
-        self.assertDictEqual(config.expand(sconfig), sconfig)
-
-        self.assertDictEqual(
-            config.expand(config.trickle(sconfig)),
+        assert config.expand(sconfig) == sconfig
+        assert config.expand(config.trickle(sconfig)) == \
             self.yaml_to_dict(yaml_final_config)
-        )
 
     def yaml_to_dict(self, yaml):
         return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
@@ -889,7 +882,7 @@ class TrickleRelativeStartDirectory(TestCase):
     def test_shell_command_before(self):
 
         test_config = config.trickle(self.config_expanded)
-        self.assertDictEqual(test_config, self.config_after)
+        assert test_config == self.config_after
 
 
 class ConfigBlankPanes(TestCase):
@@ -996,10 +989,7 @@ class ConfigBlankPanes(TestCase):
         test_config = kaptan.Kaptan().import_config(
             self.yaml_config_file).get()
 
-        self.assertDictEqual(
-            config.expand(test_config),
-            self.expanded_config
-        )
+        assert config.expand(test_config) == self.expanded_config
 
 
 class ConfigConsistency(TestCase):
@@ -1021,10 +1011,9 @@ class ConfigConsistency(TestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
-        with self.assertRaisesRegexp(
-            exc.ConfigError, 'requires "session_name"'
-        ):
+        with pytest.raises(exc.ConfigError) as excinfo:
             config.validate_schema(sconfig)
+            assert excinfo.matches(r'requires "session_name"')
 
     def test_no_windows(self):
         yaml_config = """
@@ -1034,8 +1023,9 @@ class ConfigConsistency(TestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
-        with self.assertRaisesRegexp(exc.ConfigError, 'list of "windows"'):
+        with pytest.raises(exc.ConfigError) as excinfo:
             config.validate_schema(sconfig)
+            assert excinfo.match(r'list of "windows"')
 
     def test_no_window_name(self):
         yaml_config = """
@@ -1055,8 +1045,9 @@ class ConfigConsistency(TestCase):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
 
-        with self.assertRaisesRegexp(exc.ConfigError, 'missing "window_name"'):
+        with pytest.raises(exc.ConfigError) as excinfo:
             config.validate_schema(sconfig)
+            assert excinfo.matches('missing "window_name"')
 
 
 class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
@@ -1089,13 +1080,9 @@ class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
         with EnvironmentVarGuard() as env:
             env.set(env_key, env_value)
             sconfig = config.expand(sconfig)
-            self.assertEqual("%s/test" % env_value, sconfig['start_directory'])
-            self.assertIn(
-                "%s/test2" % env_value, sconfig['shell_command_before']
-            )
-            self.assertEqual("%s/test3" % env_value, sconfig['before_script'])
-            self.assertEqual("hi - %s" % env_value, sconfig['session_name'])
-            self.assertEqual(
-                "logging @ %s" % env_value,
+            assert "%s/test" % env_value == sconfig['start_directory']
+            assert "%s/test2" % env_value in sconfig['shell_command_before']
+            assert "%s/test3" % env_value == sconfig['before_script']
+            assert "hi - %s" % env_value == sconfig['session_name']
+            assert "logging @ %s" % env_value == \
                 sconfig['windows'][1]['window_name']
-            )

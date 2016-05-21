@@ -23,22 +23,17 @@ class TmuxObjectTest(TmuxTestCase):
         for session in self.t.sessions:
             session_id = session.get('session_id')
 
-            self.assertEqual(self.t.findWhere(
-                {'session_id': session_id}), session)
-            self.assertIsInstance(
-                self.t.findWhere({
-                    'session_id': session_id
-                }), Session
-            )
+            assert self.t.findWhere({'session_id': session_id}) == session
+            assert isinstance(self.t.findWhere({
+                'session_id': session_id
+            }), Session)
 
             # session.findWhere
             for window in session.windows:
                 window_id = window.get('window_id')
 
-                self.assertEqual(
-                    session.findWhere({'window_id': window_id}), window
-                )
-                self.assertIsInstance(
+                assert session.findWhere({'window_id': window_id}) == window
+                assert isinstance(
                     session.findWhere({'window_id': window_id}), Window
                 )
 
@@ -46,10 +41,9 @@ class TmuxObjectTest(TmuxTestCase):
                 for pane in window.panes:
                     pane_id = pane.get('pane_id')
 
-                    self.assertEqual(window.findWhere(
-                        {'pane_id': pane_id}), pane)
-                    self.assertIsInstance(window.findWhere(
-                        {'pane_id': pane_id}), Pane)
+                    assert window.findWhere({'pane_id': pane_id}) == pane
+                    assert isinstance(
+                        window.findWhere({'pane_id': pane_id}), Pane)
 
     def test_findWhere_None(self):
         """.findWhere returns None if no results found."""
@@ -60,9 +54,9 @@ class TmuxObjectTest(TmuxTestCase):
             if not self.t.has_session(nonexistant_session):
                 break
 
-        self.assertIsNone(self.t.findWhere({
+        assert self.t.findWhere({
             'session_name': nonexistant_session
-        }))
+        }) is None
 
     def test_findWhere_multiple_attrs(self):
         """.findWhere returns objects with multiple attributes."""
@@ -75,8 +69,8 @@ class TmuxObjectTest(TmuxTestCase):
                 'session_name': session_name
             })
 
-            self.assertEqual(find_where, session)
-            self.assertIsInstance(find_where, Session)
+            assert find_where == session
+            assert isinstance(find_where, Session)
 
             # session.findWhere
             for window in session.windows:
@@ -88,8 +82,8 @@ class TmuxObjectTest(TmuxTestCase):
                     'window_index': window_index
                 })
 
-                self.assertEqual(find_where, window)
-                self.assertIsInstance(find_where, Window)
+                assert find_where == window
+                assert isinstance(find_where, Window)
 
                 # window.findWhere
                 for pane in window.panes:
@@ -101,8 +95,8 @@ class TmuxObjectTest(TmuxTestCase):
                         'pane_tty': pane_tty
                     })
 
-                    self.assertEqual(find_where, pane)
-                    self.assertIsInstance(find_where, Pane)
+                    assert find_where == pane
+                    assert isinstance(find_where, Pane)
 
     def test_where(self):
         """Test self.where() returns matching objects."""
@@ -118,10 +112,10 @@ class TmuxObjectTest(TmuxTestCase):
                 'session_name': session_name
             })
 
-            self.assertEqual(len(where), 1)
-            self.assertIsInstance(where, list)
-            self.assertEqual(where[0], session)
-            self.assertIsInstance(where[0], Session)
+            assert len(where) == 1
+            assert isinstance(where, list)
+            assert where[0] == session
+            assert isinstance(where[0], Session)
 
             # session.where
             for window in session.windows:
@@ -133,10 +127,10 @@ class TmuxObjectTest(TmuxTestCase):
                     'window_index': window_index
                 })
 
-                self.assertEqual(len(where), 1)
-                self.assertIsInstance(where, list)
-                self.assertEqual(where[0], window)
-                self.assertIsInstance(where[0], Window)
+                assert len(where) == 1
+                assert isinstance(where, list)
+                assert where[0] == window
+                assert isinstance(where[0], Window)
 
                 # window.where
                 for pane in window.panes:
@@ -148,10 +142,10 @@ class TmuxObjectTest(TmuxTestCase):
                         'pane_tty': pane_tty
                     })
 
-                    self.assertEqual(len(where), 1)
-                    self.assertIsInstance(where, list)
-                    self.assertEqual(where[0], pane)
-                    self.assertIsInstance(where[0], Pane)
+                    assert len(where) == 1
+                    assert isinstance(where, list)
+                    assert where[0] == pane
+                    assert isinstance(where[0], Pane)
 
     def test_getById(self):
         """Test self.getById() retrieves child object."""
@@ -164,11 +158,9 @@ class TmuxObjectTest(TmuxTestCase):
             session_id = session.get('session_id')
             get_by_id = self.t.getById(session_id)
 
-            self.assertEqual(get_by_id, session)
-            self.assertIsInstance(get_by_id, Session)
-            self.assertIsNone(self.t.getById(
-                '$' + next(namer)
-            ))
+            assert get_by_id == session
+            assert isinstance(get_by_id, Session)
+            assert self.t.getById('$' + next(namer)) is None
 
             # session.getById
             for window in session.windows:
@@ -176,12 +168,10 @@ class TmuxObjectTest(TmuxTestCase):
 
                 get_by_id = session.getById(window_id)
 
-                self.assertEqual(get_by_id, window)
-                self.assertIsInstance(get_by_id, Window)
+                assert get_by_id == window
+                assert isinstance(get_by_id, Window)
 
-                self.assertIsNone(session.getById(
-                    '@' + next(namer)
-                ))
+                assert session.getById('@' + next(namer)) is None
 
                 # window.getById
                 for pane in window.panes:
@@ -189,8 +179,6 @@ class TmuxObjectTest(TmuxTestCase):
 
                     get_by_id = window.getById(pane_id)
 
-                    self.assertEqual(get_by_id, pane)
-                    self.assertIsInstance(get_by_id, Pane)
-                    self.assertIsNone(window.getById(
-                        '%' + next(namer)
-                    ))
+                    assert get_by_id == pane
+                    assert isinstance(get_by_id, Pane)
+                    assert window.getById('%' + next(namer)) is None

@@ -80,10 +80,10 @@ class TmuxinatorTest(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.tmuxinator_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
+        assert yaml_to_dict == self.tmuxinator_dict
 
-        self.assertDictEqual(config.import_tmuxinator(
-            self.tmuxinator_dict), self.tmuxp_dict)
+        assert config.import_tmuxinator(self.tmuxinator_dict) == \
+            self.tmuxp_dict
 
 
 class TmuxinatorDeprecationsTest(TestCase):
@@ -266,11 +266,10 @@ class TmuxinatorDeprecationsTest(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.tmuxinator_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
+        assert yaml_to_dict == self.tmuxinator_dict
 
-        self.assertDictEqual(
-            config.import_tmuxinator(self.tmuxinator_dict), self.tmuxp_dict
-        )
+        assert config.import_tmuxinator(self.tmuxinator_dict) == \
+            self.tmuxp_dict
 
 
 class TmuxinatoriSampleTest(TestCase):
@@ -461,9 +460,7 @@ class TmuxinatoriSampleTest(TestCase):
         configparser = kaptan.Kaptan(handler='yaml')
         test_config = configparser.import_config(self.tmuxinator_yaml)
         yaml_to_dict = test_config.get()
-        self.assertDictEqual(yaml_to_dict, self.tmuxinator_dict)
+        assert yaml_to_dict == self.tmuxinator_dict
 
-        self.assertDictEqual(
-            config.import_tmuxinator(self.tmuxinator_dict),
+        assert config.import_tmuxinator(self.tmuxinator_dict) == \
             self.tmuxp_dict
-        )

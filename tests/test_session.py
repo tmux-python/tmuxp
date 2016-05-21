@@ -5,6 +5,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
+import pytest
 
 from tmuxp import Pane, Session, Window
 from .helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
@@ -16,8 +17,8 @@ class SessionTest(TmuxTestCase):
 
     def test_has_session(self):
         """Server.has_session returns True if has session_name exists."""
-        self.assertTrue(self.t.has_session(self.TEST_SESSION_NAME))
-        self.assertFalse(self.t.has_session('asdf2314324321'))
+        assert self.t.has_session(self.TEST_SESSION_NAME)
+        assert not self.t.has_session('asdf2314324321')
 
     def test_select_window(self):
         """Session.select_window moves window."""
@@ -30,61 +31,58 @@ class SessionTest(TmuxTestCase):
         self.session.new_window(window_name='test_window')
         window_count = len(self.session._windows)
 
-        self.assertGreaterEqual(window_count, 2)  # 2 or more windows
+        assert window_count >= 2  # 2 or more windows
 
-        self.assertEqual(len(self.session._windows), window_count)
+        assert len(self.session._windows) == window_count
 
         # tmux selects a window, moves to it, shows it as attached_window
         selected_window1 = self.session.select_window(window_base_index)
-        self.assertIsInstance(selected_window1, Window)
+        assert isinstance(selected_window1, Window)
         attached_window1 = self.session.attached_window()
 
-        self.assertEqual(selected_window1, attached_window1)
-        self.assertEqual(selected_window1.__dict__, attached_window1.__dict__)
+        assert selected_window1 == attached_window1
+        assert selected_window1.__dict__ == attached_window1.__dict__
 
         # again: tmux selects a window, moves to it, shows it as
         # attached_window
         selected_window2 = self.session.select_window(window_base_index + 1)
-        self.assertIsInstance(selected_window2, Window)
+        assert isinstance(selected_window2, Window)
         attached_window2 = self.session.attached_window()
 
-        self.assertEqual(selected_window2, attached_window2)
-        self.assertEqual(selected_window2.__dict__, attached_window2.__dict__)
+        assert selected_window2 == attached_window2
+        assert selected_window2.__dict__ == attached_window2.__dict__
 
         # assure these windows were really different
-        self.assertNotEqual(selected_window1, selected_window2)
-        self.assertNotEqual(
-            selected_window1.__dict__, selected_window2.__dict__)
+        assert selected_window1 != selected_window2
+        assert selected_window1.__dict__ != selected_window2.__dict__
 
     def test_select_window_returns_Window(self):
         """Session.select_window returns Window object."""
 
         window_count = len(self.session._windows)
-        self.assertEqual(len(self.session._windows), window_count)
+        assert len(self.session._windows) == window_count
         window_base_index = int(
             self.session.attached_window().get('window_index'))
 
-        self.assertIsInstance(self.session.select_window(
-            window_base_index), Window)
+        assert isinstance(
+            self.session.select_window(window_base_index), Window
+        )
 
     def test_attached_window(self):
         """Session.attached_window() returns Window."""
-        self.assertIsInstance(self.session.attached_window(), Window)
+        assert isinstance(self.session.attached_window(), Window)
 
     def test_attached_pane(self):
         """Session.attached_pane() returns Pane."""
-        self.assertIsInstance(self.session.attached_pane(), Pane)
+        assert isinstance(self.session.attached_pane(), Pane)
 
     def test_session_rename(self):
         """Session.rename_session renames session."""
         test_name = 'testingdis_sessname'
         self.session.rename_session(test_name)
-        self.assertEqual(self.session.get('session_name'), test_name)
+        assert self.session.get('session_name') == test_name
         self.session.rename_session(self.TEST_SESSION_NAME)
-        self.assertEqual(
-            self.session.get('session_name'),
-            self.TEST_SESSION_NAME
-        )
+        assert self.session.get('session_name') == self.TEST_SESSION_NAME
 
 
 class SessionNewTest(TmuxTestCase):
@@ -95,8 +93,8 @@ class SessionNewTest(TmuxTestCase):
         new_session = self.t.new_session(
             session_name=new_session_name, detach=True)
 
-        self.assertIsInstance(new_session, Session)
-        self.assertEqual(new_session.get('session_name'), new_session_name)
+        assert isinstance(new_session, Session)
+        assert new_session.get('session_name') == new_session_name
 
 
 class Options(TmuxTestCase):
@@ -105,31 +103,31 @@ class Options(TmuxTestCase):
         """Session.show_options() returns dict."""
 
         options = self.session.show_options()
-        self.assertIsInstance(options, dict)
+        assert isinstance(options, dict)
 
     def test_set_show_options_single(self):
         """Set option then Session.show_options(key)."""
 
         self.session.set_option('history-limit', 20)
-        self.assertEqual(20, self.session.show_options('history-limit'))
+        assert self.session.show_options('history-limit') == 20
 
         self.session.set_option('history-limit', 40)
-        self.assertEqual(40, self.session.show_options('history-limit'))
+        assert self.session.show_options('history-limit') == 40
 
-        self.assertEqual(40, self.session.show_options()['history-limit'])
+        assert self.session.show_options()['history-limit'] == 40
 
     def test_set_show_option(self):
         """Set option then Session.show_option(key)."""
         self.session.set_option('history-limit', 20)
-        self.assertEqual(20, self.session.show_option('history-limit'))
+        assert self.session.show_option('history-limit') == 20
 
         self.session.set_option('history-limit', 40)
 
-        self.assertEqual(40, self.session.show_option('history-limit'))
+        assert self.session.show_option('history-limit') == 40
 
     def test_set_option_bad(self):
         """Session.set_option raises ValueError for bad option key."""
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.session.set_option('afewewfew', 43)
 
 
@@ -138,36 +136,36 @@ class Environment(TmuxTestCase):
     def test_show_environment(self):
         """Session.show_environment() returns dict."""
 
-        vars = self.session.show_environment()
-        self.assertIsInstance(vars, dict)
+        _vars = self.session.show_environment()
+        assert isinstance(_vars, dict)
 
     def test_set_show_environment_single(self):
         """Set environment then Session.show_environment(key)."""
 
         self.session.set_environment('FOO', 'BAR')
-        self.assertEqual('BAR', self.session.show_environment('FOO'))
+        assert self.session.show_environment('FOO') == 'BAR'
 
         self.session.set_environment('FOO', 'DAR')
-        self.assertEqual('DAR', self.session.show_environment('FOO'))
+        assert self.session.show_environment('FOO') == 'DAR'
 
-        self.assertEqual('DAR', self.session.show_environment()['FOO'])
+        assert self.session.show_environment()['FOO'] == 'DAR'
 
     def test_show_environment_not_set(self):
         """Not set environment variable returns None."""
-        self.assertEqual(None, self.session.show_environment('BAR'))
+        assert self.session.show_environment('BAR') is None
 
     def test_remove_environment(self):
         """Remove environment variable."""
-        self.assertEqual(None, self.session.show_environment('BAM'))
+        assert self.session.show_environment('BAM') is None
         self.session.set_environment('BAM', 'OK')
-        self.assertEqual('OK', self.session.show_environment('BAM'))
+        assert self.session.show_environment('BAM') == 'OK'
         self.session.remove_environment('BAM')
-        self.assertEqual(None, self.session.show_environment('BAM'))
+        assert self.session.show_environment('BAM') is None
 
     def test_unset_environment(self):
         """Unset environment variable."""
-        self.assertEqual(None, self.session.show_environment('BAM'))
+        assert self.session.show_environment('BAM') is None
         self.session.set_environment('BAM', 'OK')
-        self.assertEqual('OK', self.session.show_environment('BAM'))
+        assert self.session.show_environment('BAM') == 'OK'
         self.session.unset_environment('BAM')
-        self.assertEqual(None, self.session.show_environment('BAM'))
+        assert self.session.show_environment('BAM') is None

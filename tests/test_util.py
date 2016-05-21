@@ -11,6 +11,8 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import os
+import re
+import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
@@ -20,6 +22,8 @@ from .helpers import TestCase, TmuxTestCase, fixtures_dir, stdouts
 
 logger = logging.getLogger(__name__)
 
+version_regex = re.compile(r'[0-9]\.[0-9]')
+
 
 class TmuxVersionTest(TmuxTestCase):
 
@@ -27,7 +31,7 @@ class TmuxVersionTest(TmuxTestCase):
 
     def test_no_arg_uses_tmux_version(self):
         result = has_required_tmux_version()
-        self.assertRegexpMatches(result, r'[0-9]\.[0-9]')
+        assert version_regex.match(result) is not None
 
     def test_ignores_letter_versions(self):
         """Ignore letters such as 1.8b.
@@ -39,21 +43,20 @@ class TmuxVersionTest(TmuxTestCase):
 
         """
         result = has_required_tmux_version('1.9a')
-        self.assertRegexpMatches(result, r'[0-9]\.[0-9]')
+        assert version_regex.match(result) is not None
 
         result = has_required_tmux_version('1.8a')
-        self.assertEqual(result, r'1.8')
+        assert result == r'1.8'
 
     def test_error_version_less_1_7(self):
-        with self.assertRaisesRegexp(
-            exc.TmuxpException, 'tmuxp only supports'
-        ):
+        with pytest.raises(exc.TmuxpException) as excinfo:
             has_required_tmux_version('1.7')
+            excinfo.match(r'tmuxp only supports')
 
-        with self.assertRaisesRegexp(
-            exc.TmuxpException, 'tmuxp only supports'
-        ):
+        with pytest.raises(exc.TmuxpException) as excinfo:
             has_required_tmux_version('1.6a')
+
+            excinfo.match(r'tmuxp only supports')
 
         has_required_tmux_version('1.9a')
 
@@ -63,16 +66,16 @@ class RunBeforeScript(TestCase):
     def test_raise_BeforeLoadScriptNotExists_if_not_exists(self):
         script_file = os.path.join(fixtures_dir, 'script_noexists.sh')
 
-        with self.assertRaises(BeforeLoadScriptNotExists):
+        with pytest.raises(BeforeLoadScriptNotExists):
             run_before_script(script_file)
 
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             run_before_script(script_file)
 
     def test_raise_BeforeLoadScriptError_if_retcode(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaises(BeforeLoadScriptError):
+        with pytest.raises(BeforeLoadScriptError):
             run_before_script(script_file)
 
     @stdouts
@@ -80,7 +83,7 @@ class RunBeforeScript(TestCase):
         script_file = os.path.join(fixtures_dir, 'script_complete.sh')
 
         run_before_script(script_file)
-        self.assertIn('hello', stdout.getvalue())
+        assert 'hello' in stdout.getvalue()
 
 
 class BeforeLoadScriptErrorTestCase(TestCase):
@@ -88,13 +91,13 @@ class BeforeLoadScriptErrorTestCase(TestCase):
     def test_returncode(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaisesRegexp(exc.BeforeLoadScriptError, "113"):
+        with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
             run_before_script(script_file)
+            assert excinfo.match(r'113')
 
     def test_returns_stderr_messages(self):
         script_file = os.path.join(fixtures_dir, 'script_failed.sh')
 
-        with self.assertRaisesRegexp(
-            exc.BeforeLoadScriptError, "failed with returncode"
-        ):
+        with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
             run_before_script(script_file)
+            assert excinfo.match(r'failed with returncode')

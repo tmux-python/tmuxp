@@ -4,7 +4,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-from .helpers import (TmuxTestCase, get_test_session_name, temp_session)
+from .helpers import TmuxTestCase, get_test_session_name, temp_session
 
 
 class TempSession(TmuxTestCase):
@@ -17,9 +17,9 @@ class TempSession(TmuxTestCase):
             server=server, session_name=session_name
         ):
             result = server.has_session(session_name)
-            self.assertTrue(result)
+            assert result
 
-        self.assertFalse(server.has_session(session_name))
+        assert not server.has_session(session_name)
 
     def test_if_session_killed_before(self):
         """Handles situation where session already closed within context"""
@@ -33,10 +33,10 @@ class TempSession(TmuxTestCase):
             server.kill_session(session_name)
 
             result = server.has_session(session_name)
-            self.assertFalse(result)
+            assert not result
 
         # really dead?
-        self.assertFalse(server.has_session(session_name))
+        assert not server.has_session(session_name)
 
     def test_if_session_name_works(self):
         """should allow custom ``session_name``."""

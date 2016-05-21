@@ -28,10 +28,10 @@ class StartupTest(TestCase):
     def test_creates_config_dir_not_exists(self):
         """cli.startup() creates config dir if not exists."""
 
-        self.assertFalse(os.path.exists(self.tmp_dir))
+        assert not os.path.exists(self.tmp_dir)
         cli.startup(self.tmp_dir)
 
-        self.assertTrue(os.path.exists(self.tmp_dir))
+        assert os.path.exists(self.tmp_dir)
 
     def tearDown(self):
         if os.path.isdir(self.tmp_dir):
@@ -64,7 +64,7 @@ class FindConfigsTest(TestCase):
             ):
                 configs_found = config.in_dir(self.tmp_dir)
 
-                self.assertEqual(len(configs_found), 2)
+                assert len(configs_found) == 2
 
     def test_in_dir_from_current_dir(self):
         """config.in_dir() find configs current dir."""
@@ -85,7 +85,7 @@ class FindConfigsTest(TestCase):
                 suffix='.json'
             ):
                 configs_found = config.in_dir(self.tmp_dir)
-                self.assertEqual(len(configs_found), 1)
+                assert len(configs_found) == 1
 
     def test_get_configs_cwd(self):
         """config.in_cwd() find config in shell current working directory."""
@@ -106,8 +106,8 @@ class FindConfigsTest(TestCase):
         finally:
             os.remove(config1.name)
 
-        self.assertEqual(len(configs_found), 1)
-        self.assertIn('.tmuxp.json', configs_found)
+        assert len(configs_found) == 1
+        assert '.tmuxp.json' in configs_found
 
         # clean up
         os.chdir(current_dir)
