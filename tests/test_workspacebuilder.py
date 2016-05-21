@@ -13,15 +13,15 @@ import logging
 import os
 import tempfile
 import time
-import unittest
 
 import kaptan
 from flaky import flaky
 
 from tmuxp import Window, config, exc
 from tmuxp._compat import text_type
-from .helpers import TmuxTestCase, mute, current_dir, example_dir, fixtures_dir
 from tmuxp.workspacebuilder import WorkspaceBuilder
+
+from .helpers import TmuxTestCase, example_dir, fixtures_dir, mute
 
 logger = logging.getLogger(__name__)
 
@@ -978,21 +978,3 @@ class BeforeLoadScript(TmuxTestCase):
 
         with self.temp_session():
             builder.build(session=self.session)
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BeforeLoadScript))
-    suite.addTest(unittest.makeSuite(BlankPaneTest))
-    suite.addTest(unittest.makeSuite(FocusAndPaneIndexTest))
-    suite.addTest(unittest.makeSuite(PaneOrderingTest))
-    suite.addTest(unittest.makeSuite(StartDirectoryTest))
-    suite.addTest(unittest.makeSuite(StartDirectoryRelativeTest))
-    suite.addTest(unittest.makeSuite(ThreePaneTest))
-    suite.addTest(unittest.makeSuite(TwoPaneTest))
-    suite.addTest(unittest.makeSuite(WindowAutomaticRename))
-    suite.addTest(unittest.makeSuite(WindowIndexTest))
-    suite.addTest(unittest.makeSuite(WindowOptions))
-    suite.addTest(unittest.makeSuite(SuppressHistoryTest))
-    suite.addTest(unittest.makeSuite(EnvironmentVariables))
-    return suite

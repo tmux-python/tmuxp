@@ -11,12 +11,12 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import os
-import unittest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from .helpers import TestCase, TmuxTestCase, stdouts, fixtures_dir
 from tmuxp.util import has_required_tmux_version, run_before_script
+
+from .helpers import TestCase, TmuxTestCase, fixtures_dir, stdouts
 
 logger = logging.getLogger(__name__)
 
@@ -98,11 +98,3 @@ class BeforeLoadScriptErrorTestCase(TestCase):
             exc.BeforeLoadScriptError, "failed with returncode"
         ):
             run_before_script(script_file)
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(BeforeLoadScriptErrorTestCase))
-    suite.addTest(unittest.makeSuite(RunBeforeScript))
-    suite.addTest(unittest.makeSuite(TmuxVersionTest))
-    return suite

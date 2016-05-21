@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp Server object.
-
-tmuxp.tests.server
-~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp Server object."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import unittest
 
 from tmuxp import Server
-from . import t
 from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
@@ -22,8 +15,8 @@ logger = logging.getLogger(__name__)
 class ServerTest(TmuxTestCase):
 
     def test_has_session(self):
-        self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
-        self.assertFalse(t.has_session('asdf2314324321'))
+        self.assertTrue(self.t.has_session(self.TEST_SESSION_NAME))
+        self.assertFalse(self.t.has_session('asdf2314324321'))
 
     def test_socket_name(self):
         """ ``-L`` socket_name.
@@ -86,10 +79,3 @@ class EnvironmentTest(TmuxTestCase):
     def test_show_environment_not_set(self):
         """Unset environment variable returns None."""
         self.assertEqual(None, self.server.show_environment('BAR'))
-
-
-def suite():
-    _suite = unittest.TestSuite()
-    _suite.addTest(unittest.makeSuite(ServerTest))
-    _suite.addTest(unittest.makeSuite(EnvironmentTest))
-    return _suite

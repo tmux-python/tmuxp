@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp teamocil configuration..
-
-tmuxp.tests.config_teamocil
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp teamocil configuration."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
 import os
-import unittest
 
 import kaptan
 
 from tmuxp import config
+
 from .helpers import TestCase
 
 logger = logging.getLogger(__name__)
@@ -730,13 +725,3 @@ class TeamocilLayoutsTest(TestCase):
         """ this configuration contains multiple sessions in a single file.
             tmuxp can split them into files, proceed?
         """
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TeamocilTest))
-    suite.addTest(unittest.makeSuite(Teamocil2Test))
-    suite.addTest(unittest.makeSuite(Teamocil3Test))
-    suite.addTest(unittest.makeSuite(Teamocil4Test))
-    suite.addTest(unittest.makeSuite(TeamocilLayoutsTest))
-    return suite

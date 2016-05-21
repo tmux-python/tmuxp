@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp command line interface.
-
-tmuxp.tests.cli
-~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp command line interface."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
@@ -13,9 +8,9 @@ import logging
 import os
 import shutil
 import tempfile
-import unittest
 
 from tmuxp import cli, config
+
 from .helpers import TestCase
 
 logger = logging.getLogger(__name__)
@@ -123,10 +118,3 @@ class FindConfigsTest(TestCase):
         if os.path.isdir(self.tmp_dir):
             shutil.rmtree(self.tmp_dir)
         logger.debug('wiped %s' % self.tmp_dir)
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(FindConfigsTest))
-    suite.addTest(unittest.makeSuite(StartupTest))
-    return suite

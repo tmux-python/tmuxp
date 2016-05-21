@@ -10,15 +10,14 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import os
 import time
-import unittest
 
 import kaptan
 
 from tmuxp import config
-from .helpers import TmuxTestCase, current_dir
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
+
+from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 
@@ -82,9 +81,3 @@ class FreezeTest(TmuxTestCase):
             default_flow_style=False,
             safe=True
         )
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(FreezeTest))
-    return suite

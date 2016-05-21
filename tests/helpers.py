@@ -18,8 +18,10 @@ import sys
 import tempfile
 from contextlib import contextmanager
 
+import pytest
+
 from tmuxp import exc
-from . import t
+from tmuxp.server import Server
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -39,7 +41,7 @@ fixtures_dir = os.path.realpath(os.path.join(current_dir, 'fixtures'))
 def get_test_session_name(server, prefix=TEST_SESSION_PREFIX):
     while True:
         session_name = prefix + next(namer)
-        if not t.has_session(session_name):
+        if not server.has_session(session_name):
             break
     return session_name
 
@@ -146,6 +148,7 @@ class TmuxTestCase(TestCase):
     def temp_session(self, session_name=None):
         return temp_session(self.server, session_name)
 
+    @pytest.fixture(autouse=True)
     def setUp(self):
         """Run bootstrap if :attr:`~.session` is not set."""
 
@@ -165,6 +168,8 @@ class TmuxTestCase(TestCase):
         a dumby session will be made to prevent tmux from closing.
 
         """
+        self.t = t = Server()
+        t.socket_name = 'tmuxp_test'
 
         session_name = 'tmuxp'
         if not t.has_session(session_name):
@@ -368,7 +373,6 @@ def mute():
         sys.stderr = prev_err
         sys.__stdout__ = prev_rout
         sys.__stderr__ = prev_rerr
-
 
 
 class EnvironmentVarGuard(object):

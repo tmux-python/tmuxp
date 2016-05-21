@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp tmuxinator configuration.
-
-tmuxp.tests.config_tmuxinator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp tmuxinator configuration."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
 import os
-import unittest
 
 import kaptan
 
 from tmuxp import config
+
 from .helpers import TestCase
 
 logger = logging.getLogger(__name__)
@@ -472,11 +467,3 @@ class TmuxinatoriSampleTest(TestCase):
             config.import_tmuxinator(self.tmuxinator_dict),
             self.tmuxp_dict
         )
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TmuxinatorTest))
-    suite.addTest(unittest.makeSuite(TmuxinatorDeprecationsTest))
-    suite.addTest(unittest.makeSuite(TmuxinatoriSampleTest))
-    return suite

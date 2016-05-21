@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp Window object.
-
-tmuxp.tests.window
-~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp Window object."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import unittest
 
 from tmuxp import Pane, Server, Window
+
 from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
@@ -213,17 +208,3 @@ class Options(TmuxTestCase):
 
         with self.assertRaises(ValueError):
             window.set_window_option('afewewfew', 43)
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(KillWindow))
-    suite.addTest(unittest.makeSuite(NewTest))
-    suite.addTest(unittest.makeSuite(NewTest2))
-    suite.addTest(unittest.makeSuite(NewTest3))
-    suite.addTest(unittest.makeSuite(NewTest4))
-    suite.addTest(unittest.makeSuite(Options))
-    suite.addTest(unittest.makeSuite(RenameTest))
-    suite.addTest(unittest.makeSuite(RenameSpacesTest))
-    suite.addTest(unittest.makeSuite(SelectTest))
-    return suite

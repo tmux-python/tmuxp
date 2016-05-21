@@ -4,8 +4,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-from .helpers import (TmuxTestCase, get_test_session_name,
-                                     temp_session, unittest)
+from .helpers import (TmuxTestCase, get_test_session_name, temp_session)
 
 
 class TempSession(TmuxTestCase):
@@ -42,9 +41,3 @@ class TempSession(TmuxTestCase):
     def test_if_session_name_works(self):
         """should allow custom ``session_name``."""
         pass
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TempSession))
-    return suite

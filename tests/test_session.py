@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp Session object.
-
-tmuxp.tests.session
-~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp Session object."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import unittest
 
 from tmuxp import Pane, Session, Window
-from . import t
 from .helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
 
 logger = logging.getLogger(__name__)
@@ -23,8 +16,8 @@ class SessionTest(TmuxTestCase):
 
     def test_has_session(self):
         """Server.has_session returns True if has session_name exists."""
-        self.assertTrue(t.has_session(self.TEST_SESSION_NAME))
-        self.assertFalse(t.has_session('asdf2314324321'))
+        self.assertTrue(self.t.has_session(self.TEST_SESSION_NAME))
+        self.assertFalse(self.t.has_session('asdf2314324321'))
 
     def test_select_window(self):
         """Session.select_window moves window."""
@@ -99,7 +92,8 @@ class SessionNewTest(TmuxTestCase):
     def test_new_session(self):
         """Server.new_session creates new session."""
         new_session_name = TEST_SESSION_PREFIX + next(namer)
-        new_session = t.new_session(session_name=new_session_name, detach=True)
+        new_session = self.t.new_session(
+            session_name=new_session_name, detach=True)
 
         self.assertIsInstance(new_session, Session)
         self.assertEqual(new_session.get('session_name'), new_session_name)
@@ -177,12 +171,3 @@ class Environment(TmuxTestCase):
         self.assertEqual('OK', self.session.show_environment('BAM'))
         self.session.unset_environment('BAM')
         self.assertEqual(None, self.session.show_environment('BAM'))
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Options))
-    suite.addTest(unittest.makeSuite(Environment))
-    suite.addTest(unittest.makeSuite(SessionNewTest))
-    suite.addTest(unittest.makeSuite(SessionTest))
-    return suite

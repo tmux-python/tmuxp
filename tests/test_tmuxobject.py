@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp TmuxRelationalObject and TmuxMappingObject.
-
-tmuxp.tests.tmuxobject
-~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp TmuxRelationalObject and TmuxMappingObject."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import unittest
 
 from tmuxp import Pane, Session, Window
-from . import t
 from .helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
 
 logger = logging.getLogger(__name__)
@@ -27,12 +20,13 @@ class TmuxObjectTest(TmuxTestCase):
         """Test that findWhere() retrieves single matching object."""
         self.maxDiff = None
         # server.findWhere
-        for session in t.sessions:
+        for session in self.t.sessions:
             session_id = session.get('session_id')
 
-            self.assertEqual(t.findWhere({'session_id': session_id}), session)
+            self.assertEqual(self.t.findWhere(
+                {'session_id': session_id}), session)
             self.assertIsInstance(
-                t.findWhere({
+                self.t.findWhere({
                     'session_id': session_id
                 }), Session
             )
@@ -63,20 +57,20 @@ class TmuxObjectTest(TmuxTestCase):
         while True:
             nonexistant_session = TEST_SESSION_PREFIX + next(namer)
 
-            if not t.has_session(nonexistant_session):
+            if not self.t.has_session(nonexistant_session):
                 break
 
-        self.assertIsNone(t.findWhere({
+        self.assertIsNone(self.t.findWhere({
             'session_name': nonexistant_session
         }))
 
     def test_findWhere_multiple_attrs(self):
         """.findWhere returns objects with multiple attributes."""
 
-        for session in t.sessions:
+        for session in self.t.sessions:
             session_id = session.get('session_id')
             session_name = session.get('session_name')
-            find_where = t.findWhere({
+            find_where = self.t.findWhere({
                 'session_id': session_id,
                 'session_name': session_name
             })
@@ -116,10 +110,10 @@ class TmuxObjectTest(TmuxTestCase):
         window = self.session.attached_window()
         window.split_window()  # create second pane
 
-        for session in t.sessions:
+        for session in self.t.sessions:
             session_id = session.get('session_id')
             session_name = session.get('session_name')
-            where = t.where({
+            where = self.t.where({
                 'session_id': session_id,
                 'session_name': session_name
             })
@@ -166,13 +160,13 @@ class TmuxObjectTest(TmuxTestCase):
 
         window.split_window()  # create second pane
 
-        for session in t.sessions:
+        for session in self.t.sessions:
             session_id = session.get('session_id')
-            get_by_id = t.getById(session_id)
+            get_by_id = self.t.getById(session_id)
 
             self.assertEqual(get_by_id, session)
             self.assertIsInstance(get_by_id, Session)
-            self.assertIsNone(t.getById(
+            self.assertIsNone(self.t.getById(
                 '$' + next(namer)
             ))
 
@@ -200,9 +194,3 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertIsNone(window.getById(
                         '%' + next(namer)
                     ))
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TmuxObjectTest))
-    return suite

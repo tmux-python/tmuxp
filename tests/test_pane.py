@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp Pane object.
-
-tmuxp.tests.pane
-~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp Pane object."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import unittest
 
 from .helpers import TmuxTestCase
 
@@ -59,9 +53,3 @@ class ResizeTest(TmuxTestCase):
         self.assertEqual(int(pane1['pane_width']), 10)
 
         pane1.reset()
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ResizeTest))
-    return suite

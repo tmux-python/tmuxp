@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Test for tmuxp configuration import, inlining, expanding and export.
-
-tmuxp.tests.config
-~~~~~~~~~~~~~~~~~~
-
-"""
+"""Test for tmuxp configuration import, inlining, expanding and export."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
@@ -18,7 +13,8 @@ import unittest
 import kaptan
 
 from tmuxp import config, exc
-from .helpers import TestCase, EnvironmentVarGuard, example_dir
+
+from .helpers import EnvironmentVarGuard, TestCase, example_dir
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
@@ -1103,17 +1099,3 @@ class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
                 "logging @ %s" % env_value,
                 sconfig['windows'][1]['window_name']
             )
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ConfigBlankPanes))
-    suite.addTest(unittest.makeSuite(ConfigConsistency))
-    suite.addTest(unittest.makeSuite(ExpandTest))
-    suite.addTest(unittest.makeSuite(ImportExportTest))
-    suite.addTest(unittest.makeSuite(InlineTest))
-    suite.addTest(unittest.makeSuite(ShellCommandBeforeTest))
-    suite.addTest(unittest.makeSuite(ShellCommandBeforeSession))
-    suite.addTest(unittest.makeSuite(TrickleRelativeStartDirectory))
-    suite.addTest(unittest.makeSuite(ConfigExpandEnvironmentVariables))
-    return suite
