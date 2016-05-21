@@ -16,7 +16,7 @@ env:
   - TMUX_VERSION=1.9a
 before_install:
   - export PIP_USE_MIRRORS=true
-  - pip install --upgrade pip wheel virtualenv setuptools
+  - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
   - pip install coveralls
 install:
   - pip install -e .
