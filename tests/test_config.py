@@ -18,15 +18,10 @@ import unittest
 import kaptan
 
 from tmuxp import config, exc
-from tmuxp.testsuite.helpers import TestCase
-from tmuxp.testsuite.util import EnvironmentVarGuard
+from .helpers import TestCase, EnvironmentVarGuard, example_dir
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
-current_dir = os.path.abspath(os.path.dirname(__file__))
-example_dir = os.path.abspath(os.path.join(
-    current_dir, '..', '..', 'examples'))
-
 
 sampleconfigdict = {
     'session_name': 'sampleconfig',

@@ -24,7 +24,7 @@ else:
 t = Server()
 t.socket_name = 'tmuxp_test'
 
-from tmuxp.testsuite import helpers  # NOQA
+from . import helpers  # NOQA
 
 logger = logging.getLogger()  # Logger functionality
 

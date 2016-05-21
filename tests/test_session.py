@@ -13,8 +13,8 @@ import logging
 import unittest
 
 from tmuxp import Pane, Session, Window
-from tmuxp.testsuite import t
-from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
+from . import t
+from .helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
 
 logger = logging.getLogger(__name__)
 

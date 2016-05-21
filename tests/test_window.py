@@ -13,7 +13,7 @@ import logging
 import unittest
 
 from tmuxp import Pane, Server, Window
-from tmuxp.testsuite.helpers import TmuxTestCase
+from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 

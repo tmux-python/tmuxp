@@ -16,7 +16,7 @@ import unittest
 import kaptan
 
 from tmuxp import config
-from tmuxp.testsuite.helpers import TestCase
+from .helpers import TestCase
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')

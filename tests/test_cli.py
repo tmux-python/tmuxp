@@ -16,7 +16,7 @@ import tempfile
 import unittest
 
 from tmuxp import cli, config
-from tmuxp.testsuite.helpers import TestCase
+from .helpers import TestCase
 
 logger = logging.getLogger(__name__)
 

@@ -13,8 +13,8 @@ import logging
 import unittest
 
 from tmuxp import Server
-from tmuxp.testsuite import t
-from tmuxp.testsuite.helpers import TmuxTestCase
+from . import t
+from .helpers import TmuxTestCase
 
 logger = logging.getLogger(__name__)
 

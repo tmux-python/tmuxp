@@ -19,16 +19,10 @@ import kaptan
 
 from tmuxp import Window, config, exc
 from tmuxp._compat import text_type
-from tmuxp.testsuite.helpers import TmuxTestCase, mute
+from .helpers import TmuxTestCase, mute, current_dir, example_dir, fixtures_dir
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 logger = logging.getLogger(__name__)
-
-current_dir = os.path.realpath(os.path.dirname(__file__))
-example_dir = os.path.realpath(
-    os.path.join(current_dir, '..', '..', 'examples')
-)
-fixtures_dir = os.path.realpath(os.path.join(current_dir, 'fixtures'))
 
 
 class TwoPaneTest(TmuxTestCase):

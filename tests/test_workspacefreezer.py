@@ -17,13 +17,10 @@ import unittest
 import kaptan
 
 from tmuxp import config
-from tmuxp.testsuite.helpers import TmuxTestCase
+from .helpers import TmuxTestCase, current_dir
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
-
-current_dir = os.path.abspath(os.path.dirname(__file__))
-example_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
 
 
 class FreezeTest(TmuxTestCase):
