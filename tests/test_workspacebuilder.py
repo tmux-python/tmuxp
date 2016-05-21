@@ -16,6 +16,7 @@ import time
 import unittest
 
 import kaptan
+from flaky import flaky
 
 from tmuxp import Window, config, exc
 from tmuxp._compat import text_type
@@ -223,6 +224,7 @@ class SuppressHistoryTest(TmuxTestCase):
       - echo isMissing
     """
 
+    @flaky(max_runs=3)
     def test_suppress_history(self):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
