@@ -16,6 +16,7 @@ env:
   - TMUX_VERSION=1.9a
 before_install:
   - export PIP_USE_MIRRORS=true
+  - pip install --upgrade pip wheel virtualenv
   - pip install coveralls
 install:
   - pip install -e .
