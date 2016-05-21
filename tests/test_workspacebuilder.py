@@ -381,7 +381,7 @@ class WindowAutomaticRename(TmuxTestCase):
         automatic-rename: on
       panes:
       - shell_command:
-        - top
+        - sh
         start_directory: '~'
       - shell_command:
         - echo "hey"
@@ -416,31 +416,31 @@ class WindowAutomaticRename(TmuxTestCase):
 
         for i in range(10):
             self.session.server._update_windows()
-            if w.get('window_name') != 'top':
+            if w.get('window_name') != 'sh':
                 break
             time.sleep(.2)
 
-        self.assertNotEqual(w.get('window_name'), 'top')
+        self.assertNotEqual(w.get('window_name'), 'sh')
 
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         w.select_pane(pane_base_index)
 
         for i in range(10):
             self.session.server._update_windows()
-            if w.get('window_name') == 'top':
+            if w.get('window_name') == 'sh':
                 break
             time.sleep(.3)
 
-        self.assertEqual(w.get('window_name'), text_type('top'))
+        self.assertEqual(w.get('window_name'), text_type('sh'))
 
         w.select_pane('-D')
         for i in range(10):
             self.session.server._update_windows()
-            if w['window_name'] != 'top':
+            if w['window_name'] != 'sh':
                 break
             time.sleep(.2)
 
-        self.assertNotEqual(w.get('window_name'), text_type('top'))
+        self.assertNotEqual(w.get('window_name'), text_type('sh'))
 
 
 class BlankPaneTest(TmuxTestCase):
