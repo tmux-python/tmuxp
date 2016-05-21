@@ -105,7 +105,7 @@ install dev     .. code-block:: bash
                 more.
 tests           .. code-block:: bash
 
-                    $ python ./run-tests.py
+                    $ make test
 ==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
