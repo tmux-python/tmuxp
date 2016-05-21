@@ -30,8 +30,11 @@ def run_before_script(script_file):
     try:
         proc = subprocess.Popen(
             shlex.split(str(script_file)),
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE
         )
+        for line in iter(proc.stdout.readline, b''):
+            sys.stdout.write(console_to_str(line))
         proc.wait()
 
         if proc.returncode:

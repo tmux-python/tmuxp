@@ -14,7 +14,7 @@ about = {}
 with open("tmuxp/__about__.py") as fp:
     exec(fp.read(), about)
 
-with open('requirements.pip') as f:
+with open('requirements/base.txt') as f:
     install_reqs = [line for line in f.read().split('\n') if line]
     tests_reqs = []
 

@@ -10,12 +10,11 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
-import random
 import unittest
 
 from tmuxp import Pane, Session, Window
 from tmuxp.testsuite import t
-from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase
+from tmuxp.testsuite.helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +61,7 @@ class TmuxObjectTest(TmuxTestCase):
         """.findWhere returns None if no results found."""
 
         while True:
-            nonexistant_session = TEST_SESSION_PREFIX + str(
-                random.randint(0, 9999)
-            )
+            nonexistant_session = TEST_SESSION_PREFIX + next(namer)
 
             if not t.has_session(nonexistant_session):
                 break
@@ -176,7 +173,7 @@ class TmuxObjectTest(TmuxTestCase):
             self.assertEqual(get_by_id, session)
             self.assertIsInstance(get_by_id, Session)
             self.assertIsNone(t.getById(
-                '$' + str(random.randint(50000, 90000))
+                '$' + next(namer)
             ))
 
             # session.getById
@@ -189,7 +186,7 @@ class TmuxObjectTest(TmuxTestCase):
                 self.assertIsInstance(get_by_id, Window)
 
                 self.assertIsNone(session.getById(
-                    '@' + str(random.randint(50000, 90000))
+                    '@' + next(namer)
                 ))
 
                 # window.getById
@@ -201,7 +198,7 @@ class TmuxObjectTest(TmuxTestCase):
                     self.assertEqual(get_by_id, pane)
                     self.assertIsInstance(get_by_id, Pane)
                     self.assertIsNone(window.getById(
-                        '%' + str(random.randint(50000, 90000))
+                        '%' + next(namer)
                     ))
 
 

@@ -19,7 +19,7 @@ import kaptan
 
 from tmuxp import Window, config, exc
 from tmuxp._compat import text_type
-from tmuxp.testsuite.helpers import TmuxTestCase
+from tmuxp.testsuite.helpers import TmuxTestCase, mute
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 logger = logging.getLogger(__name__)
@@ -883,8 +883,8 @@ class BeforeLoadScript(TmuxTestCase):
       - pane
     """
 
+    @mute()
     def test_throw_error_if_retcode_error(self):
-
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_fails.format(
             fixtures_dir=fixtures_dir,
@@ -909,8 +909,8 @@ class BeforeLoadScript(TmuxTestCase):
                 msg="Kills session if before_script exits with errcode"
             )
 
+    @mute()
     def test_throw_error_if_file_not_exists(self):
-
         sconfig = kaptan.Kaptan(handler='yaml')
         yaml = self.config_script_not_exists.format(
             fixtures_dir=fixtures_dir,
@@ -941,6 +941,7 @@ class BeforeLoadScript(TmuxTestCase):
                 msg="Kills session if before_script doesn't exist"
             )
 
+    @mute()
     def test_true_if_test_passes(self):
         assert(
             os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
@@ -960,6 +961,7 @@ class BeforeLoadScript(TmuxTestCase):
         with self.temp_session():
             builder.build(session=self.session)
 
+    @mute()
     def test_true_if_test_passes_with_args(self):
         assert(
             os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
