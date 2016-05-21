@@ -9,11 +9,13 @@ Developing and Testing
 .. todo::
     link to sliderepl or ipython notebook slides
 
-Our tests are inside ``./tmuxp/testsuite``. Tests are implemented using
-:py:mod:`unittest`.
+Our tests are inside ``tests/``. Tests are implemented using
+:py:mod:`unittest` and are being converted to `pytest`_.
 
-``./run-tests.py`` will create a tmux server on a separate ``socket_name``
+``make test`` will create a tmux server on a separate ``socket_name``
 using ``$ tmux -L test_case``.
+
+.. _pytest: http://pytest.org/
 
 .. _install_dev_env:
 
@@ -64,7 +66,7 @@ folder with its own packages.
 
 .. code-block:: bash
 
-    $ ./run-tests.py
+    $ make test
 
 You probably didn't see anything but tests scroll by.
 
@@ -76,35 +78,32 @@ If you found a problem or are trying to write a test, you can file an
 Test runner options
 ~~~~~~~~~~~~~~~~~~~
 
-.. note::
-
-    As of v0.1.1, the old way of using ``--tests`` is now deprecated.
-
 Testing specific TestSuites and TestCase.
 
 .. code-block:: bash
 
-    $ ./run-tests.py config
+    $ py.test tests/test_config.py
 
-will test the ``testsuite.config`` :py:class:`unittest.TestSuite`.
+will test the ``tests/test_config.py`` tests.
 
 .. code-block:: bash
 
-    $ ./run-tests.py config.ImportExportTest
+    $ py.test tests/test_config::ImportExportTest
 
-tests ``testsuite.config.ImportExportTest`` :py:class:`unittest.TestCase`.
+tests ``ImportExportTest`` :py:class:`unittest.TestCase` inside of
+``tests/test_config.py``.
 
 individual tests:
 
 .. code-block:: bash
 
-    $ ./run-tests.py config.ImportExportTest.test_export_json
+    $ py.test tests/test_config::ImportExportTest::test_export_Json
 
 Multiple can be separated by spaces:
 
 .. code-block:: bash
 
-    $ ./run-tests.py window pane config.ImportExportTest
+    $ py.test tests/test_{window,pane}.py tests/test_config.py::ImportExportTest::test_export_json
 
 .. _test_builder_visually:
 
@@ -123,7 +122,7 @@ Create two terminals:
 
     .. code-block:: bash
     
-        $ python ./run-tests.py --tests tests_workspacebuilder
+        $ py.test tests/test_workspacebuilder.py
 
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users.
@@ -143,7 +142,7 @@ To run all tests upon editing any ``.py`` file:
 
 .. code-block:: bash
 
-    $ find . -type f -not -path '*/\.*' | grep -i '.*[.]py$' | entr -c ./run-tests.py
+    $ make watch_test
 
 .. _entr: http://entrproject.org/
 
@@ -152,7 +151,7 @@ Rebuild the documentation when an ``.rst`` file is edited:
 .. code-block:: bash
 
    $ cd doc
-   $ find .. -print | grep -i '.*[.]rst' | entr -c make html
+   $ make watch
 
 .. _tmuxp developer config:
 
