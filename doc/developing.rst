@@ -10,7 +10,7 @@ Developing and Testing
     link to sliderepl or ipython notebook slides
 
 Our tests are inside ``tests/``. Tests are implemented using
-:py:mod:`unittest` and are being converted to `pytest`_.
+`pytest`_.
 
 ``make test`` will create a tmux server on a separate ``socket_name``
 using ``$ tmux -L test_case``.

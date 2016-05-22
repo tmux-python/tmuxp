@@ -105,7 +105,6 @@ More details
 
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
-.. _unittest: http://docs.python.org/2/library/unittest.html
 .. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
