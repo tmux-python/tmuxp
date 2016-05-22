@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 """Test the :class:`TmuxRelationalObject` base class object."""
 
 
-def test_findWhere(server):
+def test_findWhere(server, session):
     """Test that findWhere() retrieves single matching object."""
     # server.findWhere
     for session in server.sessions:
@@ -44,7 +44,7 @@ def test_findWhere(server):
                     window.findWhere({'pane_id': pane_id}), Pane)
 
 
-def test_findWhere_None(server):
+def test_findWhere_None(server, session):
     """.findWhere returns None if no results found."""
 
     while True:
@@ -58,7 +58,7 @@ def test_findWhere_None(server):
     }) is None
 
 
-def test_findWhere_multiple_attrs(server):
+def test_findWhere_multiple_attrs(server, session):
     """.findWhere returns objects with multiple attributes."""
 
     for session in server.sessions:

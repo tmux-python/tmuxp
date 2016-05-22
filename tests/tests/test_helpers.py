@@ -36,8 +36,3 @@ def test_if_session_killed_before(server):
 
     # really dead?
     assert not server.has_session(session_name)
-
-
-def test_if_session_name_works(self):
-    """should allow custom ``session_name``."""
-    pass

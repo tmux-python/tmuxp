@@ -16,7 +16,7 @@ def test_has_session(server, session):
     assert not server.has_session('asdf2314324321')
 
 
-def test_socket_name():
+def test_socket_name(server):
     """ ``-L`` socket_name.
 
     ``-L`` socket_name  file name of socket. which will be stored in
@@ -28,20 +28,20 @@ def test_socket_name():
     assert myserver.socket_name == 'test'
 
 
-def test_socket_path():
+def test_socket_path(server):
     """ ``-S`` socket_path  (alternative path for server socket). """
     myserver = Server(socket_path='test')
 
     assert myserver.socket_path == 'test'
 
 
-def test_config():
+def test_config(server):
     """ ``-f`` file for tmux(1) configuration. """
     myserver = Server(config_file='test')
     assert myserver.config_file == 'test'
 
 
-def test_256_colors():
+def test_256_colors(server):
     myserver = Server(colors=256)
     assert myserver.colors == 256
 
@@ -51,7 +51,7 @@ def test_256_colors():
     assert '-8' not in proc.cmd
 
 
-def test_88_colors():
+def test_88_colors(server):
     myserver = Server(colors=88)
     assert myserver.colors == 88
 
@@ -67,7 +67,7 @@ def test_show_environment(server):
     assert isinstance(_vars, dict)
 
 
-def test_set_show_environment_single(server):
+def test_set_show_environment_single(server, session):
     """Set environment then Server.show_environment(key)."""
     server.set_environment('FOO', 'BAR')
     assert 'BAR' == server.show_environment('FOO')
