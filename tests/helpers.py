@@ -18,8 +18,6 @@ import sys
 import tempfile
 from contextlib import contextmanager
 
-import pytest
-
 from tmuxp import exc
 from tmuxp.server import Server
 
@@ -148,7 +146,6 @@ class TmuxTestCase(TestCase):
     def temp_session(self, session_name=None):
         return temp_session(self.server, session_name)
 
-    @pytest.fixture(autouse=True)
     def setUp(self):
         """Run bootstrap if :attr:`~.session` is not set."""
 
