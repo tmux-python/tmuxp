@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Pythonization of the :term:`tmux(1)` session.
 
-tmuxp.session
-~~~~~~~~~~~~~
+libtmux.session
+~~~~~~~~~~~~~~~
 
 """
 from __future__ import (absolute_import, division, print_function,
@@ -11,16 +11,16 @@ from __future__ import (absolute_import, division, print_function,
 import logging
 import os
 
-from . import exc, formats, util
-from .common import EnvironmentMixin
+from . import exc, formats
+from .common import EnvironmentMixin, TmuxMappingObject, TmuxRelationalObject
 from .window import Window
 
 logger = logging.getLogger(__name__)
 
 
 class Session(
-    util.TmuxMappingObject,
-    util.TmuxRelationalObject,
+    TmuxMappingObject,
+    TmuxRelationalObject,
     EnvironmentMixin
 ):
     """:term:`tmux(1)` session.
@@ -84,7 +84,7 @@ class Session(
         proc = self.cmd('attach-session', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
     def kill_session(self):
         """``$ tmux kill-session``."""
@@ -92,7 +92,7 @@ class Session(
         proc = self.cmd('kill-session', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
     def switch_client(self, target_session=None):
         """``$ tmux switch-client``.
@@ -102,7 +102,7 @@ class Session(
         proc = self.cmd('switch-client', '-t%s' % self.get('session_id'))
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
     def rename_session(self, new_name):
         """Rename session and return new :class:`Session` object.
@@ -119,7 +119,7 @@ class Session(
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         return self
 
@@ -197,7 +197,7 @@ class Session(
         proc = self.cmd('new-window', *window_args)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         window = proc.stdout[0]
 
@@ -231,7 +231,7 @@ class Session(
         proc = self.cmd('kill-window', target)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         self.server._update_windows()
 
@@ -288,11 +288,11 @@ class Session(
         if len(active_windows) == int(1):
             return active_windows[0]
         else:
-            raise exc.TmuxpException(
+            raise exc.LibTmuxException(
                 'multiple active windows found. %s' % active_windows)
 
         if len(self._windows) == int(0):
-            raise exc.TmuxpException('No Windows')
+            raise exc.LibTmuxException('No Windows')
 
     def select_window(self, target_window):
         """Return :class:`Window` selected via ``$ tmux select-window``.
@@ -311,7 +311,7 @@ class Session(
         proc = self.cmd('select-window', target)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         return self.attached_window()
 

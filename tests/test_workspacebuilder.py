@@ -12,7 +12,8 @@ import kaptan
 import pytest
 from flaky import flaky
 
-from tmuxp import Window, config, exc
+from libtmux import Window
+from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
@@ -321,6 +322,7 @@ def test_blank_pane_count(session):
     assert len(window4._panes) == 2
 
 
+@flaky(max_runs=5, min_passes=1)
 def test_start_directory(session, tmpdir):
     yaml_config = loadfixture("workspacebuilder/start_directory.yaml")
     test_dir = str(tmpdir.mkdir('foo bar'))

@@ -7,7 +7,7 @@ from __future__ import (absolute_import, division, print_function,
 import logging
 import pytest
 
-from tmuxp import Pane, Server, Window
+from libtmux import Pane, Server, Window
 
 
 logger = logging.getLogger(__name__)

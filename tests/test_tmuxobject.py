@@ -6,7 +6,8 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 
-from tmuxp import Pane, Session, Window
+from libtmux import Pane, Session, Window
+
 from .helpers import TEST_SESSION_PREFIX, namer
 
 logger = logging.getLogger(__name__)

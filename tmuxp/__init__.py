@@ -13,10 +13,7 @@ from __future__ import absolute_import, division, print_function, \
 
 from .__about__ import __title__, __package_name__, __version__, \
     __description__, __email__, __author__, __license__, __copyright__
-from .pane import Pane
-from .server import Server
-from .session import Session
-from .window import Window
+
 from .workspacebuilder import WorkspaceBuilder
 
 from . import config, util, cli

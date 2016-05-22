@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 import pytest
 
-import logging
-from tmuxp import exc
-from tmuxp.server import Server
+from libtmux import exc
+from libtmux.server import Server
 
-from .helpers import get_test_session_name, TEST_SESSION_PREFIX, namer
+from .helpers import TEST_SESSION_PREFIX, get_test_session_name, namer
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def session(request, server):
         session = server.new_session(
             session_name=TEST_SESSION_NAME,
         )
-    except exc.TmuxpException as e:
+    except exc.LibTmuxException as e:
         raise e
 
     """
@@ -48,7 +49,7 @@ def session(request, server):
     try:
         server.switch_client(session.get('session_id'))
         pass
-    except exc.TmuxpException as e:
+    except exc.LibTmuxException as e:
         # server.attach_session(session.get('session_id'))
         pass
 

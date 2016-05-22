@@ -16,7 +16,8 @@ import sys
 import argcomplete
 import kaptan
 
-from . import Server, WorkspaceBuilder, config, exc, log, util
+from libtmux import Server
+from . import config, exc, log, util, WorkspaceBuilder
 from .__about__ import __version__
 from ._compat import input, string_types
 from .workspacebuilder import freeze

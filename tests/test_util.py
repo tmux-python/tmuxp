@@ -12,11 +12,14 @@ from __future__ import (absolute_import, division, print_function,
 import logging
 import os
 import re
+
 import pytest
 
+from libtmux.common import has_required_tmux_version
+from libtmux.exc import LibTmuxException
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import has_required_tmux_version, run_before_script
+from tmuxp.util import run_before_script
 
 from .helpers import fixtures_dir
 
@@ -48,11 +51,11 @@ def test_ignores_letter_versions():
 
 
 def test_error_version_less_1_7():
-    with pytest.raises(exc.TmuxpException) as excinfo:
+    with pytest.raises(LibTmuxException) as excinfo:
         has_required_tmux_version('1.7')
         excinfo.match(r'tmuxp only supports')
 
-    with pytest.raises(exc.TmuxpException) as excinfo:
+    with pytest.raises(LibTmuxException) as excinfo:
         has_required_tmux_version('1.6a')
 
         excinfo.match(r'tmuxp only supports')
