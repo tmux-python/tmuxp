@@ -1,0 +1,5 @@
+windows:
+- name: "erb-example"
+  root: <%= ENV['MY_PROJECT_ROOT'] %>
+  panes:
+    - cmd: "pwd"

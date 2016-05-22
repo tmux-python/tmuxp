@@ -1,0 +1,75 @@
+# Simple two windows layout
+two-windows:
+    windows:
+      - name: "foo"
+        clear: true
+        root: "/foo"
+        layout: "tiled"
+        panes:
+          - cmd: "echo 'foo'"
+          - cmd: "echo 'foo again'"
+      - name: "bar"
+        root: "/bar"
+        splits:
+          - cmd:
+            - "echo 'bar'"
+            - "echo 'bar in an array'"
+            target: bottom-right
+          - cmd: "echo 'bar again'"
+            focus: true
+            width: 50
+
+# Simple two windows layout with filters
+two-windows-with-filters:
+    windows:
+      - name: "foo"
+        root: "/foo"
+        filters:
+          before:
+            - "echo first before filter"
+            - "echo second before filter"
+          after:
+            - "echo first after filter"
+            - "echo second after filter"
+        panes:
+          - cmd: "echo 'foo'"
+          - cmd: "echo 'foo again'"
+            width: 50
+
+two-windows-with-custom-command-options:
+    windows:
+      - name: "foo"
+        cmd_separator: "\n"
+        with_env_var: false
+        clear: true
+        root: "/foo"
+        layout: "tiled"
+        panes:
+            - cmd: "echo 'foo'"
+            - cmd: "echo 'foo again'"
+      - name: "bar"
+        cmd_separator: " && "
+        with_env_var: true
+        root: "/bar"
+        splits:
+          - cmd:
+            - "echo 'bar'"
+            - "echo 'bar in an array'"
+            target: bottom-right
+          - cmd: "echo 'bar again'"
+            focus: true
+            width: 50
+
+three-windows-within-a-session:
+    session:
+        name: "my awesome session"
+        windows:
+        - name: "first window"
+          panes:
+            - cmd: "echo 'foo'"
+        - name: "second window"
+          panes:
+            - cmd: "echo 'foo'"
+        - name: "third window"
+          panes:
+            - cmd: "echo 'foo'"
