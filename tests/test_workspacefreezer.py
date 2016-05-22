@@ -13,35 +13,14 @@ from tmuxp import config
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 from .helpers import TmuxTestCase
+from .fixtures._util import loadfixture
 
 logger = logging.getLogger(__name__)
 
 
 class FreezeTest(TmuxTestCase):
 
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: '~'
-    windows:
-    - layout: main-vertical
-      panes:
-      - shell_command:
-        - vim
-        start_directory: '~'
-      - shell_command:
-        - echo "hey"
-        - cd ../
-      window_name: editor
-    - panes:
-      - shell_command:
-        - pane
-        start_directory: /usr/bin
-      window_name: logging
-    - window_name: test
-      panes:
-      - shell_command:
-        - top
-    """
+    yaml_config = loadfixture("workspacefreezer/sampleconfig.yaml")
 
     def test_focus(self):
         # assure the built yaml config has focus

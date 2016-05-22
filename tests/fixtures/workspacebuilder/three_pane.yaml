@@ -1,0 +1,12 @@
+session_name: sampleconfig
+start_directory: '~'
+windows:
+- window_name: test
+  layout: main-horizontal
+  panes:
+  - shell_command:
+    - vim
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo"

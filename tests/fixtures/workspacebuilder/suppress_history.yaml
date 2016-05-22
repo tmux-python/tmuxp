@@ -1,0 +1,11 @@
+session_name: sampleconfig
+start_directory: '~'
+suppress_history: false
+windows:
+- window_name: inHistory
+  panes:
+  - echo inHistory
+- window_name: isMissing
+  suppress_history: true
+  panes:
+  - echo isMissing

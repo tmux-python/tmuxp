@@ -1,0 +1,11 @@
+session_name: test window options
+start_directory: '~'
+windows:
+- layout: main-horizontal
+  options:
+    main-pane-height: 5
+  panes:
+  - pane
+  - pane
+  - pane
+  window_name: editor

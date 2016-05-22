@@ -17,6 +17,7 @@ from tmuxp import Window, config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
+from .fixtures._util import loadfixture
 from .helpers import TmuxTestCase, example_dir, fixtures_dir, mute
 
 logger = logging.getLogger(__name__)
@@ -24,26 +25,7 @@ logger = logging.getLogger(__name__)
 
 class TwoPaneTest(TmuxTestCase):
 
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: '~'
-    windows:
-    - layout: main-vertical
-      panes:
-      - shell_command:
-        - vim
-      - shell_command:
-        - echo "hey"
-      window_name: editor
-    - panes:
-      - shell_command:
-        - tail | echo 'hi'
-      window_name: logging
-    - window_name: test
-      panes:
-      - shell_command:
-        - htop
-    """
+    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
 
     def test_split_windows(self):
         s = self.session
@@ -66,20 +48,7 @@ class TwoPaneTest(TmuxTestCase):
 
 class ThreePaneTest(TmuxTestCase):
 
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: '~'
-    windows:
-    - window_name: test
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - vim
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    """
+    yaml_config = loadfixture("workspacebuilder/three_pane.yaml")
 
     def test_split_windows(self):
         s = self.session
@@ -104,39 +73,7 @@ class ThreePaneTest(TmuxTestCase):
 
 class FocusAndPaneIndexTest(TmuxTestCase):
 
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: '~'
-    windows:
-    - window_name: focused window
-      layout: main-horizontal
-      focus: true
-      panes:
-      - shell_command:
-        - cd ~
-      - shell_command:
-        - cd /usr
-        focus: true
-      - shell_command:
-        - cd ~
-        - echo "moo"
-        - top
-    - window_name: window 2
-      panes:
-      - shell_command:
-        - top
-        focus: true
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: window 3
-      panes:
-      - shell_command: cd /
-        focus: true
-      - pane
-      - pane
-    """
+    yaml_config = loadfixture('workspacebuilder/focus_and_pane.yaml')
 
     def test_focus_pane_index(self):
         sconfig = kaptan.Kaptan(handler='yaml')
@@ -204,21 +141,9 @@ class FocusAndPaneIndexTest(TmuxTestCase):
 
 
 class SuppressHistoryTest(TmuxTestCase):
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: '~'
-    suppress_history: false
-    windows:
-    - window_name: inHistory
-      panes:
-      - echo inHistory
-    - window_name: isMissing
-      suppress_history: true
-      panes:
-      - echo isMissing
-    """
+    yaml_config = loadfixture("workspacebuilder/suppress_history.yaml")
 
-    @flaky(max_runs=3)
+    @flaky(max_runs=5, min_passes=1)
     def test_suppress_history(self):
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(self.yaml_config).get()
@@ -270,19 +195,7 @@ class SuppressHistoryTest(TmuxTestCase):
 
 class WindowOptions(TmuxTestCase):
 
-    yaml_config = """
-    session_name: test window options
-    start_directory: '~'
-    windows:
-    - layout: main-horizontal
-      options:
-        main-pane-height: 5
-      panes:
-      - pane
-      - pane
-      - pane
-      window_name: editor
-    """
+    yaml_config = loadfixture("workspacebuilder/window_options.yaml")
 
     def test_window_options(self):
         s = self.session
@@ -306,20 +219,7 @@ class WindowOptions(TmuxTestCase):
             w.select_layout(wconf['layout'])
 
     def test_window_shell(self):
-        yaml_config = """
-        session_name: test window options
-        start_directory: '~'
-        windows:
-        - layout: main-horizontal
-          options:
-            main-pane-height: 5
-          panes:
-          - pane
-          - pane
-          - pane
-          window_name: editor
-          window_shell: top
-        """
+        yaml_config = loadfixture("workspacebuilder/window_shell.yaml")
         s = self.session
         sconfig = kaptan.Kaptan(handler='yaml')
         sconfig = sconfig.import_config(yaml_config).get()
@@ -341,18 +241,7 @@ class WindowOptions(TmuxTestCase):
 
 class EnvironmentVariables(TmuxTestCase):
 
-    yaml_config = """
-    session_name: test env vars
-    start_directory: '~'
-    environment:
-      FOO: BAR
-      PATH: /tmp
-    windows:
-    - layout: main-horizontal
-      panes:
-      - pane
-      window_name: editor
-    """
+    yaml_config = loadfixture("workspacebuilder/environment_vars.yaml")
 
     def test_environment_variables(self):
         sconfig = kaptan.Kaptan(handler='yaml')
@@ -368,22 +257,7 @@ class EnvironmentVariables(TmuxTestCase):
 
 class WindowAutomaticRename(TmuxTestCase):
 
-    yaml_config = """
-    session_name: test window options
-    start_directory: '~'
-    windows:
-    - layout: main-horizontal
-      options:
-        automatic-rename: on
-      panes:
-      - shell_command:
-        - sh
-        start_directory: '~'
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    """
+    yaml_config = loadfixture("workspacebuilder/window_automatic_rename.yaml")
 
     def test_automatic_rename_option(self):
         """With option automatic-rename: on."""
@@ -471,65 +345,7 @@ class BlankPaneTest(TmuxTestCase):
 
 
 class StartDirectoryTest(TmuxTestCase):
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: '/usr'
-    windows:
-    - window_name: supposed to be /usr/bin
-      window_index: 1
-      start_directory: /usr/bin
-      layout: main-horizontal
-      options:
-          main-pane-height: 50
-      panes:
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: support to be /dev
-      window_index: 2
-      start_directory: /dev
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: cwd containing a space
-      window_index: 3
-      start_directory: {TEST_DIR}
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: testsa3
-      window_index: 4
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo3"
-    - window_name: cwd relative to start_directory since no rel dir entered
-      window_index: 5
-      layout: main-horizontal
-      start_directory: ./
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo3"
-    """
+    yaml_config = loadfixture("workspacebuilder/start_directory.yaml")
 
     def setUp(self):
         super(StartDirectoryTest, self).setUp()
@@ -605,59 +421,8 @@ class StartDirectoryRelativeTest(TmuxTestCase):
 
     """
 
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: ./
-    windows:
-    - window_name: supposed to be /usr/bin
-      start_directory: '/usr/bin'
-      options:
-          main-pane-height: 50
-      panes:
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: support to be /dev
-      start_directory: '/dev'
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: cwd containing a space
-      start_directory: {TEST_DIR}
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo"
-    - window_name: inherit start_directory which is rel to config file
-      layout: main-horizontal
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo3"
-    - window_name: cwd relative to config file
-      layout: main-horizontal
-      start_directory: ./
-      panes:
-      - shell_command:
-        - pwd
-      - shell_command:
-        - echo "hey"
-      - shell_command:
-        - echo "moo3"
-    """
+    yaml_config = \
+        loadfixture("workspacebuilder/start_directory_relative.yaml")
 
     def setUp(self):
         super(StartDirectoryRelativeTest, self).setUp()
@@ -746,19 +511,7 @@ class PaneOrderingTest(TmuxTestCase):
 
     """
 
-    yaml_config = """
-    session_name: sampleconfig
-    start_directory: {HOME}
-    windows:
-    - options:
-      - automatic_rename: on
-      layout: tiled
-      panes:
-      - cd /usr/bin
-      - cd /usr
-      - cd /usr/sbin
-      - cd {HOME}
-    """.format(
+    yaml_config = loadfixture("workspacebuilder/pane_ordering.yaml").format(
         HOME=os.path.realpath(os.path.expanduser('~'))
     )
 
@@ -811,20 +564,7 @@ class PaneOrderingTest(TmuxTestCase):
 
 
 class WindowIndexTest(TmuxTestCase):
-    yaml_config = """
-    session_name: sampleconfig
-    windows:
-    - window_name: zero
-      panes:
-      - echo 'zero'
-    - window_name: five
-      panes:
-      - echo 'five'
-      window_index: 5
-    - window_name: one
-      panes:
-      - echo 'one'
-    """
+    yaml_config = loadfixture("workspacebuilder/window_index.yaml")
 
     def test_window_index(self):
         proc = self.session.cmd('show-option', '-gv', 'base-index')
@@ -849,29 +589,15 @@ class WindowIndexTest(TmuxTestCase):
 
 class BeforeLoadScript(TmuxTestCase):
     config = 'HI'
-    config_script_not_exists = """
-    session_name: sampleconfig
-    before_script: {script_not_exists}
-    windows:
-    - panes:
-      - pane
-    """
-
-    config_script_fails = """
-    session_name: sampleconfig
-    before_script: {script_failed}
-    windows:
-    - panes:
-      - pane
-    """
-
-    config_script_completes = """
-    session_name: sampleconfig
-    before_script: {script_complete}
-    windows:
-    - panes:
-      - pane
-    """
+    config_script_not_exists = loadfixture(
+        "workspacebuilder/config_script_not_exists.yaml"
+    )
+    config_script_fails = loadfixture(
+        "workspacebuilder/config_script_fails.yaml"
+    )
+    config_script_completes = loadfixture(
+        "workspacebuilder/config_script_completes.yaml"
+    )
 
     @mute()
     def test_throw_error_if_retcode_error(self):

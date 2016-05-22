@@ -1,0 +1,5 @@
+session_name: sampleconfig
+before_script: {script_complete}
+windows:
+- panes:
+  - pane

@@ -1,1 +1,1 @@
-from . import config, _util  # noqa
+from . import _util  # noqa

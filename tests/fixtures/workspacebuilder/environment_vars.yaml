@@ -1,0 +1,10 @@
+session_name: test env vars
+start_directory: '~'
+environment:
+  FOO: BAR
+  PATH: /tmp
+windows:
+- layout: main-horizontal
+  panes:
+  - pane
+  window_name: editor

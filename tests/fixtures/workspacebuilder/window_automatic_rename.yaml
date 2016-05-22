@@ -1,0 +1,14 @@
+session_name: test window options
+start_directory: '~'
+windows:
+- layout: main-horizontal
+  options:
+    automatic-rename: on
+  panes:
+  - shell_command:
+    - sh
+    start_directory: '~'
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo"
