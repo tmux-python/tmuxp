@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Pythonization of the :term:`tmux(1)` server.
 
-tmuxp.server
-~~~~~~~~~~~~
+libtmux.server
+~~~~~~~~~~~~~~
 
 """
 from __future__ import (absolute_import, division, print_function,

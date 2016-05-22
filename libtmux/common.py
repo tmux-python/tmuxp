@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+"""Helper methods and mixins.
 
+libtmux.common
+~~~~~~~~~~~~~~
+
+"""
 import collections
 import logging
 import os
@@ -362,7 +367,7 @@ def has_required_tmux_version(version=None):
     :versionchanged: 0.1.7
         Versions will now remove trailing letters per `Issue 55`_.
 
-        .. _Issue 55: https://github.com/tony/tmuxp/issues/55.
+        .. _Issue 55: https://github.com/tony/libtmux/issues/55.
 
     """
 
@@ -372,7 +377,7 @@ def has_required_tmux_version(version=None):
         if proc.stderr:
             if proc.stderr[0] == 'tmux: unknown option -- V':
                 raise exc.LibTmuxException(
-                    'tmuxp supports tmux 1.8 and greater. This system'
+                    'libtmux supports tmux 1.8 and greater. This system'
                     ' is running tmux 1.3 or earlier.')
             raise exc.LibTmuxException(proc.stderr)
 
@@ -382,7 +387,7 @@ def has_required_tmux_version(version=None):
 
     if StrictVersion(version) <= StrictVersion("1.7"):
         raise exc.LibTmuxException(
-            'tmuxp only supports tmux 1.8 and greater. This system'
-            ' has %s installed. Upgrade your tmux to use tmuxp.' % version
+            'libtmux only supports tmux 1.8 and greater. This system'
+            ' has %s installed. Upgrade your tmux to use libtmux.' % version
         )
     return version

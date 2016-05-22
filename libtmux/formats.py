@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Format variables for tmux objects.
 
-tmuxp.formats
-~~~~~~~~~~~~~
+libtmux.formats
+~~~~~~~~~~~~~~~
 
 For reference: http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/format.c
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Pythonization of the :term:`tmux(1)` window.
 
-tmuxp.window
-~~~~~~~~~~~~
+libtmux.window
+~~~~~~~~~~~~~~
 
 """
 from __future__ import (absolute_import, division, print_function,
@@ -12,8 +12,8 @@ import logging
 import os
 
 from . import exc, formats
-from .pane import Pane
 from .common import TmuxMappingObject, TmuxRelationalObject
+from .pane import Pane
 
 logger = logging.getLogger(__name__)
 
