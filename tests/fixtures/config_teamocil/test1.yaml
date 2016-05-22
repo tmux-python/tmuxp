@@ -1,0 +1,7 @@
+windows:
+- name: "sample-two-panes"
+  root: "~/Code/sample/www"
+  layout: even-horizontal
+  panes:
+    - cmd: ["pwd", "ls -la"]
+    - cmd: "rails server --port 3000"

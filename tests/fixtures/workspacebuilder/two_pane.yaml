@@ -1,0 +1,18 @@
+session_name: sampleconfig
+start_directory: '~'
+windows:
+- layout: main-vertical
+  panes:
+  - shell_command:
+    - vim
+  - shell_command:
+    - echo "hey"
+  window_name: editor
+- panes:
+  - shell_command:
+    - tail | echo 'hi'
+  window_name: logging
+- window_name: test
+  panes:
+  - shell_command:
+    - htop

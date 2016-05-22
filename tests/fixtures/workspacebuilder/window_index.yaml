@@ -1,0 +1,12 @@
+session_name: sampleconfig
+windows:
+- window_name: zero
+  panes:
+  - echo 'zero'
+- window_name: five
+  panes:
+  - echo 'five'
+  window_index: 5
+- window_name: one
+  panes:
+  - echo 'one'

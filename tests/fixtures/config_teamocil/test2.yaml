@@ -1,0 +1,9 @@
+windows:
+- name: "sample-four-panes"
+  root: "~/Code/sample/www"
+  layout: tiled
+  panes:
+    - cmd: "pwd"
+    - cmd: "pwd"
+    - cmd: "pwd"
+    - cmd: "pwd"

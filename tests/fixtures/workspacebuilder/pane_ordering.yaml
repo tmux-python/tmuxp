@@ -1,0 +1,11 @@
+session_name: sampleconfig
+start_directory: {HOME}
+windows:
+- options:
+  - automatic_rename: on
+  layout: tiled
+  panes:
+  - cd /usr/bin
+  - cd /usr
+  - cd /usr/sbin
+  - cd {HOME}

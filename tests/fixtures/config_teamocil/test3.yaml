@@ -1,0 +1,14 @@
+windows:
+- name: "my-first-window"
+  root: "~/Projects/foo-www"
+  layout: even-vertical
+  filters:
+    before: "rbenv local 2.0.0-p0"
+    after: "echo 'I am done initializing this pane.'"
+  panes:
+    - cmd: "git status"
+    - cmd: "bundle exec rails server --port 40"
+      focus: true
+    - cmd:
+      - "sudo service memcached start"
+      - "sudo service mongodb start"
