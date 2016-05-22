@@ -12,7 +12,7 @@ import pytest
 
 from tmuxp import config, exc
 
-from . import fixtures
+from .fixtures import config as fixtures
 from .helpers import EnvironmentVarGuard, example_dir
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def test_export_json(tmpdir):
     json_config_file = tmpdir.join('config.json')
 
     configparser = kaptan.Kaptan()
-    configparser.import_config(fixtures.config.sampleconfig.sampleconfigdict)
+    configparser.import_config(fixtures.sampleconfig.sampleconfigdict)
 
     json_config_data = configparser.export('json', indent=2)
 
@@ -39,14 +39,14 @@ def test_export_json(tmpdir):
 
     new_config = kaptan.Kaptan()
     new_config_data = new_config.import_config(str(json_config_file)).get()
-    assert fixtures.config.sampleconfig.sampleconfigdict == new_config_data
+    assert fixtures.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_export_yaml(tmpdir):
     yaml_config_file = tmpdir.join('config.yaml')
 
     configparser = kaptan.Kaptan()
-    sampleconfig = config.inline(fixtures.config.sampleconfig.sampleconfigdict)
+    sampleconfig = config.inline(fixtures.sampleconfig.sampleconfigdict)
     configparser.import_config(sampleconfig)
 
     yaml_config_data = configparser.export(
@@ -55,7 +55,7 @@ def test_export_yaml(tmpdir):
     yaml_config_file.write(yaml_config_data)
 
     new_config_data = load_config(str(yaml_config_file))
-    assert fixtures.config.sampleconfig.sampleconfigdict == new_config_data
+    assert fixtures.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_scan_config(tmpdir):
@@ -88,16 +88,16 @@ def test_scan_config(tmpdir):
 
 def test_config_expand1():
     """Expand shell commands from string to list."""
-    test_config = config.expand(fixtures.config.expand1.before_config)
-    assert test_config == fixtures.config.expand1.after_config
+    test_config = config.expand(fixtures.expand1.before_config)
+    assert test_config == fixtures.expand1.after_config
 
 
 def test_config_expand2():
     """Expand shell commands from string to list."""
 
-    unexpanded_dict = load_yaml(fixtures.config.expand2.unexpanded_yaml)
+    unexpanded_dict = load_yaml(fixtures.expand2.unexpanded_yaml)
 
-    expanded_dict = load_yaml(fixtures.config.expand2.expanded_yaml)
+    expanded_dict = load_yaml(fixtures.expand2.expanded_yaml)
 
     assert config.expand(unexpanded_dict) == expanded_dict
 
@@ -299,28 +299,28 @@ def test_inheritance_config():
 
 def test_shell_command_before():
     """Config inheritance for the nested 'start_command'."""
-    test_config = fixtures.config.shell_command_before.config_unexpanded
+    test_config = fixtures.shell_command_before.config_unexpanded
     test_config = config.expand(test_config)
 
-    assert test_config == fixtures.config.shell_command_before.config_expanded
+    assert test_config == fixtures.shell_command_before.config_expanded
 
     test_config = config.trickle(test_config)
-    assert test_config == fixtures.config.shell_command_before.config_after
+    assert test_config == fixtures.shell_command_before.config_after
 
 
 def test_in_session_scope():
-    sconfig = load_yaml(fixtures.config.shell_command_before_session.before)
+    sconfig = load_yaml(fixtures.shell_command_before_session.before)
 
     config.validate_schema(sconfig)
 
     assert config.expand(sconfig) == sconfig
     assert config.expand(config.trickle(sconfig)) == \
-        load_yaml(fixtures.config.shell_command_before_session.expected)
+        load_yaml(fixtures.shell_command_before_session.expected)
 
 
 def test_trickle_relative_start_directory():
-    test_config = config.trickle(fixtures.config.trickle.before)
-    assert test_config == fixtures.config.trickle.expected
+    test_config = config.trickle(fixtures.trickle.before)
+    assert test_config == fixtures.trickle.expected
 
 
 def test_expands_blank_panes():
@@ -353,7 +353,7 @@ def test_expands_blank_panes():
 
     yaml_config_file = os.path.join(example_dir, 'blank-panes.yaml')
     test_config = load_config(yaml_config_file)
-    assert config.expand(test_config) == fixtures.config.expand_blank.expected
+    assert config.expand(test_config) == fixtures.expand_blank.expected
 
 
 def test_no_session_name():
