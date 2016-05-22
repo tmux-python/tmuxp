@@ -23,7 +23,6 @@ with open('requirements/test.txt') as f:
 
 if sys.version_info < (2, 7):
     install_reqs += ['argparse']
-    tests_reqs += ['unittest2']
 
 if sys.version_info[0] > 2:
     readme = open('README.rst', encoding='utf-8').read()
