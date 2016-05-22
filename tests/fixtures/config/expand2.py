@@ -1,10 +1,8 @@
 import os
 
+from ._util import loadfixture
 
-def curjoin(_file):  # return filepath relative to __file__ (this file)
-    return os.path.join(os.path.dirname(__file__), _file)
-
-unexpanded_yaml = open(curjoin('expand2-unexpanded.yaml')).read()
-expanded_yaml = open(curjoin('expand2-expanded.yaml')).read().format(
+unexpanded_yaml = loadfixture('expand2-unexpanded.yaml')
+expanded_yaml = loadfixture('expand2-expanded.yaml').format(
     HOME=os.path.expanduser('~')
 )

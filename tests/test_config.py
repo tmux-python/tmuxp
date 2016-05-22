@@ -54,6 +54,10 @@ sampleconfigdict = {
 }
 
 
+def yaml_to_dict(yaml):
+    return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
+
+
 def test_export_json(tmpdir):
     json_config_file = tmpdir.join('config.json')
 
@@ -302,12 +306,12 @@ inheritance_config_after = {
 def test_inheritance_config():
     config = inheritance_config_before
 
+    # TODO: Look at verifying window_start_directory
     # if 'start_directory' in config:
     #     session_start_directory = config['start_directory']
     # else:
     #     session_start_directory = None
 
-    # TODO: Look at verifying window_start_directory
     # for windowconfitem in config['windows']:
     #     window_start_directory = None
     #
@@ -327,259 +331,25 @@ def test_inheritance_config():
     assert config == inheritance_config_after
 
 
-class ShellCommandBeforeTest(TestCase):
-
+def test_shell_command_before():
     """Config inheritance for the nested 'start_command'."""
+    test_config = fixtures.config.shell_command_before.config_unexpanded
+    test_config = config.expand(test_config)
 
-    config_unexpanded = {  # shell_command_before is string in some areas
-        'session_name': 'sampleconfig',
-        'start_directory': '/',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': '~',
-                'shell_command_before': 'source .venv/bin/activate',
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'shell_command_before': 'rbenv local 2.0.0-p0',
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    },
-                    {
-                    }
-                ]
-            },
-            {
-                'window_name': 'shufu',
-                'panes': [
-                    {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['htop'],
-                    }
-                ]
-            },
-            {
-                'options': {'automatic_rename': True, },
-                'panes': [
-                    {'shell_command': ['htop']}
-                ]
-            },
-            {
-                'panes': ['top']
-            }
-        ]
-    }
+    assert test_config == fixtures.config.shell_command_before.config_expanded
 
-    config_expanded = {  # shell_command_before is string in some areas
-        'session_name': 'sampleconfig',
-        'start_directory': '/',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': os.path.expanduser('~'),
-                'shell_command_before': ['source .venv/bin/activate'],
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'shell_command_before': ['rbenv local 2.0.0-p0'],
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    },
-                    {
-                        'shell_command': []
-                    }
-                ]
-            },
-            {
-                'window_name': 'shufu',
-                'panes': [
-                    {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['htop'],
-                    }
-                ]
-            },
-            {
-                'options': {'automatic_rename': True, },
-                'panes': [
-                    {'shell_command': ['htop']}
-                ]
-            },
-            {
-                'panes': [{
-                    'shell_command': ['top']
-                }]
-            },
-        ]
-    }
-
-    config_after = {  # shell_command_before is string in some areas
-        'session_name': 'sampleconfig',
-        'start_directory': '/',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': os.path.expanduser('~'),
-                'shell_command_before': ['source .venv/bin/activate'],
-                'panes': [
-                    {
-                        'shell_command': ['source .venv/bin/activate', 'vim'],
-                    },
-                    {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': [
-                            'source .venv/bin/activate',
-                            'rbenv local 2.0.0-p0', 'cowsay "hey"'
-                        ]
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'shell_command_before': ['rbenv local 2.0.0-p0'],
-                'start_directory': '/',
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': [
-                            'rbenv local 2.0.0-p0',
-                            'tail -F /var/log/syslog'
-                        ],
-                    },
-                    {
-                        'shell_command': ['rbenv local 2.0.0-p0']
-                    }
-                ]
-            },
-            {
-                'start_directory': '/',
-                'window_name': 'shufu',
-                'panes': [
-                    {
-                        'shell_command_before': ['rbenv local 2.0.0-p0'],
-                        'shell_command': ['rbenv local 2.0.0-p0', 'htop'],
-                    }
-                ]
-            },
-            {
-                'start_directory': '/',
-                'options': {'automatic_rename': True, },
-                'panes': [
-                    {
-                        'shell_command': ['htop']
-                    }
-                ]
-            },
-            {
-                'start_directory': '/',
-                'panes': [
-                    {
-                        'shell_command': ['top']
-                    }
-                ]
-            }
-        ]
-    }
-
-    def test_shell_command_before(self):
-        self.maxDiff = None
-        test_config = self.config_unexpanded
-        test_config = config.expand(test_config)
-
-        assert test_config == self.config_expanded
-
-        test_config = config.trickle(test_config)
-        self.maxDiff = None
-        assert test_config == self.config_after
+    test_config = config.trickle(test_config)
+    assert test_config == fixtures.config.shell_command_before.config_after
 
 
-class ShellCommandBeforeSession(TestCase):
+def test_in_session_scope():
+    sconfig = yaml_to_dict(fixtures.config.shell_command_before_session.before)
 
-    def test_in_session_scope(self):
+    config.validate_schema(sconfig)
 
-        yaml_config = """
-        shell_command_before:
-          - 'echo "hi"'
-        session_name: 'test'
-        windows:
-        - window_name: editor
-          panes:
-          - shell_command:
-            - vim
-            - :Ex
-          - pane
-          - cd /usr
-        - window_name: logging
-          panes:
-          - shell_command:
-            -
-          - shell_command:
-            - top
-            - emacs
-        """
-
-        yaml_final_config = """
-        shell_command_before:
-          - 'echo "hi"'
-        session_name: 'test'
-        windows:
-        - window_name: editor
-          panes:
-          - shell_command:
-            - 'echo "hi"'
-            - vim
-            - :Ex
-          - shell_command:
-            - 'echo "hi"'
-          - shell_command:
-            - 'echo "hi"'
-            - cd /usr
-        - window_name: logging
-          panes:
-          - shell_command:
-            - 'echo "hi"'
-          - shell_command:
-            - 'echo "hi"'
-            - top
-            - emacs
-        """
-
-        self.maxDiff = None
-
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(yaml_config).get()
-
-        config.validate_schema(sconfig)
-
-        assert config.expand(sconfig) == sconfig
-        assert config.expand(config.trickle(sconfig)) == \
-            self.yaml_to_dict(yaml_final_config)
-
-    def yaml_to_dict(self, yaml):
-        return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
+    assert config.expand(sconfig) == sconfig
+    assert config.expand(config.trickle(sconfig)) == \
+        yaml_to_dict(fixtures.config.shell_command_before_session.expected)
 
 
 class TrickleRelativeStartDirectory(TestCase):
