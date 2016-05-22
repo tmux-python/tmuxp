@@ -20,9 +20,10 @@ def server():
 
 
 @pytest.fixture(scope='function')
-def session(server):
+def session(request, server):
     t = server
     session_name = 'tmuxp'
+
     if not t.has_session(session_name):
         t.cmd('new-session', '-d', '-s', session_name)
 
@@ -60,6 +61,10 @@ def session(server):
         t.kill_session(old_test_session)
     assert TEST_SESSION_NAME == session.get('session_name')
     assert TEST_SESSION_NAME != 'tmuxp'
+
+    def fin():
+        t.kill_server()
+    request.addfinalizer(fin)
 
     return session
 
