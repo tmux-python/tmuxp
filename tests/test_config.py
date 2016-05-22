@@ -19,40 +19,6 @@ from .helpers import EnvironmentVarGuard, TestCase, example_dir
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
-sampleconfigdict = {
-    'session_name': 'sampleconfig',
-    'start_directory': '~',
-    'windows': [
-        {
-            'window_name': 'editor',
-            'panes': [
-                {
-                    'start_directory': '~',
-                    'shell_command': ['vim'],
-                }, {
-                    'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'
-        },
-        {
-            'window_name': 'logging',
-            'panes': [{
-                'shell_command': ['tail -F /var/log/syslog'],
-                'start_directory':'/var/log'
-            }]
-        },
-        {
-            'options': {
-                'automatic_rename': True,
-            },
-            'panes': [
-                {'shell_command': ['htop']}
-            ]
-        }
-    ]
-}
-
 
 def yaml_to_dict(yaml):
     return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
@@ -62,7 +28,7 @@ def test_export_json(tmpdir):
     json_config_file = tmpdir.join('config.json')
 
     configparser = kaptan.Kaptan()
-    configparser.import_config(sampleconfigdict)
+    configparser.import_config(fixtures.config.sampleconfig.sampleconfigdict)
 
     json_config_data = configparser.export('json', indent=2)
 
@@ -70,14 +36,14 @@ def test_export_json(tmpdir):
 
     new_config = kaptan.Kaptan()
     new_config_data = new_config.import_config(str(json_config_file)).get()
-    assert sampleconfigdict == new_config_data
+    assert fixtures.config.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_export_yaml(tmpdir):
     yaml_config_file = tmpdir.join('config.yaml')
 
     configparser = kaptan.Kaptan()
-    sampleconfig = config.inline(sampleconfigdict)
+    sampleconfig = config.inline(fixtures.config.sampleconfig.sampleconfigdict)
     configparser.import_config(sampleconfig)
 
     yaml_config_data = configparser.export(
@@ -87,7 +53,7 @@ def test_export_yaml(tmpdir):
 
     new_config = kaptan.Kaptan()
     new_config_data = new_config.import_config(str(yaml_config_file)).get()
-    sampleconfigdict == new_config_data
+    fixtures.config.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_scan_config(tmpdir):
