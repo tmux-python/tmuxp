@@ -12,96 +12,35 @@ import pytest
 
 from tmuxp import config
 
-from .helpers import TestCase
 from .fixtures import config_teamocil as fixtures
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
-class TeamocilTest(TestCase):
+@pytest.mark.parametrize("teamocil_yaml,teamocil_dict,tmuxp_dict", [
+    (fixtures.test1.teamocil_yaml, fixtures.test1.teamocil_conf,
+     fixtures.test1.expected),
+    (fixtures.test2.teamocil_yaml, fixtures.test2.teamocil_dict,
+     fixtures.test2.expected),
+    (fixtures.test3.teamocil_yaml, fixtures.test3.teamocil_dict,
+     fixtures.test3.expected),
+    (fixtures.test4.teamocil_yaml, fixtures.test4.teamocil_dict,
+     fixtures.test4.expected),
+])
+def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
+    configparser = kaptan.Kaptan(handler='yaml')
+    test_config = configparser.import_config(teamocil_yaml)
+    yaml_to_dict = test_config.get()
+    assert yaml_to_dict == teamocil_dict
 
-    teamocil_yaml = fixtures.test1.teamocil_yaml
-    teamocil_dict = fixtures.test1.teamocil_conf
-    tmuxp_dict = fixtures.test1.expected
+    assert config.import_teamocil(teamocil_dict) == tmuxp_dict
 
-    def test_config_to_dict(self):
-        configparser = kaptan.Kaptan(handler='yaml')
-        test_config = configparser.import_config(self.teamocil_yaml)
-        yaml_to_dict = test_config.get()
-        assert yaml_to_dict == self.teamocil_dict
-        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict
-            )
+    config.validate_schema(
+        config.import_teamocil(
+            teamocil_dict
         )
-
-
-class Teamocil2Test(TestCase):
-
-    teamocil_yaml = fixtures.test2.teamocil_yaml
-    teamocil_dict = fixtures.test2.teamocil_dict
-    tmuxp_dict = fixtures.test2.expected
-
-    def test_config_to_dict(self):
-        configparser = kaptan.Kaptan(handler='yaml')
-        test_config = configparser.import_config(self.teamocil_yaml)
-        yaml_to_dict = test_config.get()
-        assert yaml_to_dict == self.teamocil_dict
-
-        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict
-            )
-        )
-
-
-class Teamocil3Test(TestCase):
-
-    teamocil_yaml = fixtures.test3.teamocil_yaml
-    teamocil_dict = fixtures.test3.teamocil_dict
-    tmuxp_dict = fixtures.test3.expected
-
-    def test_config_to_dict(self):
-        self.maxDiff = None
-        configparser = kaptan.Kaptan(handler='yaml')
-        test_config = configparser.import_config(self.teamocil_yaml)
-        yaml_to_dict = test_config.get()
-        assert yaml_to_dict == self.teamocil_dict
-
-        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict
-            )
-        )
-
-
-class Teamocil4Test(TestCase):
-
-    teamocil_yaml = fixtures.test4.teamocil_yaml
-    teamocil_dict = fixtures.test4.teamocil_dict
-    tmuxp_dict = fixtures.test4.expected
-
-    def test_config_to_dict(self):
-        self.maxDiff = None
-        configparser = kaptan.Kaptan(handler='yaml')
-        test_config = configparser.import_config(self.teamocil_yaml)
-        yaml_to_dict = test_config.get()
-        assert yaml_to_dict == self.teamocil_dict
-
-        assert config.import_teamocil(self.teamocil_dict) == self.tmuxp_dict
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict
-            )
-        )
+    )
 
 
 @pytest.fixture(scope='module')
