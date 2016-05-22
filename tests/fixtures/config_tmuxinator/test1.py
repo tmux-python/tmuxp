@@ -22,7 +22,7 @@ tmuxinator_dict = {
     ]
 }
 
-tmuxp_dict = {
+expected = {
     'session_name': None,
     'windows': [
         {

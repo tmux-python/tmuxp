@@ -50,7 +50,7 @@ tmuxinator_dict = {
     ]
 }
 
-tmuxp_dict = {
+expected = {
     'session_name': 'sample',
     'socket_name': 'foo',
     'config': '~/.tmux.mac.conf',
