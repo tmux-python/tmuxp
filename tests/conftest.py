@@ -6,37 +6,36 @@ import logging
 from tmuxp import exc
 from tmuxp.server import Server
 
-from .helpers import get_test_session_name, TEST_SESSION_PREFIX
+from .helpers import get_test_session_name, TEST_SESSION_PREFIX, namer
 
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def server():
     t = Server()
-    t.socket_name = 'tmuxp_test'
+    t.socket_name = 'tmuxp_test%s' % next(namer)
 
     return t
 
 
 @pytest.fixture(scope='function')
 def session(request, server):
-    t = server
     session_name = 'tmuxp'
 
-    if not t.has_session(session_name):
-        t.cmd('new-session', '-d', '-s', session_name)
+    if not server.has_session(session_name):
+        server.cmd('new-session', '-d', '-s', session_name)
 
     # find current sessions prefixed with tmuxp
     old_test_sessions = [
-        s.get('session_name') for s in t._sessions
+        s.get('session_name') for s in server._sessions
         if s.get('session_name').startswith(TEST_SESSION_PREFIX)
     ]
 
-    TEST_SESSION_NAME = get_test_session_name(server=t)
+    TEST_SESSION_NAME = get_test_session_name(server=server)
 
     try:
-        session = t.new_session(
+        session = server.new_session(
             session_name=TEST_SESSION_NAME,
         )
     except exc.TmuxpException as e:
@@ -47,10 +46,10 @@ def session(request, server):
     the newly created session for that testcase.
     """
     try:
-        t.switch_client(session.get('session_id'))
+        server.switch_client(session.get('session_id'))
         pass
     except exc.TmuxpException as e:
-        # t.attach_session(session.get('session_id'))
+        # server.attach_session(session.get('session_id'))
         pass
 
     for old_test_session in old_test_sessions:
@@ -58,12 +57,12 @@ def session(request, server):
             'Old test test session %s found. Killing it.' %
             old_test_session
         )
-        t.kill_session(old_test_session)
+        server.kill_session(old_test_session)
     assert TEST_SESSION_NAME == session.get('session_name')
     assert TEST_SESSION_NAME != 'tmuxp'
 
     def fin():
-        t.kill_server()
+        server.kill_server()
     request.addfinalizer(fin)
 
     return session
