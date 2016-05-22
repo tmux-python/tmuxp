@@ -4,40 +4,40 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-from ..helpers import TmuxTestCase, get_test_session_name, temp_session
+from ..helpers import get_test_session_name, temp_session
 
 
-class TempSession(TmuxTestCase):
+def test_kills_session(server):
+    server = server
+    session_name = get_test_session_name(server=server)
 
-    def test_kills_session(self):
-        server = self.server
-        session_name = get_test_session_name(server=server)
+    with temp_session(
+        server=server, session_name=session_name
+    ):
+        result = server.has_session(session_name)
+        assert result
 
-        with temp_session(
-            server=server, session_name=session_name
-        ):
-            result = server.has_session(session_name)
-            assert result
+    assert not server.has_session(session_name)
 
-        assert not server.has_session(session_name)
 
-    def test_if_session_killed_before(self):
-        """Handles situation where session already closed within context"""
+def test_if_session_killed_before(server):
+    """Handles situation where session already closed within context"""
 
-        server = self.server
-        session_name = get_test_session_name(server=server)
+    server = server
+    session_name = get_test_session_name(server=server)
 
-        with temp_session(server=server, session_name=session_name):
+    with temp_session(server=server, session_name=session_name):
 
-            # an error or an exception within a temp_session kills the session
-            server.kill_session(session_name)
+        # an error or an exception within a temp_session kills the session
+        server.kill_session(session_name)
 
-            result = server.has_session(session_name)
-            assert not result
+        result = server.has_session(session_name)
+        assert not result
 
-        # really dead?
-        assert not server.has_session(session_name)
+    # really dead?
+    assert not server.has_session(session_name)
 
-    def test_if_session_name_works(self):
-        """should allow custom ``session_name``."""
-        pass
+
+def test_if_session_name_works(self):
+    """should allow custom ``session_name``."""
+    pass

@@ -12,46 +12,38 @@ import kaptan
 from tmuxp import config
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
-from .helpers import TmuxTestCase
 from .fixtures._util import loadfixture
 
 logger = logging.getLogger(__name__)
 
 
-class FreezeTest(TmuxTestCase):
-
+def test_freeze_config(session):
     yaml_config = loadfixture("workspacefreezer/sampleconfig.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
 
-    def test_focus(self):
-        # assure the built yaml config has focus
-        pass
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+    assert session == builder.session
 
-    def test_freeze_config(self):
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(self.yaml_config).get()
+    time.sleep(.50)
 
-        builder = WorkspaceBuilder(sconf=sconfig)
-        builder.build(session=self.session)
-        assert self.session == builder.session
+    session = session
+    sconf = freeze(session)
 
-        time.sleep(.50)
+    config.validate_schema(sconf)
 
-        session = self.session
-        sconf = freeze(session)
+    sconf = config.inline(sconf)
 
-        config.validate_schema(sconf)
-
-        sconf = config.inline(sconf)
-
-        kaptanconf = kaptan.Kaptan()
-        kaptanconf = kaptanconf.import_config(sconf)
-        kaptanconf.export(
-            'json',
-            indent=2
-        )
-        kaptanconf.export(
-            'yaml',
-            indent=2,
-            default_flow_style=False,
-            safe=True
-        )
+    kaptanconf = kaptan.Kaptan()
+    kaptanconf = kaptanconf.import_config(sconf)
+    kaptanconf.export(
+        'json',
+        indent=2
+    )
+    kaptanconf.export(
+        'yaml',
+        indent=2,
+        default_flow_style=False,
+        safe=True
+    )
