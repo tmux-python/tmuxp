@@ -12,7 +12,8 @@ import kaptan
 import pytest
 from flaky import flaky
 
-from tmuxp import Window, config, exc
+from libtmux import Window
+from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
 

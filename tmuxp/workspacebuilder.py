@@ -11,7 +11,12 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 
-from . import Pane, Server, Session, Window, exc
+from . import exc
+from libtmux.pane import Pane
+from libtmux.server import Server
+from libtmux.session import Session
+from libtmux.window import Window
+from libtmux.exc import TmuxSessionExists
 from .util import run_before_script
 
 logger = logging.getLogger(__name__)
@@ -114,7 +119,7 @@ class WorkspaceBuilder(object):
                         'session_name': self.sconf['session_name']
                     }
                 )
-                raise exc.TmuxSessionExists(
+                raise TmuxSessionExists(
                     'Session name %s is already running.' %
                     self.sconf['session_name']
                 )

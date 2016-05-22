@@ -10,12 +10,13 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 
-from . import exc, util
+from . import exc
+from .common import TmuxMappingObject, TmuxRelationalObject
 
 logger = logging.getLogger(__name__)
 
 
-class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
+class Pane(TmuxMappingObject, TmuxRelationalObject):
 
     """:term:`tmux(1)` :term:`pane`.
 
@@ -151,7 +152,7 @@ class Pane(util.TmuxMappingObject, util.TmuxRelationalObject):
             proc = self.cmd('resize-pane', args[0])
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         self.server._update_panes()
         return self

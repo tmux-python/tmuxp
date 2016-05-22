@@ -12,9 +12,8 @@ import logging
 import os
 
 from . import exc, formats
-from .common import EnvironmentMixin
+from .common import EnvironmentMixin, TmuxRelationalObject, tmux_cmd
 from .session import Session
-from .util import TmuxRelationalObject, tmux_cmd
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +122,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         sformats = formats.SESSION_FORMATS
         tmux_formats = ['#{%s}' % format for format in sformats]
@@ -186,7 +185,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         windows = proc.stdout
 
@@ -248,7 +247,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         panes = proc.stdout
 
@@ -350,7 +349,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         proc = self.cmd('kill-session', '-t%s' % target_session)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         return self
 
@@ -364,7 +363,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         proc = self.cmd('switch-client', '-t%s' % target_session)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
     def attach_session(self, target_session=None):
         """``$ tmux attach-session`` aka alias: ``$ tmux attach``.
@@ -379,7 +378,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         proc = self.cmd('attach-session', *tmux_args)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
     def new_session(self,
                     session_name=None,
@@ -447,7 +446,7 @@ class Server(TmuxRelationalObject, EnvironmentMixin):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         session = proc.stdout[0]
 

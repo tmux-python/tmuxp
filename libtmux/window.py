@@ -11,13 +11,14 @@ from __future__ import (absolute_import, division, print_function,
 import logging
 import os
 
-from . import exc, formats, util
+from . import exc, formats
 from .pane import Pane
+from .common import TmuxMappingObject, TmuxRelationalObject
 
 logger = logging.getLogger(__name__)
 
 
-class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
+class Window(TmuxMappingObject, TmuxRelationalObject):
     """:term:`tmux(1)` window."""
 
     childIdAttribute = 'pane_id'
@@ -120,7 +121,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
     def set_window_option(self, option, value):
         """Wrapper for ``$ tmux set-window-option <option> <value>``.
@@ -266,7 +267,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         self.server._update_windows()
 
@@ -286,7 +287,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
         )
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         self.server._update_windows()
 
@@ -323,7 +324,7 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
             proc = self.cmd('select-pane', '-t%s' % target_pane)
 
         if proc.stderr:
-            raise exc.TmuxpException(proc.stderr)
+            raise exc.LibTmuxException(proc.stderr)
 
         return self.attached_pane()
 
@@ -398,11 +399,11 @@ class Window(util.TmuxMappingObject, util.TmuxRelationalObject):
 
         # tmux < 1.7. This is added in 1.7.
         if pane.stderr:
-            raise exc.TmuxpException(pane.stderr)
+            raise exc.LibTmuxException(pane.stderr)
             if 'pane too small' in pane.stderr:
                 pass
 
-            raise exc.TmuxpException(pane.stderr, self._TMUX, self.panes)
+            raise exc.LibTmuxException(pane.stderr, self._TMUX, self.panes)
         else:
             pane = pane.stdout[0]
 
