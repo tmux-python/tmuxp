@@ -8,6 +8,7 @@ import logging
 import os
 
 import kaptan
+import pytest
 
 from tmuxp import config
 
@@ -103,70 +104,37 @@ class Teamocil4Test(TestCase):
         )
 
 
-class TeamocilLayoutsTest(TestCase):
+@pytest.fixture(scope='module')
+def multisession_config():
+    """Return loaded multisession teamocil config as a dictionary.
 
-    """Import configurations from teamocil's <fixtures/layout.yml>.
-
-    https://github.com/remiprev/teamocil/blob/master/spec/fixtures/layouts.yml
-
-    LICENSE: https://github.com/remiprev/teamocil/blob/master/LICENSE
-
-    """
-
+    Also prevents re-running assertion the loads the yaml, since ordering of
+    deep list items like panes will be inconsistent."""
     teamocil_yaml = fixtures.layouts.teamocil_yaml
+    configparser = kaptan.Kaptan(handler='yaml')
+    test_config = configparser.import_config(teamocil_yaml)
     teamocil_dict = fixtures.layouts.teamocil_dict
-    two_windows = fixtures.layouts.two_windows
-    two_windows_with_filters = fixtures.layouts.two_windows_with_filters
-    two_windows_with_custom_command_options = \
-        fixtures.layouts.two_windows_with_custom_command_options
-    three_windows_within_a_session = \
-        fixtures.layouts.three_windows_within_a_session
 
-    def test_config_to_dict(self):
-        self.maxDiff = None
-        configparser = kaptan.Kaptan(handler='yaml')
-        test_config = configparser.import_config(self.teamocil_yaml)
-        yaml_to_dict = test_config.get()
-        assert yaml_to_dict == self.teamocil_dict
+    assert test_config.get() == teamocil_dict
+    return teamocil_dict
 
-        assert config.import_teamocil(self.teamocil_dict['two-windows']) == \
-            self.two_windows
 
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict['two-windows']
-            )
+@pytest.mark.parametrize("session_name,expected", [
+    ('two-windows', fixtures.layouts.two_windows),
+    ('two-windows-with-filters', fixtures.layouts.two_windows_with_filters),
+    ('two-windows-with-custom-command-options',
+     fixtures.layouts.two_windows_with_custom_command_options),
+    ('three-windows-within-a-session',
+     fixtures.layouts.three_windows_within_a_session),
+])
+def test_multisession_config(session_name, expected, multisession_config):
+    # teamocil can fit multiple sessions in a config
+    assert config.import_teamocil(
+        multisession_config[session_name]
+    ) == expected
+
+    config.validate_schema(
+        config.import_teamocil(
+            multisession_config[session_name]
         )
-
-        assert config.import_teamocil(
-            self.teamocil_dict['two-windows-with-filters'],
-        ) == self.two_windows_with_filters
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict['two-windows-with-filters']
-            )
-        )
-
-        assert config.import_teamocil(
-            self.teamocil_dict['two-windows-with-custom-command-options'],
-        ) == self.two_windows_with_custom_command_options
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict['two-windows-with-custom-command-options']
-            )
-        )
-
-        assert config.import_teamocil(
-            self.teamocil_dict['three-windows-within-a-session'],
-        ) == self.three_windows_within_a_session
-
-        config.validate_schema(
-            config.import_teamocil(
-                self.teamocil_dict['three-windows-within-a-session']
-            )
-        )
-
-        # this configuration contains multiple sessions in a single file.
-        # tmuxp can split them into files, proceed?
+    )
