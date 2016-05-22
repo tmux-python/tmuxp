@@ -6,7 +6,6 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import os
-import unittest
 
 import kaptan
 import pytest
@@ -14,7 +13,7 @@ import pytest
 from tmuxp import config, exc
 
 from . import fixtures
-from .helpers import EnvironmentVarGuard, TestCase, example_dir
+from .helpers import EnvironmentVarGuard, example_dir
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
@@ -319,278 +318,133 @@ def test_in_session_scope():
         load_yaml(fixtures.config.shell_command_before_session.expected)
 
 
-class TrickleRelativeStartDirectory(TestCase):
+def test_trickle_relative_start_directory():
+    test_config = config.trickle(fixtures.config.trickle.before)
+    assert test_config == fixtures.config.trickle.expected
 
-    config_expanded = {  # shell_command_before is string in some areas
-        'session_name': 'sampleconfig',
-        'start_directory': '/var',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': 'log',
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'window_name': 'logging',
-                'start_directory': '~',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    },
-                    {
-                        'shell_command': []
-                    }
-                ]
-            },
+
+def test_expands_blank_panes():
+    """Expand blank config into full form.
+
+    Handle ``NoneType`` and 'blank'::
+
+    # nothing, None, 'blank'
+    'panes': [
+        None,
+        'blank'
+    ]
+
+    # should be blank
+    'panes': [
+        'shell_command': []
+    ]
+
+    Blank strings::
+
+        panes: [
+            ''
         ]
-    }
 
-    config_after = {  # shell_command_before is string in some areas
-        'session_name': 'sampleconfig',
-        'start_directory': '/var',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': '/var/log',
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command': [
-                            'cowsay "hey"'
-                        ]
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'start_directory': '~',
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    },
-                    {
-                        'shell_command': []
-                    }
-                ]
-            },
-        ]
-    }
+        # should output to:
+        panes:
+            'shell_command': ['']
 
-    def test_shell_command_before(self):
-
-        test_config = config.trickle(self.config_expanded)
-        assert test_config == self.config_after
-
-
-class ConfigBlankPanes(TestCase):
+    """
 
     yaml_config_file = os.path.join(example_dir, 'blank-panes.yaml')
-
-    expanded_config = {
-        'session_name': 'Blank pane test',
-        'windows': [
-            {
-                'window_name': 'Blank pane test',
-                'panes': [
-                    {
-                        'shell_command': [],
-                    },
-                    {
-                        'shell_command': [],
-                    },
-                    {
-                        'shell_command': [],
-                    }
-                ]
-            },
-            {
-                'window_name': 'More blank panes',
-                'panes': [
-                    {
-                        'shell_command': [],
-                    },
-                    {
-                        'shell_command': [],
-                    },
-                    {
-                        'shell_command': [],
-                    }
-                ]
-            },
-            {
-                'window_name': 'Empty string (return)',
-                'panes': [
-                    {
-                        'shell_command': [
-                            ''
-                        ],
-                    },
-                    {
-                        'shell_command': [
-                            ''
-                        ],
-                    },
-                    {
-                        'shell_command': [
-                            ''
-                        ],
-                    }
-                ]
-            },
-            {
-                'window_name': 'Blank with options',
-                'panes': [
-                    {
-                        'shell_command': [],
-                        'focus': True,
-                    },
-                    {
-                        'shell_command': [],
-                        'start_directory': '/tmp',
-                    }
-                ]
-            }
-        ]
-    }
-
-    def test_expands_blank(self):
-        """Expand blank config into full form.
-
-        Handle ``NoneType`` and 'blank'::
-
-        # nothing, None, 'blank'
-        'panes': [
-            None,
-            'blank'
-        ]
-
-        # should be blank
-        'panes': [
-            'shell_command': []
-        ]
-
-        Blank strings::
-
-            panes: [
-                ''
-            ]
-
-            # should output to:
-            panes:
-                'shell_command': ['']
-
-        """
-
-        self.maxDiff = None
-
-        test_config = kaptan.Kaptan().import_config(
-            self.yaml_config_file).get()
-
-        assert config.expand(test_config) == self.expanded_config
+    test_config = load_config(yaml_config_file)
+    assert config.expand(test_config) == fixtures.config.expand_blank.expected
 
 
-class ConfigConsistency(TestCase):
+def test_no_session_name():
+    yaml_config = """
+    - window_name: editor
+      panes:
+      shell_command:
+      - tail -F /var/log/syslog
+      start_directory: /var/log
+    - window_name: logging
+      automatic_rename: true
+      panes:
+      - shell_command:
+      - htop
+    """
 
-    def test_no_session_name(self):
-        yaml_config = """
-        - window_name: editor
-          panes:
-          shell_command:
-            - tail -F /var/log/syslog
-          start_directory: /var/log
-        - window_name: logging
-          automatic_rename: true
-          panes:
-          - shell_command:
-            - htop
-        """
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
 
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(yaml_config).get()
-
-        with pytest.raises(exc.ConfigError) as excinfo:
-            config.validate_schema(sconfig)
-            assert excinfo.matches(r'requires "session_name"')
-
-    def test_no_windows(self):
-        yaml_config = """
-        session_name: test session
-        """
-
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(yaml_config).get()
-
-        with pytest.raises(exc.ConfigError) as excinfo:
-            config.validate_schema(sconfig)
-            assert excinfo.match(r'list of "windows"')
-
-    def test_no_window_name(self):
-        yaml_config = """
-        session_name: test session
-        windows:
-        - window_name: editor
-          panes:
-          shell_command:
-            - tail -F /var/log/syslog
-          start_directory: /var/log
-        - automatic_rename: true
-          panes:
-          - shell_command:
-            - htop
-        """
-
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(yaml_config).get()
-
-        with pytest.raises(exc.ConfigError) as excinfo:
-            config.validate_schema(sconfig)
-            assert excinfo.matches('missing "window_name"')
+    with pytest.raises(exc.ConfigError) as excinfo:
+        config.validate_schema(sconfig)
+        assert excinfo.matches(r'requires "session_name"')
 
 
-class ConfigExpandEnvironmentVariables(TestCase, unittest.TestCase):
-    def test_replaces_start_directory(self):
-        env_key = "TESTHEY92"
-        env_value = "HEYO1"
-        yaml_config = """
-        start_directory: {TEST_VAR}/test
-        shell_command_before: {TEST_VAR}/test2
-        before_script: {TEST_VAR}/test3
-        session_name: hi - {TEST_VAR}
-        windows:
-        - window_name: editor
-          panes:
-          - shell_command:
-            - tail -F /var/log/syslog
-          start_directory: /var/log
-        - window_name: logging @ {TEST_VAR}
-          automatic_rename: true
-          panes:
-          - shell_command:
-            - htop
-        """.format(
-            TEST_VAR="${%s}" % env_key
-        )
+def test_no_windows():
+    yaml_config = """
+    session_name: test session
+    """
 
-        sconfig = kaptan.Kaptan(handler='yaml')
-        sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
 
-        with EnvironmentVarGuard() as env:
-            env.set(env_key, env_value)
-            sconfig = config.expand(sconfig)
-            assert "%s/test" % env_value == sconfig['start_directory']
-            assert "%s/test2" % env_value in sconfig['shell_command_before']
-            assert "%s/test3" % env_value == sconfig['before_script']
-            assert "hi - %s" % env_value == sconfig['session_name']
-            assert "logging @ %s" % env_value == \
-                sconfig['windows'][1]['window_name']
+    with pytest.raises(exc.ConfigError) as excinfo:
+        config.validate_schema(sconfig)
+        assert excinfo.match(r'list of "windows"')
+
+
+def test_no_window_name():
+    yaml_config = """
+    session_name: test session
+    windows:
+    - window_name: editor
+      panes:
+      shell_command:
+      - tail -F /var/log/syslog
+      start_directory: /var/log
+    - automatic_rename: true
+      panes:
+      - shell_command:
+      - htop
+    """
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    with pytest.raises(exc.ConfigError) as excinfo:
+        config.validate_schema(sconfig)
+        assert excinfo.matches('missing "window_name"')
+
+
+def test_replaces_start_directory():
+    env_key = "TESTHEY92"
+    env_value = "HEYO1"
+    yaml_config = """
+    start_directory: {TEST_VAR}/test
+    shell_command_before: {TEST_VAR}/test2
+    before_script: {TEST_VAR}/test3
+    session_name: hi - {TEST_VAR}
+    windows:
+    - window_name: editor
+      panes:
+      - shell_command:
+      - tail -F /var/log/syslog
+      start_directory: /var/log
+    - window_name: logging @ {TEST_VAR}
+      automatic_rename: true
+      panes:
+      - shell_command:
+      - htop
+    """.format(
+        TEST_VAR="${%s}" % env_key
+    )
+
+    sconfig = load_yaml(yaml_config)
+
+    with EnvironmentVarGuard() as env:
+        env.set(env_key, env_value)
+        sconfig = config.expand(sconfig)
+        assert "%s/test" % env_value == sconfig['start_directory']
+        assert "%s/test2" % env_value in sconfig['shell_command_before']
+        assert "%s/test3" % env_value == sconfig['before_script']
+        assert "hi - %s" % env_value == sconfig['session_name']
+        assert "logging @ %s" % env_value == \
+            sconfig['windows'][1]['window_name']
