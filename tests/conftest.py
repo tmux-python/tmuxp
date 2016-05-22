@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope='session')
-def t():
+def server():
     t = Server()
     t.socket_name = 'tmuxp_test'
 
@@ -20,7 +20,8 @@ def t():
 
 
 @pytest.fixture(scope='function')
-def session(t):
+def session(server):
+    t = server
     session_name = 'tmuxp'
     if not t.has_session(session_name):
         t.cmd('new-session', '-d', '-s', session_name)
