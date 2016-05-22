@@ -4,7 +4,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-from .helpers import TmuxTestCase, get_test_session_name, temp_session
+from ..helpers import TmuxTestCase, get_test_session_name, temp_session
 
 
 class TempSession(TmuxTestCase):
