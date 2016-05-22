@@ -11,12 +11,13 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 
-from . import exc
+from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
 from libtmux.window import Window
-from libtmux.exc import TmuxSessionExists
+
+from . import exc
 from .util import run_before_script
 
 logger = logging.getLogger(__name__)

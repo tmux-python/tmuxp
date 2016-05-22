@@ -6,7 +6,7 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 
-from libtmux.server import Server
+from libtmux import Server
 
 logger = logging.getLogger(__name__)
 

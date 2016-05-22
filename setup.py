@@ -55,7 +55,7 @@ setup(
     author_email=about['__email__'],
     description=about['__description__'],
     long_description=readme,
-    packages=['tmuxp', 'libtmux'],
+    packages=['tmuxp'],
     include_package_data=True,
     install_requires=install_reqs,
     tests_require=tests_reqs,

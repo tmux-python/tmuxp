@@ -5,11 +5,11 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import logging
+
 import pytest
 
 from libtmux import Pane, Session, Window
-
-from .helpers import TEST_SESSION_PREFIX, namer
+from libtmux.test import TEST_SESSION_PREFIX, namer
 
 logger = logging.getLogger(__name__)
 

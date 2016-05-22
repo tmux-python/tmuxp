@@ -21,7 +21,7 @@ from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
 from tmuxp.util import run_before_script
 
-from .helpers import fixtures_dir
+from . import fixtures_dir
 
 logger = logging.getLogger(__name__)
 

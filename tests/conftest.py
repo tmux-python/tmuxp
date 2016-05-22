@@ -7,7 +7,7 @@ import pytest
 from libtmux import exc
 from libtmux.server import Server
 
-from .helpers import TEST_SESSION_PREFIX, get_test_session_name, namer
+from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 
 logger = logging.getLogger(__name__)
 

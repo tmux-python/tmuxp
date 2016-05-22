@@ -12,13 +12,15 @@ import kaptan
 import pytest
 from flaky import flaky
 
+from . import fixtures_dir
 from libtmux import Window
+from libtmux.test import temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
+from . import example_dir
 from .fixtures._util import loadfixture
-from .helpers import example_dir, fixtures_dir, temp_session
 
 logger = logging.getLogger(__name__)
 

@@ -10,10 +10,11 @@ import os
 import kaptan
 import pytest
 
+from libtmux.test import EnvironmentVarGuard
 from tmuxp import config, exc
 
+from . import example_dir
 from .fixtures import config as fixtures
-from .helpers import EnvironmentVarGuard, example_dir
 
 logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')

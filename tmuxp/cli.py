@@ -16,8 +16,10 @@ import sys
 import argcomplete
 import kaptan
 
-from libtmux import Server
-from . import config, exc, log, util, WorkspaceBuilder
+from libtmux.server import Server
+from libtmux.common import has_required_tmux_version, which
+
+from . import WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
 from ._compat import input, string_types
 from .workspacebuilder import freeze
@@ -261,7 +263,7 @@ def load_workspace(config_file, args):
         logger.error('%s is empty or parsed no config data' % config_file)
         return
 
-    util.which('tmux')
+    which('tmux')
 
     try:
         logger.info('Loading %s.' % config_file)
@@ -960,7 +962,7 @@ def main():
     )
 
     try:
-        util.has_required_tmux_version()
+        has_required_tmux_version()
     except exc.TmuxpException as e:
         logger.error(e)
         sys.exit()
