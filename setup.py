@@ -59,7 +59,7 @@ setup(
     include_package_data=True,
     install_requires=install_reqs,
     tests_require=tests_reqs,
-	cmdclass = {'test': PyTest},
+    cmdclass={'test': PyTest},
     zip_safe=False,
     keywords=about['__title__'],
     scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
