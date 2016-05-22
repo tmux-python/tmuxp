@@ -4,7 +4,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-from ..helpers import get_test_session_name, temp_session
+from libtmux.test import get_test_session_name, temp_session
 
 
 def test_kills_session(server):
