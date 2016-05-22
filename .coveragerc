@@ -1,6 +1,6 @@
 [run]
 omit =
-    test/*
+    tests/*
     */_vendor/*
     */_*
     pkg/*
