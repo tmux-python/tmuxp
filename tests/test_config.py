@@ -20,8 +20,12 @@ logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
-def yaml_to_dict(yaml):
+def load_yaml(yaml):
     return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
+
+
+def load_config(_file):
+    return kaptan.Kaptan().import_config(_file).get()
 
 
 def test_export_json(tmpdir):
@@ -51,9 +55,8 @@ def test_export_yaml(tmpdir):
 
     yaml_config_file.write(yaml_config_data)
 
-    new_config = kaptan.Kaptan()
-    new_config_data = new_config.import_config(str(yaml_config_file)).get()
-    fixtures.config.sampleconfig.sampleconfigdict == new_config_data
+    new_config_data = load_config(str(yaml_config_file))
+    assert fixtures.config.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_scan_config(tmpdir):
@@ -93,11 +96,9 @@ def test_config_expand1():
 def test_config_expand2():
     """Expand shell commands from string to list."""
 
-    unexpanded_dict = kaptan.Kaptan(handler='yaml'). \
-        import_config(fixtures.config.expand2.unexpanded_yaml).get()
+    unexpanded_dict = load_yaml(fixtures.config.expand2.unexpanded_yaml)
 
-    expanded_dict = kaptan.Kaptan(handler='yaml'). \
-        import_config(fixtures.config.expand2.expanded_yaml).get()
+    expanded_dict = load_yaml(fixtures.config.expand2.expanded_yaml)
 
     assert config.expand(unexpanded_dict) == expanded_dict
 
@@ -309,13 +310,13 @@ def test_shell_command_before():
 
 
 def test_in_session_scope():
-    sconfig = yaml_to_dict(fixtures.config.shell_command_before_session.before)
+    sconfig = load_yaml(fixtures.config.shell_command_before_session.before)
 
     config.validate_schema(sconfig)
 
     assert config.expand(sconfig) == sconfig
     assert config.expand(config.trickle(sconfig)) == \
-        yaml_to_dict(fixtures.config.shell_command_before_session.expected)
+        load_yaml(fixtures.config.shell_command_before_session.expected)
 
 
 class TrickleRelativeStartDirectory(TestCase):
