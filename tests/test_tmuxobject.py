@@ -7,178 +7,180 @@ from __future__ import (absolute_import, division, print_function,
 import logging
 
 from tmuxp import Pane, Session, Window
-from .helpers import TEST_SESSION_PREFIX, TmuxTestCase, namer
+from .helpers import TEST_SESSION_PREFIX, namer
 
 logger = logging.getLogger(__name__)
 
 
-class TmuxObjectTest(TmuxTestCase):
+"""Test the :class:`TmuxRelationalObject` base class object."""
 
-    """Test the :class:`TmuxRelationalObject` base class object."""
 
-    def test_findWhere(self):
-        """Test that findWhere() retrieves single matching object."""
-        self.maxDiff = None
-        # server.findWhere
-        for session in self.t.sessions:
-            session_id = session.get('session_id')
+def test_findWhere(server):
+    """Test that findWhere() retrieves single matching object."""
+    # server.findWhere
+    for session in server.sessions:
+        session_id = session.get('session_id')
 
-            assert self.t.findWhere({'session_id': session_id}) == session
-            assert isinstance(self.t.findWhere({
-                'session_id': session_id
-            }), Session)
+        assert server.findWhere({'session_id': session_id}) == session
+        assert isinstance(server.findWhere({
+            'session_id': session_id
+        }), Session)
 
-            # session.findWhere
-            for window in session.windows:
-                window_id = window.get('window_id')
+        # session.findWhere
+        for window in session.windows:
+            window_id = window.get('window_id')
 
-                assert session.findWhere({'window_id': window_id}) == window
+            assert session.findWhere({'window_id': window_id}) == window
+            assert isinstance(
+                session.findWhere({'window_id': window_id}), Window
+            )
+
+            # window.findWhere
+            for pane in window.panes:
+                pane_id = pane.get('pane_id')
+
+                assert window.findWhere({'pane_id': pane_id}) == pane
                 assert isinstance(
-                    session.findWhere({'window_id': window_id}), Window
-                )
+                    window.findWhere({'pane_id': pane_id}), Pane)
 
-                # window.findWhere
-                for pane in window.panes:
-                    pane_id = pane.get('pane_id')
 
-                    assert window.findWhere({'pane_id': pane_id}) == pane
-                    assert isinstance(
-                        window.findWhere({'pane_id': pane_id}), Pane)
+def test_findWhere_None(server):
+    """.findWhere returns None if no results found."""
 
-    def test_findWhere_None(self):
-        """.findWhere returns None if no results found."""
+    while True:
+        nonexistant_session = TEST_SESSION_PREFIX + next(namer)
 
-        while True:
-            nonexistant_session = TEST_SESSION_PREFIX + next(namer)
+        if not server.has_session(nonexistant_session):
+            break
 
-            if not self.t.has_session(nonexistant_session):
-                break
+    assert server.findWhere({
+        'session_name': nonexistant_session
+    }) is None
 
-        assert self.t.findWhere({
-            'session_name': nonexistant_session
-        }) is None
 
-    def test_findWhere_multiple_attrs(self):
-        """.findWhere returns objects with multiple attributes."""
+def test_findWhere_multiple_attrs(server):
+    """.findWhere returns objects with multiple attributes."""
 
-        for session in self.t.sessions:
-            session_id = session.get('session_id')
-            session_name = session.get('session_name')
-            find_where = self.t.findWhere({
-                'session_id': session_id,
-                'session_name': session_name
+    for session in server.sessions:
+        session_id = session.get('session_id')
+        session_name = session.get('session_name')
+        find_where = server.findWhere({
+            'session_id': session_id,
+            'session_name': session_name
+        })
+
+        assert find_where == session
+        assert isinstance(find_where, Session)
+
+        # session.findWhere
+        for window in session.windows:
+            window_id = window.get('window_id')
+            window_index = window.get('window_index')
+
+            find_where = session.findWhere({
+                'window_id': window_id,
+                'window_index': window_index
             })
 
-            assert find_where == session
-            assert isinstance(find_where, Session)
+            assert find_where == window
+            assert isinstance(find_where, Window)
 
-            # session.findWhere
-            for window in session.windows:
-                window_id = window.get('window_id')
-                window_index = window.get('window_index')
+            # window.findWhere
+            for pane in window.panes:
+                pane_id = pane.get('pane_id')
+                pane_tty = pane.get('pane_tty')
 
-                find_where = session.findWhere({
-                    'window_id': window_id,
-                    'window_index': window_index
+                find_where = window.findWhere({
+                    'pane_id': pane_id,
+                    'pane_tty': pane_tty
                 })
 
-                assert find_where == window
-                assert isinstance(find_where, Window)
+                assert find_where == pane
+                assert isinstance(find_where, Pane)
 
-                # window.findWhere
-                for pane in window.panes:
-                    pane_id = pane.get('pane_id')
-                    pane_tty = pane.get('pane_tty')
 
-                    find_where = window.findWhere({
-                        'pane_id': pane_id,
-                        'pane_tty': pane_tty
-                    })
+def test_where(server, session):
+    """Test self.where() returns matching objects."""
 
-                    assert find_where == pane
-                    assert isinstance(find_where, Pane)
+    window = session.attached_window()
+    window.split_window()  # create second pane
 
-    def test_where(self):
-        """Test self.where() returns matching objects."""
+    for session in server.sessions:
+        session_id = session.get('session_id')
+        session_name = session.get('session_name')
+        where = server.where({
+            'session_id': session_id,
+            'session_name': session_name
+        })
 
-        window = self.session.attached_window()
-        window.split_window()  # create second pane
+        assert len(where) == 1
+        assert isinstance(where, list)
+        assert where[0] == session
+        assert isinstance(where[0], Session)
 
-        for session in self.t.sessions:
-            session_id = session.get('session_id')
-            session_name = session.get('session_name')
-            where = self.t.where({
-                'session_id': session_id,
-                'session_name': session_name
+        # session.where
+        for window in session.windows:
+            window_id = window.get('window_id')
+            window_index = window.get('window_index')
+
+            where = session.where({
+                'window_id': window_id,
+                'window_index': window_index
             })
 
             assert len(where) == 1
             assert isinstance(where, list)
-            assert where[0] == session
-            assert isinstance(where[0], Session)
+            assert where[0] == window
+            assert isinstance(where[0], Window)
 
-            # session.where
-            for window in session.windows:
-                window_id = window.get('window_id')
-                window_index = window.get('window_index')
+            # window.where
+            for pane in window.panes:
+                pane_id = pane.get('pane_id')
+                pane_tty = pane.get('pane_tty')
 
-                where = session.where({
-                    'window_id': window_id,
-                    'window_index': window_index
+                where = window.where({
+                    'pane_id': pane_id,
+                    'pane_tty': pane_tty
                 })
 
                 assert len(where) == 1
                 assert isinstance(where, list)
-                assert where[0] == window
-                assert isinstance(where[0], Window)
+                assert where[0] == pane
+                assert isinstance(where[0], Pane)
 
-                # window.where
-                for pane in window.panes:
-                    pane_id = pane.get('pane_id')
-                    pane_tty = pane.get('pane_tty')
 
-                    where = window.where({
-                        'pane_id': pane_id,
-                        'pane_tty': pane_tty
-                    })
+def test_getById(server, session):
+    """Test self.getById() retrieves child object."""
 
-                    assert len(where) == 1
-                    assert isinstance(where, list)
-                    assert where[0] == pane
-                    assert isinstance(where[0], Pane)
+    window = session.attached_window()
 
-    def test_getById(self):
-        """Test self.getById() retrieves child object."""
+    window.split_window()  # create second pane
 
-        window = self.session.attached_window()
+    for session in server.sessions:
+        session_id = session.get('session_id')
+        get_by_id = server.getById(session_id)
 
-        window.split_window()  # create second pane
+        assert get_by_id == session
+        assert isinstance(get_by_id, Session)
+        assert server.getById('$' + next(namer)) is None
 
-        for session in self.t.sessions:
-            session_id = session.get('session_id')
-            get_by_id = self.t.getById(session_id)
+        # session.getById
+        for window in session.windows:
+            window_id = window.get('window_id')
 
-            assert get_by_id == session
-            assert isinstance(get_by_id, Session)
-            assert self.t.getById('$' + next(namer)) is None
+            get_by_id = session.getById(window_id)
 
-            # session.getById
-            for window in session.windows:
-                window_id = window.get('window_id')
+            assert get_by_id == window
+            assert isinstance(get_by_id, Window)
 
-                get_by_id = session.getById(window_id)
+            assert session.getById('@' + next(namer)) is None
 
-                assert get_by_id == window
-                assert isinstance(get_by_id, Window)
+            # window.getById
+            for pane in window.panes:
+                pane_id = pane.get('pane_id')
 
-                assert session.getById('@' + next(namer)) is None
+                get_by_id = window.getById(pane_id)
 
-                # window.getById
-                for pane in window.panes:
-                    pane_id = pane.get('pane_id')
-
-                    get_by_id = window.getById(pane_id)
-
-                    assert get_by_id == pane
-                    assert isinstance(get_by_id, Pane)
-                    assert window.getById('%' + next(namer)) is None
+                assert get_by_id == pane
+                assert isinstance(get_by_id, Pane)
+                assert window.getById('%' + next(namer)) is None
