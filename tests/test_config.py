@@ -6,8 +6,6 @@ from __future__ import (absolute_import, division, print_function,
 
 import logging
 import os
-import shutil
-import tempfile
 import unittest
 
 import kaptan
@@ -15,6 +13,7 @@ import pytest
 
 from tmuxp import config, exc
 
+from . import fixtures
 from .helpers import EnvironmentVarGuard, TestCase, example_dir
 
 logger = logging.getLogger(__name__)
@@ -55,505 +54,277 @@ sampleconfigdict = {
 }
 
 
-class ImportExportTest(TestCase):
+def test_export_json(tmpdir):
+    json_config_file = tmpdir.join('config.json')
 
-    def setUp(self):
-        self.tmp_dir = tempfile.mkdtemp(suffix='tmuxp')
+    configparser = kaptan.Kaptan()
+    configparser.import_config(sampleconfigdict)
 
-    def tearDown(self):
-        if os.path.isdir(self.tmp_dir):
-            shutil.rmtree(self.tmp_dir)
-        logging.debug('wiped %s' % TMUXP_DIR)
+    json_config_data = configparser.export('json', indent=2)
 
-    def test_export_json(self):
-        json_config_file = os.path.join(self.tmp_dir, 'config.json')
+    json_config_file.write(json_config_data)
 
-        configparser = kaptan.Kaptan()
-        configparser.import_config(sampleconfigdict)
-
-        json_config_data = configparser.export('json', indent=2)
-
-        with open(json_config_file, 'w') as buf:
-            buf.write(json_config_data)
-
-        new_config = kaptan.Kaptan()
-        new_config_data = new_config.import_config(json_config_file).get()
-        assert sampleconfigdict == new_config_data
-
-    def test_export_yaml(self):
-        yaml_config_file = os.path.join(self.tmp_dir, 'config.yaml')
-
-        configparser = kaptan.Kaptan()
-        sampleconfig = config.inline(sampleconfigdict)
-        configparser.import_config(sampleconfig)
-
-        yaml_config_data = configparser.export(
-            'yaml', indent=2, default_flow_style=False)
-
-        with open(yaml_config_file, 'w') as buf:
-            buf.write(yaml_config_data)
-
-        new_config = kaptan.Kaptan()
-        new_config_data = new_config.import_config(yaml_config_file).get()
-        sampleconfigdict == new_config_data
-
-    def test_scan_config(self):
-        configs = []
-
-        garbage_file = os.path.join(self.tmp_dir, 'config.psd')
-        with open(garbage_file, 'w') as buf:
-            buf.write('wat')
-
-        if os.path.exists(self.tmp_dir):
-            for r, d, f in os.walk(self.tmp_dir):
-                for filela in (
-                    x for x in f if x.endswith(('.json', '.ini', 'yaml'))
-                ):
-                    configs.append(os.path.join(
-                        self.tmp_dir, filela))
-
-        files = 0
-        if os.path.exists(os.path.join(self.tmp_dir, 'config.json')):
-            files += 1
-            assert os.path.join(self.tmp_dir, 'config.json') in configs
-
-        if os.path.exists(os.path.join(self.tmp_dir, 'config.yaml')):
-            files += 1
-            assert os.path.join(self.tmp_dir, 'config.yaml') in configs
-
-        if os.path.exists(os.path.join(self.tmp_dir, 'config.ini')):
-            files += 1
-            assert os.path.join(self.tmp_dir, 'config.ini') in configs
-
-        assert len(configs) == files
+    new_config = kaptan.Kaptan()
+    new_config_data = new_config.import_config(str(json_config_file)).get()
+    assert sampleconfigdict == new_config_data
 
 
-class ExpandTest(TestCase):
+def test_export_yaml(tmpdir):
+    yaml_config_file = tmpdir.join('config.yaml')
 
-    """Assume configuration has been imported into a python dict correctly."""
+    configparser = kaptan.Kaptan()
+    sampleconfig = config.inline(sampleconfigdict)
+    configparser.import_config(sampleconfig)
 
-    before_config = {
-        'session_name': 'sampleconfig',
-        'start_directory': '~',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'panes': [
-                    {
-                        'shell_command': [
-                            'vim',
-                            'top'
-                        ]
-                    },
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command': 'cowsay "hey"'
-                    }
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    }
-                ]
-            },
-            {
-                'start_directory': '/var/log',
-                'options': {'automatic_rename': True, },
-                'panes': [
-                    {
-                        'shell_command': 'htop'
-                    },
-                    'vim',
-                ]
-            },
-            {
-                'start_directory': './',
-                'panes': [
-                    'pwd'
-                ]
-            },
-            {
-                'start_directory': './asdf/',
-                'panes': [
-                    'pwd'
-                ]
-            },
-            {
-                'start_directory': '../',
-                'panes': [
-                    'pwd'
-                ]
-            },
-            {
-                'panes': [
-                    'top'
-                ]
-            }
-        ]
-    }
+    yaml_config_data = configparser.export(
+        'yaml', indent=2, default_flow_style=False)
 
-    after_config = {
-        'session_name': 'sampleconfig',
-        'start_directory': os.path.expanduser('~'),
-        'windows': [
-            {
-                'window_name': 'editor',
-                'panes': [
-                    {
-                        'shell_command': ['vim', 'top'],
-                    },
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    }
-                ]
-            },
-            {
-                'start_directory': '/var/log',
-                'options': {'automatic_rename': True},
-                'panes': [
-                    {'shell_command': ['htop']},
-                    {'shell_command': ['vim']}
-                ]
-            },
-            {
-                'start_directory': os.path.normpath(
-                    os.path.join(os.path.expanduser('~'), './')
-                ),
-                'panes': [
-                    {'shell_command': ['pwd']}
-                ]
-            },
-            {
-                'start_directory': os.path.normpath(
-                    os.path.join(os.path.expanduser('~'), './asdf')
-                ),
-                'panes': [
-                    {'shell_command': ['pwd']}
-                ]
-            },
-            {
-                'start_directory': os.path.normpath(
-                    os.path.join(os.path.expanduser('~'), '../')
-                ),
-                'panes': [
-                    {'shell_command': ['pwd']}
-                ]
-            },
+    yaml_config_file.write(yaml_config_data)
 
-            {
-                'panes': [
-                    {'shell_command': ['top']}
-                ]
-            }
-        ]
-    }
-
-    def test_config(self):
-        """Expand shell commands from string to list."""
-        self.maxDiff = None
-        test_config = config.expand(self.before_config)
-        assert test_config == self.after_config
-
-    def test_no_window_name(self):
-        """Expand shell commands from string to list."""
-
-        unexpanded_yaml = """
-        session_name: sampleconfig
-        start_directory: '~'
-        windows:
-        - window_name: focused window
-          layout: main-horizontal
-          focus: true
-          panes:
-          - shell_command:
-            - cd ~
-          - shell_command:
-            - cd /usr
-            focus: true
-          - shell_command:
-            - cd ~
-            - echo "moo"
-            - top
-        - window_name: window 2
-          panes:
-          - shell_command:
-            - top
-            focus: true
-          - shell_command:
-            - echo "hey"
-          - shell_command:
-            - echo "moo"
-          - window_name: window 3
-          panes:
-          - shell_command: cd /
-            focus: true
-          - pane
-          - pane
-        """
-
-        expanded_yaml = """
-        session_name: sampleconfig
-        start_directory: {HOME}
-        windows:
-        - window_name: focused window
-          layout: main-horizontal
-          focus: true
-          panes:
-          - shell_command:
-            - cd ~
-          - shell_command:
-            - cd /usr
-            focus: true
-          - shell_command:
-            - cd ~
-            - echo "moo"
-            - top
-        - window_name: window 2
-          panes:
-          - shell_command:
-            - top
-            focus: true
-          - shell_command:
-            - echo "hey"
-          - shell_command:
-            - echo "moo"
-          - window_name: window 3
-          panes:
-          - shell_command:
-            - cd /
-            focus: true
-          - shell_command: []
-          - shell_command: []
-        """.format(
-            HOME=os.path.expanduser('~')
-        )
-
-        self.maxDiff = None
-
-        unexpanded_dict = kaptan.Kaptan(handler='yaml'). \
-            import_config(unexpanded_yaml).get()
-
-        expanded_dict = kaptan.Kaptan(handler='yaml'). \
-            import_config(expanded_yaml).get()
-
-        assert config.expand(unexpanded_dict) == expanded_dict
+    new_config = kaptan.Kaptan()
+    new_config_data = new_config.import_config(str(yaml_config_file)).get()
+    sampleconfigdict == new_config_data
 
 
-class InlineTest(TestCase):
+def test_scan_config(tmpdir):
+    configs = []
 
-    """Tests for :meth:`config.inline()`."""
+    garbage_file = tmpdir.join('config.psd')
+    garbage_file.write('wat')
 
-    before_config = {
-        'session_name': 'sampleconfig',
-        'start_directory': '~',
-        'windows': [
-            {
-                'shell_command': ['top'],
-                'window_name': 'editor',
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    }
-                ]
-            },
-            {
-                'options': {'automatic_rename': True, },
-                'panes': [
-                    {'shell_command': ['htop']}
-                ]
-            }
-        ]
-    }
+    for r, d, f in os.walk(str(tmpdir)):
+        for filela in (
+            x for x in f if x.endswith(('.json', '.ini', 'yaml'))
+        ):
+            configs.append(str(tmpdir.join(filela)))
 
-    after_config = {
-        'session_name': 'sampleconfig',
-        'start_directory': '~',
-        'windows': [
-            {
-                'shell_command': 'top',
-                'window_name': 'editor',
-                'panes': [
-                    'vim',
-                    'cowsay "hey"'
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'window_name': 'logging',
-                'panes': [
-                    'tail -F /var/log/syslog',
-                ]
-            },
-            {
-                'options': {
-                    'automatic_rename': True,
+    files = 0
+    if tmpdir.join('config.json').check():
+        files += 1
+        assert str(tmpdir.join('config.json')) in configs
+
+    if tmpdir.join('config.yaml').check():
+        files += 1
+        assert str(tmpdir.join('config.yaml')) in configs
+
+    if tmpdir.join('config.ini').check():
+        files += 1
+        assert str(tmpdir.join('config.ini')) in configs
+
+    assert len(configs) == files
+
+
+def test_config_expand1():
+    """Expand shell commands from string to list."""
+    test_config = config.expand(fixtures.config.expand1.before_config)
+    assert test_config == fixtures.config.expand1.after_config
+
+
+def test_config_expand2():
+    """Expand shell commands from string to list."""
+
+    unexpanded_dict = kaptan.Kaptan(handler='yaml'). \
+        import_config(fixtures.config.expand2.unexpanded_yaml).get()
+
+    expanded_dict = kaptan.Kaptan(handler='yaml'). \
+        import_config(fixtures.config.expand2.expanded_yaml).get()
+
+    assert config.expand(unexpanded_dict) == expanded_dict
+
+
+"""Tests for :meth:`config.inline()`."""
+
+ibefore_config = {  # inline config
+    'session_name': 'sampleconfig',
+    'start_directory': '~',
+    'windows': [
+        {
+            'shell_command': ['top'],
+            'window_name': 'editor',
+            'panes': [
+                {
+                    'shell_command': ['vim'],
                 },
-                'panes': [
-                    'htop'
-                ]
-            },
-
-        ]
-    }
-
-    def test_config(self):
-        """:meth:`config.inline()` shell commands list to string."""
-
-        self.maxDiff = None
-        test_config = config.inline(self.before_config)
-        assert test_config == self.after_config
-
-
-class InheritanceTest(TestCase):
-
-    """Test config inheritance for the nested 'start_command'."""
-
-    config_before = {
-        'session_name': 'sampleconfig',
-        'start_directory': '/',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': '~',
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    },
-                    {
-                        'shell_command': ['cowsay "hey"']
-                    },
-                ],
-                'layout': 'main-verticle'
-            },
-            {
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    }
-                ]
-            },
-            {
-                'window_name': 'shufu',
-                'panes': [
-                    {
-                        'shell_command': ['htop'],
-                    }
-                ]
-            },
-            {
-                'options': {
-                    'automatic_rename': True,
+                {
+                    'shell_command': ['cowsay "hey"']
                 },
-                'panes': [
-                    {
-                        'shell_command': ['htop']
-                    }
-                ]
-            }
-        ]
-    }
+            ],
+            'layout': 'main-verticle'
+        },
+        {
+            'window_name': 'logging',
+            'panes': [
+                {
+                    'shell_command': ['tail -F /var/log/syslog'],
+                }
+            ]
+        },
+        {
+            'options': {'automatic_rename': True, },
+            'panes': [
+                {'shell_command': ['htop']}
+            ]
+        }
+    ]
+}
 
-    config_after = {
-        'session_name': 'sampleconfig',
-        'start_directory': '/',
-        'windows': [
-            {
-                'window_name': 'editor',
-                'start_directory': '~',
-                'panes': [
-                    {
-                        'shell_command': ['vim'],
-                    }, {
-                        'shell_command': ['cowsay "hey"'],
-                    },
-                ],
-                'layout': 'main-verticle'
+iafter_config = {
+    'session_name': 'sampleconfig',
+    'start_directory': '~',
+    'windows': [
+        {
+            'shell_command': 'top',
+            'window_name': 'editor',
+            'panes': [
+                'vim',
+                'cowsay "hey"'
+            ],
+            'layout': 'main-verticle'
+        },
+        {
+            'window_name': 'logging',
+            'panes': [
+                'tail -F /var/log/syslog',
+            ]
+        },
+        {
+            'options': {
+                'automatic_rename': True,
             },
-            {
-                'window_name': 'logging',
-                'panes': [
-                    {
-                        'shell_command': ['tail -F /var/log/syslog'],
-                    }
-                ]
+            'panes': [
+                'htop'
+            ]
+        },
+
+    ]
+}
+
+
+def test_inline_config():
+    """:meth:`config.inline()` shell commands list to string."""
+
+    test_config = config.inline(ibefore_config)
+    assert test_config == iafter_config
+
+
+"""Test config inheritance for the nested 'start_command'."""
+
+inheritance_config_before = {
+    'session_name': 'sampleconfig',
+    'start_directory': '/',
+    'windows': [
+        {
+            'window_name': 'editor',
+            'start_directory': '~',
+            'panes': [
+                {
+                    'shell_command': ['vim'],
+                },
+                {
+                    'shell_command': ['cowsay "hey"']
+                },
+            ],
+            'layout': 'main-verticle'
+        },
+        {
+            'window_name': 'logging',
+            'panes': [
+                {
+                    'shell_command': ['tail -F /var/log/syslog'],
+                }
+            ]
+        },
+        {
+            'window_name': 'shufu',
+            'panes': [
+                {
+                    'shell_command': ['htop'],
+                }
+            ]
+        },
+        {
+            'options': {
+                'automatic_rename': True,
             },
-            {
-                'window_name': 'shufu',
-                'panes': [
-                    {
-                        'shell_command': ['htop'],
-                    }
-                ]
-            },
-            {
-                'options': {'automatic_rename': True, },
-                'panes': [
-                    {
-                        'shell_command': ['htop'],
-                    }
-                ]
-            }
-        ]
-    }
+            'panes': [
+                {
+                    'shell_command': ['htop']
+                }
+            ]
+        }
+    ]
+}
 
-    def test_start_directory(self):
-        config = self.config_before
+inheritance_config_after = {
+    'session_name': 'sampleconfig',
+    'start_directory': '/',
+    'windows': [
+        {
+            'window_name': 'editor',
+            'start_directory': '~',
+            'panes': [
+                {
+                    'shell_command': ['vim'],
+                }, {
+                    'shell_command': ['cowsay "hey"'],
+                },
+            ],
+            'layout': 'main-verticle'
+        },
+        {
+            'window_name': 'logging',
+            'panes': [
+                {
+                    'shell_command': ['tail -F /var/log/syslog'],
+                }
+            ]
+        },
+        {
+            'window_name': 'shufu',
+            'panes': [
+                {
+                    'shell_command': ['htop'],
+                }
+            ]
+        },
+        {
+            'options': {'automatic_rename': True, },
+            'panes': [
+                {
+                    'shell_command': ['htop'],
+                }
+            ]
+        }
+    ]
+}
 
-        # if 'start_directory' in config:
-        #     session_start_directory = config['start_directory']
-        # else:
-        #     session_start_directory = None
 
-        # TODO: Look at verifying window_start_directory
-        # for windowconfitem in config['windows']:
-        #     window_start_directory = None
-        #
-        #     if 'start_directory' in windowconfitem:
-        #         window_start_directory = windowconfitem['start_directory']
-        #     elif session_start_directory:
-        #         window_start_directory = session_start_directory
-        #
-        #     for paneconfitem in windowconfitem['panes']:
-        #         if 'start_directory' in paneconfitem:
-        #             pane_start_directory = paneconfitem['start_directory']
-        #         elif window_start_directory:
-        #             paneconfitem['start_directory'] = window_start_directory
-        #         elif session_start_directory:
-        #             paneconfitem['start_directory'] = session_start_directory
+def test_inheritance_config():
+    config = inheritance_config_before
 
-        self.maxDiff = None
-        assert config == self.config_after
+    # if 'start_directory' in config:
+    #     session_start_directory = config['start_directory']
+    # else:
+    #     session_start_directory = None
+
+    # TODO: Look at verifying window_start_directory
+    # for windowconfitem in config['windows']:
+    #     window_start_directory = None
+    #
+    #     if 'start_directory' in windowconfitem:
+    #         window_start_directory = windowconfitem['start_directory']
+    #     elif session_start_directory:
+    #         window_start_directory = session_start_directory
+    #
+    #     for paneconfitem in windowconfitem['panes']:
+    #         if 'start_directory' in paneconfitem:
+    #             pane_start_directory = paneconfitem['start_directory']
+    #         elif window_start_directory:
+    #             paneconfitem['start_directory'] = window_start_directory
+    #         elif session_start_directory:
+    #             paneconfitem['start_directory'] = session_start_directory
+
+    assert config == inheritance_config_after
 
 
 class ShellCommandBeforeTest(TestCase):
