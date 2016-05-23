@@ -45,7 +45,14 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinxarg.ext',
               'aafig',
+              'releases',
               ]
+
+# 'releases' (changelog) settings
+releases_unstable_prehistory = True
+releases_document_name = "history"
+releases_issue_uri = "https://github.com/tony/tmuxp/issues/%s"
+releases_release_uri = "https://github.com/tony/tmuxp/tree/%s"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -278,7 +285,10 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {
+    'http://docs.python.org/': None,
+    'https://tmuxp.readthedocs.org/en/latest/': None
+}
 
 # aafig format, try to get working with pdf
 aafig_format = dict(latex='pdf', html='gif')
