@@ -4,72 +4,36 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-CURRENT
--------
-
 - [internal] move doc building, tests and watcher to Makefile
 - [internal] update .tmuxp.yaml and .tmuxp.json for Makefile change
 
-0.11.0
-------
-
+- :release:`0.11.0 <2016-02-29>`
 - [cli] [internal] Support for environment settings in configs,
   thanks `@tasdomas`_ (`#137`_)
 - [docs] Spelling correction, thanks `@sehe`_.
 
-.. _@tasdomas: https://github.com/tasdomas
-.. _#137: https://github.com/tony/tmuxp/pull/137
-.. _@sehe: https://github.com/sehe
-
-0.10.0
-------
-
+- :release:`0.10.0 <2016-01-30>`
 - [cli] Load multiple tmux sessions at once, thanks `@madprog`_, `#135`_.
 - [docs] README and Documentation fixes `#133`_ `#131`_.
 
-.. _#131: https://github.com/tony/tmuxp/pull/131
-.. _#133: https://github.com/tony/tmuxp/pull/133
-.. _#135: https://github.com/tony/tmuxp/pull/135
-.. _@madprog: https://github.com/madprog
-
-0.9.3
------
-
+- :release:`0.9.3 <2016-01-06>`
 - [internal] switch to ``.venv`` for virtualenv directory to not conflict
   with ``.env`` (used by `autoenv`_).
 - [internal] move to `entr(1)`_ for file watching in tests. update docs.
 - [compatibility] Support `Anaconda Python`_ 2 and 3, see `#130`_.
 
-.. _autoenv: https://github.com/kennethreitz/autoenv
-.. _entr(1): http://entrproject.org/
-.. _#130: https://github.com/tony/tmuxp/pull/130
-.. _Anaconda Python: http://docs.continuum.io/anaconda/index
-
-0.9.2
------
-
+- :release:`0.9.2 <2015-10-21>`
 - [internal] Update to support tmux 2.1 via `#122`_, thank you `@estin`_.
 - [internal] use travis container infrastructure for faster tests
 - [tests] change test in workspace builder test to use ``top(1)`` instead of
   ``man(1)``. ``man(1)`` caused errors on some systems where ``PAGER`` is set.
 
-.. _#122: https://github.com/tony/tmuxp/issues/122
-.. _@estin: https://github.com/estin
-
-0.9.1
------
-
+- :release:`0.9.1 <2015-08-23>`
 - [packaging] Add fix python 3 for `sysutils/pytmuxp`_ on FreeBSD ports.
   See `#119`_ GH and `#201564`_ @ FreeBSD Bugzilla. Thanks Ruslan 
   Makhmatkhanov.
 
-.. _sysutils/pytmuxp: http://www.freshports.org/sysutils/py-tmuxp/
-.. _#119: https://github.com/tony/tmuxp/pull/119#discussion_r37709814
-.. _#201564: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=201564
-
-0.9.0
------
-
+- :release:`0.9.0 <2015-07-08>`
 - [internal]: Renamed ``config.expandpath`` to ``config.expandshell``.
 - [internal] [tests]: compat 2.7/3.3 wrapper for ``EnvironmentVarGuard`` for
   testing.
@@ -87,24 +51,11 @@ CURRENT
   `@thomasballinger`_.
 - [internal]: update travis to use new tmux git repository.
 
-.. _colorama: https://pypi.python.org/pypi/colorama
-.. _@marbu: https://github.com/marbu
-.. _#110: https://github.com/tony/tmuxp/pull/110
-.. _#109: https://github.com/tony/tmuxp/pull/109
-.. _#105: https://github.com/tony/tmuxp/pull/105
-.. _#107: https://github.com/tony/tmuxp/pull/107
-.. _@yegortimoshenko: https://github.com/yegortimoshenko
-.. _@thomasballinger: https://github.com/thomasballinger
-
-0.8.1
------
-
+- :release:`0.8.1 <2015-05-09>`
 - [internal] [testing]: fix sniffer test runner in python 3
 - [docs] new animated image demo for RTD and README
 
-0.8.0
------
-
+- :release:`0.8.0 <2015-05-07>`
 - [version]: version bump 0.1.13 -> 0.8.0
 - [internal]: tmux 2.0 support
 - [internal]: Fix documentation for :meth:``Session.switch_client()``.
@@ -119,9 +70,7 @@ CURRENT
   (See conversation at https://github.com/bitprophet/dotfiles/issues/5)
 - [internal]: Refactor ``util.tmux`` into :meth:`util.tmux_cmd`.
   
-0.1.13
-------
-
+- :release:`0.1.13 <2015-03-25>`
 - [internal] Remove ``package_metadata.py`` in favor of ``__about__.py``.
 - [docs] ``scent.py`` for building docs
 - [docs] docutils from 0.11 to 0.12
@@ -139,15 +88,7 @@ CURRENT
   from `@thomasballinger`_.
 - [docs] Update about page from teamocil and erb support from `@raine`_.
 
-.. _sniffer: https://github.com/jeffh/sniffer
-.. _watchingtestrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
-.. _@raine: https://github.com/raine
-.. _@thomasballinger: https://github.com/thomasballinger
-.. _@techtonik: https://github.com/techtonik
-
-0.1.12
-------
-
+- :release:`0.1.12 <2014-08-06>`
 - [config] :meth:`config.expand` now resolves directories in configuration
   via :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`.
 - [config] :meth:`config.expandpath` for helping resolve paths.
@@ -160,9 +101,7 @@ CURRENT
 
   Will behave better with relative directories.
 
-0.1.11
-------
-
+- :release:`0.1.11 <2014-04-06>`
 - [config]: ``before_script`` now loads relative to project directory with
   ``./``.
 - [development]: Use ``bootstrap_env.py`` in tmuxp's ``.tmuxp.yaml`` and
@@ -175,12 +114,9 @@ CURRENT
   has moved to the ``exc`` module.
 - [internal]: Tests for ``run_script_before`` refactored.
 
-0.1.10
-------
-
-2 bug fixes and allow panes with no shell commands to accept options,
-thanks for these 3 patches, `@ThiefMaster`_:
-
+- :release:`0.1.10 <2014-04-02>`
+- 2 bug fixes and allow panes with no shell commands to accept options,
+  thanks for these 3 patches, `@ThiefMaster`_:
 - [builder]: `Issue #73`_: Fix an error caused by spaces in 
   ``start_directory``.
 - [builder]: `Issue #77`_: Fix bug where having a ``-`` in a
@@ -188,18 +124,10 @@ thanks for these 3 patches, `@ThiefMaster`_:
 - [config]: `Issue #76`_: Don't require ``shell_command`` to
   pass options to panes (like ``focus: true``).
 
-.. _Issue #73: https://github.com/tony/tmuxp/issues/73
-.. _Issue #76: https://github.com/tony/tmuxp/issues/76
-.. _Issue #77: https://github.com/tony/tmuxp/issues/77
+- :release:`0.1.9 <2014-04-01>`
+- The ``--force`` was not with us.
 
-0.1.9
------
-
-The ``--force`` was not with us.
-
-0.1.8
------
-
+- :release:`0.1.8 <2014-03-30>`
 - [cli] [freezer]: `Issue #72`_: Create destination directory if it
   doesn't exist. Thanks `@ThiefMaster`_.
 - [tests]: New context manager for tests, ``temp_session``.
@@ -210,21 +138,11 @@ The ``--force`` was not with us.
   script.
 - [docs]: :ref:`python_api_quickstart` per `Issue #56`_.
 
-.. _Issue #56: https://github.com/tony/tmuxp/issues/56
-.. _Issue #72: https://github.com/tony/tmuxp/issues/72
-.. _@ThiefMaster: https://github.com/ThiefMaster
-
-0.1.7
------
-
+- :release:`0.1.7 <2014-02-25>`
 - [cli] [test]:  Fix `Issue #55`_ where tmuxp would crash with letter
   numbers in version. Write tests.
 
-.. _Issue #55: https://github.com/tony/tmuxp/issues/55
-
-0.1.6
------
-
+- :release:`0.1.6 <2014-02-08>`
 - [internals] :meth:`Window.split_window()` now allows ``-c
   start_directory``.
 - [builder] `Issue #35`_ - Builder will now use ``-c start_directory`` to
@@ -234,93 +152,54 @@ The ``--force`` was not with us.
   window creations. This would bleed into tmux user sessions after
   creations.
 
-.. _Issue #35: https://github.com/tony/tmuxp/issues/35
-
-0.1.5.1
--------
-
+- :release:`0.1.5-1 <2014-02-05>`
 - [packaging] fix `Issue #49`_ bug where ``package_manifest.py`` missing
   from ``MANIFEST.in`` would cause error installing.
 
-.. _Issue #49: https://github.com/tony/tmuxp/issues/49
-
-0.1.5
------
-
+- :release:`0.1.5 <2014-02-05>`
 - [docs] section heading normalization.
 - [docs] tao of tmux section now treated as a chatper. tao of tmux may be
   split off into its own project.
 - [internals] use conventions from `tony/cookiecutter-pypackage`_.
 
-0.1.4
------
-
+- :release:`0.1.4 <2014-02-02>`
 - [cli] Fix ``$ tmuxp freeze`` CLI output.
 - [internals] Update ``_compat`` support module.
 - [internals] Fix extra space in `PEP 263`_.
 
-.. _PEP 263: http://www.python.org/dev/peps/pep-0263/
-
-0.1.3
------
-
+- :release:`0.1.3 <2014-01-29>`
 - [cli] Fix Python 3 CLI issue. `Issue #48`_.
 - [cli] ``$ tmuxp`` without option raises an error. `Issue #48`_.
 - [builder] - Add space before send-keys to not populate bash and zsh
   history.
 
-.. _Issue #48: https://github.com/tony/tmuxp/issues/43
-
-0.1.2
------
-
+- :release:`0.1.2 <2014-01-08>`
 - [tests] now using werkzeug / flask style testsuites.
 - [cli] Merge `Issue #43`_ - ``tmuxp -d`` for loading in detached mode.
   Thanks `roxit`_.
 
-.. _Issue #43: https://github.com/tony/tmuxp/issues/43
-.. _roxit: https://github.com/roxit
-
-0.1.1
------
-
+- :release:`0.1.1 <2013-12-25>`
 - [builder] [freezer] [bug] Fix `Issue #32`_ where special characters
   caused unicode caused unexpected outcomes loading and freezing sessions.
 
-.. _Issue #32: https://github.com/tony/tmuxp/issues/32
-
-0.1
----
-
+- :release:`0.1.0 <2013-12-18>`
 - [cli] fix duplicate print out of filename with using ``tmuxp load .``.
 - version to 0.1. No ``--pre`` needed. Future versions will not use rc.
 
-0.1-rc8
-"""""""
-
+- :release:`0.1-rc8 <2013-12-17>`
 - [internal] ``unicode_literals``
 - [internal] Move py2/py3 compliancy code to ``_compat``.
 
-0.1-rc7
-"""""""
-
+- :release:`0.1-rc7 <2013-12-07>`
 - [config] [tests] [bug] `Issue #33`_ bug. Partial rewrite of
   :meth:`config.expand`.
 - [cli] tmuxp will exit silently with ``Ctrl-c``.
 
-.. _Issue #33: https://github.com/tony/tmuxp/issues/33
-
-0.1-rc6
-"""""""
-
+- :release:`0.1-rc6 <2013-12-06>`
 - [config] [tests] [examples] Add `Issue #31`_ from stratoukos -
   ``window_index`` option, and add example.
 
-.. _Issue #31: https://github.com/tony/tmuxp/issues/31
-
-0.1-rc5
-"""""""
-
+- :release:`0.1-rc5 <2013-12-04>`
 - [tests] [config] [builder] Fix `Issue #28`_ - shell_command_before in
   session scope of config causing duplication. New test.
 - [bug] Fix `Issue #26`_ and `Issue #29`_ for OS X tests. Thanks
@@ -328,57 +207,33 @@ The ``--force`` was not with us.
 - [bug] Fix `Issue #27`_ where ``$ tmuxp freeze`` raises unhelpful message
   if session doesn't exist.
 
-.. _Issue #26: https://github.com/tony/tmuxp/issues/26
-.. _Issue #27: https://github.com/tony/tmuxp/issues/27
-.. _Issue #28: https://github.com/tony/tmuxp/issues/28
-.. _Issue #29: https://github.com/tony/tmuxp/issues/29
-
-0.1-rc4
-"""""""
-
+- :release:`0.1-rc4 <2013-12-03>`
 - [bug] fix bug were ``focus: true`` would not launch sessions when using
   ``$ tmuxp load`` in a tmux session.
 
-0.1-rc3
-"""""""
-
+- :release:`0.1-rc3 <2013-12-03>`
 - [bug] [tests] `Issue #25`_ - ``focus: true`` not working in panes. Add
   tests for focusing panes in config.
 - [internal] :meth:`Pane.select_pane()`.
 - [docs] add new example for ``focus: true``.
 
-.. _Issue #25: https://github.com/tony/tmuxp/issues/25
-
-0.1-rc2
-"""""""
-
+- :release:`0.1-rc2 <2013-11-23>`
 - [cli] [tests] - fix `Issue #23`_ where workspace would not build with
   pane-base-index set to 1. Update tests to fix if ``pane-base-index`` is
   not 0.
 - [cli] - removed ``$ tmuxp load --list`` functionality. Update
   :ref:`quickstart` accordingly.
 
-.. _Issue #23: https://github.com/tony/tmuxp/issues/23
-
-0.1-rc1
-"""""""
-
+- :release:`0.1-rc1 <2013-11-23>`
 - [internal] `pep8`_ and `pep257`_ in unit tests.
 - Changelog will now be updated on a version basis, use `pep440`_
   versioning.
 
-0.1-dev
--------
-
-2013-11-21
-""""""""""
-
+- :release:`0.1-dev <2013-11-21>`
 - [internal] :meth:`Session.show_options`, :meth:`Session.show_option` now
   accept ``g`` to pass in ``-g``.
 
-2013-11-20
-""""""""""
-
+- :release:`0.1-dev <2013-11-20>`
 - [internal] :meth:`Window.show_window_options`,
   :meth:`Window.show_window_option` now accept ``g`` to pass in ``-g``.
 - [internal] [bug] Behavioral changes in the WorkspaceBuilder to fix pane
@@ -387,45 +242,27 @@ The ``--force`` was not with us.
   python configuration tests. Use :py:mod:`tempfile` instead.
 - [tests] WorkspaceBuilder tests have been improved to use async better.
 
-.. _Issue #15: https://github.com/tony/tmuxp/issues/15
-.. _Issue #21: https://github.com/tony/tmuxp/issues/21
 
-2013-11-17
-""""""""""
-
+- :release:`0.1-dev <2013-11-17>`
 - [cli] fix a bug where missing tmux didn't show correct warning.
 
-2013-11-15
-""""""""""
-
+- :release:`0.1-dev <2013-11-15>`
 - [tests] Travis now tests python 2.6 as requirement and not allowed to
   fail.
 
-2013-11-13
-""""""""""
-
+- :release:`0.1-dev <2013-11-13>`
 - [cli] accept ``-y`` argument to answer yes to questions. `#19`_
 - [cli] :meth:`cli.SessionCompleter` no longer allows a duplicate session
   after one is added.
 - [docs] ongoing work on :ref:`about_tmux`.
 
-.. _#19: https://github.com/tony/tmuxp/pull/19
-.. _#20: https://github.com/tony/tmuxp/issues/19
-
-2013-11-09
-""""""""""
-
+- :release:`0.1-dev <2013-11-09>`
 - [docs] [translation] `documentation in Chinese`_ from `wrongwaycn`_.
 - [docs] More work done on the :ref:`about_tmux` page.
 - [cli] :meth:`Pane.split_window()` for splitting :class:`Window` at
   ``target-pane`` location.
 
-.. _documentation in Chinese: http://tmuxp-zh.readthedocs.org
-.. _wrongwaycn: https://github.com/wrongwaycn
-
-2013-11-08
-""""""""""
-
+- :release:`0.1-dev <2013-11-08>`
 - [cli] [freeze] - ``$ tmuxp freeze`` will now freeze a window with a
   ``start_directory`` when all panes in a window are inside the same
   directory.
@@ -444,20 +281,14 @@ The ``--force`` was not with us.
 
     This will improve ``$ tmuxp freeze``
 
-2013-11-07
-""""""""""
-
+- :release:`0.1-dev <2013-11-07>`
 - [internal] Remove old logger (based on `tornado's log.py`_), replace
   with new, simpler one.
 - [cli] [import] fix `teamocil`_ import.
 - [import] [tests]: support import teamocil ``root`` to
   ``start_directory``.
 
-.. _tornado's log.py: https://github.com/facebook/tornado/blob/master/tornado/log.py
-
-2013-11-06
-""""""""""
-
+- :release:`0.1-dev <2013-11-06>`
 - [cli] [tests] tagged v0.0.37. Many fixes. Python 2.6 support. Will
   switch to per-version changelog after 0.1 release..
 - [config] support for blank panes (null, ``pane``, ``blank``) and panes
@@ -467,9 +298,7 @@ The ``--force`` was not with us.
   previously return a duplicate shell command, or generic python, node 
   interpreter. 
 
-2013-11-05
-""""""""""
-
+- :release:`0.1-dev <2013-11-05>`
 - [cli] Support for ``[-L socket-name]`` and ``[-S socket-path]`` in
   autocompletion and when loading. Note, switching client into another
   socket may cause an error.
@@ -477,15 +306,11 @@ The ``--force`` was not with us.
 - New :ref:`roadmap`.
 - `pep257`_, `pep8`_.
 
-2013-11-04
-""""""""""
-
+- :release:`0.1-dev <2013-11-04>`
 - [internal] [docs] - `pep257`_, `pep8`_.
 - tagged version ``v0.0.36``.
 
-2013-11-02
-""""""""""
-
+- :release:`0.1-dev <2013-11-02>`
 - [docs] Many documentation, `pep257`_, `pep8`_ fixes
 - [internal] move old :class:`Server` methods ``__list_panes()``,
   ``__list_windows`` and ``__list_sessions`` into the single underscore.
@@ -495,9 +320,7 @@ The ``--force`` was not with us.
 - [config] [tests] support for relative paths of ``start_directory``. Add an
   update config in *Start Directory* on :ref:`examples`.
 
-2013-11-01
-""""""""""
-
+- :release:`0.1-dev <2013-11-01>`
 - [internal] [tests] New servers for :class:`Server` arguments ``socket_name``,
   ``socket_path``, ``config_file``.
 - [internal] :class:`Server` support for ``-2`` with ``colors=256`` and
@@ -511,9 +334,7 @@ The ``--force`` was not with us.
   and ``start_directory``.
 - [cli] Allow saving with ``~`` in file destination.
 
-2013-10-31
-""""""""""
-
+- :release:`0.1-dev <2013-10-31>`
 - [internal] :meth:`util.is_version()`
 - [config] [tests]: correctly :meth:`config.trickle()` the ``start_directory``.
 - [config] [tests]: get ``start_directory`` working for configs
@@ -524,9 +345,7 @@ The ``--force`` was not with us.
 - [internal] :class:`Window.move_window()` for moving window.
 - [docs] major doc overhaul. front page, renamed orm_al.rst to internals.rst.
 
-2013-10-30
-""""""""""
-
+- :release:`0.1-dev <2013-10-30>`
 - [cli] fix bug where if inside tmux, loading a workspace via switch_client
   wouldn't work.
 - [cli] fix bug where ``tmuxp load .`` would return an error instead of a
@@ -537,9 +356,7 @@ The ``--force`` was not with us.
 - [internal] :meth:`Window.kill_window()`
 - [internal] support for ``start_directory`` (work in progress)
 
-2013-10-29
-""""""""""
-
+- :release:`0.1-dev <2013-10-29>`
 - [internal] :meth:`Window.select_pane` now accepts ``-l``, ``-U``, ``-D``,
   ``-L``, ``-R``.
 - [internal] [tests] support for ``automatic-rename`` option.
@@ -562,9 +379,7 @@ The ``--force`` was not with us.
   string. See the shorthand form in the :ref:`examples` section.
 - [cli] [config] support loading ``.yml``.
 
-2013-10-28
-""""""""""
-
+- :release:`0.1-dev <2013-10-28>`
 - [cli] fix ``tmuxp load .`` fixed
 - [cli] fix ``tmuxp convert <file>`` fixed.
 - [internal] `pep257`_ fixes.
@@ -575,17 +390,13 @@ The ``--force`` was not with us.
 - [internal] :meth:`Window.tmux` and :meth:`Pane.tmux` will automatically add
   their ``{window/pane}_id`` if one isn't specific.
 
-2013-10-27
-""""""""""
-
+- :release:`0.1-dev <2013-10-27>`
 - [cli] `argcomplete`_ overhaul for CLI bash completion.
 - [cli] ``tmuxp load``, ``tmuxp convert`` and ``tmuxp import`` now support
   relative and full filenames in addition to searching the config
   directory.
 
-2013-10-26
-""""""""""
-
+- :release:`0.1-dev <2013-10-26>`
 - [import] [tests] initial version of `tmuxinator`_ and `teamocil`_
   config importer. it does not support all options and it not guaranteed
   to fully convert window/pane size and state.
@@ -596,18 +407,14 @@ The ``--force`` was not with us.
 - [cli] fix ``$ tmuxp load -l`` to work correctly alongside
   ``$ tmuxp load filename``.
 
-2013-10-25
-""""""""""
-
+- :release:`0.1-dev <2013-10-25>`
 - [cli] fix bug where ``-v`` and ``--version`` wouldn't print version.
 - [cli] property handle case where no tmux server exists when
   ``attach-session`` or ``kill-session`` is used.
 - [import] [tests] test fixtures and inital work for importing
   `tmuxinator`_ and `teamocil`_ configs
 
-2013-10-24
-""""""""""
-
+- :release:`0.1-dev <2013-10-24>`
 - [internal] clean out old code for ``automatic-rename`` option. it will
   be reimplemented fresh.
 - [cli] check for ``oh-my-zsh`` when using ``$SHELL`` ``zsh``. Prompt if
@@ -622,10 +429,7 @@ The ``--force`` was not with us.
 - [cli] Fix bug in tab completion for listing sessions with no tmux server
   is active.
 
-
-2013-10-23
-""""""""""
-
+- :release:`0.1-dev <2013-10-23>`
 - [cli] zsh/bash/tcsh completion improvements for tab-completion options
 - [cli] tmuxp ``kill-session`` with tab-completion.
 - [cli] tmuxp ``attach-session`` with tab-completion. Attach session will
@@ -633,9 +437,7 @@ The ``--force`` was not with us.
 - [cli] tmuxp ``load`` for loading configs.
 - [tests] unit test fixes.
 
-2013-10-21
-""""""""""
-
+- :release:`0.1-dev <2013-10-21>`
 - [cli] Make 1.8 the official minimym version, give warning notice to
   upgrade tmux if out of date
 - Fix regression causing unexpected build behavior due to unremoved code
@@ -644,9 +446,7 @@ The ``--force`` was not with us.
 - [docs] Examples now have graphics
 - [cli] [internal] ``$ tmuxp -v`` will print the version info.
 
-2013-10-19
-""""""""""
-
+- :release:`0.1-dev <2013-10-19>`
 - [internal] tmuxp will now give warning and sys.exit() with a message if
   ``tmux`` not found in system PATH
 - [internal] major internal overhaul of :class:`Server`, :class:`Session`
@@ -670,9 +470,7 @@ The ``--force`` was not with us.
     @property :meth:`Window._panes` to :meth:`Window._list_panes()`
     to return a list of dicts without making objects.
 
-2013-10-18
-""""""""""
-
+- :release:`0.1-dev <2013-10-18>`
 - [internal] major internal overhaul of :class:`Server`, :class:`Session`,
   :class:`Window`, and :class:`Pane`. 
 
@@ -689,9 +487,7 @@ The ``--force`` was not with us.
   and 1.7 support seem likely eventually if there is enough demand.
 - [internal] python 3 support
 
-2013-10-17
-""""""""""
-
+- :release:`0.1-dev <2013-10-17>`
 - [docs] updated README docs with new project details, screenshots
 - [dev] [docs] - new example ``.tmuxp.yaml`` file updated to include
   development workflow. Removed nodemon as the tool for checking files for
@@ -699,9 +495,7 @@ The ``--force`` was not with us.
 - [cli] Support for switching sessions from within tmux. In both cases
   after the the session is built and if session already exists.
 
-2013-10-16
-""""""""""
-
+- :release:`0.1-dev <2013-10-16>`
 - [cli] use :meth:`util.which()` from salt.util to find tmux binary.
 - [pypi / packaging] add MANIFEST.in, fix issue where package would not
   install because missing file
@@ -723,15 +517,7 @@ The ``--force`` was not with us.
 - [internal] :class:`Server`, :class:`Session`, :class:`Window`,
   :class:`Pane` now explicitly mixin subclasses.
 
-.. _underscore.js: http://underscorejs.org/
-.. _backbone.js: http://backbonejs.org/
-.. _.get(): http://backbonejs.org/#Collection-get
-.. _.where(): http://underscorejs.org/#where
-.. _.findWhere(): http://underscorejs.org/#findWhere
-
-2013-10-15
-""""""""""
-
+- :release:`0.1-dev <2013-10-15>`
 - [docs] new theme
 - [docs] initial examples, misc. updates, front page update.
 - [cli] support for ``$ tmux .`` to load ``.tmuxp.{yaml/json/py}`` in current
@@ -750,9 +536,7 @@ The ``--force`` was not with us.
           - htop
 - [cli] If session name is already exists, prompt to attach.
 
-2013-10-14
-""""""""""
-
+- :release:`0.1-dev <2013-10-14>`
 - [cli] can now -l to list configs in current directory and $HOME/.tmuxp
 - [cli] tmuxp can now launch configs and build sessions
 - [internal] new exceptions
@@ -763,9 +547,7 @@ The ``--force`` was not with us.
 - [config] [tests] :meth:`config.in_dir()`
 - [config] [tests] :meth:`config.in_cwd()`
 
-2013-10-13
-""""""""""
-
+- :release:`0.1-dev <2013-10-13>`
 - [cli] [tests]  :meth:`config.inline()` to produce far far better looking
   config exports and tests.
 - :meth:`Pane.resize_pane()` and tests
@@ -775,9 +557,7 @@ The ``--force`` was not with us.
 - [internal] :meth:`Server.find()`, :meth:`Session.find()`,
   :meth:`Window.find()`.
 
-2013-10-12
-""""""""""
-
+- :release:`0.1-dev <2013-10-12>`
 - [tests] Test documentation updates
 - [internal] [tests] Builder is now :class:`WorkspaceBuilder` + tests.
   - WorkspaceBuilder can build panes
@@ -787,9 +567,7 @@ The ``--force`` was not with us.
 - [internal] [tests] :meth:`Session.show_options()`,
   :meth:`Session.show_option()`, :meth:`Session.set_option()`
 
-2013-10-11
-""""""""""
-
+- :release:`0.1-dev <2013-10-11>`
 - [builder] More preparation for builder / session maker utility.
 - [tests] Major test runner and test suite overhaul.
 - [docs] Documentation for development environment and test runner updated.
@@ -800,16 +578,12 @@ The ``--force`` was not with us.
 - [internal] setup.py import __version__ via regex from tmuxp package
 - [cli] move beginnings of cli to ``tmuxp.cli``
 
-2013-10-09
-""""""""""
-
+- :release:`0.1-dev <2013-10-09>`
 - New logging module
 - Removed dependency logutils
 - Removed dependency sh
 
-2013-10-08
-""""""""""
-
+- :release:`0.1-dev <2013-10-08>`
 - switch to semver
 
 .. _tmuxinator: https://github.com/aziz/tmuxinator
@@ -819,5 +593,101 @@ The ``--force`` was not with us.
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
 .. _pep440: http://www.python.org/dev/peps/pep-0440/
 .. _tony/cookiecutter-pypackage: https://github.com/tony/cookiecutter-pypackage
+
+.. _@tasdomas: https://github.com/tasdomas
+.. _#137: https://github.com/tony/tmuxp/pull/137
+.. _@sehe: https://github.com/sehe
+
+.. _#131: https://github.com/tony/tmuxp/pull/131
+.. _#133: https://github.com/tony/tmuxp/pull/133
+.. _#135: https://github.com/tony/tmuxp/pull/135
+.. _@madprog: https://github.com/madprog
+
+.. _autoenv: https://github.com/kennethreitz/autoenv
+.. _entr(1): http://entrproject.org/
+.. _#130: https://github.com/tony/tmuxp/pull/130
+.. _Anaconda Python: http://docs.continuum.io/anaconda/index
+
+
+.. _#122: https://github.com/tony/tmuxp/issues/122
+.. _@estin: https://github.com/estin
+
+.. _sysutils/pytmuxp: http://www.freshports.org/sysutils/py-tmuxp/
+.. _#119: https://github.com/tony/tmuxp/pull/119#discussion_r37709814
+.. _#201564: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=201564
+
+.. _colorama: https://pypi.python.org/pypi/colorama
+.. _@marbu: https://github.com/marbu
+.. _#110: https://github.com/tony/tmuxp/pull/110
+.. _#109: https://github.com/tony/tmuxp/pull/109
+.. _#105: https://github.com/tony/tmuxp/pull/105
+.. _#107: https://github.com/tony/tmuxp/pull/107
+.. _@yegortimoshenko: https://github.com/yegortimoshenko
+.. _@thomasballinger: https://github.com/thomasballinger
+
+.. _sniffer: https://github.com/jeffh/sniffer
+.. _watchingtestrunner: https://pypi.python.org/pypi/watching_testrunner/1.0
+.. _@raine: https://github.com/raine
+.. _@thomasballinger: https://github.com/thomasballinger
+.. _@techtonik: https://github.com/techtonik
+
+.. _Issue #73: https://github.com/tony/tmuxp/issues/73
+.. _Issue #76: https://github.com/tony/tmuxp/issues/76
+.. _Issue #77: https://github.com/tony/tmuxp/issues/77
+
+.. _Issue #56: https://github.com/tony/tmuxp/issues/56
+.. _Issue #72: https://github.com/tony/tmuxp/issues/72
+.. _@ThiefMaster: https://github.com/ThiefMaster
+
+
+.. _Issue #35: https://github.com/tony/tmuxp/issues/35
+
+
+.. _Issue #55: https://github.com/tony/tmuxp/issues/55
+
+.. _Issue #49: https://github.com/tony/tmuxp/issues/49
+
+
+.. _PEP 263: http://www.python.org/dev/peps/pep-0263/
+
+.. _Issue #48: https://github.com/tony/tmuxp/issues/43
+
+.. _Issue #43: https://github.com/tony/tmuxp/issues/43
+.. _roxit: https://github.com/roxit
+
+.. _Issue #32: https://github.com/tony/tmuxp/issues/32
+
+.. _Issue #33: https://github.com/tony/tmuxp/issues/33
+.. _Issue #31: https://github.com/tony/tmuxp/issues/31
+
+.. _Issue #26: https://github.com/tony/tmuxp/issues/26
+.. _Issue #27: https://github.com/tony/tmuxp/issues/27
+.. _Issue #28: https://github.com/tony/tmuxp/issues/28
+.. _Issue #29: https://github.com/tony/tmuxp/issues/29
+
+
+.. _Issue #25: https://github.com/tony/tmuxp/issues/25
+
+
+.. _Issue #23: https://github.com/tony/tmuxp/issues/23
+
+
+.. _Issue #15: https://github.com/tony/tmuxp/issues/15
+.. _Issue #21: https://github.com/tony/tmuxp/issues/21
+
+
+.. _#19: https://github.com/tony/tmuxp/pull/19
+.. _#20: https://github.com/tony/tmuxp/issues/19
+
+.. _documentation in Chinese: http://tmuxp-zh.readthedocs.org
+.. _wrongwaycn: https://github.com/wrongwaycn
+
+.. _tornado's log.py: https://github.com/facebook/tornado/blob/master/tornado/log.py
+
+.. _underscore.js: http://underscorejs.org/
+.. _backbone.js: http://backbonejs.org/
+.. _.get(): http://backbonejs.org/#Collection-get
+.. _.where(): http://underscorejs.org/#where
+.. _.findWhere(): http://underscorejs.org/#findWhere
 
 .. todo:: # vim: set filetype=rst:

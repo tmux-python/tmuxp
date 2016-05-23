@@ -12,3 +12,7 @@ div.sidebar .sidebar-title {
 form.navbar-form {
     padding: 0px 10px;
 }
+
+div#changelog > div.section > ul > li > p:only-child {
+    margin-bottom: 0;
+}

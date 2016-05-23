@@ -21,10 +21,8 @@ Explore:
 
     about
     quickstart
-    quickstart_python
     examples
     cli
-    internals
     developing
     api
     history

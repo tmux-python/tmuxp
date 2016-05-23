@@ -24,7 +24,9 @@ Then install :ref:`bash_completion`.
 Known issue on RHEL/CentOS/Fedora
 ---------------------------------
 
-For all RedHat-based distros there might be an issue with starting tmuxp. 
+For all RedHat-based distros there might be an issue with starting tmuxp.
+
+.. code-block:: sh
 
     $ tmuxp
     Traceback (most recent call last):
@@ -78,12 +80,28 @@ Create a file, ``~/.tmuxp/example.yaml``:
 
 This creates your tmuxp session.
 
+Load multiple tmux sessions at once:
+
+.. code-block:: bash
+
+    $ tmuxp load example.yaml anothersession.yaml
+
+tmuxp will offer to ``switch-client`` for you if you're already in a
+session.
+
+You can also `Import`_ configs `teamocil`_ and `tmuxinator`_.
+
+.. _Import: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
+
+
 
 Pythonics
 ---------
 
 .. seealso::
-    :ref:`tmuxp python API documentation <api>` and :ref:`developing`,
+    :ref:`libtmux python API documentation <libtmux:api>` and :ref:`developing`,
     :ref:`internals`.
 
 
@@ -97,35 +115,14 @@ AL - `Abstraction Layer`_
 python abstraction layer
 """"""""""""""""""""""""
 
-.. module:: tmuxp
-
 ======================================== =================================
-:ref:`tmuxp python api <api>`            :term:`tmux(1)` equivalent
+:ref:`tmuxp python api <libtmux:api>`    :term:`tmux(1)` equivalent
 ======================================== =================================
-:class:`Server.new_session()`            ``$ tmux new-session``
-:class:`Server.list_sessions()`          ``$ tmux list-sessions``
-:class:`Session.list_windows()`          ``$ tmux list-windows``
-:class:`Session.new_window()`            ``$ tmux new-window``
-:class:`Window.list_panes()`             ``$ tmux list-panes``
-:class:`Window.split_window()`           ``$ tmux split-window``
-:class:`Pane.send_keys()`                ``$ tmux send-keys``
+:meth:`libtmux.Server.new_session`       ``$ tmux new-session``
+:meth:`libtmux.Server.list_sessions`     ``$ tmux list-sessions``
+:meth:`libtmux.Session.list_windows`     ``$ tmux list-windows``
+:meth:`libtmux.Session.new_window`       ``$ tmux new-window``
+:meth:`libtmux.Window.list_panes`        ``$ tmux list-panes``
+:meth:`libtmux.Window.split_window`      ``$ tmux split-window``
+:meth:`libtmux.Pane.send_keys`           ``$ tmux send-keys``
 ======================================== =================================
-
-tmux ORM
-""""""""
-
-tmuxp's core internal feature is the object relation and orchestration of
-the tmux server (think an `engine`_ in `SQLAlchemy`_) and the server's
-sessions, so on...
-
-- :class:`Server` holds :class:`Session` objects.
-- :class:`Session` holds :class:`Window` objects.
-- :class:`Window` holds :class:`Pane` objects.
-
-instances of tmux objects use tmux `1.8`_'s ``pane_id``, ``window_id`` and
-``session_id`` to build create python objects to build workspaces with the
-freshest data.
-
-.. _engine: http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html
-.. _sqlalchemy: http://www.sqlalchemy.org/
-.. _1.8: http://sourceforge.net/projects/tmux/files/tmux/tmux-1.8/
