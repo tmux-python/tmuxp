@@ -286,8 +286,8 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'http://docs.python.org/': None,
-    'https://tmuxp.readthedocs.org/en/latest/': None
+    'python': ('http://docs.python.org/', None),
+    'libtmux': ('https://libtmux.readthedocs.org/', None)
 }
 
 # aafig format, try to get working with pdf

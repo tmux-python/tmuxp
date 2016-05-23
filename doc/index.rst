@@ -23,7 +23,6 @@ Explore:
     quickstart
     examples
     cli
-    internals
     developing
     api
     history
