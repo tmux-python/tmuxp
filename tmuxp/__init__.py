@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
+"""tmux session manager.
 
 tmuxp
 ~~~~~

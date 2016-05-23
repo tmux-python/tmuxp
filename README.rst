@@ -1,5 +1,4 @@
-tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
-`python objects`_, JSON or YAML.
+tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
 
@@ -36,7 +35,7 @@ Save as ``mysession.yaml``. And load:
 
    $ tmuxp load ./mysession.yaml
 
-See more `simple`_ or `very elaborate`_ config examples.
+`simple`_, `very elaborate`_ config examples
 
 Store configs in (``~/.tmuxp``) or include in your project as
 ``~/.tmuxp.{yaml,json}``. See `author's tmuxp configs`_ and the
@@ -46,7 +45,6 @@ bootstrap project dependencies before loading tmux. See the
 `bootstrap_env.py`_ and `before_script`_ example
 
 Load sessions in the background by passing ``-d`` flag
-
 
 Freeze a tmux session
 ---------------------
@@ -90,6 +88,7 @@ Want to learn more about tmux itself? Read `The Tao of Tmux`_.
 .. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
 .. _Commands: http://tmuxp.readthedocs.org/en/latest/cli.html
+.. _libtmux: https://github.com/tony/libtmux
 
 Project details
 ---------------

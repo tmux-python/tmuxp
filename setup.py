@@ -1,11 +1,4 @@
-"""tmuxp lives at <https://github.com/tony/tmuxp>.
-
-tmuxp
------
-
-Manage tmux workspaces from JSON and YAML, pythonic API, shell completion.
-
-"""
+"""tmuxp lives at <https://github.com/tony/tmuxp>."""
 import sys
 
 from setuptools import setup
