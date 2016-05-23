@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for utility functions in tmux.
-
-tmuxp.tests.util
-~~~~~~~~~~~~~~~~
-
-"""
+"""Tests for utility functions in tmux."""
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
