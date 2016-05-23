@@ -8,37 +8,62 @@ tmuxp, a novel approach to manage `tmux(1)`_ (>= 1.8) workspaces through
     :width: 45%
     :align: center
 
-How tmuxp helps you tmux:
+Load a tmux session
+-------------------
 
-- Save your most common tmux session layouts in JSON or YAML. See
-  a `simple`_ or `very elaborate`_ configuration.
-- Store layouts personally (``~/.tmuxp``) or include in your project,
-  see ``~/.tmuxp.{yaml,json}``. See the `author's tmuxp configs`_ and the
-  the projects' `tmuxp.yaml`_.
-- `Freeze`_ the layout of live sessions.
-- Automate running such as sourcing into a `virtualenv`_. The configuration
-  also supports per window commands where all panes inherit commands. See
-  `Examples`_.
-- Run a bootstrapping script to check environment / install dependencies /
-  setup project before loading starts so your development works across
-  systems. See this projects `bootstrap_env.py`_ and `before_script`_ example.
-- Load tmux sessions in the background by passing ``-d`` flag.
-- Load multiple tmux configurations ``tmuxp load config1.yaml
-  config2.yaml``.
-- Switch sessions from inside a current tmux session. tmuxp will detect
-  if you're in a session and offer to ``switch-client`` for you.
-- Offer to re-attach a tmux session if your config is already loaded.
-- For more things you can do with tmuxp, see `Examples`_.
-- CLI auto-completion with `bash, zsh and tcsh`_.
-- Use as a `python library`_, see the `python API quickstart`_.
-- Well tested a gain against live tmux (1.8+ and git).
-  See `travis.yml`_, `tmuxp on Travis CI`_ and `testing`_ page.
-- `Import`_ configs `teamocil`_ and `tmuxinator`_.
-- Thorough `Documentation`_ (also in `中文`_), `Source`_, 
-  `Commands`_, `Internals`_.
-- and `much, much more`_.
+Load tmux sessions via json and YAML, `tmuxinator`_ and
+`teamocil`_ style.
 
-Ready to begin? See the `Quickstart`_.
+.. code-block:: yaml
+
+   session_name: 4-pane-split
+   windows:
+   - window_name: dev window
+     layout: tiled
+     shell_command_before:
+       - cd ~/
+     panes:
+       - shell_command:
+           - cd /var/log
+           - ls -al | grep \.log
+       - pwd
+       - pwd
+       - pwd
+
+Save as ``mysession.yaml``. And load:
+
+.. code-block:: sh
+
+   $ tmuxp load ./mysession.yaml
+
+See more `simple`_ or `very elaborate`_ config examples.
+
+Store configs in (``~/.tmuxp``) or include in your project as
+``~/.tmuxp.{yaml,json}``. See `author's tmuxp configs`_ and the
+the projects' `tmuxp.yaml`_.
+
+bootstrap project dependencies before loading tmux. See the
+`bootstrap_env.py`_ and `before_script`_ example
+
+Load sessions in the background by passing ``-d`` flag
+
+
+Freeze a tmux session
+---------------------
+
+.. code-block:: sh
+
+   $ tmuxp freeze
+
+See more about `freezing tmux`_ sessions.
+
+Docs / Reading material
+-----------------------
+
+See the `Quickstart`_.
+
+`Documentation`_ homepage (also in `中文`_)
+
 Want to learn more about tmux itself? Read `The Tao of Tmux`_.
 
 .. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
@@ -55,19 +80,15 @@ Want to learn more about tmux itself? Read `The Tao of Tmux`_.
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
-.. _Freeze: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
+.. _freezing tmux: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
 .. _bootstrap_env.py: https://github.com/tony/tmuxp/blob/master/bootstrap_env.py
-.. _Import: http://tmuxp.readthedocs.org/en/latest/cli.html#import
 .. _travis.yml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
 .. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
 .. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
 .. _tmuxp.yaml: https://github.com/tony/tmuxp/blob/master/.tmuxp.yaml 
 .. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
 .. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
-.. _bash, zsh and tcsh: http://tmuxp.readthedocs.org/en/latest/cli.html#bash-completion
-.. _much, much more: http://tmuxp.readthedocs.org/en/latest/about.html#minor-tweaks
 .. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
-.. _Internals: http://tmuxp.readthedocs.org/en/latest/internals.html
 .. _Commands: http://tmuxp.readthedocs.org/en/latest/cli.html
 
 Project details

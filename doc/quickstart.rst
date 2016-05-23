@@ -80,6 +80,22 @@ Create a file, ``~/.tmuxp/example.yaml``:
 
 This creates your tmuxp session.
 
+Load multiple tmux sessions at once:
+
+.. code-block:: bash
+
+    $ tmuxp load example.yaml anothersession.yaml
+
+tmuxp will offer to ``switch-client`` for you if you're already in a
+session.
+
+You can also `Import`_ configs `teamocil`_ and `tmuxinator`_.
+
+.. _Import: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
+
+
 
 Pythonics
 ---------
