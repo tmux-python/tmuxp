@@ -4,4 +4,5 @@ sphinx
 reportlab
 sphinx-argparse
 sphinx-rtd-theme
+releases==1.2.0
 aafigure
