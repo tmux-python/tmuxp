@@ -78,7 +78,7 @@ If you found a problem or are trying to write a test, you can file an
 Test runner options
 ~~~~~~~~~~~~~~~~~~~
 
-Testing specific TestSuites and TestCase.
+Test only a file:
 
 .. code-block:: bash
 
@@ -88,22 +88,15 @@ will test the ``tests/test_config.py`` tests.
 
 .. code-block:: bash
 
-    $ py.test tests/test_config::ImportExportTest
+    $ py.test tests/test_config::test_export_json
 
-tests ``ImportExportTest`` :py:class:`unittest.TestCase` inside of
-``tests/test_config.py``.
-
-individual tests:
-
-.. code-block:: bash
-
-    $ py.test tests/test_config::ImportExportTest::test_export_Json
+tests ``test_export_json`` inside of ``tests/test_config.py``.
 
 Multiple can be separated by spaces:
 
 .. code-block:: bash
 
-    $ py.test tests/test_{window,pane}.py tests/test_config.py::ImportExportTest::test_export_json
+    $ py.test tests/test_{window,pane}.py tests/test_config.py::test_export_json
 
 .. _test_builder_visually:
 
