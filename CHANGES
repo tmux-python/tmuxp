@@ -4,13 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :feature:`0 major` tests moved to py.test framework
+- :feature:`0 major` `libtmux`_ core split into its own project
 - :feature:`145` Add new-window command functionality, @ikirudennis
-
 - :feature:`146` Optionally disable shell history suppression, @kmactavish
-
 - :support:`147` Patching unittest timing for shell history suppression 
 - :support:`-` move doc building, tests and watcher to Makefile
 - :support:`-` update .tmuxp.yaml and .tmuxp.json for Makefile change
+- :support:`-` overhaul README
 
 - :release:`0.11.0 <2016-02-29>`
 - :support:`137` Support for environment settings in configs, thanks 
@@ -50,7 +51,7 @@ Here you can find the recent changes to tmuxp
 - :support:`110` de-vendorize `colorama`_. Thanks `@marbu`_.
 - :support:`109` fix failure of test_pane_order on fedora machines from
   `@marbu`_
-- :support:`105`: append ``.txt`` extension to manuals (repo ony) 
+- :support:`105` append ``.txt`` extension to manuals (repo ony) 
   from `@yegortimoshenko`_.
 - :support:`107` Fix Server.attached_sessions return type by
   `@thomasballinger`_.
@@ -637,4 +638,6 @@ Here you can find the recent changes to tmuxp
 .. _.where(): http://underscorejs.org/#where
 .. _.findWhere(): http://underscorejs.org/#findWhere
 
-.. todo:: # vim: set filetype=rst:
+.. _libtmux: https://github.com/tony/libtmux
+
+.. # vim: set filetype=rst:
