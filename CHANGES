@@ -4,6 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.0.0-rc1 <2016-05-25>`
+- :support:`-` version jump 0.11.1 to 1.0
 - :feature:`0 major` tests moved to py.test framework
 - :feature:`0 major` `libtmux`_ core split into its own project
 - :feature:`145` Add new-window command functionality, @ikirudennis
