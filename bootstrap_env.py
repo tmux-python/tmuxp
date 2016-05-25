@@ -80,6 +80,7 @@ python_bin = os.path.join(env_dir, 'bin', 'python')
 virtualenv_bin = which('virtualenv', throw=False)
 virtualenv_exists = os.path.exists(env_dir) and os.path.isfile(python_bin)
 sphinx_requirements_filepath = os.path.join(project_dir, 'requirements', 'doc.txt')
+test_requirements_filepath = os.path.join(project_dir, 'requirements', 'test.txt')
 
 
 try:
@@ -122,6 +123,11 @@ def main():
 
         subprocess.check_call(
             [pip_bin, 'install', '-e', project_dir]
+        )
+
+    if not has_module('pytest'):
+        subprocess.check_call(
+            [pip_bin, 'install', '-r', test_requirements_filepath]
         )
 
     if not os.path.isfile(os.path.join(env_dir, 'bin', 'sphinx-quickstart')):
