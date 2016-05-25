@@ -18,24 +18,24 @@ Here you can find the recent changes to tmuxp
 - :support:`-` Spelling correction, thanks `@sehe`_.
 
 - :release:`0.10.0 <2016-01-30>`
-- :support:`-` Load multiple tmux sessions at once, thanks `@madprog`_, `#135`_.
+- :support:`135` Load multiple tmux sessions at once, thanks `@madprog`_.
 - :support:`131` :support:`133` README and Documentation fixes
 
 - :release:`0.9.3 <2016-01-06>`
 - :support:`-` switch to ``.venv`` for virtualenv directory to not conflict
   with ``.env`` (used by `autoenv`_).
-- :support:`-` move to `entr(1)`_ for file watching in tests. update docs.
-- [compatibility] Support `Anaconda Python`_ 2 and 3, see `#130`_.
+- :support:`130` move to `entr(1)`_ for file watching in tests. update docs.
+- [compatibility] Support `Anaconda Python`_ 2 and 3
 
 - :release:`0.9.2 <2015-10-21>`
-- :support:`-` Update to support tmux 2.1 via `#122`_, thank you `@estin`_.
+- :support:`122` Update to support tmux 2.1, thank you `@estin`_.
 - :support:`-` use travis container infrastructure for faster tests
 - :support:`-` change test in workspace builder test to use ``top(1)`` instead of
   ``man(1)``. ``man(1)`` caused errors on some systems where ``PAGER`` is set.
 
 - :release:`0.9.1 <2015-08-23>`
-- :support:`-` Add fix python 3 for `sysutils/pytmuxp`_ on FreeBSD ports.
-  See `#119`_ GH and `#201564`_ @ FreeBSD Bugzilla. Thanks Ruslan 
+- :support:`119` Add fix python 3 for `sysutils/pytmuxp`_ on FreeBSD ports.
+  See GH issue 119 and `#201564`_ @ FreeBSD Bugzilla. Thanks Ruslan 
   Makhmatkhanov.
 
 - :release:`0.9.0 <2015-07-08>`
@@ -47,12 +47,12 @@ Here you can find the recent changes to tmuxp
   ``session_name`` and ``window_name``.
 - :support:`-` [examples]: add example for environmental variables,
   ``examples/env-variables.json`` and ``examples/env-variables.yaml``.
-- :support:`-` de-vendorize `colorama`_. Thanks `@marbu`_. `#110`_
-- :support:`-` fix failure of test_pane_order on fedora machines `#109`_ from
+- :support:`110` de-vendorize `colorama`_. Thanks `@marbu`_.
+- :support:`109` fix failure of test_pane_order on fedora machines from
   `@marbu`_
-- [manuals]: append ``.txt`` extension to manuals (repo ony) `#105`_
+- :support:`105`: append ``.txt`` extension to manuals (repo ony) 
   from `@yegortimoshenko`_.
-- :support:`-` Fix Server.attached_sessions return type `#107`_ by
+- :support:`107` Fix Server.attached_sessions return type by
   `@thomasballinger`_.
 - :support:`-` update travis to use new tmux git repository.
 
@@ -122,35 +122,35 @@ Here you can find the recent changes to tmuxp
 - :release:`0.1.10 <2014-04-02>`
 - 2 bug fixes and allow panes with no shell commands to accept options,
   thanks for these 3 patches, `@ThiefMaster`_:
-- [builder]: `Issue #73`_: Fix an error caused by spaces in 
+- :bug:`73` Fix an error caused by spaces in 
   ``start_directory``.
-- [builder]: `Issue #77`_: Fix bug where having a ``-`` in a
+- :bug:`77` Fix bug where having a ``-`` in a
   ``shell_command`` would cauesd a build error.
-- [config]: `Issue #76`_: Don't require ``shell_command`` to
+- :bug:`76` Don't require ``shell_command`` to
   pass options to panes (like ``focus: true``).
 
 - :release:`0.1.9 <2014-04-01>`
 - The ``--force`` was not with us.
 
 - :release:`0.1.8 <2014-03-30>`
-- :support:`-` [freezer]: `Issue #72`_: Create destination directory if it
-  doesn't exist. Thanks `@ThiefMaster`_.
+- :support:`72` Create destination directory if it doesn't exist. Thanks
+  `@ThiefMaster`_.
 - :support:`-` New context manager for tests, ``temp_session``.
 - :support:`-` New testsuite, ``testsuite.test_utils`` for testing testsuite
   tools.
-- [config] [builder]: New command, ``before_script``, which is a file to
+- :support:`-` New command, ``before_script``, which is a file to
   be executed with a return code. It can be a bash, perl, python etc.
   script.
-- [docs]: :ref:`python_api_quickstart` per `Issue #56`_.
+- :support:`56` :ref:`python_api_quickstart`
 
 - :release:`0.1.7 <2014-02-25>`
-- :support:`-` [test]:  Fix `Issue #55`_ where tmuxp would crash with letter
-  numbers in version. Write tests.
+- :support:`55` where tmuxp would crash with letter  numbers in version.
+  Write tests.
 
 - :release:`0.1.6 <2014-02-08>`
 - :support:`-` :meth:`Window.split_window()` now allows ``-c
   start_directory``.
-- :support:`-` `Issue #35`_ - Builder will now use ``-c start_directory`` to
+- :support:`35` Builder will now use ``-c start_directory`` to
   create new windows and panes.
   
   This removes a hack where ``default-path`` would be set for new pane and
@@ -158,7 +158,7 @@ Here you can find the recent changes to tmuxp
   creations.
 
 - :release:`0.1.5-1 <2014-02-05>`
-- :support:`-` fix `Issue #49`_ bug where ``package_manifest.py`` missing
+- :bug:`49` bug where ``package_manifest.py`` missing
   from ``MANIFEST.in`` would cause error installing.
 
 - :release:`0.1.5 <2014-02-05>`
@@ -173,19 +173,19 @@ Here you can find the recent changes to tmuxp
 - :support:`-` Fix extra space in `PEP 263`_.
 
 - :release:`0.1.3 <2014-01-29>`
-- :support:`-` Fix Python 3 CLI issue. `Issue #48`_.
-- :support:`-` ``$ tmuxp`` without option raises an error. `Issue #48`_.
+- :bug:`48` Fix Python 3 CLI issue.
+- :bug:`48` ``$ tmuxp`` without option raises an error.
 - :support:`-` - Add space before send-keys to not populate bash and zsh
   history.
 
 - :release:`0.1.2 <2014-01-08>`
 - :support:`-` now using werkzeug / flask style testsuites.
-- :support:`-` Merge `Issue #43`_ - ``tmuxp -d`` for loading in detached mode.
+- :support:`43` Merge ``tmuxp -d`` for loading in detached mode.
   Thanks `roxit`_.
 
 - :release:`0.1.1 <2013-12-25>`
-- :support:`-` [freezer] :bug:`-` Fix `Issue #32`_ where special characters
-  caused unicode caused unexpected outcomes loading and freezing sessions.
+- :bug:`32` Fix bug where special characters caused unicode caused 
+  unexpected outcomes loading and freezing sessions.
 
 - :release:`0.1.0 <2013-12-18>`
 - :support:`-` fix duplicate print out of filename with using ``tmuxp load .``.
@@ -196,36 +196,33 @@ Here you can find the recent changes to tmuxp
 - :support:`-` Move py2/py3 compliancy code to ``_compat``.
 
 - :release:`0.1-rc7 <2013-12-07>`
-- :bug:`-` `Issue #33`_ bug. Partial rewrite of
-  :meth:`config.expand`.
+- :bug:`33` Partial rewrite of :meth:`config.expand`.
 - :support:`-` tmuxp will exit silently with ``Ctrl-c``.
 
 - :release:`0.1-rc6 <2013-12-06>`
-- [config] :support:`-` [examples] Add `Issue #31`_ from stratoukos -
-  ``window_index`` option, and add example.
+- :support:`31` [examples] from stratoukos add ``window_index`` option,
+  and example.
 
 - :release:`0.1-rc5 <2013-12-04>`
-- :support:`-` [config] :support:`-` Fix `Issue #28`_ - shell_command_before in
-  session scope of config causing duplication. New test.
-- :bug:`-` Fix `Issue #26`_ and `Issue #29`_ for OS X tests. Thanks
-  stratoukos.
-- :bug:`-` Fix `Issue #27`_ where ``$ tmuxp freeze`` raises unhelpful message
-  if session doesn't exist.
+- :support:`28` shell_command_before in   session scope of config causing
+  duplication. New test.
+- :bug:`26` :bug:`29` for OS X tests. Thanks stratoukos.
+- :bug:`27` ``$ tmuxp freeze`` raises unhelpful message if session doesn't
+  exist.
 
 - :release:`0.1-rc4 <2013-12-03>`
 - :bug:`-` fix bug were ``focus: true`` would not launch sessions when using
   ``$ tmuxp load`` in a tmux session.
 
 - :release:`0.1-rc3 <2013-12-03>`
-- :bug:`-` `Issue #25`_ - ``focus: true`` not working in panes. Add
+- :bug:`25` ``focus: true`` not working in panes. Add
   tests for focusing panes in config.
 - :support:`-` :meth:`Pane.select_pane()`.
 - :support:`-` add new example for ``focus: true``.
 
 - :release:`0.1-rc2 <2013-11-23>`
-- :bug:`-` fix `Issue #23`_ where workspace would not build with
-  pane-base-index set to 1. Update tests to fix if ``pane-base-index`` is
-  not 0.
+- :bug:`23` fix bug where workspace would not build with pane-base-index
+  set to 1. Update tests to fix if ``pane-base-index`` is not 0.
 - :support:`-` - removed ``$ tmuxp load --list`` functionality. Update
   :ref:`quickstart` accordingly.
 
@@ -241,10 +238,10 @@ Here you can find the recent changes to tmuxp
 - :release:`0.1-dev <2013-11-20>`
 - :support:`-` :meth:`Window.show_window_options`,
   :meth:`Window.show_window_option` now accept ``g`` to pass in ``-g``.
-- :bug:`-` Behavioral changes in the WorkspaceBuilder to fix pane
-  ordering `Issue #15`_.
-- :bug:`-` `Issue #21`_ - Error with unit testing python 2.6
-  python configuration tests. Use :py:mod:`tempfile` instead.
+- :bug:`15` Behavioral changes in the WorkspaceBuilder to fix pane
+  ordering.
+- :bug:`21` Error with unit testing python 2.6 python configuration tests.
+  Use :py:mod:`tempfile` instead.
 - :support:`-` WorkspaceBuilder tests have been improved to use async better.
 
 
@@ -256,7 +253,7 @@ Here you can find the recent changes to tmuxp
   fail.
 
 - :release:`0.1-dev <2013-11-13>`
-- :support:`-` accept ``-y`` argument to answer yes to questions. `#19`_
+- :support:`19` accept ``-y`` argument to answer yes to questions.
 - :support:`-` :meth:`cli.SessionCompleter` no longer allows a duplicate session
   after one is added.
 - :support:`-` ongoing work on :ref:`about_tmux`.
@@ -319,7 +316,7 @@ Here you can find the recent changes to tmuxp
 - :support:`-` Many documentation, `pep257`_, `pep8`_ fixes
 - :support:`-` move old :class:`Server` methods ``__list_panes()``,
   ``__list_windows`` and ``__list_sessions`` into the single underscore.
-- :support:`-` #12 bug fix for ``$ tmuxp freeze`` by @finder.
+- :support:`12` fix for ``$ tmuxp freeze`` by @finder.
 - :support:`-` Support for spaces in ``$ tmuxp attach-session`` and
   ``$ tmuxp kill-session``, and ``$ tmuxp freeze``.
 - [config] :support:`-` support for relative paths of ``start_directory``. Add an
@@ -600,33 +597,20 @@ Here you can find the recent changes to tmuxp
 .. _tony/cookiecutter-pypackage: https://github.com/tony/cookiecutter-pypackage
 
 .. _@tasdomas: https://github.com/tasdomas
-.. _#137: https://github.com/tony/tmuxp/pull/137
 .. _@sehe: https://github.com/sehe
-
-.. _#131: https://github.com/tony/tmuxp/pull/131
-.. _#133: https://github.com/tony/tmuxp/pull/133
-.. _#135: https://github.com/tony/tmuxp/pull/135
 .. _@madprog: https://github.com/madprog
 
 .. _autoenv: https://github.com/kennethreitz/autoenv
 .. _entr(1): http://entrproject.org/
-.. _#130: https://github.com/tony/tmuxp/pull/130
 .. _Anaconda Python: http://docs.continuum.io/anaconda/index
 
-
-.. _#122: https://github.com/tony/tmuxp/issues/122
 .. _@estin: https://github.com/estin
 
 .. _sysutils/pytmuxp: http://www.freshports.org/sysutils/py-tmuxp/
-.. _#119: https://github.com/tony/tmuxp/pull/119#discussion_r37709814
 .. _#201564: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=201564
 
 .. _colorama: https://pypi.python.org/pypi/colorama
 .. _@marbu: https://github.com/marbu
-.. _#110: https://github.com/tony/tmuxp/pull/110
-.. _#109: https://github.com/tony/tmuxp/pull/109
-.. _#105: https://github.com/tony/tmuxp/pull/105
-.. _#107: https://github.com/tony/tmuxp/pull/107
 .. _@yegortimoshenko: https://github.com/yegortimoshenko
 .. _@thomasballinger: https://github.com/thomasballinger
 
@@ -636,53 +620,11 @@ Here you can find the recent changes to tmuxp
 .. _@thomasballinger: https://github.com/thomasballinger
 .. _@techtonik: https://github.com/techtonik
 
-.. _Issue #73: https://github.com/tony/tmuxp/issues/73
-.. _Issue #76: https://github.com/tony/tmuxp/issues/76
-.. _Issue #77: https://github.com/tony/tmuxp/issues/77
-
-.. _Issue #56: https://github.com/tony/tmuxp/issues/56
-.. _Issue #72: https://github.com/tony/tmuxp/issues/72
 .. _@ThiefMaster: https://github.com/ThiefMaster
-
-
-.. _Issue #35: https://github.com/tony/tmuxp/issues/35
-
-
-.. _Issue #55: https://github.com/tony/tmuxp/issues/55
-
-.. _Issue #49: https://github.com/tony/tmuxp/issues/49
-
 
 .. _PEP 263: http://www.python.org/dev/peps/pep-0263/
 
-.. _Issue #48: https://github.com/tony/tmuxp/issues/43
-
-.. _Issue #43: https://github.com/tony/tmuxp/issues/43
 .. _roxit: https://github.com/roxit
-
-.. _Issue #32: https://github.com/tony/tmuxp/issues/32
-
-.. _Issue #33: https://github.com/tony/tmuxp/issues/33
-.. _Issue #31: https://github.com/tony/tmuxp/issues/31
-
-.. _Issue #26: https://github.com/tony/tmuxp/issues/26
-.. _Issue #27: https://github.com/tony/tmuxp/issues/27
-.. _Issue #28: https://github.com/tony/tmuxp/issues/28
-.. _Issue #29: https://github.com/tony/tmuxp/issues/29
-
-
-.. _Issue #25: https://github.com/tony/tmuxp/issues/25
-
-
-.. _Issue #23: https://github.com/tony/tmuxp/issues/23
-
-
-.. _Issue #15: https://github.com/tony/tmuxp/issues/15
-.. _Issue #21: https://github.com/tony/tmuxp/issues/21
-
-
-.. _#19: https://github.com/tony/tmuxp/pull/19
-.. _#20: https://github.com/tony/tmuxp/issues/19
 
 .. _documentation in Chinese: http://tmuxp-zh.readthedocs.org
 .. _wrongwaycn: https://github.com/wrongwaycn
