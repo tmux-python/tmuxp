@@ -157,7 +157,7 @@ checkbuild:
 	$(SPHINXBUILD) -n -q ./ $(BUILDDIR)
 
 watch:
-	if command -v entr > /dev/null; then find . -type f -not -path '*/\.*' | grep -i '.*[.]rst' | entr -c make html; else make html; echo "\nInstall entr(1) to automatically run tests on file change.\n See http://entrproject.org/"; fi
+	if command -v entr > /dev/null; then find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst\|CHANGES\|TODO\/conf\.py' | entr -c make html; else make html; echo "\nInstall entr(1) to automatically run tests on file change.\n See http://entrproject.org/"; fi
 
 serve:
 	echo 'docs built to <http://0.0.0.0:8003/_build/html>'; python -m SimpleHTTPServer 8003
