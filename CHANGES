@@ -4,6 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`-` switch to readthedocs.io for docs
+
 - :release:`1.0.0-rc1 <2016-05-25>`
 - :support:`-` version jump 0.11.1 to 1.0
 - :feature:`0 major` tests moved to py.test framework
