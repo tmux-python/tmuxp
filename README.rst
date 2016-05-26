@@ -69,25 +69,25 @@ Want to learn more about tmux itself? Read `The Tao of Tmux`_.
 .. _Source: https://github.com/tony/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
 .. _before_script: http://localhost:8003/_build/html/examples.html#bootstrap-project-before-launch
-.. _virtualenv: https://virtualenv.readthedocs.org/en/latest/
+.. _virtualenv: https://virtualenv.readthedocs.io/en/latest/
 .. _The Tao of tmux: http://localhost:8003/_build/html/about_tmux.html
 .. _author's tmuxp configs: https://github.com/tony/tmuxp-config
-.. _python library: https://tmuxp.readthedocs.org/en/latest/api.html
-.. _python API quickstart: https://tmuxp.readthedocs.org/en/latest/quickstart_python.html 
+.. _python library: https://tmuxp.readthedocs.io/en/latest/api.html
+.. _python API quickstart: https://tmuxp.readthedocs.io/en/latest/quickstart_python.html
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
-.. _Examples: http://tmuxp.readthedocs.org/en/latest/examples.html
-.. _freezing tmux: http://tmuxp.readthedocs.org/en/latest/cli.html#freeze-sessions
+.. _Examples: http://tmuxp.readthedocs.io/en/latest/examples.html
+.. _freezing tmux: http://tmuxp.readthedocs.io/en/latest/cli.html#freeze-sessions
 .. _bootstrap_env.py: https://github.com/tony/tmuxp/blob/master/bootstrap_env.py
-.. _travis.yml: http://tmuxp.readthedocs.org/en/latest/developing.html#travis-ci
-.. _testing: http://tmuxp.readthedocs.org/en/latest/developing.html#test-runner
-.. _python objects: http://tmuxp.readthedocs.org/en/latest/api.html#api
+.. _travis.yml: http://tmuxp.readthedocs.io/en/latest/developing.html#travis-ci
+.. _testing: http://tmuxp.readthedocs.io/en/latest/developing.html#test-runner
+.. _python objects: http://tmuxp.readthedocs.io/en/latest/api.html#api
 .. _tmuxp.yaml: https://github.com/tony/tmuxp/blob/master/.tmuxp.yaml 
-.. _simple: http://tmuxp.readthedocs.org/en/latest/examples.html#short-hand-inline
-.. _very elaborate: http://tmuxp.readthedocs.org/en/latest/examples.html#super-advanced-dev-environment
-.. _Quickstart: http://tmuxp.readthedocs.org/en/latest/quickstart.html
-.. _Commands: http://tmuxp.readthedocs.org/en/latest/cli.html
+.. _simple: http://tmuxp.readthedocs.io/en/latest/examples.html#short-hand-inline
+.. _very elaborate: http://tmuxp.readthedocs.io/en/latest/examples.html#super-advanced-dev-environment
+.. _Quickstart: http://tmuxp.readthedocs.io/en/latest/quickstart.html
+.. _Commands: http://tmuxp.readthedocs.io/en/latest/cli.html
 .. _libtmux: https://github.com/tony/libtmux
 
 Project details
@@ -99,8 +99,8 @@ python support  2.6, 2.7, >= 3.3
 config support  yaml, json, python dict
 Source          https://github.com/tony/tmuxp
 Docs            http://tmuxp.rtfd.org
-API             http://tmuxp.readthedocs.org/en/latest/api.html
-Changelog       http://tmuxp.readthedocs.org/en/latest/history.html
+API             http://tmuxp.readthedocs.io/en/latest/api.html
+Changelog       http://tmuxp.readthedocs.io/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
 Travis          http://travis-ci.org/tony/tmuxp
 Test Coverage   https://coveralls.io/r/tony/tmuxp
@@ -129,9 +129,9 @@ tests           .. code-block:: bash
 ==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
-.. _developing and testing: http://tmuxp.readthedocs.org/en/latest/developing.html
-.. _installing bash completion: http://tmuxp.readthedocs.org/en/latest/quickstart.html#bash-completion
-.. _Developing and Testing: http://tmuxp.readthedocs.org/en/latest/developing.html
+.. _developing and testing: http://tmuxp.readthedocs.io/en/latest/developing.html
+.. _installing bash completion: http://tmuxp.readthedocs.io/en/latest/quickstart.html#bash-completion
+.. _Developing and Testing: http://tmuxp.readthedocs.io/en/latest/developing.html
 .. _Issues tracker: https://github.com/tony/tmuxp/issues
 
 .. |pypi| image:: https://img.shields.io/pypi/v/tmuxp.svg

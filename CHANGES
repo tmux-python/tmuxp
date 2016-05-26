@@ -629,7 +629,7 @@ Here you can find the recent changes to tmuxp
 
 .. _roxit: https://github.com/roxit
 
-.. _documentation in Chinese: http://tmuxp-zh.readthedocs.org
+.. _documentation in Chinese: http://tmuxp-zh.readthedocs.io
 .. _wrongwaycn: https://github.com/wrongwaycn
 
 .. _tornado's log.py: https://github.com/facebook/tornado/blob/master/tornado/log.py

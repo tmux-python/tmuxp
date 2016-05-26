@@ -91,7 +91,7 @@ session.
 
 You can also `Import`_ configs `teamocil`_ and `tmuxinator`_.
 
-.. _Import: http://tmuxp.readthedocs.org/en/latest/cli.html#import
+.. _Import: http://tmuxp.readthedocs.io/en/latest/cli.html#import
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 

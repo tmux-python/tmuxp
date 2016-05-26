@@ -100,7 +100,7 @@ except ImportError:
     message = (
         'pip is required for this bootstrap to run.\n'
         'Find instructions on how to install at: %s' %
-        'http://pip.readthedocs.org/en/latest/installing.html'
+        'http://pip.readthedocs.io/en/latest/installing.html'
     )
     fail(message)
 

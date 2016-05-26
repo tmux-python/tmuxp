@@ -391,8 +391,8 @@ def command_freeze(args):
     else:
         print(
             'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.readthedocs.org/en/latest/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.readthedocs.org/>.'
+            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.readthedocs.io/>.'
         )
         sys.exit()
 
@@ -517,8 +517,8 @@ def command_import_teamocil(args):
         else:
             print(
                 'tmuxp has examples in JSON and YAML format at '
-                '<http://tmuxp.readthedocs.org/en/latest/examples.html>\n'
-                'View tmuxp docs at <http://tmuxp.readthedocs.org/>'
+                '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
+                'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
             )
             sys.exit()
 
@@ -607,8 +607,8 @@ def command_import_tmuxinator(args):
         else:
             print(
                 'tmuxp has examples in JSON and YAML format at '
-                '<http://tmuxp.readthedocs.org/en/latest/examples.html>\n'
-                'View tmuxp docs at <http://tmuxp.readthedocs.org/>'
+                '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
+                'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
             )
             sys.exit()
 
