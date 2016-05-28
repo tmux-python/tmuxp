@@ -115,7 +115,7 @@ class WorkspaceBuilder(object):
                 )
 
             if self.server.has_session(self.sconf['session_name']):
-                self.session = self.server.findWhere(
+                self.session = self.server.find_where(
                     {
                         'session_name': self.sconf['session_name']
                     }
@@ -129,15 +129,15 @@ class WorkspaceBuilder(object):
                     session_name=self.sconf['session_name']
                 )
 
-            assert(self.sconf['session_name'] == session.get('session_name'))
+            assert(self.sconf['session_name'] == session.name)
             assert(len(self.sconf['session_name']) > 0)
 
         self.session = session
         self.server = session.server
 
         self.server._list_sessions()
-        assert self.server.has_session(session.get('session_name'))
-        assert session.get('session_id')
+        assert self.server.has_session(session.name)
+        assert session.id
 
         assert(isinstance(session, Session))
 
@@ -196,7 +196,7 @@ class WorkspaceBuilder(object):
 
             w1 = None
             if i == int(1):  # if first window, use window 1
-                w1 = s.attached_window()
+                w1 = s.attached_window
                 w1.move_window(99)
                 pass
 
@@ -252,7 +252,7 @@ class WorkspaceBuilder(object):
         for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
 
             if pindex == int(pane_base_index):
-                p = w.attached_pane()
+                p = w.attached_pane
 
             else:
                 def get_pane_start_directory():
@@ -269,7 +269,7 @@ class WorkspaceBuilder(object):
                 )
 
             assert(isinstance(p, Pane))
-            assert(int(p.get('pane_index')) == int(pindex))
+            assert(int(p.index) == int(pindex))
             if 'layout' in wconf:
                 w.select_layout(wconf['layout'])
 
@@ -304,8 +304,8 @@ def freeze(session):
     for w in session.windows:
         wconf = {
             'options': w.show_window_options(),
-            'window_name': w.get('window_name'),
-            'layout': w.get('window_layout'),
+            'window_name': w.name,
+            'layout': w.layout,
             'panes': []
         }
         if w.get('window_active', '0') == '1':
@@ -315,25 +315,25 @@ def freeze(session):
         # of using 'cd' shell commands.
         def pane_has_same_path(p):
             return (
-                w.panes[0].get('pane_current_path') ==
-                p.get('pane_current_path')
+                w.panes[0].current_path ==
+                p.current_path
             )
 
         if all(pane_has_same_path(p) for p in w.panes):
-            wconf['start_directory'] = w.panes[0].get('pane_current_path')
+            wconf['start_directory'] = w.panes[0].current_path
 
         for p in w.panes:
             pconf = {'shell_command': []}
 
             if 'start_directory' not in wconf:
                 pconf['shell_command'].append(
-                    'cd ' + p.get('pane_current_path')
+                    'cd ' + p.current_path
                 )
 
             if p.get('pane_active', '0') == '1':
                 pconf['focus'] = 'true'
 
-            current_cmd = p.get('pane_current_command')
+            current_cmd = p.current_command
 
             def filter_interpretters_and_shells():
                 return (

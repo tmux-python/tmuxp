@@ -4,12 +4,9 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-import logging
 import os
 
 from tmuxp import cli, config
-
-logger = logging.getLogger(__name__)
 
 
 def test_creates_config_dir_not_exists(tmpdir):

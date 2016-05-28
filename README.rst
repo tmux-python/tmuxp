@@ -130,9 +130,6 @@ tests           .. code-block:: bash
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.io/en/latest/developing.html
-.. _installing bash completion: http://tmuxp.readthedocs.io/en/latest/quickstart.html#bash-completion
-.. _Developing and Testing: http://tmuxp.readthedocs.io/en/latest/developing.html
-.. _Issues tracker: https://github.com/tony/tmuxp/issues
 
 .. |pypi| image:: https://img.shields.io/pypi/v/tmuxp.svg
     :alt: Python Package

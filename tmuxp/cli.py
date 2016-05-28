@@ -329,7 +329,7 @@ def command_freeze(args):
     )
 
     try:
-        session = t.findWhere({
+        session = t.find_where({
             'session_name': ctext
         })
 
