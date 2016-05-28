@@ -80,7 +80,7 @@ def test_focus_pane_index(session):
 
     builder.build(session=session)
 
-    assert session.attached_window.get('window_name') == \
+    assert session.attached_window.name == \
         'focused window'
 
     pane_base_index = int(
@@ -97,24 +97,24 @@ def test_focus_pane_index(session):
     # get the pane index for each pane
     pane_base_indexes = []
     for pane in session.attached_window.panes:
-        pane_base_indexes.append(int(pane.get('pane_index')))
+        pane_base_indexes.append(int(pane.index))
 
     pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
     assert pane_indexes_should_be == pane_base_indexes
 
     w = session.attached_window
 
-    assert w.get('window_name') != 'man'
+    assert w.name != 'man'
 
     pane_path = '/usr'
     for i in range(20):
         p = w.attached_pane
         p.server._update_panes()
-        if p.get('pane_current_path') == pane_path:
+        if p.current_path == pane_path:
             break
         time.sleep(.4)
 
-    assert p.get('pane_current_path') == pane_path
+    assert p.current_path == pane_path
 
     proc = session.cmd('show-option', '-gv', 'base-index')
     base_index = int(proc.stdout[0])
@@ -128,11 +128,11 @@ def test_focus_pane_index(session):
     for i in range(10):
         p = window3.attached_pane
         p.server._update_panes()
-        if p.get('pane_current_path') == pane_path:
+        if p.current_path == pane_path:
             break
         time.sleep(.4)
 
-    assert p.get('pane_current_path') == pane_path
+    assert p.current_path == pane_path
 
 
 @flaky(max_runs=5, min_passes=1)
@@ -227,7 +227,7 @@ def test_window_shell(session):
                 break
             time.sleep(.2)
 
-        assert w.get('window_name') != text_type('top')
+        assert w.name != text_type('top')
 
 
 def test_environment_variables(session):
@@ -266,27 +266,27 @@ def test_automatic_rename_option(session):
         window_count += 1
         w.select_layout(wconf['layout'])
 
-    assert s.get('session_name') != 'tmuxp'
+    assert s.name != 'tmuxp'
     w = s.windows[0]
 
     for i in range(10):
         session.server._update_windows()
-        if w.get('window_name') != 'sh':
+        if w.name != 'sh':
             break
         time.sleep(.2)
 
-    assert w.get('window_name') != 'sh'
+    assert w.name != 'sh'
 
     pane_base_index = w.show_window_option('pane-base-index', g=True)
     w.select_pane(pane_base_index)
 
     for i in range(10):
         session.server._update_windows()
-        if w.get('window_name') == 'sh':
+        if w.name == 'sh':
             break
         time.sleep(.3)
 
-    assert w.get('window_name') == text_type('sh')
+    assert w.name == text_type('sh')
 
     w.select_pane('-D')
     for i in range(10):
@@ -295,7 +295,7 @@ def test_automatic_rename_option(session):
             break
         time.sleep(.2)
 
-    assert w.get('window_name') != text_type('sh')
+    assert w.name != text_type('sh')
 
 
 def test_blank_pane_count(session):
@@ -352,7 +352,7 @@ def test_start_directory(session, tmpdir):
         for p in window.panes:
             for i in range(60):
                 p.server._update_panes()
-                pane_path = p.get('pane_current_path')
+                pane_path = p.current_path
                 if pane_path is None:
                     pass
                 elif (
@@ -419,7 +419,7 @@ def test_start_directory_relative(session, tmpdir):
             for i in range(60):
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
-                pane_path = p.get('pane_current_path')
+                pane_path = p.current_path
                 if pane_path is None:
                     pass
                 elif (
@@ -479,7 +479,7 @@ def test_pane_order(session):
     for w in session.windows:
         pane_base_index = w.show_window_option('pane-base-index', g=True)
         for p_index, p in enumerate(w.list_panes(), start=pane_base_index):
-            assert int(p_index) == int(p.get('pane_index'))
+            assert int(p_index) == int(p.index)
 
             # pane-base-index start at base-index, pane_paths always start
             # at 0 since python list.
@@ -487,11 +487,11 @@ def test_pane_order(session):
 
             for i in range(60):
                 p.server._update_panes()
-                if p.get('pane_current_path') == pane_path:
+                if p.current_path == pane_path:
                     break
                 time.sleep(.2)
 
-            assert p.get('pane_current_path'), pane_path
+            assert p.current_path, pane_path
 
 
 def test_window_index(session):
@@ -533,7 +533,7 @@ def test_before_load_throw_error_if_retcode_error(server):
     builder = WorkspaceBuilder(sconf=sconfig)
 
     with temp_session(server) as sess:
-        session_name = sess.get('session_name')
+        session_name = sess.name
 
         with pytest.raises(exc.BeforeLoadScriptError):
             builder.build(session=sess)
@@ -561,9 +561,9 @@ def test_before_load_throw_error_if_file_not_exists(server):
     builder = WorkspaceBuilder(sconf=sconfig)
 
     with temp_session(server) as sess:
-        session_name = sess.get('session_name')
+        session_name = sess.name
         temp_session_exists = server.has_session(
-            sess.get('session_name')
+            sess.name
         )
         assert temp_session_exists
         with pytest.raises(
