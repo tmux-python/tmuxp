@@ -80,11 +80,11 @@ def test_focus_pane_index(session):
 
     builder.build(session=session)
 
-    assert session.attached_window().get('window_name') == \
+    assert session.attached_window.get('window_name') == \
         'focused window'
 
     pane_base_index = int(
-        session.attached_window().show_window_option(
+        session.attached_window.show_window_option(
             'pane-base-index', g=True
         )
     )
@@ -96,19 +96,19 @@ def test_focus_pane_index(session):
 
     # get the pane index for each pane
     pane_base_indexes = []
-    for pane in session.attached_window().panes:
+    for pane in session.attached_window.panes:
         pane_base_indexes.append(int(pane.get('pane_index')))
 
     pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
     assert pane_indexes_should_be == pane_base_indexes
 
-    w = session.attached_window()
+    w = session.attached_window
 
     assert w.get('window_name') != 'man'
 
     pane_path = '/usr'
     for i in range(20):
-        p = w.attached_pane()
+        p = w.attached_pane
         p.server._update_panes()
         if p.get('pane_current_path') == pane_path:
             break
@@ -120,13 +120,13 @@ def test_focus_pane_index(session):
     base_index = int(proc.stdout[0])
     session.server._update_windows()
 
-    window3 = session.findWhere({'window_index': str(base_index + 2)})
+    window3 = session.find_where({'window_index': str(base_index + 2)})
     assert isinstance(window3, Window)
 
     p = None
     pane_path = '/'
     for i in range(10):
-        p = window3.attached_pane()
+        p = window3.attached_pane
         p.server._update_panes()
         if p.get('pane_current_path') == pane_path:
             break
@@ -146,10 +146,10 @@ def test_suppress_history(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    inHistoryPane = session.findWhere(
-        {'window_name': 'inHistory'}).attached_pane()
-    isMissingPane = session.findWhere(
-        {'window_name': 'isMissing'}).attached_pane()
+    inHistoryPane = session.find_where(
+        {'window_name': 'inHistory'}).attached_pane
+    isMissingPane = session.find_where(
+        {'window_name': 'isMissing'}).attached_pane
 
     def assertHistory(cmd, hist):
         return 'inHistory' in cmd and cmd == hist
@@ -309,18 +309,18 @@ def test_blank_pane_count(session):
 
     assert session == builder.session
 
-    window1 = session.findWhere({'window_name': 'Blank pane test'})
+    window1 = session.find_where({'window_name': 'Blank pane test'})
     assert len(window1._panes) == 3
 
-    window2 = session.findWhere({'window_name': 'More blank panes'})
+    window2 = session.find_where({'window_name': 'More blank panes'})
     assert len(window2._panes) == 3
 
-    window3 = session.findWhere(
+    window3 = session.find_where(
         {'window_name': 'Empty string (return)'}
     )
     assert len(window3._panes) == 3
 
-    window4 = session.findWhere({'window_name': 'Blank with options'})
+    window4 = session.find_where({'window_name': 'Blank with options'})
     assert len(window4._panes) == 2
 
 

@@ -115,7 +115,7 @@ class WorkspaceBuilder(object):
                 )
 
             if self.server.has_session(self.sconf['session_name']):
-                self.session = self.server.findWhere(
+                self.session = self.server.find_where(
                     {
                         'session_name': self.sconf['session_name']
                     }
@@ -196,7 +196,7 @@ class WorkspaceBuilder(object):
 
             w1 = None
             if i == int(1):  # if first window, use window 1
-                w1 = s.attached_window()
+                w1 = s.attached_window
                 w1.move_window(99)
                 pass
 
@@ -252,7 +252,7 @@ class WorkspaceBuilder(object):
         for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
 
             if pindex == int(pane_base_index):
-                p = w.attached_pane()
+                p = w.attached_pane
 
             else:
                 def get_pane_start_directory():
