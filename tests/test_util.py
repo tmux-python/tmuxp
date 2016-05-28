@@ -4,7 +4,6 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-import logging
 import os
 
 import pytest
@@ -14,8 +13,6 @@ from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
 from tmuxp.util import run_before_script
 
 from . import fixtures_dir
-
-logger = logging.getLogger(__name__)
 
 
 def test_raise_BeforeLoadScriptNotExists_if_not_exists():

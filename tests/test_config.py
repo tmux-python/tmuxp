@@ -4,7 +4,6 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-import logging
 import os
 
 import kaptan
@@ -16,7 +15,6 @@ from tmuxp import config, exc
 from . import example_dir
 from .fixtures import config as fixtures
 
-logger = logging.getLogger(__name__)
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 

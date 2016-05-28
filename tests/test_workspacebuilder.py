@@ -4,7 +4,6 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-import logging
 import os
 import time
 
@@ -21,8 +20,6 @@ from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from . import example_dir
 from .fixtures._util import loadfixture
-
-logger = logging.getLogger(__name__)
 
 
 def test_split_windows(session):

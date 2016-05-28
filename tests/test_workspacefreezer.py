@@ -4,7 +4,6 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
-import logging
 import time
 
 import kaptan
@@ -13,8 +12,6 @@ from tmuxp import config
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 from .fixtures._util import loadfixture
-
-logger = logging.getLogger(__name__)
 
 
 def test_freeze_config(session):
