@@ -21,8 +21,8 @@ windows:
     - shell_command:
       - 'echo \\033c ~ has precedence. note: remember to quote ~ in YAML'
     - pwd
-  - window_name: should be /proc
-    start_directory: /proc
+  - window_name: should be /bin
+    start_directory: /bin
     panes:
     - echo '\033c absolute paths also have precedence.'
     - pwd

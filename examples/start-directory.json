@@ -43,8 +43,8 @@
         "echo '\\033c absolute paths also have precedence.'", 
         "pwd"
       ], 
-      "start_directory": "/proc", 
-      "window_name": "should be /proc"
+      "start_directory": "/bin", 
+      "window_name": "should be /bin"
     }, 
     {
       "panes": [
