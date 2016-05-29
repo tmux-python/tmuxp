@@ -13,6 +13,7 @@ windows:
         - echo "I get run in each pane, before each pane command!"
         -
     layout: main-vertical
+    root: ~/test/editor
     panes:
         - vim
         - #empty, will just run plain bash

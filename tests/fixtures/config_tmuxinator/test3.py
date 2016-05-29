@@ -19,6 +19,7 @@ tmuxinator_dict = {
                     None
                 ],
                 'layout': 'main-vertical',
+                'root': '~/test/editor',
                 'panes': [
                     'vim',
                     None,
@@ -58,6 +59,7 @@ tmuxinator_dict = {
 expected = {
     'session_name': 'sample',
     'socket_name': 'foo',
+    'start_directory': '~/test',
     'config': '~/.tmux.mac.conf',
     'shell_command': 'sudo /etc/rc.d/mysqld start',
     'shell_command_before': [
@@ -71,6 +73,7 @@ expected = {
                 None
             ],
             'layout': 'main-vertical',
+            'start_directory': '~/test/editor',
             'panes': [
                 'vim',
                 None,
