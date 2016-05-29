@@ -383,6 +383,8 @@ def import_tmuxinator(sconf):
 
     if 'project_root' in sconf:
         tmuxp_config['start_directory'] = sconf.pop('project_root')
+    elif 'root' in sconf:
+        tmuxp_config['start_directory'] = sconf.pop('root')
 
     if 'cli_args' in sconf:
         tmuxp_config['config'] = sconf['cli_args']
@@ -445,6 +447,8 @@ def import_tmuxinator(sconf):
                 windowdict['shell_command_before'] = v['pre']
             if 'panes' in v:
                 windowdict['panes'] = v['panes']
+            if 'root' in v:
+                windowdict['start_directory'] = v['root']
 
             if 'layout' in v:
                 windowdict['layout'] = v['layout']
