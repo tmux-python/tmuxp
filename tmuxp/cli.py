@@ -28,7 +28,8 @@ from .workspacebuilder import freeze
 
 logger = logging.getLogger(__name__)
 
-config_dir = os.path.expanduser('~/.tmuxp/')
+def config_dir():
+    return os.path.expanduser('~/.tmuxp/')
 cwd_dir = lambda x: os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
@@ -153,8 +154,8 @@ class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
             self, prefix, **kwargs
         )
 
-        completion += [os.path.join(config_dir, c)
-                       for c in config.in_dir(config_dir)]
+        completion += [os.path.join(config_dir(), c)
+                       for c in config.in_dir(config_dir())]
 
         return completion
 
@@ -169,10 +170,10 @@ class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
         )
 
         tmuxinator_configs = config.in_dir(
-            tmuxinator_config_dir, extensions='yml'
+            tmuxinator_config_dir(), extensions='yml'
         )
         completion += [
-            os.path.join(tmuxinator_config_dir, f)
+            os.path.join(tmuxinator_config_dir(), f)
             for f in tmuxinator_configs
         ]
 
@@ -188,9 +189,9 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
             self, prefix, **kwargs
         )
 
-        teamocil_configs = config.in_dir(teamocil_config_dir, extensions='yml')
+        teamocil_configs = config.in_dir(teamocil_config_dir(), extensions='yml')
         completion += [
-            os.path.join(teamocil_config_dir, f)
+            os.path.join(teamocil_config_dir(), f)
             for f in teamocil_configs
         ]
 
@@ -240,8 +241,8 @@ def setup_logger(logger=None, level='INFO'):
 def startup(config_dir):
     """Initialize CLI.
 
-    :param config_dir: Config directory to search
-    :type config_dir: string
+    :param config_dir(): Config directory to search
+    :type config_dir(): string
 
     """
 
@@ -379,7 +380,7 @@ def command_freeze(args):
         while not dest:
             save_to = os.path.abspath(
                 os.path.join(
-                    config_dir,
+                    config_dir(),
                     '%s.%s' % (sconf.get('session_name'), config_format)
                 )
             )
@@ -482,16 +483,18 @@ def resolve_config_path(config):
 
     # if purename, resolve to confg dir
     if is_pure_name(config):
-        config = join(config_dir, config)
-
-    # if relative, fill in full path
-    if not isabs(config) and len(dirname(config)) > 1 or config == '.' or config == "" or config == "./":
+        config = join(config_dir(), config)
+    elif not isabs(config) or len(dirname(config)) > 1 or config == '.' or config == "" or config == "./":
+        # if relative, fill in full path
         config = normpath(join(cwd, config))
 
     # no extension, scan
     if not splitext(config)[1]:
-        candidates = [f for f in (join(config, ext) for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']) if exists(f)]
-        print([join(config, ext) for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']])
+        first = [join(config, ext) for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']]
+        second = ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
+        candidates = [f for f in first+second if exists(f)]
+        # print(candidates)
+        print([join(config, ext) for ext in first+second])
         if len(candidates) > 1:
             logger.warning(
                 'Multiple .tmuxp.EXT files found in same directory. This is '
@@ -514,7 +517,7 @@ def command_import_teamocil(args):
     if args.list:
         try:
             configs_in_user = config.in_dir(
-                teamocil_config_dir, extensions='yml')
+                teamocil_config_dir(), extensions='yml')
         except OSError:
             configs_in_user = []
         configs_in_cwd = config.in_dir(
@@ -524,12 +527,12 @@ def command_import_teamocil(args):
 
         if not os.path.exists(teamocil_config_dir):
             output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                teamocil_config_dir
+                teamocil_config_dir()
         elif not configs_in_user:
-            output += '# %s: \n\tNone found.\n' % teamocil_config_dir
+            output += '# %s: \n\tNone found.\n' % teamocil_config_dir()
         else:
             output += '# %s: \n\t%s\n' % (
-                config_dir, ', '.join(configs_in_user)
+                config_dir(), ', '.join(configs_in_user)
             )
 
         if configs_in_cwd:
@@ -574,7 +577,7 @@ def command_import_teamocil(args):
             dest = None
             while not dest:
                 dest_prompt = prompt('Save to: ', os.path.abspath(
-                    os.path.join(config_dir, 'myimport.%s' % config_format)))
+                    os.path.join(config_dir(), 'myimport.%s' % config_format)))
                 if os.path.exists(dest_prompt):
                     print('%s exists. Pick a new filename.' % dest_prompt)
                     continue
@@ -602,7 +605,7 @@ def command_import_tmuxinator(args):
     if args.list:
             try:
                 configs_in_user = config.in_dir(
-                    tmuxinator_config_dir, extensions='yml')
+                    tmuxinator_config_dir(), extensions='yml')
             except OSError:
                 configs_in_user = []
             configs_in_cwd = config.in_dir(
@@ -610,14 +613,14 @@ def command_import_tmuxinator(args):
 
             output = ''
 
-            if not os.path.exists(tmuxinator_config_dir):
+            if not os.path.exists(tmuxinator_config_dir()):
                 output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                    tmuxinator_config_dir
+                    tmuxinator_config_dir()
             elif not configs_in_user:
-                output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir
+                output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir()
             else:
                 output += '# %s: \n\t%s\n' % (
-                    config_dir, ', '.join(configs_in_user)
+                    config_dir(), ', '.join(configs_in_user)
                 )
 
             if configs_in_cwd:
@@ -664,7 +667,7 @@ def command_import_tmuxinator(args):
             dest = None
             while not dest:
                 dest_prompt = prompt('Save to: ', os.path.abspath(
-                    os.path.join(config_dir, 'myimport.%s' % config_format)))
+                    os.path.join(config_dir(), 'myimport.%s' % config_format)))
                 if os.path.exists(dest_prompt):
                     print('%s exists. Pick a new filename.' % dest_prompt)
                     continue
@@ -695,7 +698,7 @@ def command_convert(args):
     except exc.TmuxpException:
         print('Please enter a config')
 
-    file_user = os.path.join(config_dir, configfile)
+    file_user = os.path.join(config_dir(), configfile)
     file_cwd = os.path.join(cwd_dir(), configfile)
     if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
         fullfile = os.path.normpath(file_cwd)

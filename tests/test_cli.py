@@ -88,19 +88,38 @@ def test_is_pure_name(path, expect):
 """
 
 
-def test_resolve_dot(tmpdir):
+def test_resolve_dot(tmpdir, monkeypatch):
     homedir = tmpdir.join('home').mkdir()
+    monkeypatch.setenv('HOME', homedir)
     configdir = homedir.join('.tmuxp').mkdir()
 
-    userconfig_name = 'myconfig'
-    configdir.join(userconfig_name).ensure()
+    user_config_name = 'myconfig'
+    user_config = configdir.join('%s.yaml' % user_config_name).ensure()
 
     projectdir = homedir.join('work').join('project')
     projectdir.join('.tmuxp.yaml').ensure()
+    project_config = str(projectdir.join('.tmuxp.yaml'))
 
     with projectdir.as_cwd():
-        assert resolve_config_path('.') == str(projectdir.join('.tmuxp.yaml'))
-        assert resolve_config_path('./') == str(projectdir.join('.tmuxp.yaml'))
-        assert resolve_config_path('') == str(projectdir.join('.tmuxp.yaml'))
+        expect = project_config
+        assert resolve_config_path('.') == expect
+        assert resolve_config_path('./') == expect
+        assert resolve_config_path('') == expect
+        assert resolve_config_path('../project') == expect
+        assert resolve_config_path('../project/') == expect
+        assert resolve_config_path('.tmuxp.yaml') == expect
+        assert resolve_config_path('../../.tmuxp/%s.yaml' % user_config_name) \
+            == str(user_config)
+        assert resolve_config_path('myconfig') == str(user_config)
+
         with pytest.raises(Exception):
             resolve_config_path('.tmuxp.json')
+        with pytest.raises(Exception):
+            resolve_config_path('.tmuxp.ini')
+        with pytest.raises(Exception):
+            resolve_config_path('../')
+        with pytest.raises(Exception):
+            resolve_config_path('mooooooo')
+
+
+
