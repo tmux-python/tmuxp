@@ -28,6 +28,7 @@ from .workspacebuilder import freeze
 
 logger = logging.getLogger(__name__)
 
+
 def config_dir():
     return os.path.expanduser('~/.tmuxp/')
 cwd_dir = lambda x: os.getcwd() + '/'
@@ -189,7 +190,8 @@ class TeamocilCompleter(argcomplete.completers.FilesCompleter):
             self, prefix, **kwargs
         )
 
-        teamocil_configs = config.in_dir(teamocil_config_dir(), extensions='yml')
+        teamocil_configs = config.in_dir(
+            teamocil_config_dir(), extensions='yml')
         completion += [
             os.path.join(teamocil_config_dir(), f)
             for f in teamocil_configs
@@ -250,7 +252,7 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-def load_workspace(config_file, args):
+def load_workspace(config_file, socket_name=None, socket_path=None, colors=None, attached=None, detached=None, answer_yes=False):
     """Build config workspace.
 
     :param config_file: full path to config file
@@ -265,9 +267,9 @@ def load_workspace(config_file, args):
     sconfig = config.trickle(sconfig)
 
     t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
+        socket_name=socket_name,
+        socket_path=socket_path,
+        colors=colors
     )
 
     try:
@@ -283,7 +285,7 @@ def load_workspace(config_file, args):
         builder.build()
 
         if 'TMUX' in os.environ:
-            if not args.detached and (args.answer_yes or prompt_yes_no(
+            if not detached and (answer_yes or prompt_yes_no(
                 'Already inside TMUX, switch to session?'
             )):
                 tmux_env = os.environ.pop('TMUX')
@@ -294,11 +296,11 @@ def load_workspace(config_file, args):
             else:
                 sys.exit('Session created in detached state.')
 
-        if not args.detached:
+        if not detached:
             builder.session.attach_session()
     except TmuxSessionExists as e:
-        if not args.detached and (
-            args.answer_yes or prompt_yes_no('%s Attach?' % e)
+        if not detached and (
+            answer_yes or prompt_yes_no('%s Attach?' % e)
         ):
             if 'TMUX' in os.environ:
                 builder.session.switch_client()
@@ -414,27 +416,24 @@ def command_freeze(args):
 @click.argument('config', click.Path(exists=True), nargs=-1)
 def command_load(config):
     """Load a session from a tmuxp session file."""
+    from ._compat import text_type
 
-    if isinstance(config, tuple):
+    if isinstance(config, text_type):
+        config = resolve_config_path(config)
+        load_workspace(config)
+
+    elif isinstance(config, tuple):
+        config = list(config)
+        print(config)
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             # todo: add -d option to all these
-            command_load(cfg)
+            cfg = resolve_config_path(cfg)
+            load_workspace(cfg)
 
         # todo: obey the -d in the cli args only if user specifies
-        command_load(config[-1])
-        return
-
-    if '.' == config:
-        if config.in_cwd():
-            configfile = config.in_cwd()[0]
-        else:
-            sys.exit('No tmuxp configs found in current directory.')
-    else:
-        configfile = config
-
-    print(config)
-
+        cfg = resolve_config_path(config[-1])
+        load_workspace(cfg)
 
 
 def is_pure_name(path):
@@ -444,6 +443,7 @@ def is_pure_name(path):
         not os.path.splitext(path)[1] and
         path != '.' and path != ''
     )
+
 
 def resolve_config_path(config):
     """Return the real config path or raise an exception.
@@ -1024,7 +1024,7 @@ def get_parser():
 
 def main():
     """Main CLI application."""
-
+    pass
     parser = get_parser()
 
     argcomplete.autocomplete(parser, always_complete_options=False)
