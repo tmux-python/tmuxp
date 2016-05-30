@@ -108,11 +108,11 @@ def test_resolve_dot(tmpdir, monkeypatch):
         assert resolve_config_path('../project') == expect
         assert resolve_config_path('../project/') == expect
         assert resolve_config_path('.tmuxp.yaml') == expect
-        assert resolve_config_path('../../.tmuxp/%s.yaml' % user_config_name) \
-            == str(user_config)
+        assert resolve_config_path(
+            '../../.tmuxp/%s.yaml' % user_config_name) == str(user_config)
         assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path('~/.tmuxp/myconfig.yaml') == \
-            str(user_config)
+        assert resolve_config_path(
+            '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             resolve_config_path('.tmuxp.json')
@@ -129,13 +129,13 @@ def test_resolve_dot(tmpdir, monkeypatch):
         assert resolve_config_path('work/project/') == expect
         assert resolve_config_path('./work/project') == expect
         assert resolve_config_path('./work/project/') == expect
-        assert resolve_config_path('.tmuxp/%s.yaml' % user_config_name) \
-            == str(user_config)
-        assert resolve_config_path('./.tmuxp/%s.yaml' % user_config_name) \
-            == str(user_config)
+        assert resolve_config_path(
+            '.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert resolve_config_path(
+            './.tmuxp/%s.yaml' % user_config_name) == str(user_config)
         assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path('~/.tmuxp/myconfig.yaml') == \
-            str(user_config)
+        assert resolve_config_path(
+            '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             resolve_config_path('')
@@ -153,13 +153,13 @@ def test_resolve_dot(tmpdir, monkeypatch):
         assert resolve_config_path('../work/project') == expect
         assert resolve_config_path('../../home/work/project') == expect
         assert resolve_config_path('../work/project/') == expect
-        assert resolve_config_path('%s.yaml' % user_config_name) \
-            == str(user_config)
-        assert resolve_config_path('./%s.yaml' % user_config_name) \
-            == str(user_config)
+        assert resolve_config_path(
+            '%s.yaml' % user_config_name) == str(user_config)
+        assert resolve_config_path(
+            './%s.yaml' % user_config_name) == str(user_config)
         assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path('~/.tmuxp/myconfig.yaml') == \
-            str(user_config)
+        assert resolve_config_path(
+            '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             resolve_config_path('')
@@ -176,13 +176,13 @@ def test_resolve_dot(tmpdir, monkeypatch):
         expect = project_config
         assert resolve_config_path('home/work/project') == expect
         assert resolve_config_path('./home/work/project/') == expect
-        assert resolve_config_path('home/.tmuxp/%s.yaml' % user_config_name) \
-            == str(user_config)
-        assert resolve_config_path('./home/.tmuxp/%s.yaml' % user_config_name) \
-            == str(user_config)
+        assert resolve_config_path(
+            'home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert resolve_config_path(
+            './home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
         assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path('~/.tmuxp/myconfig.yaml') == \
-            str(user_config)
+        assert resolve_config_path(
+            '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             resolve_config_path('')
