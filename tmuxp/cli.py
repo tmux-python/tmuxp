@@ -481,6 +481,7 @@ def resolve_config_path(config):
     # c is absolute file?     continue
     # see if file exists, if not raise error
 
+    config = os.path.expanduser(config)
     # if purename, resolve to confg dir
     if is_pure_name(config):
         config = join(config_dir(), config)
@@ -494,7 +495,7 @@ def resolve_config_path(config):
         second = ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
         candidates = [f for f in first+second if exists(f)]
         # print(candidates)
-        print([join(config, ext) for ext in first+second])
+        # print([join(config, ext) for ext in first+second])
         if len(candidates) > 1:
             logger.warning(
                 'Multiple .tmuxp.EXT files found in same directory. This is '
