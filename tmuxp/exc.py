@@ -17,13 +17,6 @@ class TmuxpException(Exception):
     """Base Exception for Tmuxp Errors."""
 
 
-class TmuxSessionExists(TmuxpException):
-
-    """Session does not exist in the server."""
-
-    pass
-
-
 class ConfigError(TmuxpException):
 
     """Error parsing tmuxp configuration dict."""
