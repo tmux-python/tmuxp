@@ -15,9 +15,9 @@ import sys
 
 import argcomplete
 import kaptan
-
-from libtmux.server import Server
 from libtmux.common import has_required_tmux_version, which
+from libtmux.exc import TmuxSessionExists
+from libtmux.server import Server
 
 from . import WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
@@ -283,7 +283,7 @@ def load_workspace(config_file, args):
 
         if not args.detached:
             builder.session.attach_session()
-    except exc.TmuxSessionExists as e:
+    except TmuxSessionExists as e:
         if not args.detached and (
             args.answer_yes or prompt_yes_no('%s Attach?' % e)
         ):
