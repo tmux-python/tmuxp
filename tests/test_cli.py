@@ -7,6 +7,7 @@ from __future__ import (absolute_import, division, print_function,
 import os
 
 from tmuxp import cli, config
+from tmuxp.cli import resolve_config_path
 
 
 def test_creates_config_dir_not_exists(tmpdir):
@@ -49,3 +50,26 @@ def test_get_configs_cwd(tmpdir):
         configs_found = config.in_cwd()
         assert len(configs_found) == 1
         assert '.tmuxp.json' in configs_found
+
+
+"""
+    scans for .tmuxp.{yaml,yml,json} in directory, returns first result
+    log warning if multiple found:
+
+    - current directory: ., ./, noarg
+    - relative to cwd directory: ../, ./hello/, hello/, ./hello/
+    - absolute directory: /path/to/dir, /path/to/dir/, ~/
+    - no path, no ext, config_dir: projectname, tmuxp
+
+    load file directly -
+
+    - no directory (cwd): .tmuxp.yaml
+    - relative to cwd: ../.tmuxp.yaml, ./hello/.tmuxp.yaml
+    - absolute path: /path/to/file.yaml, ~/path/to/file/.tmuxp.yaml
+
+    Any case where file is not found should return error.
+"""
+
+
+def test_resolve_dot(tmpdir):
+    pass
