@@ -1,11 +1,31 @@
-test:
-	py.test
+WATCH_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]py$$' 2> /dev/null
+
+.if exists(/usr/bin/entr)
+ENTR=/usr/bin/entr
+.elif exists(/usr/local/bin/entr)
+ENTR=/usr/local/bin/entr
+.endif
 
 entr_warn:
-	echo "\nInstall entr(1) to automatically run tasks on file change.\n See http://entrproject.org/"
+	@echo "----------------------------------------------------------"
+	@echo "     ! File watching functionality non-operational !      "
+	@echo ""
+	@echo "Install entr(1) to automatically run tasks on file change."
+	@echo "See http://entrproject.org/"
+	@echo "----------------------------------------------------------"
+
+
+test:
+	py.test $(test)
 
 watch_test:
-	if command -v entr > /dev/null; then find . -type f -not -path '*/\.*' | grep -i '.*[.]py' | entr -c make test; else make test warn; fi
+.if defined(ENTR)
+	${WATCH_FILES} | ${ENTR} -c make test
+.else
+	$(MAKE) entr_warn
+	$(MAKE) test
+	$(MAKE) entr_warn
+.endif
 
 build_docs:
 	cd doc && $(MAKE) html
@@ -17,6 +37,10 @@ flake8:
 	flake8 tmuxp tests
 
 watch_flake8:
-	if command -v entr > /dev/null; then find . -type f -not -path '*/\.*' | grep -i '.*[.][py]' | entr -c make flake8; else make flake8 warn; fi
-
-.PHONY: flake8
+.if defined(ENTR)
+	${WATCH_FILES} | ${ENTR} -c $(MAKE) flake8
+.else
+	$(MAKE) entr_warn
+	$(MAKE) flake8
+	$(MAKE) entr_warn
+.endif

@@ -137,7 +137,17 @@ To run all tests upon editing any ``.py`` file:
 
     $ make watch_test
 
-.. _entr: http://entrproject.org/
+You can also re-run a specific test file or any other `py.test usage
+argument`_:
+
+.. code-block:: bash
+
+   $ make watch_test test=tests/test_config.py
+
+   $ make watch_test test='-x tests/test_config.py tests/test_util.py'
+
+Rebuild sphinx docs on save
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Rebuild the documentation when an ``.rst`` file is edited:
 
@@ -182,6 +192,8 @@ tested are 2.6, 2.7 and 3.3. The `travis build site`_ uses this
 .. literalinclude:: ../.travis.yml
     :language: yaml
 
+.. _py.test usage argument: https://pytest.org/latest/usage.html
+.. _entr: http://entrproject.org/
 .. _travis-ci: http://www.travis-ci.org
 .. _travis build site: http://www.travis-ci.org/tony/tmuxp
 .. _.travis.yml: https://github.com/tony/tmuxp/blob/master/.travis.yml
