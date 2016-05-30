@@ -5,8 +5,7 @@ tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, print_function, with_statement
 
 import argparse
 import logging
@@ -14,7 +13,9 @@ import os
 import sys
 
 import argcomplete
+import click
 import kaptan
+from click.exceptions import FileError
 from libtmux.common import has_required_tmux_version, which
 from libtmux.exc import TmuxSessionExists
 from libtmux.server import Server
@@ -22,6 +23,7 @@ from libtmux.server import Server
 from . import WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
 from ._compat import input, string_types
+from .cli_defaultgroup import DefaultGroup
 from .workspacebuilder import freeze
 
 logger = logging.getLogger(__name__)
@@ -129,6 +131,16 @@ def prompt_choices(name, choices, default=None, no_choice=('none',)):
             return None
         if rv in _choices:
             return rv
+
+
+@click.group(cls=DefaultGroup, default_if_no_args=True)
+@click.option('--log_level', default='INFO',
+              help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
+@click.version_option(version=__version__, message='%(prog)s %(version)s')
+def cli(log_level):
+    setup_logger(
+        level=log_level.upper()
+    )
 
 
 class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
@@ -397,39 +409,79 @@ def command_freeze(args):
         sys.exit()
 
 
-def command_load(args):
+@cli.command(name='load', default=True)
+@click.argument('config', click.Path(exists=True), nargs=-1)
+def command_load(config):
     """Load a session from a tmuxp session file."""
 
-    if isinstance(args.config, list):
+    if isinstance(config, tuple):
         # Load each configuration but the last to the background
-        for cfg in args.config[:-1]:
-            new_args = argparse.Namespace(**args.__dict__)
-            new_args.detached = True
-            new_args.config = cfg
-            command_load(new_args)
+        for cfg in config[:-1]:
+            # todo: add -d option to all these
+            command_load(cfg)
 
-        # The last one will be detached if specified on the command line
-        new_args = argparse.Namespace(**args.__dict__)
-        new_args.config = args.config[-1]
-        command_load(new_args)
+        # todo: obey the -d in the cli args only if user specifies
+        command_load(config[-1])
         return
 
-    if '.' == args.config:
+    if '.' == config:
         if config.in_cwd():
             configfile = config.in_cwd()[0]
         else:
             sys.exit('No tmuxp configs found in current directory.')
     else:
-        configfile = args.config
+        configfile = config
 
-    file_user = os.path.join(config_dir, configfile)
+    print(config)
+
+
+
+
+def resolve_config_path(config):
+    """Return the real config path or raise an exception.
+
+    :param config: config file, valid examples:
+        - a file name, myconfig.yaml
+        - relative path, ../config.yaml or ../project
+        - a period, .
+    :type config: string
+
+    If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
+    one or more found, it will warn and pick the first.
+
+    If config is ".", "./" or None, it will scan current directory.
+
+    If config is has no path and only a filename, e.g. "myconfig.yaml" it will
+    search config dir.
+
+    If config has no path and only a name with no extension, e.g. "myconfig",
+    it will scan for file name with yaml, yml and json. If multiple exist, it
+    will warn and pick the first.
+
+    :raises: :class:`click.exceptions.FileError`
+    """
+
+    exists, isfile, isabs = os.path.exists, os.path.isfile, os.path.isabs
+    dirname = os.path.dirname
+
+    if isabs(configfile):
+        if not exists(configfile):
+            raise FileError(configfile)
+        load_workspace(file_cwd, config)
+    if len(dirname(configfile)) == 0:  # e.g. customconf.yaml, search config dirs
+        userspace_config = os.path.join(config_dir, configfile)
+        return configfile
+
+
     file_cwd = os.path.join(cwd_dir, configfile)
+
+
 
     if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
         print('load %s' % file_cwd)
-        load_workspace(file_cwd, args)
+        load_workspace(file_cwd, config)
     elif os.path.exists(file_user) and os.path.isfile(file_user):
-        load_workspace(file_user, args)
+        load_workspace(file_user, config)
     else:
         logger.error('%s not found.' % configfile)
 
@@ -725,7 +777,7 @@ def command_kill_session(args):
 def get_parser():
     """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 
-    server_parser = argparse.ArgumentParser(add_help=False)
+    server_parser = argparse.ArgumentParser()
 
     server_parser.add_argument(
         '-L', dest='socket_name',

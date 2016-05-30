@@ -1,4 +1,4 @@
 kaptan>=0.5.7
 libtmux==0.4.1
-argcomplete
+click==6.6
 colorama
