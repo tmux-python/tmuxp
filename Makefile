@@ -1,10 +1,8 @@
 WATCH_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]py$$' 2> /dev/null
 
-.if exists(/usr/bin/entr)
-ENTR=/usr/bin/entr
-.elif exists(/usr/local/bin/entr)
-ENTR=/usr/local/bin/entr
-.endif
+
+test:
+	py.test
 
 entr_warn:
 	@echo "----------------------------------------------------------"
@@ -15,17 +13,8 @@ entr_warn:
 	@echo "----------------------------------------------------------"
 
 
-test:
-	py.test $(test)
-
 watch_test:
-.if defined(ENTR)
-	${WATCH_FILES} | ${ENTR} -c make test
-.else
-	$(MAKE) entr_warn
-	$(MAKE) test
-	$(MAKE) entr_warn
-.endif
+	if command -v entr > /dev/null; then ${WATCH_FILES} | entr -c $(MAKE) test; else $(MAKE) test entr_warn; fi
 
 build_docs:
 	cd doc && $(MAKE) html
@@ -37,10 +26,4 @@ flake8:
 	flake8 tmuxp tests
 
 watch_flake8:
-.if defined(ENTR)
-	${WATCH_FILES} | ${ENTR} -c $(MAKE) flake8
-.else
-	$(MAKE) entr_warn
-	$(MAKE) flake8
-	$(MAKE) entr_warn
-.endif
+	if command -v entr > /dev/null; then ${WATCH_FILES} | entr -c $(MAKE) flake8; else $(MAKE) flake8 entr_warn; fi

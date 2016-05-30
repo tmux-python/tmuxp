@@ -159,7 +159,7 @@ checkbuild:
 WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst$$\|CHANGES\|TODO\|.*conf\.py$$' 2> /dev/null
 
 watch:
-	${WATCH_FILES} | entr -c make html
+	if command -v entr > /dev/null; then ${WATCH_FILES} | entr -c $(MAKE) html; else $(MAKE) html; fi
 
 serve:
 	echo 'docs built to <http://0.0.0.0:8003/_build/html>'; python -m SimpleHTTPServer 8003
