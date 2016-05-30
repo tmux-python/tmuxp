@@ -4,11 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.0.2 <2016-05-25>`
+- :support:`163` fix issue re-attaching sessions that are already loaded
+- :feature:`159` improved support for tmuxinator imports, from @fpietka.
+- :support:`161` readme link fixes from @Omeryl.
+
 - :release:`1.0.1 <2016-05-25>`
 - :support:`-` switch to readthedocs.io for docs
 - :support:`157` bump libtmux to 0.4.1
-- :feature:`159` improved support for tmuxinator imports, from @fpietka.
-- :support:`161` readme link fixes from @Omeryl.
 
 - :release:`1.0.0-rc1 <2016-05-25>`
 - :support:`-` version jump 0.11.1 to 1.0
