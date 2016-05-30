@@ -2,7 +2,7 @@ WATCH_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]py$$' 2> /dev/nul
 
 
 test:
-	py.test
+	py.test $(test)
 
 entr_warn:
 	@echo "----------------------------------------------------------"
