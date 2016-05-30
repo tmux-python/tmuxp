@@ -29,7 +29,7 @@ from .workspacebuilder import freeze
 logger = logging.getLogger(__name__)
 
 config_dir = os.path.expanduser('~/.tmuxp/')
-cwd_dir = os.getcwd() + '/'
+cwd_dir = lambda x: os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
@@ -436,6 +436,13 @@ def command_load(config):
 
 
 
+def is_pure_name(path):
+    return (
+        not os.path.isabs(path) and
+        len(os.path.dirname(path)) == 0 and
+        not os.path.splitext(path)[1] and
+        path != '.' and path != ''
+    )
 
 def resolve_config_path(config):
     """Return the real config path or raise an exception.
@@ -461,19 +468,32 @@ def resolve_config_path(config):
     :raises: :class:`click.exceptions.FileError`
     """
 
-    exists, isfile, isabs = os.path.exists, os.path.isfile, os.path.isabs
-    dirname = os.path.dirname
+    path = os.path
+    exists, isfile, isabs = path.exists, path.isfile, path.isabs
+    dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
+    cwd = os.getcwd()
 
-    if isabs(configfile):
-        if not exists(configfile):
-            raise FileError(configfile)
-        load_workspace(file_cwd, config)
+    # is relative?    resolve to absolute via cwd
+    # a is directory?   (scan dir for .tmuxp.{ext})
+    # b no extension?   (scan config dir for .tmuxp.{ext})
+    # c is absolute file?     continue
+    # see if file exists, if not raise error
+
+
+    # if relative, fill in full path
+    if not isabs(config) and len(dirname(config)) > 1:
+        config = normpath(cwd, config)
+
+    # no extension
+    if not splitext(config)[1]:
+        config = join(config_dir, config)
+
     if len(dirname(configfile)) == 0:  # e.g. customconf.yaml, search config dirs
         userspace_config = os.path.join(config_dir, configfile)
         return configfile
 
 
-    file_cwd = os.path.join(cwd_dir, configfile)
+    file_cwd = os.path.join(cwd_dir(), configfile)
 
 
 
@@ -496,7 +516,7 @@ def command_import_teamocil(args):
         except OSError:
             configs_in_user = []
         configs_in_cwd = config.in_dir(
-            config_dir=cwd_dir, extensions='yml')
+            config_dir=cwd_dir(), extensions='yml')
 
         output = ''
 
@@ -584,7 +604,7 @@ def command_import_tmuxinator(args):
             except OSError:
                 configs_in_user = []
             configs_in_cwd = config.in_dir(
-                config_dir=cwd_dir, extensions='yml')
+                config_dir=cwd_dir(), extensions='yml')
 
             output = ''
 
@@ -674,7 +694,7 @@ def command_convert(args):
         print('Please enter a config')
 
     file_user = os.path.join(config_dir, configfile)
-    file_cwd = os.path.join(cwd_dir, configfile)
+    file_cwd = os.path.join(cwd_dir(), configfile)
     if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
         fullfile = os.path.normpath(file_cwd)
         filename, ext = os.path.splitext(file_cwd)

@@ -5,9 +5,10 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import os
+import pytest
 
 from tmuxp import cli, config
-from tmuxp.cli import resolve_config_path
+from tmuxp.cli import resolve_config_path, is_pure_name
 
 
 def test_creates_config_dir_not_exists(tmpdir):
@@ -52,6 +53,22 @@ def test_get_configs_cwd(tmpdir):
         assert '.tmuxp.json' in configs_found
 
 
+@pytest.mark.parametrize('path,expect', [
+    ('.', False),
+    ('./', False),
+    ('', False),
+    ('.tmuxp.yaml', False),
+    ('../.tmuxp.yaml', False),
+    ('../', False),
+    ('/hello/world', False),
+    ('~/.tmuxp/hey', False),
+    ('~/work/c/tmux/', False),
+    ('~/work/c/tmux/.tmuxp.yaml', False),
+    ('myproject', True),
+])
+def test_is_pure_name(path, expect):
+    assert is_pure_name(path) == expect
+
 """
     scans for .tmuxp.{yaml,yml,json} in directory, returns first result
     log warning if multiple found:
@@ -72,4 +89,14 @@ def test_get_configs_cwd(tmpdir):
 
 
 def test_resolve_dot(tmpdir):
-    pass
+    homedir = tmpdir.join('home').mkdir()
+    configdir = homedir.join('.tmuxp').mkdir()
+
+    userconfig_name = 'myconfig'
+    configdir.join(userconfig_name).ensure()
+
+    projectdir = homedir.join('work').join('project')
+    projectdir.join('.tmuxp.yaml').ensure()
+
+    with projectdir.as_cwd():
+        pass
