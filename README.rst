@@ -68,9 +68,9 @@ Want to learn more about tmux itself? Read `The Tao of Tmux`_.
 .. _Documentation: http://tmuxp.rtfd.org/
 .. _Source: https://github.com/tony/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
-.. _before_script: http://localhost:8003/_build/html/examples.html#bootstrap-project-before-launch
+.. _before_script: http://tmuxp.readthedocs.io/en/latest/examples.html#bootstrap-project-before-launch
 .. _virtualenv: https://virtualenv.readthedocs.io/en/latest/
-.. _The Tao of tmux: http://localhost:8003/_build/html/about_tmux.html
+.. _The Tao of tmux: http://tmuxp.readthedocs.io/en/latest/about_tmux.html
 .. _author's tmuxp configs: https://github.com/tony/tmuxp-config
 .. _python library: https://tmuxp.readthedocs.io/en/latest/api.html
 .. _python API quickstart: https://tmuxp.readthedocs.io/en/latest/quickstart_python.html
