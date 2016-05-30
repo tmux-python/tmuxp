@@ -31,7 +31,10 @@ logger = logging.getLogger(__name__)
 
 def config_dir():
     return os.path.expanduser('~/.tmuxp/')
-cwd_dir = lambda x: os.getcwd() + '/'
+
+
+def cwd_dir():
+    return os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
@@ -252,7 +255,10 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-def load_workspace(config_file, socket_name=None, socket_path=None, colors=None, attached=None, detached=None, answer_yes=False):
+def load_workspace(
+    config_file, socket_name=None, socket_path=None, colors=None,
+    attached=None, detached=None, answer_yes=False
+):
     """Build config workspace.
 
     :param config_file: full path to config file
@@ -470,9 +476,8 @@ def resolve_config_path(config):
     """
 
     path = os.path
-    exists, isfile, isabs = path.exists, path.isfile, path.isabs
+    exists, join, isabs = path.exists, path.join, path.isabs
     dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
-    join = path.join
     cwd = os.getcwd()
 
     # is relative?    resolve to absolute via cwd
@@ -485,15 +490,18 @@ def resolve_config_path(config):
     # if purename, resolve to confg dir
     if is_pure_name(config):
         config = join(config_dir(), config)
-    elif not isabs(config) or len(dirname(config)) > 1 or config == '.' or config == "" or config == "./":
-        # if relative, fill in full path
+    elif (
+        not isabs(config) or len(dirname(config)) > 1 or config == '.' or
+        config == "" or config == "./"
+    ):  # if relative, fill in full path
         config = normpath(join(cwd, config))
 
     # no extension, scan
     if not splitext(config)[1]:
-        first = [join(config, ext) for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']]
+        first = [join(config, ext)
+                 for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']]
         second = ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
-        candidates = [f for f in first+second if exists(f)]
+        candidates = [f for f in first + second if exists(f)]
         # print(candidates)
         # print([join(config, ext) for ext in first+second])
         if len(candidates) > 1:
@@ -604,32 +612,32 @@ def command_import_teamocil(args):
 def command_import_tmuxinator(args):
     """Import tmuxinator config to tmuxp format."""
     if args.list:
-            try:
-                configs_in_user = config.in_dir(
-                    tmuxinator_config_dir(), extensions='yml')
-            except OSError:
-                configs_in_user = []
-            configs_in_cwd = config.in_dir(
-                config_dir=cwd_dir(), extensions='yml')
+        try:
+            configs_in_user = config.in_dir(
+                tmuxinator_config_dir(), extensions='yml')
+        except OSError:
+            configs_in_user = []
+        configs_in_cwd = config.in_dir(
+            config_dir=cwd_dir(), extensions='yml')
 
-            output = ''
+        output = ''
 
-            if not os.path.exists(tmuxinator_config_dir()):
-                output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                    tmuxinator_config_dir()
-            elif not configs_in_user:
-                output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir()
-            else:
-                output += '# %s: \n\t%s\n' % (
-                    config_dir(), ', '.join(configs_in_user)
-                )
+        if not os.path.exists(tmuxinator_config_dir()):
+            output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
+                tmuxinator_config_dir()
+        elif not configs_in_user:
+            output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir()
+        else:
+            output += '# %s: \n\t%s\n' % (
+                config_dir(), ', '.join(configs_in_user)
+            )
 
-            if configs_in_cwd:
-                output += '# current directory:\n\t%s' % (
-                    ', '.join(configs_in_cwd)
-                )
+        if configs_in_cwd:
+            output += '# current directory:\n\t%s' % (
+                ', '.join(configs_in_cwd)
+            )
 
-            print(output)
+        print(output)
 
     if args.config:
         configfile = os.path.abspath(os.path.relpath(
