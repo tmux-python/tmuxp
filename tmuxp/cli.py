@@ -471,6 +471,7 @@ def resolve_config_path(config):
     path = os.path
     exists, isfile, isabs = path.exists, path.isfile, path.isabs
     dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
+    join = path.join
     cwd = os.getcwd()
 
     # is relative?    resolve to absolute via cwd
@@ -479,31 +480,32 @@ def resolve_config_path(config):
     # c is absolute file?     continue
     # see if file exists, if not raise error
 
-
-    # if relative, fill in full path
-    if not isabs(config) and len(dirname(config)) > 1:
-        config = normpath(cwd, config)
-
-    # no extension
-    if not splitext(config)[1]:
+    # if purename, resolve to confg dir
+    if is_pure_name(config):
         config = join(config_dir, config)
 
-    if len(dirname(configfile)) == 0:  # e.g. customconf.yaml, search config dirs
-        userspace_config = os.path.join(config_dir, configfile)
-        return configfile
+    # if relative, fill in full path
+    if not isabs(config) and len(dirname(config)) > 1 or config == '.' or config == "" or config == "./":
+        config = normpath(join(cwd, config))
 
+    # no extension, scan
+    if not splitext(config)[1]:
+        candidates = [f for f in (join(config, ext) for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']) if exists(f)]
+        print([join(config, ext) for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']])
+        if len(candidates) > 1:
+            logger.warning(
+                'Multiple .tmuxp.EXT files found in same directory. This is '
+                'undefined behavior, please only use a yaml, yml or json in '
+                'directory or use a normal filename, e.g. myproject.json, '
+                'coolproject.yaml and load it by name')
+        elif not len(candidates):
+            raise FileError('No configs found', config)
+        config = candidates[0]
 
-    file_cwd = os.path.join(cwd_dir(), configfile)
+    if not exists(config):
+        raise FileError('File does not exist', config)
 
-
-
-    if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-        print('load %s' % file_cwd)
-        load_workspace(file_cwd, config)
-    elif os.path.exists(file_user) and os.path.isfile(file_user):
-        load_workspace(file_user, config)
-    else:
-        logger.error('%s not found.' % configfile)
+    return config
 
 
 def command_import_teamocil(args):

@@ -99,4 +99,8 @@ def test_resolve_dot(tmpdir):
     projectdir.join('.tmuxp.yaml').ensure()
 
     with projectdir.as_cwd():
-        pass
+        assert resolve_config_path('.') == str(projectdir.join('.tmuxp.yaml'))
+        assert resolve_config_path('./') == str(projectdir.join('.tmuxp.yaml'))
+        assert resolve_config_path('') == str(projectdir.join('.tmuxp.yaml'))
+        with pytest.raises(Exception):
+            resolve_config_path('.tmuxp.json')
