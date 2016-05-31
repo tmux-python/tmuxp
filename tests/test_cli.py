@@ -7,6 +7,7 @@ import os
 
 import libtmux
 import pytest
+import click
 from click.testing import CliRunner
 
 from tmuxp import cli, config
@@ -92,16 +93,27 @@ def test_is_pure_name(path, expect):
 """
 
 
-def test_resolve_dot(tmpdir, monkeypatch):
-    homedir = tmpdir.join('home').mkdir()
-    monkeypatch.setenv('HOME', homedir)
-    configdir = homedir.join('.tmuxp').mkdir()
+@pytest.fixture
+def homedir(tmpdir):
+    return tmpdir.join('home').mkdir()
 
+
+@pytest.fixture
+def configdir(homedir):
+    return homedir.join('.tmuxp').mkdir()
+
+
+@pytest.fixture
+def projectdir(homedir):
+    return homedir.join('work').join('project')
+
+
+def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
+    monkeypatch.setenv('HOME', homedir)
+    projectdir.join('.tmuxp.yaml').ensure()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
 
-    projectdir = homedir.join('work').join('project')
-    projectdir.join('.tmuxp.yaml').ensure()
     project_config = str(projectdir.join('.tmuxp.yaml'))
 
     with projectdir.as_cwd():
@@ -200,6 +212,46 @@ def test_resolve_dot(tmpdir, monkeypatch):
             resolve_config('mooooooo')
 
 
+def test_resolve_config_arg(homedir, configdir, projectdir, monkeypatch):
+    runner = CliRunner()
+
+    @click.command()
+    @click.argument(
+        'config', click.Path(exists=True), nargs=-1,
+        callback=cli.resolve_config_argument)
+    def config_cmd(config):
+        click.echo(config)
+
+    monkeypatch.setenv('HOME', homedir)
+    projectdir.join('.tmuxp.yaml').ensure()
+    user_config_name = 'myconfig'
+    user_config = configdir.join('%s.yaml' % user_config_name).ensure()
+
+    project_config = str(projectdir.join('.tmuxp.yaml'))
+
+    def check_cmd(config_arg):
+        return runner.invoke(config_cmd, [config_arg]).output
+
+    with projectdir.as_cwd():
+        expect = project_config
+        assert expect in check_cmd('.')
+        assert expect in check_cmd('./')
+        assert expect in check_cmd('')
+        assert expect in check_cmd('../project')
+        assert expect in check_cmd('../project/')
+        assert expect in check_cmd('.tmuxp.yaml')
+        assert str(user_config) in check_cmd(
+            '../../.tmuxp/%s.yaml' % user_config_name)
+        assert str(user_config) in check_cmd('myconfig')
+        assert str(user_config) in check_cmd(
+            '~/.tmuxp/myconfig.yaml')
+
+        assert 'does not exist' in check_cmd('.tmuxp.json')
+        assert 'does not exist' in check_cmd('.tmuxp.ini')
+        assert 'No configs found' in check_cmd('../')
+        assert 'No configs found' in check_cmd('moo')
+
+
 def test_load_workspace(server, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer themselv, delete the TMUX variable
@@ -221,7 +273,7 @@ def test_load_workspace(server, monkeypatch):
     (['load']),
     (['load', '.']),
 ])
-def test_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
+def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
     tmpdir.join('.tmuxp.yaml').ensure()
     with tmpdir.as_cwd():
