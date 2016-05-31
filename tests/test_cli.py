@@ -222,14 +222,14 @@ def test_zsh_autotitle_warning(monkeypatch):
 
     monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
     monkeypatch.setenv('SHELL', 'zsh')
-    result = runner.invoke(cli.cli, ['load'])
+    result = runner.invoke(cli.cli, ['load', 'nope'])
     assert 'Please set' in result.output
 
-    monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true')
+    monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true', 'nope')
     result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' not in result.output
 
     monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
     monkeypatch.setenv('SHELL', 'sh')
-    result = runner.invoke(cli.cli, ['load'])
+    result = runner.invoke(cli.cli, ['load', 'nope'])
     assert 'Please set' not in result.output
