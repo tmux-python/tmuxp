@@ -411,10 +411,12 @@ def import_config():
 
 
 @import_config.command(name='teamocil')
-def command_import_teamocil(args):
+@click.argument('configfile', click.Path(exists=True), nargs=1)
+@click.option('--list', '-l', 'list_configs', help='yes', is_flag=True)
+def command_import_teamocil(configfile, list_configs):
     """Import teamocil config to tmuxp format."""
 
-    if args.list:
+    if list_configs:
         try:
             configs_in_user = config.in_dir(
                 teamocil_config_dir(), extensions='yml')
@@ -441,9 +443,9 @@ def command_import_teamocil(args):
             )
 
         print(output)
-    elif args.config:
+    elif configfile:
         configfile = os.path.abspath(os.path.relpath(
-            os.path.expanduser(args.config)))
+            os.path.expanduser(configfile)))
         configparser = kaptan.Kaptan(handler='yaml')
 
         if os.path.exists(configfile):
@@ -471,10 +473,11 @@ def command_import_teamocil(args):
 
         print(newconfig)
         print(
-            '---------------------------------------------------------------')
-        print(
-            'Configuration import does its best to convert teamocil files.\n')
-        if args.answer_yes or click.confirm(
+            '---------------------------------------------------------------'
+            '\n'
+            'Configuration import does its best to convert teamocil files.\n'
+        )
+        if click.confirm(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
             dest = None
@@ -488,7 +491,7 @@ def command_import_teamocil(args):
                 dest = dest_prompt
 
             dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if args.answer_yes or click.confirm('Save to %s?' % dest):
+            if click.confirm('Save to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
                 buf.close()
@@ -503,9 +506,12 @@ def command_import_teamocil(args):
             sys.exit()
 
 
-def command_import_tmuxinator(args):
+@import_config.command(name='tmuxinator')
+@click.argument('configfile', click.Path(exists=True), nargs=1)
+@click.option('--list', '-l', 'list_configs', help='yes', is_flag=True)
+def command_import_tmuxinator(configfile, list_configs):
     """Import tmuxinator config to tmuxp format."""
-    if args.list:
+    if list_configs:
         try:
             configs_in_user = config.in_dir(
                 tmuxinator_config_dir(), extensions='yml')
@@ -532,10 +538,9 @@ def command_import_tmuxinator(args):
             )
 
         print(output)
-
-    if args.config:
+    elif configfile:
         configfile = os.path.abspath(os.path.relpath(
-            os.path.expanduser(args.config)))
+            os.path.expanduser(configfile)))
         configparser = kaptan.Kaptan(handler='yaml')
 
         if os.path.exists(configfile):
@@ -561,13 +566,14 @@ def command_import_tmuxinator(args):
         else:
             sys.exit('Unknown config format.')
 
+        print(newconfig)
         print(
-            newconfig,
             '---------------------------------------------------------------'
+            '\n'
             'Configuration import does its best to convert tmuxinator files.'
             '\n'
         )
-        if args.answer_yes or click.confirm(
+        if click.confirm(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
             dest = None
@@ -581,7 +587,7 @@ def command_import_tmuxinator(args):
                 dest = dest_prompt
 
             dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if args.answer_yes or click.confirm('Save to %s?' % dest):
+            if click.confirm('Save to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
                 buf.close()
