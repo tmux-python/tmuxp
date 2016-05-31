@@ -46,11 +46,111 @@ def _validate_choices(options):
     return func
 
 
-@click.group()
+def is_pure_name(path):
+    return (
+        not os.path.isabs(path) and
+        len(os.path.dirname(path)) == 0 and
+        not os.path.splitext(path)[1] and
+        path != '.' and path != ''
+    )
+
+
+def resolve_config_argument(ctx, param, value):
+    if not config:
+        click.echo("Enter at least one CONFIG")
+        click.echo(ctx.get_help(), color=ctx.color)
+        ctx.exit()
+
+    if isinstance(value, string_types):
+        value = resolve_config(value)
+
+    elif isinstance(value, tuple):
+        value = tuple(map(resolve_config, value))
+
+    print(ctx, param, value)
+    return value
+
+
+def resolve_config(config):
+    """Return the real config path or raise an exception.
+
+    :param config: config file, valid examples:
+        - a file name, myconfig.yaml
+        - relative path, ../config.yaml or ../project
+        - a period, .
+    :type config: string
+
+    If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
+    one or more found, it will warn and pick the first.
+
+    If config is ".", "./" or None, it will scan current directory.
+
+    If config is has no path and only a filename, e.g. "myconfig.yaml" it will
+    search config dir.
+
+    If config has no path and only a name with no extension, e.g. "myconfig",
+    it will scan for file name with yaml, yml and json. If multiple exist, it
+    will warn and pick the first.
+
+    :raises: :class:`click.exceptions.FileError`
+    """
+
+    path = os.path
+    exists, join, isabs = path.exists, path.join, path.isabs
+    dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
+    cwd = os.getcwd()
+
+    # is relative?    resolve to absolute via cwd
+    # a is directory?   (scan dir for .tmuxp.{ext})
+    # b no extension?   (scan config dir for .tmuxp.{ext})
+    # c is absolute file?     continue
+    # see if file exists, if not raise error
+
+    config = os.path.expanduser(config)
+    # if purename, resolve to confg dir
+    if is_pure_name(config):
+        config = join(config_dir(), config)
+    elif (
+        not isabs(config) or len(dirname(config)) > 1 or config == '.' or
+        config == "" or config == "./"
+    ):  # if relative, fill in full path
+        config = normpath(join(cwd, config))
+
+    # no extension, scan
+    if not splitext(config)[1]:
+        first = [join(config, ext)
+                 for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']]
+        second = ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
+        candidates = [f for f in first + second if exists(f)]
+        # print(candidates)
+        # print([join(config, ext) for ext in first+second])
+        if len(candidates) > 1:
+            click.secho(
+                'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
+                dirname(config), fg="red")
+            click.echo(click.wrap_text(
+                'This is undefined behavior, use only one. '
+                'Additional projects may use a filename e.g. myproject.json, '
+                'coolproject.yaml. You can load them by filename.'
+            ))
+        elif not len(candidates):
+            raise FileError('No configs found', config)
+        config = candidates[0]
+
+    if not exists(config):
+        raise FileError('File does not exist', config)
+
+    return config
+
+
+@click.group(context_settings={'obj': {}})
+@click.version_option(version=__version__, message='%(prog)s %(version)s')
 @click.option('--log_level', default='INFO',
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
-@click.version_option(version=__version__, message='%(prog)s %(version)s')
-def cli(log_level):
+@click.option('--yes', '-y', 'answer_yes', help='yes')
+@click.pass_context
+def cli(ctx, log_level, answer_yes):
+    ctx.obj['answer_yes'] = answer_yes
     setup_logger(
         level=log_level.upper()
     )
@@ -332,113 +432,32 @@ def command_freeze(args):
 
 @cli.command(name='load')
 @click.pass_context
-@click.argument('config', click.Path(exists=True), nargs=-1)
-def command_load(ctx, config):
+@click.argument('config', click.Path(exists=True), nargs=-1,
+                callback=resolve_config_argument)
+@click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
+def command_load(ctx, config, answer_yes):
     """Load a tmux workspace from one or multiple CONFIG path to config file,
     directory with config file or session name.
     """
     util.oh_my_zsh_auto_title()
+
     if not config:
         click.echo("Enter at least one CONFIG")
         click.echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
     if isinstance(config, string_types):
-        config = resolve_config_path(config)
-        load_workspace(config)
+        load_workspace(config, answer_yes=answer_yes)
 
     elif isinstance(config, tuple):
         config = list(config)
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             # todo: add -d option to all these
-            cfg = resolve_config_path(cfg)
-            load_workspace(cfg)
+            load_workspace(cfg, answer_yes=answer_yes)
 
         # todo: obey the -d in the cli args only if user specifies
-        cfg = resolve_config_path(config[-1])
-        load_workspace(cfg)
-
-
-def is_pure_name(path):
-    return (
-        not os.path.isabs(path) and
-        len(os.path.dirname(path)) == 0 and
-        not os.path.splitext(path)[1] and
-        path != '.' and path != ''
-    )
-
-
-def resolve_config_path(config):
-    """Return the real config path or raise an exception.
-
-    :param config: config file, valid examples:
-        - a file name, myconfig.yaml
-        - relative path, ../config.yaml or ../project
-        - a period, .
-    :type config: string
-
-    If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
-    one or more found, it will warn and pick the first.
-
-    If config is ".", "./" or None, it will scan current directory.
-
-    If config is has no path and only a filename, e.g. "myconfig.yaml" it will
-    search config dir.
-
-    If config has no path and only a name with no extension, e.g. "myconfig",
-    it will scan for file name with yaml, yml and json. If multiple exist, it
-    will warn and pick the first.
-
-    :raises: :class:`click.exceptions.FileError`
-    """
-
-    path = os.path
-    exists, join, isabs = path.exists, path.join, path.isabs
-    dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
-    cwd = os.getcwd()
-
-    # is relative?    resolve to absolute via cwd
-    # a is directory?   (scan dir for .tmuxp.{ext})
-    # b no extension?   (scan config dir for .tmuxp.{ext})
-    # c is absolute file?     continue
-    # see if file exists, if not raise error
-
-    config = os.path.expanduser(config)
-    # if purename, resolve to confg dir
-    if is_pure_name(config):
-        config = join(config_dir(), config)
-    elif (
-        not isabs(config) or len(dirname(config)) > 1 or config == '.' or
-        config == "" or config == "./"
-    ):  # if relative, fill in full path
-        config = normpath(join(cwd, config))
-
-    # no extension, scan
-    if not splitext(config)[1]:
-        first = [join(config, ext)
-                 for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']]
-        second = ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
-        candidates = [f for f in first + second if exists(f)]
-        # print(candidates)
-        # print([join(config, ext) for ext in first+second])
-        if len(candidates) > 1:
-            click.secho(
-                'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
-                dirname(config), fg="red")
-            click.echo(click.wrap_text(
-                'This is undefined behavior, use only one. '
-                'Additional projects may use a filename e.g. myproject.json, '
-                'coolproject.yaml. You can load them by filename.'
-            ))
-        elif not len(candidates):
-            raise FileError('No configs found', config)
-        config = candidates[0]
-
-    if not exists(config):
-        raise FileError('File does not exist', config)
-
-    return config
+        load_workspace(config[-1], answer_yes=answer_yes)
 
 
 @click.group(name='import')
@@ -632,38 +651,24 @@ def command_import_tmuxinator(args):
             sys.exit()
 
 
-def command_convert(args):
+@cli.command(name='convert')
+@click.argument('config', click.Path(exists=True), nargs=1,
+                callback=resolve_config_argument)
+def command_convert(config):
     """Convert tmuxp config to and from JSON and YAML."""
 
-    try:
-        configfile = args.config
-    except exc.TmuxpException:
-        print('Please enter a config')
-
-    file_user = os.path.join(config_dir(), configfile)
-    file_cwd = os.path.join(cwd_dir(), configfile)
-    if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-        fullfile = os.path.normpath(file_cwd)
-        filename, ext = os.path.splitext(file_cwd)
-    elif os.path.exists(file_user) and os.path.isfile(file_user):
-
-        fullfile = os.path.normpath(file_user)
-        filename, ext = os.path.splitext(file_user)
-    else:
-        click.echo('%s not found.' % configfile, err=True)
-        return
-
+    _, ext = os.path.splitext(config)
     if 'json' in ext:
-        if args.answer_yes or click.confirm(
-            'convert to <%s> to yaml?' % fullfile
+        if click.confirm(
+            'convert to <%s> to yaml?' % config
         ):
             configparser = kaptan.Kaptan()
-            configparser.import_config(configfile)
-            newfile = fullfile.replace(ext, '.yaml')
+            configparser.import_config(config)
+            newfile = config.replace(ext, '.yaml')
             newconfig = configparser.export(
                 'yaml', indent=2, default_flow_style=False
             )
-            if args.answer_yes or click.confirm(
+            if click.confirm(
                 'Save config to %s?' % newfile
             ):
                 buf = open(newfile, 'w')
@@ -671,15 +676,15 @@ def command_convert(args):
                 buf.close()
                 print('New config saved to %s' % newfile)
     elif 'yaml' in ext:
-        if args.answer_yes or click.confirm(
-            'convert to <%s> to json?' % fullfile
+        if click.confirm(
+            'convert to <%s> to json?' % config
         ):
             configparser = kaptan.Kaptan()
-            configparser.import_config(configfile)
-            newfile = fullfile.replace(ext, '.json')
+            configparser.import_config(config)
+            newfile = config.replace(ext, '.json')
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
-            if args.answer_yes or click.confirm(
+            if click.confirm(
                 'Save config to <%s>?' % newfile
             ):
                 buf = open(newfile, 'w')
