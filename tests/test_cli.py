@@ -10,7 +10,7 @@ import pytest
 from click.testing import CliRunner
 
 from tmuxp import cli, config
-from tmuxp.cli import is_pure_name, load_workspace, resolve_config_path
+from tmuxp.cli import is_pure_name, load_workspace, resolve_config
 
 from .fixtures._util import curjoin
 
@@ -106,98 +106,98 @@ def test_resolve_dot(tmpdir, monkeypatch):
 
     with projectdir.as_cwd():
         expect = project_config
-        assert resolve_config_path('.') == expect
-        assert resolve_config_path('./') == expect
-        assert resolve_config_path('') == expect
-        assert resolve_config_path('../project') == expect
-        assert resolve_config_path('../project/') == expect
-        assert resolve_config_path('.tmuxp.yaml') == expect
-        assert resolve_config_path(
+        assert resolve_config('.') == expect
+        assert resolve_config('./') == expect
+        assert resolve_config('') == expect
+        assert resolve_config('../project') == expect
+        assert resolve_config('../project/') == expect
+        assert resolve_config('.tmuxp.yaml') == expect
+        assert resolve_config(
             '../../.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config('myconfig') == str(user_config)
+        assert resolve_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config_path('.tmuxp.json')
+            resolve_config('.tmuxp.json')
         with pytest.raises(Exception):
-            resolve_config_path('.tmuxp.ini')
+            resolve_config('.tmuxp.ini')
         with pytest.raises(Exception):
-            resolve_config_path('../')
+            resolve_config('../')
         with pytest.raises(Exception):
-            resolve_config_path('mooooooo')
+            resolve_config('mooooooo')
 
     with homedir.as_cwd():
         expect = project_config
-        assert resolve_config_path('work/project') == expect
-        assert resolve_config_path('work/project/') == expect
-        assert resolve_config_path('./work/project') == expect
-        assert resolve_config_path('./work/project/') == expect
-        assert resolve_config_path(
+        assert resolve_config('work/project') == expect
+        assert resolve_config('work/project/') == expect
+        assert resolve_config('./work/project') == expect
+        assert resolve_config('./work/project/') == expect
+        assert resolve_config(
             '.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config(
             './.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config('myconfig') == str(user_config)
+        assert resolve_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config_path('')
+            resolve_config('')
         with pytest.raises(Exception):
-            resolve_config_path('.')
+            resolve_config('.')
         with pytest.raises(Exception):
-            resolve_config_path('.tmuxp.yaml')
+            resolve_config('.tmuxp.yaml')
         with pytest.raises(Exception):
-            resolve_config_path('../')
+            resolve_config('../')
         with pytest.raises(Exception):
-            resolve_config_path('mooooooo')
+            resolve_config('mooooooo')
 
     with configdir.as_cwd():
         expect = project_config
-        assert resolve_config_path('../work/project') == expect
-        assert resolve_config_path('../../home/work/project') == expect
-        assert resolve_config_path('../work/project/') == expect
-        assert resolve_config_path(
+        assert resolve_config('../work/project') == expect
+        assert resolve_config('../../home/work/project') == expect
+        assert resolve_config('../work/project/') == expect
+        assert resolve_config(
             '%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config(
             './%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config('myconfig') == str(user_config)
+        assert resolve_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config_path('')
+            resolve_config('')
         with pytest.raises(Exception):
-            resolve_config_path('.')
+            resolve_config('.')
         with pytest.raises(Exception):
-            resolve_config_path('.tmuxp.yaml')
+            resolve_config('.tmuxp.yaml')
         with pytest.raises(Exception):
-            resolve_config_path('../')
+            resolve_config('../')
         with pytest.raises(Exception):
-            resolve_config_path('mooooooo')
+            resolve_config('mooooooo')
 
     with tmpdir.as_cwd():
         expect = project_config
-        assert resolve_config_path('home/work/project') == expect
-        assert resolve_config_path('./home/work/project/') == expect
-        assert resolve_config_path(
+        assert resolve_config('home/work/project') == expect
+        assert resolve_config('./home/work/project/') == expect
+        assert resolve_config(
             'home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config(
             './home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config_path('myconfig') == str(user_config)
-        assert resolve_config_path(
+        assert resolve_config('myconfig') == str(user_config)
+        assert resolve_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config_path('')
+            resolve_config('')
         with pytest.raises(Exception):
-            resolve_config_path('.')
+            resolve_config('.')
         with pytest.raises(Exception):
-            resolve_config_path('.tmuxp.yaml')
+            resolve_config('.tmuxp.yaml')
         with pytest.raises(Exception):
-            resolve_config_path('../')
+            resolve_config('../')
         with pytest.raises(Exception):
-            resolve_config_path('mooooooo')
+            resolve_config('mooooooo')
 
 
 def test_load_workspace(server, monkeypatch):
@@ -219,21 +219,24 @@ def test_load_workspace(server, monkeypatch):
 
 @pytest.mark.parametrize("cli_args", [
     (['load']),
-    (['load', 'someconfig_arg']),
+    (['load', '.']),
 ])
-def test_zsh_autotitle_warning(cli_args, monkeypatch):
-    runner = CliRunner()
+def test_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
+    # create dummy tmuxp yaml so we don't get yelled at
+    tmpdir.join('.tmuxp.yaml').ensure()
+    with tmpdir.as_cwd():
+        runner = CliRunner()
 
-    monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
-    monkeypatch.setenv('SHELL', 'zsh')
-    result = runner.invoke(cli.cli, cli_args)
-    assert 'Please set' in result.output
+        monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
+        monkeypatch.setenv('SHELL', 'zsh')
+        result = runner.invoke(cli.cli, cli_args)
+        assert 'Please set' in result.output
 
-    monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true', 'nope')
-    result = runner.invoke(cli.cli, cli_args)
-    assert 'Please set' not in result.output
+        monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true')
+        result = runner.invoke(cli.cli, cli_args)
+        assert 'Please set' not in result.output
 
-    monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
-    monkeypatch.setenv('SHELL', 'sh')
-    result = runner.invoke(cli.cli, cli_args)
-    assert 'Please set' not in result.output
+        monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
+        monkeypatch.setenv('SHELL', 'sh')
+        result = runner.invoke(cli.cli, cli_args)
+        assert 'Please set' not in result.output
