@@ -16,13 +16,11 @@ import click
 import kaptan
 from click.exceptions import FileError
 from libtmux.common import has_required_tmux_version, which
-from libtmux.exc import TmuxSessionExists
 from libtmux.server import Server
 
 from . import WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
-from ._compat import input, string_types
-from .cli_defaultgroup import DefaultGroup
+from ._compat import string_types
 from .workspacebuilder import freeze
 
 logger = logging.getLogger(__name__)
@@ -38,106 +36,17 @@ tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
 
-def prompt(name, default=None):
-    """Return user input from command line.
+def _validate_choices(options):
+    def func(value):
+        if value not in options:
+            raise click.BadParameter(
+                'Possible choices are: {0}.'.format(', '.join(options)))
+        return value
 
-    :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from
-    `flask-script`_. See the `flask-script license`_.
-
-    .. _flask-script: https://github.com/techniq/flask-script
-    .. _flask-script license:
-        https://github.com/techniq/flask-script/blob/master/LICENSE
-
-    :param name: prompt text
-    :param default: default value if no input provided.
-    :rtype: string
-
-    """
-
-    _prompt = name + (default and ' [%s]' % default or '')
-    _prompt += name.endswith('?') and ' ' or ': '
-    while True:
-        rv = input(_prompt)
-        if rv:
-            return rv
-        if default is not None:
-            return default
+    return func
 
 
-def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
-    """Return user input from command line and converts to boolean value.
-
-    :param name: prompt text
-    :param default: default value if no input provided.
-    :param yes_choices: default 'y', 'yes', '1', 'on', 'true', 't'
-    :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
-    :rtype: bool
-
-    """
-
-    yes_choices = yes_choices or ('y', 'yes', '1', 'on', 'true', 't')
-    no_choices = no_choices or ('n', 'no', '0', 'off', 'false', 'f')
-
-    if default is None:
-        prompt_choice = 'y/n'
-    elif default is True:
-        prompt_choice = 'Y/n'
-    else:
-        prompt_choice = 'y/N'
-
-    _prompt = name + ' [%s]' % prompt_choice
-    _prompt += name.endswith('?') and ' ' or ': '
-
-    while True:
-        rv = input(_prompt)
-        if not rv:
-            return default
-        if rv.lower() in yes_choices:
-            return True
-        elif rv.lower() in no_choices:
-            return False
-
-
-def prompt_yes_no(name, default=True):
-    """:meth:`prompt_bool()` returning yes by default."""
-    return prompt_bool(name, default=default)
-
-
-def prompt_choices(name, choices, default=None, no_choice=('none',)):
-    """Return user input from command line from set of provided choices.
-
-    :param name: prompt text
-    :param choices: list or tuple of available choices. Choices may be
-                    single strings or (key, value) tuples.
-    :param default: default value if no input provided.
-    :param no_choice: acceptable list of strings for "null choice"
-    :rtype: str
-
-    """
-
-    _choices = []
-    options = []
-
-    for choice in choices:
-        if isinstance(choice, string_types):
-            options.append(choice)
-        else:
-            options.append("%s [%s]" % (choice, choice[0]))
-            choice = choice[0]
-        _choices.append(choice)
-
-    while True:
-        rv = prompt(name + ' - (%s)' % ', '.join(options), default)
-        if not rv:
-            return default
-        rv = rv.lower()
-        if rv in no_choice:
-            return None
-        if rv in _choices:
-            return rv
-
-
-@click.group(cls=DefaultGroup, default_if_no_args=True)
+@click.group()
 @click.option('--log_level', default='INFO',
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
 @click.version_option(version=__version__, message='%(prog)s %(version)s')
@@ -270,17 +179,37 @@ def load_workspace(
     try:
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
-        logger.error('%s is empty or parsed no config data' % config_file)
+        click.echo('%s is empty or parsed no config data' %
+                   config_file, err=True)
         return
 
     which('tmux')
 
+    def reattach(session):
+        if 'TMUX' in os.environ:
+            session.switch_client()
+
+        else:
+            session.attach_session()
+
+    session_name = sconfig['session_name']
+    if builder.session_exists(session_name):
+        if not detached and (
+            answer_yes or click.confirm(
+                '%s is already running. Attach?' %
+                click.style(session_name, fg='green'), default=True)
+        ):
+            reattach(builder.session)
+        return
+
     try:
-        logger.info('Loading %s.' % config_file)
+        click.echo(
+            click.style('[Loading] ', fg='green') +
+            click.style(config_file, fg='blue', bold=True))
         builder.build()
 
         if 'TMUX' in os.environ:
-            if not detached and (answer_yes or prompt_yes_no(
+            if not detached and (answer_yes or click.confirm(
                 'Already inside TMUX, switch to session?'
             )):
                 tmux_env = os.environ.pop('TMUX')
@@ -293,30 +222,21 @@ def load_workspace(
 
         if not detached:
             builder.session.attach_session()
-    except TmuxSessionExists as e:
-        if not detached and (
-            answer_yes or prompt_yes_no('%s Attach?' % e)
-        ):
-            if 'TMUX' in os.environ:
-                builder.session.switch_client()
-
-            else:
-                builder.session.attach_session()
     except exc.TmuxpException as e:
         import traceback
 
-        print(traceback.format_exc())
-        logger.error(e)
+        click.echo(traceback.format_exc(), err=True)
+        click.echo(e, err=True)
 
-        choice = prompt_choices(
+        choice = click.prompt(
             'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
-            choices=['k', 'a', 'd'],
+            value_proc=_validate_choices(['k', 'a', 'd']),
             default='k'
         )
 
         if choice == 'k':
             builder.session.kill_session()
-            print('Session killed.')
+            click.echo('Session killed.')
         elif choice == 'a':
             if 'TMUX' in os.environ:
                 builder.session.switch_client()
@@ -354,8 +274,11 @@ def command_freeze(args):
     configparser = kaptan.Kaptan()
     newconfig = config.inline(sconf)
     configparser.import_config(newconfig)
-    config_format = prompt_choices('Convert to', choices=[
-        'yaml', 'json'], default='yaml')
+    config_format = click.prompt(
+        'Convert to',
+        value_proc=_validate_choices(['yaml', 'json']),
+        default='yaml'
+    )
 
     if config_format == 'yaml':
         newconfig = configparser.export(
@@ -371,7 +294,7 @@ def command_freeze(args):
         '---------------------------------------------------------------')
     print(
         'Configuration import does its best to convert teamocil files.\n')
-    if args.answer_yes or prompt_yes_no(
+    if args.answer_yes or click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
     ):
         dest = None
@@ -382,7 +305,7 @@ def command_freeze(args):
                     '%s.%s' % (sconf.get('session_name'), config_format)
                 )
             )
-            dest_prompt = prompt('Save to: ', save_to)
+            dest_prompt = click.prompt('Save to: ', save_to)
             if os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue
@@ -390,7 +313,7 @@ def command_freeze(args):
             dest = dest_prompt
 
         dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-        if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
+        if args.answer_yes or click.confirm('Save to %s?' % dest):
             destdir = os.path.dirname(dest)
             if not os.path.isdir(destdir):
                 os.makedirs(destdir)
@@ -408,19 +331,24 @@ def command_freeze(args):
         sys.exit()
 
 
-@cli.command(name='load', default=True)
+@cli.command(name='load')
+@click.pass_context
 @click.argument('config', click.Path(exists=True), nargs=-1)
-def command_load(config):
-    """Load a session from a tmuxp session file."""
-    from ._compat import text_type
+def command_load(ctx, config):
+    """Load a tmux workspace from one or multiple CONFIG path to config file,
+    directory with config file or session name.
+    """
+    if not config:
+        click.echo("Enter at least one CONFIG")
+        click.echo(ctx.get_help(), color=ctx.color)
+        ctx.exit()
 
-    if isinstance(config, text_type):
+    if isinstance(config, string_types):
         config = resolve_config_path(config)
         load_workspace(config)
 
     elif isinstance(config, tuple):
         config = list(config)
-        print(config)
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             # todo: add -d option to all these
@@ -495,11 +423,14 @@ def resolve_config_path(config):
         # print(candidates)
         # print([join(config, ext) for ext in first+second])
         if len(candidates) > 1:
-            logger.warning(
-                'Multiple .tmuxp.EXT files found in same directory. This is '
-                'undefined behavior, please only use a yaml, yml or json in '
-                'directory or use a normal filename, e.g. myproject.json, '
-                'coolproject.yaml and load it by name')
+            click.secho(
+                'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
+                dirname(config), fg="red")
+            click.echo(click.wrap_text(
+                'This is undefined behavior, use only one. '
+                'Additional projects may use a filename e.g. myproject.json, '
+                'coolproject.yaml. You can load them by filename.'
+            ))
         elif not len(candidates):
             raise FileError('No configs found', config)
         config = candidates[0]
@@ -510,6 +441,12 @@ def resolve_config_path(config):
     return config
 
 
+@click.group(name='import')
+def import_config():
+    pass
+
+
+@import_config.command(name='teamocil')
 def command_import_teamocil(args):
     """Import teamocil config to tmuxp format."""
 
@@ -553,8 +490,11 @@ def command_import_teamocil(args):
         else:
             sys.exit('File not found: %s' % configfile)
 
-        config_format = prompt_choices('Convert to', choices=[
-                                       'yaml', 'json'], default='yaml')
+        config_format = click.prompt(
+            'Convert to',
+            value_proc=_validate_choices(['yaml', 'json']),
+            default='yaml'
+        )
 
         if config_format == 'yaml':
             newconfig = configparser.export(
@@ -570,12 +510,12 @@ def command_import_teamocil(args):
             '---------------------------------------------------------------')
         print(
             'Configuration import does its best to convert teamocil files.\n')
-        if args.answer_yes or prompt_yes_no(
+        if args.answer_yes or click.confirm(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
             dest = None
             while not dest:
-                dest_prompt = prompt('Save to: ', os.path.abspath(
+                dest_prompt = click.prompt('Save to: %s ' % os.path.abspath(
                     os.path.join(config_dir(), 'myimport.%s' % config_format)))
                 if os.path.exists(dest_prompt):
                     print('%s exists. Pick a new filename.' % dest_prompt)
@@ -584,7 +524,7 @@ def command_import_teamocil(args):
                 dest = dest_prompt
 
             dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
+            if args.answer_yes or click.confirm('Save to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
                 buf.close()
@@ -642,8 +582,11 @@ def command_import_tmuxinator(args):
         else:
             sys.exit('File not found: %s' % configfile)
 
-        config_format = prompt_choices('Convert to', choices=[
-                                       'yaml', 'json'], default='yaml')
+        config_format = click.prompt(
+            'Convert to',
+            value_proc=_validate_choices(['yaml', 'json']),
+            default='yaml'
+        )
 
         if config_format == 'yaml':
             newconfig = configparser.export(
@@ -660,12 +603,12 @@ def command_import_tmuxinator(args):
             'Configuration import does its best to convert tmuxinator files.'
             '\n'
         )
-        if args.answer_yes or prompt_yes_no(
+        if args.answer_yes or click.confirm(
             'The new config *WILL* require adjusting afterwards. Save config?'
         ):
             dest = None
             while not dest:
-                dest_prompt = prompt('Save to: ', os.path.abspath(
+                dest_prompt = click.prompt('Save to: %s' % os.path.abspath(
                     os.path.join(config_dir(), 'myimport.%s' % config_format)))
                 if os.path.exists(dest_prompt):
                     print('%s exists. Pick a new filename.' % dest_prompt)
@@ -674,7 +617,7 @@ def command_import_tmuxinator(args):
                 dest = dest_prompt
 
             dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
+            if args.answer_yes or click.confirm('Save to %s?' % dest):
                 buf = open(dest, 'w')
                 buf.write(newconfig)
                 buf.close()
@@ -707,11 +650,11 @@ def command_convert(args):
         fullfile = os.path.normpath(file_user)
         filename, ext = os.path.splitext(file_user)
     else:
-        logger.error('%s not found.' % configfile)
+        click.echo('%s not found.' % configfile, err=True)
         return
 
     if 'json' in ext:
-        if args.answer_yes or prompt_yes_no(
+        if args.answer_yes or click.confirm(
             'convert to <%s> to yaml?' % fullfile
         ):
             configparser = kaptan.Kaptan()
@@ -720,7 +663,7 @@ def command_convert(args):
             newconfig = configparser.export(
                 'yaml', indent=2, default_flow_style=False
             )
-            if args.answer_yes or prompt_yes_no(
+            if args.answer_yes or click.confirm(
                 'Save config to %s?' % newfile
             ):
                 buf = open(newfile, 'w')
@@ -728,7 +671,7 @@ def command_convert(args):
                 buf.close()
                 print('New config saved to %s' % newfile)
     elif 'yaml' in ext:
-        if args.answer_yes or prompt_yes_no(
+        if args.answer_yes or click.confirm(
             'convert to <%s> to json?' % fullfile
         ):
             configparser = kaptan.Kaptan()
@@ -736,7 +679,7 @@ def command_convert(args):
             newfile = fullfile.replace(ext, '.json')
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
-            if args.answer_yes or prompt_yes_no(
+            if args.answer_yes or click.confirm(
                 'Save config to <%s>?' % newfile
             ):
                 buf = open(newfile, 'w')
@@ -795,7 +738,7 @@ def command_kill_session(args):
         session.kill_session()
         print("Killed session %s." % ctext)
     except exc.TmuxpException as e:
-        logger.error(e)
+        click.echo(e, err=True)
 
 
 def get_parser():
@@ -1038,7 +981,7 @@ def main():
     try:
         has_required_tmux_version()
     except exc.TmuxpException as e:
-        logger.error(e)
+        click.echo(e, err=True)
         sys.exit()
 
     util.oh_my_zsh_auto_title()
