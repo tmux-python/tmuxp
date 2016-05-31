@@ -270,17 +270,24 @@ def test_load_workspace(server, monkeypatch):
 
 
 @pytest.mark.parametrize("cli_args", [
-    (['load']),
     (['load', '.']),
+    (['load', '.tmuxp.yaml']),
 ])
 def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
     tmpdir.join('.tmuxp.yaml').ensure()
+    tmpdir.join('.oh-my-zsh').ensure(dir=True)
+    monkeypatch.setenv('HOME', str(tmpdir))
+
     with tmpdir.as_cwd():
         runner = CliRunner()
 
         monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
         monkeypatch.setenv('SHELL', 'zsh')
+        result = runner.invoke(cli.cli, cli_args)
+        assert 'Please set' in result.output
+
+        monkeypatch.setenv('DISABLE_AUTO_TITLE', 'false')
         result = runner.invoke(cli.cli, cli_args)
         assert 'Please set' in result.output
 
