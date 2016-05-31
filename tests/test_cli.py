@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp command line interface."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, print_function, with_statement
 
 import os
 
@@ -223,13 +222,14 @@ def test_zsh_autotitle_warning(monkeypatch):
 
     monkeypatch.delenv('DISABLE_AUTO_TITLE')
     monkeypatch.setenv('SHELL', 'zsh')
-    result = runner.invoke(cli.cli)
+    result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' in result.output
 
     monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true')
-    result = runner.invoke(cli.cli)
+    result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' not in result.output
 
     monkeypatch.delenv('DISABLE_AUTO_TITLE')
     monkeypatch.setenv('SHELL', 'sh')
+    result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' not in result.output
