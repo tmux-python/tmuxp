@@ -51,7 +51,6 @@ def _validate_choices(options):
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
 @click.version_option(version=__version__, message='%(prog)s %(version)s')
 def cli(log_level):
-    util.oh_my_zsh_auto_title()
     setup_logger(
         level=log_level.upper()
     )
@@ -338,6 +337,7 @@ def command_load(ctx, config):
     """Load a tmux workspace from one or multiple CONFIG path to config file,
     directory with config file or session name.
     """
+    util.oh_my_zsh_auto_title()
     if not config:
         click.echo("Enter at least one CONFIG")
         click.echo(ctx.get_help(), color=ctx.color)
