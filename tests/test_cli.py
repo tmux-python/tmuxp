@@ -204,7 +204,7 @@ def test_load_workspace(server, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer themselv, delete the TMUX variable
     # temporarily.
-    monkeypatch.delenv('TMUX')
+    monkeypatch.delenv('TMUX', raising=False)
     session_file = curjoin("workspacebuilder/two_pane.yaml")
 
     # open it detached
@@ -220,7 +220,7 @@ def test_load_workspace(server, monkeypatch):
 def test_zsh_autotitle_warning(monkeypatch):
     runner = CliRunner()
 
-    monkeypatch.delenv('DISABLE_AUTO_TITLE')
+    monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
     monkeypatch.setenv('SHELL', 'zsh')
     result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' in result.output
@@ -229,7 +229,7 @@ def test_zsh_autotitle_warning(monkeypatch):
     result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' not in result.output
 
-    monkeypatch.delenv('DISABLE_AUTO_TITLE')
+    monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
     monkeypatch.setenv('SHELL', 'sh')
     result = runner.invoke(cli.cli, ['load'])
     assert 'Please set' not in result.output
