@@ -383,8 +383,10 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.pass_context
 @click.argument('config', click.Path(exists=True), nargs=-1,
                 callback=resolve_config_argument)
+@click.option('-S', 'socket_path', help='pass-through for tmux -L')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
-def command_load(ctx, config, answer_yes):
+def command_load(ctx, config, socket_name, socket_path, answer_yes):
     """Load a tmux workspace from one or multiple CONFIG path to config file,
     directory with config file or session name.
     """
@@ -396,23 +398,29 @@ def command_load(ctx, config, answer_yes):
 
     util.oh_my_zsh_auto_title()
 
+    tmux_options = {
+        'socket_name': socket_name,
+        'socket_path': socket_path,
+        'answer_yes': answer_yes
+    }
+
     if not config:
         click.echo("Enter at least one CONFIG")
         click.echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
     if isinstance(config, string_types):
-        load_workspace(config, answer_yes=answer_yes)
+        load_workspace(config, **tmux_options)
 
     elif isinstance(config, tuple):
         config = list(config)
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             # todo: add -d option to all these
-            load_workspace(cfg, answer_yes=answer_yes)
+            load_workspace(cfg, **tmux_options)
 
         # todo: obey the -d in the cli args only if user specifies
-        load_workspace(config[-1], answer_yes=answer_yes)
+        load_workspace(config[-1], **tmux_options)
 
 
 @cli.group(name='import')
