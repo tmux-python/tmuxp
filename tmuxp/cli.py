@@ -253,10 +253,12 @@ def load_workspace(
 @click.version_option(version=__version__, message='%(prog)s %(version)s')
 @click.option('--log_level', default='INFO',
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
-@click.option('--yes', '-y', 'answer_yes', help='yes')
-@click.pass_context
-def cli(ctx, log_level, answer_yes):
-    ctx.obj['answer_yes'] = answer_yes
+def cli(log_level):
+    try:
+        has_required_tmux_version()
+    except exc.TmuxpException as e:
+        click.echo(e, err=True)
+        sys.exit()
     setup_logger(
         level=log_level.upper()
     )
@@ -384,6 +386,12 @@ def command_load(ctx, config, answer_yes):
     """Load a tmux workspace from one or multiple CONFIG path to config file,
     directory with config file or session name.
     """
+    try:
+        has_required_tmux_version()
+    except exc.TmuxpException as e:
+        click.echo(e, err=True)
+        sys.exit()
+
     util.oh_my_zsh_auto_title()
 
     if not config:
@@ -644,59 +652,6 @@ def command_convert(config):
                 print('New config saved to <%s>.' % newfile)
 
 
-def command_attach_session(args):
-    """Command to attach / switch client to a tmux session."""
-    ctext = ' '.join(args.session_name)
-
-    t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
-    )
-
-    try:
-        session = next((s for s in t.sessions if s.get(
-            'session_name') == ctext), None)
-        if not session:
-            raise exc.TmuxpException('Session not found.')
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    if 'TMUX' in os.environ:
-        del os.environ['TMUX']
-        session.switch_client()
-        print('Inside tmux client, switching client.')
-    else:
-        session.attach_session()
-        print('Attaching client.')
-
-
-def command_kill_session(args):
-    """Command to kill a tmux session."""
-    ctext = ' '.join(args.session_name)
-
-    t = Server(
-        socket_name=args.socket_name or None,
-        socket_path=args.socket_path or None
-    )
-
-    try:
-        session = next((s for s in t.sessions if s.get(
-            'session_name') == ctext), None)
-        if not session:
-            raise exc.TmuxpException('Session not found.')
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    try:
-        session.kill_session()
-        print("Killed session %s." % ctext)
-    except exc.TmuxpException as e:
-        click.echo(e, err=True)
-
-
 def get_parser():
     """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
 
@@ -762,7 +717,6 @@ def get_parser():
         parents=[server_parser],
         help='Kill tmux session by name.'
     )
-    kill_session.set_defaults(callback=command_kill_session)
 
     kill_session.add_argument(
         dest='session_name',
@@ -779,7 +733,6 @@ def get_parser():
              'terminal and attach it. If used from inside, switch the current '
              'client.'
     )
-    attach_session.set_defaults(callback=command_attach_session)
 
     attach_session.add_argument(
         dest='session_name',
@@ -911,53 +864,3 @@ def get_parser():
     )
 
     return parser
-
-
-def main():
-    """Main CLI application."""
-    pass
-    parser = get_parser()
-
-    args = parser.parse_args()
-
-    log_level = 'INFO'
-    if 'log_level' in args and isinstance(args.log_level, string_types):
-        log_level = args.log_level.upper()
-
-    setup_logger(
-        level=log_level
-    )
-
-    try:
-        has_required_tmux_version()
-    except exc.TmuxpException as e:
-        click.echo(e, err=True)
-        sys.exit()
-
-    util.oh_my_zsh_auto_title()
-
-    t = Server(  # noqa
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
-    )
-
-    try:
-        if not hasattr(args, 'callback'):
-            parser.print_help()
-        elif args.callback is command_load:
-            command_load(args)
-        elif args.callback is command_convert:
-            command_convert(args)
-        elif args.callback is command_import_teamocil:
-            command_import_teamocil(args)
-        elif args.callback is command_import_tmuxinator:
-            command_import_tmuxinator(args)
-        elif args.callback is command_freeze:
-            command_freeze(args)
-        elif args.callback is command_attach_session:
-            command_attach_session(args)
-        elif args.callback is command_kill_session:
-            command_kill_session(args)
-    except KeyboardInterrupt:
-        pass
