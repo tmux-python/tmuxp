@@ -142,6 +142,7 @@ def prompt_choices(name, choices, default=None, no_choice=('none',)):
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
 @click.version_option(version=__version__, message='%(prog)s %(version)s')
 def cli(log_level):
+    util.oh_my_zsh_auto_title()
     setup_logger(
         level=log_level.upper()
     )

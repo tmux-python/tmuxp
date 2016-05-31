@@ -8,6 +8,7 @@ import os
 
 import libtmux
 import pytest
+from click.testing import CliRunner
 
 from tmuxp import cli, config
 from tmuxp.cli import is_pure_name, load_workspace, resolve_config_path
@@ -215,3 +216,20 @@ def test_load_workspace(server, monkeypatch):
 
     assert isinstance(session, libtmux.Session)
     assert session.name == 'sampleconfig'
+
+
+def test_zsh_autotitle_warning(monkeypatch):
+    runner = CliRunner()
+
+    monkeypatch.delenv('DISABLE_AUTO_TITLE')
+    monkeypatch.setenv('SHELL', 'zsh')
+    result = runner.invoke(cli.cli)
+    assert 'Please set' in result.output
+
+    monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true')
+    result = runner.invoke(cli.cli)
+    assert 'Please set' not in result.output
+
+    monkeypatch.delenv('DISABLE_AUTO_TITLE')
+    monkeypatch.setenv('SHELL', 'sh')
+    assert 'Please set' not in result.output
