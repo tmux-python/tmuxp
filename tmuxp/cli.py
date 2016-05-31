@@ -154,115 +154,6 @@ def resolve_config(config):
     return config
 
 
-@click.group(context_settings={'obj': {}})
-@click.version_option(version=__version__, message='%(prog)s %(version)s')
-@click.option('--log_level', default='INFO',
-              help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
-@click.option('--yes', '-y', 'answer_yes', help='yes')
-@click.pass_context
-def cli(ctx, log_level, answer_yes):
-    ctx.obj['answer_yes'] = answer_yes
-    setup_logger(
-        level=log_level.upper()
-    )
-
-
-class ConfigFileCompleter(object):
-
-    """completer for tmuxp files."""
-
-    def __call__(self, prefix, **kwargs):
-
-        completion = [os.path.join(config_dir(), c)
-                      for c in config.in_dir(config_dir())]
-
-        return completion
-
-
-class TmuxinatorCompleter(object):
-
-    """completer for Tmuxinator files."""
-
-    def __call__(self, prefix, **kwargs):
-
-        tmuxinator_configs = config.in_dir(
-            tmuxinator_config_dir(), extensions='yml'
-        )
-        completion = [
-            os.path.join(tmuxinator_config_dir(), f)
-            for f in tmuxinator_configs
-        ]
-
-        return completion
-
-
-class TeamocilCompleter(object):
-
-    """completer for Teamocil files."""
-
-    def __call__(self, prefix, **kwargs):
-        teamocil_configs = config.in_dir(
-            teamocil_config_dir(), extensions='yml')
-        completion = [
-            os.path.join(teamocil_config_dir(), f)
-            for f in teamocil_configs
-        ]
-
-        return completion
-
-
-def SessionCompleter(prefix, parsed_args, **kwargs):
-    """Return list of session names for completer."""
-
-    t = Server(
-        socket_name=parsed_args.socket_name,
-        socket_path=parsed_args.socket_path
-    )
-
-    sessions_available = [
-        s.get('session_name') for s in t._sessions
-        if s.get('session_name').startswith(' '.join(prefix))
-    ]
-
-    if parsed_args.session_name and sessions_available:
-        return []
-
-    return [
-        s.get('session_name') for s in t._sessions
-        if s.get('session_name').startswith(prefix)
-    ]
-
-
-def setup_logger(logger=None, level='INFO'):
-    """Setup logging for CLI use.
-
-    :param logger: instance of logger
-    :type logger: :py:class:`Logger`
-
-    """
-    if not logger:
-        logger = logging.getLogger()
-    if not logger.handlers:
-        channel = logging.StreamHandler()
-        channel.setFormatter(log.DebugLogFormatter())
-
-        # channel.setFormatter(log.LogFormatter())
-        logger.setLevel(level)
-        logger.addHandler(channel)
-
-
-def startup(config_dir):
-    """Initialize CLI.
-
-    :param config_dir(): Config directory to search
-    :type config_dir(): string
-
-    """
-
-    if not os.path.exists(config_dir):
-        os.makedirs(config_dir)
-
-
 def load_workspace(
     config_file, socket_name=None, socket_path=None, colors=None,
     attached=None, detached=None, answer_yes=False
@@ -356,6 +247,49 @@ def load_workspace(
             sys.exit()
 
     return builder.session
+
+
+@click.group(context_settings={'obj': {}})
+@click.version_option(version=__version__, message='%(prog)s %(version)s')
+@click.option('--log_level', default='INFO',
+              help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
+@click.option('--yes', '-y', 'answer_yes', help='yes')
+@click.pass_context
+def cli(ctx, log_level, answer_yes):
+    ctx.obj['answer_yes'] = answer_yes
+    setup_logger(
+        level=log_level.upper()
+    )
+
+
+def setup_logger(logger=None, level='INFO'):
+    """Setup logging for CLI use.
+
+    :param logger: instance of logger
+    :type logger: :py:class:`Logger`
+
+    """
+    if not logger:
+        logger = logging.getLogger()
+    if not logger.handlers:
+        channel = logging.StreamHandler()
+        channel.setFormatter(log.DebugLogFormatter())
+
+        # channel.setFormatter(log.LogFormatter())
+        logger.setLevel(level)
+        logger.addHandler(channel)
+
+
+def startup(config_dir):
+    """Initialize CLI.
+
+    :param config_dir(): Config directory to search
+    :type config_dir(): string
+
+    """
+
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
 
 
 def command_freeze(args):
@@ -830,7 +764,7 @@ def get_parser():
         nargs='+',
         default=None,
         help='Name of session',
-    ).completer = SessionCompleter
+    )
 
     attach_session = subparsers.add_parser(
         'attach-session',
@@ -846,7 +780,7 @@ def get_parser():
         nargs='+',
         type=str,
         help='Name of session',
-    ).completer = SessionCompleter
+    )
 
     freeze = subparsers.add_parser(
         'freeze',
@@ -860,7 +794,7 @@ def get_parser():
         type=str,
         nargs='+',
         help='Name of session',
-    ).completer = SessionCompleter
+    )
 
     load = subparsers.add_parser(
         'load',
@@ -875,8 +809,6 @@ def get_parser():
         type=str,
         nargs='+',
         help='List config available in working directory and config folder.'
-    ).completer = ConfigFileCompleter(
-        allowednames=('.yaml', '.json'), directories=False
     )
     load.set_defaults(callback=command_load)
 
@@ -898,10 +830,7 @@ def get_parser():
         type=str,
         default=None,
         help='Absolute or relative path to config file.'
-    ).completer = ConfigFileCompleter(
-        allowednames=('.yaml', '.json'), directories=False
     )
-
     convert.set_defaults(callback=command_convert)
 
     importparser = subparsers.add_parser(
@@ -934,8 +863,7 @@ def get_parser():
         help='''\
         Checks current ~/.teamocil and current directory for yaml files.
         '''
-    ).completer = TeamocilCompleter(allowednames='.yml', directories=False)
-    import_teamocil.set_defaults(callback=command_import_teamocil)
+    )
 
     import_tmuxinator = importsubparser.add_parser(
         'tmuxinator',
@@ -958,7 +886,7 @@ def get_parser():
         help='''\
         Checks current ~/.tmuxinator and current directory for yaml files.
         '''
-    ).completer = TmuxinatorCompleter(allowednames='.yml', directories=False)
+    )
 
     import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
 
