@@ -405,7 +405,7 @@ def command_load(ctx, config, answer_yes):
         load_workspace(config[-1], answer_yes=answer_yes)
 
 
-@click.group(name='import')
+@cli.group(name='import')
 def import_config():
     pass
 
