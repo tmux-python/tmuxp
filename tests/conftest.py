@@ -12,15 +12,19 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope='function')
-def server():
+def server(request):
     t = Server()
     t.socket_name = 'tmuxp_test%s' % next(namer)
+
+    def fin():
+        t.kill_server()
+    request.addfinalizer(fin)
 
     return t
 
 
 @pytest.fixture(scope='function')
-def session(request, server):
+def session(server):
     session_name = 'tmuxp'
 
     if not server.has_session(session_name):
@@ -60,10 +64,6 @@ def session(request, server):
         server.kill_session(old_test_session)
     assert TEST_SESSION_NAME == session.get('session_name')
     assert TEST_SESSION_NAME != 'tmuxp'
-
-    def fin():
-        server.kill_server()
-    request.addfinalizer(fin)
 
     return session
 
