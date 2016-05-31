@@ -4,7 +4,7 @@
 from __future__ import absolute_import, print_function, with_statement
 
 import os
-
+import json
 import libtmux
 import pytest
 import click
@@ -299,3 +299,24 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         monkeypatch.setenv('SHELL', 'sh')
         result = runner.invoke(cli.cli, cli_args)
         assert 'Please set' not in result.output
+
+
+@pytest.mark.parametrize("cli_args", [
+    (['convert', '.']),
+    (['convert', '.tmuxp.yaml']),
+])
+def test_convert(cli_args, tmpdir, monkeypatch):
+    # create dummy tmuxp yaml so we don't get yelled at
+    tmpdir.join('.tmuxp.yaml').write("""
+session_name: hello
+    """)
+    tmpdir.join('.oh-my-zsh').ensure(dir=True)
+    monkeypatch.setenv('HOME', str(tmpdir))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        runner.invoke(cli.cli, cli_args, input='y\ny\n')
+        assert tmpdir.join('.tmuxp.json').check()
+        assert tmpdir.join('.tmuxp.json').open().read() == \
+            json.dumps({'session_name': 'hello'}, indent=2)
