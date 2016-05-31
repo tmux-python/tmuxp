@@ -37,6 +37,14 @@ teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
 
 def _validate_choices(options):
+    """Callback wrapper for validating click.prompt input.
+
+    :param options: List of allowed choices
+    :type options: list
+    :rtype: func
+    :returns: function for value_proc in :func:`click.prompt`.
+    """
+
     def func(value):
         if value not in options:
             raise click.BadParameter(
@@ -47,6 +55,7 @@ def _validate_choices(options):
 
 
 def is_pure_name(path):
+    """Return True if path is a name and not a file path."""
     return (
         not os.path.isabs(path) and
         len(os.path.dirname(path)) == 0 and
@@ -56,6 +65,9 @@ def is_pure_name(path):
 
 
 def resolve_config_argument(ctx, param, value):
+    """Validate / translate config name/path values for click config arg.
+
+    Wrapper on top of :func:`cli.resolve_config`."""
     if not config:
         click.echo("Enter at least one CONFIG")
         click.echo(ctx.get_help(), color=ctx.color)
