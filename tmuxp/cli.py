@@ -67,7 +67,6 @@ def resolve_config_argument(ctx, param, value):
     elif isinstance(value, tuple):
         value = tuple(map(resolve_config, value))
 
-    print(ctx, param, value)
     return value
 
 
