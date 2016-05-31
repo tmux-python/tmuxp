@@ -217,19 +217,23 @@ def test_load_workspace(server, monkeypatch):
     assert session.name == 'sampleconfig'
 
 
-def test_zsh_autotitle_warning(monkeypatch):
+@pytest.mark.parametrize("cli_args", [
+    (['load']),
+    (['load', 'someconfig_arg']),
+])
+def test_zsh_autotitle_warning(cli_args, monkeypatch):
     runner = CliRunner()
 
     monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
     monkeypatch.setenv('SHELL', 'zsh')
-    result = runner.invoke(cli.cli, ['load', 'nope'])
+    result = runner.invoke(cli.cli, cli_args)
     assert 'Please set' in result.output
 
     monkeypatch.setenv('DISABLE_AUTO_TITLE', 'true', 'nope')
-    result = runner.invoke(cli.cli, ['load'])
+    result = runner.invoke(cli.cli, cli_args)
     assert 'Please set' not in result.output
 
     monkeypatch.delenv('DISABLE_AUTO_TITLE', raising=False)
     monkeypatch.setenv('SHELL', 'sh')
-    result = runner.invoke(cli.cli, ['load', 'nope'])
+    result = runner.invoke(cli.cli, cli_args)
     assert 'Please set' not in result.output
