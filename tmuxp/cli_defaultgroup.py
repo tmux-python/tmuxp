@@ -118,4 +118,3 @@ class DefaultCommandFormatter(object):
             else:
                 rows_.append((cmd_name, help))
         return self.formatter.write_dl(rows_, *args, **kwargs)
-
