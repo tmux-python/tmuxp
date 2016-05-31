@@ -294,20 +294,21 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-def command_freeze(args):
+@cli.command(name='freeze')
+@click.argument('session_name', nargs=1)
+@click.option('-S', 'socket_path', help='pass-through for tmux -L')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
+def command_freeze(session_name, socket_name, socket_path):
     """Import teamocil config to tmuxp format."""
 
-    ctext = ' '.join(args.session_name)
-
     t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
+        socket_name=socket_name,
+        socket_path=socket_path,
     )
 
     try:
         session = t.find_where({
-            'session_name': ctext
+            'session_name': session_name
         })
 
         if not session:
@@ -337,10 +338,11 @@ def command_freeze(args):
 
     print(newconfig)
     print(
-        '---------------------------------------------------------------')
-    print(
-        'Configuration import does its best to convert teamocil files.\n')
-    if args.answer_yes or click.confirm(
+        '---------------------------------------------------------------'
+        '\n'
+        'Configuration import does its best to convert teamocil files.\n'
+    )
+    if click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
     ):
         dest = None
@@ -359,7 +361,7 @@ def command_freeze(args):
             dest = dest_prompt
 
         dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-        if args.answer_yes or click.confirm('Save to %s?' % dest):
+        if click.confirm('Save to %s?' % dest):
             destdir = os.path.dirname(dest)
             if not os.path.isdir(destdir):
                 os.makedirs(destdir)
