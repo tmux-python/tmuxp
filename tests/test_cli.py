@@ -5,10 +5,14 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import os
+
+import libtmux
 import pytest
 
 from tmuxp import cli, config
-from tmuxp.cli import resolve_config_path, is_pure_name
+from tmuxp.cli import is_pure_name, load_workspace, resolve_config_path
+
+from .fixtures._util import curjoin
 
 
 def test_creates_config_dir_not_exists(tmpdir):
@@ -194,3 +198,20 @@ def test_resolve_dot(tmpdir, monkeypatch):
             resolve_config_path('../')
         with pytest.raises(Exception):
             resolve_config_path('mooooooo')
+
+
+def test_load_workspace(server, monkeypatch):
+    # this is an implementation test. Since this testsuite may be ran within
+    # a tmux session by the developer themselv, delete the TMUX variable
+    # temporarily.
+    monkeypatch.delenv('TMUX')
+    session_file = curjoin("workspacebuilder/two_pane.yaml")
+
+    # open it detached
+    session = load_workspace(
+        session_file, socket_name=server.socket_name,
+        detached=True
+    )
+
+    assert isinstance(session, libtmux.Session)
+    assert session.name == 'sampleconfig'
