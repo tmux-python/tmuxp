@@ -354,6 +354,36 @@ def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
         assert tmpdir.join('la.yaml').check()
 
 
+@pytest.mark.parametrize("cli_args,inputs", [
+    (['import', 'tmuxinator', './.tmuxinator/config.yaml'],
+     ['\n', 'y\n', './la.yaml\n', 'y\n']),
+    (['import', 'tmuxinator', './.tmuxinator/config.yaml'],
+     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
+    (['import', 'tmuxinator', 'config'],
+     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
+])
+def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
+    tmuxinator_config = loadfixture('config_tmuxinator/test3.yaml')
+    tmuxinator_dir = tmpdir.join('.tmuxinator').mkdir()
+    tmuxinator_dir.join('config.yaml').write(tmuxinator_config)
+    tmpdir.join('exists.yaml').ensure()
+    monkeypatch.setenv('HOME', str(tmpdir))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+        runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+        assert tmpdir.join('la.yaml').check()
+
+
+def test_get_abs_path(tmpdir):
+    expect = str(tmpdir)
+    with tmpdir.as_cwd():
+        cli.get_abs_path('../') == os.path.dirname(expect)
+        cli.get_abs_path('.') == expect
+        cli.get_abs_path('./') == expect
+        cli.get_abs_path(expect) == expect
+
+
 def test_get_tmuxinator_dir(monkeypatch):
     assert cli.get_tmuxinator_dir() == os.path.expanduser('~/.tmuxinator/')
 
