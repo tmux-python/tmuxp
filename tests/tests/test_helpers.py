@@ -4,6 +4,8 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
+from flaky import flaky
+
 from libtmux.test import get_test_session_name, temp_session
 
 
@@ -20,6 +22,7 @@ def test_kills_session(server):
     assert not server.has_session(session_name)
 
 
+@flaky(max_runs=5, min_passes=1)
 def test_if_session_killed_before(server):
     """Handles situation where session already closed within context"""
 
