@@ -35,51 +35,58 @@ For zsh, ``.zshrc``:
 Freeze sessions
 ---------------
 
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: freeze
+::
 
+    tmuxp freeze <session_name>
 
-    You can save the state of your tmux session by freezing it.
+You can save the state of your tmux session by freezing it.
 
-    Tmuxp will offer to save your session state to ``.json`` or ``.yaml``.
+Tmuxp will offer to save your session state to ``.json`` or ``.yaml``.
 
 .. _cli_load:
 
 Load session
 ------------
 
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: load
+::
 
-    Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by
-    :ref:`bash_completion`.
+    # path to folder with .tmuxp.{yaml,yml,json}
+    tmuxp load .
+    tmuxp load ../
+    tmuxp load path/to/folder/
+    tmuxp load /path/to/folder/
 
-    Files also may be loaded by absolute path.
+    # name of the config, assume $HOME/.tmuxp/myconfig.yaml
+    tmuxp load myconfig
 
-    .. code-block:: bash
+    # direct path to json/yaml file
+    tmuxp load ./myfile.yaml
+    tmuxp load /abs/path/to/myfile.yaml
+    tmuxp load ~/myfile.yaml
 
-        $ tmuxp load <filename>
+Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by
+:ref:`bash_completion`.
 
-    Files named ``.tmuxp.yaml`` or ``.tmuxp.json`` in the current working
-    directory may be loaded with:
+Files also may be loaded by absolute path.
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        $ tmuxp load .
+    $ tmuxp load <filename>
 
-    Multiple sessions can be loaded at once. The first ones will be created
-    without being attached. The last one will be attached if there is no
-    ``-d`` flag on the command line.
+Files named ``.tmuxp.yaml`` or ``.tmuxp.json`` in the current working
+directory may be loaded with:
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        $ tmuxp load <filename1> <filename2> ...
+    $ tmuxp load .
+
+Multiple sessions can be loaded at once. The first ones will be created
+without being attached. The last one will be attached if there is no
+``-d`` flag on the command line.
+
+.. code-block:: bash
+
+    $ tmuxp load <filename1> <filename2> ...
 
 .. _cli_import:
 
@@ -91,49 +98,27 @@ Import
 From teamocil
 ~~~~~~~~~~~~~
 
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: import teamocil
+::
+
+    tmuxp import tmuxinator /path/to/file.{json,yaml}
 
 .. _import_tmuxinator:
 
 From tmuxinator
 ~~~~~~~~~~~~~~~
 
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: import tmuxinator
+::
+
+    tmuxp import tmuxinator /path/to/file.{json,yaml}
 
 .. _convert_config:
 
 Convert between YAML and JSON
 -----------------------------
 
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: convert
+::
 
+    tmuxp convert /path/to/file.{json,yaml}
 
-    tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
-    ``.json`` to  ``.yaml``.
-
-Other commands
---------------
-
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: kill-session
-
-.. argparse::
-    :module: tmuxp.cli
-    :func: get_parser
-    :prog: tmuxp
-    :path: attach-session
+tmuxp automatically will prompt to convert ``.yaml`` to ``.json`` and
+``.json`` to  ``.yaml``.

@@ -14,9 +14,6 @@ with open('requirements/base.txt') as f:
 with open('requirements/test.txt') as f:
     tests_reqs = [line for line in f.read().split('\n') if line]
 
-if sys.version_info < (2, 7):
-    install_reqs += ['argparse']
-
 if sys.version_info[0] > 2:
     readme = open('README.rst', encoding='utf-8').read()
 else:
