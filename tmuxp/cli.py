@@ -399,12 +399,6 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
     """Load a tmux workspace from one or multiple CONFIG path to config file,
     directory with config file or session name.
     """
-    try:
-        has_required_tmux_version()
-    except exc.TmuxpException as e:
-        click.echo(e, err=True)
-        sys.exit()
-
     util.oh_my_zsh_auto_title()
 
     tmux_options = {
