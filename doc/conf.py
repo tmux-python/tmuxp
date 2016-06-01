@@ -43,7 +43,6 @@ with open("../tmuxp/__about__.py") as fp:
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx.ext.todo',
-              'sphinxarg.ext',
               'aafig',
               'releases',
               ]

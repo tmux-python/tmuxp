@@ -14,9 +14,6 @@ with open('requirements/base.txt') as f:
 with open('requirements/test.txt') as f:
     tests_reqs = [line for line in f.read().split('\n') if line]
 
-if sys.version_info < (2, 7):
-    install_reqs += ['argparse']
-
 if sys.version_info[0] > 2:
     readme = open('README.rst', encoding='utf-8').read()
 else:
@@ -55,8 +52,7 @@ setup(
     cmdclass={'test': PyTest},
     zip_safe=False,
     keywords=about['__title__'],
-    scripts=['pkg/tmuxp.bash', 'pkg/tmuxp.zsh', 'pkg/tmuxp.tcsh'],
-    entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.main']),
+    entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.cli']),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         "License :: OSI Approved :: BSD License",

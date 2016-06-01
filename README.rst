@@ -139,10 +139,10 @@ tests           .. code-block:: bash
    :alt: Build Status
    :target: https://travis-ci.org/tony/tmuxp
 
-.. |coverage| image:: https://img.shields.io/coveralls/tony/tmuxp.svg
+.. |coverage| image:: https://codecov.io/gh/tony/tmuxp/branch/master/graph/badge.svg
     :alt: Code Coverage
-    :target: https://coveralls.io/r/tony/tmuxp?branch=master
-    
+    :target: https://codecov.io/gh/tony/tmuxp
+
 .. |license| image:: https://img.shields.io/github/license/tony/tmuxp.svg
     :alt: License 
 

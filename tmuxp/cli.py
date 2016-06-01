@@ -5,206 +5,313 @@ tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, print_function, with_statement
 
-import argparse
 import logging
 import os
 import sys
 
-import argcomplete
+import click
 import kaptan
+from click.exceptions import FileError
 from libtmux.common import has_required_tmux_version, which
-from libtmux.exc import TmuxSessionExists
 from libtmux.server import Server
 
 from . import WorkspaceBuilder, config, exc, log, util
 from .__about__ import __version__
-from ._compat import input, string_types
+from ._compat import string_types
 from .workspacebuilder import freeze
 
 logger = logging.getLogger(__name__)
 
-config_dir = os.path.expanduser('~/.tmuxp/')
-cwd_dir = os.getcwd() + '/'
-tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
-teamocil_config_dir = os.path.expanduser('~/.teamocil/')
+
+def get_config_dir():
+    return os.path.expanduser('~/.tmuxp/')
 
 
-def prompt(name, default=None):
-    """Return user input from command line.
+def get_cwd():
+    return os.getcwd()
 
-    :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from
-    `flask-script`_. See the `flask-script license`_.
 
-    .. _flask-script: https://github.com/techniq/flask-script
-    .. _flask-script license:
-        https://github.com/techniq/flask-script/blob/master/LICENSE
+def get_tmuxinator_dir():
+    return os.path.expanduser('~/.tmuxinator/')
 
-    :param name: prompt text
-    :param default: default value if no input provided.
-    :rtype: string
 
+def get_teamocil_dir():
+    return os.path.expanduser('~/.teamocil/')
+
+
+def _validate_choices(options):
+    """Callback wrapper for validating click.prompt input.
+
+    :param options: List of allowed choices
+    :type options: list
+    :rtype: func
+    :returns: function for value_proc in :func:`click.prompt`.
     """
 
-    _prompt = name + (default and ' [%s]' % default or '')
-    _prompt += name.endswith('?') and ' ' or ': '
-    while True:
-        rv = input(_prompt)
-        if rv:
-            return rv
-        if default is not None:
-            return default
+    def func(value):
+        if value not in options:
+            raise click.BadParameter(
+                'Possible choices are: {0}.'.format(', '.join(options)))
+        return value
+
+    return func
 
 
-def prompt_bool(name, default=False, yes_choices=None, no_choices=None):
-    """Return user input from command line and converts to boolean value.
-
-    :param name: prompt text
-    :param default: default value if no input provided.
-    :param yes_choices: default 'y', 'yes', '1', 'on', 'true', 't'
-    :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
-    :rtype: bool
-
-    """
-
-    yes_choices = yes_choices or ('y', 'yes', '1', 'on', 'true', 't')
-    no_choices = no_choices or ('n', 'no', '0', 'off', 'false', 'f')
-
-    if default is None:
-        prompt_choice = 'y/n'
-    elif default is True:
-        prompt_choice = 'Y/n'
-    else:
-        prompt_choice = 'y/N'
-
-    _prompt = name + ' [%s]' % prompt_choice
-    _prompt += name.endswith('?') and ' ' or ': '
-
-    while True:
-        rv = input(_prompt)
-        if not rv:
-            return default
-        if rv.lower() in yes_choices:
-            return True
-        elif rv.lower() in no_choices:
-            return False
-
-
-def prompt_yes_no(name, default=True):
-    """:meth:`prompt_bool()` returning yes by default."""
-    return prompt_bool(name, default=default)
-
-
-def prompt_choices(name, choices, default=None, no_choice=('none',)):
-    """Return user input from command line from set of provided choices.
-
-    :param name: prompt text
-    :param choices: list or tuple of available choices. Choices may be
-                    single strings or (key, value) tuples.
-    :param default: default value if no input provided.
-    :param no_choice: acceptable list of strings for "null choice"
-    :rtype: str
-
-    """
-
-    _choices = []
-    options = []
-
-    for choice in choices:
-        if isinstance(choice, string_types):
-            options.append(choice)
-        else:
-            options.append("%s [%s]" % (choice, choice[0]))
-            choice = choice[0]
-        _choices.append(choice)
-
-    while True:
-        rv = prompt(name + ' - (%s)' % ', '.join(options), default)
-        if not rv:
-            return default
-        rv = rv.lower()
-        if rv in no_choice:
-            return None
-        if rv in _choices:
-            return rv
-
-
-class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
-
-    """argcomplete completer for tmuxp files."""
-
-    def __call__(self, prefix, **kwargs):
-
-        completion = argcomplete.completers.FilesCompleter.__call__(
-            self, prefix, **kwargs
-        )
-
-        completion += [os.path.join(config_dir, c)
-                       for c in config.in_dir(config_dir)]
-
-        return completion
-
-
-class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
-
-    """argcomplete completer for Tmuxinator files."""
-
-    def __call__(self, prefix, **kwargs):
-        completion = argcomplete.completers.FilesCompleter.__call__(
-            self, prefix, **kwargs
-        )
-
-        tmuxinator_configs = config.in_dir(
-            tmuxinator_config_dir, extensions='yml'
-        )
-        completion += [
-            os.path.join(tmuxinator_config_dir, f)
-            for f in tmuxinator_configs
-        ]
-
-        return completion
-
-
-class TeamocilCompleter(argcomplete.completers.FilesCompleter):
-
-    """argcomplete completer for Teamocil files."""
-
-    def __call__(self, prefix, **kwargs):
-        completion = argcomplete.completers.FilesCompleter.__call__(
-            self, prefix, **kwargs
-        )
-
-        teamocil_configs = config.in_dir(teamocil_config_dir, extensions='yml')
-        completion += [
-            os.path.join(teamocil_config_dir, f)
-            for f in teamocil_configs
-        ]
-
-        return completion
-
-
-def SessionCompleter(prefix, parsed_args, **kwargs):
-    """Return list of session names for argcomplete completer."""
-
-    t = Server(
-        socket_name=parsed_args.socket_name,
-        socket_path=parsed_args.socket_path
+def is_pure_name(path):
+    """Return True if path is a name and not a file path."""
+    return (
+        not os.path.isabs(path) and
+        len(os.path.dirname(path)) == 0 and
+        not os.path.splitext(path)[1] and
+        path != '.' and path != ''
     )
 
-    sessions_available = [
-        s.get('session_name') for s in t._sessions
-        if s.get('session_name').startswith(' '.join(prefix))
-    ]
 
-    if parsed_args.session_name and sessions_available:
-        return []
+def _create_resolve_config_argument(config_dir):
+    """For finding configurations in tmuxinator/teamocil"""
+    def func(ctx, param, value):
+        return resolve_config_argument(ctx, param, value, config_dir)
 
-    return [
-        s.get('session_name') for s in t._sessions
-        if s.get('session_name').startswith(prefix)
-    ]
+    return func
+
+
+def resolve_config_argument(ctx, param, value, config_dir=None):
+    """Validate / translate config name/path values for click config arg.
+
+    Wrapper on top of :func:`cli.resolve_config`."""
+    if callable(config_dir):
+        config_dir = config_dir()
+
+    if not config:
+        click.echo("Enter at least one CONFIG")
+        click.echo(ctx.get_help(), color=ctx.color)
+        ctx.exit()
+
+    if isinstance(value, string_types):
+        value = resolve_config(value, config_dir=config_dir)
+
+    elif isinstance(value, tuple):
+        value = tuple(
+            [resolve_config(v, config_dir=config_dir) for v in value])
+
+    return value
+
+
+def get_abs_path(config):
+    path = os.path
+    join, isabs = path.join, path.isabs
+    dirname, normpath = path.dirname, path.normpath
+    cwd = os.getcwd()
+
+    config = os.path.expanduser(config)
+    if not isabs(config) or len(dirname(config)) > 1:
+        config = normpath(join(cwd, config))
+
+    return config
+
+
+def _resolve_path_no_overwrite(config):
+    path = get_abs_path(config)
+    if os.path.exists(path):
+        raise click.exceptions.UsageError(
+            '%s exists. Pick a new filename.' % path)
+    return path
+
+
+def resolve_config(config, config_dir=None):
+    """Return the real config path or raise an exception.
+
+    :param config: config file, valid examples:
+        - a file name, myconfig.yaml
+        - relative path, ../config.yaml or ../project
+        - a period, .
+    :type config: string
+
+    If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
+    one or more found, it will warn and pick the first.
+
+    If config is ".", "./" or None, it will scan current directory.
+
+    If config is has no path and only a filename, e.g. "myconfig.yaml" it will
+    search config dir.
+
+    If config has no path and only a name with no extension, e.g. "myconfig",
+    it will scan for file name with yaml, yml and json. If multiple exist, it
+    will warn and pick the first.
+
+    :raises: :class:`click.exceptions.FileError`
+    """
+    if not config_dir:
+        config_dir = get_config_dir()
+    path = os.path
+    exists, join, isabs = path.exists, path.join, path.isabs
+    dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
+    cwd = os.getcwd()
+    is_name = False
+    file_error = None
+
+    config = os.path.expanduser(config)
+    # if purename, resolve to confg dir
+    if is_pure_name(config):
+        is_name = True
+    elif (
+        not isabs(config) or len(dirname(config)) > 1 or config == '.' or
+        config == "" or config == "./"
+    ):  # if relative, fill in full path
+        config = normpath(join(cwd, config))
+
+    # no extension, scan
+    if not splitext(config)[1]:
+        if is_name:
+            candidates = [
+                x for x in ['%s%s' % (join(config_dir, config), ext)
+                            for ext in ['.yaml', '.yml', '.json']
+                            ] if exists(x)
+            ]
+            if not len(candidates):
+                file_error = (
+                    'config not found in config dir (yaml/yml/json) %s'
+                    'for name' % (config_dir))
+        else:
+            candidates = [
+                x for x in [
+                    join(config, ext) for ext in
+                    ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']
+                ] if exists(x)
+            ]
+
+            if len(candidates) > 1:
+                click.secho(
+                    'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
+                    dirname(config), fg="red")
+                click.echo(click.wrap_text(
+                    'This is undefined behavior, use only one. '
+                    'Use file names e.g. myproject.json, coolproject.yaml. '
+                    'You can load them by filename.'
+                ))
+            elif not len(candidates):
+                file_error = 'No tmuxp files found in directory'
+        if len(candidates):
+            config = candidates[0]
+    elif not exists(config):
+        file_error = 'file not found'
+
+    if file_error:
+        raise FileError(file_error, config)
+
+    return config
+
+
+def load_workspace(
+    config_file, socket_name=None, socket_path=None, colors=None,
+    attached=None, detached=None, answer_yes=False
+):
+    """Build config workspace.
+
+    :param config_file: full path to config file
+    :param type: string
+
+    """
+
+    sconfig = kaptan.Kaptan()
+    sconfig = sconfig.import_config(config_file).get()
+    # expands configurations relative to config / profile file location
+    sconfig = config.expand(sconfig, os.path.dirname(config_file))
+    sconfig = config.trickle(sconfig)
+
+    t = Server(
+        socket_name=socket_name,
+        socket_path=socket_path,
+        colors=colors
+    )
+
+    try:
+        builder = WorkspaceBuilder(sconf=sconfig, server=t)
+    except exc.EmptyConfigException:
+        click.echo('%s is empty or parsed no config data' %
+                   config_file, err=True)
+        return
+
+    which('tmux')
+
+    def reattach(session):
+        if 'TMUX' in os.environ:
+            session.switch_client()
+
+        else:
+            session.attach_session()
+
+    session_name = sconfig['session_name']
+    if builder.session_exists(session_name):
+        if not detached and (
+            answer_yes or click.confirm(
+                '%s is already running. Attach?' %
+                click.style(session_name, fg='green'), default=True)
+        ):
+            reattach(builder.session)
+        return
+
+    try:
+        click.echo(
+            click.style('[Loading] ', fg='green') +
+            click.style(config_file, fg='blue', bold=True))
+        builder.build()
+
+        if 'TMUX' in os.environ:
+            if not detached and (answer_yes or click.confirm(
+                'Already inside TMUX, switch to session?'
+            )):
+                tmux_env = os.environ.pop('TMUX')
+                builder.session.switch_client()
+
+                os.environ['TMUX'] = tmux_env
+                return builder.session
+            else:
+                sys.exit('Session created in detached state.')
+
+        if not detached:
+            builder.session.attach_session()
+    except exc.TmuxpException as e:
+        import traceback
+
+        click.echo(traceback.format_exc(), err=True)
+        click.echo(e, err=True)
+
+        choice = click.prompt(
+            'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
+            value_proc=_validate_choices(['k', 'a', 'd']),
+            default='k'
+        )
+
+        if choice == 'k':
+            builder.session.kill_session()
+            click.echo('Session killed.')
+        elif choice == 'a':
+            if 'TMUX' in os.environ:
+                builder.session.switch_client()
+            else:
+                builder.session.attach_session()
+        else:
+            sys.exit()
+
+    return builder.session
+
+
+@click.group(context_settings={'obj': {}})
+@click.version_option(version=__version__, message='%(prog)s %(version)s')
+@click.option('--log_level', default='INFO',
+              help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
+def cli(log_level):
+    try:
+        has_required_tmux_version()
+    except exc.TmuxpException as e:
+        click.echo(e, err=True)
+        sys.exit()
+    setup_logger(
+        level=log_level.upper()
+    )
 
 
 def setup_logger(logger=None, level='INFO'):
@@ -228,8 +335,8 @@ def setup_logger(logger=None, level='INFO'):
 def startup(config_dir):
     """Initialize CLI.
 
-    :param config_dir: Config directory to search
-    :type config_dir: string
+    :param get_config_dir(): Config directory to search
+    :type get_config_dir(): string
 
     """
 
@@ -237,100 +344,21 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-def load_workspace(config_file, args):
-    """Build config workspace.
-
-    :param config_file: full path to config file
-    :param type: string
-
-    """
-
-    sconfig = kaptan.Kaptan()
-    sconfig = sconfig.import_config(config_file).get()
-    # expands configurations relative to config / profile file location
-    sconfig = config.expand(sconfig, os.path.dirname(config_file))
-    sconfig = config.trickle(sconfig)
-
-    t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
-    )
-
-    try:
-        builder = WorkspaceBuilder(sconf=sconfig, server=t)
-    except exc.EmptyConfigException:
-        logger.error('%s is empty or parsed no config data' % config_file)
-        return
-
-    which('tmux')
-
-    try:
-        logger.info('Loading %s.' % config_file)
-        builder.build()
-
-        if 'TMUX' in os.environ:
-            if not args.detached and (args.answer_yes or prompt_yes_no(
-                'Already inside TMUX, switch to session?'
-            )):
-                tmux_env = os.environ.pop('TMUX')
-                builder.session.switch_client()
-
-                os.environ['TMUX'] = tmux_env
-                return
-            else:
-                sys.exit('Session created in detached state.')
-
-        if not args.detached:
-            builder.session.attach_session()
-    except TmuxSessionExists as e:
-        if not args.detached and (
-            args.answer_yes or prompt_yes_no('%s Attach?' % e)
-        ):
-            if 'TMUX' in os.environ:
-                builder.session.switch_client()
-
-            else:
-                builder.session.attach_session()
-        return
-    except exc.TmuxpException as e:
-        import traceback
-
-        print(traceback.format_exc())
-        logger.error(e)
-
-        choice = prompt_choices(
-            'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
-            choices=['k', 'a', 'd'],
-            default='k'
-        )
-
-        if choice == 'k':
-            builder.session.kill_session()
-            print('Session killed.')
-        elif choice == 'a':
-            if 'TMUX' in os.environ:
-                builder.session.switch_client()
-            else:
-                builder.session.attach_session()
-        else:
-            sys.exit()
-
-
-def command_freeze(args):
+@cli.command(name='freeze')
+@click.argument('session_name', nargs=1)
+@click.option('-S', 'socket_path', help='pass-through for tmux -L')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
+def command_freeze(session_name, socket_name, socket_path):
     """Import teamocil config to tmuxp format."""
 
-    ctext = ' '.join(args.session_name)
-
     t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
+        socket_name=socket_name,
+        socket_path=socket_path,
     )
 
     try:
         session = t.find_where({
-            'session_name': ctext
+            'session_name': session_name
         })
 
         if not session:
@@ -343,8 +371,11 @@ def command_freeze(args):
     configparser = kaptan.Kaptan()
     newconfig = config.inline(sconf)
     configparser.import_config(newconfig)
-    config_format = prompt_choices('Convert to', choices=[
-        'yaml', 'json'], default='yaml')
+    config_format = click.prompt(
+        'Convert to',
+        value_proc=_validate_choices(['yaml', 'json']),
+        default='yaml'
+    )
 
     if config_format == 'yaml':
         newconfig = configparser.export(
@@ -357,21 +388,25 @@ def command_freeze(args):
 
     print(newconfig)
     print(
-        '---------------------------------------------------------------')
-    print(
-        'Configuration import does its best to convert teamocil files.\n')
-    if args.answer_yes or prompt_yes_no(
+        '---------------------------------------------------------------'
+        '\n'
+        'Freeze does it best to snapshot live tmux sessions.\n'
+    )
+    if click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
     ):
         dest = None
         while not dest:
             save_to = os.path.abspath(
                 os.path.join(
-                    config_dir,
+                    get_config_dir(),
                     '%s.%s' % (sconf.get('session_name'), config_format)
                 )
             )
-            dest_prompt = prompt('Save to: ', save_to)
+            dest_prompt = click.prompt(
+                'Save to: %s' %
+                save_to, value_proc=get_abs_path,
+                default=save_to, confirmation_prompt=True)
             if os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue
@@ -379,7 +414,7 @@ def command_freeze(args):
             dest = dest_prompt
 
         dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-        if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
+        if click.confirm('Save to %s?' % dest):
             destdir = os.path.dirname(dest)
             if not os.path.isdir(destdir):
                 os.makedirs(destdir)
@@ -397,254 +432,154 @@ def command_freeze(args):
         sys.exit()
 
 
-def command_load(args):
-    """Load a session from a tmuxp session file."""
+@cli.command(name='load')
+@click.pass_context
+@click.argument('config', click.Path(exists=True), nargs=-1,
+                callback=resolve_config_argument)
+@click.option('-S', 'socket_path', help='pass-through for tmux -L')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
+@click.option('-d', 'detached',
+              help='Load the session without attaching it', is_flag=True)
+@click.option(
+    '-2', 'colors', flag_value=256, default=True,
+    help='Force tmux to assume the terminal supports 256 colours.')
+@click.option(
+    '-8', 'colors', flag_value=88,
+    help='Like -2, but indicates that the terminal supports 88 colours.')
+def command_load(ctx, config, socket_name, socket_path, answer_yes,
+                 detached, colors):
+    """Load a tmux workspace from one or multiple CONFIG path to config file,
+    directory with config file or session name.
+    """
+    util.oh_my_zsh_auto_title()
 
-    if isinstance(args.config, list):
+    tmux_options = {
+        'socket_name': socket_name,
+        'socket_path': socket_path,
+        'answer_yes': answer_yes,
+        'colors': colors,
+        'detached': detached
+    }
+
+    if not config:
+        click.echo("Enter at least one CONFIG")
+        click.echo(ctx.get_help(), color=ctx.color)
+        ctx.exit()
+
+    if isinstance(config, string_types):
+        load_workspace(config, **tmux_options)
+
+    elif isinstance(config, tuple):
+        config = list(config)
         # Load each configuration but the last to the background
-        for cfg in args.config[:-1]:
-            new_args = argparse.Namespace(**args.__dict__)
-            new_args.detached = True
-            new_args.config = cfg
-            command_load(new_args)
+        for cfg in config[:-1]:
+            # todo: add -d option to all these
+            load_workspace(cfg, **tmux_options)
 
-        # The last one will be detached if specified on the command line
-        new_args = argparse.Namespace(**args.__dict__)
-        new_args.config = args.config[-1]
-        command_load(new_args)
-        return
+        # todo: obey the -d in the cli args only if user specifies
+        load_workspace(config[-1], **tmux_options)
 
-    if '.' == args.config:
-        if config.in_cwd():
-            configfile = config.in_cwd()[0]
-        else:
-            sys.exit('No tmuxp configs found in current directory.')
+
+@cli.group(name='import')
+def import_config_cmd():
+    pass
+
+
+def import_config(configfile, importfunc):
+    configparser = kaptan.Kaptan(handler='yaml')
+
+    configparser.import_config(configfile)
+    newconfig = importfunc(configparser.get())
+    configparser.import_config(newconfig)
+
+    config_format = click.prompt(
+        'Convert to',
+        value_proc=_validate_choices(['yaml', 'json']),
+        default='yaml'
+    )
+
+    if config_format == 'yaml':
+        newconfig = configparser.export(
+            'yaml', indent=2, default_flow_style=False
+        )
+    elif config_format == 'json':
+        newconfig = configparser.export('json', indent=2)
     else:
-        configfile = args.config
+        sys.exit('Unknown config format.')
 
-    file_user = os.path.join(config_dir, configfile)
-    file_cwd = os.path.join(cwd_dir, configfile)
+    click.echo(
+        newconfig +
+        '---------------------------------------------------------------'
+        '\n'
+        'Configuration import does its best to convert files.\n'
+    )
+    if click.confirm(
+        'The new config *WILL* require adjusting afterwards. Save config?'
+    ):
+        dest = None
+        while not dest:
+            dest_path = click.prompt(
+                'Save to [%s]' % os.getcwd(),
+                value_proc=_resolve_path_no_overwrite,)
 
-    if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-        print('load %s' % file_cwd)
-        load_workspace(file_cwd, args)
-    elif os.path.exists(file_user) and os.path.isfile(file_user):
-        load_workspace(file_user, args)
+            # dest = dest_prompt
+            if click.confirm('Save to %s?' % dest_path):
+                dest = dest_path
+
+        buf = open(dest, 'w')
+        buf.write(newconfig)
+        buf.close()
+
+        click.echo('Saved to %s.' % dest)
     else:
-        logger.error('%s not found.' % configfile)
+        click.echo(
+            'tmuxp has examples in JSON and YAML format at '
+            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
+        )
+        sys.exit()
 
 
-def command_import_teamocil(args):
+@import_config_cmd.command(name='teamocil')
+@click.argument(
+    'configfile', click.Path(exists=True), nargs=1,
+    callback=_create_resolve_config_argument(get_teamocil_dir)
+)
+def command_import_teamocil(configfile):
     """Import teamocil config to tmuxp format."""
 
-    if args.list:
-        try:
-            configs_in_user = config.in_dir(
-                teamocil_config_dir, extensions='yml')
-        except OSError:
-            configs_in_user = []
-        configs_in_cwd = config.in_dir(
-            config_dir=cwd_dir, extensions='yml')
-
-        output = ''
-
-        if not os.path.exists(teamocil_config_dir):
-            output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                teamocil_config_dir
-        elif not configs_in_user:
-            output += '# %s: \n\tNone found.\n' % teamocil_config_dir
-        else:
-            output += '# %s: \n\t%s\n' % (
-                config_dir, ', '.join(configs_in_user)
-            )
-
-        if configs_in_cwd:
-            output += '# current directory:\n\t%s' % (
-                ', '.join(configs_in_cwd)
-            )
-
-        print(output)
-    elif args.config:
-        configfile = os.path.abspath(os.path.relpath(
-            os.path.expanduser(args.config)))
-        configparser = kaptan.Kaptan(handler='yaml')
-
-        if os.path.exists(configfile):
-            print(configfile)
-            configparser.import_config(configfile)
-            newconfig = config.import_teamocil(configparser.get())
-            configparser.import_config(newconfig)
-        else:
-            sys.exit('File not found: %s' % configfile)
-
-        config_format = prompt_choices('Convert to', choices=[
-                                       'yaml', 'json'], default='yaml')
-
-        if config_format == 'yaml':
-            newconfig = configparser.export(
-                'yaml', indent=2, default_flow_style=False
-            )
-        elif config_format == 'json':
-            newconfig = configparser.export('json', indent=2)
-        else:
-            sys.exit('Unknown config format.')
-
-        print(newconfig)
-        print(
-            '---------------------------------------------------------------')
-        print(
-            'Configuration import does its best to convert teamocil files.\n')
-        if args.answer_yes or prompt_yes_no(
-            'The new config *WILL* require adjusting afterwards. Save config?'
-        ):
-            dest = None
-            while not dest:
-                dest_prompt = prompt('Save to: ', os.path.abspath(
-                    os.path.join(config_dir, 'myimport.%s' % config_format)))
-                if os.path.exists(dest_prompt):
-                    print('%s exists. Pick a new filename.' % dest_prompt)
-                    continue
-
-                dest = dest_prompt
-
-            dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
-                buf = open(dest, 'w')
-                buf.write(newconfig)
-                buf.close()
-
-                print('Saved to %s.' % dest)
-        else:
-            print(
-                'tmuxp has examples in JSON and YAML format at '
-                '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-                'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
-            )
-            sys.exit()
+    import_config(configfile, config.import_teamocil)
 
 
-def command_import_tmuxinator(args):
+@import_config_cmd.command(name='tmuxinator')
+@click.argument(
+    'configfile', click.Path(exists=True), nargs=1,
+    callback=_create_resolve_config_argument(get_tmuxinator_dir)
+)
+def command_import_tmuxinator(configfile):
     """Import tmuxinator config to tmuxp format."""
-    if args.list:
-            try:
-                configs_in_user = config.in_dir(
-                    tmuxinator_config_dir, extensions='yml')
-            except OSError:
-                configs_in_user = []
-            configs_in_cwd = config.in_dir(
-                config_dir=cwd_dir, extensions='yml')
-
-            output = ''
-
-            if not os.path.exists(tmuxinator_config_dir):
-                output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                    tmuxinator_config_dir
-            elif not configs_in_user:
-                output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir
-            else:
-                output += '# %s: \n\t%s\n' % (
-                    config_dir, ', '.join(configs_in_user)
-                )
-
-            if configs_in_cwd:
-                output += '# current directory:\n\t%s' % (
-                    ', '.join(configs_in_cwd)
-                )
-
-            print(output)
-
-    if args.config:
-        configfile = os.path.abspath(os.path.relpath(
-            os.path.expanduser(args.config)))
-        configparser = kaptan.Kaptan(handler='yaml')
-
-        if os.path.exists(configfile):
-            print(configfile)
-            configparser.import_config(configfile)
-            newconfig = config.import_tmuxinator(configparser.get())
-            configparser.import_config(newconfig)
-        else:
-            sys.exit('File not found: %s' % configfile)
-
-        config_format = prompt_choices('Convert to', choices=[
-                                       'yaml', 'json'], default='yaml')
-
-        if config_format == 'yaml':
-            newconfig = configparser.export(
-                'yaml', indent=2, default_flow_style=False
-            )
-        elif config_format == 'json':
-            newconfig = configparser.export('json', indent=2)
-        else:
-            sys.exit('Unknown config format.')
-
-        print(
-            newconfig,
-            '---------------------------------------------------------------'
-            'Configuration import does its best to convert tmuxinator files.'
-            '\n'
-        )
-        if args.answer_yes or prompt_yes_no(
-            'The new config *WILL* require adjusting afterwards. Save config?'
-        ):
-            dest = None
-            while not dest:
-                dest_prompt = prompt('Save to: ', os.path.abspath(
-                    os.path.join(config_dir, 'myimport.%s' % config_format)))
-                if os.path.exists(dest_prompt):
-                    print('%s exists. Pick a new filename.' % dest_prompt)
-                    continue
-
-                dest = dest_prompt
-
-            dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if args.answer_yes or prompt_yes_no('Save to %s?' % dest):
-                buf = open(dest, 'w')
-                buf.write(newconfig)
-                buf.close()
-
-                print('Saved to %s.' % dest)
-        else:
-            print(
-                'tmuxp has examples in JSON and YAML format at '
-                '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-                'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
-            )
-            sys.exit()
+    import_config(configfile, config.import_tmuxinator)
 
 
-def command_convert(args):
+@cli.command(name='convert')
+@click.argument('config', click.Path(exists=True), nargs=1,
+                callback=resolve_config_argument)
+def command_convert(config):
     """Convert tmuxp config to and from JSON and YAML."""
 
-    try:
-        configfile = args.config
-    except exc.TmuxpException:
-        print('Please enter a config')
-
-    file_user = os.path.join(config_dir, configfile)
-    file_cwd = os.path.join(cwd_dir, configfile)
-    if os.path.exists(file_cwd) and os.path.isfile(file_cwd):
-        fullfile = os.path.normpath(file_cwd)
-        filename, ext = os.path.splitext(file_cwd)
-    elif os.path.exists(file_user) and os.path.isfile(file_user):
-
-        fullfile = os.path.normpath(file_user)
-        filename, ext = os.path.splitext(file_user)
-    else:
-        logger.error('%s not found.' % configfile)
-        return
-
+    _, ext = os.path.splitext(config)
     if 'json' in ext:
-        if args.answer_yes or prompt_yes_no(
-            'convert to <%s> to yaml?' % fullfile
+        if click.confirm(
+            'convert to <%s> to yaml?' % config
         ):
             configparser = kaptan.Kaptan()
-            configparser.import_config(configfile)
-            newfile = fullfile.replace(ext, '.yaml')
+            configparser.import_config(config)
+            newfile = config.replace(ext, '.yaml')
             newconfig = configparser.export(
                 'yaml', indent=2, default_flow_style=False
             )
-            if args.answer_yes or prompt_yes_no(
+            if click.confirm(
                 'Save config to %s?' % newfile
             ):
                 buf = open(newfile, 'w')
@@ -652,345 +587,18 @@ def command_convert(args):
                 buf.close()
                 print('New config saved to %s' % newfile)
     elif 'yaml' in ext:
-        if args.answer_yes or prompt_yes_no(
-            'convert to <%s> to json?' % fullfile
+        if click.confirm(
+            'convert to <%s> to json?' % config
         ):
             configparser = kaptan.Kaptan()
-            configparser.import_config(configfile)
-            newfile = fullfile.replace(ext, '.json')
+            configparser.import_config(config)
+            newfile = config.replace(ext, '.json')
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
-            if args.answer_yes or prompt_yes_no(
+            if click.confirm(
                 'Save config to <%s>?' % newfile
             ):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to <%s>.' % newfile)
-
-
-def command_attach_session(args):
-    """Command to attach / switch client to a tmux session."""
-    ctext = ' '.join(args.session_name)
-
-    t = Server(
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
-    )
-
-    try:
-        session = next((s for s in t.sessions if s.get(
-            'session_name') == ctext), None)
-        if not session:
-            raise exc.TmuxpException('Session not found.')
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    if 'TMUX' in os.environ:
-        del os.environ['TMUX']
-        session.switch_client()
-        print('Inside tmux client, switching client.')
-    else:
-        session.attach_session()
-        print('Attaching client.')
-
-
-def command_kill_session(args):
-    """Command to kill a tmux session."""
-    ctext = ' '.join(args.session_name)
-
-    t = Server(
-        socket_name=args.socket_name or None,
-        socket_path=args.socket_path or None
-    )
-
-    try:
-        session = next((s for s in t.sessions if s.get(
-            'session_name') == ctext), None)
-        if not session:
-            raise exc.TmuxpException('Session not found.')
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    try:
-        session.kill_session()
-        print("Killed session %s." % ctext)
-    except exc.TmuxpException as e:
-        logger.error(e)
-
-
-def get_parser():
-    """Return :py:class:`argparse.ArgumentParser` instance for CLI."""
-
-    server_parser = argparse.ArgumentParser(add_help=False)
-
-    server_parser.add_argument(
-        '-L', dest='socket_name',
-        default=None,
-        help='socket name of tmux server. Same as tmux.',
-        metavar='socket-name'
-    )
-
-    server_parser.add_argument(
-        '-S',
-        dest='socket_path',
-        default=None,
-        help='socket path of tmux server. Same as tmux.',
-        metavar='socket-path'
-    )
-
-    server_parser.add_argument(
-        '-y',
-        dest='answer_yes',
-        default=None,
-        help='Always answer yes.',
-        action='store_true'
-    )
-
-    parser = argparse.ArgumentParser(
-        description='Launch tmux workspace. '
-                    'Help documentation: <http://tmuxp.rtfd.org>.',
-        parents=[server_parser]
-    )
-
-    client_parser = argparse.ArgumentParser(add_help=False)
-    colorsgroup = client_parser.add_mutually_exclusive_group()
-
-    colorsgroup.add_argument(
-        '-2',
-        dest='colors',
-        action='store_const',
-        const=256,
-        help='Force tmux to assume the terminal supports 256 colours.',
-    )
-
-    colorsgroup.add_argument(
-        '-8',
-        dest='colors',
-        action='store_const',
-        const=88,
-        help='Like -2, but indicates that the terminal supports 88 colours.',
-    )
-
-    parser.set_defaults(colors=None)
-
-    subparsers = parser.add_subparsers(
-        title='commands',
-        description='valid commands',
-    )
-
-    kill_session = subparsers.add_parser(
-        'kill-session',
-        parents=[server_parser],
-        help='Kill tmux session by name.'
-    )
-    kill_session.set_defaults(callback=command_kill_session)
-
-    kill_session.add_argument(
-        dest='session_name',
-        type=str,
-        nargs='+',
-        default=None,
-        help='Name of session',
-    ).completer = SessionCompleter
-
-    attach_session = subparsers.add_parser(
-        'attach-session',
-        parents=[server_parser, client_parser],
-        help='If run from outside tmux, create a new client in the current '
-             'terminal and attach it. If used from inside, switch the current '
-             'client.'
-    )
-    attach_session.set_defaults(callback=command_attach_session)
-
-    attach_session.add_argument(
-        dest='session_name',
-        nargs='+',
-        type=str,
-        help='Name of session',
-    ).completer = SessionCompleter
-
-    freeze = subparsers.add_parser(
-        'freeze',
-        parents=[server_parser],
-        help='Create a snapshot of a tmux session and save it to JSON or YAML.'
-    )
-    freeze.set_defaults(callback=command_freeze)
-
-    freeze.add_argument(
-        dest='session_name',
-        type=str,
-        nargs='+',
-        help='Name of session',
-    ).completer = SessionCompleter
-
-    load = subparsers.add_parser(
-        'load',
-        parents=[server_parser, client_parser],
-        help='Load configurations from one or more files. '
-             'Attach to the session described by the last file. '
-             'If it already exists, offer to attach instead.'
-    )
-
-    load.add_argument(
-        dest='config',
-        type=str,
-        nargs='+',
-        help='List config available in working directory and config folder.'
-    ).completer = ConfigFileCompleter(
-        allowednames=('.yaml', '.json'), directories=False
-    )
-    load.set_defaults(callback=command_load)
-
-    load.add_argument(
-        '-d',
-        dest='detached',
-        default=None,
-        help='Load the last session without attaching to it.',
-        action='store_true'
-    )
-
-    convert = subparsers.add_parser(
-        'convert',
-        help='Convert tmuxp config between YAML and JSON format.'
-    )
-
-    convert.add_argument(
-        dest='config',
-        type=str,
-        default=None,
-        help='Absolute or relative path to config file.'
-    ).completer = ConfigFileCompleter(
-        allowednames=('.yaml', '.json'), directories=False
-    )
-
-    convert.set_defaults(callback=command_convert)
-
-    importparser = subparsers.add_parser(
-        'import',
-        help='Import configurations from teamocil and tmuxinator.'
-    )
-    importsubparser = importparser.add_subparsers(
-        title='commands',
-        description='valid commands',
-        help='additional help'
-    )
-
-    import_teamocil = importsubparser.add_parser(
-        'teamocil',
-        help="Parse teamocil configurations into tmuxp format"
-    )
-
-    import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(
-        required=True
-    )
-    import_teamocilgroup.add_argument(
-        '--list', dest='list', action='store_true',
-        help='List configs in ~/.teamocil and current working directory.'
-    )
-
-    import_teamocilgroup.add_argument(
-        dest='config',
-        type=str,
-        nargs='?',
-        help='''\
-        Checks current ~/.teamocil and current directory for yaml files.
-        '''
-    ).completer = TeamocilCompleter(allowednames='.yml', directories=False)
-    import_teamocil.set_defaults(callback=command_import_teamocil)
-
-    import_tmuxinator = importsubparser.add_parser(
-        'tmuxinator',
-        help="Parse teamocil configurations into tmuxp format"
-    )
-
-    import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
-        required=True)
-    import_tmuxinatorgroup.add_argument(
-        '--list', dest='list', action='store_true',
-        help=(
-            'List yaml configs in ~/.tmuxinator and current working directory.'
-        )
-    )
-
-    import_tmuxinatorgroup.add_argument(
-        dest='config',
-        type=str,
-        nargs='?',
-        help='''\
-        Checks current ~/.tmuxinator and current directory for yaml files.
-        '''
-    ).completer = TmuxinatorCompleter(allowednames='.yml', directories=False)
-
-    import_tmuxinator.set_defaults(callback=command_import_tmuxinator)
-
-    parser.add_argument(
-        '--log-level', dest='log_level',
-        default=None,
-        help=(
-            'Level of debug verbosity. DEBUG, INFO, WARNING, ERROR, CRITICAL.',
-        )
-    )
-
-    parser.add_argument(
-        '-v', '--version', action='version',
-        version='tmuxp %s' % __version__,
-        help='Prints the tmuxp version',
-    )
-
-    return parser
-
-
-def main():
-    """Main CLI application."""
-
-    parser = get_parser()
-
-    argcomplete.autocomplete(parser, always_complete_options=False)
-
-    args = parser.parse_args()
-
-    log_level = 'INFO'
-    if 'log_level' in args and isinstance(args.log_level, string_types):
-        log_level = args.log_level.upper()
-
-    setup_logger(
-        level=log_level
-    )
-
-    try:
-        has_required_tmux_version()
-    except exc.TmuxpException as e:
-        logger.error(e)
-        sys.exit()
-
-    util.oh_my_zsh_auto_title()
-
-    t = Server(  # noqa
-        socket_name=args.socket_name,
-        socket_path=args.socket_path,
-        colors=args.colors
-    )
-
-    try:
-        if not hasattr(args, 'callback'):
-            parser.print_help()
-        elif args.callback is command_load:
-            command_load(args)
-        elif args.callback is command_convert:
-            command_convert(args)
-        elif args.callback is command_import_teamocil:
-            command_import_teamocil(args)
-        elif args.callback is command_import_tmuxinator:
-            command_import_tmuxinator(args)
-        elif args.callback is command_freeze:
-            command_freeze(args)
-        elif args.callback is command_attach_session:
-            command_attach_session(args)
-        elif args.callback is command_kill_session:
-            command_kill_session(args)
-    except KeyboardInterrupt:
-        pass

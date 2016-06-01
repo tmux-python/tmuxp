@@ -5,8 +5,8 @@ API Reference
 =============
 
 .. seealso::
-    :ref:`python_api_quickstart` to see how you can control tmux via
-    python API calls.
+    :ref:`python_api_quickstart <libtmux:quickstart>` to see how you can
+    control tmux via python API calls.
 
 .. module:: tmuxp
 
@@ -15,16 +15,6 @@ Internals
 
 .. automethod:: tmuxp.util.run_before_script
 
-Command Line
-------------
-
-.. automethod:: tmuxp.cli.startup
-.. automethod:: tmuxp.cli.prompt
-.. automethod:: tmuxp.cli.prompt_bool
-.. automethod:: tmuxp.cli.prompt_choices
-.. automethod:: tmuxp.cli.setup_logger
-.. automethod:: tmuxp.cli.get_parser
-.. automethod:: tmuxp.cli.load_workspace
 
 Configuration
 -------------

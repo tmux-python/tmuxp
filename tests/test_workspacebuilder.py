@@ -9,7 +9,6 @@ import time
 
 import kaptan
 import pytest
-from flaky import flaky
 
 from . import fixtures_dir
 from libtmux import Window
@@ -132,7 +131,7 @@ def test_focus_pane_index(session):
     assert p.current_path == pane_path
 
 
-@flaky(max_runs=5, min_passes=1)
+@pytest.mark.flaky(reruns=5)
 def test_suppress_history(session):
     yaml_config = loadfixture("workspacebuilder/suppress_history.yaml")
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -321,7 +320,6 @@ def test_blank_pane_count(session):
     assert len(window4._panes) == 2
 
 
-@flaky(max_runs=5, min_passes=1)
 def test_start_directory(session, tmpdir):
     yaml_config = loadfixture("workspacebuilder/start_directory.yaml")
     test_dir = str(tmpdir.mkdir('foo bar'))
