@@ -37,4 +37,4 @@ addons:
       - libevent-dev
       - libncurses-dev
 after_success:
-  - coveralls
+  - bash <(curl -s https://codecov.io/bash)
