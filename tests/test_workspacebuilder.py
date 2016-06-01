@@ -131,6 +131,7 @@ def test_focus_pane_index(session):
     assert p.current_path == pane_path
 
 
+@pytest.mark.flaky(reruns=5)
 def test_suppress_history(session):
     yaml_config = loadfixture("workspacebuilder/suppress_history.yaml")
     sconfig = kaptan.Kaptan(handler='yaml')
