@@ -29,9 +29,8 @@ def get_config_dir():
     return os.path.expanduser('~/.tmuxp/')
 
 
-def cwd_dir():
-    return os.getcwd() + '/'
-tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
+def get_cwd():
+    return os.getcwd()
 
 
 def get_tmuxinator_dir():
@@ -40,7 +39,6 @@ def get_tmuxinator_dir():
 
 def get_teamocil_dir():
     return os.path.expanduser('~/.teamocil/')
-teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
 
 def _validate_choices(options):

@@ -352,3 +352,68 @@ def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
         runner = CliRunner()
         runner.invoke(cli.cli, cli_args, input=''.join(inputs))
         assert tmpdir.join('la.yaml').check()
+
+
+def test_get_tmuxinator_dir(monkeypatch):
+    assert cli.get_tmuxinator_dir() == os.path.expanduser('~/.tmuxinator/')
+
+    monkeypatch.setenv('HOME', '/moo')
+    assert cli.get_tmuxinator_dir() == '/moo/.tmuxinator/'
+    assert cli.get_tmuxinator_dir() == os.path.expanduser('~/.tmuxinator/')
+
+
+def test_get_cwd(tmpdir):
+    assert cli.get_cwd() == os.getcwd()
+
+    with tmpdir.as_cwd():
+        assert cli.get_cwd() == str(tmpdir)
+        assert cli.get_cwd() == os.getcwd()
+
+
+def test_get_teamocil_dir(monkeypatch):
+    assert cli.get_teamocil_dir() == os.path.expanduser('~/.teamocil/')
+
+    monkeypatch.setenv('HOME', '/moo')
+    assert cli.get_teamocil_dir() == '/moo/.teamocil/'
+    assert cli.get_teamocil_dir() == os.path.expanduser('~/.teamocil/')
+
+
+def test_validate_choices():
+    validate = cli._validate_choices(['choice1', 'choice2'])
+
+    assert validate('choice1')
+    assert validate('choice2')
+
+    with pytest.raises(click.BadParameter):
+        assert validate('choice3')
+
+
+def test_create_resolve_config_arg(tmpdir):
+    configdir = tmpdir.join('myconfigdir')
+    configdir.mkdir()
+    user_config_name = 'myconfig'
+    user_config = configdir.join('%s.yaml' % user_config_name).ensure()
+
+    expect = str(configdir.join('myconfig.yaml'))
+    my_resolve_config = cli._create_resolve_config_argument(str(configdir))
+
+    runner = CliRunner()
+
+    @click.command()
+    @click.argument(
+        'config', click.Path(exists=True), nargs=-1,
+        callback=my_resolve_config)
+    def config_cmd(config):
+        click.echo(config)
+
+    def check_cmd(config_arg):
+        return runner.invoke(config_cmd, [config_arg]).output
+
+    with configdir.as_cwd():
+        assert expect in check_cmd('myconfig')
+        assert expect in check_cmd('myconfig.yaml')
+        assert expect in check_cmd('./myconfig.yaml')
+        assert str(user_config) in check_cmd(
+            str(configdir.join('myconfig.yaml')))
+
+        assert 'file not found' in check_cmd('.tmuxp.json')
