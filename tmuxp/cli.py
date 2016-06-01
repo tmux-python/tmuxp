@@ -482,27 +482,16 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
 
 
 @cli.group(name='import')
-def import_config():
+def import_config_cmd():
     pass
 
 
-@import_config.command(name='teamocil')
-@click.argument(
-    'configfile', click.Path(exists=True), nargs=1,
-    callback=_create_resolve_config_argument(get_teamocil_dir)
-)
-def command_import_teamocil(configfile):
-    """Import teamocil config to tmuxp format."""
-
+def import_config(configfile, importfunc):
     configparser = kaptan.Kaptan(handler='yaml')
 
-    if os.path.exists(configfile):
-        print(configfile)
-        configparser.import_config(configfile)
-        newconfig = config.import_teamocil(configparser.get())
-        configparser.import_config(newconfig)
-    else:
-        sys.exit('File not found: %s' % configfile)
+    configparser.import_config(configfile)
+    newconfig = importfunc(configparser.get())
+    configparser.import_config(newconfig)
 
     config_format = click.prompt(
         'Convert to',
@@ -523,7 +512,7 @@ def command_import_teamocil(configfile):
         newconfig +
         '---------------------------------------------------------------'
         '\n'
-        'Configuration import does its best to convert teamocil files.\n'
+        'Configuration import does its best to convert files.\n'
     )
     if click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
@@ -552,71 +541,25 @@ def command_import_teamocil(configfile):
         sys.exit()
 
 
-@import_config.command(name='tmuxinator')
-@click.argument('configfile', click.Path(exists=True), nargs=1)
+@import_config_cmd.command(name='teamocil')
+@click.argument(
+    'configfile', click.Path(exists=True), nargs=1,
+    callback=_create_resolve_config_argument(get_teamocil_dir)
+)
+def command_import_teamocil(configfile):
+    """Import teamocil config to tmuxp format."""
+
+    import_config(configfile, config.import_teamocil)
+
+
+@import_config_cmd.command(name='tmuxinator')
+@click.argument(
+    'configfile', click.Path(exists=True), nargs=1,
+    callback=_create_resolve_config_argument(get_tmuxinator_dir)
+)
 def command_import_tmuxinator(configfile):
     """Import tmuxinator config to tmuxp format."""
-    configfile = os.path.abspath(os.path.relpath(
-        os.path.expanduser(configfile)))
-    configparser = kaptan.Kaptan(handler='yaml')
-
-    if os.path.exists(configfile):
-        print(configfile)
-        configparser.import_config(configfile)
-        newconfig = config.import_tmuxinator(configparser.get())
-        configparser.import_config(newconfig)
-    else:
-        sys.exit('File not found: %s' % configfile)
-
-    config_format = click.prompt(
-        'Convert to',
-        value_proc=_validate_choices(['yaml', 'json']),
-        default='yaml'
-    )
-
-    if config_format == 'yaml':
-        newconfig = configparser.export(
-            'yaml', indent=2, default_flow_style=False
-        )
-    elif config_format == 'json':
-        newconfig = configparser.export('json', indent=2)
-    else:
-        sys.exit('Unknown config format.')
-
-    print(newconfig)
-    print(
-        '---------------------------------------------------------------'
-        '\n'
-        'Configuration import does its best to convert tmuxinator files.'
-        '\n'
-    )
-    if click.confirm(
-        'The new config *WILL* require adjusting afterwards. Save config?'
-    ):
-        dest = None
-        while not dest:
-            dest_prompt = click.prompt('Save to: %s' % os.path.abspath(
-                os.path.join(get_config_dir(), 'myimport.%s' % config_format)))
-            if os.path.exists(dest_prompt):
-                print('%s exists. Pick a new filename.' % dest_prompt)
-                continue
-
-            dest = dest_prompt
-
-        dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-        if click.confirm('Save to %s?' % dest):
-            buf = open(dest, 'w')
-            buf.write(newconfig)
-            buf.close()
-
-            print('Saved to %s.' % dest)
-    else:
-        print(
-            'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
-        )
-        sys.exit()
+    import_config(configfile, config.import_tmuxinator)
 
 
 @cli.command(name='convert')
