@@ -249,7 +249,7 @@ def test_resolve_config_arg(homedir, configdir, projectdir, monkeypatch):
         assert 'file not found' in check_cmd('.tmuxp.json')
         assert 'file not found' in check_cmd('.tmuxp.ini')
         assert 'No tmuxp files found' in check_cmd('../')
-        assert 'no configs with moo found' in check_cmd('moo')
+        assert 'config not found in config dir' in check_cmd('moo')
 
 
 def test_load_workspace(server, monkeypatch):
@@ -337,6 +337,8 @@ def test_import(cli_args, monkeypatch):
     (['import', 'teamocil', './.teamocil/config.yaml'],
      ['\n', 'y\n', './la.yaml\n', 'y\n']),
     (['import', 'teamocil', './.teamocil/config.yaml'],
+     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
+    (['import', 'teamocil', 'config'],
      ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
 ])
 def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):

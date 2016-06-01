@@ -32,6 +32,14 @@ def get_config_dir():
 def cwd_dir():
     return os.getcwd() + '/'
 tmuxinator_config_dir = os.path.expanduser('~/.tmuxinator/')
+
+
+def get_tmuxinator_dir():
+    return os.path.expanduser('~/.tmuxinator/')
+
+
+def get_teamocil_dir():
+    return os.path.expanduser('~/.teamocil/')
 teamocil_config_dir = os.path.expanduser('~/.teamocil/')
 
 
@@ -63,20 +71,32 @@ def is_pure_name(path):
     )
 
 
-def resolve_config_argument(ctx, param, value):
+def _create_resolve_config_argument(config_dir):
+    """For finding configurations in tmuxinator/teamocil"""
+    def func(ctx, param, value):
+        return resolve_config_argument(ctx, param, value, config_dir)
+
+    return func
+
+
+def resolve_config_argument(ctx, param, value, config_dir=None):
     """Validate / translate config name/path values for click config arg.
 
     Wrapper on top of :func:`cli.resolve_config`."""
+    if callable(config_dir):
+        config_dir = config_dir()
+
     if not config:
         click.echo("Enter at least one CONFIG")
         click.echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
     if isinstance(value, string_types):
-        value = resolve_config(value)
+        value = resolve_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
-        value = tuple(map(resolve_config, value))
+        value = tuple(
+            [resolve_config(v, config_dir=config_dir) for v in value])
 
     return value
 
@@ -130,21 +150,13 @@ def resolve_config(config, config_dir=None):
     path = os.path
     exists, join, isabs = path.exists, path.join, path.isabs
     dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
-    basename = path.basename
     cwd = os.getcwd()
     is_name = False
     file_error = None
 
-    # is relative?    resolve to absolute via cwd
-    # a is directory?   (scan dir for .tmuxp.{ext})
-    # b no extension?   (scan config dir for .tmuxp.{ext})
-    # c is absolute file?     continue
-    # see if file exists, if not raise error
-
     config = os.path.expanduser(config)
     # if purename, resolve to confg dir
     if is_pure_name(config):
-        config = join(config_dir, config)
         is_name = True
     elif (
         not isabs(config) or len(dirname(config)) > 1 or config == '.' or
@@ -155,21 +167,22 @@ def resolve_config(config, config_dir=None):
     # no extension, scan
     if not splitext(config)[1]:
         if is_name:
-            candidates = filter(
-                exists,
-                ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
-            )
+            candidates = [
+                x for x in ['%s%s' % (join(config_dir, config), ext)
+                            for ext in ['.yaml', '.yml', '.json']
+                            ] if exists(x)
+            ]
             if not len(candidates):
-                file_error = 'no configs with %s found in config dir' % (
-                    basename(config))
+                file_error = (
+                    'config not found in config dir (yaml/yml/json) %s'
+                    'for name' % (config_dir))
         else:
-            candidates = filter(
-                exists,
-                [
+            candidates = [
+                x for x in [
                     join(config, ext) for ext in
                     ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']
-                ]
-            )
+                ] if exists(x)
+            ]
 
             if len(candidates) > 1:
                 click.secho(
@@ -476,12 +489,13 @@ def import_config():
 
 
 @import_config.command(name='teamocil')
-@click.argument('configfile', click.Path(exists=True), nargs=1)
+@click.argument(
+    'configfile', click.Path(exists=True), nargs=1,
+    callback=_create_resolve_config_argument(get_teamocil_dir)
+)
 def command_import_teamocil(configfile):
     """Import teamocil config to tmuxp format."""
 
-    configfile = os.path.abspath(os.path.relpath(
-        os.path.expanduser(configfile)))
     configparser = kaptan.Kaptan(handler='yaml')
 
     if os.path.exists(configfile):
