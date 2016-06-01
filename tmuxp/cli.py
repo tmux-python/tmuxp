@@ -25,7 +25,7 @@ from .workspacebuilder import freeze
 logger = logging.getLogger(__name__)
 
 
-def config_dir():
+def get_config_dir():
     return os.path.expanduser('~/.tmuxp/')
 
 
@@ -81,7 +81,28 @@ def resolve_config_argument(ctx, param, value):
     return value
 
 
-def resolve_config(config):
+def get_abs_path(config):
+    path = os.path
+    join, isabs = path.join, path.isabs
+    dirname, normpath = path.dirname, path.normpath
+    cwd = os.getcwd()
+
+    config = os.path.expanduser(config)
+    if not isabs(config) or len(dirname(config)) > 1:
+        config = normpath(join(cwd, config))
+
+    return config
+
+
+def _resolve_path_no_overwrite(config):
+    path = get_abs_path(config)
+    if os.path.exists(path):
+        raise click.exceptions.UsageError(
+            '%s exists. Pick a new filename.' % path)
+    return path
+
+
+def resolve_config(config, config_dir=None):
     """Return the real config path or raise an exception.
 
     :param config: config file, valid examples:
@@ -104,11 +125,15 @@ def resolve_config(config):
 
     :raises: :class:`click.exceptions.FileError`
     """
-
+    if not config_dir:
+        config_dir = get_config_dir()
     path = os.path
     exists, join, isabs = path.exists, path.join, path.isabs
     dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
+    basename = path.basename
     cwd = os.getcwd()
+    is_name = False
+    file_error = None
 
     # is relative?    resolve to absolute via cwd
     # a is directory?   (scan dir for .tmuxp.{ext})
@@ -119,7 +144,8 @@ def resolve_config(config):
     config = os.path.expanduser(config)
     # if purename, resolve to confg dir
     if is_pure_name(config):
-        config = join(config_dir(), config)
+        config = join(config_dir, config)
+        is_name = True
     elif (
         not isabs(config) or len(dirname(config)) > 1 or config == '.' or
         config == "" or config == "./"
@@ -128,27 +154,41 @@ def resolve_config(config):
 
     # no extension, scan
     if not splitext(config)[1]:
-        first = [join(config, ext)
-                 for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']]
-        second = ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
-        candidates = [f for f in first + second if exists(f)]
-        # print(candidates)
-        # print([join(config, ext) for ext in first+second])
-        if len(candidates) > 1:
-            click.secho(
-                'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
-                dirname(config), fg="red")
-            click.echo(click.wrap_text(
-                'This is undefined behavior, use only one. '
-                'Additional projects may use a filename e.g. myproject.json, '
-                'coolproject.yaml. You can load them by filename.'
-            ))
-        elif not len(candidates):
-            raise FileError('No configs found', config)
-        config = candidates[0]
+        if is_name:
+            candidates = filter(
+                exists,
+                ['%s%s' % (config, ext) for ext in ['.yaml', '.yml', '.json']]
+            )
+            if not len(candidates):
+                file_error = 'no configs with %s found in config dir' % (
+                    basename(config))
+        else:
+            candidates = filter(
+                exists,
+                [
+                    join(config, ext) for ext in
+                    ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']
+                ]
+            )
 
-    if not exists(config):
-        raise FileError('File does not exist', config)
+            if len(candidates) > 1:
+                click.secho(
+                    'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
+                    dirname(config), fg="red")
+                click.echo(click.wrap_text(
+                    'This is undefined behavior, use only one. '
+                    'Use file names e.g. myproject.json, coolproject.yaml. '
+                    'You can load them by filename.'
+                ))
+            elif not len(candidates):
+                file_error = 'No tmuxp files found in directory'
+        if len(candidates):
+            config = candidates[0]
+    elif not exists(config):
+        file_error = 'file not found'
+
+    if file_error:
+        raise FileError(file_error, config)
 
     return config
 
@@ -284,8 +324,8 @@ def setup_logger(logger=None, level='INFO'):
 def startup(config_dir):
     """Initialize CLI.
 
-    :param config_dir(): Config directory to search
-    :type config_dir(): string
+    :param get_config_dir(): Config directory to search
+    :type get_config_dir(): string
 
     """
 
@@ -339,7 +379,7 @@ def command_freeze(session_name, socket_name, socket_path):
     print(
         '---------------------------------------------------------------'
         '\n'
-        'Configuration import does its best to convert teamocil files.\n'
+        'Freeze does it best to snapshot live tmux sessions.\n'
     )
     if click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
@@ -348,11 +388,14 @@ def command_freeze(session_name, socket_name, socket_path):
         while not dest:
             save_to = os.path.abspath(
                 os.path.join(
-                    config_dir(),
+                    get_config_dir(),
                     '%s.%s' % (sconf.get('session_name'), config_format)
                 )
             )
-            dest_prompt = click.prompt('Save to: ', save_to)
+            dest_prompt = click.prompt(
+                'Save to: %s' %
+                save_to, value_proc=get_abs_path,
+                default=save_to, confirmation_prompt=True)
             if os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue
@@ -434,194 +477,134 @@ def import_config():
 
 @import_config.command(name='teamocil')
 @click.argument('configfile', click.Path(exists=True), nargs=1)
-@click.option('--list', '-l', 'list_configs', help='yes', is_flag=True)
-def command_import_teamocil(configfile, list_configs):
+def command_import_teamocil(configfile):
     """Import teamocil config to tmuxp format."""
 
-    if list_configs:
-        try:
-            configs_in_user = config.in_dir(
-                teamocil_config_dir(), extensions='yml')
-        except OSError:
-            configs_in_user = []
-        configs_in_cwd = config.in_dir(
-            config_dir=cwd_dir(), extensions='yml')
+    configfile = os.path.abspath(os.path.relpath(
+        os.path.expanduser(configfile)))
+    configparser = kaptan.Kaptan(handler='yaml')
 
-        output = ''
+    if os.path.exists(configfile):
+        print(configfile)
+        configparser.import_config(configfile)
+        newconfig = config.import_teamocil(configparser.get())
+        configparser.import_config(newconfig)
+    else:
+        sys.exit('File not found: %s' % configfile)
 
-        if not os.path.exists(teamocil_config_dir):
-            output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                teamocil_config_dir()
-        elif not configs_in_user:
-            output += '# %s: \n\tNone found.\n' % teamocil_config_dir()
-        else:
-            output += '# %s: \n\t%s\n' % (
-                config_dir(), ', '.join(configs_in_user)
-            )
+    config_format = click.prompt(
+        'Convert to',
+        value_proc=_validate_choices(['yaml', 'json']),
+        default='yaml'
+    )
 
-        if configs_in_cwd:
-            output += '# current directory:\n\t%s' % (
-                ', '.join(configs_in_cwd)
-            )
-
-        print(output)
-    elif configfile:
-        configfile = os.path.abspath(os.path.relpath(
-            os.path.expanduser(configfile)))
-        configparser = kaptan.Kaptan(handler='yaml')
-
-        if os.path.exists(configfile):
-            print(configfile)
-            configparser.import_config(configfile)
-            newconfig = config.import_teamocil(configparser.get())
-            configparser.import_config(newconfig)
-        else:
-            sys.exit('File not found: %s' % configfile)
-
-        config_format = click.prompt(
-            'Convert to',
-            value_proc=_validate_choices(['yaml', 'json']),
-            default='yaml'
+    if config_format == 'yaml':
+        newconfig = configparser.export(
+            'yaml', indent=2, default_flow_style=False
         )
+    elif config_format == 'json':
+        newconfig = configparser.export('json', indent=2)
+    else:
+        sys.exit('Unknown config format.')
 
-        if config_format == 'yaml':
-            newconfig = configparser.export(
-                'yaml', indent=2, default_flow_style=False
-            )
-        elif config_format == 'json':
-            newconfig = configparser.export('json', indent=2)
-        else:
-            sys.exit('Unknown config format.')
+    click.echo(
+        newconfig +
+        '---------------------------------------------------------------'
+        '\n'
+        'Configuration import does its best to convert teamocil files.\n'
+    )
+    if click.confirm(
+        'The new config *WILL* require adjusting afterwards. Save config?'
+    ):
+        dest = None
+        while not dest:
+            dest_path = click.prompt(
+                'Save to [%s]' % os.getcwd(),
+                value_proc=_resolve_path_no_overwrite,)
 
-        print(newconfig)
-        print(
-            '---------------------------------------------------------------'
-            '\n'
-            'Configuration import does its best to convert teamocil files.\n'
+            # dest = dest_prompt
+            if click.confirm('Save to %s?' % dest_path):
+                dest = dest_path
+
+        buf = open(dest, 'w')
+        buf.write(newconfig)
+        buf.close()
+
+        click.echo('Saved to %s.' % dest)
+    else:
+        click.echo(
+            'tmuxp has examples in JSON and YAML format at '
+            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
         )
-        if click.confirm(
-            'The new config *WILL* require adjusting afterwards. Save config?'
-        ):
-            dest = None
-            while not dest:
-                dest_prompt = click.prompt('Save to: %s ' % os.path.abspath(
-                    os.path.join(config_dir(), 'myimport.%s' % config_format)))
-                if os.path.exists(dest_prompt):
-                    print('%s exists. Pick a new filename.' % dest_prompt)
-                    continue
-
-                dest = dest_prompt
-
-            dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if click.confirm('Save to %s?' % dest):
-                buf = open(dest, 'w')
-                buf.write(newconfig)
-                buf.close()
-
-                print('Saved to %s.' % dest)
-        else:
-            print(
-                'tmuxp has examples in JSON and YAML format at '
-                '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-                'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
-            )
-            sys.exit()
+        sys.exit()
 
 
 @import_config.command(name='tmuxinator')
 @click.argument('configfile', click.Path(exists=True), nargs=1)
-@click.option('--list', '-l', 'list_configs', help='yes', is_flag=True)
-def command_import_tmuxinator(configfile, list_configs):
+def command_import_tmuxinator(configfile):
     """Import tmuxinator config to tmuxp format."""
-    if list_configs:
-        try:
-            configs_in_user = config.in_dir(
-                tmuxinator_config_dir(), extensions='yml')
-        except OSError:
-            configs_in_user = []
-        configs_in_cwd = config.in_dir(
-            config_dir=cwd_dir(), extensions='yml')
+    configfile = os.path.abspath(os.path.relpath(
+        os.path.expanduser(configfile)))
+    configparser = kaptan.Kaptan(handler='yaml')
 
-        output = ''
+    if os.path.exists(configfile):
+        print(configfile)
+        configparser.import_config(configfile)
+        newconfig = config.import_tmuxinator(configparser.get())
+        configparser.import_config(newconfig)
+    else:
+        sys.exit('File not found: %s' % configfile)
 
-        if not os.path.exists(tmuxinator_config_dir()):
-            output += '# %s: \n\tDirectory doesn\'t exist.\n' % \
-                tmuxinator_config_dir()
-        elif not configs_in_user:
-            output += '# %s: \n\tNone found.\n' % tmuxinator_config_dir()
-        else:
-            output += '# %s: \n\t%s\n' % (
-                config_dir(), ', '.join(configs_in_user)
-            )
+    config_format = click.prompt(
+        'Convert to',
+        value_proc=_validate_choices(['yaml', 'json']),
+        default='yaml'
+    )
 
-        if configs_in_cwd:
-            output += '# current directory:\n\t%s' % (
-                ', '.join(configs_in_cwd)
-            )
-
-        print(output)
-    elif configfile:
-        configfile = os.path.abspath(os.path.relpath(
-            os.path.expanduser(configfile)))
-        configparser = kaptan.Kaptan(handler='yaml')
-
-        if os.path.exists(configfile):
-            print(configfile)
-            configparser.import_config(configfile)
-            newconfig = config.import_tmuxinator(configparser.get())
-            configparser.import_config(newconfig)
-        else:
-            sys.exit('File not found: %s' % configfile)
-
-        config_format = click.prompt(
-            'Convert to',
-            value_proc=_validate_choices(['yaml', 'json']),
-            default='yaml'
+    if config_format == 'yaml':
+        newconfig = configparser.export(
+            'yaml', indent=2, default_flow_style=False
         )
+    elif config_format == 'json':
+        newconfig = configparser.export('json', indent=2)
+    else:
+        sys.exit('Unknown config format.')
 
-        if config_format == 'yaml':
-            newconfig = configparser.export(
-                'yaml', indent=2, default_flow_style=False
-            )
-        elif config_format == 'json':
-            newconfig = configparser.export('json', indent=2)
-        else:
-            sys.exit('Unknown config format.')
+    print(newconfig)
+    print(
+        '---------------------------------------------------------------'
+        '\n'
+        'Configuration import does its best to convert tmuxinator files.'
+        '\n'
+    )
+    if click.confirm(
+        'The new config *WILL* require adjusting afterwards. Save config?'
+    ):
+        dest = None
+        while not dest:
+            dest_prompt = click.prompt('Save to: %s' % os.path.abspath(
+                os.path.join(get_config_dir(), 'myimport.%s' % config_format)))
+            if os.path.exists(dest_prompt):
+                print('%s exists. Pick a new filename.' % dest_prompt)
+                continue
 
-        print(newconfig)
+            dest = dest_prompt
+
+        dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
+        if click.confirm('Save to %s?' % dest):
+            buf = open(dest, 'w')
+            buf.write(newconfig)
+            buf.close()
+
+            print('Saved to %s.' % dest)
+    else:
         print(
-            '---------------------------------------------------------------'
-            '\n'
-            'Configuration import does its best to convert tmuxinator files.'
-            '\n'
+            'tmuxp has examples in JSON and YAML format at '
+            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
         )
-        if click.confirm(
-            'The new config *WILL* require adjusting afterwards. Save config?'
-        ):
-            dest = None
-            while not dest:
-                dest_prompt = click.prompt('Save to: %s' % os.path.abspath(
-                    os.path.join(config_dir(), 'myimport.%s' % config_format)))
-                if os.path.exists(dest_prompt):
-                    print('%s exists. Pick a new filename.' % dest_prompt)
-                    continue
-
-                dest = dest_prompt
-
-            dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-            if click.confirm('Save to %s?' % dest):
-                buf = open(dest, 'w')
-                buf.write(newconfig)
-                buf.close()
-
-                print('Saved to %s.' % dest)
-        else:
-            print(
-                'tmuxp has examples in JSON and YAML format at '
-                '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-                'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
-            )
-            sys.exit()
+        sys.exit()
 
 
 @cli.command(name='convert')

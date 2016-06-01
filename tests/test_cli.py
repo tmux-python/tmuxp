@@ -13,7 +13,7 @@ from click.testing import CliRunner
 from tmuxp import cli, config
 from tmuxp.cli import is_pure_name, load_workspace, resolve_config
 
-from .fixtures._util import curjoin
+from .fixtures._util import curjoin, loadfixture
 
 
 def test_creates_config_dir_not_exists(tmpdir):
@@ -242,14 +242,14 @@ def test_resolve_config_arg(homedir, configdir, projectdir, monkeypatch):
         assert expect in check_cmd('.tmuxp.yaml')
         assert str(user_config) in check_cmd(
             '../../.tmuxp/%s.yaml' % user_config_name)
-        assert str(user_config) in check_cmd('myconfig')
+        assert user_config.purebasename in check_cmd('myconfig')
         assert str(user_config) in check_cmd(
             '~/.tmuxp/myconfig.yaml')
 
-        assert 'does not exist' in check_cmd('.tmuxp.json')
-        assert 'does not exist' in check_cmd('.tmuxp.ini')
-        assert 'No configs found' in check_cmd('../')
-        assert 'No configs found' in check_cmd('moo')
+        assert 'file not found' in check_cmd('.tmuxp.json')
+        assert 'file not found' in check_cmd('.tmuxp.ini')
+        assert 'No tmuxp files found' in check_cmd('../')
+        assert 'no configs with moo found' in check_cmd('moo')
 
 
 def test_load_workspace(server, monkeypatch):
@@ -320,3 +320,33 @@ session_name: hello
         assert tmpdir.join('.tmuxp.json').check()
         assert tmpdir.join('.tmuxp.json').open().read() == \
             json.dumps({'session_name': 'hello'}, indent=2)
+
+
+@pytest.mark.parametrize("cli_args", [
+    (['import']),
+])
+def test_import(cli_args, monkeypatch):
+    runner = CliRunner()
+
+    result = runner.invoke(cli.cli, cli_args)
+    assert 'tmuxinator' in result.output
+    assert 'teamocil' in result.output
+
+
+@pytest.mark.parametrize("cli_args,inputs", [
+    (['import', 'teamocil', './.teamocil/config.yaml'],
+     ['\n', 'y\n', './la.yaml\n', 'y\n']),
+    (['import', 'teamocil', './.teamocil/config.yaml'],
+     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
+])
+def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
+    teamocil_config = loadfixture('config_teamocil/test4.yaml')
+    teamocil_dir = tmpdir.join('.teamocil').mkdir()
+    teamocil_dir.join('config.yaml').write(teamocil_config)
+    tmpdir.join('exists.yaml').ensure()
+    monkeypatch.setenv('HOME', str(tmpdir))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+        runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+        assert tmpdir.join('la.yaml').check()
