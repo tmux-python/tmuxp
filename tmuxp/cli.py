@@ -172,7 +172,7 @@ def resolve_config(config, config_dir=None):
             ]
             if not len(candidates):
                 file_error = (
-                    'config not found in config dir (yaml/yml/json) %s'
+                    'config not found in config dir (yaml/yml/json) %s '
                     'for name' % (config_dir))
         else:
             candidates = [
