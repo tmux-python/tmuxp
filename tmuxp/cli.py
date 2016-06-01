@@ -386,7 +386,16 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.option('-S', 'socket_path', help='pass-through for tmux -L')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
-def command_load(ctx, config, socket_name, socket_path, answer_yes):
+@click.option('-d', 'detached',
+              help='Load the session without attaching it', is_flag=True)
+@click.option(
+    '-2', 'colors', flag_value=256, default=True,
+    help='Force tmux to assume the terminal supports 256 colours.')
+@click.option(
+    '-8', 'colors', flag_value=88,
+    help='Like -2, but indicates that the terminal supports 88 colours.')
+def command_load(ctx, config, socket_name, socket_path, answer_yes,
+                 detached, colors):
     """Load a tmux workspace from one or multiple CONFIG path to config file,
     directory with config file or session name.
     """
@@ -401,7 +410,9 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes):
     tmux_options = {
         'socket_name': socket_name,
         'socket_path': socket_path,
-        'answer_yes': answer_yes
+        'answer_yes': answer_yes,
+        'colors': colors,
+        'detached': detached
     }
 
     if not config:
