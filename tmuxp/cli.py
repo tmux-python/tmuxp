@@ -300,7 +300,9 @@ def load_workspace(
 
 
 @click.group(context_settings={'obj': {}})
-@click.version_option(version=__version__, message='%(prog)s %(version)s')
+@click.version_option(
+    __version__, '-V', '--version', message='%(prog)s %(version)s'
+)
 @click.option('--log_level', default='INFO',
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
 def cli(log_level):
