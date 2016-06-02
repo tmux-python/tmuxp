@@ -4,6 +4,17 @@
 Command Line Interface
 ======================
 
+.. _completion:
+
+Completion
+----------
+
+In zsh/bash:
+
+.. code-block::
+
+    eval "$(_TMUXP_COMPLETE=source tmuxp)"
+
 .. _commands:
 
 .. _cli_freeze:
