@@ -67,9 +67,11 @@ Load sessions in the background by passing ``-d`` flag
 Freeze a tmux session
 ---------------------
 
+snapshot your tmux layout, pane paths, and window/session names. 
+
 .. code-block:: sh
 
-   $ tmuxp freeze
+   $ tmuxp freeze SESSION_NAME
 
 See more about `freezing tmux`_ sessions.
 
