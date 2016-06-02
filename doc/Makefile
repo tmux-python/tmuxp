@@ -156,7 +156,7 @@ checkbuild:
 	rm -rf $(BUILDDIR)
 	$(SPHINXBUILD) -n -q ./ $(BUILDDIR)
 
-WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst$$\|CHANGES\|TODO\|.*conf\.py$$' 2> /dev/null
+WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst\|CHANGES\|TODO\|.*conf\.py' 2> /dev/null
 
 watch:
 	if command -v entr > /dev/null; then ${WATCH_FILES} | entr -c $(MAKE) html; else $(MAKE) html; fi
