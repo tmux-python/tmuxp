@@ -476,8 +476,9 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
         config = list(config)
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
-            # todo: add -d option to all these
-            load_workspace(cfg, **tmux_options)
+            opt = tmux_options.copy()
+            opt.update({'detached': True})
+            load_workspace(cfg, **opt)
 
         # todo: obey the -d in the cli args only if user specifies
         load_workspace(config[-1], **tmux_options)
