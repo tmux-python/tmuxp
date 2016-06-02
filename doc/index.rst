@@ -11,7 +11,7 @@ tmux session manager
     :width: 100%
 
 .. include:: ../README.rst
-    :start-line: 9
+    :start-line: 8
     :end-before: Project details
 
 Explore:

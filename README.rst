@@ -37,19 +37,19 @@ Save as ``mysession.yaml``. And load:
 
 Sessions in ``~/.tmuxp/`` can use names:
 
-.. code-block::
+.. code-block:: sh
 
     $ tmuxp load mysession
 
 Projects with ``.tmuxp.yaml`` or ``.tmuxp.json`` load via directory:
 
-.. code-block::
+.. code-block:: sh
 
     $ tmuxp load path/to/my/project/
 
 Load multiple at once (in bg, offer to attach last):
 
-.. code-block::
+.. code-block:: sh
 
     $ tmuxp load mysession ./another/project/ 
 
