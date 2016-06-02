@@ -4,7 +4,11 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-- :feature:`-` Add back ``tmuxp -V`` for version info
+- :release:`1.1.1 <2016-06-02>`
+- :bug:`167 backported` fix attaching multiple sessions
+- :bug:`165 backported` fix typo in error output, thanks @fpietka
+- :support:`166 backported` add new docs on zsh/bash completion
+- :feature:`- backported` Add back ``tmuxp -V`` for version info
 
 - :release:`1.1.0 <2016-06-01>`
 - :feature:`160` load tmuxp configs by name
