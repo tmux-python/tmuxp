@@ -4,6 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :feature:`-` Add back ``tmuxp -V`` for version info
+
 - :release:`1.1.0 <2016-06-01>`
 - :feature:`160` load tmuxp configs by name
 - :feature:`134` Use ``click`` for command-line completion, Rewrite command
