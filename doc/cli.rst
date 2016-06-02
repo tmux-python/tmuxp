@@ -9,7 +9,7 @@ Command Line Interface
 Completion
 ----------
 
-In zsh/bash:
+In zsh (``~/.zshrc``) or bash (``~/.bashrc``):
 
 .. code-block::
 
