@@ -1,4 +1,5 @@
 .. _cli:
+.. _commands:
 
 ======================
 Command Line Interface
@@ -11,11 +12,9 @@ Completion
 
 In zsh (``~/.zshrc``) or bash (``~/.bashrc``):
 
-.. code-block::
+.. code-block:: sh
 
     eval "$(_TMUXP_COMPLETE=source tmuxp)"
-
-.. _commands:
 
 .. _cli_freeze:
 
@@ -50,9 +49,6 @@ Load session
     tmuxp load ./myfile.yaml
     tmuxp load /abs/path/to/myfile.yaml
     tmuxp load ~/myfile.yaml
-
-Keep your configs in ``$HOME/.tmuxp`` for easy access and detection by
-:ref:`bash_completion`.
 
 Files also may be loaded by absolute path.
 
