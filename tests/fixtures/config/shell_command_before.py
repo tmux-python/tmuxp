@@ -40,7 +40,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
             ]
         },
         {
-            'options': {'automatic_rename': True, },
+            'options': {'automatic-rename': True, },
             'panes': [
                 {'shell_command': ['htop']}
             ]
@@ -92,7 +92,7 @@ config_expanded = {  # shell_command_before is string in some areas
             ]
         },
         {
-            'options': {'automatic_rename': True, },
+            'options': {'automatic-rename': True, },
             'panes': [
                 {'shell_command': ['htop']}
             ]
@@ -155,7 +155,7 @@ config_after = {  # shell_command_before is string in some areas
         },
         {
             'start_directory': '/',
-            'options': {'automatic_rename': True, },
+            'options': {'automatic-rename': True, },
             'panes': [
                 {
                     'shell_command': ['htop']

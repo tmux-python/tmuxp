@@ -1,0 +1,12 @@
+session_name: test global options
+start_directory: '~'
+global_options:
+  repeat-time: 493
+  status-position: 'top'
+windows:
+- layout: main-horizontal
+  panes:
+  - pane
+  - pane
+  - pane
+  window_name: moo
