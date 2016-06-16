@@ -166,13 +166,15 @@ Environment variable replacing
 ------------------------------
 
 tmuxp will replace environment variables wrapped in curly brackets
-for the following variables:
+for values of these settings:
 
 - ``start_directory``
 - ``before_script``
 - ``session_name``
 - ``window_name``
 - ``shell_command_before``
+- ``global_options``
+- ``options`` in session scope and window scope
 
 tmuxp replaces these variables before-hand with variables in the
 terminal ``tmuxp`` invokes in.
@@ -278,19 +280,25 @@ JSON
 .. literalinclude:: ../examples/window-index.json
     :language: json
 
-Automatic Rename
+Set tmux options
 ----------------
+
+Works with global (server-wide) options, session options
+and window options.
+
+Including ``automatic-rename``, ``default-shell``,
+``default-command``, etc.
 
 YAML
 ~~~~
 
-.. literalinclude:: ../examples/automatic-rename.yaml
+.. literalinclude:: ../examples/options.yaml
     :language: yaml
 
 JSON
 ~~~~
 
-.. literalinclude:: ../examples/automatic-rename.json
+.. literalinclude:: ../examples/options.json
     :language: json
 
 Main pane height
