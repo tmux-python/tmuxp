@@ -1,0 +1,13 @@
+session_name: test env vars for options
+start_directory: '~'
+global_options:
+  visual-silence: ${VISUAL_SILENCE}
+options:
+  repeat-time: 738
+windows:
+- window_name: moo
+  layout: main-horizontal
+  options:
+    main-pane-height: ${MAIN_PANE_HEIGHT}
+  panes:
+  - pane

@@ -161,6 +161,12 @@ class WorkspaceBuilder(object):
             except Exception as e:
                 self.session.kill_session()
                 raise e
+        if 'options' in self.sconf:
+            for option, value in self.sconf['options'].items():
+                self.session.set_option(option, value)
+        if 'global_options' in self.sconf:
+            for option, value in self.sconf['global_options'].items():
+                self.session.set_option(option, value, g=True)
         if 'environment' in self.sconf:
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)

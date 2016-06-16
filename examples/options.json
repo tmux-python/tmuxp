@@ -26,5 +26,12 @@
     }
   ], 
   "session_name": "test window options", 
-  "start_directory": "~"
+  "start_directory": "~", 
+  "global_options": {
+    "default-shell": "/bin/sh", 
+    "default-command": "/bin/sh"
+  }, 
+  "options": {
+    "main-pane-height": "${MAIN_PANE_HEIGHT}"
+  }
 }

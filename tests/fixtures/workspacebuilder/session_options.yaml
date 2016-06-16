@@ -1,0 +1,12 @@
+session_name: test session options
+start_directory: '~'
+options:
+  default-shell: /bin/sh
+  default-command: /bin/sh
+windows:
+- layout: main-horizontal
+  panes:
+  - pane
+  - pane
+  - pane
+  window_name: moo

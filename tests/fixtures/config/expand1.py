@@ -32,7 +32,7 @@ before_config = {
         },
         {
             'start_directory': '/var/log',
-            'options': {'automatic_rename': True, },
+            'options': {'automatic-rename': True, },
             'panes': [
                 {
                     'shell_command': 'htop'
@@ -95,7 +95,7 @@ after_config = {
         },
         {
             'start_directory': '/var/log',
-            'options': {'automatic_rename': True},
+            'options': {'automatic-rename': True},
             'panes': [
                 {'shell_command': ['htop']},
                 {'shell_command': ['vim']}

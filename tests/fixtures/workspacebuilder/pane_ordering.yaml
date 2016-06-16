@@ -2,7 +2,7 @@ session_name: sampleconfig
 start_directory: {HOME}
 windows:
 - options:
-  - automatic_rename: on
+    automatic-rename: on
   layout: tiled
   panes:
   - cd /usr/bin

@@ -9,7 +9,8 @@ windows:
     - tail -F /var/log/syslog
   start_directory: /var/log
 - window_name: logging for ${USER}
-  automatic_rename: true
+  options:
+    automatic-rename: true
   panes:
   - shell_command:
     - htop

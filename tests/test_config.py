@@ -9,7 +9,6 @@ import os
 import kaptan
 import pytest
 
-from libtmux.test import EnvironmentVarGuard
 from tmuxp import config, exc
 
 from . import example_dir
@@ -129,7 +128,7 @@ ibefore_config = {  # inline config
             ]
         },
         {
-            'options': {'automatic_rename': True, },
+            'options': {'automatic-rename': True, },
             'panes': [
                 {'shell_command': ['htop']}
             ]
@@ -158,7 +157,7 @@ iafter_config = {
         },
         {
             'options': {
-                'automatic_rename': True,
+                'automatic-rename': True,
             },
             'panes': [
                 'htop'
@@ -213,7 +212,7 @@ inheritance_config_before = {
         },
         {
             'options': {
-                'automatic_rename': True,
+                'automatic-rename': True,
             },
             'panes': [
                 {
@@ -257,7 +256,7 @@ inheritance_config_after = {
             ]
         },
         {
-            'options': {'automatic_rename': True, },
+            'options': {'automatic-rename': True, },
             'panes': [
                 {
                     'shell_command': ['htop'],
@@ -363,7 +362,7 @@ def test_no_session_name():
       - tail -F /var/log/syslog
       start_directory: /var/log
     - window_name: logging
-      automatic_rename: true
+      automatic-rename: true
       panes:
       - shell_command:
       - htop
@@ -399,7 +398,7 @@ def test_no_window_name():
       shell_command:
       - tail -F /var/log/syslog
       start_directory: /var/log
-    - automatic_rename: true
+    - automatic-rename: true
       panes:
       - shell_command:
       - htop
@@ -413,14 +412,18 @@ def test_no_window_name():
         assert excinfo.matches('missing "window_name"')
 
 
-def test_replaces_start_directory():
+def test_replaces_env_variables(monkeypatch):
     env_key = "TESTHEY92"
-    env_value = "HEYO1"
+    env_val = "HEYO1"
     yaml_config = """
     start_directory: {TEST_VAR}/test
     shell_command_before: {TEST_VAR}/test2
     before_script: {TEST_VAR}/test3
     session_name: hi - {TEST_VAR}
+    options:
+        default-command: {TEST_VAR}/lol
+    global_options:
+        default-shell: {TEST_VAR}/moo
     windows:
     - window_name: editor
       panes:
@@ -428,7 +431,7 @@ def test_replaces_start_directory():
       - tail -F /var/log/syslog
       start_directory: /var/log
     - window_name: logging @ {TEST_VAR}
-      automatic_rename: true
+      automatic-rename: true
       panes:
       - shell_command:
       - htop
@@ -438,12 +441,12 @@ def test_replaces_start_directory():
 
     sconfig = load_yaml(yaml_config)
 
-    with EnvironmentVarGuard() as env:
-        env.set(env_key, env_value)
-        sconfig = config.expand(sconfig)
-        assert "%s/test" % env_value == sconfig['start_directory']
-        assert "%s/test2" % env_value in sconfig['shell_command_before']
-        assert "%s/test3" % env_value == sconfig['before_script']
-        assert "hi - %s" % env_value == sconfig['session_name']
-        assert "logging @ %s" % env_value == \
-            sconfig['windows'][1]['window_name']
+    monkeypatch.setenv(env_key, env_val)
+    sconfig = config.expand(sconfig)
+    assert "%s/test" % env_val == sconfig['start_directory']
+    assert "%s/test2" % env_val in sconfig['shell_command_before']
+    assert "%s/test3" % env_val == sconfig['before_script']
+    assert "hi - %s" % env_val == sconfig['session_name']
+    assert "%s/moo" % env_val == sconfig['global_options']['default-shell']
+    assert "%s/lol" % env_val == sconfig['options']['default-command']
+    assert "logging @ %s" % env_val == sconfig['windows'][1]['window_name']

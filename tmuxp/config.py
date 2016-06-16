@@ -198,6 +198,23 @@ def expand(sconf, cwd=None, parent=None):
             if any(val.startswith(a) for a in ['.', './']):
                 val = os.path.normpath(os.path.join(cwd, val))
             sconf['environment'][key] = val
+    if 'global_options' in sconf:
+        for key in sconf['global_options']:
+            val = sconf['global_options'][key]
+            if isinstance(val, string_types):
+                val = expandshell(val)
+                if any(val.startswith(a) for a in ['.', './']):
+                    val = os.path.normpath(os.path.join(cwd, val))
+            sconf['global_options'][key] = val
+    if 'options' in sconf:
+        for key in sconf['options']:
+            val = sconf['options'][key]
+            if isinstance(val, string_types):
+                val = expandshell(val)
+                if any(val.startswith(a) for a in ['.', './']):
+                    val = os.path.normpath(os.path.join(cwd, val))
+            sconf['options'][key] = val
+
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
     if 'start_directory' in sconf:

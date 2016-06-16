@@ -103,7 +103,7 @@ def test_focus_pane_index(session):
     assert w.name != 'man'
 
     pane_path = '/usr'
-    for i in range(20):
+    for _ in range(20):
         p = w.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
@@ -121,7 +121,7 @@ def test_focus_pane_index(session):
 
     p = None
     pane_path = '/'
-    for i in range(10):
+    for _ in range(10):
         p = window3.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
@@ -164,7 +164,7 @@ def test_suppress_history(session):
         session.cmd('send-keys', ' fc -ln -1')
         session.cmd('send-keys', 'Enter')
 
-        for i in range(10):
+        for _ in range(10):
             time.sleep(0.1)
 
             # Get the contents of the pane
@@ -180,6 +180,57 @@ def test_suppress_history(session):
                 correct = True
                 break
         assert correct, "Unknown sent command: [%s]" % sent_cmd
+
+
+def test_session_options(session):
+    yaml_config = loadfixture("workspacebuilder/session_options.yaml")
+    s = session
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    assert "/bin/sh" in s.show_option('default-shell')
+    assert "/bin/sh" in s.show_option('default-command')
+
+
+def test_global_options(session):
+    yaml_config = loadfixture("workspacebuilder/global_options.yaml")
+    s = session
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    assert "top" in s.show_option('status-position', g=True)
+    assert 493 == s.show_option('repeat-time', g=True)
+
+
+def test_global_session_env_options(session, monkeypatch):
+    visual_silence = 'on'
+    monkeypatch.setenv('VISUAL_SILENCE', visual_silence)
+    repeat_time = 738
+    monkeypatch.setenv('REPEAT_TIME', repeat_time)
+    main_pane_height = 8
+    monkeypatch.setenv('MAIN_PANE_HEIGHT', main_pane_height)
+
+    yaml_config = loadfixture("workspacebuilder/env_var_options.yaml")
+    s = session
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    assert visual_silence in s.show_option('visual-silence', g=True)
+    assert repeat_time == s.show_option('repeat-time')
+    assert main_pane_height == \
+        s.attached_window.show_window_option('main-pane-height')
 
 
 def test_window_options(session):
@@ -217,7 +268,7 @@ def test_window_shell(session):
     for w, wconf in builder.iter_create_windows(s):
         if 'window_shell' in wconf:
             assert wconf['window_shell'] == text_type('top')
-        for i in range(10):
+        for _ in range(10):
             session.server._update_windows()
             if w['window_name'] != 'top':
                 break
@@ -265,7 +316,7 @@ def test_automatic_rename_option(session):
     assert s.name != 'tmuxp'
     w = s.windows[0]
 
-    for i in range(10):
+    for _ in range(10):
         session.server._update_windows()
         if w.name != 'sh':
             break
@@ -276,7 +327,7 @@ def test_automatic_rename_option(session):
     pane_base_index = w.show_window_option('pane-base-index', g=True)
     w.select_pane(pane_base_index)
 
-    for i in range(10):
+    for _ in range(10):
         session.server._update_windows()
         if w.name == 'sh':
             break
@@ -285,7 +336,7 @@ def test_automatic_rename_option(session):
     assert w.name == text_type('sh')
 
     w.select_pane('-D')
-    for i in range(10):
+    for _ in range(10):
         session.server._update_windows()
         if w['window_name'] != 'sh':
             break
@@ -345,7 +396,7 @@ def test_start_directory(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            for i in range(60):
+            for _ in range(60):
                 p.server._update_panes()
                 pane_path = p.current_path
                 if pane_path is None:
@@ -411,7 +462,7 @@ def test_start_directory_relative(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            for i in range(60):
+            for _ in range(60):
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
                 pane_path = p.current_path
@@ -480,7 +531,7 @@ def test_pane_order(session):
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            for i in range(60):
+            for _ in range(60):
                 p.server._update_panes()
                 if p.current_path == pane_path:
                     break
@@ -506,7 +557,7 @@ def test_window_index(session):
 
     builder = WorkspaceBuilder(sconf=sconfig)
 
-    for window, wconf in builder.iter_create_windows(session):
+    for window, _ in builder.iter_create_windows(session):
         expected_index = name_index_map[window['window_name']]
         assert int(window['window_index']) == expected_index
 

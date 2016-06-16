@@ -14,6 +14,9 @@ env:
   - TMUX_VERSION=2.0
   - TMUX_VERSION=1.8
   - TMUX_VERSION=1.9a
+matrix:
+  allow_failures:
+  - env: TMUX_VERSION=master
 before_install:
   - export PIP_USE_MIRRORS=true
   - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
