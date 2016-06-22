@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, print_function, unicode_literals
 
 import os
-import platform
 import subprocess
 import sys
 
@@ -15,13 +13,6 @@ def warning(*objs):
 
 def fail(message):
     sys.exit("Error: {message}".format(message=message))
-
-
-PY2 = sys.version_info[0] == 2
-if PY2:
-    from urllib import urlretrieve
-else:
-    from urllib.request import urlretrieve
 
 
 def has_module(module_name):
@@ -79,12 +70,14 @@ pip_bin = os.path.join(env_dir, 'bin', 'pip')
 python_bin = os.path.join(env_dir, 'bin', 'python')
 virtualenv_bin = which('virtualenv', throw=False)
 virtualenv_exists = os.path.exists(env_dir) and os.path.isfile(python_bin)
-sphinx_requirements_filepath = os.path.join(project_dir, 'requirements', 'doc.txt')
-test_requirements_filepath = os.path.join(project_dir, 'requirements', 'test.txt')
+sphinx_requirements_filepath = os.path.join(
+    project_dir, 'requirements', 'doc.txt')
+test_requirements_filepath = os.path.join(
+    project_dir, 'requirements', 'test.txt')
 
 
 try:
-    import virtualenv
+    import virtualenv  # NOQA
 except ImportError:
     message = (
         'Virtualenv is required for this bootstrap to run.\n'
@@ -95,7 +88,7 @@ except ImportError:
 
 
 try:
-    import pip
+    import pip  # NOQA
 except ImportError:
     message = (
         'pip is required for this bootstrap to run.\n'
