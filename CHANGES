@@ -5,7 +5,7 @@ Changelog
 Here you can find the recent changes to tmuxp
 
 - :release:`1.2.0 <2016-06-16>`
-- :feature:`65` Ability to specify ``options`` and ``global_options`` via
+- :feature:`169` Ability to specify ``options`` and ``global_options`` via
   configuration. Also you can specify environment variables via that.
 
   Include tests and add example.
