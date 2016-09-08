@@ -351,7 +351,7 @@ def startup(config_dir):
 @click.option('-S', 'socket_path', help='pass-through for tmux -L')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 def command_freeze(session_name, socket_name, socket_path):
-    """Import teamocil config to tmuxp format."""
+    """Write configuration for a snapshot of the current session into a tmuxp config."""
 
     t = Server(
         socket_name=socket_name,
