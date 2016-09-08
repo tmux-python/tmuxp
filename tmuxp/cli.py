@@ -451,8 +451,24 @@ def command_freeze(session_name, socket_name, socket_path):
     help='Like -2, but indicates that the terminal supports 88 colours.')
 def command_load(ctx, config, socket_name, socket_path, answer_yes,
                  detached, colors):
-    """Load a tmux workspace from one or multiple CONFIG path to config file,
-    directory with config file or session name.
+    """Load a tmux workspace from each CONFIG.
+
+    CONFIG is a specifier for a configuration file.
+
+    If CONFIG is a path to a directory, tmuxp will search it for ".tmuxp.{yaml,yml,json}".
+
+    If CONFIG is has no directory component and only a filename, e.g. "myconfig.yaml", tmuxp will
+    search the users's config directory for that file.
+
+    If CONFIG has no directory component, and only a name with no extension, e.g. "myconfig",
+    tmuxp will search the users's config directory for any file with the extension ".yaml", ".yml",
+    or ".json" that matches that name.
+
+    If multiple configuration files that match a given CONFIG are found, tmuxp will warn and pick
+    the first one found.
+
+    If multiple CONFIGs are provided, workspaces will be created for all of them. The last one
+    provided will be attached. The others will be created in detached mode.
     """
     util.oh_my_zsh_auto_title()
 
