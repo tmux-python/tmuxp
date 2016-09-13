@@ -306,6 +306,11 @@ def load_workspace(
 @click.option('--log_level', default='INFO',
               help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
 def cli(log_level):
+    """Manage tmux sessions.
+
+    Pass the "--help" argument to any command to see detailed help.
+    See detailed documentation and examples at:
+    http://tmuxp.readthedocs.io/en/latest/"""
     try:
         has_required_tmux_version()
     except exc.TmuxpException as e:
@@ -351,7 +356,10 @@ def startup(config_dir):
 @click.option('-S', 'socket_path', help='pass-through for tmux -L')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 def command_freeze(session_name, socket_name, socket_path):
-    """Import teamocil config to tmuxp format."""
+    """Snapshot a session into a config.
+
+    If SESSION_NAME is provided, snapshot that session. Otherwise, use the
+    current session."""
 
     t = Server(
         socket_name=socket_name,
@@ -434,7 +442,7 @@ def command_freeze(session_name, socket_name, socket_path):
         sys.exit()
 
 
-@cli.command(name='load')
+@cli.command(name='load', short_help='Load tmuxp workspaces.')
 @click.pass_context
 @click.argument('config', click.Path(exists=True), nargs=-1,
                 callback=resolve_config_argument)
@@ -451,8 +459,27 @@ def command_freeze(session_name, socket_name, socket_path):
     help='Like -2, but indicates that the terminal supports 88 colours.')
 def command_load(ctx, config, socket_name, socket_path, answer_yes,
                  detached, colors):
-    """Load a tmux workspace from one or multiple CONFIG path to config file,
-    directory with config file or session name.
+    """Load a tmux workspace from each CONFIG.
+
+    CONFIG is a specifier for a configuration file.
+
+    If CONFIG is a path to a directory, tmuxp will search it for
+    ".tmuxp.{yaml,yml,json}".
+
+    If CONFIG is has no directory component and only a filename, e.g.
+    "myconfig.yaml", tmuxp will search the users's config directory for that
+    file.
+
+    If CONFIG has no directory component, and only a name with no extension,
+    e.g. "myconfig", tmuxp will search the users's config directory for any
+    file with the extension ".yaml", ".yml", or ".json" that matches that name.
+
+    If multiple configuration files that match a given CONFIG are found, tmuxp
+    will warn and pick the first one found.
+
+    If multiple CONFIGs are provided, workspaces will be created for all of
+    them. The last one provided will be attached. The others will be created in
+    detached mode.
     """
     util.oh_my_zsh_auto_title()
 
@@ -486,6 +513,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
 
 @cli.group(name='import')
 def import_config_cmd():
+    """Import a teamocil/tmuxinator config."""
     pass
 
 
@@ -544,24 +572,29 @@ def import_config(configfile, importfunc):
         sys.exit()
 
 
-@import_config_cmd.command(name='teamocil')
+@import_config_cmd.command(name='teamocil',
+                           short_help='Convert and import a teamocil config.')
 @click.argument(
     'configfile', click.Path(exists=True), nargs=1,
     callback=_create_resolve_config_argument(get_teamocil_dir)
 )
 def command_import_teamocil(configfile):
-    """Import teamocil config to tmuxp format."""
+    """Convert a teamocil config from CONFIGFILE to tmuxp format and import
+    it into tmuxp."""
 
     import_config(configfile, config.import_teamocil)
 
 
-@import_config_cmd.command(name='tmuxinator')
+@import_config_cmd.command(
+    name='tmuxinator',
+    short_help='Convert and import a tmuxinator config.')
 @click.argument(
     'configfile', click.Path(exists=True), nargs=1,
     callback=_create_resolve_config_argument(get_tmuxinator_dir)
 )
 def command_import_tmuxinator(configfile):
-    """Import tmuxinator config to tmuxp format."""
+    """Convert a tmuxinator config from CONFIGFILE to tmuxp format and import
+    it into tmuxp."""
     import_config(configfile, config.import_tmuxinator)
 
 
@@ -569,7 +602,7 @@ def command_import_tmuxinator(configfile):
 @click.argument('config', click.Path(exists=True), nargs=1,
                 callback=resolve_config_argument)
 def command_convert(config):
-    """Convert tmuxp config to and from JSON and YAML."""
+    """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
     if 'json' in ext:
