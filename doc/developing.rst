@@ -88,7 +88,7 @@ will test the ``tests/test_config.py`` tests.
 
 .. code-block:: bash
 
-    $ py.test tests/test_config::test_export_json
+    $ py.test tests/test_config.py::test_export_json
 
 tests ``test_export_json`` inside of ``tests/test_config.py``.
 
