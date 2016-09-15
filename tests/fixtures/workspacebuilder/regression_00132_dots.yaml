@@ -1,0 +1,7 @@
+# regression for https://github.com/tony/tmuxp/issues/132
+session_name: dot.session-name
+windows:
+- layout: main-vertical
+  panes:
+  - shell_command:
+    - echo 'hi'

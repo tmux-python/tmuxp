@@ -269,6 +269,17 @@ def test_load_workspace(server, monkeypatch):
     assert session.name == 'sampleconfig'
 
 
+def test_regression_00132_session_name_with_dots(tmpdir, server, session):
+    server.new_session('any session')
+    yaml_config = curjoin("workspacebuilder/regression_00132_dots.yaml")
+    cli_args = [yaml_config]
+    inputs = ['\n']
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.command_load, cli_args, input=''.join(inputs))
+    assert 'already running' not in result.output
+
+
 @pytest.mark.parametrize("cli_args", [
     (['load', '.']),
     (['load', '.tmuxp.yaml']),
