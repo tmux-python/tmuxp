@@ -5,8 +5,8 @@ API Reference
 =============
 
 .. seealso::
-    :ref:`python_api_quickstart <libtmux:quickstart>` to see how you can
-    control tmux via python API calls.
+    See :ref:`libtmux's API <libtmux:api>` and :ref:`Quickstart
+    <libtmux:quickstart>` to see how you can control tmux via python API calls.
 
 .. module:: tmuxp
 
