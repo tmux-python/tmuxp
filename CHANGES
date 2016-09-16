@@ -177,7 +177,7 @@ Here you can find the recent changes to tmuxp
 - :support:`-` New command, ``before_script``, which is a file to
   be executed with a return code. It can be a bash, perl, python etc.
   script.
-- :support:`56` :ref:`python_api_quickstart`
+- :support:`56` :ref:`python_api_quickstart <libtmux:quickstart>`
 
 - :release:`0.1.7 <2014-02-25>`
 - :support:`55` where tmuxp would crash with letter  numbers in version.
