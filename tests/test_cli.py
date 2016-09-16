@@ -269,6 +269,18 @@ def test_load_workspace(server, monkeypatch):
     assert session.name == 'sampleconfig'
 
 
+def test_regression_00132_session_name_with_dots(tmpdir, server, session):
+    yaml_config = curjoin("workspacebuilder/regression_00132_dots.yaml")
+    cli_args = [yaml_config]
+    inputs = []
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.command_load, cli_args, input=''.join(inputs),
+        standalone_mode=False)
+    assert result.exception
+    assert isinstance(result.exception, libtmux.exc.BadSessionName)
+
+
 @pytest.mark.parametrize("cli_args", [
     (['load', '.']),
     (['load', '.tmuxp.yaml']),
