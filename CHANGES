@@ -4,6 +4,9 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.2.2 <2016-09-16>`
+- :bug:`181` Support tmux 2.3
+
 - :release:`1.2.1 <2016-09-16>`
 - :bug:`132` Handle cases with invalid session names
 - :support:`- backported` update libtmux from 0.5.0 to 0.6.0
