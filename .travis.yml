@@ -9,6 +9,7 @@ python:
   - 3.5
 env:
   - TMUX_VERSION=master
+  - TMUX_VERSION=2.3
   - TMUX_VERSION=2.2
   - TMUX_VERSION=2.1
   - TMUX_VERSION=2.0
