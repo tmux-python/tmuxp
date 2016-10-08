@@ -20,14 +20,14 @@ Load tmux sessions via json and YAML, `tmuxinator`_ and
    - window_name: dev window
      layout: tiled
      shell_command_before:
-       - cd ~/
+       - cd ~/                 # run as a first command in all panes
      panes:
-       - shell_command:
-           - cd /var/log
+       - shell_command:        # pane no. 1
+           - cd /var/log       # run multiple commands in this pane
            - ls -al | grep \.log
-       - echo second pane
-       - echo third pane
-       - echo forth pane
+       - echo second pane      # pane no. 2
+       - echo third pane       # pane no. 3
+       - echo forth pane       # pane no. 4
 
 Save as ``mysession.yaml``. And load:
 
