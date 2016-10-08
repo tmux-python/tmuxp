@@ -6,7 +6,7 @@ windows:
       - shell_command:
         - echo "\033c
         - it trickles down from session-level"
-      - pwd
+      - echo hello
   - window_name: should be /var/log
     start_directory: log
     panes:
@@ -14,18 +14,18 @@ windows:
         - echo '\033c
         - window start_directory concatenates to session start_directory
         - if it is not absolute'
-      - pwd
+      - echo hello
   - window_name: should be ~
     start_directory: '~'
     panes:
     - shell_command:
       - 'echo \\033c ~ has precedence. note: remember to quote ~ in YAML'
-    - pwd
+    - echo hello
   - window_name: should be /bin
     start_directory: /bin
     panes:
     - echo '\033c absolute paths also have precedence.'
-    - pwd
+    - echo hello
   - window_name: should be config's dir
     start_directory: ./
     panes:

@@ -7,9 +7,9 @@
             "cd /var/log", 
             "ls -al | grep \\.log"
           ]
-        }, 
-        "pwd", 
-        "pwd"
+        },
+        "echo hello",
+        "echo hello"
       ], 
       "shell_command_before": [
         "cd ~/"

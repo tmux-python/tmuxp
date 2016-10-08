@@ -18,7 +18,7 @@ windows:
   layout: main-horizontal
   panes:
   - shell_command:
-    - pwd
+    - echo hello
   - shell_command:
     - echo "hey"
   - shell_command:
@@ -29,7 +29,7 @@ windows:
   layout: main-horizontal
   panes:
   - shell_command:
-    - pwd
+    - echo hello
   - shell_command:
     - echo "hey"
   - shell_command:
@@ -39,7 +39,7 @@ windows:
   layout: main-horizontal
   panes:
   - shell_command:
-    - pwd
+    - echo hello
   - shell_command:
     - echo "hey"
   - shell_command:
@@ -50,7 +50,7 @@ windows:
   start_directory: ./
   panes:
   - shell_command:
-    - pwd
+    - echo hello
   - shell_command:
     - echo "hey"
   - shell_command:

@@ -8,5 +8,5 @@ windows:
     - shell_command:
         - cd /var/log
         - ls -al | grep \.log
-    - pwd
-    - pwd
+    - echo hello
+    - echo hello
