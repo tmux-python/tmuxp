@@ -4,7 +4,7 @@
       "panes": [
         {
           "shell_command": [
-            "pwd", 
+            "echo hello",
             "echo 'this pane should be selected on load'"
           ], 
           "focus": true
@@ -12,7 +12,7 @@
         {
           "shell_command": [
             "cd /var/log", 
-            "pwd"
+            "echo hello"
           ]
         }
       ], 

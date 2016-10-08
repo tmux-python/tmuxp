@@ -2,8 +2,8 @@
   "windows": [
     {
       "panes": [
-        "pwd", 
-        "pwd"
+        "echo hello",
+        "echo hello"
       ], 
       "window_name": "my test window"
     }

@@ -8,7 +8,7 @@
             "it trickles down from session-level\""
           ]
         }, 
-        "pwd"
+        "echo hello"
       ], 
       "window_name": "should be /var/"
     }, 
@@ -21,7 +21,7 @@
             "if it is not absolute'"
           ]
         }, 
-        "pwd"
+        "echo hello"
       ], 
       "start_directory": "log", 
       "window_name": "should be /var/log"
@@ -33,7 +33,7 @@
             "echo \\\\033c ~ has precedence. note: remember to quote ~ in YAML"
           ]
         }, 
-        "pwd"
+        "echo hello"
       ], 
       "start_directory": "~", 
       "window_name": "should be ~"
@@ -41,7 +41,7 @@
     {
       "panes": [
         "echo '\\033c absolute paths also have precedence.'", 
-        "pwd"
+        "echo hello"
       ], 
       "start_directory": "/bin", 
       "window_name": "should be /bin"

@@ -8,9 +8,9 @@
             "ls -al | grep \\.log"
           ]
         }, 
-        "pwd", 
-        "pwd", 
-        "pwd"
+        "echo hello",
+        "echo hello",
+        "echo hello"
       ], 
       "shell_command_before": [
         "cd ~/"

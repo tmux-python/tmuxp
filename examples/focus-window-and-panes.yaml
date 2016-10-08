@@ -4,12 +4,12 @@ windows:
     focus: true
     panes:
     - shell_command:
-      - pwd
+      - echo hello
       - echo 'this pane should be selected on load'
       focus: true
     - shell_command:
       - cd /var/log
-      - pwd
+      - echo hello
   - window_name: second window
     shell_command_before: cd /var/log
     panes:

@@ -2,5 +2,5 @@ session_name: 2-pane-vertical
 windows:
   - window_name: my test window
     panes:
-      - pwd
-      - pwd
+      - echo hello
+      - echo hello

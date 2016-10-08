@@ -25,9 +25,9 @@ Load tmux sessions via json and YAML, `tmuxinator`_ and
        - shell_command:
            - cd /var/log
            - ls -al | grep \.log
-       - pwd
-       - pwd
-       - pwd
+       - echo second pane
+       - echo third pane
+       - echo forth pane
 
 Save as ``mysession.yaml``. And load:
 
