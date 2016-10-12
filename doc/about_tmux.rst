@@ -10,6 +10,19 @@ The Tao of tmux
 
     BSD-licensed terminal multiplexer.
 
+.. sidebar:: Pre-order the book!
+
+  .. figure:: https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
+      :scale: 30%
+      :align: left
+      :target: https://leanpub.com/the-tao-of-tmux
+      :alt: The Tao of tmux
+
+      The Tao of tmux is becoming a book! `Pre-order your copy today`_. It will
+      be released just in time for the 2016 winter holiday.
+
+      .. _Pre-order your copy today: https://leanpub.com/the-tao-of-tmux
+
 tmux is geared for developers and admins who interact regularly with
 CLI (text-only interfaces)
 
