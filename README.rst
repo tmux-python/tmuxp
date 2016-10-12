@@ -6,6 +6,9 @@ tmuxp, tmux session manager. built on `libtmux`_.
     :scale: 100%
     :width: 45%
     :align: center
+    
+**New to tmux?** Pre-order a copy of my new book `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_. Scheduled for release this December.
+
 
 Load a tmux session
 -------------------
@@ -82,7 +85,7 @@ See the `Quickstart`_.
 
 `Documentation`_ homepage (also in `中文`_)
 
-Want to learn more about tmux itself? Read `The Tao of Tmux`_.
+Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 
 .. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
 .. _Documentation: http://tmuxp.rtfd.org/
@@ -90,7 +93,7 @@ Want to learn more about tmux itself? Read `The Tao of Tmux`_.
 .. _中文: http://tmuxp-zh.rtfd.org/
 .. _before_script: http://tmuxp.readthedocs.io/en/latest/examples.html#bootstrap-project-before-launch
 .. _virtualenv: https://virtualenv.readthedocs.io/en/latest/
-.. _The Tao of tmux: http://tmuxp.readthedocs.io/en/latest/about_tmux.html
+.. _Read The Tao of tmux online: http://tmuxp.readthedocs.io/en/latest/about_tmux.html
 .. _author's tmuxp configs: https://github.com/tony/tmuxp-config
 .. _python library: https://tmuxp.readthedocs.io/en/latest/api.html
 .. _python API quickstart: https://tmuxp.readthedocs.io/en/latest/quickstart_python.html
@@ -150,6 +153,7 @@ tests           .. code-block:: bash
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.readthedocs.io/en/latest/developing.html
+
 
 .. |pypi| image:: https://img.shields.io/pypi/v/tmuxp.svg
     :alt: Python Package
