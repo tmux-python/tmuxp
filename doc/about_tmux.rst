@@ -4,6 +4,7 @@
 The Tao of tmux
 ###############
 
+
 .. figure:: _static/tao-tmux-screenshot.png
     :scale: 60%
     :align: center
@@ -18,10 +19,28 @@ The Tao of tmux
       :target: https://leanpub.com/the-tao-of-tmux
       :alt: The Tao of tmux
 
-      The Tao of tmux is becoming a book! `Pre-order your copy today`_. It will
-      be released just in time for the 2016 winter holiday.
+      Get your copy of the *The Tao of tmux* on `Leanpub`_, `Kindle`_ (Amazon),
+      and `iBooks`_ (iTunes store). The final version will be delivered
+      to you by the 2016 winter holiday.
 
-      .. _Pre-order your copy today: https://leanpub.com/the-tao-of-tmux
+      Read and browse the book for `free on the web`_.
+
+      .. figure:: _static/img/books/amazon-logo.png
+        :scale: 30%
+        :align: left
+        :target: https://www.amazon.com/gp/product/B01MG342KU/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B01MG342KU&linkCode=as2&tag=gitpull-20&linkId=e6d3f08ad92bfea1cf62d735b6a90bdf
+        :alt: Amazon Kindle
+
+      .. figure:: _static/img/books/ibooks-logo.png
+        :scale: 15%
+        :align: left
+        :target: https://itunes.apple.com/us/book/the-tao-of-tmux/id1168912720
+        :alt: iTunes
+
+      .. _free on the web: https://leanpub.com/the-tao-of-tmux/read
+      .. _Leanpub: https://leanpub.com/the-tao-of-tmux
+      .. _Kindle: https://www.amazon.com/gp/product/B01MG342KU/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B01MG342KU&linkCode=as2&tag=gitpull-20&linkId=e6d3f08ad92bfea1cf62d735b6a90bdf
+      .. _iBooks: https://itunes.apple.com/us/book/the-tao-of-tmux/id1168912720
 
 tmux is geared for developers and admins who interact regularly with
 CLI (text-only interfaces)
