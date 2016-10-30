@@ -16,3 +16,7 @@ form.navbar-form {
 div#changelog > div.section > ul > li > p:only-child {
     margin-bottom: 0;
 }
+
+div#text-based-window-manager {
+    clear: both;
+}
