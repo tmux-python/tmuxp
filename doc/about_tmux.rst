@@ -72,7 +72,7 @@ Text-based window manager
 **tmux**            **"Desktop"-Speak**    **Plain English**
 ------------------- ---------------------- -------------------------------
 Multiplexer         Multi-tasking          Multiple applications
-                                           simulataneously.
+                                           simultaneously.
 Session             Desktop                Applications are visible here
 Window              Virtual Desktop or     A desktop that stores it own
                     applications           screen
