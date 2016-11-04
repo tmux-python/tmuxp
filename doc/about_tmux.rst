@@ -34,13 +34,13 @@ The Tao of tmux
       .. figure:: _static/img/books/ibooks-logo.png
         :scale: 15%
         :align: left
-        :target: https://itunes.apple.com/us/book/the-tao-of-tmux/id1168912720
+        :target: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
         :alt: iTunes
 
       .. _free on the web: https://leanpub.com/the-tao-of-tmux/read
       .. _Leanpub: https://leanpub.com/the-tao-of-tmux
       .. _Kindle: https://www.amazon.com/gp/product/B01MG342KU/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B01MG342KU&linkCode=as2&tag=gitpull-20&linkId=e6d3f08ad92bfea1cf62d735b6a90bdf
-      .. _iBooks: https://itunes.apple.com/us/book/the-tao-of-tmux/id1168912720
+      .. _iBooks: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
 
 tmux is geared for developers and admins who interact regularly with
 CLI (text-only interfaces)
