@@ -12,6 +12,9 @@ Built on a object relational mapper for tmux. tmux users can reload common
 workspaces from YAML, JSON and :py:obj:`dict` configurations like
 `tmuxinator`_ and `teamocil`_.
 
+tmuxp is used by developers for tmux automation at great companies like 
+`Bugsnag`_, `Pragmatic Coders`_ and many others.
+
 To jump right in, see :ref:`quickstart` and :ref:`examples`.
 
 Interested in some kung-fu or joining the effort? :ref:`api` and
@@ -19,6 +22,9 @@ Interested in some kung-fu or joining the effort? :ref:`api` and
 
 `BSD-licensed`_. Code on `github 
 <http://github.com/tony/tmuxp>`_.
+
+.. _Bugsnag: https://blog.bugsnag.com/benefits-of-using-tmux/
+.. _Pragmatic Coders: http://pragmaticcoders.com/blog/tmuxp-preconfigured-sessions/
 
 Differences from tmuxinator / teamocil
 --------------------------------------
