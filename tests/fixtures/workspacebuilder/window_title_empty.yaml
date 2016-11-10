@@ -1,0 +1,12 @@
+session_name: Window index example
+windows:
+  - window_name: ''
+    panes:
+      - echo "This window has an empty title"
+  - window_name: ""
+    panes:
+      - echo "So is this."
+    window_index: 5
+  - window_name: 
+    panes:
+      - echo "And this one too."

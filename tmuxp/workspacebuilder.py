@@ -339,6 +339,9 @@ def freeze(session):
         if all(pane_has_same_path(p) for p in w.panes):
             wconf['start_directory'] = w.panes[0].current_path
 
+        if w.name == '':
+            empty_window_title = True
+
         for p in w.panes:
             pconf = {'shell_command': []}
 
@@ -371,6 +374,8 @@ def freeze(session):
                     pconf = 'pane'
 
             wconf['panes'].append(pconf)
+            if empty_window_title:
+                pconf['shell_command'].append('tmux rename-session \'\'')
 
         sconf['windows'].append(wconf)
 

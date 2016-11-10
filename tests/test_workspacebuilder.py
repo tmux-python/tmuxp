@@ -667,3 +667,33 @@ def test_before_load_true_if_test_passes_with_args(server):
 
     with temp_session(server) as session:
         builder.build(session=session)
+
+def test_window_title(session):
+    yaml_config = loadfixture("workspacebuilder/window_title_empty.yaml")
+    s = session
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+
+    window_count = len(session._windows)  # current window count
+    assert len(s._windows) == window_count
+    for w, wconf in builder.iter_create_windows(s):
+        if w['window_name'] == '':
+            assert True
+        else:
+            print("Wname: ", w['window_name'])
+            assert False
+    '''
+    for w, wconf in builder.iter_create_windows(s):
+        for p in builder.iter_create_panes(w, wconf):
+            p = p
+            assert len(s._windows) == window_count
+        assert isinstance(w, Window)
+        assert w.show_window_option('main-pane-height') == 5
+
+        assert len(s._windows) == window_count
+        window_count += 1
+        w.select_layout(wconf['layout'])
+        '''
