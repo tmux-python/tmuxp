@@ -287,6 +287,7 @@ class WorkspaceBuilder(object):
                 )
 
             assert(isinstance(p, Pane))
+            assert(int(p.index) == int(pindex))
             if 'layout' in wconf:
                 w.select_layout(wconf['layout'])
 
