@@ -20,3 +20,9 @@ div#changelog > div.section > ul > li > p:only-child {
 div#text-based-window-manager {
     clear: both;
 }
+
+@media screen and (max-width: 768px) {
+    #fork-gh img {
+        display: none;
+    }
+}
