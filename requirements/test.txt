@@ -1,2 +1,2 @@
-pytest==3.0.3  # updated from 3.0.2
-pytest-rerunfailures==2.0.1  # updated from 2.0.0
+pytest==3.0.4 # Updated from 3.0.3
+pytest-rerunfailures==2.1.0 # Updated from 2.0.1
