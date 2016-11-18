@@ -83,7 +83,7 @@ From teamocil
 
 ::
 
-    tmuxp import tmuxinator /path/to/file.{json,yaml}
+    tmuxp import teamocil /path/to/file.{json,yaml}
 
 .. _import_tmuxinator:
 
