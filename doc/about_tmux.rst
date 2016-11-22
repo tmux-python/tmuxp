@@ -334,7 +334,7 @@ Sessions can be *renamed after creation*.
 =============== =========================================================
 Command         .. code-block:: bash
 
-                    $ tmux rename-session <sesion-name>
+                    $ tmux rename-session <session-name>
 
 Short cut       ``Prefix`` + ``$``
 =============== =========================================================
