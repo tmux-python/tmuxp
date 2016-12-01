@@ -148,10 +148,10 @@ def test_suppress_history(session):
         {'window_name': 'isMissing'}).attached_pane
 
     def assertHistory(cmd, hist):
-        return 'inHistory' in cmd and cmd == hist
+        return 'inHistory' in cmd and cmd.endswith(hist)
 
     def assertIsMissing(cmd, hist):
-        return 'isMissing' in cmd and cmd != hist
+        return 'isMissing' in cmd and not cmd.endswith(hist)
 
     for p, assertCase in [
         (inHistoryPane, assertHistory,), (isMissingPane, assertIsMissing,)
