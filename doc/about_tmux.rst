@@ -31,8 +31,8 @@ The Tao of tmux
       .. figure:: _static/img/books/amazon-logo.png
         :scale: 30%
         :align: left
-        :target: https://www.amazon.com/gp/product/B01MG342KU/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B01MG342KU&linkCode=as2&tag=gitpull-20&linkId=e6d3f08ad92bfea1cf62d735b6a90bdf
-        :alt: Amazon Kindle
+        :target: http://amzn.to/2gPfRhC
+       :alt: Amazon Kindle
 
       .. figure:: _static/img/books/ibooks-logo.png
         :scale: 15%
@@ -42,7 +42,7 @@ The Tao of tmux
 
       .. _free on the web: https://leanpub.com/the-tao-of-tmux/read
       .. _Leanpub: https://leanpub.com/the-tao-of-tmux
-      .. _Kindle: https://www.amazon.com/gp/product/B01MG342KU/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=B01MG342KU&linkCode=as2&tag=gitpull-20&linkId=e6d3f08ad92bfea1cf62d735b6a90bdf
+      .. _Kindle: http://amzn.to/2gPfRhC
       .. _iBooks: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
       .. _Pre-order on Leanpub: https://leanpub.com/the-tao-of-tmux/c/oBsI4y3o4quu
 
