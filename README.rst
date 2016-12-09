@@ -2,13 +2,8 @@ tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
 
-.. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-demo.gif
-    :scale: 100%
-    :width: 45%
-    :align: center
-    
+   
 **New to tmux?** Pre-order a copy of my new book `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_. Scheduled for release this December.
-
 
 Load a tmux session
 -------------------
@@ -65,7 +60,13 @@ the projects' `tmuxp.yaml`_.
 bootstrap project dependencies before loading tmux. See the
 `bootstrap_env.py`_ and `before_script`_ example
 
-Load sessions in the background by passing ``-d`` flag
+You can also load sessions in the background by passing ``-d`` flag
+
+.. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-demo.gif
+    :scale: 100%
+    :width: 45%
+    :align: center
+ 
 
 Freeze a tmux session
 ---------------------
