@@ -7,12 +7,18 @@ tmuxp
 tmux session manager
 ====================
 
+.. include:: ../README.rst
+    :start-line: 8
+    :end-before: .. image
+
 .. image:: _static/tmuxp-demo.gif
     :width: 100%
 
+
+Freeze a tmux session
+---------------------
 .. include:: ../README.rst
-    :start-line: 8
-    :end-before: Project details
+    :start-after: Freeze a tmux session
 
 Explore:
 
