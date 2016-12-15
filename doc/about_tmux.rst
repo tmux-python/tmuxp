@@ -157,7 +157,7 @@ tmux supports as manys terminals as you want.
    |         |         |
    |         |         |     /-----------------\
    +---------+---------+ --> |'switch-window 2'|
-   | $ vim   | $ bash  |     \-----------------/
+   | $ bash  | $ bash  |     \-----------------/
    |         |         |              |
    |         |         |              |
    +---------+---------+              |
@@ -167,15 +167,15 @@ tmux supports as manys terminals as you want.
              |
              v
    +---------+---------+
+   | $ vim             |
+   |                   |
+   |                   |
+   +-------------------+
    | $ bash  | $ bash  |
    |         |         |
    |         |         |
-   +---------+---------+
-   | $ vim   | $ bash  |
-   |         |         |
-   |         |         |
-   +---------+---------+
-   | '1:sys*  2:vim'   |
+   +-------------------+
+   | '1:sys  2:vim*'   |
    +-------------------+
 
 You can switch between the windows you create.
