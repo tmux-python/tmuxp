@@ -9,6 +9,17 @@ div.sidebar .sidebar-title {
     display: none;
 }
 
+div.sidebar {
+    font-size: 13px;
+}
+
+div.sidebar img {
+    margin: 0px;
+    padding: 0px;
+    width: 50%;
+    text-align: center;
+}
+
 form.navbar-form {
     padding: 0px 10px;
 }

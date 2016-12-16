@@ -15,28 +15,28 @@ The Tao of tmux
 
   .. figure:: https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
       :scale: 30%
-      :align: left
+      :align: center
       :target: https://leanpub.com/the-tao-of-tmux
       :alt: The Tao of tmux
 
-      Get your copy of the *The Tao of tmux* on `Leanpub`_, `Kindle`_ (Amazon),
+      Grab your copy of the *The Tao of tmux* on `Leanpub`_, `Kindle`_ (Amazon),
       and `iBooks`_ (iTunes store). The final version will be delivered
       to you by the 2016 winter holiday.
 
       `Pre-order on Leanpub`_ before Dec 23rd for the special discount
       price of $7.99. 
 
-      Read and browse the book for `free on the web`_.
+      Read the book for `free on the web`_.
 
       .. figure:: _static/img/books/amazon-logo.png
-        :scale: 30%
-        :align: left
+        :scale: 20%
+        :align: center
         :target: http://amzn.to/2gPfRhC
-       :alt: Amazon Kindle
+        :alt: Amazon Kindle
 
       .. figure:: _static/img/books/ibooks-logo.png
-        :scale: 15%
-        :align: left
+        :scale: 10%
+        :align: center
         :target: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
         :alt: iTunes
 
