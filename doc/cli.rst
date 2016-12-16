@@ -34,6 +34,13 @@ Tmuxp will offer to save your session state to ``.json`` or ``.yaml``.
 Load session
 ------------
 
+You can load your tmuxp file and attach the vim session via a few
+shorthands:
+
+1. The directory with a ``.tmuxp.{yaml,yml,json`` file in it
+2. The name of the project file in your `$HOME/.tmuxp` folder
+3. The direct path of the tmuxp file you want to load
+
 ::
 
     # path to folder with .tmuxp.{yaml,yml,json}
@@ -50,7 +57,7 @@ Load session
     tmuxp load /abs/path/to/myfile.yaml
     tmuxp load ~/myfile.yaml
 
-Files also may be loaded by absolute path.
+Absolute and relative directory paths are supported.
 
 .. code-block:: bash
 
