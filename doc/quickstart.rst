@@ -19,12 +19,12 @@ You can upgrade to the latest release with:
 
     $ pip install tmuxp -U
 
-Then install :ref:`bash_completion`.
+Then install :ref:`completion`.
 
 CLI
 ---
 
-.. seealso:: :ref:`examples`, :ref:`cli`, :ref:`bash_completion`.
+.. seealso:: :ref:`examples`, :ref:`cli`, :ref:`completion`.
 
 tmuxp launches workspaces / sessions from JSON and YAML files.
 
