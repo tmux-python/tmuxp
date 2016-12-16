@@ -3,7 +3,7 @@ tmuxp, tmux session manager. built on `libtmux`_.
 |pypi| |docs| |build-status| |coverage| |license|
 
 **New to tmux?** Pre-order a copy of my new book `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ on Leanpub,
-`Amazon Kindle`_ or `Apple iBooks`_. Scheduled for release this December.
+`Amazon Kindle`_, `Apple iBooks`_, or for free `on the web`_. Scheduled for release this December.
 
 Load a tmux session
 -------------------
@@ -113,6 +113,7 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _Quickstart: http://tmuxp.readthedocs.io/en/latest/quickstart.html
 .. _Commands: http://tmuxp.readthedocs.io/en/latest/cli.html
 .. _libtmux: https://github.com/tony/libtmux
+.. _on the web: https://leanpub.com/the-tao-of-tmux/read
 
 Donations
 ---------
