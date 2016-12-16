@@ -32,6 +32,5 @@ Explore:
     developing
     api
     history
-    roadmap
     about_tmux
     glossary
