@@ -87,7 +87,7 @@ texinfo_documents = [
 
 intersphinx_mapping = {
     'python': ('http://docs.python.org/', None),
-    'libtmux': ('http://libtmux.git-pull.com/en/latest/', None)
+    'libtmux': ('http://libtmux.readthedocs.io/en/latest', None)
 }
 
 # aafig format, try to get working with pdf
