@@ -1,5 +1,6 @@
 -r ./base.txt
 docutils==0.12
+requests[security]
 sphinx
 reportlab
 alabaster
