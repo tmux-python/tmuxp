@@ -92,26 +92,26 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _Documentation: http://tmuxp.rtfd.org/
 .. _Source: https://github.com/tony/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
-.. _before_script: http://tmuxp.readthedocs.io/en/latest/examples.html#bootstrap-project-before-launch
-.. _virtualenv: https://virtualenv.readthedocs.io/en/latest/
-.. _Read The Tao of tmux online: http://tmuxp.readthedocs.io/en/latest/about_tmux.html
+.. _before_script: http://tmuxp.git-pull.com/en/latest/examples.html#bootstrap-project-before-launch
+.. _virtualenv: https://virtualenv.git-pull.com/en/latest/
+.. _Read The Tao of tmux online: http://tmuxp.git-pull.com/en/latest/about_tmux.html
 .. _author's tmuxp configs: https://github.com/tony/tmuxp-config
-.. _python library: https://tmuxp.readthedocs.io/en/latest/api.html
-.. _python API quickstart: https://tmuxp.readthedocs.io/en/latest/quickstart_python.html
+.. _python library: https://tmuxp.git-pull.com/en/latest/api.html
+.. _python API quickstart: https://tmuxp.git-pull.com/en/latest/quickstart_python.html
 .. _tmux(1): http://tmux.sourceforge.net/
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
-.. _Examples: http://tmuxp.readthedocs.io/en/latest/examples.html
-.. _freezing tmux: http://tmuxp.readthedocs.io/en/latest/cli.html#freeze-sessions
+.. _Examples: http://tmuxp.git-pull.com/en/latest/examples.html
+.. _freezing tmux: http://tmuxp.git-pull.com/en/latest/cli.html#freeze-sessions
 .. _bootstrap_env.py: https://github.com/tony/tmuxp/blob/master/bootstrap_env.py
-.. _travis.yml: http://tmuxp.readthedocs.io/en/latest/developing.html#travis-ci
-.. _testing: http://tmuxp.readthedocs.io/en/latest/developing.html#test-runner
-.. _python objects: http://tmuxp.readthedocs.io/en/latest/api.html#api
+.. _travis.yml: http://tmuxp.git-pull.com/en/latest/developing.html#travis-ci
+.. _testing: http://tmuxp.git-pull.com/en/latest/developing.html#test-runner
+.. _python objects: http://tmuxp.git-pull.com/en/latest/api.html#api
 .. _tmuxp.yaml: https://github.com/tony/tmuxp/blob/master/.tmuxp.yaml 
-.. _simple: http://tmuxp.readthedocs.io/en/latest/examples.html#short-hand-inline
-.. _very elaborate: http://tmuxp.readthedocs.io/en/latest/examples.html#super-advanced-dev-environment
-.. _Quickstart: http://tmuxp.readthedocs.io/en/latest/quickstart.html
-.. _Commands: http://tmuxp.readthedocs.io/en/latest/cli.html
+.. _simple: http://tmuxp.git-pull.com/en/latest/examples.html#short-hand-inline
+.. _very elaborate: http://tmuxp.git-pull.com/en/latest/examples.html#super-advanced-dev-environment
+.. _Quickstart: http://tmuxp.git-pull.com/en/latest/quickstart.html
+.. _Commands: http://tmuxp.git-pull.com/en/latest/cli.html
 .. _libtmux: https://github.com/tony/libtmux
 .. _on the web: https://leanpub.com/the-tao-of-tmux/read
 
@@ -134,8 +134,8 @@ python support  2.6, 2.7, >= 3.3
 config support  yaml, json, python dict
 Source          https://github.com/tony/tmuxp
 Docs            http://tmuxp.rtfd.org
-API             http://tmuxp.readthedocs.io/en/latest/api.html
-Changelog       http://tmuxp.readthedocs.io/en/latest/history.html
+API             http://tmuxp.git-pull.com/en/latest/api.html
+Changelog       http://tmuxp.git-pull.com/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
 Travis          http://travis-ci.org/tony/tmuxp
 Test Coverage   https://coveralls.io/r/tony/tmuxp
@@ -164,7 +164,7 @@ tests           .. code-block:: bash
 ==============  ==========================================================
 
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
-.. _developing and testing: http://tmuxp.readthedocs.io/en/latest/developing.html
+.. _developing and testing: http://tmuxp.git-pull.com/en/latest/developing.html
 .. _Amazon Kindle: http://amzn.to/2gPfRhC
 .. _Apple iBooks: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
 
