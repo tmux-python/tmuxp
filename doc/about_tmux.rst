@@ -11,42 +11,6 @@ The Tao of tmux
 
     BSD-licensed terminal multiplexer.
 
-.. sidebar:: Pre-order the book!
-
-  .. figure:: https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
-      :scale: 30%
-      :align: center
-      :target: https://leanpub.com/the-tao-of-tmux
-      :alt: The Tao of tmux
-
-      Grab your copy of the *The Tao of tmux* on `Leanpub`_, `Kindle`_ (Amazon),
-      and `iBooks`_ (iTunes store). The final version will be delivered
-      to you by the 2016 winter holiday.
-
-      `Pre-order on Leanpub`_ before Dec 23rd for the special discount
-      price of $7.99. 
-
-      Read the book for `free on the web`_.
-
-      .. figure:: _static/img/books/amazon-logo.png
-        :scale: 20%
-        :align: center
-        :target: http://amzn.to/2gPfRhC
-        :alt: Amazon Kindle
-
-      .. figure:: _static/img/books/ibooks-logo.png
-        :scale: 10%
-        :align: center
-        :target: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
-        :alt: iTunes
-
-      .. _free on the web: https://leanpub.com/the-tao-of-tmux/read
-      .. _Leanpub: https://leanpub.com/the-tao-of-tmux
-      .. _Kindle: http://amzn.to/2gPfRhC
-      .. _iBooks: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
-      .. _Pre-order on Leanpub: https://leanpub.com/the-tao-of-tmux/c/oBsI4y3o4quu
-
-
 tmux is geared for developers and admins who interact regularly with
 CLI (text-only interfaces)
 
