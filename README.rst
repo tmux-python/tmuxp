@@ -89,7 +89,7 @@ See the `Quickstart`_.
 Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 
 .. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
-.. _Documentation: http://tmuxp.rtfd.org/
+.. _Documentation: http://tmuxp.git-pull.com
 .. _Source: https://github.com/tony/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
 .. _before_script: http://tmuxp.git-pull.com/en/latest/examples.html#bootstrap-project-before-launch
@@ -133,7 +133,7 @@ tmux support    1.8, 1.9a, 2.0, 2.1, 2.2, 2.3
 python support  2.6, 2.7, >= 3.3
 config support  yaml, json, python dict
 Source          https://github.com/tony/tmuxp
-Docs            http://tmuxp.rtfd.org
+Docs            http://tmuxp.git-pull.com
 API             http://tmuxp.git-pull.com/en/latest/api.html
 Changelog       http://tmuxp.git-pull.com/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
