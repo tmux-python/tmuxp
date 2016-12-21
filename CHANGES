@@ -4,6 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.2.3 <2016-12-21>`
+- :support:`-` bump libtmux 0.6.0 to 0.6.1
+- :support:`193` improve suppress history test, courtesy of @abeyer.
+- :support:`191` documentation typo from @modille
+- :support:`186` documentation typo from @joelwallis
+
 - :release:`1.2.2 <2016-09-16>`
 - :bug:`181` Support tmux 2.3
 
