@@ -1,5 +1,5 @@
 -r ./base.txt
-docutils==0.12
+docutils==0.13.1
 requests[security]
 sphinx
 reportlab==3.3.0
