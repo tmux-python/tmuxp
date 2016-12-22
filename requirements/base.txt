@@ -1,4 +1,4 @@
 kaptan>=0.5.7
 libtmux==0.6.1 # Updated from 0.6.0
 click==6.6
-colorama
+colorama==0.3.7
