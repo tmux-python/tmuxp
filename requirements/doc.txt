@@ -3,6 +3,6 @@ docutils==0.12
 requests[security]
 sphinx
 reportlab==3.3.0
-alabaster
+alabaster==0.7.9
 releases==1.2.1 # Updated from 1.2.0
 aafigure
