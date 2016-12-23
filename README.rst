@@ -2,8 +2,8 @@ tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
 
-**New to tmux?** Pre-order a copy of my new book `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ on Leanpub,
-`Amazon Kindle`_, `Apple iBooks`_, or for free `on the web`_. Scheduled for release January 2017.
+**New to tmux?** Pre-order a copy of my new book `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ on Leanpub and
+`Amazon Kindle`_, or for free `on the web`_. Scheduled for release January 2017.
 
 Load a tmux session
 -------------------
@@ -166,7 +166,6 @@ tests           .. code-block:: bash
 .. _BSD: http://opensource.org/licenses/BSD-3-Clause
 .. _developing and testing: http://tmuxp.git-pull.com/en/latest/developing.html
 .. _Amazon Kindle: http://amzn.to/2gPfRhC
-.. _Apple iBooks: https://geo.itunes.apple.com/us/book/the-tao-of-tmux/id1168912720?mt=11&at=1001lrwP
 
 .. |pypi| image:: https://img.shields.io/pypi/v/tmuxp.svg
     :alt: Python Package
