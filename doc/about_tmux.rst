@@ -651,9 +651,10 @@ To get the text documentation of a ``.1`` manual file:
 
 .. _Creative Commons BY-NC-ND 3.0 US: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
 
-.. container:: book-container
+The Book
+--------
 
-   **Pre-order the book!**
+.. container:: book-container
 
    .. container:: leftside-book
 
@@ -664,6 +665,8 @@ To get the text documentation of a ``.1`` manual file:
           :alt: The Tao of tmux
 
    .. container:: rightside-book
+
+      **Pre-order the book!**
 
       Get your copy of the  *The Tao of tmux* on `Leanpub`_ and `Kindle`_
       (Amazon). The final version will be delivered to you by January 2017.
@@ -679,8 +682,7 @@ To get the text documentation of a ``.1`` manual file:
    .. _Leanpub: https://leanpub.com/the-tao-of-tmux
    .. _Kindle: http://amzn.to/2gPfRhC
 
-=======
 License
-=======
+-------
 
 This page is licensed `Creative Commons BY-NC-ND 3.0 US`_.

@@ -41,7 +41,7 @@ div#text-based-window-manager {
 /*** Book Stuff ***/
 div.book-container {
     clear: both;
-    height: 200px;
+    height: 230px;
 }
 
 div.book-container > p {
@@ -49,7 +49,7 @@ div.book-container > p {
 }
 
 div.book-container div.leftside-book {
-    width: 125px;
+    width: 180px;
     padding: 0px;
     float: left;
 }
@@ -60,13 +60,17 @@ div.book-container div.leftside-book div.figure.align-left {
 }
 
 div.book-container div.leftside-book div.figure.align-left img {
-   width: 125px;
-   height: 162px;
+   width: 180px;
+   height: 230px;
 }
 
 div.book-container div.rightside-book {
-    margin-left: 125px;
+    margin-left: 180px;
     padding: 0px 10px;
+}
+
+div.book-container div.rightside-book p:first-child {
+   text-align: center;
 }
 
 div.book-container div.rightside-book div.figure {
@@ -78,3 +82,5 @@ div.book-container div.rightside-book div.figure.align-left {
    /* clear:none;   if using a rightside button like iBooks */
    clear: both;
 }
+
+
