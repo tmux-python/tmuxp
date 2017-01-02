@@ -4,7 +4,6 @@
 The Tao of tmux
 ###############
 
-
 .. figure:: _static/tao-tmux-screenshot.png
     :scale: 60%
     :align: center
@@ -650,10 +649,38 @@ To get the text documentation of a ``.1`` manual file:
 
 .. [1] http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1
 
+.. _Creative Commons BY-NC-ND 3.0 US: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
+
+.. container:: book-container
+
+   **Pre-order the book!**
+
+   .. container:: leftside-book
+
+      .. figure:: https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
+          :scale: 100%
+          :align: left
+          :target: https://leanpub.com/the-tao-of-tmux
+          :alt: The Tao of tmux
+
+   .. container:: rightside-book
+
+      Get your copy of the  *The Tao of tmux* on `Leanpub`_ and `Kindle`_
+      (Amazon). The final version will be delivered to you by January 2017.
+
+      .. figure:: _static/img/books/amazon-logo.png
+        :scale: 19%
+        :target: http://amzn.to/2gPfRhC
+        :alt: Amazon Kindle
+
+      Read and browse the book for `free on the web`_.
+
+   .. _free on the web: https://leanpub.com/the-tao-of-tmux/read
+   .. _Leanpub: https://leanpub.com/the-tao-of-tmux
+   .. _Kindle: http://amzn.to/2gPfRhC
+
 =======
 License
 =======
 
 This page is licensed `Creative Commons BY-NC-ND 3.0 US`_.
-
-.. _Creative Commons BY-NC-ND 3.0 US: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
