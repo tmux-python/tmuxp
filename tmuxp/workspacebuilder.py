@@ -137,6 +137,8 @@ class WorkspaceBuilder(object):
                     'Session name %s is already running.' % self.sconf['session_name']
                 )
             else:
+                self.sconf['start_directory'] = self.sconf.get('start_directory', None)
+
                 session = self.server.new_session(
                     session_name=self.sconf['session_name'],
                     start_directory=self.sconf['start_directory'],
