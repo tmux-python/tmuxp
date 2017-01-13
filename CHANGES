@@ -4,6 +4,10 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.2.4 <2017-01-13>`
+- :bug:`198` bump click from 6.6 to 6.7
+- :support:`195` pin packages for colorama and doc requirements
+
 - :release:`1.2.3 <2016-12-21>`
 - :support:`-` bump libtmux 0.6.0 to 0.6.1
 - :support:`193` improve suppress history test, courtesy of @abeyer.
