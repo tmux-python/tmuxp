@@ -15,6 +15,7 @@ from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
 from libtmux.window import Window
+from libtmux.common import has_version
 
 from . import exc
 from .util import run_before_script
@@ -137,7 +138,12 @@ class WorkspaceBuilder(object):
                     'Session name %s is already running.' % self.sconf['session_name']
                 )
             else:
-                self.sconf['start_directory'] = self.sconf.get('start_directory', None)
+                if not has_version('1.8'):
+                    self.sconf['start_directory'] = self.sconf.get(
+                        'start_directory', None
+                    )
+                else:
+                    self.sconf['start_directory'] = None
 
                 session = self.server.new_session(
                     session_name=self.sconf['session_name'],
