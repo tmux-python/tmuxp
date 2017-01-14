@@ -57,8 +57,8 @@ Store configs in (``~/.tmuxp``) or include in your project as
 ``~/.tmuxp.{yaml,json}``. See `author's tmuxp configs`_ and the
 the projects' `tmuxp.yaml`_.
 
-bootstrap project dependencies before loading tmux. See the
-`bootstrap_env.py`_ and `before_script`_ example
+Run custom startup scripts (such as installing project dependencies before
+loading tmux. See the `bootstrap_env.py`_ and `before_script`_ example
 
 You can also load sessions in the background by passing ``-d`` flag
 
