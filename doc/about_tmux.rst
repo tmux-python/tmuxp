@@ -8,7 +8,7 @@ The Tao of tmux
     :scale: 60%
     :align: center
 
-    BSD-licensed terminal multiplexer.
+    ISC-licensed terminal multiplexer.
 
 tmux is geared for developers and admins who interact regularly with
 CLI (text-only interfaces)
