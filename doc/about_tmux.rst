@@ -666,7 +666,7 @@ The Book
 
    .. container:: rightside-book
 
-      **Buy the book!**
+      **Get the book!**
 
       Get your copy of the  *The Tao of tmux* on `Leanpub`_ and `Kindle`_
       (Amazon).
