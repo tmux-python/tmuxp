@@ -2,8 +2,9 @@ tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
 
-**New to tmux?** Grab a copy of `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ on Leanpub and
-`Amazon Kindle`_, or for free `on the web`_.
+**New to tmux?** `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ is
+available on Leanpub and `Amazon Kindle`_. Read and browse the book for free
+`on the web`_.
 
 Load a tmux session
 -------------------
