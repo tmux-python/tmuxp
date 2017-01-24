@@ -1,6 +1,6 @@
 -r ./base.txt
 docutils==0.13.1
-requests[security]==2.12.5
+requests[security]==2.13.0
 sphinx==1.5.2
 reportlab==3.3.0
 alabaster==0.7.9
