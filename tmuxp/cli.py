@@ -26,6 +26,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_config_dir():
+    if 'TMUXP_CONFIG_DIR' in os.environ:
+        return os.path.expanduser(os.environ['TMUXP_CONFIG_DIR'])
+
+    if 'TMUXP_DIR' in os.environ:
+        return os.path.expanduser(os.environ['TMUXP_DIR'])
+
     return os.path.expanduser('~/.tmuxp/')
 
 
