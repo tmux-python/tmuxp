@@ -205,7 +205,7 @@ def resolve_config(config, config_dir=None):
 
 
 def load_workspace(
-    config_file, socket_name=None, socket_path=None, colors=None,
+    config_file, session_name=None, socket_name=None, socket_path=None, colors=None,
     attached=None, detached=None, answer_yes=False
 ):
     """Build config workspace.
@@ -243,7 +243,13 @@ def load_workspace(
         else:
             session.attach_session()
 
-    session_name = sconfig['session_name']
+    if session_name is None:
+        # get existing session name from config
+        session_name = sconfig['session_name']
+    else:
+        # use the new session name
+        sconfig['session_name'] = session_name
+
     if builder.session_exists(session_name):
         if not detached and (
             answer_yes or click.confirm(
@@ -446,6 +452,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.pass_context
 @click.argument('config', click.Path(exists=True), nargs=-1,
                 callback=resolve_config_argument)
+@click.option('-s', 'session_name', help='pass-through for tmux -s')
 @click.option('-S', 'socket_path', help='pass-through for tmux -L')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
@@ -457,7 +464,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.option(
     '-8', 'colors', flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.')
-def command_load(ctx, config, socket_name, socket_path, answer_yes,
+def command_load(ctx, config, session_name, socket_name, socket_path, answer_yes,
                  detached, colors):
     """Load a tmux workspace from each CONFIG.
 
@@ -484,6 +491,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
     util.oh_my_zsh_auto_title()
 
     tmux_options = {
+        'session_name': session_name,
         'socket_name': socket_name,
         'socket_path': socket_path,
         'answer_yes': answer_yes,
