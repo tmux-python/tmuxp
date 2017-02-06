@@ -74,6 +74,7 @@ def test_get_configs_cwd(tmpdir):
 def test_is_pure_name(path, expect):
     assert is_pure_name(path) == expect
 
+
 """
     scans for .tmuxp.{yaml,yml,json} in directory, returns first result
     log warning if multiple found:
