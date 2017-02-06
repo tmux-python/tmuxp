@@ -75,18 +75,18 @@ def is_pure_name(path):
     )
 
 
-def _create_resolve_config_argument(config_dir):
+def _create_scan_config_argument(config_dir):
     """For finding configurations in tmuxinator/teamocil"""
     def func(ctx, param, value):
-        return resolve_config_argument(ctx, param, value, config_dir)
+        return scan_config_argument(ctx, param, value, config_dir)
 
     return func
 
 
-def resolve_config_argument(ctx, param, value, config_dir=None):
+def scan_config_argument(ctx, param, value, config_dir=None):
     """Validate / translate config name/path values for click config arg.
 
-    Wrapper on top of :func:`cli.resolve_config`."""
+    Wrapper on top of :func:`cli.scan_config`."""
     if callable(config_dir):
         config_dir = config_dir()
 
@@ -96,11 +96,11 @@ def resolve_config_argument(ctx, param, value, config_dir=None):
         ctx.exit()
 
     if isinstance(value, string_types):
-        value = resolve_config(value, config_dir=config_dir)
+        value = scan_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
         value = tuple(
-            [resolve_config(v, config_dir=config_dir) for v in value])
+            [scan_config(v, config_dir=config_dir) for v in value])
 
     return value
 
@@ -126,7 +126,7 @@ def _resolve_path_no_overwrite(config):
     return path
 
 
-def resolve_config(config, config_dir=None):
+def scan_config(config, config_dir=None):
     """Return the real config path or raise an exception.
 
     :param config: config file, valid examples:
@@ -451,7 +451,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @cli.command(name='load', short_help='Load tmuxp workspaces.')
 @click.pass_context
 @click.argument('config', click.Path(exists=True), nargs=-1,
-                callback=resolve_config_argument)
+                callback=scan_config_argument)
 @click.option('-S', 'socket_path', help='pass-through for tmux -L')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
@@ -582,7 +582,7 @@ def import_config(configfile, importfunc):
                            short_help='Convert and import a teamocil config.')
 @click.argument(
     'configfile', click.Path(exists=True), nargs=1,
-    callback=_create_resolve_config_argument(get_teamocil_dir)
+    callback=_create_scan_config_argument(get_teamocil_dir)
 )
 def command_import_teamocil(configfile):
     """Convert a teamocil config from CONFIGFILE to tmuxp format and import
@@ -596,7 +596,7 @@ def command_import_teamocil(configfile):
     short_help='Convert and import a tmuxinator config.')
 @click.argument(
     'configfile', click.Path(exists=True), nargs=1,
-    callback=_create_resolve_config_argument(get_tmuxinator_dir)
+    callback=_create_scan_config_argument(get_tmuxinator_dir)
 )
 def command_import_tmuxinator(configfile):
     """Convert a tmuxinator config from CONFIGFILE to tmuxp format and import
@@ -606,7 +606,7 @@ def command_import_tmuxinator(configfile):
 
 @cli.command(name='convert')
 @click.argument('config', click.Path(exists=True), nargs=1,
-                callback=resolve_config_argument)
+                callback=scan_config_argument)
 def command_convert(config):
     """Convert a tmuxp config between JSON and YAML."""
 
