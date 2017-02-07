@@ -11,7 +11,9 @@ import click
 from click.testing import CliRunner
 
 from tmuxp import cli, config
-from tmuxp.cli import is_pure_name, load_workspace, resolve_config
+from tmuxp.cli import (
+    is_pure_name, load_workspace, scan_config, get_config_dir
+)
 
 from .fixtures._util import curjoin, loadfixture
 
@@ -74,6 +76,7 @@ def test_get_configs_cwd(tmpdir):
 def test_is_pure_name(path, expect):
     assert is_pure_name(path) == expect
 
+
 """
     scans for .tmuxp.{yaml,yml,json} in directory, returns first result
     log warning if multiple found:
@@ -108,6 +111,12 @@ def projectdir(homedir):
     return homedir.join('work').join('project')
 
 
+def test_tmuxp_configdir_env_var(tmpdir, monkeypatch):
+    monkeypatch.setenv('TMUXP_CONFIGDIR', tmpdir)
+
+    assert get_config_dir() == tmpdir
+
+
 def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
     monkeypatch.setenv('HOME', homedir)
     projectdir.join('.tmuxp.yaml').ensure()
@@ -118,107 +127,107 @@ def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
 
     with projectdir.as_cwd():
         expect = project_config
-        assert resolve_config('.') == expect
-        assert resolve_config('./') == expect
-        assert resolve_config('') == expect
-        assert resolve_config('../project') == expect
-        assert resolve_config('../project/') == expect
-        assert resolve_config('.tmuxp.yaml') == expect
-        assert resolve_config(
+        assert scan_config('.') == expect
+        assert scan_config('./') == expect
+        assert scan_config('') == expect
+        assert scan_config('../project') == expect
+        assert scan_config('../project/') == expect
+        assert scan_config('.tmuxp.yaml') == expect
+        assert scan_config(
             '../../.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config('myconfig') == str(user_config)
-        assert resolve_config(
+        assert scan_config('myconfig') == str(user_config)
+        assert scan_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config('.tmuxp.json')
+            scan_config('.tmuxp.json')
         with pytest.raises(Exception):
-            resolve_config('.tmuxp.ini')
+            scan_config('.tmuxp.ini')
         with pytest.raises(Exception):
-            resolve_config('../')
+            scan_config('../')
         with pytest.raises(Exception):
-            resolve_config('mooooooo')
+            scan_config('mooooooo')
 
     with homedir.as_cwd():
         expect = project_config
-        assert resolve_config('work/project') == expect
-        assert resolve_config('work/project/') == expect
-        assert resolve_config('./work/project') == expect
-        assert resolve_config('./work/project/') == expect
-        assert resolve_config(
+        assert scan_config('work/project') == expect
+        assert scan_config('work/project/') == expect
+        assert scan_config('./work/project') == expect
+        assert scan_config('./work/project/') == expect
+        assert scan_config(
             '.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config(
+        assert scan_config(
             './.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config('myconfig') == str(user_config)
-        assert resolve_config(
+        assert scan_config('myconfig') == str(user_config)
+        assert scan_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config('')
+            scan_config('')
         with pytest.raises(Exception):
-            resolve_config('.')
+            scan_config('.')
         with pytest.raises(Exception):
-            resolve_config('.tmuxp.yaml')
+            scan_config('.tmuxp.yaml')
         with pytest.raises(Exception):
-            resolve_config('../')
+            scan_config('../')
         with pytest.raises(Exception):
-            resolve_config('mooooooo')
+            scan_config('mooooooo')
 
     with configdir.as_cwd():
         expect = project_config
-        assert resolve_config('../work/project') == expect
-        assert resolve_config('../../home/work/project') == expect
-        assert resolve_config('../work/project/') == expect
-        assert resolve_config(
+        assert scan_config('../work/project') == expect
+        assert scan_config('../../home/work/project') == expect
+        assert scan_config('../work/project/') == expect
+        assert scan_config(
             '%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config(
+        assert scan_config(
             './%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config('myconfig') == str(user_config)
-        assert resolve_config(
+        assert scan_config('myconfig') == str(user_config)
+        assert scan_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config('')
+            scan_config('')
         with pytest.raises(Exception):
-            resolve_config('.')
+            scan_config('.')
         with pytest.raises(Exception):
-            resolve_config('.tmuxp.yaml')
+            scan_config('.tmuxp.yaml')
         with pytest.raises(Exception):
-            resolve_config('../')
+            scan_config('../')
         with pytest.raises(Exception):
-            resolve_config('mooooooo')
+            scan_config('mooooooo')
 
     with tmpdir.as_cwd():
         expect = project_config
-        assert resolve_config('home/work/project') == expect
-        assert resolve_config('./home/work/project/') == expect
-        assert resolve_config(
+        assert scan_config('home/work/project') == expect
+        assert scan_config('./home/work/project/') == expect
+        assert scan_config(
             'home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config(
+        assert scan_config(
             './home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert resolve_config('myconfig') == str(user_config)
-        assert resolve_config(
+        assert scan_config('myconfig') == str(user_config)
+        assert scan_config(
             '~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
-            resolve_config('')
+            scan_config('')
         with pytest.raises(Exception):
-            resolve_config('.')
+            scan_config('.')
         with pytest.raises(Exception):
-            resolve_config('.tmuxp.yaml')
+            scan_config('.tmuxp.yaml')
         with pytest.raises(Exception):
-            resolve_config('../')
+            scan_config('../')
         with pytest.raises(Exception):
-            resolve_config('mooooooo')
+            scan_config('mooooooo')
 
 
-def test_resolve_config_arg(homedir, configdir, projectdir, monkeypatch):
+def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
     runner = CliRunner()
 
     @click.command()
     @click.argument(
         'config', click.Path(exists=True), nargs=-1,
-        callback=cli.resolve_config_argument)
+        callback=cli.scan_config_argument)
     def config_cmd(config):
         click.echo(config)
 
@@ -430,21 +439,21 @@ def test_validate_choices():
         assert validate('choice3')
 
 
-def test_create_resolve_config_arg(tmpdir):
+def test_create_scan_config_arg(tmpdir):
     configdir = tmpdir.join('myconfigdir')
     configdir.mkdir()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
 
     expect = str(configdir.join('myconfig.yaml'))
-    my_resolve_config = cli._create_resolve_config_argument(str(configdir))
+    my_scan_config = cli._create_scan_config_argument(str(configdir))
 
     runner = CliRunner()
 
     @click.command()
     @click.argument(
         'config', click.Path(exists=True), nargs=-1,
-        callback=my_resolve_config)
+        callback=my_scan_config)
     def config_cmd(config):
         click.echo(config)
 
