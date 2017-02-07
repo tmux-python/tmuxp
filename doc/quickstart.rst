@@ -68,7 +68,7 @@ Or in your ``~/.bashrc`` / ``~/.zshrc`` you can set:
 
 .. code-block:: bash
 
-   export TMUX_CONFIGDIR=$HOME/.yourconfigdir/tmuxp
+   export TMUXP_CONFIGDIR=$HOME/.yourconfigdir/tmuxp
 
 You can also `Import`_ configs `teamocil`_ and `tmuxinator`_.
 
