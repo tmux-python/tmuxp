@@ -11,7 +11,9 @@ import click
 from click.testing import CliRunner
 
 from tmuxp import cli, config
-from tmuxp.cli import is_pure_name, load_workspace, scan_config
+from tmuxp.cli import (
+    is_pure_name, load_workspace, scan_config, get_config_dir
+)
 
 from .fixtures._util import curjoin, loadfixture
 
@@ -107,6 +109,12 @@ def configdir(homedir):
 @pytest.fixture
 def projectdir(homedir):
     return homedir.join('work').join('project')
+
+
+def test_tmuxp_configdir_env_var(tmpdir, monkeypatch):
+    monkeypatch.setenv('TMUXP_CONFIGDIR', tmpdir)
+
+    assert get_config_dir() == tmpdir
 
 
 def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
