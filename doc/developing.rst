@@ -162,8 +162,6 @@ tmuxp developer config
 ----------------------
 
 .. image:: _static/tmuxp-dev-screenshot.png
-    :scale: 100%
-    :width: 60%
     :align: center
 
 After you :ref:`install_dev_env`, when inside the tmuxp checkout:
