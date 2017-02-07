@@ -57,6 +57,19 @@ Load multiple tmux sessions at once:
 tmuxp will offer to ``switch-client`` for you if you're already in a
 session.
 
+You can also have a custom tmuxp config directory by setting the
+``TMUX_CONFIGDIR`` in your environment variables.
+
+.. code-block:: bash
+
+    $ TMUXP_CONFIGDIR=$HOME/.tmuxpmoo tmuxp load cpython
+
+Or in your ``~/.bashrc`` / ``~/.zshrc`` you can set:
+
+.. code-block:: bash
+
+   export TMUX_CONFIGDIR=$HOME/.yourconfigdir/tmuxp
+
 You can also `Import`_ configs `teamocil`_ and `tmuxinator`_.
 
 Pythonics
