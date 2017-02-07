@@ -59,12 +59,6 @@ session.
 
 You can also `Import`_ configs `teamocil`_ and `tmuxinator`_.
 
-.. _Import: http://tmuxp.readthedocs.io/en/latest/cli.html#import
-.. _tmuxinator: https://github.com/aziz/tmuxinator
-.. _teamocil: https://github.com/remiprev/teamocil
-
-
-
 Pythonics
 ---------
 
@@ -72,13 +66,9 @@ Pythonics
     :ref:`libtmux python API documentation <libtmux:api>` and :ref:`developing`,
     :ref:`internals`.
 
-
 ORM - `Object Relational Mapper`_
 
 AL - `Abstraction Layer`_
-
-.. _Abstraction Layer: http://en.wikipedia.org/wiki/Abstraction_layer
-.. _Object Relational Mapper: http://en.wikipedia.org/wiki/Object-relational_mapping
 
 python abstraction layer
 """"""""""""""""""""""""
@@ -94,3 +84,9 @@ python abstraction layer
 :meth:`libtmux.Window.split_window`      ``$ tmux split-window``
 :meth:`libtmux.Pane.send_keys`           ``$ tmux send-keys``
 ======================================== =================================
+
+.. _Import: http://tmuxp.readthedocs.io/en/latest/cli.html#import
+.. _tmuxinator: https://github.com/aziz/tmuxinator
+.. _teamocil: https://github.com/remiprev/teamocil
+.. _Abstraction Layer: http://en.wikipedia.org/wiki/Abstraction_layer
+.. _Object Relational Mapper: http://en.wikipedia.org/wiki/Object-relational_mapping
