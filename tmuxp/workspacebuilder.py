@@ -267,11 +267,11 @@ class WorkspaceBuilder(object):
 
         pane_base_index = int(w.show_window_option('pane-base-index', g=True))
 
-        for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
+        p = None
 
+        for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
             if pindex == int(pane_base_index):
                 p = w.attached_pane
-
             else:
                 def get_pane_start_directory():
 
@@ -284,6 +284,7 @@ class WorkspaceBuilder(object):
                 p = w.split_window(
                     attach=True,
                     start_directory=get_pane_start_directory(),
+                    target=p.id
                 )
 
             assert(isinstance(p, Pane))
