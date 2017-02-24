@@ -33,6 +33,7 @@ def test_split_windows(session):
     assert len(s._windows) == window_count
     for w, wconf in builder.iter_create_windows(s):
         for p in builder.iter_create_panes(w, wconf):
+            w.select_layout('tiled')  # fix glitch with pane size
             p = p
             assert len(s._windows) == window_count
         assert isinstance(w, Window)
@@ -54,6 +55,7 @@ def test_split_windows_three_pane(session):
     assert len(s._windows) == window_count
     for w, wconf in builder.iter_create_windows(s):
         for p in builder.iter_create_panes(w, wconf):
+            w.select_layout('tiled')  # fix glitch with pane size
             p = p
             assert len(s._windows) == window_count
         assert isinstance(w, Window)
@@ -246,6 +248,7 @@ def test_window_options(session):
     assert len(s._windows) == window_count
     for w, wconf in builder.iter_create_windows(s):
         for p in builder.iter_create_panes(w, wconf):
+            w.select_layout('tiled')  # fix glitch with pane size
             p = p
             assert len(s._windows) == window_count
         assert isinstance(w, Window)
@@ -302,7 +305,9 @@ def test_automatic_rename_option(session):
     window_count = len(session._windows)  # current window count
     assert len(s._windows) == window_count
     for w, wconf in builder.iter_create_windows(s):
+
         for p in builder.iter_create_panes(w, wconf):
+            w.select_layout('tiled')  # fix glitch with pane size
             p = p
             assert len(s._windows), window_count
         assert isinstance(w, Window)
@@ -514,6 +519,7 @@ def test_pane_order(session):
     assert len(s._windows) == window_count
     for w, wconf in builder.iter_create_windows(s):
         for p in builder.iter_create_panes(w, wconf):
+            w.select_layout('tiled')  # fix glitch with pane size
             p = p
             assert len(s._windows) == window_count
 
