@@ -4,6 +4,10 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.2.6 <2017-02-24>`
+- :support:`218 backported` Fix pane ordering by running ``select-layout`` before
+  splits.
+
 - :release:`1.2.5 <2017-02-08>`
 - :feature:`207 backported` add custom tmuxp config directory via
   ``TMUXP_CONFIGDIR`` variable.
