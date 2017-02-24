@@ -4,9 +4,8 @@ options:
   default-shell: /bin/sh
   default-command: /bin/sh
 windows:
-- layout: main-horizontal
+- window_name: moo
   panes:
   - pane
   - pane
   - pane
-  window_name: moo

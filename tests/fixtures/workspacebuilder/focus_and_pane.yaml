@@ -2,7 +2,6 @@ session_name: sampleconfig
 start_directory: '~'
 windows:
 - window_name: focused window
-  layout: main-horizontal
   focus: true
   panes:
   - shell_command:

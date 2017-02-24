@@ -4,9 +4,8 @@ global_options:
   repeat-time: 493
   status-position: 'top'
 windows:
-- layout: main-horizontal
+- window_name: moo
   panes:
   - pane
   - pane
   - pane
-  window_name: moo

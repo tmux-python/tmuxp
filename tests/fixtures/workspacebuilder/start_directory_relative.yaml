@@ -12,7 +12,6 @@ windows:
     - echo "moo"
 - window_name: support to be /dev
   start_directory: '/dev'
-  layout: main-horizontal
   panes:
   - shell_command:
     - echo hello
@@ -22,7 +21,6 @@ windows:
     - echo "moo"
 - window_name: cwd containing a space
   start_directory: {TEST_DIR}
-  layout: main-horizontal
   panes:
   - shell_command:
     - echo hello
@@ -31,7 +29,6 @@ windows:
   - shell_command:
     - echo "moo"
 - window_name: inherit start_directory which is rel to config file
-  layout: main-horizontal
   panes:
   - shell_command:
     - echo hello
@@ -40,7 +37,6 @@ windows:
   - shell_command:
     - echo "moo3"
 - window_name: cwd relative to config file
-  layout: main-horizontal
   start_directory: ./
   panes:
   - shell_command:

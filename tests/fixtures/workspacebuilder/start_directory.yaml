@@ -4,7 +4,6 @@ windows:
 - window_name: supposed to be /usr/bin
   window_index: 1
   start_directory: /usr/bin
-  layout: main-horizontal
   options:
       main-pane-height: 50
   panes:
@@ -15,7 +14,6 @@ windows:
 - window_name: support to be /dev
   window_index: 2
   start_directory: /dev
-  layout: main-horizontal
   panes:
   - shell_command:
     - echo hello
@@ -26,7 +24,6 @@ windows:
 - window_name: cwd containing a space
   window_index: 3
   start_directory: {TEST_DIR}
-  layout: main-horizontal
   panes:
   - shell_command:
     - echo hello
@@ -36,7 +33,6 @@ windows:
     - echo "moo"
 - window_name: testsa3
   window_index: 4
-  layout: main-horizontal
   panes:
   - shell_command:
     - echo hello
@@ -46,7 +42,6 @@ windows:
     - echo "moo3"
 - window_name: cwd relative to start_directory since no rel dir entered
   window_index: 5
-  layout: main-horizontal
   start_directory: ./
   panes:
   - shell_command:
