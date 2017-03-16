@@ -62,6 +62,10 @@ html_sidebars = {
     ]
 }
 
+html_theme_options = {
+    'logo': 'img/tmuxp.svg',
+}
+
 html_theme_path = ['_themes']
 html_static_path = ['_static']
 
