@@ -401,7 +401,7 @@ See examples of ``tmuxp`` in the wild. Have a project config to show off?
 Edit this page.
 
 * https://github.com/tony/dockerfiles/blob/master/.tmuxp.yaml
-* https://github.com/tony/pullv/blob/master/.tmuxp.yaml
+* https://github.com/tony/vcspull/blob/master/.tmuxp.yaml
 * https://github.com/tony/sphinxcontrib-github/blob/master/.tmuxp.yaml
 
 You can use ``start_directory: ./`` to make the directories relative to
