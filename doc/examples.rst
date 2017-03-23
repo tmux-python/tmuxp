@@ -1,8 +1,8 @@
 .. _examples:
 
-========
-Examples
-========
+======================
+Example Configurations
+======================
 
 Short hand / inline
 -------------------
