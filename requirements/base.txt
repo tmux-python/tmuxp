@@ -1,4 +1,4 @@
 kaptan>=0.5.7
-libtmux==0.6.3 # Updated from 0.6.2
+libtmux==0.6.4 # Updated from 0.6.3
 click==6.7
 colorama==0.3.7
