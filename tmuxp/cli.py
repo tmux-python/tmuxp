@@ -15,6 +15,7 @@ import click
 import kaptan
 from click.exceptions import FileError
 from libtmux.common import has_required_tmux_version, which
+from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
 from . import WorkspaceBuilder, config, exc, log, util
@@ -316,6 +317,9 @@ def cli(log_level):
     http://tmuxp.readthedocs.io/en/latest/"""
     try:
         has_required_tmux_version()
+    except TmuxCommandNotFound:
+        click.echo('tmux not found. tmuxp requires you install tmux first.')
+        sys.exit()
     except exc.TmuxpException as e:
         click.echo(e, err=True)
         sys.exit()
