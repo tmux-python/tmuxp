@@ -80,3 +80,21 @@ div.book-container div.rightside-book div.figure.align-left {
 }
 
 
+table.docutils {
+   background-color: #fafbfc;
+   border: 0;
+}
+
+table.docutils td, table.docutils th {
+   border: 0;
+}
+
+table.docutils pre {
+  background-color: rgba(239, 242, 244, .75);
+}
+
+pre {
+  background-color: #fafbfc;
+  border-left: 5px solid #558abb;
+  font-size: 0.75em;
+}
