@@ -2,6 +2,8 @@
 
 import os
 import sys
+import alabaster
+
 
 # Get the project root dir, which is the parent dir of this
 cwd = os.getcwd()
@@ -46,9 +48,8 @@ exclude_patterns = ['_build']
 
 pygments_style = 'sphinx'
 
-import alabaster
-
 html_theme_path = [alabaster.get_path()]
+html_favicon = 'favicon.ico'
 html_theme = 'alabaster'
 html_sidebars = {
     '**': [
