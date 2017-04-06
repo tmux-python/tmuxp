@@ -98,3 +98,32 @@ pre {
   border-left: 5px solid #558abb;
   font-size: 0.75em;
 }
+
+div.seealso, div.note {
+  background-color: #fafbfc;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+div.seealso {
+  border-left: 5px solid #8abb55;
+}
+
+div.note {
+  border-left: 5px solid #bb5557;
+}
+
+code {
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
+  color: #24292e;
+  font-size: 85%;
+  padding-bottom: 0.2em;
+  padding-top: 0.2em;
+}
+
+code::before, code::after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
