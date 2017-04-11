@@ -188,6 +188,8 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 focus = w
 
+            self.config_after_window(w, wconf)
+
             if focus_pane:
                 focus_pane.select_pane()
 
@@ -307,6 +309,14 @@ class WorkspaceBuilder(object):
             w.server._update_panes()
 
             yield p, pconf
+
+    """
+    Applies window configurations relevant after window and pane creation.
+    """
+    def config_after_window(self, w, wconf):
+        if 'options_after' in wconf and isinstance(wconf['options_after'], dict):
+            for key, val in wconf['options_after'].items():
+                w.set_window_option(key, val)
 
 
 def freeze(session):
