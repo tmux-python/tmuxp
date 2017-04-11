@@ -1,0 +1,11 @@
+session_name: tmuxp test window_options_after
+options:
+  default-shell: /bin/sh
+  default-command: /bin/sh
+windows:
+  - window_name: test
+    panes:
+    - echo 0
+    - echo 1
+    options_after:
+      synchronize-panes: on

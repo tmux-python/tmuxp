@@ -259,6 +259,34 @@ def test_window_options(session):
         w.select_layout(wconf['layout'])
 
 
+def test_window_options_after(session):
+    yaml_config = loadfixture("workspacebuilder/window_options_after.yaml")
+    s = session
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    def assert_last_line(p, s):
+        # Print output for easier debugging if test fails
+        print('\n'.join(p.cmd('capture-pane', '-p').stdout))
+        assert p.cmd('capture-pane', '-p').stdout[-2] == s
+
+    for i, pane in enumerate(session.attached_window.panes):
+        assert_last_line(pane, str(i))
+        pane.cmd('send-keys', 'Up') # Will repeat echo
+        pane.enter()                # in each iteration
+        assert_last_line(pane, str(i))
+
+    session.cmd('send-keys', 'echo moo')
+    session.cmd('send-keys', 'Enter')
+
+    for pane in session.attached_window.panes:
+        assert_last_line(pane, 'moo')
+
+
 def test_window_shell(session):
     yaml_config = loadfixture("workspacebuilder/window_shell.yaml")
     s = session
