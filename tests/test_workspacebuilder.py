@@ -259,6 +259,7 @@ def test_window_options(session):
         w.select_layout(wconf['layout'])
 
 
+@pytest.mark.flaky(reruns=5)
 def test_window_options_after(session):
     yaml_config = loadfixture("workspacebuilder/window_options_after.yaml")
     s = session
@@ -270,21 +271,35 @@ def test_window_options_after(session):
     builder.build(session=session)
 
     def assert_last_line(p, s):
-        # Print output for easier debugging if test fails
-        print('\n'.join(p.cmd('capture-pane', '-p').stdout))
-        assert p.cmd('capture-pane', '-p').stdout[-2] == s
+        correct = False
+        for _ in range(10):
+            pane_out = p.cmd('capture-pane', '-p', '-J').stdout
+            if len(pane_out) > 1 and pane_out[-2].strip() == s:
+                correct = True
+                break
+
+            time.sleep(0.1)
+
+        # Print output for easier debugging if assertion fails
+        if not correct:
+            print('\n'.join(pane_out))
+
+        return correct
 
     for i, pane in enumerate(session.attached_window.panes):
-        assert_last_line(pane, str(i))
+        assert assert_last_line(pane, str(i)), \
+                "Initial command did not execute properly/" + str(i)
         pane.cmd('send-keys', 'Up') # Will repeat echo
         pane.enter()                # in each iteration
-        assert_last_line(pane, str(i))
+        assert assert_last_line(pane, str(i)), \
+                "Repeated command did not execute properly/" + str(i)
 
     session.cmd('send-keys', ' echo moo')
     session.cmd('send-keys', 'Enter')
 
     for pane in session.attached_window.panes:
-        assert_last_line(pane, 'moo')
+        assert assert_last_line(pane, 'moo'), \
+                "Synchronized command did not execute properly"
 
 
 def test_window_shell(session):
