@@ -1,9 +1,9 @@
 session_name: tmuxp test window_options_after
 options:
-  default-shell: /bin/sh
-  default-command: /bin/sh
+  default-shell: /bin/bash
 windows:
   - window_name: test
+    suppress_history: false
     panes:
     - echo 0
     - echo 1

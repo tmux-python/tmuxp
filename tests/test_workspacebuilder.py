@@ -280,7 +280,7 @@ def test_window_options_after(session):
         pane.enter()                # in each iteration
         assert_last_line(pane, str(i))
 
-    session.cmd('send-keys', 'echo moo')
+    session.cmd('send-keys', ' echo moo')
     session.cmd('send-keys', 'Enter')
 
     for pane in session.attached_window.panes:
