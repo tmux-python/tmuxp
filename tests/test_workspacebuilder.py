@@ -274,6 +274,8 @@ def test_window_options_after(session):
         correct = False
         for _ in range(10):
             pane_out = p.cmd('capture-pane', '-p', '-J').stdout
+            # delete trailing empty lines for tmux 1.8...
+            while not pane_out[-1].strip(): pane_out.pop()
             if len(pane_out) > 1 and pane_out[-2].strip() == s:
                 correct = True
                 break
