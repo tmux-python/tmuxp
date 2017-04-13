@@ -35,19 +35,19 @@ Load tmux sessions via json and YAML, `tmuxinator`_ and
        - echo third pane          # pane no. 3
        - echo forth pane          # pane no. 4
 
-Save as ``mysession.yaml``. And load:
+Save as *mysession.yaml*, and load:
 
 .. code-block:: sh
 
    $ tmuxp load ./mysession.yaml
 
-Sessions in ``~/.tmuxp/`` can use names:
+Sessions in *~/.tmuxp/* can use names:
 
 .. code-block:: sh
 
     $ tmuxp load mysession
 
-Projects with ``.tmuxp.yaml`` or ``.tmuxp.json`` load via directory:
+Projects with *.tmuxp.yaml* or *.tmuxp.json* load via directory:
 
 .. code-block:: sh
 
@@ -61,8 +61,8 @@ Load multiple at once (in bg, offer to attach last):
 
 `simple`_, `very elaborate`_ config examples
 
-Store configs in (``~/.tmuxp``) or include in your project as
-``~/.tmuxp.{yaml,json}``. See `author's tmuxp configs`_ and the
+Store configs in (*~/.tmuxp*) or include in your project as
+*~/.tmuxp.{yaml,json}*. See `author's tmuxp configs`_ and the
 the projects' `tmuxp.yaml`_.
 
 Run custom startup scripts (such as installing project dependencies before
@@ -79,11 +79,11 @@ You can also load sessions in the background by passing ``-d`` flag
 Freeze a tmux session
 ---------------------
 
-snapshot your tmux layout, pane paths, and window/session names. 
+Snapshot your tmux layout, pane paths, and window/session names. 
 
 .. code-block:: sh
 
-   $ tmuxp freeze SESSION_NAME
+   $ tmuxp freeze session-name
 
 See more about `freezing tmux`_ sessions.
 
