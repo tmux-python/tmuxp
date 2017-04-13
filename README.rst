@@ -6,6 +6,13 @@ tmuxp, tmux session manager. built on `libtmux`_.
 available on Leanpub and `Amazon Kindle`_. Read and browse the book for free
 `on the web`_.
 
+Installation
+------------
+
+.. code-block:: shell
+
+   $ pip install --user tmuxp
+
 Load a tmux session
 -------------------
 

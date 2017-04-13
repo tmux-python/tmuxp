@@ -15,10 +15,10 @@ tmux session manager
     :width: 100%
 
 
-Freeze a tmux session
----------------------
+Installation
+------------
 .. include:: ../README.rst
-    :start-after: Freeze a tmux session
+    :start-after: Installation
 
 Explore:
 
