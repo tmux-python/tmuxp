@@ -8,6 +8,8 @@ python:
   - 3.4
   - 3.5
   - 3.6
+  - pypy
+  - pypy3
 env:
   - TMUX_VERSION=master
   - TMUX_VERSION=2.3
