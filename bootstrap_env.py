@@ -82,7 +82,7 @@ except ImportError:
     message = (
         'Virtualenv is required for this bootstrap to run.\n'
         'Install virtualenv via:\n'
-        '\t$ [sudo] pip install virtualenv'
+        '\t$ pip install --user virtualenv'
     )
     fail(message)
 
