@@ -155,7 +155,7 @@ git repo        .. code-block:: bash
                     $ git clone https://github.com/tony/tmuxp.git
 install stable  .. code-block:: bash
 
-                    $ sudo pip install tmuxp
+                    $ pip install --user tmuxp
 install dev     .. code-block:: bash
 
                     $ git clone https://github.com/tony/tmuxp.git tmuxp
