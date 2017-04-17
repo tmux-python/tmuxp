@@ -218,6 +218,8 @@ def load_workspace(
     :param type: string
 
     """
+    # get the canonical path, eliminating any symlinks
+    config_file = os.path.realpath(config_file)
 
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
