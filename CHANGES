@@ -40,7 +40,7 @@ Here you can find the recent changes to tmuxp
 - :support:`- backported` update libtmux from 0.5.0 to 0.6.0
 
 - :release:`1.2.0 <2016-06-16>`
-- :feature:`65` Ability to specify ``options`` and ``global_options`` via
+- :feature:`169` Ability to specify ``options`` and ``global_options`` via
   configuration. Also you can specify environment variables via that.
 
   Include tests and add example.
