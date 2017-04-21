@@ -146,7 +146,7 @@ API             http://tmuxp.git-pull.com/en/latest/api.html
 Changelog       http://tmuxp.git-pull.com/en/latest/history.html
 Issues          https://github.com/tony/tmuxp/issues
 Travis          http://travis-ci.org/tony/tmuxp
-Test Coverage   https://coveralls.io/r/tony/tmuxp
+Test Coverage   https://codecov.io/gh/tony/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
 Open Hub        https://www.openhub.net/p/tmuxp
 License         `BSD`_.
