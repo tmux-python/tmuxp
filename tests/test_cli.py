@@ -263,7 +263,7 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
 
 def test_load_workspace(server, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
-    # a tmux session by the developer themselv, delete the TMUX variable
+    # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv('TMUX', raising=False)
     session_file = curjoin("workspacebuilder/two_pane.yaml")
@@ -276,6 +276,37 @@ def test_load_workspace(server, monkeypatch):
 
     assert isinstance(session, libtmux.Session)
     assert session.name == 'sampleconfig'
+
+
+def test_load_symlinked_workspace(server, tmpdir, monkeypatch):
+    # this is an implementation test. Since this testsuite may be ran within
+    # a tmux session by the developer himself, delete the TMUX variable
+    # temporarily.
+    monkeypatch.delenv('TMUX', raising=False)
+
+    realtemp = tmpdir.mkdir('myrealtemp')
+    linktemp = tmpdir.join('symlinktemp')
+    linktemp.mksymlinkto(realtemp)
+    projfile = linktemp.join('simple.yaml')
+
+    projfile.write("""
+session_name: samplesimple
+start_directory: './'
+windows:
+- panes:
+    - echo 'hey'""")
+
+    # open it detached
+    session = load_workspace(
+        projfile.strpath,
+        socket_name=server.socket_name,
+        detached=True
+    )
+    pane = session.attached_window.attached_pane
+
+    assert isinstance(session, libtmux.Session)
+    assert session.name == 'samplesimple'
+    assert pane.current_path == realtemp.strpath
 
 
 def test_regression_00132_session_name_with_dots(tmpdir, server, session):
