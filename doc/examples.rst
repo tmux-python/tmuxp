@@ -301,6 +301,25 @@ JSON
 .. literalinclude:: ../examples/options.json
     :language: json
 
+Set window options after pane creation
+--------------------------------------
+
+Apply window options after panes have been created. Useful for
+``synchronize-panes`` option after executing individual commands in each
+pane during creation.
+
+YAML
+~~~~
+
+.. literalinclude:: ../examples/2-pane-synchronized.yaml
+    :language: yaml
+
+JSON
+~~~~
+
+.. literalinclude:: ../examples/2-pane-synchronized.json
+    :language: json
+
 Main pane height
 ----------------
 
