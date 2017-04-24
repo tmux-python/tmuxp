@@ -259,6 +259,51 @@ def test_window_options(session):
         w.select_layout(wconf['layout'])
 
 
+@pytest.mark.flaky(reruns=5)
+def test_window_options_after(session):
+    yaml_config = loadfixture("workspacebuilder/window_options_after.yaml")
+    s = session
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    def assert_last_line(p, s):
+        correct = False
+        for _ in range(10):
+            pane_out = p.cmd('capture-pane', '-p', '-J').stdout
+            # delete trailing empty lines for tmux 1.8...
+            while not pane_out[-1].strip(): pane_out.pop()
+            if len(pane_out) > 1 and pane_out[-2].strip() == s:
+                correct = True
+                break
+
+            time.sleep(0.1)
+
+        # Print output for easier debugging if assertion fails
+        if not correct:
+            print('\n'.join(pane_out))
+
+        return correct
+
+    for i, pane in enumerate(session.attached_window.panes):
+        assert assert_last_line(pane, str(i)), \
+                "Initial command did not execute properly/" + str(i)
+        pane.cmd('send-keys', 'Up') # Will repeat echo
+        pane.enter()                # in each iteration
+        assert assert_last_line(pane, str(i)), \
+                "Repeated command did not execute properly/" + str(i)
+
+    session.cmd('send-keys', ' echo moo')
+    session.cmd('send-keys', 'Enter')
+
+    for pane in session.attached_window.panes:
+        assert assert_last_line(pane, 'moo'), \
+                "Synchronized command did not execute properly"
+
+
 def test_window_shell(session):
     yaml_config = loadfixture("workspacebuilder/window_shell.yaml")
     s = session
