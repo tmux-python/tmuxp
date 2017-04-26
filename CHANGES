@@ -4,6 +4,11 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.3.0 <2017-04-26>`
+- :feature:`236` Support for symlinked directories, thanks @rafi.
+- :feature:`236` Support for ``options_after``, for setting options like
+  ``synchronize-panes``. Thanks @sebastianst.
+
 - :release:`1.2.8 <2017-04-02>`
 - :support:`229 backported` More helpful error message on systems missing
   tmux.
