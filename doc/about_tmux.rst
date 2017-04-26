@@ -515,8 +515,12 @@ Vi-style copy and paste
 
     # Vi copypaste mode
     set-window-option -g mode-keys vi
+    # tmux <= 2.3
     bind-key -t vi-copy 'v' begin-selection
     bind-key -t vi-copy 'y' copy-selection
+    # tmux >= 2.4
+    bind-key -T copy-mode-vi 'v' send-keys -X begin-selection
+    bind-key -T copy-mode-vi 'y' send-keys -X copy-selection
 
 Aggressive resizing for clients
 -------------------------------
