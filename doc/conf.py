@@ -30,7 +30,7 @@ extensions = ['sphinx.ext.autodoc',
 releases_unstable_prehistory = True
 releases_document_name = "history"
 releases_issue_uri = "https://github.com/tony/tmuxp/issues/%s"
-releases_release_uri = "https://github.com/tony/tmuxp/tree/%s"
+releases_release_uri = "https://github.com/tony/tmuxp/tree/v%s"
 
 templates_path = ['_templates']
 
