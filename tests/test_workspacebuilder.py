@@ -12,6 +12,7 @@ import pytest
 
 from . import fixtures_dir
 from libtmux import Window
+from libtmux.common import has_gte_version
 from libtmux.test import temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
@@ -242,6 +243,9 @@ def test_window_options(session):
     sconfig = sconfig.import_config(yaml_config).get()
     sconfig = config.expand(sconfig)
 
+    if has_gte_version('2.3'):
+        sconfig['windows'][0]['options']['pane-border-format'] = ' #P '
+
     builder = WorkspaceBuilder(sconf=sconfig)
 
     window_count = len(session._windows)  # current window count
@@ -253,6 +257,8 @@ def test_window_options(session):
             assert len(s._windows) == window_count
         assert isinstance(w, Window)
         assert w.show_window_option('main-pane-height') == 5
+        if has_gte_version('2.3'):
+            assert w.show_window_option('pane-border-format') == ' #P '
 
         assert len(s._windows) == window_count
         window_count += 1
@@ -262,7 +268,6 @@ def test_window_options(session):
 @pytest.mark.flaky(reruns=5)
 def test_window_options_after(session):
     yaml_config = loadfixture("workspacebuilder/window_options_after.yaml")
-    s = session
     sconfig = kaptan.Kaptan(handler='yaml')
     sconfig = sconfig.import_config(yaml_config).get()
     sconfig = config.expand(sconfig)
@@ -274,8 +279,8 @@ def test_window_options_after(session):
         correct = False
         for _ in range(10):
             pane_out = p.cmd('capture-pane', '-p', '-J').stdout
-            # delete trailing empty lines for tmux 1.8...
-            while not pane_out[-1].strip(): pane_out.pop()
+            while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
+                pane_out.pop()
             if len(pane_out) > 1 and pane_out[-2].strip() == s:
                 correct = True
                 break
@@ -291,10 +296,11 @@ def test_window_options_after(session):
     for i, pane in enumerate(session.attached_window.panes):
         assert assert_last_line(pane, str(i)), \
                 "Initial command did not execute properly/" + str(i)
-        pane.cmd('send-keys', 'Up') # Will repeat echo
-        pane.enter()                # in each iteration
-        assert assert_last_line(pane, str(i)), \
-                "Repeated command did not execute properly/" + str(i)
+        pane.cmd('send-keys', 'Up')  # Will repeat echo
+        pane.enter()                 # in each iteration
+        assert assert_last_line(pane, str(i)), (
+               "Repeated command did not execute properly/" + str(i)
+        )
 
     session.cmd('send-keys', ' echo moo')
     session.cmd('send-keys', 'Enter')

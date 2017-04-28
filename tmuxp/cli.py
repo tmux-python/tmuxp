@@ -14,7 +14,7 @@ import sys
 import click
 import kaptan
 from click.exceptions import FileError
-from libtmux.common import has_required_tmux_version, which
+from libtmux.common import has_minimum_version, which
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
@@ -318,7 +318,7 @@ def cli(log_level):
     See detailed documentation and examples at:
     http://tmuxp.readthedocs.io/en/latest/"""
     try:
-        has_required_tmux_version()
+        has_minimum_version()
     except TmuxCommandNotFound:
         click.echo('tmux not found. tmuxp requires you install tmux first.')
         sys.exit()
