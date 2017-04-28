@@ -8,7 +8,7 @@ Here you can find the recent changes to tmuxp
 - :feature:`239` Improve support for formatted options when freezing and
   using configs with them.
 - :feature:`236` Support for symlinked directories, thanks @rafi.
-- :feature:`236` Support for ``options_after``, for setting options like
+- :feature:`235` Support for ``options_after``, for setting options like
   ``synchronize-panes``. Thanks @sebastianst.
 - :support:`248` Drop python 2.6 support
 - :support:`248` Upgrade libtmux to 0.7.1
