@@ -114,7 +114,7 @@ div.note {
   border-left: 5px solid #bb5557;
 }
 
-code {
+code.literal{
   font-size: 85%;
   color: #24292e;
   box-sizing: border-box;
@@ -124,18 +124,6 @@ code {
   border: 1px solid #f0f4f7;
   border-radius: 4px;
   line-height: 20px;
-}
-
-code.descclassname {  /* left side of sphinx autodoc */
-  border-right: 0px;
-  border-bottom-right-radius: 0px;
-  border-top-right-radius: 0px;
-}
-
-code.descname {  /* right side of sphinx autodoc */
-  border-left: 0px;
-  border-bottom-left-radius: 0px;
-  border-top-left-radius: 0px;
 }
 
 code::before, code::after {
