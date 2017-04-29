@@ -119,10 +119,9 @@ code.literal{
   color: #24292e;
   box-sizing: border-box;
   display: inline-block;
-  padding: 0 2px;
+  padding: 0;
   background: #fafcfc;
   border: 1px solid #f0f4f7;
-  border-radius: 4px;
   line-height: 20px;
 }
 
