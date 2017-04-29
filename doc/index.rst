@@ -18,7 +18,7 @@ tmux session manager
 Freeze a tmux session
 ---------------------
 .. include:: ../README.rst
-    :start-after: Freeze a tmux session
+    :start-after: ---------------------
 
 Explore:
 
