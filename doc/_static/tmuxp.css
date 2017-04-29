@@ -115,12 +115,15 @@ div.note {
 }
 
 code {
-  background-color: rgba(27,31,35,0.05);
-  border-radius: 3px;
-  color: #24292e;
   font-size: 85%;
-  padding-bottom: 0.2em;
-  padding-top: 0.2em;
+  color: #24292e;
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 0 5px;
+  background: #fafcfc;
+  border: 1px solid #f0f4f7;
+  border-radius: 4px;
+  line-height: 20px;
 }
 
 code::before, code::after {
