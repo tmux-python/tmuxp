@@ -131,7 +131,7 @@ def scan_config(config, config_dir=None):
         - a file name, myconfig.yaml
         - relative path, ../config.yaml or ../project
         - a period, .
-    :type config: string
+    :type config: str
 
     If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
     one or more found, it will warn and pick the first.
@@ -215,7 +215,7 @@ def load_workspace(
     """Build config workspace.
 
     :param config_file: full path to config file
-    :param type: string
+    :param type: str
 
     """
     # get the canonical path, eliminating any symlinks

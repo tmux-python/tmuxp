@@ -51,9 +51,9 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
     """Return True if file has a valid config file type.
 
     :param filename: filename to check (e.g. ``mysession.json``).
-    :type filename: string
+    :type filename: str
     :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
-    :type extensions: list or string
+    :type extensions: list or str
     :rtype: bool
 
     """
@@ -70,7 +70,7 @@ def in_dir(
     """Return a list of configs in ``config_dir``.
 
     :param config_dir: directory to search
-    :type config_dir: string
+    :type config_dir: str
     :param extensions: filetypes to check (e.g. ``['.yaml', '.json']``).
     :type extensions: list
     :rtype: list
@@ -109,9 +109,9 @@ def expandshell(_path):
     :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`
 
     :param _path: path to expand
-    :type _path: string
+    :type _path: str
     :returns: expanded path
-    :rtype: string
+    :rtype: str
 
     """
     return os.path.expandvars(os.path.expanduser(_path))
@@ -174,7 +174,7 @@ def expand(sconf, cwd=None, parent=None):
     :type sconf: dict
     :param cwd: directory to expand relative paths against. should be the dir
         of the config directory.
-    :type cwd: string
+    :type cwd: str
     :param parent: (used on recursive entries) start_directory of parent window
         or session object.
     :type parent: str

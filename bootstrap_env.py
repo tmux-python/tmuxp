@@ -31,10 +31,10 @@ def which(exe=None, throw=True):
     from salt.util - https://www.github.com/saltstack/salt - license apache
 
     :param exe: Application to search PATHs for.
-    :type exe: string
+    :type exe: str
     :param throw: Raise ``Exception`` if not found in paths
     :type throw: bool
-    :rtype: string
+    :rtype: str
 
     """
     if exe:
@@ -130,6 +130,7 @@ def main():
 
     if os.path.exists(os.path.join(env_dir, 'build')):
         os.removedirs(os.path.join(env_dir, 'build'))
+
 
 if __name__ == '__main__':
     main()
