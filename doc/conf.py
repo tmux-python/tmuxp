@@ -2,7 +2,7 @@
 
 import os
 import sys
-import alabaster
+import alagitpull
 
 
 # Get the project root dir, which is the parent dir of this
@@ -19,13 +19,14 @@ with open("../tmuxp/__about__.py") as fp:
     exec(fp.read(), about)
 
 
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.todo',
-              'aafig',
-              'releases',
-              'alabaster',
-              ]
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'aafig',
+    'releases',
+    'alagitpull',
+]
 
 releases_unstable_prehistory = True
 releases_document_name = "history"
@@ -48,13 +49,12 @@ exclude_patterns = ['_build']
 
 pygments_style = 'sphinx'
 
-html_theme_path = [alabaster.get_path()]
+html_theme_path = [alagitpull.get_path()]
 html_favicon = 'favicon.ico'
-html_theme = 'alabaster'
+html_theme = 'alagitpull'
 html_sidebars = {
     '**': [
         'about.html',
-        'star.html',
         'navigation.html',
         'relations.html',
         'more.html',
@@ -65,6 +65,12 @@ html_sidebars = {
 
 html_theme_options = {
     'logo': 'img/tmuxp.svg',
+    'github_user': 'tony',
+    'github_repo': 'tmuxp',
+    'github_type': 'star',
+    'github_banner': True,
+    'projects': alagitpull.projects,
+    'project_name': about['__title__'],
 }
 
 html_theme_path = ['_themes']
