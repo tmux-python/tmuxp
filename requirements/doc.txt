@@ -1,6 +1,6 @@
 -r ./base.txt
 docutils==0.13.1
-requests[security]==2.16.4
+requests[security]==2.16.5
 sphinx==1.5.6
 reportlab==3.4.0
 alagitpull==0.0.5
