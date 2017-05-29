@@ -10,6 +10,8 @@ import pytest
 import click
 from click.testing import CliRunner
 
+from libtmux.common import has_lt_version
+
 from tmuxp import cli, config
 from tmuxp.cli import (
     is_pure_name, load_workspace, scan_config, get_config_dir
@@ -276,6 +278,40 @@ def test_load_workspace(server, monkeypatch):
 
     assert isinstance(session, libtmux.Session)
     assert session.name == 'sampleconfig'
+
+
+@pytest.mark.skipif(
+    has_lt_version('2.1'), reason='exact session name matches only tmux >= 2.1'
+)
+def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
+    monkeypatch.delenv('TMUX', raising=False)
+    session_file = curjoin("workspacebuilder/two_pane.yaml")
+
+    # open it detached
+    session = load_workspace(
+        session_file, socket_name=server.socket_name,
+        detached=True
+    )
+
+    assert isinstance(session, libtmux.Session)
+    assert session.name == 'sampleconfig'
+
+    projfile = tmpdir.join('simple.yaml')
+
+    projfile.write("""
+session_name: sampleconfi
+start_directory: './'
+windows:
+- panes:
+    - echo 'hey'""")
+
+    # open it detached
+    session = load_workspace(
+        projfile.strpath,
+        socket_name=server.socket_name,
+        detached=True
+    )
+    assert session.name == 'sampleconfi'
 
 
 def test_load_symlinked_workspace(server, tmpdir, monkeypatch):
