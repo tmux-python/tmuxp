@@ -278,6 +278,37 @@ def test_load_workspace(server, monkeypatch):
     assert session.name == 'sampleconfig'
 
 
+def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
+    monkeypatch.delenv('TMUX', raising=False)
+    session_file = curjoin("workspacebuilder/two_pane.yaml")
+
+    # open it detached
+    session = load_workspace(
+        session_file, socket_name=server.socket_name,
+        detached=True
+    )
+
+    assert isinstance(session, libtmux.Session)
+    assert session.name == 'sampleconfig'
+
+    projfile = tmpdir.join('simple.yaml')
+
+    projfile.write("""
+session_name: sampleconfi
+start_directory: './'
+windows:
+- panes:
+    - echo 'hey'""")
+
+    # open it detached
+    session = load_workspace(
+        projfile.strpath,
+        socket_name=server.socket_name,
+        detached=True
+    )
+    assert session.name == 'sampleconfi'
+
+
 def test_load_symlinked_workspace(server, tmpdir, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
