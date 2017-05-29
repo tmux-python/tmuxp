@@ -10,6 +10,8 @@ import pytest
 import click
 from click.testing import CliRunner
 
+from libtmux.common import has_lt_version
+
 from tmuxp import cli, config
 from tmuxp.cli import (
     is_pure_name, load_workspace, scan_config, get_config_dir
@@ -278,6 +280,9 @@ def test_load_workspace(server, monkeypatch):
     assert session.name == 'sampleconfig'
 
 
+@pytest.mark.skipif(
+    has_lt_version('2.1'), reason='exact session name matches only tmux >= 2.1'
+)
 def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
     monkeypatch.delenv('TMUX', raising=False)
     session_file = curjoin("workspacebuilder/two_pane.yaml")
