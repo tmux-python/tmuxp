@@ -1,5 +1,7 @@
 # Makefile for Sphinx documentation
 #
+PYVERSION=$(shell python -c "import sys;v=sys.version_info[0];sys.stdout.write(str(v))")
+HTTP_PORT     = 8031
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -164,7 +166,13 @@ watch:
 serve:
 	@echo '================================================='
 	@echo
-	@echo 'docs server running at http://0.0.0.0:8031/_build/html'
+	@echo 'docs server running at http://0.0.0.0:${HTTP_PORT}/_build/html'
 	@echo
 	@echo '================================================='
-	python -m SimpleHTTPServer 8031
+	@if test ${PYVERSION} -eq 2; then $(MAKE) serve_py2; else make serve_py3; fi
+
+serve_py2:
+	python -m SimpleHTTPServer ${HTTP_PORT}
+
+serve_py3:
+	python -m http.server ${HTTP_PORT}
