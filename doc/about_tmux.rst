@@ -253,7 +253,8 @@ Start a new session
 
 That's all it takes to launch yourself into a tmux session.
 
-.. tip:: Common pitfall
+.. admonition:: Common pitfall
+    :class: note
 
     Running ``$ tmux list-sessions`` or any other command for listing tmux
     entities (such as ``$ tmux list-windows`` or ``$ tmux list-panes``).
@@ -261,10 +262,10 @@ That's all it takes to launch yourself into a tmux session.
     
     This could be because:
 
-        - tmux server has killed its' last session, killing the server.
-        - tmux server has encountered a crash. (tmux is highly stable,
-          this will rarely happen)
-        - tmux has not be launched yet at all.
+    - tmux server has killed its' last session, killing the server.
+    - tmux server has encountered a crash. (tmux is highly stable,
+      this will rarely happen)
+    - tmux has not be launched yet at all.
 
 .. _Prefix key:
 
