@@ -30,7 +30,7 @@ the text dimension. Inside tmux you can:
 - switch between multiple workspaces, like virtual desktops
 
 =============
-Thinking Tmux
+Thinking tmux
 =============
 
 Text-based window manager
@@ -110,7 +110,6 @@ One screen can be used to edit a file, and another may be used to
    +--------+--------+
 
 tmux supports as manys terminals as you want.
-
 
 .. aafig::
    :textual:
@@ -502,7 +501,7 @@ Short cut             Action
 ===================   ====================================================
 
 ================
-Configuring Tmux
+Configuring tmux
 ================
 
 Tmux can be configured via a configuration at ``~/.tmux.conf``.
