@@ -75,10 +75,11 @@ format [1]_. See :ref:`cli_freeze`.
 
 **JSON config** JSON config support. See :ref:`Examples`.
 
-**ORM-based API** - Utilitizes tmux >= 1.8's unique ID's for panes,
-windows and sessions to create an object relational view of the tmux
-:class:`Server` and its' :class:`Session`, :class:`Window`, :class:`Pane`.
-See :ref:`Internals`.
+**ORM-based API** via `libtmux`_ - Utilitizes tmux >= 1.8's unique ID's for
+panes, windows and sessions to create an object relational view of the tmux
+:class:`~libtmux.Server` and its' :class:`~libtmux.Session`,
+:class:`~libtmux.Window`, :class:`~libtmux.Pane`.
+See :ref:`libtmux's internals <libtmux:Internals>`.
 
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
@@ -86,6 +87,8 @@ from JSON and YAML.
 .. [1] While freezing and importing sessions is a great way to save time, 
        tweaking will probably be required - There is no substitute to a
        config made with love.
+
+.. _libtmux: https://libtmux.git-pull.com
 
 Minor tweaks
 ------------
@@ -103,15 +106,9 @@ Minor tweaks
 - ``$ tmuxp -L<socket-name>``, ``$ tmuxp -S<socket-path>`` for sockets and
   ``$ tmuxp -f<config-file>`` for config file.
 
-More details
-------------
-
-.. include:: ../README.rst
-    :start-after: ---------------
-
 .. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
-.. _BSD-licensed: http://opensource.org/licenses/BSD-2-Clause
+.. _BSD-licensed: http://opensource.org/licenses/BSD-3-Clause
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _ERB: http://ruby-doc.org/stdlib-2.0.0/libdoc/erb/rdoc/ERB.html
