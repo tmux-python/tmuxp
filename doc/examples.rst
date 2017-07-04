@@ -4,8 +4,8 @@
 Example Configurations
 ======================
 
-Short hand / inline
--------------------
+Short hand / inline style
+-------------------------
 
 tmuxp has a short-hand syntax to for those who wish to keep their configs
 punctual.
