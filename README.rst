@@ -59,7 +59,7 @@ Load multiple at once (in bg, offer to attach last):
 
     $ tmuxp load mysession ./another/project/ 
 
-`simple`_, `very elaborate`_ config examples
+`simple`_ and `very elaborate`_ config examples
 
 Store configs in (*~/.tmuxp*) or include in your project as
 *~/.tmuxp.{yaml,json}*. See `author's tmuxp configs`_ and the
