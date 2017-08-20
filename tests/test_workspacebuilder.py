@@ -145,10 +145,10 @@ def test_suppress_history(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    inHistoryPane = session.find_where(
-        {'window_name': 'inHistory'}).attached_pane
-    isMissingPane = session.find_where(
-        {'window_name': 'isMissing'}).attached_pane
+    inHistoryWindow = session.find_where(
+        {'window_name': 'inHistory'})
+    isMissingWindow = session.find_where(
+        {'window_name': 'isMissing'})
 
     def assertHistory(cmd, hist):
         return 'inHistory' in cmd and cmd.endswith(hist)
@@ -156,26 +156,28 @@ def test_suppress_history(session):
     def assertIsMissing(cmd, hist):
         return 'isMissing' in cmd and not cmd.endswith(hist)
 
-    for p, assertCase in [
-        (inHistoryPane, assertHistory,), (isMissingPane, assertIsMissing,)
+    for w, window_name, assertCase in [
+        (inHistoryWindow, 'inHistory', assertHistory,),
+        (isMissingWindow, 'isMissing', assertIsMissing,)
     ]:
         correct = False
-        p.window.select_window()
+        w.select_window()
+        p = w.attached_pane
         p.select_pane()
 
         # Print the last-in-history command in the pane
-        session.cmd('send-keys', 'fc -ln -1')
-        session.cmd('send-keys', 'Enter')
+        p.cmd('send-keys', ' fc -ln -1')
+        p.cmd('send-keys', 'Enter')
 
         for _ in range(10):
             time.sleep(0.1)
-
-            # Get the contents of the pane
-            session.cmd('capture-pane')
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
+
+            # Get the contents of the pane
+            p.cmd('capture-pane')
             captured_pane = session.server.cmd('show-buffer')
-            session.cmd('delete-buffer')
+            session.server.cmd('delete-buffer')
 
             # Parse the sent and last-in-history commands
             sent_cmd = captured_pane.stdout[0].strip()
@@ -184,7 +186,9 @@ def test_suppress_history(session):
             if assertCase(sent_cmd, history_cmd):
                 correct = True
                 break
-        assert correct, "Unknown sent command: [%s]" % sent_cmd
+        assert correct, "Unknown sent command: [%s] in %s" % (
+            sent_cmd, assertCase
+        )
 
 
 def test_session_options(session):
