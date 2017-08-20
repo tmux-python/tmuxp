@@ -164,7 +164,7 @@ def test_suppress_history(session):
         p.select_pane()
 
         # Print the last-in-history command in the pane
-        session.cmd('send-keys', ' fc -ln -1')
+        session.cmd('send-keys', 'fc -ln -1')
         session.cmd('send-keys', 'Enter')
 
         for _ in range(10):
@@ -172,7 +172,9 @@ def test_suppress_history(session):
 
             # Get the contents of the pane
             session.cmd('capture-pane')
-            captured_pane = session.cmd('show-buffer')
+            # from v0.7.4 libtmux session.cmd adds target -t self.id by default
+            # show-buffer doesn't accept -t, use global cmd.
+            captured_pane = session.server.cmd('show-buffer')
             session.cmd('delete-buffer')
 
             # Parse the sent and last-in-history commands
