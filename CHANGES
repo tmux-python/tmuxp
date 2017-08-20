@@ -4,12 +4,18 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.3.2 <2017-08-20>`
+- :bug:`184` - update libtmux to fix environmental variables in the
+  session scope
+- :support:`- backported` Update libtmux to 0.7.4
+- :support:`- backported` Updates to pytest and pytest-rerunfailures
+
 - :release:`1.3.1 <2017-05-29>`
-- :bug:`252` Fix bug where loading a session with a name matching a subset
+- :bug:`252 backported` Fix bug where loading a session with a name matching a subset
   of current session causes undesired behavior.
-- :support:`-` Update libtmux to 0.7.3
-- :support:`-` Switch theme to alagitpull (alabaster subtheme)
-- :support:`-` Remove unneeded doc dependency packages
+- :support:`- backported` Update libtmux to 0.7.3
+- :support:`- backported` Switch theme to alagitpull (alabaster subtheme)
+- :support:`- backported` Remove unneeded doc dependency packages
 
 - :release:`1.3.0 <2017-04-27>`
 - :feature:`239` Improve support for formatted options when freezing and
