@@ -157,7 +157,16 @@ class WorkspaceBuilder(object):
 
         if 'before_script' in self.sconf:
             try:
-                run_before_script(self.sconf['before_script'])
+                cwd = None
+
+                # we want to run the before_script file cwd'd from the
+                # session start directory, if it exists.
+                if 'start_directory' in self.sconf:
+                    cwd = self.sconf['start_directory']
+                run_before_script(
+                    self.sconf['before_script'],
+                    cwd=cwd
+                )
             except Exception as e:
                 self.session.kill_session()
                 raise e

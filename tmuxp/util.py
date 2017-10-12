@@ -22,13 +22,14 @@ logger = logging.getLogger(__name__)
 PY2 = sys.version_info[0] == 2
 
 
-def run_before_script(script_file):
+def run_before_script(script_file, cwd=None):
     """Function to wrap try/except for subprocess.check_call()."""
     try:
         proc = subprocess.Popen(
             shlex.split(str(script_file)),
             stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE
+            stdout=subprocess.PIPE,
+            cwd=cwd
         )
         for line in iter(proc.stdout.readline, b''):
             sys.stdout.write(console_to_str(line))
