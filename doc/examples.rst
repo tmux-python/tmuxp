@@ -442,7 +442,7 @@ packages are installed:
     # assuming your .tmuxp.yaml is in your project root directory
     session_name: my pipenv project
     start_directory: ./
-    before_script: pipenv install --dev  # ensure dev deps install
+    before_script: pipenv install --dev --skip-lock # ensure dev deps install
     windows:
     - window_name: django project
       focus: true
@@ -457,7 +457,7 @@ You can also source yourself into the virtual environment using ``shell_command_
     # assuming your .tmuxp.yaml is in your project root directory
     session_name: my pipenv project
     start_directory: ./
-    before_script: pipenv install --dev  # ensure dev deps install
+    before_script: pipenv install --dev --skip-lock # ensure dev deps install
     shell_command_before:
     - '[ -d `pipenv --venv` ] && source `pipenv --venv`/bin/activate && reset'
     windows:
