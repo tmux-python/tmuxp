@@ -426,6 +426,49 @@ Edit this page.
 You can use ``start_directory: ./`` to make the directories relative to
 the config file / project root.
 
+Bonus: pipenv auto-bootstrapping
+--------------------------------
+
+.. versionadded:: 1.3.4
+
+   ``before_script`` CWD's into the root (session)-level
+   ``start_directory``.
+
+If you use `pipenv`_, you can use a script like this to ensure your
+packages are installed:
+
+.. code-block:: yaml
+
+    # assuming your .tmuxp.yaml is in your project root directory
+    session_name: my pipenv project
+    start_directory: ./
+    before_script: pipenv install --dev  # ensure dev deps install
+    windows:
+    - window_name: django project
+      focus: true
+      panes:
+      - blank
+      - pipenv run ./manage.py runserver
+
+You can also source yourself into the virtual environment using ``shell_command_before``:
+
+.. code-block:: yaml
+
+    # assuming your .tmuxp.yaml is in your project root directory
+    session_name: my pipenv project
+    start_directory: ./
+    before_script: pipenv install --dev  # ensure dev deps install
+    shell_command_before:
+    - '[ -d `pipenv --venv` ] && source `pipenv --venv`/bin/activate && reset'
+    windows:
+    - window_name: django project
+      focus: true
+      panes:
+      - blank
+      - ./manage.py runserver
+
+.. _pipenv: https://docs.pipenv.org/
+
 Kung fu
 -------
 
