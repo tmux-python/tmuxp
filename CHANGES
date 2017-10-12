@@ -4,6 +4,10 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`- backported` `before_script` now respects `start_directory`
+  in the session root. This makes it easier to run things like `pipenv
+  install` as a `before_script`.
+
 - :release:`1.3.3 <2017-10-07>`
 - :support:`- backported` Update libtmux to 0.7.5 for tmux 2.6 hotfix
 
