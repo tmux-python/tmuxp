@@ -1,5 +1,6 @@
 # Makefile for Sphinx documentation
 #
+WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst\|CHANGES\|TODO\|.*conf\.py' 2> /dev/null
 PYVERSION=$(shell python -c "import sys;v=sys.version_info[0];sys.stdout.write(str(v))")
 HTTP_PORT     = 8031
 
@@ -158,17 +159,15 @@ checkbuild:
 	rm -rf $(BUILDDIR)
 	$(SPHINXBUILD) -n -q ./ $(BUILDDIR)
 
-WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst\|CHANGES\|TODO\|.*conf\.py' 2> /dev/null
-
 watch:
 	if command -v entr > /dev/null; then ${WATCH_FILES} | entr -c $(MAKE) html; else $(MAKE) html; fi
 
 serve:
-	@echo '================================================='
+	@echo '=============================================================='
 	@echo
 	@echo 'docs server running at http://0.0.0.0:${HTTP_PORT}/_build/html'
 	@echo
-	@echo '================================================='
+	@echo '=============================================================='
 	@if test ${PYVERSION} -eq 2; then $(MAKE) serve_py2; else make serve_py3; fi
 
 serve_py2:
