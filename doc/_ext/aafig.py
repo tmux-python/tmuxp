@@ -12,6 +12,8 @@
     :license: BOLA, see LICENSE for details
 """
 
+from __future__ import unicode_literals
+
 import posixpath
 from os import path
 
@@ -46,8 +48,8 @@ def get_basename(text, options, prefix='aafig'):
     options = options.copy()
     if 'format' in options:
         del options['format']
-    hashkey = text.encode('utf-8') + str(options)
-    id = sha(hashkey).hexdigest()
+    hashkey = text + str(options)
+    id = sha(hashkey.encode('utf-8')).hexdigest()
     return '%s-%s' % (prefix, id)
 
 
@@ -75,7 +77,7 @@ class AafigDirective(images.Image):
 
     def run(self):
         aafig_options = dict()
-        own_options_keys = self.own_option_spec.keys() + ['scale']
+        own_options_keys = [self.own_option_spec.keys()] + ['scale']
         for (k, v) in self.options.items():
             if k in own_options_keys:
                 # convert flags to booleans
@@ -123,7 +125,7 @@ def render_aafig_images(app, doctree):
             continue
         try:
             fname, outfn, id, extra = render_aafigure(app, text, options)
-        except AafigError, exc:
+        except AafigError as exc:
             app.builder.warn('aafigure error: ' + str(exc))
             img.replace_self(nodes.literal_block(text, text))
             continue
@@ -171,7 +173,7 @@ def render_aafigure(app, text, options):
                 f = None
                 try:
                     try:
-                        f = file(metadata_fname, 'r')
+                        f = open(metadata_fname, 'r')
                         extra = f.read()
                     except:
                         raise AafigError()
@@ -187,13 +189,13 @@ def render_aafigure(app, text, options):
     try:
         (visitor, output) = aafigure.render(text, outfn, options)
         output.close()
-    except aafigure.UnsupportedFormatError, e:
+    except aafigure.UnsupportedFormatError as e:
         raise AafigError(str(e))
 
     extra = None
     if options['format'].lower() == 'svg':
         extra = visitor.get_size_attrs()
-        f = file(metadata_fname, 'w')
+        f = open(metadata_fname, 'w')
         f.write(extra)
         f.close()
 
