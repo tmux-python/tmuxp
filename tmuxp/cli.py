@@ -300,7 +300,8 @@ def load_workspace(
                     # we've literally selected the window at least once
                     # with the client
                     hook_cmd.append('selectw -t {}'.format(window.id))
-                    hook_cmd.append('selectl -t {}'.format(window.id))
+                    # edit: removed -t, or else it won't respect main-pane-w/h
+                    hook_cmd.append('selectl'.format(window.id))
                     hook_cmd.append('selectw -p'.format(window.id))
 
                 # unset the hook immediately after executing
