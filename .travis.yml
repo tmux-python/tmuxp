@@ -36,7 +36,7 @@ before_script:
   - git checkout $TMUX_VERSION
   - sh autogen.sh
   - ./configure --prefix=$HOME/tmux && make && make install
-  - export PATH=$PATH:$HOME/tmux/bin
+  - export PATH=$HOME/tmux/bin:$PATH
   - cd ..
   - tmux -V
 script: coverage run --source=tmuxp setup.py test
