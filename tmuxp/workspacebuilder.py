@@ -323,7 +323,10 @@ class WorkspaceBuilder(object):
     Applies window configurations relevant after window and pane creation.
     """
     def config_after_window(self, w, wconf):
-        if 'options_after' in wconf and isinstance(wconf['options_after'], dict):
+        if (
+            'options_after' in wconf and
+            isinstance(wconf['options_after'], dict)
+        ):
             for key, val in wconf['options_after'].items():
                 w.set_window_option(key, val)
 
