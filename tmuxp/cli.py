@@ -14,7 +14,7 @@ import sys
 import click
 import kaptan
 from click.exceptions import FileError
-from libtmux.common import has_minimum_version, which
+from libtmux.common import has_minimum_version, which, has_gte_version
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
@@ -278,7 +278,49 @@ def load_workspace(
                 sys.exit('Session created in detached state.')
 
         if not detached:
+
+            if has_gte_version('2.6'):
+                # tmuxp issue: https://github.com/tony/tmuxp/issues/309
+                # tmux issue: https://github.com/tmux/tmux/issues/1106
+                #
+                # tmux now requires that the window be viewed with the client
+                # before select-layout adjustments can be meaningful
+                #
+                # To handle this, let's create a temporary hook for this
+                # session to iterage and run select-layout on all windows
+                # after client attaches.
+                cmd = [
+                    'set-hook',
+                    '-t', builder.session.id,
+                    'client-attached'
+                ]
+                hook_cmd = []
+                for window in builder.session.windows:
+                    # unfortunately, select-layout won't work unless
+                    # we've literally selected the window at least once
+                    # with the client
+                    hook_cmd.append('selectw -t {}'.format(window.id))
+                    # edit: removed -t, or else it won't respect main-pane-w/h
+                    hook_cmd.append('selectl'.format(window.id))
+                    hook_cmd.append('selectw -p'.format(window.id))
+
+                # unset the hook immediately after executing
+                hook_cmd.append(
+                    'set-hook -u -t {target_session} client-attached'.format(
+                        target_session=builder.session.id
+                    )
+                )
+
+                # join the hook's commands with semicolons
+                hook_cmd = '{}'.format('; '.join(hook_cmd))
+
+                # append the hook command
+                cmd.append(hook_cmd)
+
+                # create the hook
+                builder.session.cmd(*cmd)
             builder.session.attach_session()
+
     except exc.TmuxpException as e:
         import traceback
 
