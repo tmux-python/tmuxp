@@ -1,0 +1,3 @@
+isort==4.2.15
+flake8==3.5.0
+vulture==0.26
