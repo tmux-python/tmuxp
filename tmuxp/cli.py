@@ -63,6 +63,68 @@ def _validate_choices(options):
     return func
 
 
+def set_layout_hook(session, hook_name):
+    """Set layout hooks to normalize layout.
+
+    References:
+
+        - tmuxp issue: https://github.com/tony/tmuxp/issues/309
+        - tmux issue: https://github.com/tmux/tmux/issues/1106
+
+    tmux 2.6+ requires that the window be viewed with the client before
+    select-layout adjustments can take effect.
+
+    To handle this, this function creates temporary hook for this session to
+    iterate through all windows and select the layout.
+
+    In order for layout changes to take effect, a client must at the very
+    least be attached to the window (not just the session).
+
+    hook_name is provided to allow this to set to multiple scenarios, such
+    as 'client-attached' (which the user attaches the session). You may
+    also want 'after-switch-client' for cases where the user loads tmuxp
+    sessions inside tmux since tmuxp offers to switch for them.
+
+    Also, the hooks are set immediately unbind after they're invoked via -u.
+
+    :param session: session to bind hook to
+    :type session: :class:`libtmux.session.Session`
+    :param hook_name: hook name to bind to, e.g. 'client-attached'
+    :type hook_name: str
+    """
+    cmd = [
+        'set-hook',
+        '-t', session.id,
+        hook_name
+    ]
+    hook_cmd = []
+    for window in session.windows:
+        # unfortunately, select-layout won't work unless
+        # we've literally selected the window at least once
+        # with the client
+        hook_cmd.append('selectw -t {}'.format(window.id))
+        # edit: removed -t, or else it won't respect main-pane-w/h
+        hook_cmd.append('selectl'.format(window.id))
+        hook_cmd.append('selectw -p'.format(window.id))
+
+    # unset the hook immediately after executing
+    hook_cmd.append(
+        'set-hook -u -t {target_session} {hook_name}'.format(
+            target_session=session.id,
+            hook_name=hook_name
+        )
+    )
+
+    # join the hook's commands with semicolons
+    hook_cmd = '{}'.format('; '.join(hook_cmd))
+
+    # append the hook command
+    cmd.append(hook_cmd)
+
+    # create the hook
+    session.cmd(*cmd)
+
+
 def is_pure_name(path):
     """Return True if path is a name and not a file path."""
     return (
@@ -265,58 +327,36 @@ def load_workspace(
             click.style(config_file, fg='blue', bold=True))
         builder.build()
 
-        if 'TMUX' in os.environ:
+        if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
             if not detached and (answer_yes or click.confirm(
                 'Already inside TMUX, switch to session?'
             )):
                 tmux_env = os.environ.pop('TMUX')
+
+                if has_gte_version('2.6'):
+                    # if using -d from inside tmux session + switching inside
+                    # https://github.com/tmux/tmux/blob/2.6/cmd-switch-client.c#L132
+                    set_layout_hook(builder.session, 'client-session-changed')
+
                 builder.session.switch_client()
 
                 os.environ['TMUX'] = tmux_env
                 return builder.session
-            else:
+            else:  # session created in the background, from within tmux
+                if has_gte_version('2.6'):  # prepare for both cases
+                    set_layout_hook(builder.session, 'client-attached')
+                    set_layout_hook(builder.session, 'client-session-changed')
+
                 sys.exit('Session created in detached state.')
 
+        # below: tmuxp ran outside of tmux
+
         if has_gte_version('2.6'):
-            # tmuxp issue: https://github.com/tony/tmuxp/issues/309
-            # tmux issue: https://github.com/tmux/tmux/issues/1106
-            #
-            # tmux now requires that the window be viewed with the client
-            # before select-layout adjustments can be meaningful
-            #
-            # To handle this, let's create a temporary hook for this
-            # session to iterage and run select-layout on all windows
-            # after client attaches.
-            cmd = [
-                'set-hook',
-                '-t', builder.session.id,
-                'client-attached'
-            ]
-            hook_cmd = []
-            for window in builder.session.windows:
-                # unfortunately, select-layout won't work unless
-                # we've literally selected the window at least once
-                # with the client
-                hook_cmd.append('selectw -t {}'.format(window.id))
-                # edit: removed -t, or else it won't respect main-pane-w/h
-                hook_cmd.append('selectl'.format(window.id))
-                hook_cmd.append('selectw -p'.format(window.id))
+            # if attaching for first time
+            set_layout_hook(builder.session, 'client-attached')
 
-            # unset the hook immediately after executing
-            hook_cmd.append(
-                'set-hook -u -t {target_session} client-attached'.format(
-                    target_session=builder.session.id
-                )
-            )
-
-            # join the hook's commands with semicolons
-            hook_cmd = '{}'.format('; '.join(hook_cmd))
-
-            # append the hook command
-            cmd.append(hook_cmd)
-
-            # create the hook
-            builder.session.cmd(*cmd)
+            # for cases where user switches client for first time
+            set_layout_hook(builder.session, 'client-session-changed')
 
         if not detached:
             builder.session.attach_session()
