@@ -4,6 +4,7 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.3.5 <2017-11-10>`
 - :feature:`312` Support for tmux 2.6 layout setting (via hooks) in the
   following scenarios:
 
