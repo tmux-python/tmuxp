@@ -1,0 +1,29 @@
+# Number of days of inactivity before an issue becomes stale
+daysUntilStale: 60
+# Number of days of inactivity before a stale issue is closed
+daysUntilClose: 7
+# Issues with these labels will never be considered stale
+exemptLabels:
+  - pinned
+  - security
+# Label to use when marking an issue as stale
+staleLabel: stale
+# Comment to post when marking an issue as stale. Set to `false` to disable
+markComment: |
+  This issue has been automatically marked as stale because it has not had
+  recent activity. It will be closed if no further activity occurs. Thank you
+  for your contributions.
+
+  This bot is used to handle issues where the issue hasn't been discussed or
+  has gone out of date. If an issue isn't resolved and handled in a certain
+  period of time, it may be closed. If you would like your issue re-opened,
+  please create a fresh issue with the latest, up to date information and
+  mention this issue in it.
+unmarkComment: |
+  Thank you for updating this issue. It is no longer marked as stale.
+
+# Comment to post when closing a stale issue. Set to `false` to disable
+closeComment: false
+
+# limit to only 'issues' or 'pulls'
+only: issues
