@@ -70,7 +70,7 @@ def oh_my_zsh_auto_title():
                 os.environ.get('DISABLE_AUTO_TITLE') == "false"
             ):
                 print('Please set:\n\n'
-                      '\texport DISABLE_AUTO_TITLE = \'true\'\n\n'
+                      '\texport DISABLE_AUTO_TITLE=\'true\'\n\n'
                       'in ~/.zshrc or where your zsh profile is stored.\n'
                       'Remember the "export" at the beginning!\n\n'
                       'Then create a new shell or type:\n\n'
