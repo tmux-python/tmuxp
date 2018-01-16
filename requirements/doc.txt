@@ -1,6 +1,6 @@
 -r ./base.txt
 docutils==0.14
 sphinx==1.6.6
-alagitpull==0.0.15 # Updated from 0.0.12
-releases==1.4.0 # Updated from 1.3.1
+alagitpull==0.0.16
+releases==1.4.0
 aafigure==0.6
