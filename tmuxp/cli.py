@@ -737,8 +737,8 @@ def command_convert(config):
 def command_list(config_dir=None):
     """List existing workspace configurations.
 
-    CONFIG_DIR is an optional parameter, if it's a directory path then workspace
-    configurations will be looked there."""
+    CONFIG_DIR is an optional argument, if it's a valid directory path then
+    workspace configurations will be looked there."""
 
     if not config_dir:
         config_dir = get_config_dir()
