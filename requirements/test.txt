@@ -1,2 +1,2 @@
-pytest==3.4.0 # Updated from 3.0.4
+pytest==3.4.1 # Updated from 3.0.4
 pytest-rerunfailures==4.0 # Updated from 2.0.1
