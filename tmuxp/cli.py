@@ -755,6 +755,10 @@ def command_list(config_dir=None):
         click.echo("Error: '%s' is not a directory." % config_dir)
         sys.exit(-1)
 
+    except FileNotFoundError:
+        click.echo("Error: '%s' does not exist, create it." % config_dir)
+        sys.exit(-1)
+
     if config_files:
         click.echo("Configurations in '%s':" % config_dir)
         for config_file in config_files:
