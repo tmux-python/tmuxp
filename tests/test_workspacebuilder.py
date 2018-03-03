@@ -293,15 +293,16 @@ def test_window_options_after(session):
 
     def assert_last_line(p, s):
         correct = False
-        for _ in range(10):
+        timeout = time.time() + 5  # 5 second timeout
+        while True:
             pane_out = p.cmd('capture-pane', '-p', '-J').stdout
             while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
                 pane_out.pop()
             if len(pane_out) > 1 and pane_out[-2].strip() == s:
                 correct = True
                 break
-
-            time.sleep(0.1)
+            elif time.time() > timeout:
+                break
 
         # Print output for easier debugging if assertion fails
         if not correct:
