@@ -28,6 +28,7 @@ before_install:
   - pip install pytest-cov coverage
 install:
   - pip install -e .
+  - pip install -r requirements/test.txt
 before_script:
   - git clone https://github.com/tmux/tmux.git tmux
   - cd tmux
