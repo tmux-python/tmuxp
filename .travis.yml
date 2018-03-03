@@ -25,7 +25,7 @@ before_install:
   - export PIP_USE_MIRRORS=true
   - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
   - pip install --upgrade pip wheel virtualenv setuptools
-  - pip install pytest-cov python-coverage
+  - pip install pytest-cov coverage
 install:
   - pip install -e .
 before_script:
