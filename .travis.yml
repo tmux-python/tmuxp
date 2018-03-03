@@ -20,11 +20,12 @@ env:
 matrix:
   allow_failures:
   - env: TMUX_VERSION=master
+
 before_install:
   - export PIP_USE_MIRRORS=true
   - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
   - pip install --upgrade pip wheel virtualenv setuptools
-  - pip install coveralls
+  - pip install pytest-cov python-coverage
 install:
   - pip install -e .
 before_script:
@@ -36,11 +37,11 @@ before_script:
   - export PATH=$HOME/tmux/bin:$PATH
   - cd ..
   - tmux -V
-script: coverage run --source=tmuxp setup.py test
+script: py.test --cov=codecov
 addons:
   apt:
     packages:
       - libevent-dev
       - libncurses-dev
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - codecov
