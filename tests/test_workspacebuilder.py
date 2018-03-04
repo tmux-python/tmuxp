@@ -22,6 +22,9 @@ from . import example_dir
 from .fixtures._util import loadfixture
 
 
+RETRY_TIMEOUT_SECONDS = int(os.getenv('RETRY_TIMEOUT_SECONDS', 8))
+
+
 def test_split_windows(session):
     yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
     s = session
@@ -293,15 +296,17 @@ def test_window_options_after(session):
 
     def assert_last_line(p, s):
         correct = False
-        for _ in range(10):
+        timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+
+        while True:
             pane_out = p.cmd('capture-pane', '-p', '-J').stdout
             while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
                 pane_out.pop()
             if len(pane_out) > 1 and pane_out[-2].strip() == s:
                 correct = True
                 break
-
-            time.sleep(0.1)
+            elif time.time() > timeout:
+                break
 
         # Print output for easier debugging if assertion fails
         if not correct:
@@ -390,31 +395,38 @@ def test_automatic_rename_option(session):
     assert s.name != 'tmuxp'
     w = s.windows[0]
 
-    for _ in range(10):
+    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+    while True:
         session.server._update_windows()
         if w.name != 'sh':
             break
-        time.sleep(.2)
+        elif time.time() > timeout:
+            break
 
     assert w.name != 'sh'
 
     pane_base_index = w.show_window_option('pane-base-index', g=True)
     w.select_pane(pane_base_index)
 
-    for _ in range(10):
+    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+    while True:
         session.server._update_windows()
         if w.name == 'sh':
             break
-        time.sleep(.3)
+        elif time.time() > timeout:
+            break
 
     assert w.name == text_type('sh')
 
     w.select_pane('-D')
-    for _ in range(10):
+
+    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+    while True:
         session.server._update_windows()
         if w['window_name'] != 'sh':
             break
-        time.sleep(.2)
+        elif time.time() > timeout:
+            break
 
     assert w.name != text_type('sh')
 
