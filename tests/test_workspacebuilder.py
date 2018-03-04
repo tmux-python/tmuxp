@@ -9,20 +9,22 @@ import time
 
 import kaptan
 import pytest
-
-from . import fixtures_dir
 from libtmux import Window
 from libtmux.common import has_gte_version
 from libtmux.test import temp_session
+
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from . import example_dir
+from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
 
-
 RETRY_TIMEOUT_SECONDS = int(os.getenv('RETRY_TIMEOUT_SECONDS', 8))
+
+
+def retry(seconds=RETRY_TIMEOUT_SECONDS):
+    return (lambda: time.time() < time.time() + seconds)()
 
 
 def test_split_windows(session):
@@ -110,14 +112,10 @@ def test_focus_pane_index(session):
 
     pane_path = '/usr'
 
-    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-
-    while True:
+    while retry():
         p = w.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
-            break
-        elif time.time() > timeout:
             break
 
     assert p.current_path == pane_path
@@ -131,13 +129,11 @@ def test_focus_pane_index(session):
 
     p = None
     pane_path = '/'
-    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-    while True:
+
+    while retry():
         p = window3.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
-            break
-        elif time.time() > timeout:
             break
 
     assert p.current_path == pane_path
@@ -302,16 +298,13 @@ def test_window_options_after(session):
 
     def assert_last_line(p, s):
         correct = False
-        timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
 
-        while True:
+        while retry():
             pane_out = p.cmd('capture-pane', '-p', '-J').stdout
             while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
                 pane_out.pop()
             if len(pane_out) > 1 and pane_out[-2].strip() == s:
                 correct = True
-                break
-            elif time.time() > timeout:
                 break
 
         # Print output for easier debugging if assertion fails
@@ -351,12 +344,10 @@ def test_window_shell(session):
     for w, wconf in builder.iter_create_windows(s):
         if 'window_shell' in wconf:
             assert wconf['window_shell'] == text_type('top')
-        timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-        while True:
+
+        while retry():
             session.server._update_windows()
             if w['window_name'] != 'top':
-                break
-            elif time.time() > timeout:
                 break
 
         assert w.name != text_type('top')
@@ -403,12 +394,9 @@ def test_automatic_rename_option(session):
     assert s.name != 'tmuxp'
     w = s.windows[0]
 
-    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-    while True:
+    while retry():
         session.server._update_windows()
         if w.name != 'sh':
-            break
-        elif time.time() > timeout:
             break
 
     assert w.name != 'sh'
@@ -416,24 +404,18 @@ def test_automatic_rename_option(session):
     pane_base_index = w.show_window_option('pane-base-index', g=True)
     w.select_pane(pane_base_index)
 
-    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-    while True:
+    while retry():
         session.server._update_windows()
         if w.name == 'sh':
-            break
-        elif time.time() > timeout:
             break
 
     assert w.name == text_type('sh')
 
     w.select_pane('-D')
 
-    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-    while True:
+    while retry():
         session.server._update_windows()
         if w['window_name'] != 'sh':
-            break
-        elif time.time() > timeout:
             break
 
     assert w.name != text_type('sh')
@@ -490,8 +472,7 @@ def test_start_directory(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-            while True:
+            while retry():
                 p.server._update_panes()
                 pane_path = p.current_path
                 if pane_path is None:
@@ -504,8 +485,6 @@ def test_start_directory(session, tmpdir):
                         path == pane_path or
                         path in pane_path
                     )
-                    break
-                elif time.time() > timeout:
                     break
 
             # handle case with OS X adding /private/ to /tmp/ paths
@@ -558,8 +537,7 @@ def test_start_directory_relative(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-            while True:
+            while retry():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
                 pane_path = p.current_path
@@ -573,8 +551,6 @@ def test_start_directory_relative(session, tmpdir):
                         path == pane_path or
                         path in pane_path
                     )
-                    break
-                elif time.time() > timeout:
                     break
 
             assert result
@@ -629,12 +605,9 @@ def test_pane_order(session):
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
-            while True:
+            while retry():
                 p.server._update_panes()
                 if p.current_path == pane_path:
-                    break
-                elif time.time() > timeout:
                     break
 
             assert p.current_path, pane_path
