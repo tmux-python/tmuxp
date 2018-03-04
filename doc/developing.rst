@@ -187,6 +187,14 @@ tmuxp is tested against tmux 1.8 and the latest git source. Interpretters
 tested are 2.6, 2.7 and 3.3. The `travis build site`_ uses this
 `.travis.yml`_ configuration:
 
+Testing options
+---------------
+
+``RETRY_TIMEOUT_SECONDS`` can be toggled if certain workspace builder
+tests are being stubborn.
+
+e.g. ``RETRY_TIMEOUT_SECONDS=10 py.test ``
+
 .. literalinclude:: ../.travis.yml
     :language: yaml
 
