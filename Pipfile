@@ -1,29 +1,25 @@
 [[source]]
+
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
+
 [packages]
-
-
-
-
-
-
-
 
 
 
 [dev-packages]
 
 kaptan = ">=0.5.7"
-libtmux = "==0.7.5"
+libtmux = "==0.7.7"
 click = "==6.7"
 colorama = "==0.3.9"
 docutils = "==0.14"
 alagitpull = "==0.0.19"
 aafigure = "==0.6"
 pytest = "==3.2.3"
-"pytest-rerunfailures" = "==3.1"
+pytest-rerunfailures = "==3.1"
 releases = "==1.4.0"
-sphinx = "==1.7.0"
+sphinx = "==1.7.1"
+"e1839a8" = {path = ".", editable = true}
