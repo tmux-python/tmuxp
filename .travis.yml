@@ -7,16 +7,19 @@ python:
   - pypy3.5-5.8.0
   - pypy-5.6.0
 env:
-  - TMUX_VERSION=master
-  - TMUX_VERSION=2.6
-  - TMUX_VERSION=2.5
-  - TMUX_VERSION=2.4
-  - TMUX_VERSION=2.3
-  - TMUX_VERSION=2.2
-  - TMUX_VERSION=2.1
-  - TMUX_VERSION=2.0
-  - TMUX_VERSION=1.9a
-  - TMUX_VERSION=1.8
+  global:
+    - RETRY_TIMEOUT_SECONDS=15
+  matrix:
+    - TMUX_VERSION=master
+    - TMUX_VERSION=2.6
+    - TMUX_VERSION=2.5
+    - TMUX_VERSION=2.4
+    - TMUX_VERSION=2.3
+    - TMUX_VERSION=2.2
+    - TMUX_VERSION=2.1
+    - TMUX_VERSION=2.0
+    - TMUX_VERSION=1.9a
+    - TMUX_VERSION=1.8
 matrix:
   allow_failures:
   - env: TMUX_VERSION=master
