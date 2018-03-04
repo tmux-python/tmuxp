@@ -5,13 +5,12 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import os
-import time
 
 import kaptan
 import pytest
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import temp_session
+from libtmux.test import temp_session, retry
 
 from tmuxp import config, exc
 from tmuxp._compat import text_type
@@ -19,30 +18,6 @@ from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
-
-RETRY_TIMEOUT_SECONDS = int(os.getenv('RETRY_TIMEOUT_SECONDS', 8))
-
-
-def retry(seconds=RETRY_TIMEOUT_SECONDS):
-    """Retry a block of code until a time limit or ``break``.
-
-    .. code-block:: python
-
-        while retry():
-            p = w.attached_pane
-            p.server._update_panes()
-            if p.current_path == pane_path:
-                break
-
-
-    :param seconds: Seconds to retry, defaults to ``RETRY_TIMEOUT_SECONDS``,
-        which is configurable via environmental variables.
-    :type seconds: int
-    :rtype: void
-
-    :todo: Move to libtmux.test
-    """
-    return (lambda: time.time() < time.time() + seconds)()
 
 
 def test_split_windows(session):
@@ -199,8 +174,7 @@ def test_suppress_history(session):
         p.cmd('send-keys', 'Enter')
 
         buffer_name = 'test'
-        for _ in range(10):
-            time.sleep(0.1)
+        while retry():
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
 
