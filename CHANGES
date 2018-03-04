@@ -4,6 +4,19 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`348 backported` Continuous integration updates and fixes for Travis CI
+  
+  - Update builds to use trusty
+  - Remove older python 3 versions (before 3.6)
+  - Update pypy versions
+- :support:`349 backported` flake8 via continuous integration
+- :support:`- backported` Improve reliability of time-sensitive tests by
+  using ``while True`` with a timeout.
+- :support:`- backported` Update sphinx to 1.7.1
+- :support:`- backported` Update alagitpull (sphinx theme) to 0.0.19.
+  External websites open in new window.
+- :support:`- backported` Update pytest to 3.4.1
+
 - :release:`1.3.5 <2017-11-10>`
 - :feature:`312 backported` Support for tmux 2.6 layout setting (via hooks) in the
   following scenarios:
