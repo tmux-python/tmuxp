@@ -109,12 +109,16 @@ def test_focus_pane_index(session):
     assert w.name != 'man'
 
     pane_path = '/usr'
-    for _ in range(20):
+
+    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+
+    while True:
         p = w.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
             break
-        time.sleep(.4)
+        elif time.time() > timeout:
+            break
 
     assert p.current_path == pane_path
 
@@ -127,12 +131,14 @@ def test_focus_pane_index(session):
 
     p = None
     pane_path = '/'
-    for _ in range(10):
+    timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+    while True:
         p = window3.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
             break
-        time.sleep(.4)
+        elif time.time() > timeout:
+            break
 
     assert p.current_path == pane_path
 
@@ -345,11 +351,13 @@ def test_window_shell(session):
     for w, wconf in builder.iter_create_windows(s):
         if 'window_shell' in wconf:
             assert wconf['window_shell'] == text_type('top')
-        for _ in range(10):
+        timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+        while True:
             session.server._update_windows()
             if w['window_name'] != 'top':
                 break
-            time.sleep(.2)
+            elif time.time() > timeout:
+                break
 
         assert w.name != text_type('top')
 
@@ -482,7 +490,8 @@ def test_start_directory(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            for _ in range(60):
+            timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+            while True:
                 p.server._update_panes()
                 pane_path = p.current_path
                 if pane_path is None:
@@ -496,7 +505,8 @@ def test_start_directory(session, tmpdir):
                         path in pane_path
                     )
                     break
-                time.sleep(.2)
+                elif time.time() > timeout:
+                    break
 
             # handle case with OS X adding /private/ to /tmp/ paths
             assert result
@@ -548,7 +558,8 @@ def test_start_directory_relative(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            for _ in range(60):
+            timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+            while True:
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
                 pane_path = p.current_path
@@ -562,9 +573,9 @@ def test_start_directory_relative(session, tmpdir):
                         path == pane_path or
                         path in pane_path
                     )
-
                     break
-                time.sleep(.2)
+                elif time.time() > timeout:
+                    break
 
             assert result
 
@@ -618,11 +629,13 @@ def test_pane_order(session):
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            for _ in range(60):
+            timeout = time.time() + RETRY_TIMEOUT_SECONDS  # seconds timeout
+            while True:
                 p.server._update_panes()
                 if p.current_path == pane_path:
                     break
-                time.sleep(.2)
+                elif time.time() > timeout:
+                    break
 
             assert p.current_path, pane_path
 
