@@ -24,6 +24,24 @@ RETRY_TIMEOUT_SECONDS = int(os.getenv('RETRY_TIMEOUT_SECONDS', 8))
 
 
 def retry(seconds=RETRY_TIMEOUT_SECONDS):
+    """Retry a block of code until a time limit or ``break``.
+
+    .. code-block:: python
+
+        while retry():
+            p = w.attached_pane
+            p.server._update_panes()
+            if p.current_path == pane_path:
+                break
+
+
+    :param seconds: Seconds to retry, defaults to ``RETRY_TIMEOUT_SECONDS``,
+        which is configurable via environmental variables.
+    :type seconds: int
+    :rtype: void
+
+    :todo: Move to libtmux.test
+    """
     return (lambda: time.time() < time.time() + seconds)()
 
 
