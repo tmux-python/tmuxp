@@ -741,3 +741,28 @@ def command_convert(config):
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to <%s>.' % newfile)
+
+
+@cli.command(name='list')
+@click.argument('config_dir', type=click.Path(exists=True), nargs=1,
+        required=False)
+def command_list(config_dir=None):
+    """List existing workspace configurations.
+
+    CONFIG_DIR is an optional argument, if it's a valid directory path
+    then workspace configurations will be looked there.
+    """
+
+    if not config_dir:
+        config_dir = get_config_dir()
+    join = os.path.join
+    glob = glob.glob
+
+    tails = ('*.yml', '*.yaml', '*.json')
+    config_files = sum((glob(join(config_dir, tail)) for tail in tails), [])
+
+    if config_files:
+        click.echo("Configurations in '%s':" % config_dir)
+        for config_file in config_files:
+            click.echo("  %s" % config_file)
+
