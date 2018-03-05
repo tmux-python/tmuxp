@@ -745,13 +745,15 @@ def command_list(config_dir=None):
     if not config_dir:
         config_dir = get_config_dir()
     join = os.path.join
-    glob = glob.glob
 
     tails = ('*.yml', '*.yaml', '*.json')
-    config_files = sum((glob(join(config_dir, tail)) for tail in tails), [])
+    config_files = sum((glob.glob(join(config_dir, tail)) for tail in tails),
+                       [])
 
     if config_files:
-        click.echo("Configurations in '%s':" % config_dir)
+        click.echo("Configuration files found in '%s':" % config_dir)
         for config_file in config_files:
+            config_file = config_file.replace(config_dir, '')
+            config_file = ''.join(config_file.split('.')[:-1])
             click.echo("  %s" % config_file)
 
