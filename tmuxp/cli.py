@@ -750,10 +750,6 @@ def command_list(config_dir=None):
     config_files = sum((glob.glob(join(config_dir, tail)) for tail in tails),
                        [])
 
-    except FileNotFoundError:
-        click.echo("Error: '%s' does not exist, create it." % config_dir)
-        sys.exit(-1)
-
     if config_files:
         click.echo("Configuration files found in '%s':" % config_dir)
         for config_file in config_files:
