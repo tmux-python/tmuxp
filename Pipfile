@@ -12,7 +12,7 @@ name = "pypi"
 [dev-packages]
 
 kaptan = ">=0.5.7"
-libtmux = "==0.7.7"
+libtmux = "==0.7.8"
 click = "==6.7"
 colorama = "==0.3.9"
 docutils = "==0.14"
