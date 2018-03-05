@@ -5,20 +5,18 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals, with_statement)
 
 import os
-import time
 
 import kaptan
 import pytest
-
-from . import fixtures_dir
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import temp_session
+from libtmux.test import temp_session, retry
+
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from . import example_dir
+from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
 
 
@@ -106,12 +104,12 @@ def test_focus_pane_index(session):
     assert w.name != 'man'
 
     pane_path = '/usr'
-    for _ in range(20):
+
+    while retry():
         p = w.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
             break
-        time.sleep(.4)
 
     assert p.current_path == pane_path
 
@@ -124,12 +122,12 @@ def test_focus_pane_index(session):
 
     p = None
     pane_path = '/'
-    for _ in range(10):
+
+    while retry():
         p = window3.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
             break
-        time.sleep(.4)
 
     assert p.current_path == pane_path
 
@@ -176,8 +174,7 @@ def test_suppress_history(session):
         p.cmd('send-keys', 'Enter')
 
         buffer_name = 'test'
-        for _ in range(10):
-            time.sleep(0.1)
+        while retry():
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
 
@@ -293,15 +290,14 @@ def test_window_options_after(session):
 
     def assert_last_line(p, s):
         correct = False
-        for _ in range(10):
+
+        while retry():
             pane_out = p.cmd('capture-pane', '-p', '-J').stdout
             while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
                 pane_out.pop()
             if len(pane_out) > 1 and pane_out[-2].strip() == s:
                 correct = True
                 break
-
-            time.sleep(0.1)
 
         # Print output for easier debugging if assertion fails
         if not correct:
@@ -340,11 +336,11 @@ def test_window_shell(session):
     for w, wconf in builder.iter_create_windows(s):
         if 'window_shell' in wconf:
             assert wconf['window_shell'] == text_type('top')
-        for _ in range(10):
+
+        while retry():
             session.server._update_windows()
             if w['window_name'] != 'top':
                 break
-            time.sleep(.2)
 
         assert w.name != text_type('top')
 
@@ -390,31 +386,29 @@ def test_automatic_rename_option(session):
     assert s.name != 'tmuxp'
     w = s.windows[0]
 
-    for _ in range(10):
+    while retry():
         session.server._update_windows()
         if w.name != 'sh':
             break
-        time.sleep(.2)
 
     assert w.name != 'sh'
 
     pane_base_index = w.show_window_option('pane-base-index', g=True)
     w.select_pane(pane_base_index)
 
-    for _ in range(10):
+    while retry():
         session.server._update_windows()
         if w.name == 'sh':
             break
-        time.sleep(.3)
 
     assert w.name == text_type('sh')
 
     w.select_pane('-D')
-    for _ in range(10):
+
+    while retry():
         session.server._update_windows()
         if w['window_name'] != 'sh':
             break
-        time.sleep(.2)
 
     assert w.name != text_type('sh')
 
@@ -470,7 +464,7 @@ def test_start_directory(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            for _ in range(60):
+            while retry():
                 p.server._update_panes()
                 pane_path = p.current_path
                 if pane_path is None:
@@ -484,7 +478,6 @@ def test_start_directory(session, tmpdir):
                         path in pane_path
                     )
                     break
-                time.sleep(.2)
 
             # handle case with OS X adding /private/ to /tmp/ paths
             assert result
@@ -536,7 +529,7 @@ def test_start_directory_relative(session, tmpdir):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            for _ in range(60):
+            while retry():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
                 pane_path = p.current_path
@@ -550,9 +543,7 @@ def test_start_directory_relative(session, tmpdir):
                         path == pane_path or
                         path in pane_path
                     )
-
                     break
-                time.sleep(.2)
 
             assert result
 
@@ -606,11 +597,10 @@ def test_pane_order(session):
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            for _ in range(60):
+            while retry():
                 p.server._update_panes()
                 if p.current_path == pane_path:
                     break
-                time.sleep(.2)
 
             assert p.current_path, pane_path
 

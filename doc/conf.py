@@ -52,6 +52,7 @@ pygments_style = 'sphinx'
 html_theme_path = [alagitpull.get_path()]
 html_favicon = 'favicon.ico'
 html_theme = 'alagitpull'
+html_static_path = ['_static']
 html_sidebars = {
     '**': [
         'about.html',
@@ -73,8 +74,11 @@ html_theme_options = {
     'project_name': about['__title__'],
 }
 
-html_theme_path = ['_themes']
-html_static_path = ['_static']
+alagitpull_internal_hosts = [
+    'tmuxp.git-pull.com',
+    '0.0.0.0',
+]
+alagitpull_external_hosts_new_window = True
 
 htmlhelp_basename = '%sdoc' % about['__title__']
 

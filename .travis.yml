@@ -1,35 +1,37 @@
 language: python
-dist: precise
+dist: trusty
 sudo: false
 python:
   - 2.7
-  - 3.3
-  - 3.4
-  - 3.5
   - 3.6
-  - pypy3.5-5.8.0
-  - pypy-5.6.0
+  - pypy3.5-5.10.1
+  - pypy2.7-5.10.0
 env:
-  - TMUX_VERSION=master
-  - TMUX_VERSION=2.6
-  - TMUX_VERSION=2.5
-  - TMUX_VERSION=2.4
-  - TMUX_VERSION=2.3
-  - TMUX_VERSION=2.2
-  - TMUX_VERSION=2.1
-  - TMUX_VERSION=2.0
-  - TMUX_VERSION=1.8
-  - TMUX_VERSION=1.9a
+  global:
+    - RETRY_TIMEOUT_SECONDS=15
+  matrix:
+    - TMUX_VERSION=master
+    - TMUX_VERSION=2.6
+    - TMUX_VERSION=2.5
+    - TMUX_VERSION=2.4
+    - TMUX_VERSION=2.3
+    - TMUX_VERSION=2.2
+    - TMUX_VERSION=2.1
+    - TMUX_VERSION=2.0
+    - TMUX_VERSION=1.9a
+    - TMUX_VERSION=1.8
 matrix:
   allow_failures:
   - env: TMUX_VERSION=master
+
 before_install:
   - export PIP_USE_MIRRORS=true
   - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
   - pip install --upgrade pip wheel virtualenv setuptools
-  - pip install coveralls
+  - pip install pytest-cov coverage codecov flake8
 install:
   - pip install -e .
+  - pip install -r requirements/test.txt
 before_script:
   - git clone https://github.com/tmux/tmux.git tmux
   - cd tmux
@@ -39,11 +41,13 @@ before_script:
   - export PATH=$HOME/tmux/bin:$PATH
   - cd ..
   - tmux -V
-script: coverage run --source=tmuxp setup.py test
+script:
+  - py.test --cov
+  - make flake8
 addons:
   apt:
     packages:
       - libevent-dev
       - libncurses-dev
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - codecov

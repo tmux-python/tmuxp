@@ -1,5 +1,5 @@
 {
-  "before_script": "./bootstrap_env.py", 
+  "before_script": "pipenv install --dev --skip-lock", 
   "windows": [
     {
       "panes": [
@@ -9,13 +9,10 @@
         "pane", 
         "make watch_test"
       ], 
+      "layout": "main-horizontal", 
       "options": {
         "main-pane-height": 35
       }, 
-      "layout": "main-horizontal", 
-      "shell_command_before": [
-        "[ -d .venv -a -f .venv/bin/activate ] && source .venv/bin/activate"
-      ], 
       "focus": true, 
       "window_name": "tmuxp"
     }, 
@@ -30,15 +27,15 @@
       ], 
       "start_directory": "doc/", 
       "layout": "main-horizontal", 
-      "shell_command_before": [
-        "[ -d ../.venv -a -f ../.venv/bin/activate ] && source ../.venv/bin/activate"
-      ], 
+      "window_name": "docs", 
       "options": {
         "main-pane-height": 35
-      }, 
-      "window_name": "docs"
+      }
     }
   ], 
   "session_name": "tmuxp", 
-  "start_directory": "./"
+  "start_directory": "./", 
+  "shell_command_before": [
+    "[ -d `pipenv --venv` ] && source `pipenv --venv`/bin/activate && reset"
+  ]
 }
