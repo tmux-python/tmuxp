@@ -10,7 +10,6 @@ from __future__ import absolute_import, print_function, with_statement
 import logging
 import os
 import sys
-import glob
 
 import click
 import kaptan
@@ -28,21 +27,10 @@ logger = logging.getLogger(__name__)
 
 
 def get_config_dir():
-    expanduser = os.path.expanduser
     if 'TMUXP_CONFIGDIR' in os.environ:
-        return expanduser(os.environ['TMUXP_CONFIGDIR'])
-    # List XDG config directory or home-level one in that order, if
-    # they exists.
-    paths = (
-        expanduser('~/.config/tmuxp/'),
-        expanduser('~/.tmuxp/')
-    )
-    directories = sum([glob.glob(path) for path in paths], [])
-    # get_config_dir() is supposed to return a directory, existing or
-    # not, so ensure the XDG config directory is returned if both paths
-    # did not exist in previous glob calls.
-    directories.append(paths[0])
-    return directories[0]
+        return os.path.expanduser(os.environ['TMUXP_CONFIGDIR'])
+
+    return os.path.expanduser('~/.tmuxp/')
 
 
 def get_cwd():
@@ -741,30 +729,3 @@ def command_convert(config):
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to <%s>.' % newfile)
-
-
-@cli.command(name='list')
-@click.argument('config_dir', type=click.Path(exists=True), nargs=1,
-        required=False)
-def command_list(config_dir=None):
-    """List existing workspace configurations.
-
-    CONFIG_DIR is an optional argument, if it's a valid directory path
-    then workspace configurations will be looked there.
-    """
-
-    if not config_dir:
-        config_dir = get_config_dir()
-    join = os.path.join
-
-    tails = ('*.yml', '*.yaml', '*.json')
-    config_files = sum((glob.glob(join(config_dir, tail)) for tail in tails),
-                       [])
-
-    if config_files:
-        click.echo("Configuration files found in '%s':" % config_dir)
-        for config_file in config_files:
-            config_file = config_file.replace(config_dir, '')
-            config_file = ''.join(config_file.split('.')[:-1])
-            click.echo("  %s" % config_file)
-
