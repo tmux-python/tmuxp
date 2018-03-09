@@ -734,7 +734,7 @@ def command_convert(config):
 
 @cli.command(name='list')
 @click.argument('config_dir', type=click.Path(exists=True), nargs=1,
-        required=False)
+                required=False)
 def command_list(config_dir=None):
     """List existing workspace configurations.
 
@@ -756,4 +756,3 @@ def command_list(config_dir=None):
             config_file = config_file.replace(config_dir, '')
             config_file = ''.join(config_file.split('.')[:-1])
             click.echo("  %s" % config_file)
-
