@@ -10,6 +10,7 @@ from __future__ import absolute_import, print_function, with_statement
 import logging
 import os
 import sys
+import glob
 
 import click
 import kaptan
@@ -27,10 +28,21 @@ logger = logging.getLogger(__name__)
 
 
 def get_config_dir():
+    expanduser = os.path.expanduser
     if 'TMUXP_CONFIGDIR' in os.environ:
-        return os.path.expanduser(os.environ['TMUXP_CONFIGDIR'])
-
-    return os.path.expanduser('~/.tmuxp/')
+        return expanduser(os.environ['TMUXP_CONFIGDIR'])
+    # List XDG config directory or home-level one in that order, if
+    # they exists.
+    paths = (
+        expanduser('~/.config/tmuxp/'),
+        expanduser('~/.tmuxp/')
+    )
+    directories = sum([glob.glob(path) for path in paths], [])
+    # get_config_dir() is supposed to return a directory, existing or
+    # not, so ensure the XDG config directory is returned if both paths
+    # did not exist in previous glob calls.
+    directories.append(paths[0])
+    return directories[0]
 
 
 def get_cwd():
