@@ -1,4 +1,4 @@
-# regression for https://github.com/tony/tmuxp/issues/132
+# regression for https://github.com/tmux-python/tmuxp/issues/132
 session_name: dot.session-name
 windows:
 - layout: main-vertical

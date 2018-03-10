@@ -70,7 +70,7 @@ loading tmux. See the `bootstrap_env.py`_ and `before_script`_ example
 
 You can also load sessions in the background by passing ``-d`` flag
 
-.. image:: https://raw.github.com/tony/tmuxp/master/doc/_static/tmuxp-demo.gif
+.. image:: https://raw.github.com/tmux-python/tmuxp/master/doc/_static/tmuxp-demo.gif
     :scale: 100%
     :width: 45%
     :align: center
@@ -96,14 +96,14 @@ See the `Quickstart`_.
 
 Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 
-.. _tmuxp on Travis CI: http://travis-ci.org/tony/tmuxp
+.. _tmuxp on Travis CI: http://travis-ci.org/tmux-python/tmuxp
 .. _Documentation: http://tmuxp.git-pull.com
-.. _Source: https://github.com/tony/tmuxp
+.. _Source: https://github.com/tmux-python/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
 .. _before_script: http://tmuxp.git-pull.com/en/latest/examples.html#bootstrap-project-before-launch
 .. _virtualenv: https://virtualenv.git-pull.com/en/latest/
 .. _Read The Tao of tmux online: http://tmuxp.git-pull.com/en/latest/about_tmux.html
-.. _author's tmuxp configs: https://github.com/tony/tmuxp-config
+.. _author's tmuxp configs: https://github.com/tmux-python/tmuxp-config
 .. _python library: https://tmuxp.git-pull.com/en/latest/api.html
 .. _python API quickstart: https://tmuxp.git-pull.com/en/latest/quickstart_python.html
 .. _tmux(1): http://tmux.sourceforge.net/
@@ -111,16 +111,16 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _Examples: http://tmuxp.git-pull.com/en/latest/examples.html
 .. _freezing tmux: http://tmuxp.git-pull.com/en/latest/cli.html#freeze-sessions
-.. _bootstrap_env.py: https://github.com/tony/tmuxp/blob/master/bootstrap_env.py
+.. _bootstrap_env.py: https://github.com/tmux-python/tmuxp/blob/master/bootstrap_env.py
 .. _travis.yml: http://tmuxp.git-pull.com/en/latest/developing.html#travis-ci
 .. _testing: http://tmuxp.git-pull.com/en/latest/developing.html#test-runner
 .. _python objects: http://tmuxp.git-pull.com/en/latest/api.html#api
-.. _tmuxp.yaml: https://github.com/tony/tmuxp/blob/master/.tmuxp.yaml 
+.. _tmuxp.yaml: https://github.com/tmux-python/tmuxp/blob/master/.tmuxp.yaml 
 .. _simple: http://tmuxp.git-pull.com/en/latest/examples.html#short-hand-inline
 .. _very elaborate: http://tmuxp.git-pull.com/en/latest/examples.html#super-advanced-dev-environment
 .. _Quickstart: http://tmuxp.git-pull.com/en/latest/quickstart.html
 .. _Commands: http://tmuxp.git-pull.com/en/latest/cli.html
-.. _libtmux: https://github.com/tony/libtmux
+.. _libtmux: https://github.com/tmux-python/libtmux
 .. _on the web: https://leanpub.com/the-tao-of-tmux/read
 
 Donations
@@ -140,25 +140,25 @@ Project details
 tmux support    1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
 python support  2.7, >= 3.3, pypy, pypy3
 config support  yaml, json, python dict
-Source          https://github.com/tony/tmuxp
+Source          https://github.com/tmux-python/tmuxp
 Docs            http://tmuxp.git-pull.com
 API             http://tmuxp.git-pull.com/en/latest/api.html
 Changelog       http://tmuxp.git-pull.com/en/latest/history.html
-Issues          https://github.com/tony/tmuxp/issues
-Travis          http://travis-ci.org/tony/tmuxp
-Test Coverage   https://codecov.io/gh/tony/tmuxp
+Issues          https://github.com/tmux-python/tmuxp/issues
+Travis          http://travis-ci.org/tmux-python/tmuxp
+Test Coverage   https://codecov.io/gh/tmux-python/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
 Open Hub        https://www.openhub.net/p/tmuxp
 License         `BSD`_.
 git repo        .. code-block:: bash
 
-                    $ git clone https://github.com/tony/tmuxp.git
+                    $ git clone https://github.com/tmux-python/tmuxp.git
 install stable  .. code-block:: bash
 
                     $ pip install --user tmuxp
 install dev     .. code-block:: bash
 
-                    $ git clone https://github.com/tony/tmuxp.git tmuxp
+                    $ git clone https://github.com/tmux-python/tmuxp.git tmuxp
                     $ cd ./tmuxp
                     $ virtualenv .venv
                     $ source .venv/bin/activate
@@ -179,15 +179,15 @@ tests           .. code-block:: bash
     :alt: Python Package
     :target: http://badge.fury.io/py/tmuxp
 
-.. |build-status| image:: https://img.shields.io/travis/tony/tmuxp.svg
+.. |build-status| image:: https://img.shields.io/travis/tmux-python/tmuxp.svg
    :alt: Build Status
-   :target: https://travis-ci.org/tony/tmuxp
+   :target: https://travis-ci.org/tmux-python/tmuxp
 
-.. |coverage| image:: https://codecov.io/gh/tony/tmuxp/branch/master/graph/badge.svg
+.. |coverage| image:: https://codecov.io/gh/tmux-python/tmuxp/branch/master/graph/badge.svg
     :alt: Code Coverage
-    :target: https://codecov.io/gh/tony/tmuxp
+    :target: https://codecov.io/gh/tmux-python/tmuxp
 
-.. |license| image:: https://img.shields.io/github/license/tony/tmuxp.svg
+.. |license| image:: https://img.shields.io/github/license/tmux-python/tmuxp.svg
     :alt: License 
 
 .. |docs| image:: https://readthedocs.org/projects/tmuxp/badge/?version=latest

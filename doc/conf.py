@@ -30,8 +30,8 @@ extensions = [
 
 releases_unstable_prehistory = True
 releases_document_name = "history"
-releases_issue_uri = "https://github.com/tony/tmuxp/issues/%s"
-releases_release_uri = "https://github.com/tony/tmuxp/tree/v%s"
+releases_issue_uri = "https://github.com/tmux-python/tmuxp/issues/%s"
+releases_release_uri = "https://github.com/tmux-python/tmuxp/tree/v%s"
 
 templates_path = ['_templates']
 
@@ -66,7 +66,7 @@ html_sidebars = {
 
 html_theme_options = {
     'logo': 'img/tmuxp.svg',
-    'github_user': 'tony',
+    'github_user': 'tmux-python',
     'github_repo': 'tmuxp',
     'github_type': 'star',
     'github_banner': True,

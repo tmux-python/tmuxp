@@ -135,7 +135,7 @@ def test_focus_pane_index(session):
 @pytest.mark.skip(
     reason='''
 Test needs to be rewritten, assertion not reliable across platforms
-and CI. See https://github.com/tony/tmuxp/issues/310.
+and CI. See https://github.com/tmux-python/tmuxp/issues/310.
     '''.strip()
 )
 def test_suppress_history(session):
@@ -551,7 +551,7 @@ def test_start_directory_relative(session, tmpdir):
 def test_pane_order(session):
     """Pane ordering based on position in config and ``pane_index``.
 
-    Regression test for https://github.com/tony/tmuxp/issues/15.
+    Regression test for https://github.com/tmux-python/tmuxp/issues/15.
 
     """
 

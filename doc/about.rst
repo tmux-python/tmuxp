@@ -21,7 +21,7 @@ Interested in some kung-fu or joining the effort? :ref:`api` and
 :ref:`developing`.
 
 `BSD-licensed`_. Code on `github 
-<http://github.com/tony/tmuxp>`_.
+<http://github.com/tmux-python/tmuxp>`_.
 
 .. _Bugsnag: https://blog.bugsnag.com/benefits-of-using-tmux/
 .. _Pragmatic Coders: http://pragmaticcoders.com/blog/tmuxp-preconfigured-sessions/
@@ -106,10 +106,10 @@ Minor tweaks
 - ``$ tmuxp -L<socket-name>``, ``$ tmuxp -S<socket-path>`` for sockets and
   ``$ tmuxp -f<config-file>`` for config file.
 
-.. _attempt at 1.7 test: https://travis-ci.org/tony/tmuxp/jobs/12348263
+.. _attempt at 1.7 test: https://travis-ci.org/tmux-python/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
 .. _BSD-licensed: http://opensource.org/licenses/BSD-3-Clause
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _ERB: http://ruby-doc.org/stdlib-2.0.0/libdoc/erb/rdoc/ERB.html
-.. _edit this page: https://github.com/tony/tmuxp/edit/master/doc/about.rst
+.. _edit this page: https://github.com/tmux-python/tmuxp/edit/master/doc/about.rst

@@ -68,7 +68,7 @@ def set_layout_hook(session, hook_name):
 
     References:
 
-        - tmuxp issue: https://github.com/tony/tmuxp/issues/309
+        - tmuxp issue: https://github.com/tmux-python/tmuxp/issues/309
         - tmux issue: https://github.com/tmux/tmux/issues/1106
 
     tmux 2.6+ requires that the window be viewed with the client before

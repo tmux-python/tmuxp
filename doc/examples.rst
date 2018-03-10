@@ -194,7 +194,7 @@ example.
 If you have a special case and would like to see behavior changed,
 please make a ticket on the `issue tracker`_.
 
-.. _issue tracker: https://github.com/tony/tmuxp/issues
+.. _issue tracker: https://github.com/tmux-python/tmuxp/issues
 
 YAML
 ~~~~
@@ -481,4 +481,4 @@ Kung fu
 
 Add yours? Submit a pull request to the `github`_ site!
 
-.. _github: https://github.com/tony/tmuxp
+.. _github: https://github.com/tmux-python/tmuxp

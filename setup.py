@@ -1,4 +1,4 @@
-"""tmuxp lives at <https://github.com/tony/tmuxp>."""
+"""tmuxp lives at <https://github.com/tmux-python/tmuxp>."""
 import sys
 
 from setuptools import setup
@@ -38,7 +38,7 @@ class PyTest(TestCommand):
 setup(
     name=about['__title__'],
     version=about['__version__'],
-    url='http://github.com/tony/tmuxp/',
+    url='http://github.com/tmux-python/tmuxp/',
     download_url='https://pypi.python.org/pypi/tmuxp',
     license=about['__license__'],
     author=about['__author__'],

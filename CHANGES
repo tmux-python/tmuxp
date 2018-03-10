@@ -761,6 +761,6 @@ Here you can find the recent changes to tmuxp
 .. _.where(): http://underscorejs.org/#where
 .. _.findWhere(): http://underscorejs.org/#findWhere
 
-.. _libtmux: https://github.com/tony/libtmux
+.. _libtmux: https://github.com/tmux-python/libtmux
 
 .. # vim: set filetype=rst:
