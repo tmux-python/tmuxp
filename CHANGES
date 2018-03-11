@@ -4,6 +4,7 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`-` Bump libtmux to 0.8.0
 - :support:`348 backported` Continuous integration updates and fixes for Travis CI
   
   - Update builds to use trusty
