@@ -7,7 +7,7 @@ Quickstart
 Installation
 ------------
 
-Assure you have at least tmux **>= 1.8** and python **>= 2.6**. For Ubuntu 12.04/12.10/13.04 users, you can download the tmux 1.8 package for Ubuntu 13.10 from `https://launchpad.net/ubuntu/+source/tmux <https://launchpad.net/ubuntu/+source/tmux>`_ and install it using dpkg.
+Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
 
 .. code-block:: bash
 
