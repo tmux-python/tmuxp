@@ -5,8 +5,8 @@
 tmuxp
 ~~~~~
 
-:copyright: Copyright 2013-2017 Tony Narlock.
-:license: BSD, see LICENSE for details
+:copyright: Copyright 2013-2018 Tony Narlock.
+:license: MIT, see LICENSE for details
 
 """
 from __future__ import absolute_import, division, print_function, \

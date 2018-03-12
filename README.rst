@@ -149,7 +149,7 @@ Travis          http://travis-ci.org/tmux-python/tmuxp
 Test Coverage   https://codecov.io/gh/tmux-python/tmuxp
 pypi            https://pypi.python.org/pypi/tmuxp
 Open Hub        https://www.openhub.net/p/tmuxp
-License         `BSD`_.
+License         `MIT`_.
 git repo        .. code-block:: bash
 
                     $ git clone https://github.com/tmux-python/tmuxp.git
@@ -171,7 +171,7 @@ tests           .. code-block:: bash
                     $ make test
 ==============  ==========================================================
 
-.. _BSD: http://opensource.org/licenses/BSD-3-Clause
+.. _MIT: http://opensource.org/licenses/MIT
 .. _developing and testing: http://tmuxp.git-pull.com/en/latest/developing.html
 .. _Amazon Kindle: http://amzn.to/2gPfRhC
 

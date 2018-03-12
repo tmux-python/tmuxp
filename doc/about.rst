@@ -20,7 +20,7 @@ To jump right in, see :ref:`quickstart` and :ref:`examples`.
 Interested in some kung-fu or joining the effort? :ref:`api` and
 :ref:`developing`.
 
-`BSD-licensed`_. Code on `github 
+`MIT-licensed`_. Code on `github 
 <http://github.com/tmux-python/tmuxp>`_.
 
 .. _Bugsnag: https://blog.bugsnag.com/benefits-of-using-tmux/
@@ -108,7 +108,7 @@ Minor tweaks
 
 .. _attempt at 1.7 test: https://travis-ci.org/tmux-python/tmuxp/jobs/12348263
 .. _kaptan: https://github.com/emre/kaptan
-.. _BSD-licensed: http://opensource.org/licenses/BSD-3-Clause
+.. _MIT-licensed: http://opensource.org/licenses/MIT
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _ERB: http://ruby-doc.org/stdlib-2.0.0/libdoc/erb/rdoc/ERB.html

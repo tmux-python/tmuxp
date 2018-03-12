@@ -55,7 +55,7 @@ setup(
     entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.cli']),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX",
         "Operating System :: MacOS :: MacOS X",
         'Environment :: Web Environment',
