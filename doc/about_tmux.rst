@@ -18,7 +18,7 @@ In the world of computers, there are 2 realms:
 1. The text realm
 2. The graphical realm
 
-Tmux resides in the text realm. This is about fixed-width fonts and that
+tmux resides in the text realm. This is about fixed-width fonts and that
 old fashioned black terminal.
 
 tmux is to the console what a desktop is to gui apps. It's a world inside
@@ -216,7 +216,7 @@ Multitasking. Preserving the thinking you have.
 Installing tmux
 ===============
 
-Tmux is packaged on most Linux and BSD systems.
+tmux is packaged on most Linux and BSD systems.
 
 For the freshest results on how to get tmux installed on your system,
 "How to install tmux on <my distro>" will do, as directions change and are
