@@ -4,6 +4,7 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.4.0 <2018-03-11>`
 - :support:`-` Bump libtmux to 0.8.0
 - :support:`264` Update license from BSD to MIT
 - :support:`348 backported` Continuous integration updates and fixes for Travis CI
