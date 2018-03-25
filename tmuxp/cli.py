@@ -444,7 +444,7 @@ def startup(config_dir):
 
 @cli.command(name='freeze')
 @click.argument('session_name', nargs=1)
-@click.option('-S', 'socket_path', help='pass-through for tmux -L')
+@click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 def command_freeze(session_name, socket_name, socket_path):
     """Snapshot a session into a config.
@@ -537,7 +537,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.pass_context
 @click.argument('config', click.Path(exists=True), nargs=-1,
                 callback=scan_config_argument)
-@click.option('-S', 'socket_path', help='pass-through for tmux -L')
+@click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option('-d', 'detached',
