@@ -351,12 +351,12 @@ def load_workspace(
 
         # below: tmuxp ran outside of tmux
 
-        if has_gte_version('2.6'):
+        # if has_gte_version('2.6'):
             # if attaching for first time
-            set_layout_hook(builder.session, 'client-attached')
+            # set_layout_hook(builder.session, 'client-attached')
 
             # for cases where user switches client for first time
-            set_layout_hook(builder.session, 'client-session-changed')
+            # set_layout_hook(builder.session, 'client-session-changed')
 
         if not detached:
             builder.session.attach_session()
