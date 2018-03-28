@@ -2,5 +2,5 @@
 docutils==0.14
 sphinx==1.7.2
 alagitpull==0.0.19
-releases==1.4.0
+releases==1.4.1
 aafigure==0.6
