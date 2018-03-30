@@ -321,11 +321,23 @@ def load_workspace(
             reattach(builder.session)
         return
 
+    session = None
+    if session_name == 'current':
+        sessions = t.list_sessions() or []
+        for s in sessions:
+            if s.attached == '1' and (answer_yes or click.confirm(
+                'Reuse session [%s]?' % s.name
+            )):
+                session = s
+                # need to create a new window, or the currently-active one will be clobbered
+                session.new_window()
+                break
+
     try:
         click.echo(
             click.style('[Loading] ', fg='green') +
             click.style(config_file, fg='blue', bold=True))
-        builder.build()
+        builder.build(session)
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
             if not detached and (answer_yes or click.confirm(
