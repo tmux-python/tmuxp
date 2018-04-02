@@ -329,7 +329,8 @@ def load_workspace(
                 'Reuse session [%s]?' % s.name
             )):
                 session = s
-                # need to create a new window, or the currently-active one will be clobbered
+                # need to create a new window,
+                # or the currently-active one will be clobbered
                 session.new_window()
                 break
 
