@@ -19,6 +19,9 @@ CLI
 ---
 
 .. automethod:: tmuxp.cli._reattach
+.. automethod:: tmuxp.cli.get_config_dir
+.. automethod:: tmuxp.cli.get_teamocil_dir
+.. automethod:: tmuxp.cli.get_tmuxinator_dir
 .. automethod:: tmuxp.cli.load_workspace
 .. automethod:: tmuxp.cli._validate_choices
 
