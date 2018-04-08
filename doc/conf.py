@@ -104,7 +104,8 @@ texinfo_documents = [
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
-    'libtmux': ('https://libtmux.readthedocs.io/en/latest', None)
+    'libtmux': ('https://libtmux.readthedocs.io/en/latest', None),
+    'click': ('http://click.pocoo.org/5', None)
 }
 
 # aafig format, try to get working with pdf
