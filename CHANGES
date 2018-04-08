@@ -4,6 +4,18 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`-` Add sphinxcontrib-napoleon.
+- :support:`-` Assure *requirements/dev.txt* dependencies are in *Pipfile*
+- :support:`-` Update sphinx, releases to latest version
+- :support:`-` Sync *requirements/\*.txt* dependencies with *Pipfile*.
+- :support:`-` Update docstring style to use numpy-style documentation.
+  This enhances readability and plays nicely with sphinx documentation.
+- :support:`-` Documentation overhaul.
+  
+  - Areas like :meth:`tmuxp.cli.load_workspace` are now documented verbosely.
+    This is so contributors helping on the project can more quickly gain
+    situational awareness in this tricky area of code.
+
 - :release:`1.4.0 <2018-03-11>`
 - :support:`-` Bump libtmux to 0.8.0
 - :support:`264` Update license from BSD to MIT
