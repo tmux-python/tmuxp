@@ -20,6 +20,7 @@ CLI
 
 .. automethod:: tmuxp.cli._reattach
 .. automethod:: tmuxp.cli.load_workspace
+.. automethod:: tmuxp.cli._validate_choices
 
 Configuration
 -------------
