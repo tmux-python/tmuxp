@@ -51,7 +51,7 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
 html_theme_path = [alagitpull.get_path()]
-html_favicon = 'favicon.ico'
+html_favicon = '_static/favicon.ico'
 html_theme = 'alagitpull'
 html_static_path = ['_static']
 html_sidebars = {
