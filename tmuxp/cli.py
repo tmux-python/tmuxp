@@ -46,12 +46,22 @@ def get_teamocil_dir():
 
 
 def _validate_choices(options):
-    """Callback wrapper for validating click.prompt input.
+    """
+    Callback wrapper for validating click.prompt input.
 
-    :param options: List of allowed choices
-    :type options: list
-    :rtype: func
-    :returns: function for value_proc in :func:`click.prompt`.
+    Parameters
+    ----------
+    options : list
+        List of allowed choices
+
+    Returns
+    -------
+    :func:`callable`
+        callback function for value_proc in :func:`click.prompt`.
+
+    Raises
+    ------
+    :class:`click.BadParameter`
     """
 
     def func(value):
