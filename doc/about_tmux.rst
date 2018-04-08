@@ -4,7 +4,7 @@
 The Tao of tmux
 ###############
 
-.. figure:: _static/tao-tmux-screenshot.png
+.. figure:: /_static/tao-tmux-screenshot.png
     :scale: 60%
     :align: center
 
@@ -660,6 +660,8 @@ The Book
 
       .. figure:: https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
           :scale: 100%
+          :width: 301
+          :height: 390
           :align: left
           :target: https://leanpub.com/the-tao-of-tmux
           :alt: The Tao of tmux
