@@ -26,22 +26,61 @@ from .workspacebuilder import freeze
 logger = logging.getLogger(__name__)
 
 
+def get_cwd():
+    return os.getcwd()
+
+
 def get_config_dir():
+    """
+    Return tmuxp configuration directory.
+
+    Checks for ``TMUXP_CONFIGDIR`` environmental variable.
+
+    Returns
+    -------
+    str :
+        absolute path to tmuxp config directory
+    """
     if 'TMUXP_CONFIGDIR' in os.environ:
         return os.path.expanduser(os.environ['TMUXP_CONFIGDIR'])
 
     return os.path.expanduser('~/.tmuxp/')
 
 
-def get_cwd():
-    return os.getcwd()
-
-
 def get_tmuxinator_dir():
+    """
+    Return tmuxinator configuration directory.
+
+    Checks for ``TMUXINATOR_CONFIG`` environmental variable.
+
+    Returns
+    -------
+    str :
+        absolute path to tmuxinator config directory
+
+    See Also
+    --------
+    :meth:`tmuxp.config.import_tmuxinator`
+    """
+    if 'TMUXINATOR_CONFIG' in os.environ:
+        return os.path.expanduser(os.environ['TMUXINATOR_CONFIG'])
+
     return os.path.expanduser('~/.tmuxinator/')
 
 
 def get_teamocil_dir():
+    """
+    Return teamocil configuration directory.
+
+    Returns
+    -------
+    str :
+        absolute path to teamocil config directory
+
+    See Also
+    --------
+    :meth:`tmuxp.config.import_teamocil`
+    """
     return os.path.expanduser('~/.teamocil/')
 
 
@@ -197,13 +236,8 @@ def _resolve_path_no_overwrite(config):
 
 
 def scan_config(config, config_dir=None):
-    """Return the real config path or raise an exception.
-
-    :param config: config file, valid examples:
-        - a file name, myconfig.yaml
-        - relative path, ../config.yaml or ../project
-        - a period, .
-    :type config: str
+    """
+    Return the real config path or raise an exception.
 
     If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
     one or more found, it will warn and pick the first.
@@ -217,7 +251,18 @@ def scan_config(config, config_dir=None):
     it will scan for file name with yaml, yml and json. If multiple exist, it
     will warn and pick the first.
 
-    :raises: :class:`click.exceptions.FileError`
+    Parameters
+    ----------
+    config : str
+        config file, valid examples:
+
+        - a file name, myconfig.yaml
+        - relative path, ../config.yaml or ../project
+        - a period, .
+
+    Raises
+    ------
+    :class:`click.exceptions.FileError`
     """
     if not config_dir:
         config_dir = get_config_dir()
@@ -524,15 +569,21 @@ def cli(log_level):
 
 
 def setup_logger(logger=None, level='INFO'):
-    """Setup logging for CLI use.
-
-    :param logger: instance of logger
-    :type logger: :py:class:`Logger`
-
     """
-    if not logger:
+    Setup logging for CLI use.
+
+    Tries to do some conditionals to prevent handlers from being added twice.
+    Just to be safe.
+
+    Parameters
+    ----------
+    logger : :py:class:`Logger`
+        logger instance for tmuxp
+    """
+    if not logger:  # if no logger exists, make one
         logger = logging.getLogger()
-    if not logger.handlers:
+
+    if not logger.handlers:  # setup logger handlers
         channel = logging.StreamHandler()
         channel.setFormatter(log.DebugLogFormatter())
 
