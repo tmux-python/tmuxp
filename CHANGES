@@ -444,7 +444,6 @@ Here you can find the recent changes to tmuxp
   autocompletion and when loading. Note, switching client into another
   socket may cause an error.
 - Documentation tweaking to :ref:`API`, :ref:`about_tmux`.
-- New :ref:`roadmap`.
 - `pep257`_, `pep8`_.
 
 - :release:`0.1-dev <2013-11-04>`
