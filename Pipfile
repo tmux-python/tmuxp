@@ -1,16 +1,11 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
 
-
-
 [dev-packages]
-
 kaptan = ">=0.5.7"
 libtmux = "==0.8.0"
 click = "==6.7"
@@ -18,8 +13,11 @@ colorama = "==0.3.9"
 docutils = "==0.14"
 alagitpull = "==0.0.19"
 aafigure = "==0.6"
-pytest = "==3.4.2"
+pytest = "==3.5.0"
 pytest-rerunfailures = "==4.0"
-releases = "==1.4.0"
-sphinx = "==1.7.1"
+releases = "==1.4.1"
+Sphinx = "==1.7.2"
 "e1839a8" = {path = ".", editable = true}
+isort = "==4.3.4"
+"flake8" = "==3.5.0"
+vulture = "==0.26"
