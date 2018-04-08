@@ -193,7 +193,7 @@ Testing options
 ``RETRY_TIMEOUT_SECONDS`` can be toggled if certain workspace builder
 tests are being stubborn.
 
-e.g. ``RETRY_TIMEOUT_SECONDS=10 py.test ``
+e.g. ``RETRY_TIMEOUT_SECONDS=10 py.test``
 
 .. literalinclude:: ../.travis.yml
     :language: yaml
