@@ -337,7 +337,7 @@ def load_workspace(
     The prepared configuration and the server object is passed into an instance
     of :class:`tmuxp.WorkspaceBuilder`.
 
-    A sanity check against :func:`libtmux.common.which` is ran. It will raise
+    A sanity check against :meth:`libtmux.common.which` is ran. It will raise
     an exception if tmux isn't found.
 
     If a tmux session under the same name as ``session_name`` in the tmuxp
@@ -411,6 +411,9 @@ def load_workspace(
         return
 
     session_name = sconfig['session_name']
+
+    # if the session already exists, prompt the user to attach. tmuxp doesn't
+    # support incremental session building or appending (yet, PR's welcome!)
     if builder.session_exists(session_name):
         if not detached and (
             answer_yes or click.confirm(
@@ -448,18 +451,16 @@ def load_workspace(
                     set_layout_hook(builder.session, 'client-session-changed')
 
                 sys.exit('Session created in detached state.')
+        else:  # tmuxp ran from inside tmux
+            if has_gte_version('2.6'):
+                # if attaching for first time
+                set_layout_hook(builder.session, 'client-attached')
 
-        # below: tmuxp ran outside of tmux
+                # for cases where user switches client for first time
+                set_layout_hook(builder.session, 'client-session-changed')
 
-        if has_gte_version('2.6'):
-            # if attaching for first time
-            set_layout_hook(builder.session, 'client-attached')
-
-            # for cases where user switches client for first time
-            set_layout_hook(builder.session, 'client-session-changed')
-
-        if not detached:
-            builder.session.attach_session()
+            if not detached:
+                builder.session.attach_session()
 
     except exc.TmuxpException as e:
         import traceback
