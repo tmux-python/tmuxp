@@ -15,6 +15,11 @@ Internals
 
 .. automethod:: tmuxp.util.run_before_script
 
+CLI
+---
+
+.. automethod:: tmuxp.cli._reattach
+.. automethod:: tmuxp.cli.load_workspace
 
 Configuration
 -------------
