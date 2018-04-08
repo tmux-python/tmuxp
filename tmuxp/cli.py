@@ -270,46 +270,145 @@ def scan_config(config, config_dir=None):
     return config
 
 
+def _reattach(session):
+    """
+    Reattach session (depending on env being inside tmux already or not)
+
+    Parameters
+    ----------
+    session : :class:`libtmux.Session`
+
+    Notes
+    -----
+    If ``TMUX`` environmental variable exists in the environment this script is
+    running, that means we're in a tmux client. So ``tmux switch-client`` will
+    load the session.
+
+    If not, ``tmux attach-session`` loads the client to the target session.
+    """
+    if 'TMUX' in os.environ:
+        session.switch_client()
+
+    else:
+        session.attach_session()
+
+
 def load_workspace(
     config_file, socket_name=None, socket_path=None, colors=None,
-    attached=None, detached=None, answer_yes=False
+    detached=False, answer_yes=False
 ):
-    """Build config workspace.
+    """
+    Load a tmux "workspace" session via tmuxp file.
 
-    :param config_file: full path to config file
-    :param type: str
+    Parameters
+    ----------
+    config_file : str
+        absolute path to config file
+    socket_name : str, optional
+        ``tmux -L <socket-name>``
+    socket_path: str, optional
+        ``tmux -S <socket-path>``
+    colors : str, optional
+        '-2'
+            Force tmux to support 256 colors
+    detached : bool
+        Force detached state. default False.
+    answer_yes : bool
+        Assume yes when given prompt. default False.
 
+    Notes
+    -----
+
+    tmuxp will check and load a configuration file. The file will use kaptan
+    to load a JSON/YAML into a :py:obj:`dict`. Then :func:`config.expand` and
+    :func:`config.trickle` will be used to expand any shorthands, template
+    variables, or file paths relative to where the config/script is executed
+    from.
+
+    :func:`config.expand` accepts the directory of the config file, so the
+    user's configuration can resolve absolute paths relative to where the
+    config file is. In otherwords, if a config file at */var/moo/hi.yaml*
+    has *./* in its configs, we want to be sure any file path with *./* is
+    relative to */var/moo*, not the user's PWD.
+
+    A :class:`libtmux.Server` object is created. No tmux server is started yet,
+    just the object.
+
+    The prepared configuration and the server object is passed into an instance
+    of :class:`tmuxp.WorkspaceBuilder`.
+
+    A sanity check against :func:`libtmux.common.which` is ran. It will raise
+    an exception if tmux isn't found.
+
+    If a tmux session under the same name as ``session_name`` in the tmuxp
+    configuration exists, tmuxp offers to attach the session. Currently, tmuxp
+    does not allow appending a workspace / incremental building on top of a
+    current session (pull requests are welcome!).
+
+    :meth:`tmuxp.WorkspaceBuilder.build` will build the session in the
+    background via using tmux's detached state (``-d``).
+
+    After the session (workspace) is built, unless the user decided to load
+    the session in the background via ``tmuxp -d`` (which is in the spirit
+    of tmux's ``-d``), we need to prompt the user to attach the session.
+
+    If the user is already inside a tmux client, which we detect via the
+    ``TMUX`` environment variable bring present, we will prompt the user to
+    switch their current client to it.
+
+    If they're outside of tmux client - in a plain-old PTY - we will
+    automatically ``attach``.
+
+    If an exception is raised during the building of the workspace, tmuxp will
+    prompt to cleanup (``$ tmux kill-session``) the session on the user's
+    behalf. An exception raised during this process means it's not easy to
+    predict how broken the session is.
+
+    .. versionchanged:: tmux 2.6+
+
+        In tmux 2.6, the way layout and proportion's work when interfacing
+        with tmux in a detached state (outside of a client) changed. Since
+        tmuxp builds workspaces in a detached state, the WorkspaceBuilder isn't
+        able to rely on functionality requiring awarness of session geometry,
+        e.g. ``set-layout``.
+
+        Thankfully, tmux is able to defer commands to run after the user
+        performs certain actions, such as loading a client via
+        ``attach-session`` or ``switch-client``.
+
+        Upon client switch, ``client-session-changed`` is triggered [1]_.
+
+    References
+    ----------
+    .. [1] cmd-switch-client.c hook. GitHub repo for tmux.
+       https://github.com/tmux/tmux/blob/2.6/cmd-switch-client.c#L132.
+       Accessed April 8th, 2018.
     """
     # get the canonical path, eliminating any symlinks
     config_file = os.path.realpath(config_file)
 
+    # kaptan allows us to open a yaml or json file as a dict
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
-    # expands configurations relative to config / profile file location
+    # shapes configurations relative to config / profile file location
     sconfig = config.expand(sconfig, os.path.dirname(config_file))
+    # propagate config inheritance (e.g. session -> window, window -> pane)
     sconfig = config.trickle(sconfig)
 
-    t = Server(
+    t = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
         colors=colors
     )
 
-    try:
+    which('tmux')  # raise exception if tmux not found
+
+    try:  # load WorkspaceBuilder object for tmuxp config / tmux server
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
         click.echo('%s is empty or parsed no config data' %
                    config_file, err=True)
         return
-
-    which('tmux')
-
-    def reattach(session):
-        if 'TMUX' in os.environ:
-            session.switch_client()
-
-        else:
-            session.attach_session()
 
     session_name = sconfig['session_name']
     if builder.session_exists(session_name):
@@ -318,29 +417,30 @@ def load_workspace(
                 '%s is already running. Attach?' %
                 click.style(session_name, fg='green'), default=True)
         ):
-            reattach(builder.session)
+            _reattach(builder.session)
         return
 
     try:
         click.echo(
             click.style('[Loading] ', fg='green') +
-            click.style(config_file, fg='blue', bold=True))
-        builder.build()
+            click.style(config_file, fg='blue', bold=True)
+        )
+
+        builder.build()  # load tmux session via workspace builder
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
             if not detached and (answer_yes or click.confirm(
                 'Already inside TMUX, switch to session?'
             )):
+                # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
                 tmux_env = os.environ.pop('TMUX')
 
                 if has_gte_version('2.6'):
-                    # if using -d from inside tmux session + switching inside
-                    # https://github.com/tmux/tmux/blob/2.6/cmd-switch-client.c#L132
                     set_layout_hook(builder.session, 'client-session-changed')
 
-                builder.session.switch_client()
+                builder.session.switch_client()  # switch client to new session
 
-                os.environ['TMUX'] = tmux_env
+                os.environ['TMUX'] = tmux_env  # set TMUX back again
                 return builder.session
             else:  # session created in the background, from within tmux
                 if has_gte_version('2.6'):  # prepare for both cases
