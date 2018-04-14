@@ -66,20 +66,23 @@ class WorkspaceBuilder(object):
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
-
     """
 
     def __init__(self, sconf, server=None):
-        """Initialize workspace loading.
+        """
+        Initialize workspace loading.
 
-        :todo: initialize :class:`Session` from here, in ``self.session``.
+        Parameters
+        ----------
+        sconf : dict
+            session config, includes a :py:obj:`list` of ``windows``.
 
-        :param sconf: session config, includes a :py:obj:`list` of ``windows``.
-        :type sconf: :py:obj:`dict`
+        server : :class:`Server`
+            tmux server to build session in
 
-        :param server:
-        :type server: :class:`Server`
-
+        Notes
+        -----
+        TODO: Initialize :class:`Session` from here, in ``self.session``.
         """
 
         if not sconf:
@@ -107,16 +110,18 @@ class WorkspaceBuilder(object):
         return True
 
     def build(self, session=None):
-        """Build tmux workspace in session.
+        """
+        Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
 
         Without ``session``, it will use :class:`Server` at ``self.server``
         passed in on initialization to create a new Session object.
 
-        :param session: - session to build workspace in
-        :type session: :class:`Session`
-
+        Parameters
+        ----------
+        session : :class:`Session`
+            session to build workspace in
         """
 
         if not session:

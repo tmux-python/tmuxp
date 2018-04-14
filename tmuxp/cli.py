@@ -136,10 +136,12 @@ def set_layout_hook(session, hook_name):
 
     Also, the hooks are set immediately unbind after they're invoked via -u.
 
-    :param session: session to bind hook to
-    :type session: :class:`libtmux.session.Session`
-    :param hook_name: hook name to bind to, e.g. 'client-attached'
-    :type hook_name: str
+    Parameters
+    ----------
+    session : :class:`libtmux.session.Session`
+        session to bind hook to
+    hook_name : str
+        hook name to bind to, e.g. 'client-attached'
     """
     cmd = [
         'set-hook',
@@ -175,7 +177,19 @@ def set_layout_hook(session, hook_name):
 
 
 def is_pure_name(path):
-    """Return True if path is a name and not a file path."""
+    """
+    Return True if path is a name and not a file path.
+
+    Parameters
+    ----------
+    path : str
+        Path (can be absolute, relative, etc.)
+
+    Returns
+    -------
+    bool
+        True if path is a name of config in config dir, not file path.
+    """
     return (
         not os.path.isabs(path) and
         len(os.path.dirname(path)) == 0 and
@@ -593,11 +607,12 @@ def setup_logger(logger=None, level='INFO'):
 
 
 def startup(config_dir):
-    """Initialize CLI.
+    """
+    Initialize CLI.
 
-    :param get_config_dir(): Config directory to search
-    :type get_config_dir(): string
-
+    Parameters
+    ----------
+    str : get_config_dir(): Config directory to search
     """
 
     if not os.path.exists(config_dir):
