@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 class WorkspaceBuilder(object):
 
-    """Load workspace from session :py:obj:`dict`.
+    """
+    Load workspace from session :py:obj:`dict`.
 
     Build tmux workspace from a configuration. Creates and names windows, sets
     options, splits windows into panes.
@@ -221,9 +222,16 @@ class WorkspaceBuilder(object):
 
         Applies ``window_options`` to window.
 
-        :param session: :class:`libtmux.Session` from the config
-        :rtype: tuple(:class:`libtmux.Window`, ``wconf``)
+        Parameters
+        ----------
+        session : :class:`libtmux.Session`
+            session to create windows in
 
+        Returns
+        -------
+        tuple of (:class:`libtmux.Window`, ``wconf``)
+            Newly created window, and the section from the tmuxp configuration
+            that was used to create the window.
         """
         for i, wconf in enumerate(self.sconf['windows'], start=1):
             if 'window_name' not in wconf:
@@ -286,6 +294,8 @@ class WorkspaceBuilder(object):
         Returns
         -------
         tuple of (:class:`libtmux.Pane`, ``pconf``)
+            Newly created pane, and the section from the tmuxp configuration
+            that was used to create the pane.
         """
         assert(isinstance(w, Window))
 
@@ -332,10 +342,20 @@ class WorkspaceBuilder(object):
 
             yield p, pconf
 
-    """
-    Applies window configurations relevant after window and pane creation.
-    """
     def config_after_window(self, w, wconf):
+        """Actions to apply to window after window and pane finished.
+
+        When building a tmux session, sometimes its easier to postpone things
+        like setting options until after things are already structurally
+        prepared.
+
+        Parameters
+        ----------
+        w : :class:`libtmux.Window`
+            window to create panes for
+        wconf : dict
+            config section for window
+        """
         if (
             'options_after' in wconf and
             isinstance(wconf['options_after'], dict)
