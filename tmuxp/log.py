@@ -6,8 +6,7 @@ tmuxp.log
 ~~~~~~~~~
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import time
@@ -24,7 +23,8 @@ LEVEL_COLORS = {
 
 
 def default_log_template(self, record):
-    """Return the prefix for the log message. Template for Formatter.
+    """
+    Return the prefix for the log message. Template for Formatter.
 
     Parameters
     ----------
@@ -81,11 +81,19 @@ class LogFormatter(logging.Formatter):
 
 
 def debug_log_template(self, record):
-    """ Return the prefix for the log message. Template for Formatter.
+    """
+    Return the prefix for the log message. Template for Formatter.
 
-    :param: record: :py:class:`logging.LogRecord` object. this is passed in
-    from inside the :py:meth:`logging.Formatter.format` record.
+    Parameters
+    ----------
+    record :  :py:class:`logging.LogRecord`
+        This is passed in from inside the :py:meth:`logging.Formatter.format`
+        record.
 
+    Returns
+    -------
+    str
+        Log template.
     """
 
     reset = Style.RESET_ALL
