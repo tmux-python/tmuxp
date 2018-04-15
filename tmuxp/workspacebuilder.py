@@ -32,37 +32,37 @@ class WorkspaceBuilder(object):
 
     The normal phase of loading is:
 
-        1.  :term:`kaptan` imports json/yaml/ini. ``.get()`` returns python
-            :class:`dict`::
+    1. :term:`kaptan` imports json/yaml/ini. ``.get()`` returns python
+       :class:`dict`::
 
-                import kaptan
-                sconf = kaptan.Kaptan(handler='yaml')
-                sconf = sconfig.import_config(self.yaml_config).get()
+           import kaptan
+           sconf = kaptan.Kaptan(handler='yaml')
+           sconf = sconfig.import_config(self.yaml_config).get()
 
-            or from config file with extension::
+       or from config file with extension::
 
-                import kaptan
-                sconf = kaptan.Kaptan()
-                sconf = sconfig.import_config('path/to/config.yaml').get()
+           import kaptan
+           sconf = kaptan.Kaptan()
+           sconf = sconfig.import_config('path/to/config.yaml').get()
 
-            kaptan automatically detects the handler from filenames.
+       kaptan automatically detects the handler from filenames.
 
-        2.  :meth:`config.expand` sconf inline shorthand::
+    2. :meth:`config.expand` sconf inline shorthand::
 
-                from tmuxp import config
-                sconf = config.expand(sconf)
+           from tmuxp import config
+           sconf = config.expand(sconf)
 
-        3.  :meth:`config.trickle` passes down default values from session
-            -> window -> pane if applicable::
+    3. :meth:`config.trickle` passes down default values from session
+       -> window -> pane if applicable::
 
-                sconf = config.trickle(sconf)
+           sconf = config.trickle(sconf)
 
-        4.  (You are here) We will create a :class:`Session` (a real
-            ``tmux(1)`` session) and iterate through the list of windows, and
-            their panes, returning full :class:`Window` and :class:`Pane`
-            objects each step of the way::
+    4. (You are here) We will create a :class:`libtmux.Session` (a real
+       ``tmux(1)`` session) and iterate through the list of windows, and
+       their panes, returning full :class:`libtmux.Window` and
+       :class:`libtmux.Pane` objects each step of the way::
 
-                workspace = WorkspaceBuilder(sconf=sconf)
+           workspace = WorkspaceBuilder(sconf=sconf)
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
@@ -77,12 +77,13 @@ class WorkspaceBuilder(object):
         sconf : dict
             session config, includes a :py:obj:`list` of ``windows``.
 
-        server : :class:`Server`
+        server : :class:`libtmux.Server`
             tmux server to build session in
 
         Notes
         -----
-        TODO: Initialize :class:`Session` from here, in ``self.session``.
+        TODO: Initialize :class:`libtmux.Session` from here, in
+        ``self.session``.
         """
 
         if not sconf:
@@ -115,12 +116,13 @@ class WorkspaceBuilder(object):
 
         Optionally accepts ``session`` to build with only session object.
 
-        Without ``session``, it will use :class:`Server` at ``self.server``
-        passed in on initialization to create a new Session object.
+        Without ``session``, it will use :class:`libmtux.Server` at
+        ``self.server`` passed in on initialization to create a new Session
+        object.
 
         Parameters
         ----------
-        session : :class:`Session`
+        session : :class:`libtmux.Session`
             session to build workspace in
         """
 
@@ -211,15 +213,16 @@ class WorkspaceBuilder(object):
             focus.select_window()
 
     def iter_create_windows(self, s):
-        """Return :class:`Window` iterating through session config dict.
+        """
+        Return :class:`libtmux.Window` iterating through session config dict.
 
-        Generator yielding :class:`Window` by iterating through
+        Generator yielding :class:`libtmux.Window` by iterating through
         ``sconf['windows']``.
 
         Applies ``window_options`` to window.
 
-        :param session: :class:`Session` from the config
-        :rtype: tuple(:class:`Window`, ``wconf``)
+        :param session: :class:`libtmux.Session` from the config
+        :rtype: tuple(:class:`libtmux.Window`, ``wconf``)
 
         """
         for i, wconf in enumerate(self.sconf['windows'], start=1):
@@ -268,16 +271,21 @@ class WorkspaceBuilder(object):
             yield w, wconf
 
     def iter_create_panes(self, w, wconf):
-        """Return :class:`Pane` iterating through window config dict.
+        """
+        Return :class:`libtmux.Pane` iterating through window config dict.
 
         Run ``shell_command`` with ``$ tmux send-keys``.
 
-        :param w: window to create panes for
-        :type w: :class:`Window`
-        :param wconf: config section for window
-        :type wconf: :py:obj:`dict`
-        :rtype: tuple(:class:`Pane`, ``pconf``)
+        Parameters
+        ----------
+        w : :class:`libtmux.Window`
+            window to create panes for
+        wconf : dict
+            config section for window
 
+        Returns
+        -------
+        tuple of (:class:`libtmux.Pane`, ``pconf``)
         """
         assert(isinstance(w, Window))
 
@@ -342,7 +350,7 @@ def freeze(session):
 
     Parameters
     ----------
-    session : :class:`Session`
+    session : :class:`libtmux.Session`
         session object
 
     Returns
