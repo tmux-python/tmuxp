@@ -337,12 +337,18 @@ class WorkspaceBuilder(object):
 
 
 def freeze(session):
-    """Freeze live tmux session and Return session config :py:obj:`dict`.
+    """
+    Freeze live tmux session and Return session config :py:obj:`dict`.
 
-    :param session: session object
-    :type session: :class:`Session`
-    :rtype: dict
+    Parameters
+    ----------
+    session : :class:`Session`
+        session object
 
+    Returns
+    -------
+    dict
+        tmuxp compatible workspace config
     """
     sconf = {'session_name': session['session_name'], 'windows': []}
 
