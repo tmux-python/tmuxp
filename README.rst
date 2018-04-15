@@ -2,6 +2,10 @@ tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
 
+**We need help!** tmuxp is a trusted session manager for tmux. If you
+could lend your time to helping answer issues and QA pull requests, please
+do! See `issue #290 <https://github.com/tmux-python/tmuxp/issues/290>`__!
+
 **New to tmux?** `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ is
 available on Leanpub and `Amazon Kindle`_. Read and browse the book for free
 `on the web`_.
