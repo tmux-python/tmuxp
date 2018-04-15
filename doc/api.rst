@@ -58,6 +58,8 @@ Workspace Builder
 .. autoclass:: tmuxp.WorkspaceBuilder
    :members:
 
+.. automethod:: tmuxp.workspacebuilder.freeze
+
 Exceptions
 ----------
 
