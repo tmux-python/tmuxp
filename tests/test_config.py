@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp configuration import, inlining, expanding and export."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import os
 
-import kaptan
 import pytest
+
+import kaptan
 
 from tmuxp import config, exc
 

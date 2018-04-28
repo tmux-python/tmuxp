@@ -2,8 +2,8 @@
 
 import os
 import sys
-import alagitpull
 
+import alagitpull
 
 # Get the project root dir, which is the parent dir of this
 cwd = os.getcwd()

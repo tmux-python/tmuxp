@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp workspacebuilder."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import os
 
-import kaptan
 import pytest
+
+import kaptan
+
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import temp_session, retry
-
+from libtmux.test import retry, temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder

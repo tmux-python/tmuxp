@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp command line interface."""
 
-from __future__ import absolute_import, print_function, with_statement
+from __future__ import absolute_import
 
-import os
 import json
-import libtmux
+import os
+
 import pytest
+
 import click
 from click.testing import CliRunner
 
+import libtmux
 from libtmux.common import has_lt_version
-
 from tmuxp import cli, config
-from tmuxp.cli import (
-    is_pure_name, load_workspace, scan_config, get_config_dir
-)
+from tmuxp.cli import get_config_dir, is_pure_name, load_workspace, scan_config
 
 from .fixtures._util import curjoin, loadfixture
 

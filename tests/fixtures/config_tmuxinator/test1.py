@@ -1,6 +1,5 @@
 from .._util import loadfixture
 
-
 tmuxinator_yaml = loadfixture('config_tmuxinator/test1.yaml')
 tmuxinator_dict = {
     'windows': [

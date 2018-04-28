@@ -9,12 +9,16 @@ tmuxp
 :license: MIT, see LICENSE for details
 
 """
-from __future__ import absolute_import, division, print_function, \
-    with_statement, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
-from .__about__ import __title__, __package_name__, __version__, \
-    __description__, __email__, __author__, __license__, __copyright__
-
-from .workspacebuilder import WorkspaceBuilder
-
-from . import config, util, cli
+from . import cli, config, util
+from .__about__ import (
+    __author__,
+    __copyright__,
+    __description__,
+    __email__,
+    __license__,
+    __package_name__,
+    __title__,
+    __version__,
+)

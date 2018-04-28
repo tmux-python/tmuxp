@@ -5,7 +5,7 @@ tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import, print_function, with_statement
+from __future__ import absolute_import
 
 import logging
 import os
@@ -14,14 +14,15 @@ import sys
 import click
 import kaptan
 from click.exceptions import FileError
-from libtmux.common import has_minimum_version, which, has_gte_version
+
+from libtmux.common import has_gte_version, has_minimum_version, which
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
-from . import WorkspaceBuilder, config, exc, log, util
+from . import config, exc, log, util
 from .__about__ import __version__
 from ._compat import string_types
-from .workspacebuilder import freeze
+from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
 

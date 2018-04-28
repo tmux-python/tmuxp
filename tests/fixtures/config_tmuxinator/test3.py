@@ -1,6 +1,5 @@
 from .._util import loadfixture
 
-
 tmuxinator_yaml = loadfixture('config_tmuxinator/test3.yaml')
 
 tmuxinator_dict = {
