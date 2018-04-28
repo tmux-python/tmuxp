@@ -4,6 +4,9 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`-` Remove unused ``__future__`` imports
+- :support:`-` Sort imports
+- :support:`-` Add configuration and make command for isort.
 - :support:`-` Add sphinxcontrib-napoleon.
 - :support:`-` Assure *requirements/dev.txt* dependencies are in *Pipfile*
 - :support:`-` Update sphinx, releases to latest version
