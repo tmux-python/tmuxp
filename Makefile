@@ -29,3 +29,9 @@ flake8:
 
 watch_flake8:
 	if command -v entr > /dev/null; then ${PY_FILES} | entr -c $(MAKE) flake8; else $(MAKE) flake8 entr_warn; fi
+
+sync_pipfile:
+	pipenv install --skip-lock --dev -r requirements/doc.txt && \
+	pipenv install --skip-lock --dev -r requirements/dev.txt && \
+	pipenv install --skip-lock --dev -r requirements/test.txt && \
+	pipenv install --skip-lock -r requirements/base.txt
