@@ -4,6 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+kaptan = ">=0.5.7"
+libtmux = "==0.8.0"
+click = "==6.7"
+colorama = "==0.3.9"
 
 [dev-packages]
 kaptan = ">=0.5.7"
@@ -11,7 +15,7 @@ libtmux = "==0.8.0"
 click = "==6.7"
 colorama = "==0.3.9"
 docutils = "==0.14"
-alagitpull = "==0.0.20"
+alagitpull = "==0.0.21"
 aafigure = "==0.6"
 pytest = "==3.6.2"
 pytest-rerunfailures = "==4.1"
