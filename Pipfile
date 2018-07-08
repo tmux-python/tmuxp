@@ -1,13 +1,7 @@
 [[source]]
-url = "https://pypi.python.org/simple"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
-
-[packages]
-kaptan = ">=0.5.7"
-libtmux = "==0.8.0"
-click = "==6.7"
-colorama = "==0.3.9"
 
 [dev-packages]
 kaptan = ">=0.5.7"
@@ -16,13 +10,22 @@ click = "==6.7"
 colorama = "==0.3.9"
 docutils = "==0.14"
 alagitpull = "==0.0.21"
+releases = "==1.6.1"
 aafigure = "==0.6"
-pytest = "==3.6.2"
-pytest-rerunfailures = "==4.1"
-releases = "==1.6.0"
+sphinxcontrib-napoleon = "==0.6.1"
 Sphinx = "==1.7.5"
-"e1839a8" = {path = ".", editable = true}
 isort = "==4.3.4"
 "flake8" = "==3.5.0"
-vulture = "==0.27"
-sphinxcontrib-napoleon = "==0.6.1"
+vulture = "==0.28"
+pytest = "==3.6.3"
+pytest-rerunfailures = "==4.1"
+tmuxp = {path = ".", editable = true}
+
+[packages]
+kaptan = ">=0.5.7"
+libtmux = "==0.8.0"
+click = "==6.7"
+colorama = "==0.3.9"
+
+[requires]
+python_version = "2.7"
