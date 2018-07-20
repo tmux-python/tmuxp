@@ -10,6 +10,7 @@ from __future__ import absolute_import
 import logging
 import os
 import sys
+import tempfile
 
 import click
 import kaptan
@@ -726,8 +727,11 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.option(
     '-8', 'colors', flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.')
+@click.option(
+    '--combine', '-c', 'combine', is_flag=True,
+    help='Combines the windows of the given files (only makes sense if you give more than one')
 def command_load(ctx, config, socket_name, socket_path, answer_yes,
-                 detached, colors):
+                 detached, colors, combine):
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -769,15 +773,40 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
         load_workspace(config, **tmux_options)
 
     elif isinstance(config, tuple):
-        config = list(config)
-        # Load each configuration but the last to the background
-        for cfg in config[:-1]:
-            opt = tmux_options.copy()
-            opt.update({'detached': True})
-            load_workspace(cfg, **opt)
+        if combine:
+            # TODO rename arg 'config' or global import of the config module?
+            from . import config as _config
+            configs = []
+            for cfg in config:
+                sconfig = kaptan.Kaptan()
+                sconfig = sconfig.import_config(cfg).get()
+                sconfig = _config.expand(sconfig, os.path.dirname(cfg))
+                sconfig = _config.trickle(sconfig)
+                configs.append(sconfig)
+            combined_config = {
+                # TODO what else needs to be merged?
+                'windows': [win for cfg in configs for win in cfg['windows']],
+                'session_name': "--".join(cfg['session_name'] for cfg in configs),
+            }
+            configparser = kaptan.Kaptan()
+            configparser.import_config(combined_config)
+            newconfig = configparser.export(
+                'yaml', indent=2, default_flow_style=False
+            )
+            with tempfile.NamedTemporaryFile(suffix=".yaml") as tmp:
+                tmp.write(newconfig)
+                tmp.flush()
+                load_workspace(tmp.name, **tmux_options)
+        else:
+            config = list(config)
+            # Load each configuration but the last to the background
+            for cfg in config[:-1]:
+                opt = tmux_options.copy()
+                opt.update({'detached': True})
+                load_workspace(cfg, **opt)
 
-        # todo: obey the -d in the cli args only if user specifies
-        load_workspace(config[-1], **tmux_options)
+            # todo: obey the -d in the cli args only if user specifies
+            load_workspace(config[-1], **tmux_options)
 
 
 @cli.group(name='import')
