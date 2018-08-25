@@ -61,19 +61,22 @@ def test_get_configs_cwd(tmpdir):
         assert '.tmuxp.json' in configs_found
 
 
-@pytest.mark.parametrize('path,expect', [
-    ('.', False),
-    ('./', False),
-    ('', False),
-    ('.tmuxp.yaml', False),
-    ('../.tmuxp.yaml', False),
-    ('../', False),
-    ('/hello/world', False),
-    ('~/.tmuxp/hey', False),
-    ('~/work/c/tmux/', False),
-    ('~/work/c/tmux/.tmuxp.yaml', False),
-    ('myproject', True),
-])
+@pytest.mark.parametrize(
+    'path,expect',
+    [
+        ('.', False),
+        ('./', False),
+        ('', False),
+        ('.tmuxp.yaml', False),
+        ('../.tmuxp.yaml', False),
+        ('../', False),
+        ('/hello/world', False),
+        ('~/.tmuxp/hey', False),
+        ('~/work/c/tmux/', False),
+        ('~/work/c/tmux/.tmuxp.yaml', False),
+        ('myproject', True),
+    ],
+)
 def test_is_pure_name(path, expect):
     assert is_pure_name(path) == expect
 
@@ -134,11 +137,11 @@ def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
         assert scan_config('../project') == expect
         assert scan_config('../project/') == expect
         assert scan_config('.tmuxp.yaml') == expect
-        assert scan_config(
-            '../../.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('../../.tmuxp/%s.yaml' % user_config_name) == str(
+            user_config
+        )
         assert scan_config('myconfig') == str(user_config)
-        assert scan_config(
-            '~/.tmuxp/myconfig.yaml') == str(user_config)
+        assert scan_config('~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             scan_config('.tmuxp.json')
@@ -155,13 +158,10 @@ def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
         assert scan_config('work/project/') == expect
         assert scan_config('./work/project') == expect
         assert scan_config('./work/project/') == expect
-        assert scan_config(
-            '.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert scan_config(
-            './.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('./.tmuxp/%s.yaml' % user_config_name) == str(user_config)
         assert scan_config('myconfig') == str(user_config)
-        assert scan_config(
-            '~/.tmuxp/myconfig.yaml') == str(user_config)
+        assert scan_config('~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             scan_config('')
@@ -179,13 +179,10 @@ def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
         assert scan_config('../work/project') == expect
         assert scan_config('../../home/work/project') == expect
         assert scan_config('../work/project/') == expect
-        assert scan_config(
-            '%s.yaml' % user_config_name) == str(user_config)
-        assert scan_config(
-            './%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('./%s.yaml' % user_config_name) == str(user_config)
         assert scan_config('myconfig') == str(user_config)
-        assert scan_config(
-            '~/.tmuxp/myconfig.yaml') == str(user_config)
+        assert scan_config('~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             scan_config('')
@@ -202,13 +199,12 @@ def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
         expect = project_config
         assert scan_config('home/work/project') == expect
         assert scan_config('./home/work/project/') == expect
-        assert scan_config(
-            'home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
-        assert scan_config(
-            './home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('home/.tmuxp/%s.yaml' % user_config_name) == str(user_config)
+        assert scan_config('./home/.tmuxp/%s.yaml' % user_config_name) == str(
+            user_config
+        )
         assert scan_config('myconfig') == str(user_config)
-        assert scan_config(
-            '~/.tmuxp/myconfig.yaml') == str(user_config)
+        assert scan_config('~/.tmuxp/myconfig.yaml') == str(user_config)
 
         with pytest.raises(Exception):
             scan_config('')
@@ -227,8 +223,8 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
 
     @click.command()
     @click.argument(
-        'config', click.Path(exists=True), nargs=-1,
-        callback=cli.scan_config_argument)
+        'config', click.Path(exists=True), nargs=-1, callback=cli.scan_config_argument
+    )
     def config_cmd(config):
         click.echo(config)
 
@@ -250,11 +246,9 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
         assert expect in check_cmd('../project')
         assert expect in check_cmd('../project/')
         assert expect in check_cmd('.tmuxp.yaml')
-        assert str(user_config) in check_cmd(
-            '../../.tmuxp/%s.yaml' % user_config_name)
+        assert str(user_config) in check_cmd('../../.tmuxp/%s.yaml' % user_config_name)
         assert user_config.purebasename in check_cmd('myconfig')
-        assert str(user_config) in check_cmd(
-            '~/.tmuxp/myconfig.yaml')
+        assert str(user_config) in check_cmd('~/.tmuxp/myconfig.yaml')
 
         assert 'file not found' in check_cmd('.tmuxp.json')
         assert 'file not found' in check_cmd('.tmuxp.ini')
@@ -271,8 +265,7 @@ def test_load_workspace(server, monkeypatch):
 
     # open it detached
     session = load_workspace(
-        session_file, socket_name=server.socket_name,
-        detached=True
+        session_file, socket_name=server.socket_name, detached=True
     )
 
     assert isinstance(session, libtmux.Session)
@@ -288,8 +281,7 @@ def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
 
     # open it detached
     session = load_workspace(
-        session_file, socket_name=server.socket_name,
-        detached=True
+        session_file, socket_name=server.socket_name, detached=True
     )
 
     assert isinstance(session, libtmux.Session)
@@ -297,18 +289,18 @@ def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
 
     projfile = tmpdir.join('simple.yaml')
 
-    projfile.write("""
+    projfile.write(
+        """
 session_name: sampleconfi
 start_directory: './'
 windows:
 - panes:
-    - echo 'hey'""")
+    - echo 'hey'"""
+    )
 
     # open it detached
     session = load_workspace(
-        projfile.strpath,
-        socket_name=server.socket_name,
-        detached=True
+        projfile.strpath, socket_name=server.socket_name, detached=True
     )
     assert session.name == 'sampleconfi'
 
@@ -324,18 +316,18 @@ def test_load_symlinked_workspace(server, tmpdir, monkeypatch):
     linktemp.mksymlinkto(realtemp)
     projfile = linktemp.join('simple.yaml')
 
-    projfile.write("""
+    projfile.write(
+        """
 session_name: samplesimple
 start_directory: './'
 windows:
 - panes:
-    - echo 'hey'""")
+    - echo 'hey'"""
+    )
 
     # open it detached
     session = load_workspace(
-        projfile.strpath,
-        socket_name=server.socket_name,
-        detached=True
+        projfile.strpath, socket_name=server.socket_name, detached=True
     )
     pane = session.attached_window.attached_pane
 
@@ -350,16 +342,13 @@ def test_regression_00132_session_name_with_dots(tmpdir, server, session):
     inputs = []
     runner = CliRunner()
     result = runner.invoke(
-        cli.command_load, cli_args, input=''.join(inputs),
-        standalone_mode=False)
+        cli.command_load, cli_args, input=''.join(inputs), standalone_mode=False
+    )
     assert result.exception
     assert isinstance(result.exception, libtmux.exc.BadSessionName)
 
 
-@pytest.mark.parametrize("cli_args", [
-    (['load', '.']),
-    (['load', '.tmuxp.yaml']),
-])
+@pytest.mark.parametrize("cli_args", [(['load', '.']), (['load', '.tmuxp.yaml'])])
 def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
     tmpdir.join('.tmuxp.yaml').ensure()
@@ -388,15 +377,14 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
-@pytest.mark.parametrize("cli_args", [
-    (['convert', '.']),
-    (['convert', '.tmuxp.yaml']),
-])
+@pytest.mark.parametrize("cli_args", [(['convert', '.']), (['convert', '.tmuxp.yaml'])])
 def test_convert(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
-    tmpdir.join('.tmuxp.yaml').write("""
+    tmpdir.join('.tmuxp.yaml').write(
+        """
 session_name: hello
-    """)
+    """
+    )
     tmpdir.join('.oh-my-zsh').ensure(dir=True)
     monkeypatch.setenv('HOME', str(tmpdir))
 
@@ -405,13 +393,12 @@ session_name: hello
 
         runner.invoke(cli.cli, cli_args, input='y\ny\n')
         assert tmpdir.join('.tmuxp.json').check()
-        assert tmpdir.join('.tmuxp.json').open().read() == \
-            json.dumps({'session_name': 'hello'}, indent=2)
+        assert tmpdir.join('.tmuxp.json').open().read() == json.dumps(
+            {'session_name': 'hello'}, indent=2
+        )
 
 
-@pytest.mark.parametrize("cli_args", [
-    (['import']),
-])
+@pytest.mark.parametrize("cli_args", [(['import'])])
 def test_import(cli_args, monkeypatch):
     runner = CliRunner()
 
@@ -420,14 +407,23 @@ def test_import(cli_args, monkeypatch):
     assert 'teamocil' in result.output
 
 
-@pytest.mark.parametrize("cli_args,inputs", [
-    (['import', 'teamocil', './.teamocil/config.yaml'],
-     ['\n', 'y\n', './la.yaml\n', 'y\n']),
-    (['import', 'teamocil', './.teamocil/config.yaml'],
-     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
-    (['import', 'teamocil', 'config'],
-     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
-])
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [
+        (
+            ['import', 'teamocil', './.teamocil/config.yaml'],
+            ['\n', 'y\n', './la.yaml\n', 'y\n'],
+        ),
+        (
+            ['import', 'teamocil', './.teamocil/config.yaml'],
+            ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
+        ),
+        (
+            ['import', 'teamocil', 'config'],
+            ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
+        ),
+    ],
+)
 def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
     teamocil_config = loadfixture('config_teamocil/test4.yaml')
     teamocil_dir = tmpdir.join('.teamocil').mkdir()
@@ -441,14 +437,23 @@ def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
         assert tmpdir.join('la.yaml').check()
 
 
-@pytest.mark.parametrize("cli_args,inputs", [
-    (['import', 'tmuxinator', './.tmuxinator/config.yaml'],
-     ['\n', 'y\n', './la.yaml\n', 'y\n']),
-    (['import', 'tmuxinator', './.tmuxinator/config.yaml'],
-     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
-    (['import', 'tmuxinator', 'config'],
-     ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),
-])
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [
+        (
+            ['import', 'tmuxinator', './.tmuxinator/config.yaml'],
+            ['\n', 'y\n', './la.yaml\n', 'y\n'],
+        ),
+        (
+            ['import', 'tmuxinator', './.tmuxinator/config.yaml'],
+            ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
+        ),
+        (
+            ['import', 'tmuxinator', 'config'],
+            ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
+        ),
+    ],
+)
 def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
     tmuxinator_config = loadfixture('config_tmuxinator/test3.yaml')
     tmuxinator_dir = tmpdir.join('.tmuxinator').mkdir()
@@ -518,8 +523,8 @@ def test_create_scan_config_arg(tmpdir):
 
     @click.command()
     @click.argument(
-        'config', click.Path(exists=True), nargs=-1,
-        callback=my_scan_config)
+        'config', click.Path(exists=True), nargs=-1, callback=my_scan_config
+    )
     def config_cmd(config):
         click.echo(config)
 
@@ -530,7 +535,6 @@ def test_create_scan_config_arg(tmpdir):
         assert expect in check_cmd('myconfig')
         assert expect in check_cmd('myconfig.yaml')
         assert expect in check_cmd('./myconfig.yaml')
-        assert str(user_config) in check_cmd(
-            str(configdir.join('myconfig.yaml')))
+        assert str(user_config) in check_cmd(str(configdir.join('myconfig.yaml')))
 
         assert 'file not found' in check_cmd('.tmuxp.json')

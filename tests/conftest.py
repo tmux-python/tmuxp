@@ -18,6 +18,7 @@ def server(request):
 
     def fin():
         t.kill_server()
+
     request.addfinalizer(fin)
 
     return t
@@ -32,16 +33,15 @@ def session(server):
 
     # find current sessions prefixed with tmuxp
     old_test_sessions = [
-        s.get('session_name') for s in server._sessions
+        s.get('session_name')
+        for s in server._sessions
         if s.get('session_name').startswith(TEST_SESSION_PREFIX)
     ]
 
     TEST_SESSION_NAME = get_test_session_name(server=server)
 
     try:
-        session = server.new_session(
-            session_name=TEST_SESSION_NAME,
-        )
+        session = server.new_session(session_name=TEST_SESSION_NAME)
     except exc.LibTmuxException as e:
         raise e
 
@@ -57,10 +57,7 @@ def session(server):
         pass
 
     for old_test_session in old_test_sessions:
-        logger.debug(
-            'Old test test session %s found. Killing it.' %
-            old_test_session
-        )
+        logger.debug('Old test test session %s found. Killing it.' % old_test_session)
         server.kill_session(old_test_session)
     assert TEST_SESSION_NAME == session.get('session_name')
     assert TEST_SESSION_NAME != 'tmuxp'

@@ -61,6 +61,7 @@ class AafigDirective(images.Image):
     """
     Directive to insert an ASCII art figure to be rendered by aafigure.
     """
+
     has_content = True
     required_arguments = 0
     own_option_spec = dict(
@@ -101,8 +102,10 @@ def render_aafig_images(app, doctree):
     format_map = app.builder.config.aafig_format
     merge_dict(format_map, DEFAULT_FORMATS)
     if aafigure is None:
-        app.builder.warn('aafigure module not installed, ASCII art images '
-                         'will be redered as literal text')
+        app.builder.warn(
+            'aafigure module not installed, ASCII art images '
+            'will be redered as literal text'
+        )
     for img in doctree.traverse(nodes.image):
         if not hasattr(img, 'aafig'):
             continue
@@ -115,9 +118,11 @@ def render_aafig_images(app, doctree):
         if format in format_map:
             options['format'] = format_map[format]
         else:
-            app.builder.warn('unsupported builder format "%s", please '
-                             'add a custom entry in aafig_format config '
-                             'option for this builder' % format)
+            app.builder.warn(
+                'unsupported builder format "%s", please '
+                'add a custom entry in aafig_format config '
+                'option for this builder' % format
+            )
             img.replace_self(nodes.literal_block(text, text))
             continue
         if options['format'] is None:
@@ -157,11 +162,12 @@ def render_aafigure(app, text, options):
     else:
         # Non-HTML
         if app.builder.format != 'latex':
-            app.builder.warn('aafig: the builder format %s is not officially '
-                             'supported, aafigure images could not work. '
-                             'Please report problems and working builder to '
-                             'avoid this warning inthe future' %
-                             app.builder.format)
+            app.builder.warn(
+                'aafig: the builder format %s is not officially '
+                'supported, aafigure images could not work. '
+                'Please report problems and working builder to '
+                'avoid this warning inthe future' % app.builder.format
+            )
         relfn = fname
         outfn = path.join(app.builder.outdir, fname)
     metadata_fname = '%s.aafig' % outfn

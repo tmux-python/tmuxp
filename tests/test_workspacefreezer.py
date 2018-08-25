@@ -33,13 +33,5 @@ def test_freeze_config(session):
 
     kaptanconf = kaptan.Kaptan()
     kaptanconf = kaptanconf.import_config(sconf)
-    kaptanconf.export(
-        'json',
-        indent=2
-    )
-    kaptanconf.export(
-        'yaml',
-        indent=2,
-        default_flow_style=False,
-        safe=True
-    )
+    kaptanconf.export('json', indent=2)
+    kaptanconf.export('yaml', indent=2, default_flow_style=False, safe=True)
