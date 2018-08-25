@@ -1,8 +1,6 @@
 PY_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]py$$' 2> /dev/null
 
-
-entr_warn:
-	@echo "----------------------------------------------------------"
+entr_warn: @echo "----------------------------------------------------------"
 	@echo "     ! File watching functionality non-operational !      "
 	@echo "                                                          "
 	@echo "Install entr(1) to automatically run tasks on file change."
@@ -11,6 +9,9 @@ entr_warn:
 
 isort:
 	isort `${PY_FILES}`
+
+black:
+	black `${PY_FILES}` --skip-string-normalization
 
 test:
 	py.test $(test)
