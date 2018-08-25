@@ -107,7 +107,8 @@ def _validate_choices(options):
     def func(value):
         if value not in options:
             raise click.BadParameter(
-                'Possible choices are: {0}.'.format(', '.join(options)))
+                'Possible choices are: {0}.'.format(', '.join(options))
+            )
         return value
 
     return func
@@ -144,11 +145,7 @@ def set_layout_hook(session, hook_name):
     hook_name : str
         hook name to bind to, e.g. 'client-attached'
     """
-    cmd = [
-        'set-hook',
-        '-t', session.id,
-        hook_name
-    ]
+    cmd = ['set-hook', '-t', session.id, hook_name]
     hook_cmd = []
     for window in session.windows:
         # unfortunately, select-layout won't work unless
@@ -162,8 +159,7 @@ def set_layout_hook(session, hook_name):
     # unset the hook immediately after executing
     hook_cmd.append(
         'set-hook -u -t {target_session} {hook_name}'.format(
-            target_session=session.id,
-            hook_name=hook_name
+            target_session=session.id, hook_name=hook_name
         )
     )
 
@@ -192,15 +188,17 @@ def is_pure_name(path):
         True if path is a name of config in config dir, not file path.
     """
     return (
-        not os.path.isabs(path) and
-        len(os.path.dirname(path)) == 0 and
-        not os.path.splitext(path)[1] and
-        path != '.' and path != ''
+        not os.path.isabs(path)
+        and len(os.path.dirname(path)) == 0
+        and not os.path.splitext(path)[1]
+        and path != '.'
+        and path != ''
     )
 
 
 def _create_scan_config_argument(config_dir):
     """For finding configurations in tmuxinator/teamocil"""
+
     def func(ctx, param, value):
         return scan_config_argument(ctx, param, value, config_dir)
 
@@ -223,8 +221,7 @@ def scan_config_argument(ctx, param, value, config_dir=None):
         value = scan_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
-        value = tuple(
-            [scan_config(v, config_dir=config_dir) for v in value])
+        value = tuple([scan_config(v, config_dir=config_dir) for v in value])
 
     return value
 
@@ -245,8 +242,7 @@ def get_abs_path(config):
 def _resolve_path_no_overwrite(config):
     path = get_abs_path(config)
     if os.path.exists(path):
-        raise click.exceptions.UsageError(
-            '%s exists. Pick a new filename.' % path)
+        raise click.exceptions.UsageError('%s exists. Pick a new filename.' % path)
     return path
 
 
@@ -293,8 +289,11 @@ def scan_config(config, config_dir=None):
     if is_pure_name(config):
         is_name = True
     elif (
-        not isabs(config) or len(dirname(config)) > 1 or config == '.' or
-        config == "" or config == "./"
+        not isabs(config)
+        or len(dirname(config)) > 1
+        or config == '.'
+        or config == ""
+        or config == "./"
     ):  # if relative, fill in full path
         config = normpath(join(cwd, config))
 
@@ -302,31 +301,40 @@ def scan_config(config, config_dir=None):
     if not splitext(config)[1]:
         if is_name:
             candidates = [
-                x for x in ['%s%s' % (join(config_dir, config), ext)
-                            for ext in ['.yaml', '.yml', '.json']
-                            ] if exists(x)
+                x
+                for x in [
+                    '%s%s' % (join(config_dir, config), ext)
+                    for ext in ['.yaml', '.yml', '.json']
+                ]
+                if exists(x)
             ]
             if not len(candidates):
                 file_error = (
                     'config not found in config dir (yaml/yml/json) %s '
-                    'for name' % (config_dir))
+                    'for name' % (config_dir)
+                )
         else:
             candidates = [
-                x for x in [
-                    join(config, ext) for ext in
-                    ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']
-                ] if exists(x)
+                x
+                for x in [
+                    join(config, ext)
+                    for ext in ['.tmuxp.yaml', '.tmuxp.yml', '.tmuxp.json']
+                ]
+                if exists(x)
             ]
 
             if len(candidates) > 1:
                 click.secho(
-                    'Multiple .tmuxp.{yml,yaml,json} configs in %s' %
-                    dirname(config), fg="red")
-                click.echo(click.wrap_text(
-                    'This is undefined behavior, use only one. '
-                    'Use file names e.g. myproject.json, coolproject.yaml. '
-                    'You can load them by filename.'
-                ))
+                    'Multiple .tmuxp.{yml,yaml,json} configs in %s' % dirname(config),
+                    fg="red",
+                )
+                click.echo(
+                    click.wrap_text(
+                        'This is undefined behavior, use only one. '
+                        'Use file names e.g. myproject.json, coolproject.yaml. '
+                        'You can load them by filename.'
+                    )
+                )
             elif not len(candidates):
                 file_error = 'No tmuxp files found in directory'
         if len(candidates):
@@ -364,8 +372,12 @@ def _reattach(session):
 
 
 def load_workspace(
-    config_file, socket_name=None, socket_path=None, colors=None,
-    detached=False, answer_yes=False
+    config_file,
+    socket_name=None,
+    socket_path=None,
+    colors=None,
+    detached=False,
+    answer_yes=False,
 ):
     """
     Load a tmux "workspace" session via tmuxp file.
@@ -466,9 +478,7 @@ def load_workspace(
     sconfig = config.trickle(sconfig)
 
     t = Server(  # create tmux server object
-        socket_name=socket_name,
-        socket_path=socket_path,
-        colors=colors
+        socket_name=socket_name, socket_path=socket_path, colors=colors
     )
 
     which('tmux')  # raise exception if tmux not found
@@ -476,8 +486,7 @@ def load_workspace(
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
-        click.echo('%s is empty or parsed no config data' %
-                   config_file, err=True)
+        click.echo('%s is empty or parsed no config data' % config_file, err=True)
         return
 
     session_name = sconfig['session_name']
@@ -486,25 +495,28 @@ def load_workspace(
     # support incremental session building or appending (yet, PR's welcome!)
     if builder.session_exists(session_name):
         if not detached and (
-            answer_yes or click.confirm(
-                '%s is already running. Attach?' %
-                click.style(session_name, fg='green'), default=True)
+            answer_yes
+            or click.confirm(
+                '%s is already running. Attach?'
+                % click.style(session_name, fg='green'),
+                default=True,
+            )
         ):
             _reattach(builder.session)
         return
 
     try:
         click.echo(
-            click.style('[Loading] ', fg='green') +
-            click.style(config_file, fg='blue', bold=True)
+            click.style('[Loading] ', fg='green')
+            + click.style(config_file, fg='blue', bold=True)
         )
 
         builder.build()  # load tmux session via workspace builder
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            if not detached and (answer_yes or click.confirm(
-                'Already inside TMUX, switch to session?'
-            )):
+            if not detached and (
+                answer_yes or click.confirm('Already inside TMUX, switch to session?')
+            ):
                 # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
                 tmux_env = os.environ.pop('TMUX')
 
@@ -541,7 +553,7 @@ def load_workspace(
         choice = click.prompt(
             'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
             value_proc=_validate_choices(['k', 'a', 'd']),
-            default='k'
+            default='k',
         )
 
         if choice == 'k':
@@ -559,11 +571,12 @@ def load_workspace(
 
 
 @click.group(context_settings={'obj': {}})
-@click.version_option(
-    __version__, '-V', '--version', message='%(prog)s %(version)s'
+@click.version_option(__version__, '-V', '--version', message='%(prog)s %(version)s')
+@click.option(
+    '--log_level',
+    default='INFO',
+    help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)',
 )
-@click.option('--log_level', default='INFO',
-              help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
 def cli(log_level):
     """Manage tmux sessions.
 
@@ -578,9 +591,7 @@ def cli(log_level):
     except exc.TmuxpException as e:
         click.echo(e, err=True)
         sys.exit()
-    setup_logger(
-        level=log_level.upper()
-    )
+    setup_logger(level=log_level.upper())
 
 
 def setup_logger(logger=None, level='INFO'):
@@ -630,15 +641,10 @@ def command_freeze(session_name, socket_name, socket_path):
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the
     current session."""
 
-    t = Server(
-        socket_name=socket_name,
-        socket_path=socket_path,
-    )
+    t = Server(socket_name=socket_name, socket_path=socket_path)
 
     try:
-        session = t.find_where({
-            'session_name': session_name
-        })
+        session = t.find_where({'session_name': session_name})
 
         if not session:
             raise exc.TmuxpException('Session not found.')
@@ -651,9 +657,7 @@ def command_freeze(session_name, socket_name, socket_path):
     newconfig = config.inline(sconf)
     configparser.import_config(newconfig)
     config_format = click.prompt(
-        'Convert to',
-        value_proc=_validate_choices(['yaml', 'json']),
-        default='yaml'
+        'Convert to', value_proc=_validate_choices(['yaml', 'json']), default='yaml'
     )
 
     if config_format == 'yaml':
@@ -679,13 +683,15 @@ def command_freeze(session_name, socket_name, socket_path):
             save_to = os.path.abspath(
                 os.path.join(
                     get_config_dir(),
-                    '%s.%s' % (sconf.get('session_name'), config_format)
+                    '%s.%s' % (sconf.get('session_name'), config_format),
                 )
             )
             dest_prompt = click.prompt(
-                'Save to: %s' %
-                save_to, value_proc=get_abs_path,
-                default=save_to, confirmation_prompt=True)
+                'Save to: %s' % save_to,
+                value_proc=get_abs_path,
+                default=save_to,
+                confirmation_prompt=True,
+            )
             if os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue
@@ -713,21 +719,29 @@ def command_freeze(session_name, socket_name, socket_path):
 
 @cli.command(name='load', short_help='Load tmuxp workspaces.')
 @click.pass_context
-@click.argument('config', click.Path(exists=True), nargs=-1,
-                callback=scan_config_argument)
+@click.argument(
+    'config', click.Path(exists=True), nargs=-1, callback=scan_config_argument
+)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
-@click.option('-d', 'detached',
-              help='Load the session without attaching it', is_flag=True)
 @click.option(
-    '-2', 'colors', flag_value=256, default=True,
-    help='Force tmux to assume the terminal supports 256 colours.')
+    '-d', 'detached', help='Load the session without attaching it', is_flag=True
+)
 @click.option(
-    '-8', 'colors', flag_value=88,
-    help='Like -2, but indicates that the terminal supports 88 colours.')
-def command_load(ctx, config, socket_name, socket_path, answer_yes,
-                 detached, colors):
+    '-2',
+    'colors',
+    flag_value=256,
+    default=True,
+    help='Force tmux to assume the terminal supports 256 colours.',
+)
+@click.option(
+    '-8',
+    'colors',
+    flag_value=88,
+    help='Like -2, but indicates that the terminal supports 88 colours.',
+)
+def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, colors):
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -757,7 +771,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes,
         'socket_path': socket_path,
         'answer_yes': answer_yes,
         'colors': colors,
-        'detached': detached
+        'detached': detached,
     }
 
     if not config:
@@ -794,23 +808,18 @@ def import_config(configfile, importfunc):
     configparser.import_config(newconfig)
 
     config_format = click.prompt(
-        'Convert to',
-        value_proc=_validate_choices(['yaml', 'json']),
-        default='yaml'
+        'Convert to', value_proc=_validate_choices(['yaml', 'json']), default='yaml'
     )
 
     if config_format == 'yaml':
-        newconfig = configparser.export(
-            'yaml', indent=2, default_flow_style=False
-        )
+        newconfig = configparser.export('yaml', indent=2, default_flow_style=False)
     elif config_format == 'json':
         newconfig = configparser.export('json', indent=2)
     else:
         sys.exit('Unknown config format.')
 
     click.echo(
-        newconfig +
-        '---------------------------------------------------------------'
+        newconfig + '---------------------------------------------------------------'
         '\n'
         'Configuration import does its best to convert files.\n'
     )
@@ -820,8 +829,8 @@ def import_config(configfile, importfunc):
         dest = None
         while not dest:
             dest_path = click.prompt(
-                'Save to [%s]' % os.getcwd(),
-                value_proc=_resolve_path_no_overwrite,)
+                'Save to [%s]' % os.getcwd(), value_proc=_resolve_path_no_overwrite
+            )
 
             # dest = dest_prompt
             if click.confirm('Save to %s?' % dest_path):
@@ -841,11 +850,14 @@ def import_config(configfile, importfunc):
         sys.exit()
 
 
-@import_config_cmd.command(name='teamocil',
-                           short_help='Convert and import a teamocil config.')
+@import_config_cmd.command(
+    name='teamocil', short_help='Convert and import a teamocil config.'
+)
 @click.argument(
-    'configfile', click.Path(exists=True), nargs=1,
-    callback=_create_scan_config_argument(get_teamocil_dir)
+    'configfile',
+    click.Path(exists=True),
+    nargs=1,
+    callback=_create_scan_config_argument(get_teamocil_dir),
 )
 def command_import_teamocil(configfile):
     """Convert a teamocil config from CONFIGFILE to tmuxp format and import
@@ -855,11 +867,13 @@ def command_import_teamocil(configfile):
 
 
 @import_config_cmd.command(
-    name='tmuxinator',
-    short_help='Convert and import a tmuxinator config.')
+    name='tmuxinator', short_help='Convert and import a tmuxinator config.'
+)
 @click.argument(
-    'configfile', click.Path(exists=True), nargs=1,
-    callback=_create_scan_config_argument(get_tmuxinator_dir)
+    'configfile',
+    click.Path(exists=True),
+    nargs=1,
+    callback=_create_scan_config_argument(get_tmuxinator_dir),
 )
 def command_import_tmuxinator(configfile):
     """Convert a tmuxinator config from CONFIGFILE to tmuxp format and import
@@ -868,41 +882,32 @@ def command_import_tmuxinator(configfile):
 
 
 @cli.command(name='convert')
-@click.argument('config', click.Path(exists=True), nargs=1,
-                callback=scan_config_argument)
+@click.argument(
+    'config', click.Path(exists=True), nargs=1, callback=scan_config_argument
+)
 def command_convert(config):
     """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
     if 'json' in ext:
-        if click.confirm(
-            'convert to <%s> to yaml?' % config
-        ):
+        if click.confirm('convert to <%s> to yaml?' % config):
             configparser = kaptan.Kaptan()
             configparser.import_config(config)
             newfile = config.replace(ext, '.yaml')
-            newconfig = configparser.export(
-                'yaml', indent=2, default_flow_style=False
-            )
-            if click.confirm(
-                'Save config to %s?' % newfile
-            ):
+            newconfig = configparser.export('yaml', indent=2, default_flow_style=False)
+            if click.confirm('Save config to %s?' % newfile):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to %s' % newfile)
     elif 'yaml' in ext:
-        if click.confirm(
-            'convert to <%s> to json?' % config
-        ):
+        if click.confirm('convert to <%s> to json?' % config):
             configparser = kaptan.Kaptan()
             configparser.import_config(config)
             newfile = config.replace(ext, '.json')
             newconfig = configparser.export('json', indent=2)
             print(newconfig)
-            if click.confirm(
-                'Save config to <%s>?' % newfile
-            ):
+            if click.confirm('Save config to <%s>?' % newfile):
                 buf = open(newfile, 'w')
                 buf.write(newconfig)
                 buf.close()

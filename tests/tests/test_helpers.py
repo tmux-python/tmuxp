@@ -12,9 +12,7 @@ def test_kills_session(server):
     server = server
     session_name = get_test_session_name(server=server)
 
-    with temp_session(
-        server=server, session_name=session_name
-    ):
+    with temp_session(server=server, session_name=session_name):
         result = server.has_session(session_name)
         assert result
 

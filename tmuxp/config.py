@@ -44,8 +44,7 @@ def validate_schema(sconf):
 
         if 'panes' not in window:
             raise exc.ConfigError(
-                'config window %s requires list of panes' %
-                window['window_name']
+                'config window %s requires list of panes' % window['window_name']
             )
 
     return True
@@ -66,14 +65,12 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
     -------
     bool
     """
-    extensions = [extensions] if isinstance(
-        extensions, string_types) else extensions
+    extensions = [extensions] if isinstance(extensions, string_types) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
 def in_dir(
-        config_dir=os.path.expanduser('~/.tmuxp'),
-        extensions=['.yml', '.yaml', '.json']
+    config_dir=os.path.expanduser('~/.tmuxp'), extensions=['.yml', '.yaml', '.json']
 ):
     """
     Return a list of configs in ``config_dir``.
@@ -92,8 +89,7 @@ def in_dir(
     configs = []
 
     for filename in os.listdir(config_dir):
-        if is_config_file(filename, extensions) and \
-                not filename.startswith('.'):
+        if is_config_file(filename, extensions) and not filename.startswith('.'):
             configs.append(filename)
 
     return configs
@@ -153,26 +149,24 @@ def inline(sconf):
     """
 
     if (
-        'shell_command' in sconf and
-        isinstance(sconf['shell_command'], list) and
-        len(sconf['shell_command']) == 1
+        'shell_command' in sconf
+        and isinstance(sconf['shell_command'], list)
+        and len(sconf['shell_command']) == 1
     ):
         sconf['shell_command'] = sconf['shell_command'][0]
 
         if len(sconf.keys()) == int(1):
             sconf = sconf['shell_command']
     if (
-        'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], list) and
-        len(sconf['shell_command_before']) == 1
+        'shell_command_before' in sconf
+        and isinstance(sconf['shell_command_before'], list)
+        and len(sconf['shell_command_before']) == 1
     ):
         sconf['shell_command_before'] = sconf['shell_command_before'][0]
 
     # recurse into window and pane config items
     if 'windows' in sconf:
-        sconf['windows'] = [
-            inline(window) for window in sconf['windows']
-        ]
+        sconf['windows'] = [inline(window) for window in sconf['windows']]
     if 'panes' in sconf:
         sconf['panes'] = [inline(pane) for pane in sconf['panes']]
 
@@ -269,21 +263,16 @@ def expand(sconf, cwd=None, parent=None):
                 os.path.join(cwd, sconf['before_script'])
             )
 
-    if (
-        'shell_command' in sconf and
-        isinstance(sconf['shell_command'], string_types)
-    ):
+    if 'shell_command' in sconf and isinstance(sconf['shell_command'], string_types):
         sconf['shell_command'] = [sconf['shell_command']]
 
-    if (
-        'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], string_types)
+    if 'shell_command_before' in sconf and isinstance(
+        sconf['shell_command_before'], string_types
     ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
 
-    if (
-        'shell_command_before' in sconf and
-        isinstance(sconf['shell_command_before'], list)
+    if 'shell_command_before' in sconf and isinstance(
+        sconf['shell_command_before'], list
     ):
         sconf['shell_command_before'] = [
             expandshell(scmd) for scmd in sconf['shell_command_before']
@@ -291,9 +280,7 @@ def expand(sconf, cwd=None, parent=None):
 
     # recurse into window and pane config items
     if 'windows' in sconf:
-        sconf['windows'] = [
-            expand(window, parent=sconf) for window in sconf['windows']
-        ]
+        sconf['windows'] = [expand(window, parent=sconf) for window in sconf['windows']]
     elif 'panes' in sconf:
 
         for pconf in sconf['panes']:
@@ -302,13 +289,9 @@ def expand(sconf, cwd=None, parent=None):
             pconf = sconf['panes'][p_index] = {}
 
             if isinstance(p, string_types):
-                p = {
-                    'shell_command': [p]
-                }
+                p = {'shell_command': [p]}
             elif not p:
-                p = {
-                    'shell_command': []
-                }
+                p = {'shell_command': []}
 
             assert isinstance(p, dict)
             if 'shell_command' in p:
@@ -329,9 +312,7 @@ def expand(sconf, cwd=None, parent=None):
                 p['shell_command'] = []
 
             pconf.update(p)
-        sconf['panes'] = [
-            expand(pane, parent=sconf) for pane in sconf['panes']
-        ]
+        sconf['panes'] = [expand(pane, parent=sconf) for pane in sconf['panes']]
 
     return sconf
 
@@ -377,12 +358,10 @@ def trickle(sconf):
                 windowconfig['start_directory'] = session_start_directory
             else:
                 if not any(
-                        windowconfig['start_directory'].startswith(a)
-                        for a in ['~', '/']
+                    windowconfig['start_directory'].startswith(a) for a in ['~', '/']
                 ):
                     window_start_path = os.path.join(
-                        session_start_directory,
-                        windowconfig['start_directory']
+                        session_start_directory, windowconfig['start_directory']
                     )
                     windowconfig['start_directory'] = window_start_path
 
@@ -445,16 +424,12 @@ def import_tmuxinator(sconf):
         tmuxp_config['config'] = sconf['cli_args']
 
         if '-f' in tmuxp_config['config']:
-            tmuxp_config['config'] = tmuxp_config[
-                'config'
-            ].replace('-f', '').strip()
+            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
     elif 'tmux_options' in sconf:
         tmuxp_config['config'] = sconf['tmux_options']
 
         if '-f' in tmuxp_config['config']:
-            tmuxp_config['config'] = tmuxp_config[
-                'config'
-            ].replace('-f', '').strip()
+            tmuxp_config['config'] = tmuxp_config['config'].replace('-f', '').strip()
 
     if 'socket_name' in sconf:
         tmuxp_config['socket_name'] = sconf['socket_name']
@@ -480,9 +455,7 @@ def import_tmuxinator(sconf):
     if 'rbenv' in sconf:
         if 'shell_command_before' not in tmuxp_config:
             tmuxp_config['shell_command_before'] = []
-        tmuxp_config['shell_command_before'].append(
-            'rbenv shell %s' % sconf['rbenv']
-        )
+        tmuxp_config['shell_command_before'].append('rbenv shell %s' % sconf['rbenv'])
 
     for w in sconf['windows']:
         for k, v in w.items():

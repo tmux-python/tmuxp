@@ -10,8 +10,7 @@ cwd = os.getcwd()
 project_root = os.path.dirname(cwd)
 
 sys.path.insert(0, project_root)
-sys.path.append(os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "_ext")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "_ext")))
 
 # package data
 about = {}
@@ -75,44 +74,50 @@ html_theme_options = {
     'project_name': about['__title__'],
 }
 
-alagitpull_internal_hosts = [
-    'tmuxp.git-pull.com',
-    '0.0.0.0',
-]
+alagitpull_internal_hosts = ['tmuxp.git-pull.com', '0.0.0.0']
 alagitpull_external_hosts_new_window = True
 
 htmlhelp_basename = '%sdoc' % about['__title__']
 
 latex_documents = [
-    ('index', '{0}.tex'.format(about['__package_name__']),
-     '{0} Documentation'.format(about['__title__']),
-     about['__author__'], 'manual'),
+    (
+        'index',
+        '{0}.tex'.format(about['__package_name__']),
+        '{0} Documentation'.format(about['__title__']),
+        about['__author__'],
+        'manual',
+    )
 ]
 
 man_pages = [
-    ('index', about['__package_name__'],
-     '{0} Documentation'.format(about['__title__']),
-     about['__author__'], 1),
+    (
+        'index',
+        about['__package_name__'],
+        '{0} Documentation'.format(about['__title__']),
+        about['__author__'],
+        1,
+    )
 ]
 
 texinfo_documents = [
-    ('index', '{0}'.format(about['__package_name__']),
-     '{0} Documentation'.format(about['__title__']),
-     about['__author__'], about['__package_name__'],
-     about['__description__'], 'Miscellaneous'),
+    (
+        'index',
+        '{0}'.format(about['__package_name__']),
+        '{0} Documentation'.format(about['__title__']),
+        about['__author__'],
+        about['__package_name__'],
+        about['__description__'],
+        'Miscellaneous',
+    )
 ]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'libtmux': ('https://libtmux.readthedocs.io/en/latest', None),
-    'click': ('http://click.pocoo.org/5', None)
+    'click': ('http://click.pocoo.org/5', None),
 }
 
 # aafig format, try to get working with pdf
 aafig_format = dict(latex='pdf', html='gif')
 
-aafig_default_options = dict(
-    scale=.75,
-    aspect=0.5,
-    proportional=True,
-)
+aafig_default_options = dict(scale=.75, aspect=0.5, proportional=True)
