@@ -1,2 +1,2 @@
-pytest==3.7.2
+pytest==3.7.3
 pytest-rerunfailures==4.1
