@@ -417,7 +417,7 @@ def load_workspace(
     just the object.
 
     The prepared configuration and the server object is passed into an instance
-    of :class:`tmuxp.WorkspaceBuilder`.
+    of :class:`~tmuxp.workspacebuilder.WorkspaceBuilder`.
 
     A sanity check against :meth:`libtmux.common.which` is ran. It will raise
     an exception if tmux isn't found.
@@ -427,8 +427,8 @@ def load_workspace(
     does not allow appending a workspace / incremental building on top of a
     current session (pull requests are welcome!).
 
-    :meth:`tmuxp.WorkspaceBuilder.build` will build the session in the
-    background via using tmux's detached state (``-d``).
+    :meth:`~tmuxp.workspacebuilder.WorkspaceBuilder.build` will build the session in
+    the background via using tmux's detached state (``-d``).
 
     After the session (workspace) is built, unless the user decided to load
     the session in the background via ``tmuxp -d`` (which is in the spirit
