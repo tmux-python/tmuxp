@@ -55,7 +55,7 @@ Import and export
 Workspace Builder
 -----------------
 
-.. autoclass:: tmuxp.WorkspaceBuilder
+.. autoclass:: tmuxp.workspacebuilder.WorkspaceBuilder
    :members:
 
 .. automethod:: tmuxp.workspacebuilder.freeze
