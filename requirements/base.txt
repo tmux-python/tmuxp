@@ -1,4 +1,4 @@
 kaptan>=0.5.7
 libtmux==0.8.0
-click==6.7
+click<7
 colorama==0.3.9
