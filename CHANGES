@@ -19,6 +19,9 @@ Here you can find the recent changes to tmuxp
     This is so contributors helping on the project can more quickly gain
     situational awareness in this tricky area of code.
 
+- :release:`1.4.1 <2018-09-26>`
+- :support:`-` Loosen click restraint to <7
+
 - :release:`1.4.0 <2018-03-11>`
 - :support:`-` Bump libtmux to 0.8.0
 - :support:`264` Update license from BSD to MIT
