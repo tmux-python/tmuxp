@@ -4,6 +4,9 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.4.2 <2018-09-30>`
+- :support:`431 backported` Include tests in source distribution
+
 - :release:`1.4.1 <2018-09-26>`
 - :support:`-` Loosen click restraint to <7
 
