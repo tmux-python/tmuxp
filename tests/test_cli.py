@@ -223,7 +223,10 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
 
     @click.command()
     @click.argument(
-        'config', click.Path(exists=True), nargs=-1, callback=cli.scan_config_argument
+        'config',
+        type=click.Path(exists=True),
+        nargs=-1,
+        callback=cli.scan_config_argument,
     )
     def config_cmd(config):
         click.echo(config)
@@ -523,7 +526,7 @@ def test_create_scan_config_arg(tmpdir):
 
     @click.command()
     @click.argument(
-        'config', click.Path(exists=True), nargs=-1, callback=my_scan_config
+        'config', type=click.Path(exists=True), nargs=-1, callback=my_scan_config
     )
     def config_cmd(config):
         click.echo(config)
