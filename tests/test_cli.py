@@ -222,12 +222,7 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
     runner = CliRunner()
 
     @click.command()
-    @click.argument(
-        'config',
-        type=click.Path(exists=True),
-        nargs=-1,
-        callback=cli.scan_config_argument,
-    )
+    @click.argument('config', type=cli.ConfigPath(exists=True), nargs=-1)
     def config_cmd(config):
         click.echo(config)
 
@@ -466,7 +461,8 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
 
     with tmpdir.as_cwd():
         runner = CliRunner()
-        runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+        out = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+        print(out.output)
         assert tmpdir.join('la.yaml').check()
 
 
@@ -513,20 +509,21 @@ def test_validate_choices():
         assert validate('choice3')
 
 
-def test_create_scan_config_arg(tmpdir):
+def test_pass_config_dir_ClickPath(tmpdir):
     configdir = tmpdir.join('myconfigdir')
     configdir.mkdir()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
 
     expect = str(configdir.join('myconfig.yaml'))
-    my_scan_config = cli._create_scan_config_argument(str(configdir))
 
     runner = CliRunner()
 
     @click.command()
     @click.argument(
-        'config', type=click.Path(exists=True), nargs=-1, callback=my_scan_config
+        'config',
+        type=cli.ConfigPath(exists=True, config_dir=(str(configdir))),
+        nargs=-1,
     )
     def config_cmd(config):
         click.echo(config)
