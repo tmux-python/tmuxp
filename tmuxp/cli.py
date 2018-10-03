@@ -196,13 +196,18 @@ def is_pure_name(path):
     )
 
 
-def _create_scan_config_argument(config_dir):
-    """For finding configurations in tmuxinator/teamocil"""
+class ConfigPath(click.Path):
+    def __init__(self, config_dir=None, *args, **kwargs):
+        super(ConfigPath, self).__init__(*args, **kwargs)
+        self.config_dir = config_dir
 
-    def func(ctx, param, value):
-        return scan_config_argument(ctx, param, value, config_dir)
+    def convert(self, value, param, ctx):
+        config_dir = self.config_dir
+        if callable(config_dir):
+            config_dir = config_dir()
 
-    return func
+        value = scan_config(value, config_dir=config_dir)
+        return super(ConfigPath, self).convert(value, param, ctx)
 
 
 def scan_config_argument(ctx, param, value, config_dir=None):
@@ -719,9 +724,7 @@ def command_freeze(session_name, socket_name, socket_path):
 
 @cli.command(name='load', short_help='Load tmuxp workspaces.')
 @click.pass_context
-@click.argument(
-    'config', click.Path(exists=True), nargs=-1, callback=scan_config_argument
-)
+@click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
@@ -729,15 +732,15 @@ def command_freeze(session_name, socket_name, socket_path):
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
 )
 @click.option(
-    '-2',
     'colors',
+    '-2',
     flag_value=256,
     default=True,
     help='Force tmux to assume the terminal supports 256 colours.',
 )
 @click.option(
-    '-8',
     'colors',
+    '-8',
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
@@ -854,10 +857,7 @@ def import_config(configfile, importfunc):
     name='teamocil', short_help='Convert and import a teamocil config.'
 )
 @click.argument(
-    'configfile',
-    click.Path(exists=True),
-    nargs=1,
-    callback=_create_scan_config_argument(get_teamocil_dir),
+    'configfile', type=ConfigPath(exists=True, config_dir=get_teamocil_dir), nargs=1
 )
 def command_import_teamocil(configfile):
     """Convert a teamocil config from CONFIGFILE to tmuxp format and import
@@ -870,10 +870,7 @@ def command_import_teamocil(configfile):
     name='tmuxinator', short_help='Convert and import a tmuxinator config.'
 )
 @click.argument(
-    'configfile',
-    click.Path(exists=True),
-    nargs=1,
-    callback=_create_scan_config_argument(get_tmuxinator_dir),
+    'configfile', type=ConfigPath(exists=True, config_dir=get_tmuxinator_dir), nargs=1
 )
 def command_import_tmuxinator(configfile):
     """Convert a tmuxinator config from CONFIGFILE to tmuxp format and import
@@ -882,9 +879,7 @@ def command_import_tmuxinator(configfile):
 
 
 @cli.command(name='convert')
-@click.argument(
-    'config', click.Path(exists=True), nargs=1, callback=scan_config_argument
-)
+@click.argument('config', type=ConfigPath(exists=True), nargs=1)
 def command_convert(config):
     """Convert a tmuxp config between JSON and YAML."""
 
