@@ -4,6 +4,7 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :feature:`-` Support Click 7.0
 - :support:`-` Remove unused ``__future__`` imports
 - :support:`-` Sort imports
 - :support:`-` Add configuration and make command for isort.
