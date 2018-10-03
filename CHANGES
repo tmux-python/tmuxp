@@ -4,6 +4,7 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.5.0 <2018-10-02>`
 - :feature:`-` Support Click 7.0
 - :support:`-` Remove unused ``__future__`` imports
 - :support:`-` Sort imports
