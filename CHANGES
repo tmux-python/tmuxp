@@ -14,7 +14,7 @@ Here you can find the recent changes to tmuxp
 - :support:`-` Update docstring style to use numpy-style documentation.
   This enhances readability and plays nicely with sphinx documentation.
 - :support:`-` Documentation overhaul.
-  
+
   - Areas like :meth:`tmuxp.cli.load_workspace` are now documented verbosely.
     This is so contributors helping on the project can more quickly gain
     situational awareness in this tricky area of code.
@@ -29,7 +29,7 @@ Here you can find the recent changes to tmuxp
 - :support:`-` Bump libtmux to 0.8.0
 - :support:`264` Update license from BSD to MIT
 - :support:`348 backported` Continuous integration updates and fixes for Travis CI
-  
+
   - Update builds to use trusty
   - Remove older python 3 versions (before 3.6)
   - Update pypy versions
