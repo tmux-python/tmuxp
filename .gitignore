@@ -69,6 +69,7 @@ target/
 .idea
 .ropeproject
 *.swp
+.vscode
 
 # docs
 doc/_build/
