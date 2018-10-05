@@ -4,28 +4,27 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-kaptan = ">=0.5.7"
-libtmux = "==0.8.0"
-click = ">=7<8"
-colorama = "==0.3.9"
-docutils = "==0.14"
-alagitpull = "==0.0.21"
-releases = "==1.6.1"
-aafigure = "==0.6"
-sphinxcontrib-napoleon = "==0.7"
-Sphinx = "==1.8.1"
-isort = "==4.3.4"
-"flake8" = "==3.5.0"
-vulture = "==0.29"
-pytest = "==3.8.2"
-pytest-rerunfailures = "==4.1"
+docutils = "*"
+alagitpull = "*"
+releases = "*"
+aafigure = "*"
+sphinxcontrib-napoleon = "*"
+Sphinx = "*"
+isort = "*"
+"flake8" = "*"
+vulture = "*"
+pytest = "*"
+pytest-rerunfailures = "*"
 tmuxp = {path = ".", editable = true}
+"e1839a8" = {path = ".", editable = true}
 
 [packages]
-kaptan = ">=0.5.7"
+kaptan = "*"
 libtmux = "==0.8.0"
 click = ">=7<8"
-colorama = "==0.3.9"
+colorama = "*"
+"e1839a8" = {path = ".", editable = true}
+sphinx = "*"
 
 [requires]
 python_version = "2.7"
