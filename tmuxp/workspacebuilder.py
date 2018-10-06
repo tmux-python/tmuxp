@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 """Create a tmux workspace from a configuration :py:obj:`dict`.
 
 tmuxp.workspacebuilder
