@@ -9,7 +9,7 @@ alagitpull = "*"
 releases = "*"
 aafigure = "*"
 sphinxcontrib-napoleon = "*"
-Sphinx = "*"
+sphinx = "*"
 isort = "*"
 "flake8" = "*"
 vulture = "*"
@@ -17,6 +17,7 @@ pytest = "*"
 pytest-rerunfailures = "*"
 tmuxp = {path = ".", editable = true}
 "e1839a8" = {path = ".", editable = true}
+"doc8" = "*"
 
 [packages]
 kaptan = "*"
@@ -24,7 +25,6 @@ libtmux = "==0.8.0"
 click = ">=7<8"
 colorama = "*"
 "e1839a8" = {path = ".", editable = true}
-sphinx = "*"
 
 [requires]
 python_version = "2.7"

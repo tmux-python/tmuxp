@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2c486adaf98acf9e522cf764580b65347b68f94d41e1471c3e60d3ea6f92fcdf"
+            "sha256": "e3efff75927fcb0d4465ec55eb7501a6ac906c336fca84920b9af28641a8350e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -291,6 +291,14 @@
             "markers": "python_version < '3.2'",
             "version": "==3.5.0"
         },
+        "doc8": {
+            "hashes": [
+                "sha256:2df89f9c1a5abfb98ab55d0175fed633cae0cf45025b8b1e0ee5ea772be28543",
+                "sha256:d12f08aa77a4a65eb28752f4bc78f41f611f9412c4155e2b03f1f5d4a45efe04"
+            ],
+            "index": "pypi",
+            "version": "==0.8.0"
+        },
         "docutils": {
             "hashes": [
                 "sha256:02aec4bd92ab067f6ff27a38a38a41173bf01bed8f89157768c1573f53e474a6",
@@ -416,6 +424,13 @@
             "markers": "python_version < '3.6'",
             "version": "==2.3.2"
         },
+        "pbr": {
+            "hashes": [
+                "sha256:1be135151a0da949af8c5d0ee9013d9eafada71237eb80b3ba8896b4f12ec5dc",
+                "sha256:cf36765bf2218654ae824ec8e14257259ba44e43b117fd573c8d07a9895adbdd"
+            ],
+            "version": "==4.3.0"
+        },
         "pluggy": {
             "hashes": [
                 "sha256:6e3836e39f4d36ae72840833db137f7b7d35105079aee6ec4a62d9f80d594dd1",
@@ -519,6 +534,12 @@
             ],
             "version": "==2.19.1"
         },
+        "restructuredtext-lint": {
+            "hashes": [
+                "sha256:c48ca9a84c312b262809f041fe47dcfaedc9ee4879b3e1f9532f745c182b4037"
+            ],
+            "version": "==1.1.3"
+        },
         "scandir": {
             "hashes": [
                 "sha256:04b8adb105f2ed313a7c2ef0f1cf7aff4871aa7a1883fa4d8c44b5551ab052d6",
@@ -579,6 +600,13 @@
                 "sha256:9de47f375baf1ea07cdb3436ff39d7a9c76042c10a769c52353ec46e4e8fc3b9"
             ],
             "version": "==1.1.0"
+        },
+        "stevedore": {
+            "hashes": [
+                "sha256:1e153545aca7a6a49d8337acca4f41c212fbfa60bf864ecd056df0cafb9627e8",
+                "sha256:c7eac1c0d95824c88b655273da5c17cdde6482b2739f47c30bf851dcc9d3c2c0"
+            ],
+            "version": "==1.29.0"
         },
         "tmuxp": {
             "editable": true,
