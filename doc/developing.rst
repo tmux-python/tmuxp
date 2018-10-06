@@ -146,7 +146,7 @@ Multiple can be separated by spaces:
 .. _test_builder_visually:
 
 Visual testing
-~~~~~~~~~~~~~~
+--------------
 
 You can watch tmux testsuite build sessions visually by keeping a client
 open in a separate terminal.
