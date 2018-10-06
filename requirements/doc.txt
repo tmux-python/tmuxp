@@ -5,3 +5,4 @@ alagitpull==0.0.21
 releases==1.6.1
 aafigure==0.6
 sphinxcontrib-napoleon==0.7
+doc8==0.8.0
