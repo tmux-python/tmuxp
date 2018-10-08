@@ -154,10 +154,10 @@ sandwich, and re-(attach), all applications are still running!
    +--------+--------+
    | $ bash | $ bash |
    |        |        |
-   |        |        |     /------------\ 
-   +--------+--------+ --> |   detach   | 
-   | $ vim  | $ bash |     | 'Ctrl-b b' |     
-   |        |        |     \------------/     
+   |        |        |     /------------\
+   +--------+--------+ --> |   detach   |
+   | $ vim  | $ bash |     | 'Ctrl-b b' |
+   |        |        |     \------------/
    |        |        |            |
    +--------+--------+            |
                /------------------/
@@ -208,7 +208,7 @@ Applications running on a remote server can be launched inside of a tmux
 session, detached, and reattached next timeyour `"train of thought"`_ and
 work.
 
-Multitasking. Preserving the thinking you have. 
+Multitasking. Preserving the thinking you have.
 
 .. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
 
@@ -258,7 +258,7 @@ That's all it takes to launch yourself into a tmux session.
     Running ``$ tmux list-sessions`` or any other command for listing tmux
     entities (such as ``$ tmux list-windows`` or ``$ tmux list-panes``).
     This can generate the error "failed to connect to server".
-    
+
     This could be because:
 
     - tmux server has killed its' last session, killing the server.
@@ -633,7 +633,7 @@ Short cut             Action
 ``M-o``               Rotate the panes in the current window backwards.
 ``M-p``               Move to the previous window with a bell or activity
                       marker.
-``C-Up, C-Down``      Resize the current pane in steps of one cell. 
+``C-Up, C-Down``      Resize the current pane in steps of one cell.
 ``C-Left, C-Right``
 ``M-Up, M-Down``      Resize the current pane in steps of five cells.
 ``M-Left, M-Right``

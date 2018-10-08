@@ -12,7 +12,7 @@ Built on a object relational mapper for tmux. tmux users can reload common
 workspaces from YAML, JSON and :py:obj:`dict` configurations like
 `tmuxinator`_ and `teamocil`_.
 
-tmuxp is used by developers for tmux automation at great companies like 
+tmuxp is used by developers for tmux automation at great companies like
 `Bugsnag`_, `Pragmatic Coders`_ and many others.
 
 To jump right in, see :ref:`quickstart` and :ref:`examples`.
@@ -20,7 +20,7 @@ To jump right in, see :ref:`quickstart` and :ref:`examples`.
 Interested in some kung-fu or joining the effort? :ref:`api` and
 :ref:`developing`.
 
-`MIT-licensed`_. Code on `github 
+`MIT-licensed`_. Code on `github
 <http://github.com/tmux-python/tmuxp>`_.
 
 .. _Bugsnag: https://blog.bugsnag.com/benefits-of-using-tmux/
@@ -84,7 +84,7 @@ See :ref:`libtmux's internals <libtmux:Internals>`.
 **Conversion** ``$ tmuxp convert <filename>`` can convert files to and
 from JSON and YAML.
 
-.. [1] While freezing and importing sessions is a great way to save time, 
+.. [1] While freezing and importing sessions is a great way to save time,
        tweaking will probably be required - There is no substitute to a
        config made with love.
 

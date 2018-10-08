@@ -22,6 +22,9 @@ using ``$ tmux -L test_case``.
 Install the latest code from git
 --------------------------------
 
+Using pip
+^^^^^^^^^
+
 To begin developing, check out the code from github:
 
 .. code-block:: bash
@@ -56,6 +59,48 @@ adjust the code and the installed software will reflect the changes.
 
     $ tmuxp
 
+Using pipenv
+^^^^^^^^^^^^
+
+To begin developing, check out the code from github:
+
+.. code-block:: bash
+
+    $ git clone git@github.com:tmux-python/tmuxp.git
+    $ cd tmuxp
+
+You can create a virtualenv, and install all of the locked
+packages as listed in Pipfile.lock:
+
+.. code-block:: bash
+
+    $ pipenv install --ignore-pipfile --dev
+
+If you prefer to install updated packages based on Pipfile only, not being
+bound by Pipfile.lock:
+
+.. code-block:: bash
+
+    $ pipenv install --skip-lock --dev
+
+If you ever need to update packages during your development session, the
+following command can be used to update all packages as per Pipfile settings or
+individual package (second command):
+
+.. code-block:: bash
+
+    $ pipenv update --dev
+    $ pipenv update requests
+
+Then activate it to your current tty / terminal session with:
+
+.. code-block:: bash
+
+    $ pipenv shell
+
+That is it! You are now ready to code!
+
+
 Test Runner
 -----------
 
@@ -76,7 +121,7 @@ If you found a problem or are trying to write a test, you can file an
 .. _test_specific_tests:
 
 Test runner options
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 Test only a file:
 
@@ -101,7 +146,7 @@ Multiple can be separated by spaces:
 .. _test_builder_visually:
 
 Visual testing
-~~~~~~~~~~~~~~
+--------------
 
 You can watch tmux testsuite build sessions visually by keeping a client
 open in a separate terminal.
@@ -114,7 +159,7 @@ Create two terminals:
     version of tmuxp above. Then:
 
     .. code-block:: bash
-    
+
         $ py.test tests/test_workspacebuilder.py
 
 Terminal 1 should have flickered and built the session before your eyes.
@@ -147,7 +192,7 @@ argument`_:
    $ make watch_test test='-x tests/test_config.py tests/test_util.py'
 
 Rebuild sphinx docs on save
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 Rebuild the documentation when an ``.rst`` file is edited:
 
@@ -178,7 +223,7 @@ this will load the ``.tmuxp.yaml`` in the root of the project.
 .. _travis:
 
 Travis CI
-~~~~~~~~~
+---------
 
 tmuxp uses `travis-ci`_ for continuous integration / automatic unit
 testing.

@@ -183,12 +183,12 @@ In this case of this example, assuming the username "user"::
 
     $ MY_ENV_VAR=foo tmuxp load examples/env-variables.yaml
 
-and your session name will be ``session - user (foo)``. 
+and your session name will be ``session - user (foo)``.
 
-Shell variables in ``shell_command`` do not support this type of 
+Shell variables in ``shell_command`` do not support this type of
 concatenation. ``shell_command`` and ``shell_command_before`` both
 support normal shell variables, since they are sent into panes
-automatically via ``send-key`` in ``tmux(1)``. See ``ls $PWD`` in 
+automatically via ``send-key`` in ``tmux(1)``. See ``ls $PWD`` in
 example.
 
 If you have a special case and would like to see behavior changed,
@@ -369,7 +369,7 @@ A successful script will exit with a status of ``0``.
 Important: the script file must be chmod executable ``+x`` or ``755``.
 
 Run a python script (and check for it's return code), the script is
-*relative to the ``.tmuxp.yaml``'s root* (Windows and panes omitted in 
+*relative to the ``.tmuxp.yaml``'s root* (Windows and panes omitted in
 this example):
 
 .. code-block:: yaml
@@ -450,7 +450,8 @@ packages are installed:
       - blank
       - pipenv run ./manage.py runserver
 
-You can also source yourself into the virtual environment using ``shell_command_before``:
+You can also source yourself into the virtual environment using
+``shell_command_before``:
 
 .. code-block:: yaml
 
