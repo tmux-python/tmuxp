@@ -356,7 +356,7 @@ def test_replaces_env_variables(monkeypatch):
 
     sconfig = load_yaml(yaml_config)
 
-    monkeypatch.setenv(env_key, env_val)
+    monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = config.expand(sconfig)
     assert "%s/test" % env_val == sconfig['start_directory']
     assert "%s/test2" % env_val in sconfig['shell_command_before']

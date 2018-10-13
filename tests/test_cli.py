@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp command line interface."""
-
 from __future__ import absolute_import
 
 import json
@@ -116,13 +115,13 @@ def projectdir(homedir):
 
 
 def test_tmuxp_configdir_env_var(tmpdir, monkeypatch):
-    monkeypatch.setenv('TMUXP_CONFIGDIR', tmpdir)
+    monkeypatch.setenv('TMUXP_CONFIGDIR', str(tmpdir))
 
     assert get_config_dir() == tmpdir
 
 
 def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
-    monkeypatch.setenv('HOME', homedir)
+    monkeypatch.setenv('HOME', str(homedir))
     projectdir.join('.tmuxp.yaml').ensure()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
@@ -226,7 +225,7 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
     def config_cmd(config):
         click.echo(config)
 
-    monkeypatch.setenv('HOME', homedir)
+    monkeypatch.setenv('HOME', str(homedir))
     projectdir.join('.tmuxp.yaml').ensure()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
