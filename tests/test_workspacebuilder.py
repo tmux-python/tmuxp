@@ -219,11 +219,11 @@ def test_global_options(session):
 
 def test_global_session_env_options(session, monkeypatch):
     visual_silence = 'on'
-    monkeypatch.setenv('VISUAL_SILENCE', visual_silence)
+    monkeypatch.setenv(str('VISUAL_SILENCE'), str(visual_silence))
     repeat_time = 738
-    monkeypatch.setenv('REPEAT_TIME', repeat_time)
+    monkeypatch.setenv(str('REPEAT_TIME'), str(repeat_time))
     main_pane_height = 8
-    monkeypatch.setenv('MAIN_PANE_HEIGHT', main_pane_height)
+    monkeypatch.setenv(str('MAIN_PANE_HEIGHT'), str(main_pane_height))
 
     yaml_config = loadfixture("workspacebuilder/env_var_options.yaml")
     s = session
