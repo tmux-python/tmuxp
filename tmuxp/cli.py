@@ -35,9 +35,10 @@ def get_config_dir():
     """
     Return tmuxp configuration directory.
 
-    ``TMUXP_CONFIGDIR`` environmental variable has precedence, then XDG default
-    directory is checked, either from XDG_CONFIG_HOME environmental variable or
-    its default, then the old default ~/.tmuxp is returned for compatibility.
+    ``TMUXP_CONFIGDIR`` environmental variable has precedence if set and not 
+    empty. We also honor XDG default directory, evaluating from XDG_CONFIG_HOME 
+    environmental variable if set and not empty or its default. Then the old 
+    default ~/.tmuxp is returned for compatibility.
 
     Returns
     -------
@@ -46,9 +47,9 @@ def get_config_dir():
     """
 
     paths = []
-    if 'TMUXP_CONFIGDIR' in os.environ:
+    if 'TMUXP_CONFIGDIR' in os.environ and os.environ['TMUX_CONFIGDIR']:
         paths.append(os.environ['TMUXP_CONFIGDIR'])
-    if 'XDG_CONFIG_HOME' in os.environ:
+    if 'XDG_CONFIG_HOME' in os.environ and os.environ['XDG_CONFIG_HOME']:
         paths.append(os.environ['XDG_CONFIG_HOME'])
     else:
         paths.append('~/.config/tmuxp/')
