@@ -14,7 +14,10 @@ In zsh (``~/.zshrc``) or bash (``~/.bashrc``):
 
 .. code-block:: sh
 
-    eval "$(_TMUXP_COMPLETE=source tmuxp)"
+    if command -v tmuxp >/dev/null; then
+        eval "$(_TMUXP_COMPLETE=source tmuxp)"
+    fi
+
 
 .. _cli_freeze:
 
