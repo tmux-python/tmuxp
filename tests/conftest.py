@@ -52,10 +52,10 @@ def session(server):
     try:
         server.switch_client(session.get('session_id'))
         pass
-    except exc.LibTmuxException as e:
+    except exc.LibTmuxException:
         # server.attach_session(session.get('session_id'))
         pass
-
+        
     for old_test_session in old_test_sessions:
         logger.debug('Old test test session %s found. Killing it.' % old_test_session)
         server.kill_session(old_test_session)
