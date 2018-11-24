@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftmux-python%2Ftmuxp.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftmux-python%2Ftmuxp?ref=badge_shield)
+
 tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
@@ -198,3 +200,6 @@ tests           .. code-block:: bash
     :alt: Documentation Status
     :scale: 100%
     :target: https://readthedocs.org/projects/tmuxp/
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftmux-python%2Ftmuxp.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftmux-python%2Ftmuxp?ref=badge_large)
