@@ -12,7 +12,6 @@ sphinxcontrib-napoleon = "*"
 sphinx = ">=1.8.1"
 isort = "*"
 "flake8" = "*"
-vulture = "*"
 pytest = "*"
 pytest-rerunfailures = "*"
 tmuxp = {path = ".", editable = true}
