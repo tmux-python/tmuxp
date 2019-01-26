@@ -20,7 +20,7 @@ tmuxp = {path = ".", editable = true}
 
 [packages]
 kaptan = "*"
-libtmux = "==0.8.0"
+libtmux = "==0.8.1"
 click = ">=7<8"
 colorama = "*"
 "e1839a8" = {path = ".", editable = true}
