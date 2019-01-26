@@ -172,7 +172,7 @@ class WorkspaceBuilder(object):
                 self.session.set_option(option, value)
         if 'global_options' in self.sconf:
             for option, value in self.sconf['global_options'].items():
-                self.session.set_option(option, value, g=True)
+                self.session.set_option(option, value, _global=True)
         if 'environment' in self.sconf:
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)

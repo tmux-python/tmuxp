@@ -213,8 +213,8 @@ def test_global_options(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert "top" in s.show_option('status-position', g=True)
-    assert 493 == s.show_option('repeat-time', g=True)
+    assert "top" in s.show_option('status-position', _global=True)
+    assert 493 == s.show_option('repeat-time', _global=True)
 
 
 def test_global_session_env_options(session, monkeypatch):
@@ -234,7 +234,7 @@ def test_global_session_env_options(session, monkeypatch):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert visual_silence in s.show_option('visual-silence', g=True)
+    assert visual_silence in s.show_option('visual-silence', _global=True)
     assert repeat_time == s.show_option('repeat-time')
     assert main_pane_height == s.attached_window.show_window_option('main-pane-height')
 
