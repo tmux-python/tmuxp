@@ -7,6 +7,7 @@ Here you can find the recent changes to tmuxp
 - :release:`1.5.0 <2018-10-02>`
 - :feature:`-` Support Click 7.0
 - :support:`-` Remove unused ``__future__`` imports
+- :libtmux:`471` Update libtmux 0.8.0 -> 0.8.1
 - :support:`-` Sort imports
 - :support:`-` Add configuration and make command for isort.
 - :support:`-` Add sphinxcontrib-napoleon.
