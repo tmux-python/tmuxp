@@ -4,6 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :support:`-` Add tests/*.sh scripts to MANIFEST.in to include them in Pypi package.
+- :support:`-` Include twine to dev packages on requirements and Pipfile files.
 - :release:`1.5.0 <2018-10-02>`
 - :feature:`-` Support Click 7.0
 - :support:`-` Remove unused ``__future__`` imports
