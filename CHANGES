@@ -4,6 +4,7 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.5.1 <2019-02-18>`
 - :support:`-` Add tests/*.sh scripts to MANIFEST.in to include them in Pypi package.
 - :support:`-` Include twine to dev packages on requirements and Pipfile files.
 - :release:`1.5.0 <2018-10-02>`
