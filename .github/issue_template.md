@@ -14,11 +14,11 @@
   * output of `tmux show-options -g`, `tmux show-window-options -g`
   * output of `tmuxp freeze <SESSION_NAME>`
 
-### Step 2: Describe your environment
+### Step 3: Describe your environment
   * Architecture: _____
   * OS version: _____
 
-### Step 3: Describe the problem:
+### Step 4: Describe the problem:
 #### Steps to reproduce:
   1. _____
   2. _____
