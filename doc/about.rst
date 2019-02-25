@@ -46,18 +46,18 @@ well tested and adopted.
 Additional Features Of tmuxp
 ----------------------------
 
-**CLI** tmuxp's CLI can attach and kill sessions with tab-completion
+**CLI** - tmuxp's CLI can attach and kill sessions with tab-completion
 support. See :ref:`commands`.
 
-**Import config** import configs from Teamocil / Tmuxinator [1]_. See
+**Import config** - import configs from Teamocil / Tmuxinator [1]_. See
 :ref:`cli_import`.
 
-**Session freezing** Supports session freezing into YAML and JSON
+**Session freezing** - Supports session freezing into YAML and JSON
 format [1]_. See :ref:`cli_freeze`.
 
-**JSON config** JSON config support. See :ref:`Examples`.
+**JSON config** - JSON config support. See :ref:`Examples`.
 
-**Load + Switch** to other sessions from inside tmux
+**Load + Switch** - to other sessions from inside tmux
 
 **ORM-based API** via `libtmux`_ - Utilitizes tmux >= 1.8's unique ID's for
 panes, windows and sessions to create an object relational view of the tmux
@@ -83,27 +83,29 @@ tmuxinator may have support for earlier versions. But this means the
 contibutors are concentrated on the newest and best features of tmux 
 not legacy work
 
+
 Missing Features in tmuxp
 -------------------------
 
 **No list configs command** - tmuxinator has a command for listing any sessions available for execution.
 
-**Fish Shell Completion** - both tmuxinator and teamocil have Fish shell completion.
+**Fish Shell Completion** - both tmuxinator and teamocil.
 
 **Command Shorthand** - simple 3-letter alias for the main command "mux".
 
 **No configuration Linter** - tmuxinator has the doctor sub command for checking session yaml files.
 
+
 Significant Differences Between The Two
 ---------------------------------------
 
-**Programming Language** python. teamocil and tmuxinator uses ruby.
+**Programming Language** - Python is the core of tmuxp. teamocil and tmuxinator use Ruby.
 
-**Workspace building process** teamocil and tmuxinator process configs
-directly shell commands. tmuxp processes configuration via ORM layer.
+**Workspace building process** - teamocil and tmuxinator process configs
+directly with shell commands. tmuxp processes configuration via ORM layer.
 
-Minor Tweaks
-------------
+Minor Features Worth a Mention
+------------------------------
 
 - Unit tests against live tmux version to test statefulness of tmux
   sessions, windows and panes. See :ref:`travis`.
