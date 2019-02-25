@@ -6,9 +6,9 @@
 About
 =====
 
-tmuxp helps you manage tmux workspaces.
+tmuxp helps you manage tmux workspaces in thee form of panes, windows and sessions.
 
-Built on a object relational mapper for tmux. tmux users can reload common
+Built on an ORM (object relational mapper) for tmux. tmux users can reload common
 workspaces from YAML, JSON and :py:obj:`dict` configurations like
 `tmuxinator`_ and `teamocil`_.
 
@@ -26,43 +26,25 @@ Interested in some kung-fu or joining the effort? :ref:`api` and
 .. _Bugsnag: https://blog.bugsnag.com/benefits-of-using-tmux/
 .. _Pragmatic Coders: http://pragmaticcoders.com/blog/tmuxp-preconfigured-sessions/
 
-Differences from tmuxinator / teamocil
---------------------------------------
+==============================================
+Comparison to Other Terminal Emulator Wrappers
+==============================================
 
-.. note::
+Similarities to tmuxinator & teamocil
+------------------------------------
 
-    If you use teamocil / tmuxinator and can clarify or add differences,
-    please free to `edit this page`_ on github.
+**Load sessions** - Loads tmux sessions from config.
 
-Similarities
-~~~~~~~~~~~~
+**YAML** - Uses YAML for sessions and configs.
 
-**Load sessions** Loads tmux sessions from config
-
-**YAML** Supports YAML format
-
-**Inlining / shorthand configuration** All three support short-hand and
+**Inlining / shorthand configuration** - All three support short-hand and
 simplified markup for panes that have one command.
 
-**Maturity and stability** As of 2016, all three are considered stable,
+**Maturity and stability** - As of 2016, all three are considered stable,
 well tested and adopted.
 
-Missing
-~~~~~~~
-
-**Version support** tmuxp only supports ``tmux >= 1.8``. Teamocil and
-tmuxinator may have support for earlier versions.
-
-Differences
-~~~~~~~~~~~
-
-**Programming Language** python. teamocil and tmuxinator uses ruby.
-
-**Workspace building process** teamocil and tmuxinator process configs
-directly shell commands. tmuxp processes configuration via ORM layer.
-
-Additional Features
--------------------
+Additional Features Of tmuxp
+----------------------------
 
 **CLI** tmuxp's CLI can attach and kill sessions with tab-completion
 support. See :ref:`commands`.
@@ -74,6 +56,8 @@ support. See :ref:`commands`.
 format [1]_. See :ref:`cli_freeze`.
 
 **JSON config** JSON config support. See :ref:`Examples`.
+
+**Load + Switch** to other sessions from inside tmux
 
 **ORM-based API** via `libtmux`_ - Utilitizes tmux >= 1.8's unique ID's for
 panes, windows and sessions to create an object relational view of the tmux
@@ -90,12 +74,39 @@ from JSON and YAML.
 
 .. _libtmux: https://libtmux.git-pull.com
 
-Minor tweaks
+
+Features Missing From tmup Other Wrappers Have
+----------------------------------------------
+
+**Version support** tmuxp only supports ``tmux >= 1.8``. Teamocil and
+tmuxinator may have support for earlier versions. But this means the 
+contibutors are concentrated on the newest and best features of tmux 
+not legacy work
+
+Missing Features in tmuxp
+-------------------------
+
+**No list configs command** - tmuxinator has a command for listing any sessions available for execution.
+
+**Fish Shell Completion** - both tmuxinator and teamocil have Fish shell completion.
+
+**Command Shorthand** - simple 3-letter alias for the main command "mux".
+
+**No configuration Linter** - tmuxinator has the doctor sub command for checking session yaml files.
+
+Significant Differences Between The Two
+---------------------------------------
+
+**Programming Language** python. teamocil and tmuxinator uses ruby.
+
+**Workspace building process** teamocil and tmuxinator process configs
+directly shell commands. tmuxp processes configuration via ORM layer.
+
+Minor Tweaks
 ------------
 
 - Unit tests against live tmux version to test statefulness of tmux
   sessions, windows and panes. See :ref:`travis`.
-- Load + switch to new session from inside tmux.
 - Resume session if config loaded.
 - Pre-commands virtualenv / rvm / any other commands.
 - Load config from anywhere ``$ tmuxp load /full/file/path.json``.
@@ -113,3 +124,4 @@ Minor tweaks
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _ERB: http://ruby-doc.org/stdlib-2.0.0/libdoc/erb/rdoc/ERB.html
 .. _edit this page: https://github.com/tmux-python/tmuxp/edit/master/doc/about.rst
+
