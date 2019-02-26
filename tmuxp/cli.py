@@ -561,6 +561,8 @@ def load_workspace(
         ``tmux -S <socket-path>``
     new_session_name: str, options
         ``tmux new -s <new_session_name>``
+    tmux_config_file: str, optional
+        ``tmux -f <config-file>``
     colors : str, optional
         '-2'
             Force tmux to support 256 colors
