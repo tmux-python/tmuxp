@@ -395,6 +395,7 @@ def load_workspace(
     config_file,
     socket_name=None,
     socket_path=None,
+    tmux_config_file=None,
     colors=None,
     detached=False,
     answer_yes=False,
@@ -410,6 +411,8 @@ def load_workspace(
         ``tmux -L <socket-name>``
     socket_path: str, optional
         ``tmux -S <socket-path>``
+    tmux_config_file: str, optional
+        ``tmux -f <config-file>``
     colors : str, optional
         '-2'
             Force tmux to support 256 colors
@@ -498,7 +501,10 @@ def load_workspace(
     sconfig = config.trickle(sconfig)
 
     t = Server(  # create tmux server object
-        socket_name=socket_name, socket_path=socket_path, colors=colors
+        socket_name=socket_name,
+        socket_path=socket_path,
+        colors=colors,
+        config_file=tmux_config_file,
     )
 
     which('tmux')  # raise exception if tmux not found
@@ -742,6 +748,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option('-f', 'tmux_config_file', help='pass-through for tmux -f')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
@@ -759,7 +766,7 @@ def command_freeze(session_name, socket_name, socket_path):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
-def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, colors):
+def command_load(ctx, config, socket_name, socket_path, tmux_config_file, answer_yes, detached, colors):
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -787,6 +794,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, co
     tmux_options = {
         'socket_name': socket_name,
         'socket_path': socket_path,
+        'tmux_config_file': tmux_config_file,
         'answer_yes': answer_yes,
         'colors': colors,
         'detached': detached,
