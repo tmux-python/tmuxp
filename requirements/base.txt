@@ -1,4 +1,4 @@
-kaptan>=0.5.7
-libtmux==0.8.0
-click==6.7
-colorama==0.3.9
+kaptan>=0.5.10
+libtmux==0.8.1
+click>=7<8
+colorama>=0.3.9

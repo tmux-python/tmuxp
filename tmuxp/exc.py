@@ -6,8 +6,7 @@ tmuxp.exc
 
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 from ._compat import implements_to_string
 
@@ -32,20 +31,17 @@ class EmptyConfigException(ConfigError):
 
 
 class BeforeLoadScriptNotExists(OSError):
-
     def __init__(self, *args, **kwargs):
         super(BeforeLoadScriptNotExists, self).__init__(*args, **kwargs)
 
-        self.strerror = (
-            "before_script file '%s' doesn't exist." % self.strerror
-        )
+        self.strerror = "before_script file '%s' doesn't exist." % self.strerror
 
 
 @implements_to_string
 class BeforeLoadScriptError(Exception):
 
     """Exception replacing :py:class:`subprocess.CalledProcessError` for
-    :meth:`util.run_before_script`.
+    :meth:`tmuxp.util.run_before_script`.
     """
 
     def __init__(self, returncode, cmd, output=None):

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp configuration import, inlining, expanding and export."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import os
 
-import kaptan
 import pytest
+
+import kaptan
 
 from tmuxp import config, exc
 
@@ -47,8 +47,7 @@ def test_export_yaml(tmpdir):
     sampleconfig = config.inline(fixtures.sampleconfig.sampleconfigdict)
     configparser.import_config(sampleconfig)
 
-    yaml_config_data = configparser.export(
-        'yaml', indent=2, default_flow_style=False)
+    yaml_config_data = configparser.export('yaml', indent=2, default_flow_style=False)
 
     yaml_config_file.write(yaml_config_data)
 
@@ -63,9 +62,7 @@ def test_scan_config(tmpdir):
     garbage_file.write('wat')
 
     for r, d, f in os.walk(str(tmpdir)):
-        for filela in (
-            x for x in f if x.endswith(('.json', '.ini', 'yaml'))
-        ):
+        for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
             configs.append(str(tmpdir.join(filela)))
 
     files = 0
@@ -109,31 +106,15 @@ ibefore_config = {  # inline config
         {
             'shell_command': ['top'],
             'window_name': 'editor',
-            'panes': [
-                {
-                    'shell_command': ['vim'],
-                },
-                {
-                    'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'
+            'panes': [{'shell_command': ['vim']}, {'shell_command': ['cowsay "hey"']}],
+            'layout': 'main-verticle',
         },
         {
             'window_name': 'logging',
-            'panes': [
-                {
-                    'shell_command': ['tail -F /var/log/syslog'],
-                }
-            ]
+            'panes': [{'shell_command': ['tail -F /var/log/syslog']}],
         },
-        {
-            'options': {'automatic-rename': True, },
-            'panes': [
-                {'shell_command': ['htop']}
-            ]
-        }
-    ]
+        {'options': {'automatic-rename': True}, 'panes': [{'shell_command': ['htop']}]},
+    ],
 }
 
 iafter_config = {
@@ -143,28 +124,12 @@ iafter_config = {
         {
             'shell_command': 'top',
             'window_name': 'editor',
-            'panes': [
-                'vim',
-                'cowsay "hey"'
-            ],
-            'layout': 'main-verticle'
+            'panes': ['vim', 'cowsay "hey"'],
+            'layout': 'main-verticle',
         },
-        {
-            'window_name': 'logging',
-            'panes': [
-                'tail -F /var/log/syslog',
-            ]
-        },
-        {
-            'options': {
-                'automatic-rename': True,
-            },
-            'panes': [
-                'htop'
-            ]
-        },
-
-    ]
+        {'window_name': 'logging', 'panes': ['tail -F /var/log/syslog']},
+        {'options': {'automatic-rename': True}, 'panes': ['htop']},
+    ],
 }
 
 
@@ -184,43 +149,16 @@ inheritance_config_before = {
         {
             'window_name': 'editor',
             'start_directory': '~',
-            'panes': [
-                {
-                    'shell_command': ['vim'],
-                },
-                {
-                    'shell_command': ['cowsay "hey"']
-                },
-            ],
-            'layout': 'main-verticle'
+            'panes': [{'shell_command': ['vim']}, {'shell_command': ['cowsay "hey"']}],
+            'layout': 'main-verticle',
         },
         {
             'window_name': 'logging',
-            'panes': [
-                {
-                    'shell_command': ['tail -F /var/log/syslog'],
-                }
-            ]
+            'panes': [{'shell_command': ['tail -F /var/log/syslog']}],
         },
-        {
-            'window_name': 'shufu',
-            'panes': [
-                {
-                    'shell_command': ['htop'],
-                }
-            ]
-        },
-        {
-            'options': {
-                'automatic-rename': True,
-            },
-            'panes': [
-                {
-                    'shell_command': ['htop']
-                }
-            ]
-        }
-    ]
+        {'window_name': 'shufu', 'panes': [{'shell_command': ['htop']}]},
+        {'options': {'automatic-rename': True}, 'panes': [{'shell_command': ['htop']}]},
+    ],
 }
 
 inheritance_config_after = {
@@ -230,40 +168,16 @@ inheritance_config_after = {
         {
             'window_name': 'editor',
             'start_directory': '~',
-            'panes': [
-                {
-                    'shell_command': ['vim'],
-                }, {
-                    'shell_command': ['cowsay "hey"'],
-                },
-            ],
-            'layout': 'main-verticle'
+            'panes': [{'shell_command': ['vim']}, {'shell_command': ['cowsay "hey"']}],
+            'layout': 'main-verticle',
         },
         {
             'window_name': 'logging',
-            'panes': [
-                {
-                    'shell_command': ['tail -F /var/log/syslog'],
-                }
-            ]
+            'panes': [{'shell_command': ['tail -F /var/log/syslog']}],
         },
-        {
-            'window_name': 'shufu',
-            'panes': [
-                {
-                    'shell_command': ['htop'],
-                }
-            ]
-        },
-        {
-            'options': {'automatic-rename': True, },
-            'panes': [
-                {
-                    'shell_command': ['htop'],
-                }
-            ]
-        }
-    ]
+        {'window_name': 'shufu', 'panes': [{'shell_command': ['htop']}]},
+        {'options': {'automatic-rename': True}, 'panes': [{'shell_command': ['htop']}]},
+    ],
 }
 
 
@@ -312,8 +226,9 @@ def test_in_session_scope():
     config.validate_schema(sconfig)
 
     assert config.expand(sconfig) == sconfig
-    assert config.expand(config.trickle(sconfig)) == \
-        load_yaml(fixtures.shell_command_before_session.expected)
+    assert config.expand(config.trickle(sconfig)) == load_yaml(
+        fixtures.shell_command_before_session.expected
+    )
 
 
 def test_trickle_relative_start_directory():
@@ -441,7 +356,7 @@ def test_replaces_env_variables(monkeypatch):
 
     sconfig = load_yaml(yaml_config)
 
-    monkeypatch.setenv(env_key, env_val)
+    monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = config.expand(sconfig)
     assert "%s/test" % env_val == sconfig['start_directory']
     assert "%s/test2" % env_val in sconfig['shell_command_before']

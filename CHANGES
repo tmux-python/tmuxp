@@ -4,11 +4,38 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+- :release:`1.5.1 <2019-02-18>`
+- :support:`-` Add tests/*.sh scripts to MANIFEST.in to include them in Pypi package.
+- :support:`-` Include twine to dev packages on requirements and Pipfile files.
+- :release:`1.5.0 <2018-10-02>`
+- :feature:`-` Support Click 7.0
+- :support:`-` Remove unused ``__future__`` imports
+- :libtmux:`471` Update libtmux 0.8.0 -> 0.8.1
+- :support:`-` Sort imports
+- :support:`-` Add configuration and make command for isort.
+- :support:`-` Add sphinxcontrib-napoleon.
+- :support:`-` Assure *requirements/dev.txt* dependencies are in *Pipfile*
+- :support:`-` Update sphinx, releases to latest version
+- :support:`-` Sync *requirements/\*.txt* dependencies with *Pipfile*.
+- :support:`-` Update docstring style to use numpy-style documentation.
+  This enhances readability and plays nicely with sphinx documentation.
+- :support:`-` Documentation overhaul.
+
+  - Areas like :meth:`tmuxp.cli.load_workspace` are now documented verbosely.
+    This is so contributors helping on the project can more quickly gain
+    situational awareness in this tricky area of code.
+
+- :release:`1.4.2 <2018-09-30>`
+- :support:`431 backported` Include tests in source distribution
+
+- :release:`1.4.1 <2018-09-26>`
+- :support:`-` Loosen click restraint to <7
+
 - :release:`1.4.0 <2018-03-11>`
 - :support:`-` Bump libtmux to 0.8.0
 - :support:`264` Update license from BSD to MIT
 - :support:`348 backported` Continuous integration updates and fixes for Travis CI
-  
+
   - Update builds to use trusty
   - Remove older python 3 versions (before 3.6)
   - Update pypy versions
@@ -432,7 +459,6 @@ Here you can find the recent changes to tmuxp
   autocompletion and when loading. Note, switching client into another
   socket may cause an error.
 - Documentation tweaking to :ref:`API`, :ref:`about_tmux`.
-- New :ref:`roadmap`.
 - `pep257`_, `pep8`_.
 
 - :release:`0.1-dev <2013-11-04>`

@@ -1,6 +1,6 @@
 # Makefile for Sphinx documentation
 #
-WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst\|CHANGES\|TODO\|.*conf\.py' 2> /dev/null
+WATCH_FILES= find .. -type f -not -path '*/\.*' | grep -i '.*[.]rst\|CHANGES\|TODO\|.*conf\.py\|.*[.]py$$' 2> /dev/null
 PYVERSION=$(shell python -c "import sys;v=sys.version_info[0];sys.stdout.write(str(v))")
 HTTP_PORT     = 8031
 

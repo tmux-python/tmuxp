@@ -1,6 +1,8 @@
 -r ./base.txt
-docutils==0.14
-sphinx==1.7.1
-alagitpull==0.0.19
-releases==1.4.0
-aafigure==0.6
+docutils>=0.14
+sphinx>=1.8.1
+alagitpull>=0.0.21
+releases>=1.6.1
+aafigure>=0.6
+sphinxcontrib-napoleon>=0.7
+doc8>=0.8.0

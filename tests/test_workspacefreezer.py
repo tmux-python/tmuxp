@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp workspacefreezer."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import time
 
@@ -34,13 +33,5 @@ def test_freeze_config(session):
 
     kaptanconf = kaptan.Kaptan()
     kaptanconf = kaptanconf.import_config(sconf)
-    kaptanconf.export(
-        'json',
-        indent=2
-    )
-    kaptanconf.export(
-        'yaml',
-        indent=2,
-        default_flow_style=False,
-        safe=True
-    )
+    kaptanconf.export('json', indent=2)
+    kaptanconf.export('yaml', indent=2, default_flow_style=False, safe=True)

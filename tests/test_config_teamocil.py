@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp teamocil configuration."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import os
 
-import kaptan
 import pytest
+
+import kaptan
 
 from tmuxp import config
 
@@ -16,16 +16,31 @@ from .fixtures import config_teamocil as fixtures
 TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
 
 
-@pytest.mark.parametrize("teamocil_yaml,teamocil_dict,tmuxp_dict", [
-    (fixtures.test1.teamocil_yaml, fixtures.test1.teamocil_conf,
-     fixtures.test1.expected),
-    (fixtures.test2.teamocil_yaml, fixtures.test2.teamocil_dict,
-     fixtures.test2.expected),
-    (fixtures.test3.teamocil_yaml, fixtures.test3.teamocil_dict,
-     fixtures.test3.expected),
-    (fixtures.test4.teamocil_yaml, fixtures.test4.teamocil_dict,
-     fixtures.test4.expected),
-])
+@pytest.mark.parametrize(
+    "teamocil_yaml,teamocil_dict,tmuxp_dict",
+    [
+        (
+            fixtures.test1.teamocil_yaml,
+            fixtures.test1.teamocil_conf,
+            fixtures.test1.expected,
+        ),
+        (
+            fixtures.test2.teamocil_yaml,
+            fixtures.test2.teamocil_dict,
+            fixtures.test2.expected,
+        ),
+        (
+            fixtures.test3.teamocil_yaml,
+            fixtures.test3.teamocil_dict,
+            fixtures.test3.expected,
+        ),
+        (
+            fixtures.test4.teamocil_yaml,
+            fixtures.test4.teamocil_dict,
+            fixtures.test4.expected,
+        ),
+    ],
+)
 def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
     configparser = kaptan.Kaptan(handler='yaml')
     test_config = configparser.import_config(teamocil_yaml)
@@ -34,11 +49,7 @@ def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
 
     assert config.import_teamocil(teamocil_dict) == tmuxp_dict
 
-    config.validate_schema(
-        config.import_teamocil(
-            teamocil_dict
-        )
-    )
+    config.validate_schema(config.import_teamocil(teamocil_dict))
 
 
 @pytest.fixture(scope='module')
@@ -56,22 +67,23 @@ def multisession_config():
     return teamocil_dict
 
 
-@pytest.mark.parametrize("session_name,expected", [
-    ('two-windows', fixtures.layouts.two_windows),
-    ('two-windows-with-filters', fixtures.layouts.two_windows_with_filters),
-    ('two-windows-with-custom-command-options',
-     fixtures.layouts.two_windows_with_custom_command_options),
-    ('three-windows-within-a-session',
-     fixtures.layouts.three_windows_within_a_session),
-])
+@pytest.mark.parametrize(
+    "session_name,expected",
+    [
+        ('two-windows', fixtures.layouts.two_windows),
+        ('two-windows-with-filters', fixtures.layouts.two_windows_with_filters),
+        (
+            'two-windows-with-custom-command-options',
+            fixtures.layouts.two_windows_with_custom_command_options,
+        ),
+        (
+            'three-windows-within-a-session',
+            fixtures.layouts.three_windows_within_a_session,
+        ),
+    ],
+)
 def test_multisession_config(session_name, expected, multisession_config):
     # teamocil can fit multiple sessions in a config
-    assert config.import_teamocil(
-        multisession_config[session_name]
-    ) == expected
+    assert config.import_teamocil(multisession_config[session_name]) == expected
 
-    config.validate_schema(
-        config.import_teamocil(
-            multisession_config[session_name]
-        )
-    )
+    config.validate_schema(config.import_teamocil(multisession_config[session_name]))

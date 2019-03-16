@@ -5,8 +5,7 @@ tmuxp.util
 ~~~~~~~~~~
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import os
@@ -29,7 +28,7 @@ def run_before_script(script_file, cwd=None):
             shlex.split(str(script_file)),
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            cwd=cwd
+            cwd=cwd,
         )
         for line in iter(proc.stdout.readline, b''):
             sys.stdout.write(console_to_str(line))
@@ -48,9 +47,7 @@ def run_before_script(script_file, cwd=None):
         return proc.returncode
     except OSError as e:
         if e.errno == 2:
-            raise exc.BeforeLoadScriptNotExists(
-                e, os.path.abspath(script_file)
-            )
+            raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
         else:
             raise e
 
@@ -66,12 +63,14 @@ def oh_my_zsh_auto_title():
         if os.path.exists(os.path.expanduser('~/.oh-my-zsh')):
             # oh-my-zsh exists
             if (
-                'DISABLE_AUTO_TITLE' not in os.environ or
-                os.environ.get('DISABLE_AUTO_TITLE') == "false"
+                'DISABLE_AUTO_TITLE' not in os.environ
+                or os.environ.get('DISABLE_AUTO_TITLE') == "false"
             ):
-                print('Please set:\n\n'
-                      '\texport DISABLE_AUTO_TITLE=\'true\'\n\n'
-                      'in ~/.zshrc or where your zsh profile is stored.\n'
-                      'Remember the "export" at the beginning!\n\n'
-                      'Then create a new shell or type:\n\n'
-                      '\t$ source ~/.zshrc')
+                print(
+                    'Please set:\n\n'
+                    '\texport DISABLE_AUTO_TITLE=\'true\'\n\n'
+                    'in ~/.zshrc or where your zsh profile is stored.\n'
+                    'Remember the "export" at the beginning!\n\n'
+                    'Then create a new shell or type:\n\n'
+                    '\t$ source ~/.zshrc'
+                )

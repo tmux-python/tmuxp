@@ -2,6 +2,10 @@ tmuxp, tmux session manager. built on `libtmux`_.
 
 |pypi| |docs| |build-status| |coverage| |license|
 
+**We need help!** tmuxp is a trusted session manager for tmux. If you
+could lend your time to helping answer issues and QA pull requests, please
+do! See `issue #290 <https://github.com/tmux-python/tmuxp/issues/290>`__!
+
 **New to tmux?** `The Tao of tmux <https://leanpub.com/the-tao-of-tmux>`_ is
 available on Leanpub and `Amazon Kindle`_. Read and browse the book for free
 `on the web`_.
@@ -137,7 +141,7 @@ Project details
 ---------------
 
 ==============  ==========================================================
-tmux support    1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
+tmux support    1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7. 2.8
 python support  2.7, >= 3.3, pypy, pypy3
 config support  yaml, json, python dict
 Source          https://github.com/tmux-python/tmuxp

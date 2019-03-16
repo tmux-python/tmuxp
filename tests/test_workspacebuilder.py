@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """Test for tmuxp workspacebuilder."""
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals, with_statement)
+from __future__ import absolute_import, unicode_literals
 
 import os
 
-import kaptan
 import pytest
+
+import kaptan
+
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import temp_session, retry
-
+from libtmux.test import retry, temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
@@ -77,13 +77,10 @@ def test_focus_pane_index(session):
 
     builder.build(session=session)
 
-    assert session.attached_window.name == \
-        'focused window'
+    assert session.attached_window.name == 'focused window'
 
     pane_base_index = int(
-        session.attached_window.show_window_option(
-            'pane-base-index', g=True
-        )
+        session.attached_window.show_window_option('pane-base-index', g=True)
     )
 
     if not pane_base_index:
@@ -148,10 +145,8 @@ def test_suppress_history(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    inHistoryWindow = session.find_where(
-        {'window_name': 'inHistory'})
-    isMissingWindow = session.find_where(
-        {'window_name': 'isMissing'})
+    inHistoryWindow = session.find_where({'window_name': 'inHistory'})
+    isMissingWindow = session.find_where({'window_name': 'isMissing'})
 
     def assertHistory(cmd, hist):
         return 'inHistory' in cmd and cmd.endswith(hist)
@@ -160,8 +155,8 @@ def test_suppress_history(session):
         return 'isMissing' in cmd and not cmd.endswith(hist)
 
     for w, window_name, assertCase in [
-        (inHistoryWindow, 'inHistory', assertHistory,),
-        (isMissingWindow, 'isMissing', assertIsMissing,)
+        (inHistoryWindow, 'inHistory', assertHistory),
+        (isMissingWindow, 'isMissing', assertIsMissing),
     ]:
         assert w.name == window_name
         correct = False
@@ -181,9 +176,7 @@ def test_suppress_history(session):
             # Get the contents of the pane
             p.cmd('capture-pane', '-b', buffer_name)
 
-            captured_pane = session.server.cmd(
-                'show-buffer', '-b', buffer_name
-            )
+            captured_pane = session.server.cmd('show-buffer', '-b', buffer_name)
             session.server.cmd('delete-buffer', '-b', buffer_name)
 
             # Parse the sent and last-in-history commands
@@ -193,9 +186,7 @@ def test_suppress_history(session):
             if assertCase(sent_cmd, history_cmd):
                 correct = True
                 break
-        assert correct, "Unknown sent command: [%s] in %s" % (
-            sent_cmd, assertCase
-        )
+        assert correct, "Unknown sent command: [%s] in %s" % (sent_cmd, assertCase)
 
 
 def test_session_options(session):
@@ -222,17 +213,17 @@ def test_global_options(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert "top" in s.show_option('status-position', g=True)
-    assert 493 == s.show_option('repeat-time', g=True)
+    assert "top" in s.show_option('status-position', _global=True)
+    assert 493 == s.show_option('repeat-time', _global=True)
 
 
 def test_global_session_env_options(session, monkeypatch):
     visual_silence = 'on'
-    monkeypatch.setenv('VISUAL_SILENCE', visual_silence)
+    monkeypatch.setenv(str('VISUAL_SILENCE'), str(visual_silence))
     repeat_time = 738
-    monkeypatch.setenv('REPEAT_TIME', repeat_time)
+    monkeypatch.setenv(str('REPEAT_TIME'), str(repeat_time))
     main_pane_height = 8
-    monkeypatch.setenv('MAIN_PANE_HEIGHT', main_pane_height)
+    monkeypatch.setenv(str('MAIN_PANE_HEIGHT'), str(main_pane_height))
 
     yaml_config = loadfixture("workspacebuilder/env_var_options.yaml")
     s = session
@@ -243,10 +234,9 @@ def test_global_session_env_options(session, monkeypatch):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert visual_silence in s.show_option('visual-silence', g=True)
+    assert visual_silence in s.show_option('visual-silence', _global=True)
     assert repeat_time == s.show_option('repeat-time')
-    assert main_pane_height == \
-        s.attached_window.show_window_option('main-pane-height')
+    assert main_pane_height == s.attached_window.show_window_option('main-pane-height')
 
 
 def test_window_options(session):
@@ -306,22 +296,22 @@ def test_window_options_after(session):
         return correct
 
     for i, pane in enumerate(session.attached_window.panes):
-        assert assert_last_line(pane, str(i)), (
-            "Initial command did not execute properly/" + str(i)
-        )
+        assert assert_last_line(
+            pane, str(i)
+        ), "Initial command did not execute properly/" + str(i)
         pane.cmd('send-keys', 'Up')  # Will repeat echo
-        pane.enter()                 # in each iteration
-        assert assert_last_line(pane, str(i)), (
-            "Repeated command did not execute properly/" + str(i)
-        )
+        pane.enter()  # in each iteration
+        assert assert_last_line(
+            pane, str(i)
+        ), "Repeated command did not execute properly/" + str(i)
 
     session.cmd('send-keys', ' echo moo')
     session.cmd('send-keys', 'Enter')
 
     for pane in session.attached_window.panes:
-        assert assert_last_line(pane, 'moo'), (
-            "Synchronized command did not execute properly"
-        )
+        assert assert_last_line(
+            pane, 'moo'
+        ), "Synchronized command did not execute properly"
 
 
 def test_window_shell(session):
@@ -416,8 +406,7 @@ def test_automatic_rename_option(session):
 def test_blank_pane_count(session):
     """:todo: Verify blank panes of various types build into workspaces."""
     yaml_config_file = os.path.join(example_dir, 'blank-panes.yaml')
-    test_config = kaptan.Kaptan().import_config(
-        yaml_config_file).get()
+    test_config = kaptan.Kaptan().import_config(yaml_config_file).get()
     test_config = config.expand(test_config)
     builder = WorkspaceBuilder(sconf=test_config)
     builder.build(session=session)
@@ -430,9 +419,7 @@ def test_blank_pane_count(session):
     window2 = session.find_where({'window_name': 'More blank panes'})
     assert len(window2._panes) == 3
 
-    window3 = session.find_where(
-        {'window_name': 'Empty string (return)'}
-    )
+    window3 = session.find_where({'window_name': 'Empty string (return)'})
     assert len(window3._panes) == 3
 
     window4 = session.find_where({'window_name': 'Blank with options'})
@@ -442,10 +429,7 @@ def test_blank_pane_count(session):
 def test_start_directory(session, tmpdir):
     yaml_config = loadfixture("workspacebuilder/start_directory.yaml")
     test_dir = str(tmpdir.mkdir('foo bar'))
-    test_config = yaml_config.format(
-        TMP_DIR=str(tmpdir),
-        TEST_DIR=test_dir
-    )
+    test_config = yaml_config.format(TMP_DIR=str(tmpdir), TEST_DIR=test_dir)
 
     sconfig = kaptan.Kaptan(handler='yaml')
     sconfig = sconfig.import_config(test_config).get()
@@ -456,11 +440,7 @@ def test_start_directory(session, tmpdir):
     builder.build(session=session)
 
     assert session == builder.session
-    dirs = [
-        '/usr/bin', '/dev', test_dir,
-        '/usr',
-        '/usr'
-    ]
+    dirs = ['/usr/bin', '/dev', test_dir, '/usr', '/usr']
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
@@ -469,14 +449,8 @@ def test_start_directory(session, tmpdir):
                 pane_path = p.current_path
                 if pane_path is None:
                     pass
-                elif (
-                    path in pane_path or
-                    pane_path == path
-                ):
-                    result = (
-                        path == pane_path or
-                        path in pane_path
-                    )
+                elif path in pane_path or pane_path == path:
+                    result = path == pane_path or path in pane_path
                     break
 
             # handle case with OS X adding /private/ to /tmp/ paths
@@ -495,14 +469,11 @@ def test_start_directory_relative(session, tmpdir):
     $ tmuxp load .
 
     """
-    yaml_config = \
-        loadfixture("workspacebuilder/start_directory_relative.yaml")
+    yaml_config = loadfixture("workspacebuilder/start_directory_relative.yaml")
 
     test_dir = str(tmpdir.mkdir('foo bar'))
     config_dir = str(tmpdir.mkdir('testRelConfigDir'))
-    test_config = yaml_config.format(
-        TEST_DIR=test_dir,
-    )
+    test_config = yaml_config.format(TEST_DIR=test_dir)
 
     sconfig = kaptan.Kaptan(handler='yaml')
     sconfig = sconfig.import_config(test_config).get()
@@ -519,13 +490,7 @@ def test_start_directory_relative(session, tmpdir):
 
     assert session == builder.session
 
-    dirs = [
-        '/usr/bin',
-        '/dev',
-        test_dir,
-        config_dir,
-        config_dir,
-    ]
+    dirs = ['/usr/bin', '/dev', test_dir, config_dir, config_dir]
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
@@ -535,14 +500,8 @@ def test_start_directory_relative(session, tmpdir):
                 pane_path = p.current_path
                 if pane_path is None:
                     pass
-                elif (
-                    path in pane_path or
-                    pane_path == path
-                ):
-                    result = (
-                        path == pane_path or
-                        path in pane_path
-                    )
+                elif path in pane_path or pane_path == path:
+                    result = path == pane_path or path in pane_path
                     break
 
             assert result
@@ -564,7 +523,7 @@ def test_pane_order(session):
         '/usr/bin',
         '/usr',
         '/usr/sbin',
-        os.path.realpath(os.path.expanduser('~'))
+        os.path.realpath(os.path.expanduser('~')),
     ]
 
     s = session
@@ -609,11 +568,7 @@ def test_window_index(session):
     yaml_config = loadfixture("workspacebuilder/window_index.yaml")
     proc = session.cmd('show-option', '-gv', 'base-index')
     base_index = int(proc.stdout[0])
-    name_index_map = {
-        'zero': 0 + base_index,
-        'one': 1 + base_index,
-        'five': 5,
-    }
+    name_index_map = {'zero': 0 + base_index, 'one': 1 + base_index, 'five': 5}
 
     sconfig = kaptan.Kaptan(handler='yaml')
     sconfig = sconfig.import_config(yaml_config).get()
@@ -628,13 +583,11 @@ def test_window_index(session):
 
 
 def test_before_load_throw_error_if_retcode_error(server):
-    config_script_fails = loadfixture(
-        "workspacebuilder/config_script_fails.yaml"
-    )
+    config_script_fails = loadfixture("workspacebuilder/config_script_fails.yaml")
     sconfig = kaptan.Kaptan(handler='yaml')
     yaml = config_script_fails.format(
         fixtures_dir=fixtures_dir,
-        script_failed=os.path.join(fixtures_dir, 'script_failed.sh')
+        script_failed=os.path.join(fixtures_dir, 'script_failed.sh'),
     )
 
     sconfig = sconfig.import_config(yaml).get()
@@ -650,8 +603,7 @@ def test_before_load_throw_error_if_retcode_error(server):
             builder.build(session=sess)
 
         result = server.has_session(session_name)
-        assert not result, \
-            "Kills session if before_script exits with errcode"
+        assert not result, "Kills session if before_script exits with errcode"
 
 
 def test_before_load_throw_error_if_file_not_exists(server):
@@ -661,9 +613,7 @@ def test_before_load_throw_error_if_file_not_exists(server):
     sconfig = kaptan.Kaptan(handler='yaml')
     yaml = config_script_not_exists.format(
         fixtures_dir=fixtures_dir,
-        script_not_exists=os.path.join(
-            fixtures_dir, 'script_not_exists.sh'
-        )
+        script_not_exists=os.path.join(fixtures_dir, 'script_not_exists.sh'),
     )
     sconfig = sconfig.import_config(yaml).get()
     sconfig = config.expand(sconfig)
@@ -673,13 +623,9 @@ def test_before_load_throw_error_if_file_not_exists(server):
 
     with temp_session(server) as sess:
         session_name = sess.name
-        temp_session_exists = server.has_session(
-            sess.name
-        )
+        temp_session_exists = server.has_session(sess.name)
         assert temp_session_exists
-        with pytest.raises(
-            (exc.BeforeLoadScriptNotExists, OSError),
-        ) as excinfo:
+        with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)) as excinfo:
             builder.build(session=sess)
             excinfo.match(r'No such file or directory')
         result = server.has_session(session_name)
@@ -690,12 +636,11 @@ def test_before_load_true_if_test_passes(server):
     config_script_completes = loadfixture(
         "workspacebuilder/config_script_completes.yaml"
     )
-    assert os.path.exists(
-        os.path.join(fixtures_dir, 'script_complete.sh'))
+    assert os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
     sconfig = kaptan.Kaptan(handler='yaml')
     yaml = config_script_completes.format(
         fixtures_dir=fixtures_dir,
-        script_complete=os.path.join(fixtures_dir, 'script_complete.sh')
+        script_complete=os.path.join(fixtures_dir, 'script_complete.sh'),
     )
 
     sconfig = sconfig.import_config(yaml).get()
@@ -713,15 +658,11 @@ def test_before_load_true_if_test_passes_with_args(server):
         "workspacebuilder/config_script_completes.yaml"
     )
 
-    assert(
-        os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
-    )
+    assert os.path.exists(os.path.join(fixtures_dir, 'script_complete.sh'))
     sconfig = kaptan.Kaptan(handler='yaml')
     yaml = config_script_completes.format(
         fixtures_dir=fixtures_dir,
-        script_complete=os.path.join(
-            fixtures_dir, 'script_complete.sh'
-        ) + ' -v'
+        script_complete=os.path.join(fixtures_dir, 'script_complete.sh') + ' -v',
     )
 
     sconfig = sconfig.import_config(yaml).get()
