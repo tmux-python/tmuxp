@@ -10,11 +10,17 @@ Command Line Interface
 Completion
 ----------
 
-In zsh (``~/.zshrc``) or bash (``~/.bashrc``):
+In bash (``~/.bashrc``):
 
 .. code-block:: sh
 
     eval "$(_TMUXP_COMPLETE=source tmuxp)"
+
+In zsh (``~/.zshrc``):
+
+.. code-block:: sh
+
+    eval "$(_TMUXP_COMPLETE=source_zsh tmuxp)"
 
 .. _cli_freeze:
 
