@@ -20,7 +20,7 @@ from os import path
 from docutils import nodes
 from docutils.parsers.rst.directives import flag, images, nonnegative_int
 from sphinx.errors import SphinxError
-from sphinx.util import ensuredir, relative_uri
+from sphinx.util import ensuredir, relative_uri, logging
 
 try:
     from hashlib import sha1 as sha
@@ -33,6 +33,8 @@ try:
 except ImportError:
     aafigure = None
 
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_FORMATS = dict(html='svg', latex='pdf', text=None)
 
@@ -102,7 +104,7 @@ def render_aafig_images(app, doctree):
     format_map = app.builder.config.aafig_format
     merge_dict(format_map, DEFAULT_FORMATS)
     if aafigure is None:
-        app.builder.warn(
+        logger.warn(
             'aafigure module not installed, ASCII art images '
             'will be redered as literal text'
         )
@@ -118,7 +120,7 @@ def render_aafig_images(app, doctree):
         if format in format_map:
             options['format'] = format_map[format]
         else:
-            app.builder.warn(
+            logger.warn(
                 'unsupported builder format "%s", please '
                 'add a custom entry in aafig_format config '
                 'option for this builder' % format
@@ -131,7 +133,7 @@ def render_aafig_images(app, doctree):
         try:
             fname, outfn, id, extra = render_aafigure(app, text, options)
         except AafigError as exc:
-            app.builder.warn('aafigure error: ' + str(exc))
+            logger.warn('aafigure error: ' + str(exc))
             img.replace_self(nodes.literal_block(text, text))
             continue
         img['uri'] = fname
@@ -162,7 +164,7 @@ def render_aafigure(app, text, options):
     else:
         # Non-HTML
         if app.builder.format != 'latex':
-            app.builder.warn(
+            logger.warn(
                 'aafig: the builder format %s is not officially '
                 'supported, aafigure images could not work. '
                 'Please report problems and working builder to '
