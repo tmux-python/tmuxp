@@ -183,8 +183,8 @@ Here you can find the recent changes to tmuxp
 1.0.0-rc1 <2016-05-25>
 ----------------------
 - version jump 0.11.1 to 1.0
-- :issue:`0`  tests moved to py.test framework
-- :issue:`0`  `libtmux`_ core split into its own project
+- tests moved to py.test framework
+- `libtmux`_ core split into its own project
 - :issue:`145`  Add new-window command functionality, @ikirudennis
 - :issue:`146`  Optionally disable shell history suppression, @kmactavish
 - :issue:`147`  Patching unittest timing for shell history suppression 
