@@ -6,26 +6,24 @@ name = "pypi"
 [dev-packages]
 docutils = "*"
 alagitpull = "*"
-releases = "*"
 aafigure = "*"
-sphinxcontrib-napoleon = "*"
-sphinx = ">=1.8.1"
+sphinx = "*"
 isort = "*"
 "flake8" = "*"
 pytest = "*"
 pytest-rerunfailures = "*"
-tmuxp = {path = ".", editable = true}
-"e1839a8" = {path = ".", editable = true}
+tmuxp = {path = ".",editable = true}
 "doc8" = "*"
 twine = "*"
+sphinx-issues = "*"
+pillow = "*"
 
 [packages]
 kaptan = "*"
 libtmux = "==0.8.1"
 click = ">=7<8"
 colorama = "*"
-"e1839a8" = {path = ".", editable = true}
-sphinx = "*"
+e1839a8 = {path = ".",editable = true}
 
 [requires]
-python_version = "2.7"
+python_version = "3"
