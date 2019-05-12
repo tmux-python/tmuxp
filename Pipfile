@@ -13,7 +13,6 @@ isort = "*"
 pytest = "*"
 pytest-rerunfailures = "*"
 tmuxp = {path = ".", editable = true}
-"e1839a8" = {path = ".", editable = true}
 "doc8" = "*"
 twine = "*"
 
