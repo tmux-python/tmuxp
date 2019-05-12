@@ -2,6 +2,6 @@
 docutils>=0.14
 sphinx>=2.0.0
 alagitpull>=0.0.21
-sphinx_issues
+sphinx_issues==1.2.0
 aafigure>=0.6
 doc8>=0.8.0
