@@ -28,7 +28,6 @@ extensions = [
     'sphinxcontrib.napoleon',
     'sphinx.ext.linkcode',
     'aafig',
-    'releases',
     'alagitpull',
 ]
 

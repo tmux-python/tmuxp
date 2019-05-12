@@ -6,7 +6,6 @@ name = "pypi"
 [dev-packages]
 docutils = "*"
 alagitpull = "*"
-releases = "*"
 aafigure = "*"
 sphinxcontrib-napoleon = "*"
 sphinx = ">=1.8.1"
