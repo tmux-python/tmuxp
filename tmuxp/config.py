@@ -42,11 +42,6 @@ def validate_schema(sconf):
         if 'window_name' not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
-        if 'panes' not in window:
-            raise exc.ConfigError(
-                'config window %s requires list of panes' % window['window_name']
-            )
-
     return True
 
 
@@ -369,6 +364,11 @@ def trickle(sconf):
         if suppress_history is not None:
             if 'suppress_history' not in windowconfig:
                 windowconfig['suppress_history'] = suppress_history
+
+        # If panes were NOT specified for a window, assume that a single pane
+        # with no shell commands is desired
+        if 'panes' not in windowconfig:
+            windowconfig['panes'] = [{'shell_command': []}]
 
         for paneconfig in windowconfig['panes']:
             commands_before = []
