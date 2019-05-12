@@ -126,7 +126,7 @@ intersphinx_mapping = {
 # aafig format, try to get working with pdf
 aafig_format = dict(latex='pdf', html='gif')
 
-aafig_default_options = dict(scale=.75, aspect=0.5, proportional=True)
+aafig_default_options = dict(scale=0.75, aspect=0.5, proportional=True)
 
 
 def linkcode_resolve(domain, info):  # NOQA: C901

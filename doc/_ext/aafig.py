@@ -20,7 +20,7 @@ from os import path
 from docutils import nodes
 from docutils.parsers.rst.directives import flag, images, nonnegative_int
 from sphinx.errors import SphinxError
-from sphinx.util import ensuredir, relative_uri, logging
+from sphinx.util import ensuredir, logging, relative_uri
 
 try:
     from hashlib import sha1 as sha

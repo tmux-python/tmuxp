@@ -22,7 +22,7 @@ def test_freeze_config(session):
     builder.build(session=session)
     assert session == builder.session
 
-    time.sleep(.50)
+    time.sleep(0.50)
 
     session = session
     sconf = freeze(session)
