@@ -16,6 +16,7 @@ tmuxp = {path = ".",editable = true}
 "doc8" = "*"
 twine = "*"
 sphinx-issues = "*"
+pillow = "*"
 
 [packages]
 kaptan = "*"
