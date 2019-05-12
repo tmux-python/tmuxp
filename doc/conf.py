@@ -37,7 +37,7 @@ releases_document_name = ["history"]
 releases_issue_uri = "https://github.com/tmux-python/tmuxp/issues/%s"
 releases_release_uri = "https://github.com/tmux-python/tmuxp/tree/v%s"
 
-issues_github_path = about['__github__']
+issues_github_path = about['__github__'].replace('https://github.com/', '')
 
 templates_path = ['_templates']
 
