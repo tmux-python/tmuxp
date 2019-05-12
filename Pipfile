@@ -7,8 +7,7 @@ name = "pypi"
 docutils = "*"
 alagitpull = "*"
 aafigure = "*"
-sphinxcontrib-napoleon = "*"
-sphinx = ">=1.8.1"
+sphinx = "*"
 isort = "*"
 "flake8" = "*"
 pytest = "*"
@@ -24,7 +23,6 @@ libtmux = "==0.8.1"
 click = ">=7<8"
 colorama = "*"
 "e1839a8" = {path = ".", editable = true}
-sphinx = "*"
 
 [requires]
 python_version = "2.7"

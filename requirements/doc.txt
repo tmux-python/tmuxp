@@ -3,5 +3,4 @@ docutils>=0.14
 sphinx>=1.8.1
 alagitpull>=0.0.21
 aafigure>=0.6
-sphinxcontrib-napoleon>=0.7
 doc8>=0.8.0
