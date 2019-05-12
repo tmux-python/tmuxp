@@ -375,7 +375,7 @@ Here you can find the recent changes to tmuxp
 ------------------
 - :issue:`48` Fix Python 3 CLI issue.
 - :issue:`48` ``$ tmuxp`` without option raises an error.
-- - Add space before send-keys to not populate bash and zsh
+- Add space before send-keys to not populate bash and zsh
   history.
 
 0.1.2 <2014-01-08>
@@ -433,7 +433,7 @@ Here you can find the recent changes to tmuxp
 --------------------
 - :issue:`23` fix bug where workspace would not build with pane-base-index
   set to 1. Update tests to fix if ``pane-base-index`` is not 0.
-- - removed ``$ tmuxp load --list`` functionality. Update
+- removed ``$ tmuxp load --list`` functionality. Update
   :ref:`quickstart` accordingly.
 
 0.1-rc1 <2013-11-23>
