@@ -50,7 +50,7 @@ def get_config_dir():
     if 'TMUXP_CONFIGDIR' in os.environ:
         paths.append(os.environ['TMUXP_CONFIGDIR'])
     if 'XDG_CONFIG_HOME' in os.environ:
-        paths.append(os.environ['XDG_CONFIG_HOME'])
+        paths.append(os.path.join(os.environ['XDG_CONFIG_HOME'], 'tmuxp'))
     else:
         paths.append('~/.config/tmuxp/')
     paths.append('~/.tmuxp')
