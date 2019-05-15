@@ -120,6 +120,13 @@ def test_tmuxp_configdir_env_var(tmpdir, monkeypatch):
     assert get_config_dir() == tmpdir
 
 
+def test_tmuxp_configdir_xdg_config_dir(tmpdir, monkeypatch):
+    monkeypatch.setenv('XDG_CONFIG_HOME', str(tmpdir))
+    tmux_dir = tmpdir.mkdir("tmuxp")
+
+    assert get_config_dir() == str(tmux_dir)
+
+
 def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
     monkeypatch.setenv('HOME', str(homedir))
     projectdir.join('.tmuxp.yaml').ensure()
