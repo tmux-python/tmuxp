@@ -652,7 +652,7 @@ def startup(config_dir):
 
 
 @cli.command(name='freeze')
-@click.argument('session_name', nargs=1)
+@click.argument('session_name', nargs=1, required=False)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 def command_freeze(session_name, socket_name, socket_path):
@@ -664,7 +664,10 @@ def command_freeze(session_name, socket_name, socket_path):
     t = Server(socket_name=socket_name, socket_path=socket_path)
 
     try:
-        session = t.find_where({'session_name': session_name})
+        if session_name:
+            session = t.find_where({'session_name': session_name})
+        else:
+            session = t.list_sessions()[0]
 
         if not session:
             raise exc.TmuxpException('Session not found.')
