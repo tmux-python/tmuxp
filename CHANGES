@@ -4,6 +4,17 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+1.5.2 <2019-06-02>
+------------------
+- Loosen libtmux version constraint to >0.8 and <0.9 (libtmux 0.8.2
+  released today)
+- :issue:`484` CHANGES converted to plain reStructuredText
+- :issue:`491` ``tmuxp freeze`` will now infer active session with freezing
+- :issue:`490` Fix XDG's ``$XDG_CONFIG_HOME`` behavior
+- :issue:`483`, :issue:`482`, :issue:`480`  Doc fixes
+- :issue:`484` Simplifying handling of configs with no panes (Fixes
+  :issue:`470`)
+
 1.5.1 <2019-02-18>
 ------------------
 - Add tests/\*.sh scripts to MANIFEST.in to include them in Pypi package.
