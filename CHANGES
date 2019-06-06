@@ -4,6 +4,10 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+master
+------
+- :issue:`377`: Include examples in source distribution package
+
 1.5.2 <2019-06-02>
 ------------------
 - Loosen libtmux version constraint to >0.8 and <0.9 (libtmux 0.8.2
