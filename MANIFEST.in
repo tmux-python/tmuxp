@@ -2,3 +2,4 @@ include README.rst LICENSE CHANGES .tmuxp.yaml
 include requirements/*.txt
 recursive-include doc *.rst
 recursive-include tests *.py *.yaml *.json *.sh
+recursive-include examples  *.yaml *.json
