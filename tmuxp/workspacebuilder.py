@@ -202,7 +202,7 @@ class WorkspaceBuilder(object):
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, s):
+    def iter_create_windows(self, session):
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -222,17 +222,17 @@ class WorkspaceBuilder(object):
             Newly created window, and the section from the tmuxp configuration
             that was used to create the window.
         """
-        for i, wconf in enumerate(self.sconf['windows'], start=1):
+        for wconf in self.sconf['windows']:
             if 'window_name' not in wconf:
                 window_name = None
             else:
                 window_name = wconf['window_name']
 
             w1 = None
-            if i == int(1):  # if first window, use window 1
-                w1 = s.attached_window
+            is_first_window = self.first_window(session)
+            if is_first_window: # if first window, use window 1
+                w1 = session.attached_window
                 w1.move_window(99)
-                pass
 
             if 'start_directory' in wconf:
                 sd = wconf['start_directory']
@@ -244,7 +244,7 @@ class WorkspaceBuilder(object):
             else:
                 ws = None
 
-            w = s.new_window(
+            w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
@@ -252,10 +252,13 @@ class WorkspaceBuilder(object):
                 window_shell=ws,
             )
 
-            if i == int(1) and w1:  # if first window, use window 1
+            if is_first_window and w1:  # if first window, use window 1
                 w1.kill_window()
+
             assert isinstance(w, Window)
-            s.server._update_windows()
+
+            session.server._update_windows()
+
             if 'options' in wconf and isinstance(wconf['options'], dict):
                 for key, val in wconf['options'].items():
                     w.set_window_option(key, val)
@@ -263,7 +266,7 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 w.select_window()
 
-            s.server._update_windows()
+            session.server._update_windows()
 
             yield w, wconf
 
@@ -348,6 +351,12 @@ class WorkspaceBuilder(object):
         if 'options_after' in wconf and isinstance(wconf['options_after'], dict):
             for key, val in wconf['options_after'].items():
                 w.set_window_option(key, val)
+
+    def find_current_attached_session(self):
+        return self.server.list_sessions()[0]
+
+    def first_window(self, session):
+        return len(session.windows) == 0
 
 
 def freeze(session):

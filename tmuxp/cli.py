@@ -531,12 +531,13 @@ def load_workspace(
             + click.style(config_file, fg='blue', bold=True)
         )
 
-        builder.build()  # load tmux session via workspace builder
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
             if not detached and (
                 answer_yes or click.confirm('Already inside TMUX, switch to session?')
             ):
+                builder.build()  # load tmux session via workspace builder
+
                 # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
                 tmux_env = os.environ.pop('TMUX')
 
@@ -547,13 +548,19 @@ def load_workspace(
 
                 os.environ['TMUX'] = tmux_env  # set TMUX back again
                 return builder.session
-            else:  # session created in the background, from within tmux
+            else: # windows created in the same session
+                current_attached_sesssion = builder.find_current_attached_session()
+                builder.build(current_attached_sesssion)
+
                 if has_gte_version('2.6'):  # prepare for both cases
                     set_layout_hook(builder.session, 'client-attached')
                     set_layout_hook(builder.session, 'client-session-changed')
 
                 sys.exit('Session created in detached state.')
         else:  # tmuxp ran from inside tmux
+
+            builder.build()  # load tmux session via workspace builder
+
             if has_gte_version('2.6'):
                 # if attaching for first time
                 set_layout_hook(builder.session, 'client-attached')
