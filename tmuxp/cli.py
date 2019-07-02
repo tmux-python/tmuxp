@@ -162,6 +162,7 @@ def set_layout_hook(session, hook_name):
     """
     cmd = ['set-hook', '-t', session.id, hook_name]
     hook_cmd = []
+    attached_window = session.attached_window
     for window in session.windows:
         # unfortunately, select-layout won't work unless
         # we've literally selected the window at least once
@@ -177,6 +178,7 @@ def set_layout_hook(session, hook_name):
             target_session=session.id, hook_name=hook_name
         )
     )
+    hook_cmd.append('selectw -t {}'.format(attached_window.id))
 
     # join the hook's commands with semicolons
     hook_cmd = '{}'.format('; '.join(hook_cmd))
