@@ -122,7 +122,7 @@ class WorkspaceBuilder(object):
             session to build workspace in
         """
 
-        self.previous_session = False
+        previous_session = False
         if not session:
             if not self.server:
                 raise exc.TmuxpException(
@@ -145,7 +145,7 @@ class WorkspaceBuilder(object):
             assert self.sconf['session_name'] == session.name
             assert len(self.sconf['session_name']) > 0
         else:
-            self.previous_session = True
+            previous_session = True
 
         self.session = session
         self.server = session.server
@@ -205,7 +205,7 @@ class WorkspaceBuilder(object):
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, session):
+    def iter_create_windows(self, session, previous_session=False):
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -231,10 +231,9 @@ class WorkspaceBuilder(object):
             else:
                 window_name = wconf['window_name']
 
-            is_first_window_pass = self.first_window_pass(i)
+            is_first_window_pass = self.first_window_pass(i, session, previous_session)
 
             w1 = None
-            #if i == int(1):
             if is_first_window_pass: # if first window, use window 1
                 w1 = session.attached_window
                 w1.move_window(99)
@@ -360,8 +359,8 @@ class WorkspaceBuilder(object):
     def find_current_attached_session(self):
         return self.server.list_sessions()[0]
 
-    def first_window_pass(self, i):
-        return len(self.session.windows) == 1 and i == 1 and not self.previous_session
+    def first_window_pass(self, i, session, previous_session):
+        return len(session.windows) == 1 and i == 1 and not previous_session
 
 
 def freeze(session):
