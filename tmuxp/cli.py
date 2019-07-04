@@ -531,11 +531,12 @@ def load_workspace(
             + click.style(config_file, fg='blue', bold=True)
         )
 
-
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            if not detached and (
-                answer_yes or click.confirm('Already inside TMUX, switch to session?')
-            ):
+            msg = 'Already inside TMUX, \n(a)ttach, (d)etach in a new session or append windows in (c)urrent session?\n[a/d/c]'
+            options = ['a', 'd', 'c']
+            choice = click.prompt(msg, value_proc=_validate_choices(options))
+
+            if not detached and choice == 'a':
                 builder.build()  # load tmux session via workspace builder
 
                 # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
@@ -548,17 +549,20 @@ def load_workspace(
 
                 os.environ['TMUX'] = tmux_env  # set TMUX back again
                 return builder.session
-            else: # windows created in the same session
+            elif not detached and choice == 'c': # windows created in the same session
                 current_attached_sesssion = builder.find_current_attached_session()
                 builder.build(current_attached_sesssion)
 
                 if has_gte_version('2.6'):  # prepare for both cases
                     set_layout_hook(builder.session, 'client-attached')
                     set_layout_hook(builder.session, 'client-session-changed')
-
+            else:
+                builder.build()
+                if has_gte_version('2.6'):  # prepare for both cases
+                    set_layout_hook(builder.session, 'client-attached')
+                    set_layout_hook(builder.session, 'client-session-changed')
                 sys.exit('Session created in detached state.')
-        else:  # tmuxp ran from inside tmux
-
+        else:
             builder.build()  # load tmux session via workspace builder
 
             if has_gte_version('2.6'):
