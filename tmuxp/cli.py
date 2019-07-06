@@ -500,7 +500,7 @@ def load_workspace(
             choice = click.prompt(msg, value_proc=_validate_choices(options))
 
             if not detached and choice == 'a':
-                builder.build()  # load tmux session via workspace builder
+                builder.build()  # load config in a new session and attach
 
                 # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
                 tmux_env = os.environ.pop('TMUX')
@@ -519,14 +519,14 @@ def load_workspace(
                 if has_gte_version('2.6'):  # prepare for both cases
                     set_layout_hook(builder.session, 'client-attached')
                     set_layout_hook(builder.session, 'client-session-changed')
-            else:
+            else: # load config in a new detached session
                 builder.build()
                 if has_gte_version('2.6'):  # prepare for both cases
                     set_layout_hook(builder.session, 'client-attached')
                     set_layout_hook(builder.session, 'client-session-changed')
                 sys.exit('Session created in detached state.')
         else:
-            builder.build()  # load tmux session via workspace builder
+            builder.build() # load config in a new session
 
             if has_gte_version('2.6'):
                 # if attaching for first time
