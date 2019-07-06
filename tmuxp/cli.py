@@ -368,29 +368,6 @@ def scan_config(config, config_dir=None):
     return config
 
 
-def _reattach(session):
-    """
-    Reattach session (depending on env being inside tmux already or not)
-
-    Parameters
-    ----------
-    session : :class:`libtmux.Session`
-
-    Notes
-    -----
-    If ``TMUX`` environmental variable exists in the environment this script is
-    running, that means we're in a tmux client. So ``tmux switch-client`` will
-    load the session.
-
-    If not, ``tmux attach-session`` loads the client to the target session.
-    """
-    if 'TMUX' in os.environ:
-        session.switch_client()
-
-    else:
-        session.attach_session()
-
-
 def load_workspace(
     config_file,
     socket_name=None,
@@ -510,20 +487,6 @@ def load_workspace(
         return
 
     session_name = sconfig['session_name']
-
-    # if the session already exists, prompt the user to attach. tmuxp doesn't
-    # support incremental session building or appending (yet, PR's welcome!)
-    if builder.session_exists(session_name):
-        if not detached and (
-            answer_yes
-            or click.confirm(
-                '%s is already running. Attach?'
-                % click.style(session_name, fg='green'),
-                default=True,
-            )
-        ):
-            _reattach(builder.session)
-        return
 
     try:
         click.echo(

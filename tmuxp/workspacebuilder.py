@@ -98,14 +98,6 @@ class WorkspaceBuilder(object):
 
         self.sconf = sconf
 
-    def session_exists(self, session_name=None):
-        exists = self.server.has_session(session_name)
-        if not exists:
-            return exists
-
-        self.session = self.server.find_where({'session_name': session_name})
-        return True
-
     def build(self, session=None):
         """
         Build tmux workspace in session.
