@@ -114,7 +114,7 @@ class WorkspaceBuilder(object):
             session to build workspace in
         """
 
-        previous_session = False
+        self.previous_session = False
         if not session:
             if not self.server:
                 raise exc.TmuxpException(
@@ -137,7 +137,7 @@ class WorkspaceBuilder(object):
             assert self.sconf['session_name'] == session.name
             assert len(self.sconf['session_name']) > 0
         else:
-            previous_session = True
+            self.previous_session = True
 
         self.session = session
         self.server = session.server
@@ -172,7 +172,7 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
-        for w, wconf in self.iter_create_windows(session):
+        for w, wconf in self.iter_create_windows(session, self.append_windows_same_session()):
             assert isinstance(w, Window)
 
             focus_pane = None
@@ -197,7 +197,7 @@ class WorkspaceBuilder(object):
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, session, previous_session=False):
+    def iter_create_windows(self, session, append_same_sassion=False):
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -223,7 +223,7 @@ class WorkspaceBuilder(object):
             else:
                 window_name = wconf['window_name']
 
-            is_first_window_pass = self.first_window_pass(i, session, previous_session)
+            is_first_window_pass = self.first_window_pass(i, session, append_same_sassion)
 
             w1 = None
             if is_first_window_pass: # if first window, use window 1
@@ -351,8 +351,11 @@ class WorkspaceBuilder(object):
     def find_current_attached_session(self):
         return self.server.list_sessions()[0]
 
-    def first_window_pass(self, i, session, previous_session):
-        return len(session.windows) == 1 and i == 1 and not previous_session
+    def first_window_pass(self, i, session, append_same_sassion):
+        return len(session.windows) == 1 and i == 1 and not append_same_sassion
+
+    def append_windows_same_session(self):
+        return self.previous_session
 
 
 def freeze(session):
