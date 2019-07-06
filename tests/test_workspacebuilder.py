@@ -673,3 +673,51 @@ def test_before_load_true_if_test_passes_with_args(server):
 
     with temp_session(server) as session:
         builder.build(session=session)
+
+
+def test_load_configs_same_session(server):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 3
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build(server.sessions[0])
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 5
+
+
+def test_load_configs_separate_sessions(server):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 3
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 2
+    assert len(server.sessions[0]._windows) == 3
+    assert len(server.sessions[1]._windows) == 2
+
