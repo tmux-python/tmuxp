@@ -172,7 +172,8 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
-        for w, wconf in self.iter_create_windows(session, self.append_windows_same_session()):
+        append_windows = self.append_windows_same_session()
+        for w, wconf in self.iter_create_windows(session, append_windows):
             assert isinstance(w, Window)
 
             focus_pane = None
@@ -223,7 +224,9 @@ class WorkspaceBuilder(object):
             else:
                 window_name = wconf['window_name']
 
-            is_first_window_pass = self.first_window_pass(i, session, append_same_sassion)
+            is_first_window_pass = self.first_window_pass(
+                i, session, append_same_sassion
+            )
 
             w1 = None
             if is_first_window_pass: # if first window, use window 1

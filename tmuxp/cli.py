@@ -486,8 +486,6 @@ def load_workspace(
         click.echo('%s is empty or parsed no config data' % config_file, err=True)
         return
 
-    session_name = sconfig['session_name']
-
     try:
         click.echo(
             click.style('[Loading] ', fg='green')
@@ -495,7 +493,8 @@ def load_workspace(
         )
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            msg = 'Already inside TMUX, \n(a)ttach, (d)etach in a new session or append windows in (c)urrent session?\n[a/d/c]'
+            msg = "Already inside TMUX, \n(a)ttach, (d)etach in a new session "\
+            "or append windows in (c)urrent session?\n[a/d/c]"
             options = ['a', 'd', 'c']
             choice = click.prompt(msg, value_proc=_validate_choices(options))
 
