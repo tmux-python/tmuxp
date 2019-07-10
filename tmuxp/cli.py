@@ -492,50 +492,27 @@ def load_workspace(
             + click.style(config_file, fg='blue', bold=True)
         )
 
+        if detached:
+            return load_detached(builder)
+
+        if answer_yes:
+            load_attached(builder, detached)
+            return builder.session
+
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
             msg = "Already inside TMUX, \n(a)ttach, (d)etach in a new session "\
             "or append windows in (c)urrent session?\n[a/d/c]"
             options = ['a', 'd', 'c']
             choice = click.prompt(msg, value_proc=_validate_choices(options))
 
-            if not detached and choice == 'a':
-                builder.build()  # load config in a new session and attach
-
-                # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
-                tmux_env = os.environ.pop('TMUX')
-
-                if has_gte_version('2.6'):
-                    set_layout_hook(builder.session, 'client-session-changed')
-
-                builder.session.switch_client()  # switch client to new session
-
-                os.environ['TMUX'] = tmux_env  # set TMUX back again
-                return builder.session
-            elif not detached and choice == 'c': # windows created in the same session
-                current_attached_sesssion = builder.find_current_attached_session()
-                builder.build(current_attached_sesssion)
-
-                if has_gte_version('2.6'):  # prepare for both cases
-                    set_layout_hook(builder.session, 'client-attached')
-                    set_layout_hook(builder.session, 'client-session-changed')
-            else: # load config in a new detached session
-                builder.build()
-                if has_gte_version('2.6'):  # prepare for both cases
-                    set_layout_hook(builder.session, 'client-attached')
-                    set_layout_hook(builder.session, 'client-session-changed')
-                sys.exit('Session created in detached state.')
+            if choice == 'a':
+                load_attached(builder, detached)
+            elif choice == 'c':
+                load_append_windows_same_session(builder)
+            else:
+                return load_detached(builder)
         else:
-            builder.build() # load config in a new session
-
-            if has_gte_version('2.6'):
-                # if attaching for first time
-                set_layout_hook(builder.session, 'client-attached')
-
-                # for cases where user switches client for first time
-                set_layout_hook(builder.session, 'client-session-changed')
-
-            if not detached:
-                builder.session.attach_session()
+            load_attached(builder, detached)
 
     except exc.TmuxpException as e:
         import traceback
@@ -561,6 +538,47 @@ def load_workspace(
             sys.exit()
 
     return builder.session
+
+
+def load_attached(builder, detached):
+    """
+        Load config in a new session and attach.
+    """
+    builder.build() # load config in a new session
+    if 'TMUX' in os.environ:
+        # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
+        tmux_env = os.environ.pop('TMUX')
+        if has_gte_version('2.6'):
+            set_layout_hook(builder.session, 'client-session-changed')
+        builder.session.switch_client()  # switch client to new session
+        os.environ['TMUX'] = tmux_env  # set TMUX back again
+    else:
+        if has_gte_version('2.6'):
+            # if attaching for first time
+            set_layout_hook(builder.session, 'client-attached')
+            # for cases where user switches client for first time
+            set_layout_hook(builder.session, 'client-session-changed')
+        if not detached:
+            builder.session.attach_session()
+
+
+def load_detached(builder):
+    builder.build()
+    if has_gte_version('2.6'):  # prepare for both cases
+        set_layout_hook(builder.session, 'client-attached')
+        set_layout_hook(builder.session, 'client-session-changed')
+    return sys.exit('Session created in detached state.')
+
+
+def load_append_windows_same_session(builder):
+    """
+        Load configs in the active session appending windows
+    """
+    current_attached_sesssion = builder.find_current_attached_session()
+    builder.build(current_attached_sesssion)
+    if has_gte_version('2.6'):  # prepare for both cases
+        set_layout_hook(builder.session, 'client-attached')
+        set_layout_hook(builder.session, 'client-session-changed')
 
 
 @click.group(context_settings={'obj': {}})
