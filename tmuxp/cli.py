@@ -375,6 +375,7 @@ def load_workspace(
     colors=None,
     detached=False,
     answer_yes=False,
+    append=False,
 ):
     """
     Load a tmux "workspace" session via tmuxp file.
@@ -393,7 +394,10 @@ def load_workspace(
     detached : bool
         Force detached state. default False.
     answer_yes : bool
-        Assume yes when given prompt. default False.
+        Assume yes when given prompt to attach in a new sesion. default False.
+    append: bool
+        Assume current when given prompt to append windows in in same Session.
+        Default False.
 
     Notes
     -----
@@ -493,21 +497,29 @@ def load_workspace(
         )
 
         if detached:
-            return load_detached(builder)
+            load_detached(builder)
+            return builder.session
+
+        if append:
+            if 'TMUX' in os.environ:
+                load_append_windows_same_session(builder)
+            else:
+                load_attached(builder, detached)
+            return builder.session
 
         if answer_yes:
             load_attached(builder, detached)
             return builder.session
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            msg = "Already inside TMUX, \n(a)ttach, (d)etach in a new session "\
-            "or append windows in (c)urrent session?\n[a/d/c]"
-            options = ['a', 'd', 'c']
+            msg = "Already inside TMUX, switch to session? yes/no\n"\
+            "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            options = ['y', 'n', 'a']
             choice = click.prompt(msg, value_proc=_validate_choices(options))
 
-            if choice == 'a':
+            if choice == 'y':
                 load_attached(builder, detached)
-            elif choice == 'c':
+            elif choice == 'a':
                 load_append_windows_same_session(builder)
             else:
                 return load_detached(builder)
@@ -567,7 +579,7 @@ def load_detached(builder):
     if has_gte_version('2.6'):  # prepare for both cases
         set_layout_hook(builder.session, 'client-attached')
         set_layout_hook(builder.session, 'client-session-changed')
-    return sys.exit('Session created in detached state.')
+    print('Session created in detached state.')
 
 
 def load_append_windows_same_session(builder):
@@ -738,6 +750,9 @@ def command_freeze(session_name, socket_name, socket_path):
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
 )
 @click.option(
+    '-a', 'append', help='Load appending windows in active session', is_flag=True
+)
+@click.option(
     'colors',
     '-2',
     flag_value=256,
@@ -750,7 +765,16 @@ def command_freeze(session_name, socket_name, socket_path):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
-def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, colors):
+def command_load(
+    ctx,
+    config,
+    socket_name,
+    socket_path,
+    answer_yes,
+    detached,
+    colors,
+    append
+):
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -781,6 +805,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, co
         'answer_yes': answer_yes,
         'colors': colors,
         'detached': detached,
+        'append': append
     }
 
     if not config:
