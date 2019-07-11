@@ -55,7 +55,8 @@ Load multiple tmux sessions at once:
     $ tmuxp load example.yaml anothersession.yaml
 
 tmuxp will offer to ``switch-client`` for you if you're already in a
-session.
+session. You can also load config appending windows in the current
+active session.
 
 You can also have a custom tmuxp config directory by setting the
 ``TMUX_CONFIGDIR`` in your environment variables.

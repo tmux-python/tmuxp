@@ -84,6 +84,24 @@ without being attached. The last one will be attached if there is no
 
     $ tmuxp load <filename1> <filename2> ...
 
+If you try to load a config file within a tmux session, it will ask you
+if you want to load and attach in the new session or just load detached.
+You can also load config appending windows in the current active session.
+
+::
+
+    Already inside TMUX, switch to session? yes/no
+    Or (a)ppend windows in the current active session?
+    [y/n/a]:
+
+All this modes you can force doing:
+
+.. code-block:: bash
+
+    $ tmuxp load -y config # load attached
+    $ tmuxp load -d config # load detached
+    $ tmuxp load -a config # load appending
+
 .. _cli_import:
 
 Import

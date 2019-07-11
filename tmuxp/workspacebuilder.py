@@ -211,6 +211,9 @@ class WorkspaceBuilder(object):
         ----------
         session : :class:`libtmux.Session`
             session to create windows in
+        append_same_sassion : bool
+            trick to identify previous open session and create
+            windows appending in the current session. default False.
 
         Returns
         -------
