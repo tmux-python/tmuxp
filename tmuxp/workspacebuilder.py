@@ -98,7 +98,7 @@ class WorkspaceBuilder(object):
 
         self.sconf = sconf
 
-    def build(self, session=None):
+    def build(self, session=None, append=False):
         """
         Build tmux workspace in session.
 
@@ -112,9 +112,10 @@ class WorkspaceBuilder(object):
         ----------
         session : :class:`libtmux.Session`
             session to build workspace in
+        append : bool
+            append windows in current active session
         """
 
-        self.previous_session = False
         if not session:
             if not self.server:
                 raise exc.TmuxpException(
@@ -136,8 +137,6 @@ class WorkspaceBuilder(object):
 
             assert self.sconf['session_name'] == session.name
             assert len(self.sconf['session_name']) > 0
-        else:
-            self.previous_session = True
 
         self.session = session
         self.server = session.server
@@ -172,8 +171,7 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
-        append_windows = self.append_windows_same_session()
-        for w, wconf in self.iter_create_windows(session, append_windows):
+        for w, wconf in self.iter_create_windows(session, append):
             assert isinstance(w, Window)
 
             focus_pane = None
@@ -359,9 +357,6 @@ class WorkspaceBuilder(object):
 
     def first_window_pass(self, i, session, append_same_sassion):
         return len(session.windows) == 1 and i == 1 and not append_same_sassion
-
-    def append_windows_same_session(self):
-        return self.previous_session
 
 
 def freeze(session):

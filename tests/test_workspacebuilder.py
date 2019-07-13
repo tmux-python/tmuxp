@@ -692,7 +692,7 @@ def test_load_configs_same_session(server):
     sconfig = sconfig.import_config(yaml_config).get()
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
-    builder.build(server.sessions[0])
+    builder.build(server.sessions[0], True)
 
     assert len(server.sessions) == 1
     assert len(server.sessions[0]._windows) == 5

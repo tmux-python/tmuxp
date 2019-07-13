@@ -587,7 +587,7 @@ def load_append_windows_same_session(builder):
         Load configs in the active session appending windows
     """
     current_attached_sesssion = builder.find_current_attached_session()
-    builder.build(current_attached_sesssion)
+    builder.build(current_attached_sesssion, True)
     if has_gte_version('2.6'):  # prepare for both cases
         set_layout_hook(builder.session, 'client-attached')
         set_layout_hook(builder.session, 'client-session-changed')
