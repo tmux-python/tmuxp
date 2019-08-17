@@ -4,8 +4,9 @@ sudo: false
 python:
   - 2.7
   - 3.6
-  - pypy3.5-5.10.1
-  - pypy2.7-5.10.0
+  - 3.7
+  - pypy
+  - pypy3
 env:
   global:
     - RETRY_TIMEOUT_SECONDS=15
