@@ -4,6 +4,10 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+master
+------
+- :issue:`500`: Fix window focus
+
 1.5.3 <2019-06-06>
 ------------------
 - :issue:`377`: Include examples in source distribution package
