@@ -21,7 +21,7 @@ black = "==19.3b0"
 
 [packages]
 kaptan = "*"
-libtmux = "==0.8.1"
+libtmux = "<0.9"
 click = ">=7<8"
 colorama = "*"
 e1839a8 = {path = ".",editable = true}
