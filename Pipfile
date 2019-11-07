@@ -17,7 +17,7 @@ tmuxp = {path = ".",editable = true}
 twine = "*"
 sphinx-issues = "*"
 pillow = "*"
-black = "==19.3b0"
+black = "==19.10b0"
 
 [packages]
 kaptan = "*"
