@@ -388,11 +388,11 @@
         },
         "pytest-rerunfailures": {
             "hashes": [
-                "sha256:1180a0f98975e1e1a2e055c87c1159cbd3bace8ceb71b1e7ffe4ace6121e7801",
-                "sha256:f3c9cf31339bf87b048c09dadb633a81156fa4899527fffc55cde105d04ed5fd"
+                "sha256:17c1236b9f8463f74a5df6c807f301c53c2ea1ab81b7509b7e23fab3b7cbe812",
+                "sha256:4997cda1b82f74cc0c280f6a5a0470d36deb318e3d8bd6da71efc32a3e0c9ae4"
             ],
             "index": "pypi",
-            "version": "==7.0"
+            "version": "==8.0"
         },
         "pytz": {
             "hashes": [
