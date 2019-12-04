@@ -458,7 +458,7 @@ def test_start_directory(session, tmpdir):
 
 
 def test_start_directory_relative(session, tmpdir):
-    """Same as above test, but with relative start directory, mimicing
+    """Same as above test, but with relative start directory, mimicking
     loading it from a location of project file. Like::
 
     $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
