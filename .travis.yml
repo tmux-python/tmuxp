@@ -6,6 +6,7 @@ python:
   - 3.7
   - pypy
   - pypy3
+if: (type = push AND branch IN (master)) OR (type = pull_request)
 env:
   global:
     - RETRY_TIMEOUT_SECONDS=15
