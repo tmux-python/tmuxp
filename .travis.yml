@@ -1,5 +1,6 @@
 language: python
 sudo: false
+dist: bionic  # 18.04
 python:
   - 2.7
   - 3.6
