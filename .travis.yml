@@ -3,7 +3,6 @@ sudo: false
 dist: bionic  # 18.04
 python:
   - 2.7
-  - 3.6
   - 3.7
   - pypy3
 if: (type = push AND branch IN (master)) OR (type = pull_request)
