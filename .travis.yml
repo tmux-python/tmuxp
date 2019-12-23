@@ -28,6 +28,9 @@ matrix:
   - env: TMUX_VERSION=master
 cache:
   - pip
+  - directories:
+    - ~/source
+    - ~/build
 before_install:
   - export PIP_USE_MIRRORS=true
   - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
@@ -37,13 +40,15 @@ install:
   - pip install -e .
   - pip install -r requirements/test.txt
 before_script:
-  - git clone https://github.com/tmux/tmux.git tmux
-  - cd tmux
+  - mkdir -p ~/source
+  - mkdir -p ~/build/tmux-$TMUX_VERSION
+  - if [[ ! -d ~/source/tmux-$TMUX_VERSION ]]; then git clone https://github.com/tmux/tmux.git ~/source/tmux-$TMUX_VERSION; fi
+  - cd ~/source/tmux-$TMUX_VERSION
   - git checkout $TMUX_VERSION
-  - sh autogen.sh
-  - ./configure --prefix=$HOME/tmux && make && make install
-  - export PATH=$HOME/tmux/bin:$PATH
-  - cd ..
+  - export PATH=$HOME/build/tmux-$TMUX_VERSION/bin:$PATH
+  - if [[ $TMUX_VERSION == "master" || ! $(tmux -V | grep $TMUX_VERSION) ]]; then sh autogen.sh; fi
+  - if [[ $TMUX_VERSION == "master" || ! $(tmux -V | grep $TMUX_VERSION) ]]; then ./configure --prefix=$HOME/build/tmux-$TMUX_VERSION && make && make install; fi
+  - cd $TRAVIS_BUILD_DIR
   - tmux -V
 script:
   - py.test --cov
