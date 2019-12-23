@@ -4,6 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+current
+-------
+- :issue:`519` Fix typo, thanks @timgates42
+- :issue:`506` Fix Makefile typo, thanks @wolfgangpfnuer
+- Travis: Only run on master and PRs one time
+- Travis: Add caching for tmux builds
+- Travis: Test 2.9 and 3.0a
+
 1.5.4 <2019-11-06>
 ------------------
 - :issue:`500`: Fix window focus
