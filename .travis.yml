@@ -27,7 +27,8 @@ env:
 matrix:
   allow_failures:
   - env: TMUX_VERSION=master
-
+cache:
+  - pip
 before_install:
   - export PIP_USE_MIRRORS=true
   - pip install --upgrade pytest  # https://github.com/travis-ci/travis-ci/issues/4873
