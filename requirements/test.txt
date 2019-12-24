@@ -2,3 +2,4 @@ pytest<6
 pytest-rerunfailures<9
 pytest-cov
 coverage
+codecov
