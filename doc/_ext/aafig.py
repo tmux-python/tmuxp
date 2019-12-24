@@ -183,7 +183,7 @@ def render_aafigure(app, text, options):
                     try:
                         f = open(metadata_fname, 'r')
                         extra = f.read()
-                    except:
+                    except Exception:
                         raise AafigError()
                 finally:
                     if f is not None:
