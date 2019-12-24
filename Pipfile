@@ -27,6 +27,7 @@ colorama = "*"
 e1839a8 = {path = ".",editable = true}
 pytest-cov = "*"
 coverage = "*"
+codecov = "*"
 
 [requires]
 python_version = "3"
