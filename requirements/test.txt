@@ -1,2 +1,5 @@
-pytest>=3.9.1
-pytest-rerunfailures>=4.2
+pytest<6
+pytest-rerunfailures<9
+pytest-cov
+coverage
+codecov

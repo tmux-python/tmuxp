@@ -2,7 +2,6 @@
 import sys
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
 
 about = {}
 with open("tmuxp/__about__.py") as fp:
@@ -20,20 +19,6 @@ else:
     readme = open('README.rst').read()
 
 history = open('CHANGES').read().replace('.. :changelog:', '')
-
-
-class PyTest(TestCommand):
-    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def run_tests(self):
-        import pytest
-
-        errno = pytest.main(self.pytest_args)
-        sys.exit(errno)
 
 
 setup(
@@ -55,7 +40,6 @@ setup(
     include_package_data=True,
     install_requires=install_reqs,
     tests_require=tests_reqs,
-    cmdclass={'test': PyTest},
     zip_safe=False,
     keywords=about['__title__'],
     entry_points=dict(console_scripts=['tmuxp=tmuxp:cli.cli']),
