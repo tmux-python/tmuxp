@@ -30,6 +30,7 @@ matrix:
   - env: TMUX_VERSION=master
 cache:
   - pip
+  - apt
   - directories:
     - ~/source
     - ~/build
