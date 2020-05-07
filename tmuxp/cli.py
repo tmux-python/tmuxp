@@ -698,7 +698,7 @@ def command_freeze(session_name, socket_name, socket_path):
     print(
         '---------------------------------------------------------------'
         '\n'
-        'Freeze does it best to snapshot live tmux sessions.\n'
+        'Freeze does its best to snapshot live tmux sessions.\n'
     )
     if click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
