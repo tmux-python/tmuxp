@@ -10,6 +10,7 @@ from __future__ import absolute_import
 import logging
 import os
 import sys
+from pathlib import Path
 
 import click
 import kaptan
@@ -924,3 +925,11 @@ def command_convert(config):
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to <%s>.' % newfile)
+
+
+@cli.command(name='ls', short_help='List configured sessions in $HOME/.tmuxp dir.')
+def command_ls():
+    tmuxp_dir = Path.home() / '.tmuxp'
+    if tmuxp_dir.exists() and tmuxp_dir.is_dir():
+        for f in tmuxp_dir.iterdir():
+            print(f.stem)
