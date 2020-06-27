@@ -592,4 +592,4 @@ def test_ls_cli(monkeypatch, tmpdir):
     runner = CliRunner()
 
     cli_output = runner.invoke(command_ls).output
-    assert cli_output == "session_1\nsession_2\nsession_3\n"
+    assert cli_output == 'session_1\nsession_2\nsession_3\n'
