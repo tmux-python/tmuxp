@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import json
 import os
+from pathlib import Path
 
 import pytest
 
@@ -13,7 +14,13 @@ from click.testing import CliRunner
 import libtmux
 from libtmux.common import has_lt_version
 from tmuxp import cli, config
-from tmuxp.cli import get_config_dir, is_pure_name, load_workspace, scan_config
+from tmuxp.cli import (
+    command_ls,
+    get_config_dir,
+    is_pure_name,
+    load_workspace,
+    scan_config,
+)
 
 from .fixtures._util import curjoin, loadfixture
 
@@ -574,3 +581,15 @@ def test_pass_config_dir_ClickPath(tmpdir):
         assert str(user_config) in check_cmd(str(configdir.join('myconfig.yaml')))
 
         assert 'file not found' in check_cmd('.tmuxp.json')
+
+def test_ls_cli(monkeypatch, tmpdir):
+    tmpdir.join('.tmuxp/session_1.yaml').ensure()
+    tmpdir.join('.tmuxp/session_2.yaml').ensure()
+    tmpdir.join('.tmuxp/session_3.json').ensure()
+
+    monkeypatch.setenv("HOME", str(tmpdir))
+
+    runner = CliRunner()
+
+    cli_output = runner.invoke(command_ls).output
+    assert cli_output == "session_1\nsession_2\nsession_3\n"
