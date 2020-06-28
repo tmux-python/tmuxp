@@ -40,4 +40,7 @@ twine = "*"
 codecov = "*"
 colorama = "*"
 coverage = "*"
-pytest-cov = "*"
+pytest-cov = [
+  {version="<2.10.0", python="<3"},
+  {version="*", python=">=3"}
+]
