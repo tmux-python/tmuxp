@@ -36,9 +36,8 @@ cache:
     - ~/source
     - ~/build
 install:
-  - pip install -e .
-  - pip install -r requirements/test.txt
-  - pip install -r requirements/dev.txt
+  - pip install poetry
+  - poetry install
 before_script:
   - mkdir -p ~/source
   - mkdir -p ~/build/tmux-$TMUX_VERSION
@@ -51,7 +50,7 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
   - tmux -V
 script:
-  - py.test --cov
+  - poetry run py.test --cov
   - make flake8
 addons:
   apt:
