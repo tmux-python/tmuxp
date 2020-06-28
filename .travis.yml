@@ -40,7 +40,7 @@ before_install:
   - poetry --version
   - poetry version
 install:
-  - poetry install --v
+  - poetry install -v
 before_script:
   - mkdir -p ~/source
   - mkdir -p ~/build/tmux-$TMUX_VERSION
