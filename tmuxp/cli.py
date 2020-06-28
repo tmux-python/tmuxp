@@ -169,8 +169,8 @@ def set_layout_hook(session, hook_name):
         # with the client
         hook_cmd.append('selectw -t {}'.format(window.id))
         # edit: removed -t, or else it won't respect main-pane-w/h
-        hook_cmd.append('selectl'.format(window.id))
-        hook_cmd.append('selectw -p'.format(window.id))
+        hook_cmd.append('selectl')
+        hook_cmd.append('selectw -p')
 
     # unset the hook immediately after executing
     hook_cmd.append(
