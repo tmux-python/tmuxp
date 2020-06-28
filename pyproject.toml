@@ -11,12 +11,8 @@ authors = ["Tony Narlock <tony@git-pull.com>"]
 [tool.poetry.dependencies]
 python = ">=3.5"
 click = ">=7<8"
-codecov = "*"
-colorama = "*"
-coverage = "*"
 kaptan = "*"
 libtmux = "<0.9"
-pytest-cov = "*"
 
 [tool.poetry.dev-dependencies]
 aafigure = "*"
@@ -32,3 +28,7 @@ pytest-rerunfailures = "*"
 sphinx = "*"
 sphinx-issues = "*"
 twine = "*"
+codecov = "*"
+colorama = "*"
+coverage = "*"
+pytest-cov = "*"
