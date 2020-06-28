@@ -35,9 +35,12 @@ cache:
   - directories:
     - ~/source
     - ~/build
-install:
+before_install:
   - pip install poetry
-  - poetry install
+  - poetry --version
+  - poetry version
+install:
+  - poetry install --v
 before_script:
   - mkdir -p ~/source
   - mkdir -p ~/build/tmux-$TMUX_VERSION
