@@ -9,7 +9,7 @@ license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.5"
+python = ">=2.7"
 click = ">=7<8"
 kaptan = "*"
 libtmux = "<0.9"
