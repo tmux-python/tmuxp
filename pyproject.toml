@@ -1,2 +1,34 @@
 [tool.black]
 skip-string-normalization = true
+
+[tool.poetry]
+name = "tmuxp"
+version = "1.5.4"
+description = "tmux session manager."
+license = "MIT"
+authors = ["Tony Narlock <tony@git-pull.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.5"
+click = ">=7<8"
+codecov = "*"
+colorama = "*"
+coverage = "*"
+kaptan = "*"
+libtmux = "<0.9"
+pytest-cov = "*"
+
+[tool.poetry.dev-dependencies]
+aafigure = "*"
+alagitpull = "*"
+black = {version="==19.10b0", python="^3.6"}
+doc8 = "*"
+docutils = "*"
+flake8 = "*"
+isort = "*"
+pillow = "*"
+pytest = "*"
+pytest-rerunfailures = "*"
+sphinx = "*"
+sphinx-issues = "*"
+twine = "*"
