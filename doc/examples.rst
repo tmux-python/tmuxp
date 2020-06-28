@@ -434,8 +434,8 @@ Bonus: pipenv auto-bootstrapping
    ``before_script`` CWD's into the root (session)-level
    ``start_directory``.
 
-If you use `pipenv`_, you can use a script like this to ensure your
-packages are installed:
+If you use `pipenv`_ / `poetry`_, you can use a script like this to ensure
+your packages are installed:
 
 .. code-block:: yaml
 
@@ -469,6 +469,7 @@ You can also source yourself into the virtual environment using
       - ./manage.py runserver
 
 .. _pipenv: https://docs.pipenv.org/
+.. _poetry: https://python-poetry.org/
 
 Kung fu
 -------
