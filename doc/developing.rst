@@ -59,7 +59,7 @@ adjust the code and the installed software will reflect the changes.
 
     $ tmuxp
 
-Using pipenv
+Using poetry
 ^^^^^^^^^^^^
 
 To begin developing, check out the code from github:
@@ -70,33 +70,26 @@ To begin developing, check out the code from github:
     $ cd tmuxp
 
 You can create a virtualenv, and install all of the locked
-packages as listed in Pipfile.lock:
+packages as listed in poetry.lock:
 
 .. code-block:: bash
 
-    $ pipenv install --ignore-pipfile --dev
-
-If you prefer to install updated packages based on Pipfile only, not being
-bound by Pipfile.lock:
-
-.. code-block:: bash
-
-    $ pipenv install --skip-lock --dev
+    $ poetry install
 
 If you ever need to update packages during your development session, the
-following command can be used to update all packages as per Pipfile settings or
+following command can be used to update all packages as per poetry settings or
 individual package (second command):
 
 .. code-block:: bash
 
-    $ pipenv update --dev
-    $ pipenv update requests
+    $ poetry update
+    $ poetry update requests
 
 Then activate it to your current tty / terminal session with:
 
 .. code-block:: bash
 
-    $ pipenv shell
+    $ poetry shell
 
 That is it! You are now ready to code!
 
