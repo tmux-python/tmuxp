@@ -1,2 +1,47 @@
 [tool.black]
 skip-string-normalization = true
+
+[tool.poetry]
+name = "tmuxp"
+version = "1.5.4"
+description = "tmux session manager."
+license = "MIT"
+authors = ["Tony Narlock <tony@git-pull.com>"]
+
+[tool.poetry.dependencies]
+python = "~2.7 || ^3.5"
+click = ">=7<8"
+kaptan = "*"
+libtmux = "<0.9"
+
+[tool.poetry.dev-dependencies]
+aafigure = "*"
+alagitpull = "*"
+black = {version="==19.10b0", python="^3.6"}
+doc8 = "*"
+docutils = "*"
+flake8 = "*"
+isort = "*"
+pillow = [
+  {version="<7", python="<3"},
+  {version="*", python=">=3"}
+]
+pytest = [
+  {version="<4.7.0", python="<3"},
+  {version="*", python=">=3"}
+]
+pathlib2 = {version="<2.3.5", python="<3"}  # Untangle pytest peer-dependency
+pytest-rerunfailures = "*"
+sphinx = [
+  {version="<2", python="<3"},
+  {version="*", python=">=3"}
+]
+sphinx-issues = "*"
+twine = "*"
+codecov = "*"
+colorama = "*"
+coverage = "*"
+pytest-cov = [
+  {version="<2.10.0", python="<3"},
+  {version="*", python=">=3"}
+]

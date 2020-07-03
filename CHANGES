@@ -11,6 +11,7 @@ current
 - Travis: Only run on master and PRs one time
 - Travis: Add caching for tmux builds
 - Travis: Test 2.9 and 3.0a
+- :issue:`613`: Move from Pipenv to Poetry
 
 1.5.4 <2019-11-06>
 ------------------

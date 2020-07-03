@@ -29,16 +29,19 @@ matrix:
   finish_fast: true
   allow_failures:
   - env: TMUX_VERSION=master
+  - python: pypy3
 cache:
   - pip
   - apt
   - directories:
     - ~/source
     - ~/build
+before_install:
+  - pip install poetry
+  - poetry --version
+  - poetry version
 install:
-  - pip install -e .
-  - pip install -r requirements/test.txt
-  - pip install -r requirements/dev.txt
+  - poetry install -v
 before_script:
   - mkdir -p ~/source
   - mkdir -p ~/build/tmux-$TMUX_VERSION
@@ -51,7 +54,7 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
   - tmux -V
 script:
-  - py.test --cov
+  - poetry run py.test --cov
   - make flake8
 addons:
   apt:
