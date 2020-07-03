@@ -29,6 +29,7 @@ matrix:
   finish_fast: true
   allow_failures:
   - env: TMUX_VERSION=master
+  - python: pypy3
 cache:
   - pip
   - apt
