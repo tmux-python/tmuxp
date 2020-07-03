@@ -1,8 +1,8 @@
 session_name: tmuxp
 start_directory: ./ # load session relative to config location (project root).
-before_script: pipenv install --dev --skip-lock
-shell_command_before: 
-  - '[ -d `pipenv --venv` ] && source `pipenv --venv`/bin/activate && reset'
+before_script: ./.tmuxp-before-script.sh
+shell_command_before:
+- '[ -f .venv/bin/activate ] && source .venv/bin/activate && reset'
 windows:
 - window_name: tmuxp
   focus: True
