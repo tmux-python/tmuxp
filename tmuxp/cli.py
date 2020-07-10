@@ -10,7 +10,6 @@ from __future__ import absolute_import
 import logging
 import os
 import sys
-from pathlib import Path
 
 import click
 import kaptan
@@ -931,9 +930,10 @@ def command_convert(config):
 
 @cli.command(name='ls', short_help='List configured sessions in $HOME/.tmuxp dir.')
 def command_ls():
-    tmuxp_dir = Path.home() / '.tmuxp'
-    if tmuxp_dir.exists() and tmuxp_dir.is_dir():
-        for f in sorted(tmuxp_dir.iterdir()):
-            if f.is_dir() or f.suffix not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
+    tmuxp_dir = get_config_dir()
+    if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
+        for f in sorted(os.listdir(tmuxp_dir)):
+            stem, ext = os.path.splitext(f)
+            if os.path.isdir(f) or ext not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
                 continue
-            print(f.stem)
+            print(stem)

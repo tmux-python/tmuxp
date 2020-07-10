@@ -4,7 +4,6 @@ from __future__ import absolute_import
 
 import json
 import os
-import pathlib
 
 import pytest
 
@@ -599,7 +598,7 @@ def test_ls_cli(monkeypatch, tmpdir):
     # - directories should be ignored
     # - extensions not covered in VALID_CONFIG_DIR_FILE_EXTENSIONS
     ignored_filenames = ['.git/', '.gitignore/', 'session_4.txt']
-    stems = [pathlib.PurePath(f).stem for f in filenames if f not in ignored_filenames]
+    stems = [os.path.splitext(f)[0] for f in filenames if f not in ignored_filenames]
 
     for filename in filenames:
         location = tmpdir.join('.tmuxp/{}'.format(filename))
