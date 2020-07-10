@@ -931,5 +931,5 @@ def command_convert(config):
 def command_ls():
     tmuxp_dir = Path.home() / '.tmuxp'
     if tmuxp_dir.exists() and tmuxp_dir.is_dir():
-        for f in tmuxp_dir.iterdir():
+        for f in sorted(tmuxp_dir.iterdir()):
             print(f.stem)
