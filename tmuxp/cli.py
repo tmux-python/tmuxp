@@ -928,7 +928,9 @@ def command_convert(config):
                 print('New config saved to <%s>.' % newfile)
 
 
-@cli.command(name='ls', short_help='List configured sessions in $HOME/.tmuxp dir.')
+@cli.command(
+    name='ls', short_help='List configured sessions in {}.'.format(get_config_dir())
+)
 def command_ls():
     tmuxp_dir = get_config_dir()
     if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
