@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import json
 import os
-from pathlib import Path
+import pathlib
 
 import pytest
 
@@ -582,14 +582,32 @@ def test_pass_config_dir_ClickPath(tmpdir):
 
         assert 'file not found' in check_cmd('.tmuxp.json')
 
-def test_ls_cli(monkeypatch, tmpdir):
-    tmpdir.join('.tmuxp/session_1.yaml').ensure()
-    tmpdir.join('.tmuxp/session_2.yaml').ensure()
-    tmpdir.join('.tmuxp/session_3.json').ensure()
 
+def test_ls_cli(monkeypatch, tmpdir):
     monkeypatch.setenv("HOME", str(tmpdir))
 
-    runner = CliRunner()
+    filenames = [
+        '.git/',
+        '.gitignore/',
+        'session_1.yaml',
+        'session_2.yaml',
+        'session_3.json',
+        'session_4.txt',
+    ]
 
+    # should ignore:
+    # - directories should be ignored
+    # - extensions not covered in VALID_CONFIG_DIR_FILE_EXTENSIONS
+    ignored_filenames = ['.git/', '.gitignore/', 'session_4.txt']
+    stems = [pathlib.PurePath(f).stem for f in filenames if f not in ignored_filenames]
+
+    for filename in filenames:
+        location = tmpdir.join('.tmuxp/{}'.format(filename))
+        if filename.endswith('/'):
+            location.ensure_dir()
+        else:
+            location.ensure()
+
+    runner = CliRunner()
     cli_output = runner.invoke(command_ls).output
-    assert cli_output == 'session_1\nsession_2\nsession_3\n'
+    assert cli_output == '\n'.join(stems) + '\n'
