@@ -26,6 +26,8 @@ from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
 
+VALID_CONFIG_DIR_FILE_EXTENSIONS = ['.yaml', '.yml', '.json']
+
 
 def get_cwd():
     return os.getcwd()
@@ -326,7 +328,7 @@ def scan_config(config, config_dir=None):
                 x
                 for x in [
                     '%s%s' % (join(config_dir, config), ext)
-                    for ext in ['.yaml', '.yml', '.json']
+                    for ext in VALID_CONFIG_DIR_FILE_EXTENSIONS
                 ]
                 if exists(x)
             ]
@@ -924,3 +926,16 @@ def command_convert(config):
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to <%s>.' % newfile)
+
+
+@cli.command(
+    name='ls', short_help='List configured sessions in {}.'.format(get_config_dir())
+)
+def command_ls():
+    tmuxp_dir = get_config_dir()
+    if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
+        for f in sorted(os.listdir(tmuxp_dir)):
+            stem, ext = os.path.splitext(f)
+            if os.path.isdir(f) or ext not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
+                continue
+            print(stem)
