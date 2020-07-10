@@ -27,6 +27,8 @@ from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
 
+VALID_CONFIG_DIR_FILE_EXTENSIONS = ['.yaml', '.yml', '.json']
+
 
 def get_cwd():
     return os.getcwd()
@@ -327,7 +329,7 @@ def scan_config(config, config_dir=None):
                 x
                 for x in [
                     '%s%s' % (join(config_dir, config), ext)
-                    for ext in ['.yaml', '.yml', '.json']
+                    for ext in VALID_CONFIG_DIR_FILE_EXTENSIONS
                 ]
                 if exists(x)
             ]
@@ -932,4 +934,6 @@ def command_ls():
     tmuxp_dir = Path.home() / '.tmuxp'
     if tmuxp_dir.exists() and tmuxp_dir.is_dir():
         for f in sorted(tmuxp_dir.iterdir()):
+            if f.is_dir() or f.suffix not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
+                continue
             print(f.stem)
