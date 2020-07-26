@@ -6,6 +6,13 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
+- :issue:`616` New command: ``tmuxp ls``
+  
+  List commands available via config directory. If the config is printed,
+  it's loadable via ``tmuxp load configfilename`` without needing to type the
+  full filepath.
+- :issue:`480` Fix typo, thanks @jstoja
+- :issue:`578` Fix typo, thanks @mauroporras
 - :issue:`519` Fix typo, thanks @timgates42
 - :issue:`506` Fix Makefile typo, thanks @wolfgangpfnuer
 - Travis: Only run on master and PRs one time
