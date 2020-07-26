@@ -6,11 +6,11 @@ Here you can find the recent changes to tmuxp
 
 1.5.5 <2020-07-26>
 ------------------
-- :issue:`616` New command: ``tmuxp ls``
+- :issue:`616` (via: :issue:`599`) New command: ``tmuxp ls``
   
   List commands available via config directory. If the config is printed,
   it's loadable via ``tmuxp load configfilename`` without needing to type the
-  full filepath.
+  full filepath. Thank you @pythops!
 - :issue:`480` Fix typo, thanks @jstoja
 - :issue:`578` Fix typo, thanks @mauroporras
 - :issue:`519` Fix typo, thanks @timgates42
