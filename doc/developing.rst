@@ -194,6 +194,9 @@ Rebuild the documentation when an ``.rst`` file is edited:
    $ cd doc
    $ make watch
 
+   # If you're not source'd via `poetry shell`, you can use this:
+   $ make SPHINXBUILD='poetry run sphinx-build' watch
+
 .. _tmuxp developer config:
 
 tmuxp developer config
