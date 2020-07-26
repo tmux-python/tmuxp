@@ -21,7 +21,10 @@ black = {version="==19.10b0", python="^3.6"}
 doc8 = "*"
 docutils = "*"
 flake8 = "*"
-isort = "*"
+isort = [
+  {version="<5", python="<3.6"},
+  {version=">=5.0.0", python=">=3.6"}
+]
 pillow = [
   {version="<7", python="<3"},
   {version="*", python=">=3"}
