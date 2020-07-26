@@ -20,12 +20,12 @@ if PY2:
     itervalues = lambda d: d.itervalues()
     iteritems = lambda d: d.iteritems()
 
+    from itertools import imap, izip
+
+    import ConfigParser as configparser
+    import cPickle as pickle
     from cStringIO import StringIO as BytesIO
     from StringIO import StringIO
-    import cPickle as pickle
-    import ConfigParser as configparser
-
-    from itertools import izip, imap
 
     range_type = xrange
 
@@ -33,6 +33,7 @@ if PY2:
 
     input = raw_input
     from string import lower as ascii_lowercase
+
     import urlparse
 
     exec('def reraise(tp, value, tb=None):\n raise tp, value, tb')
@@ -58,9 +59,9 @@ else:
     itervalues = lambda d: iter(d.values())
     iteritems = lambda d: iter(d.items())
 
-    from io import StringIO, BytesIO
-    import pickle
     import configparser
+    import pickle
+    from io import BytesIO, StringIO
 
     izip = zip
     imap = map
@@ -69,9 +70,9 @@ else:
     cmp = lambda a, b: (a > b) - (a < b)
 
     input = input
-    from string import ascii_lowercase
     import urllib.parse as urllib
     import urllib.parse as urlparse
+    from string import ascii_lowercase
     from urllib.request import urlretrieve
 
     console_encoding = sys.__stdout__.encoding
