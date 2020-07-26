@@ -22,4 +22,4 @@ windows:
   - focus: true
   - pane
   - make serve
-  - make watch
+  - make SPHINXBUILD='poetry run sphinx-build' watch
