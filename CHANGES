@@ -15,6 +15,7 @@ current
 - :issue:`578` Fix typo, thanks @mauroporras
 - :issue:`519` Fix typo, thanks @timgates42
 - :issue:`506` Fix Makefile typo, thanks @wolfgangpfnuer
+- :issue:`619` Update isort to 5.x
 - Travis: Only run on master and PRs one time
 - Travis: Add caching for tmux builds
 - Travis: Test 2.9 and 3.0a
