@@ -4,8 +4,8 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-current
--------
+1.5.5 <2020-07-26>
+------------------
 - :issue:`616` New command: ``tmuxp ls``
   
   List commands available via config directory. If the config is printed,
