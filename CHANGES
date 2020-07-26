@@ -38,7 +38,7 @@ Here you can find the recent changes to tmuxp
 - :issue:`491` ``tmuxp freeze`` will now infer active session with freezing
 - :issue:`490` Fix XDG's ``$XDG_CONFIG_HOME`` behavior
 - :issue:`483`, :issue:`482`, :issue:`480`  Doc fixes
-- :issue:`484` Simplifying handling of configs with no panes (Fixes
+- :issue:`487` Simplifying handling of configs with no panes (Fixes
   :issue:`470`)
 
 1.5.1 <2019-02-18>
