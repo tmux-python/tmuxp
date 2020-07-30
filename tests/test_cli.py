@@ -491,6 +491,14 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
             ['\n', 'y\n', './la.yaml\n', 'y\n'],
         ),
         (['freeze'], ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
+        (  # Create a new one
+            ['freeze', 'mysession', '--force'],
+            ['\n', 'y\n', './la.yaml\n', 'y\n']
+        ),
+        (  # Imply current session if not entered
+            ['freeze', '--force'],
+            ['\n', 'y\n', './la.yaml\n', 'y\n'],
+        ),
     ],
 )
 def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
@@ -506,6 +514,34 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
         out = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
         print(out.output)
         assert tmpdir.join('la.yaml').check()
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [
+        (  # Overwrite
+            ['freeze', 'mysession', '--force'],
+            ['\n', 'y\n', './exists.yaml\n', 'y\n'],
+        ),
+        (  # Imply current session if not entered
+            ['freeze', '--force'],
+            ['\n', 'y\n', './exists.yaml\n', 'y\n']
+        ),
+    ],
+)
+def test_freeze_overwrite(server, cli_args, inputs, tmpdir, monkeypatch):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    tmpdir.join('exists.yaml').ensure()
+
+    server.new_session(session_name='mysession')
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+        # Use tmux server (socket name) used in the test
+        cli_args = cli_args + ['-L', server.socket_name]
+        out = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+        print(out.output)
+        assert tmpdir.join('exists.yaml').check()
 
 
 def test_get_abs_path(tmpdir):
