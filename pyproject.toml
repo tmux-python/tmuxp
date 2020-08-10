@@ -16,7 +16,7 @@ libtmux = "<0.9"
 
 [tool.poetry.dev-dependencies]
 aafigure = "*"
-alagitpull = "*"
+alagitpull = "~=0.1.0"
 black = {version="==19.10b0", python="^3.6"}
 doc8 = "*"
 docutils = "*"
