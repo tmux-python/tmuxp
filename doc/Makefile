@@ -6,7 +6,7 @@ HTTP_PORT     = 8031
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
+SPHINXBUILD   = poetry run sphinx-build
 PAPER         =
 BUILDDIR      = _build
 
