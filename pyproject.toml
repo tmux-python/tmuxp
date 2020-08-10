@@ -7,6 +7,23 @@ version = "1.5.5"
 description = "tmux session manager."
 license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX",
+  "Operating System :: MacOS :: MacOS X",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 2.7",
+  "Programming Language :: Python :: 3.5",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Utilities",
+  "Topic :: System :: Shells"
+]
 
 [tool.poetry.dependencies]
 python = "~2.7 || ^3.5"
