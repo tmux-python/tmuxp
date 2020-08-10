@@ -33,6 +33,9 @@ readme = "README.rst"
 Documentation = "https://tmuxp.git-pull.com"
 Repository = "https://github.com/tmux-python/tmuxp"
 
+[tool.poetry.scripts]
+tmuxp = 'tmuxp:cli.cli'
+
 [tool.poetry.dependencies]
 python = "~2.7 || ^3.5"
 click = ">=7<8"
