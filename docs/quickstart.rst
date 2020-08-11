@@ -98,7 +98,7 @@ python abstraction layer
 :meth:`libtmux.Pane.send_keys`           ``$ tmux send-keys``
 ======================================== =================================
 
-.. _Import: http://tmuxp.readthedocs.io/cli.html#import
+.. _Import: http://tmuxp.git-pull.com/cli.html#import
 .. _tmuxinator: https://github.com/aziz/tmuxinator
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _Abstraction Layer: http://en.wikipedia.org/wiki/Abstraction_layer

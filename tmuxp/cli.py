@@ -606,7 +606,7 @@ def cli(log_level):
 
     Pass the "--help" argument to any command to see detailed help.
     See detailed documentation and examples at:
-    http://tmuxp.readthedocs.io/"""
+    http://tmuxp.git-pull.com/"""
     try:
         has_minimum_version()
     except TmuxCommandNotFound:
@@ -735,8 +735,8 @@ def command_freeze(session_name, socket_name, socket_path):
     else:
         print(
             'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.readthedocs.io/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.readthedocs.io/>.'
+            '<http://tmuxp.git-pull.com/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.git-pull.com/>.'
         )
         sys.exit()
 
@@ -866,8 +866,8 @@ def import_config(configfile, importfunc):
     else:
         click.echo(
             'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.readthedocs.io/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
+            '<http://tmuxp.git-pull.com/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.git-pull.com/>'
         )
         sys.exit()
 
