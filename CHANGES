@@ -4,6 +4,14 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+current
+-------
+- :issue:`623` Move docs from RTD to self-serve site
+- :issue:`623` Modernize Makefiles
+- :issue:`623` New development docs
+- :issue:`623` Update pyproject.toml to experiment with poetry packaging
+- :issue:`619` isort 5
+
 tmuxp 1.5.5 (2020-07-26)
 ------------------------
 - :issue:`616` (via: :issue:`599`) New command: ``tmuxp ls``
