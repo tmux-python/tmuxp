@@ -197,6 +197,10 @@ tests           .. code-block:: bash
     :alt: Python Package
     :target: http://badge.fury.io/py/tmuxp
 
+.. |docs| image:: https://github.com/tmux-python/tmuxp/workflows/Publish%20Docs/badge.svg
+   :alt: Docs
+   :target: https://github.com/tmux-python/tmuxp/actions?query=workflow%3A"Publish+Docs"
+
 .. |build-status| image:: https://img.shields.io/travis/tmux-python/tmuxp.svg
    :alt: Build Status
    :target: https://travis-ci.org/tmux-python/tmuxp
@@ -207,8 +211,3 @@ tests           .. code-block:: bash
 
 .. |license| image:: https://img.shields.io/github/license/tmux-python/tmuxp.svg
     :alt: License 
-
-.. |docs| image:: https://readthedocs.org/projects/tmuxp/badge/?version=latest
-    :alt: Documentation Status
-    :scale: 100%
-    :target: https://readthedocs.org/projects/tmuxp/
