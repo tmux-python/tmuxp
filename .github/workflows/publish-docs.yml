@@ -1,0 +1,97 @@
+name: Publish Docs
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.x' ]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Configure git
+      run: |
+        git config --global user.name 'travis-ci'	
+        git config --global user.email 'travis@nowhere.edu'
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+    - name: Install poetry
+      run: |
+        curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+        python get-poetry.py -y
+        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        rm get-poetry.py
+
+    - name: Get poetry cache paths from config
+      run: |
+        echo ::set-env name=poetry_cache_dir::$(poetry config --list | sed -n 's/.*cache-dir = //p' | sed -e 's/^"//' -e 's/"$//')
+        echo ::set-env name=poetry_virtualenvs_path::$(poetry config --list | sed -n 's/.*virtualenvs.path = .* # //p' | sed -e 's/^"//' -e 's/"$//')
+
+    - name: Configure poetry
+      shell: bash
+      run: poetry config virtualenvs.in-project true
+
+    - name: Set up cache
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          {{ env.poetry_cache_dir }}
+          {{ env.poetry_virtualenvs_path }}
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Ensure cache is healthy
+      if: steps.cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: poetry run pip --version >/dev/null 2>&1 || rm -rf .venv
+
+    - name: Upgrade pip
+      shell: bash
+      run: poetry run python -m pip install pip -U
+
+    - name: Install dependencies [w/ docs]
+      run: poetry install --extras "docs lint"
+
+    - name: Build documentation
+      run: |
+        pushd docs; make SPHINXBUILD='poetry run sphinx-build' html; popd
+
+    - name: Push documentation to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-west-1'   # optional: defaults to us-east-1
+        SOURCE_DIR: 'docs/_build/html'      # optional: defaults to entire repository 
+
+    - name: Generate list of changed files for CloudFront to invalidate
+      run: |
+        pushd docs/_build/html; FILES=$(find . -name \* -print | grep html | cut -c2- | sort | uniq | tr '\n' ' '); popd
+        for file in $FILES; do
+          echo $file
+          # add bare directory to list of updated paths when we see index.html
+          [[ "$file" == *"/index.html" ]] && echo $file | sed -e 's/\/index.html$/\//'
+        done | sort | uniq | tr '\n' ' ' > .updated_files
+
+    - name: Invalidate on CloudFront
+      uses: chetan/invalidate-cloudfront-action@master
+      env:
+        DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION }}
+        AWS_REGION: 'us-east-1'
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        PATHS_FROM: .updated_files
