@@ -138,7 +138,7 @@ texinfo_documents = [
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
-    'libtmux': ('https://libtmux.readthedocs.io/en/latest', None),
+    'libtmux': ('https://libtmux.readthedocs.io', None),
     'click': ('http://click.pocoo.org/5', None),
 }
 
