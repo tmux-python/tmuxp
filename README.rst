@@ -153,41 +153,17 @@ See donation options at https://git-pull.com/support.html.
 
 Project details
 ---------------
-
-==============  ==========================================================
-tmux support    1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7. 2.8
-python support  2.7, >= 3.5, pypy, pypy3
-config support  yaml, json, python dict
-Source          https://github.com/tmux-python/tmuxp
-Docs            http://tmuxp.git-pull.com
-API             http://tmuxp.git-pull.com/en/latest/api.html
-Changelog       http://tmuxp.git-pull.com/en/latest/history.html
-Issues          https://github.com/tmux-python/tmuxp/issues
-Travis          http://travis-ci.org/tmux-python/tmuxp
-Test Coverage   https://codecov.io/gh/tmux-python/tmuxp
-pypi            https://pypi.python.org/pypi/tmuxp
-Open Hub        https://www.openhub.net/p/tmuxp
-License         `MIT`_.
-git repo        .. code-block:: bash
-
-                    $ git clone https://github.com/tmux-python/tmuxp.git
-install stable  .. code-block:: bash
-
-                    $ pip install --user tmuxp
-install dev     .. code-block:: bash
-
-                    $ git clone https://github.com/tmux-python/tmuxp.git tmuxp
-                    $ cd ./tmuxp
-                    $ virtualenv .venv
-                    $ source .venv/bin/activate
-                    $ pip install -e .
-
-                See the `developing and testing`_ page in the docs for
-                more.
-tests           .. code-block:: bash
-
-                    $ make test
-==============  ==========================================================
+- tmux support: 1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
+- python support: 2.7, >= 3.3, pypy, pypy3
+- Source: https://github.com/tmux-python/tmuxp
+- Docs: https://tmuxp.git-pull.com
+- API: https://tmuxp.git-pull.com/api.html
+- Changelog: https://tmuxp.git-pull.com/history.html
+- Issues: https://github.com/tmux-python/tmuxp/issues
+- Test Coverage: https://codecov.io/gh/tmux-python/tmuxp
+- pypi: https://pypi.python.org/pypi/tmuxp
+- Open Hub: https://www.openhub.net/p/tmuxp-python
+- License: `MIT`_.
 
 .. _MIT: http://opensource.org/licenses/MIT
 .. _developing and testing: http://tmuxp.git-pull.com/en/latest/developing.html
