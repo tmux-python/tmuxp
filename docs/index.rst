@@ -14,14 +14,13 @@ tmux session manager
 .. image:: _static/tmuxp-demo.gif
     :width: 100%
 
-
 Freeze a tmux session
 ---------------------
 .. include:: ../README.rst
     :start-after: ---------------------
 
-Explore:
-
+Table of Contents
+-----------------
 .. toctree::
     :maxdepth: 2
 
