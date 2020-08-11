@@ -27,7 +27,7 @@
       "options": {
         "main-pane-height": 35
       },
-      "start_directory": "doc/",
+      "start_directory": "docs/",
       "panes": [
         {
           "focus": true
