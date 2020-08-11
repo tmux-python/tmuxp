@@ -8,7 +8,7 @@ tmux session manager
 ====================
 
 .. include:: ../README.rst
-    :start-line: 4
+    :start-line: 2
     :end-before: .. image
 
 .. image:: _static/tmuxp-demo.gif
