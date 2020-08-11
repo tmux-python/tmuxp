@@ -5,6 +5,7 @@ import sys
 from os.path import dirname, relpath
 
 import alagitpull
+from recommonmark.transform import AutoStructify
 
 import tmuxp
 
@@ -30,15 +31,32 @@ extensions = [
     'aafig',
     'alagitpull',
     'sphinx_issues',
+    'recommonmark',
 ]
 
 issues_github_path = about['__github__'].replace('https://github.com/', '')
 
 templates_path = ['_templates']
 
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext', '.md': 'markdown'}
 
 master_doc = 'index'
+
+# app setup hook
+def setup(app):
+    app.add_config_value(
+        'recommonmark_config',
+        {
+            #'url_resolver': lambda url: github_doc_root + url,
+            'enable_auto_toc_tree': True,
+            'auto_toc_tree_section': 'Contents',
+            'auto_code_block': True,
+            'enable_eval_rst': True,
+        },
+        True,
+    )
+    app.add_transform(AutoStructify)
+
 
 project = about['__title__']
 copyright = about['__copyright__']
@@ -51,8 +69,8 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
 html_theme_path = [alagitpull.get_path()]
-html_favicon = '_static/favicon.ico'
 html_theme = 'alagitpull'
+html_extra_path = ['manifest.json']
 html_static_path = ['_static']
 html_sidebars = {
     '**': [
@@ -73,6 +91,12 @@ html_theme_options = {
     'github_banner': True,
     'projects': alagitpull.projects,
     'project_name': about['__title__'],
+    'project_title': about['__title__'],
+    'project_description': about['__description__'],
+    'project_url': about['__docs__'],
+    'show_meta_manifest_tag': True,
+    'show_meta_og_tags': True,
+    'show_meta_app_icon_tags': True,
 }
 
 alagitpull_internal_hosts = ['tmuxp.git-pull.com', '0.0.0.0']
