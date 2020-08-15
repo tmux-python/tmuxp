@@ -51,6 +51,7 @@ tmuxp 1.5.0 (2018-10-02)
 - Support Click 7.0
 - Remove unused ``__future__`` imports
 - :issue:`471` Update libtmux 0.8.0 -> 0.8.1
+- :issue:`404` from @anddam, support XDG base directory
 - Sort imports
 - Add configuration and make command for isort.
 - Add sphinxcontrib-napoleon.
