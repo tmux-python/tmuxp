@@ -45,12 +45,6 @@ Save as *mysession.yaml*, and load:
 
    $ tmuxp load ./mysession.yaml
 
-Sessions in *~/.tmuxp/* can use names:
-
-.. code-block:: sh
-
-    $ tmuxp load mysession
-
 Projects with *.tmuxp.yaml* or *.tmuxp.json* load via directory:
 
 .. code-block:: sh
@@ -65,14 +59,34 @@ Load multiple at once (in bg, offer to attach last):
 
 `simple`_ and `very elaborate`_ config examples
 
-Store configs in (*~/.tmuxp*) or include in your project as
-*~/.tmuxp.{yaml,json}*. See `author's tmuxp configs`_ and the
-the projects' `tmuxp.yaml`_.
+User-level configurations
+-------------------------
+tmuxp checks for configs in user directories:
 
+- ``$TMUXP_CONFIGDIR``, if set
+- ``$XDG_CONFIG_HOME``, usually *$HOME/.config/tmuxp/*
+- ``$HOME/.tmuxp/``
+
+Load your tmuxp config from anywhere by using the filename, assuming
+*~/.config/tmuxp/mysession.yaml* (or *.json*):
+
+.. code-block:: sh
+
+    $ tmuxp load mysession
+
+See `author's tmuxp configs`_ and the projects' `tmuxp.yaml`_.
+
+Pre-load hook
+-------------
 Run custom startup scripts (such as installing project dependencies before
 loading tmux. See the `bootstrap_env.py`_ and `before_script`_ example
 
+Load in detached state
+----------------------
 You can also load sessions in the background by passing ``-d`` flag
+
+Screenshot
+----------
 
 .. image:: https://raw.github.com/tmux-python/tmuxp/master/doc/_static/tmuxp-demo.gif
     :scale: 100%
