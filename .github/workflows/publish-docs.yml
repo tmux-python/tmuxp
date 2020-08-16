@@ -1,7 +1,9 @@
 name: Publish Docs
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
 jobs:
   build:
 
