@@ -1,0 +1,100 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    # Don't run twice for internal PRs from our own repo
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '2.7', '3.x' ]
+        tmux-version: [ '2.6', '2.7', '2.8', '3.0', 'master' ]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Get full Python version
+      id: full-python-version
+      shell: bash
+      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+    - name: Install poetry
+      run: |
+        curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+        python get-poetry.py -y
+        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        rm get-poetry.py
+
+    - name: Get poetry cache paths from config
+      run: |
+        echo ::set-env name=poetry_cache_dir::$(poetry config --list | sed -n 's/.*cache-dir = //p' | sed -e 's/^"//' -e 's/"$//')
+        echo ::set-env name=poetry_virtualenvs_path::$(poetry config --list | sed -n 's/.*virtualenvs.path = .* # //p' | sed -e 's/^"//' -e 's/"$//')
+
+    - name: Configure poetry
+      shell: bash
+      run: poetry config virtualenvs.in-project true
+
+    - name: Set up poetry cache
+      uses: actions/cache@v2
+      id: cache
+      with:
+        path: |
+          .venv
+          {{ env.poetry_cache_dir }}
+          {{ env.poetry_virtualenvs_path }}
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Ensure cache is healthy
+      if: steps.cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: poetry run pip --version >/dev/null 2>&1 || rm -rf .venv
+
+    - name: Setup tmux build cache for tmux ${{ matrix.tmux-version }}
+      id: tmux-build-cache
+      uses: actions/cache@v1
+      with:
+        path: ~/tmux-builds/tmux-${{ matrix.tmux-version }}
+        key: tmux-${{ matrix.tmux-version }}
+
+    - name: Build tmux ${{ matrix.tmux-version }}
+      if: steps.tmux-build-cache.outputs.cache-hit != 'true'
+      run: |
+        sudo apt install libevent-dev libncurses5-dev libtinfo-dev libutempter-dev bison
+        mkdir ~/tmux-builds
+        mkdir ~/tmux-src
+        git clone https://github.com/tmux/tmux.git ~/tmux-src/tmux-${{ matrix.tmux-version }}
+        cd ~/tmux-src/tmux-${{ matrix.tmux-version }}
+        git checkout ${{ matrix.tmux-version }}
+        sh autogen.sh
+        ./configure --prefix=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }} && make && make install
+        export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
+        cd ~
+        tmux -V
+
+    - name: Upgrade pip
+      shell: bash
+      run: poetry run python -m pip install pip -U
+
+    - name: Install python dependencies
+      run: |
+        poetry install -E "test coverage lint"
+    - name: Lint with flake8
+      run: |
+        poetry run flake8
+    - name: Test with pytest
+      continue-on-error: ${{ matrix.tmux-version == 'master' }}
+      run: |
+        export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
+        ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
+        tmux -V
+        poetry run py.test --cov=./ --cov-report=xml
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
