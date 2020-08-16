@@ -209,7 +209,7 @@ def expand(sconf, cwd=None, parent=None):
     if 'session_name' in sconf:
         sconf['session_name'] = expandshell(sconf['session_name'])
     if 'window_name' in sconf:
-        if not (sconf['window_name'] == None):
+        if not (sconf['window_name'] is None):
             sconf['window_name'] = expandshell(sconf['window_name'])
         else:
             sconf['shell_command'] = 'tmux rename-session \'\''
