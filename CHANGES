@@ -6,6 +6,9 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
+- :issue:`197` The `start_directory` toplevel config now sets the session's
+  `start-directory`. This affects the working directory of newly created
+  windows in that session.
 - :issue:`623` Move docs from RTD to self-serve site
 - :issue:`623` Modernize Makefiles
 - :issue:`623` New development docs
