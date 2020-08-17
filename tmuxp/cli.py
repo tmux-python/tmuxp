@@ -898,12 +898,14 @@ def command_import_tmuxinator(configfile):
 
 
 @cli.command(name='convert')
+@click.option('--yes', '-y', 'confirmed', help='Auto confirms with "yes".', 
+              is_flag=True)
 @click.argument('config', type=ConfigPath(exists=True), nargs=1)
-def command_convert(config):
+def command_convert(confirmed, config):
     """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
-    if 'json' in ext:
+    if 'json' in ext and not confirmed:
         if click.confirm('convert to <%s> to yaml?' % config):
             configparser = kaptan.Kaptan()
             configparser.import_config(config)
@@ -914,7 +916,7 @@ def command_convert(config):
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to %s' % newfile)
-    elif 'yaml' in ext:
+    elif 'yaml' in ext and not confirmed:
         if click.confirm('convert to <%s> to json?' % config):
             configparser = kaptan.Kaptan()
             configparser.import_config(config)
@@ -926,6 +928,24 @@ def command_convert(config):
                 buf.write(newconfig)
                 buf.close()
                 print('New config saved to <%s>.' % newfile)
+    elif 'json' in ext and confirmed:
+        configparser = kaptan.Kaptan()
+        configparser.import_config(config)
+        newfile = config.replace(ext, '.yaml')
+        newconfig = configparser.export('yaml', indent=2, default_flow_style=False)
+        buf = open(newfile, 'w')
+        buf.write(newconfig)
+        buf.close()
+        print('New config saved to <%s>.' % newfile)
+    elif 'yaml' in ext and confirmed:
+        configparser = kaptan.Kaptan()
+        configparser.import_config(config)
+        newfile = config.replace(ext, '.json')
+        newconfig = configparser.export('json', indent=2)
+        buf = open(newfile, 'w')
+        buf.write(newconfig)
+        buf.close()
+        print('New config saved to <%s>.' % newfile)
 
 
 @cli.command(
