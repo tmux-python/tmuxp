@@ -57,6 +57,12 @@ Load multiple at once (in bg, offer to attach last):
 
     $ tmuxp load mysession ./another/project/ 
 
+Name a session:
+
+.. code-block:: bash
+
+    $ tmxup load -n session-name ./mysession.yaml
+
 `simple`_ and `very elaborate`_ config examples
 
 User-level configurations
