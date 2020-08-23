@@ -291,10 +291,10 @@ def test_load_workspace_named_session(server, monkeypatch):
 
     # open it detached
     session = load_workspace(
-        session_file, 
-        socket_name=server.socket_name, 
-        new_session_name='tmuxp-new', 
-        detached=True
+        session_file,
+        socket_name=server.socket_name,
+        new_session_name='tmuxp-new',
+        detached=True,
     )
 
     assert isinstance(session, libtmux.Session)
