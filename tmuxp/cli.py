@@ -7,6 +7,7 @@ tmuxp.cli
 """
 from __future__ import absolute_import
 
+import importlib
 import logging
 import os
 import sys
@@ -192,6 +193,35 @@ def set_layout_hook(session, hook_name):
     session.cmd(*cmd)
 
 
+def load_plugins(sconfig):
+    plugins = []
+    if 'plugins' in sconfig:
+        for plugin in sconfig['plugins']:
+            try:
+                """
+                click.echo(
+                    click.style('[Loading] ', fg='green')
+                    + click.style(f'Plugin: {plugin}', fg='blue', bold=True)
+                )
+                """
+                module_name = plugin.split('.')
+                module_name = '.'.join(module_name[:-1])
+                plugin_name = plugin.split('.')[-1]
+                plugin = getattr(importlib.import_module(module_name), plugin_name)
+                plugins.append(plugin())
+            except Exception as error:
+                click.echo(
+                    click.wrap_text(
+                        f'Error in loading {plugin}. Please make '
+                        f'sure {plugin} is installed.\n\n'
+                        f'{error}'
+                    )
+                )
+                
+    return plugins
+
+
+
 def is_pure_name(path):
     """
     Return True if path is a name and not a file path.
@@ -276,7 +306,7 @@ def scan_config(config, config_dir=None):
 
     If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
     one or more found, it will warn and pick the first.
-
+[Loading]
     If config is ".", "./" or None, it will scan current directory.
 
     If config is has no path and only a filename, e.g. "myconfig.yaml" it will
@@ -372,7 +402,7 @@ def scan_config(config, config_dir=None):
     return config
 
 
-def _reattach(session):
+def _reattach(session, plugins):
     """
     Reattach session (depending on env being inside tmux already or not)
 
@@ -388,6 +418,10 @@ def _reattach(session):
 
     If not, ``tmux attach-session`` loads the client to the target session.
     """
+
+    for plugin in plugins:
+        plugin.reattach(session)
+
     if 'TMUX' in os.environ:
         session.switch_client()
 
@@ -513,8 +547,10 @@ def load_workspace(
 
     which('tmux')  # raise exception if tmux not found
 
+    plugins = load_plugins(sconfig)
+
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
-        builder = WorkspaceBuilder(sconf=sconfig, server=t)
+        builder = WorkspaceBuilder(sconf=sconfig, server=t, plugins=plugins)
     except exc.EmptyConfigException:
         click.echo('%s is empty or parsed no config data' % config_file, err=True)
         return
@@ -532,7 +568,7 @@ def load_workspace(
                 default=True,
             )
         ):
-            _reattach(builder.session)
+            _reattach(builder.session, plugins)
         return
 
     try:

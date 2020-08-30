@@ -42,6 +42,10 @@ def validate_schema(sconf):
         if 'window_name' not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
+    if 'plugins' in sconf:
+        if not isinstance(sconf['plugins'], list):
+            raise exc.ConfigError('"plugins" only supports list type')
+
     return True
 
 
