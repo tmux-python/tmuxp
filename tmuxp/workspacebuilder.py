@@ -154,7 +154,7 @@ class WorkspaceBuilder(object):
         assert session.id
 
         assert isinstance(session, Session)
-        
+
         for plugin in self.plugins:
             plugin.before_workspace_builder(session)
 
