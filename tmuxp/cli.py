@@ -306,7 +306,6 @@ def scan_config(config, config_dir=None):
 
     If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
     one or more found, it will warn and pick the first.
-[Loading]
     If config is ".", "./" or None, it will scan current directory.
 
     If config is has no path and only a filename, e.g. "myconfig.yaml" it will
