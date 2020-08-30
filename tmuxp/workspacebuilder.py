@@ -195,6 +195,9 @@ class WorkspaceBuilder(object):
         for w, wconf in self.iter_create_windows(session):
             assert isinstance(w, Window)
 
+            for plugin in self.plugins:
+                plugin.on_window_create(w)
+
             focus_pane = None
             for p, pconf in self.iter_create_panes(w, wconf):
                 assert isinstance(p, Pane)
@@ -209,9 +212,10 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 focus = w
 
-            for plugin in self.plugins:
-                plugin.on_window_create(w)
             self.config_after_window(w, wconf)
+
+            for plugin in self.plugins:
+                plugin.after_window_finished(w)
 
             if focus_pane:
                 focus_pane.select_pane()
