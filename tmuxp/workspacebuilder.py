@@ -68,7 +68,7 @@ class WorkspaceBuilder(object):
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    def __init__(self, sconf, server=None):
+    def __init__(self, sconf, server=None, plugins=None):
         """
         Initialize workspace loading.
 
@@ -97,6 +97,8 @@ class WorkspaceBuilder(object):
             self.server = None
 
         self.sconf = sconf
+
+        self.plugins = plugins if plugins is not None else []
 
     def session_exists(self, session_name=None):
         exists = self.server.has_session(session_name)
@@ -158,6 +160,9 @@ class WorkspaceBuilder(object):
         assert session.id
 
         assert isinstance(session, Session)
+        
+        for plugin in self.plugins:
+            plugin.before_workspace_builder(session)
 
         focus = None
 
@@ -183,6 +188,10 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
+        # Runs after before_script
+        for plugin in self.plugins:
+            plugin.before_script(session)
+
         for w, wconf in self.iter_create_windows(session):
             assert isinstance(w, Window)
 
@@ -200,6 +209,8 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 focus = w
 
+            for plugin in self.plugins:
+                plugin.on_window_create(w)
             self.config_after_window(w, wconf)
 
             if focus_pane:
