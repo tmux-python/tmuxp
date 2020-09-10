@@ -1,0 +1,16 @@
+session_name: plugin-test
+plugins:
+- 'tmuxp_plugin_one.plugin.TestPluginOne'
+- 'tmuxp_plugin_two.plugin.TestPluginTwo'
+windows:
+- window_name: editor
+  layout: tiled
+  shell_command_before:
+    - cd ~/
+  panes:
+    - shell_command:
+        - cd /var/log
+        - ls -al | grep \.log
+    - echo hello
+    - echo hello
+    - echo hello

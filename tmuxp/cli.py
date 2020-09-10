@@ -193,34 +193,6 @@ def set_layout_hook(session, hook_name):
     session.cmd(*cmd)
 
 
-def load_plugins(sconfig):
-    plugins = []
-    if 'plugins' in sconfig:
-        for plugin in sconfig['plugins']:
-            try:
-                """
-                click.echo(
-                    click.style('[Loading] ', fg='green')
-                    + click.style(f'Plugin: {plugin}', fg='blue', bold=True)
-                )
-                """
-                module_name = plugin.split('.')
-                module_name = '.'.join(module_name[:-1])
-                plugin_name = plugin.split('.')[-1]
-                plugin = getattr(importlib.import_module(module_name), plugin_name)
-                plugins.append(plugin())
-            except Exception as error:
-                click.echo(
-                    click.wrap_text(
-                        f'Error in loading {plugin}. Please make '
-                        f'sure {plugin} is installed.\n\n'
-                        f'{error}'
-                    )
-                )
-
-    return plugins
-
-
 def is_pure_name(path):
     """
     Return True if path is a name and not a file path.
@@ -399,6 +371,34 @@ def scan_config(config, config_dir=None):
         raise FileError(file_error, config)
 
     return config
+
+
+def load_plugins(config):
+    plugins = []
+    if 'plugins' in config:
+        for plugin in config['plugins']:
+            try:
+                """
+                click.echo(
+                    click.style('[Loading] ', fg='green')
+                    + click.style(f'Plugin: {plugin}', fg='blue', bold=True)
+                )
+                """
+                module_name = plugin.split('.')
+                module_name = '.'.join(module_name[:-1])
+                plugin_name = plugin.split('.')[-1]
+                plugin = getattr(importlib.import_module(module_name), plugin_name)
+                plugins.append(plugin())
+            except Exception as error:
+                click.echo(
+                    click.wrap_text(
+                        f'Error in loading {plugin}. Please make ' \
+                        f'sure {plugin} is installed.\n\n' \
+                        f'{error}' \
+                    )
+                )
+
+    return plugins
 
 
 def _reattach(session, plugins):
