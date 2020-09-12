@@ -416,7 +416,7 @@ def load_workspace(
     socket_path: str, optional
         ``tmux -S <socket-path>``
     new_session_name: str, options
-        ``tmux new -t <new-session-name>``
+        ``tmux new -s <new-session-name>``
     colors : str, optional
         '-2'
             Force tmux to support 256 colors
@@ -752,7 +752,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
-@click.option('-n', 'new_session_name', help='name of the new session')
+@click.option('-s', 'new_session_name', help='start new session with new session name')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
