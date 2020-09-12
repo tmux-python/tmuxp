@@ -89,7 +89,7 @@ are created, the last session is named from the terminal.
 
 .. code-block:: bash
 
-    $ tmxup load -s <new-session-name> <filename1> ...
+    $ tmxup load -s <new_session_name> <filename1> ...
 
 .. _cli_import:
 

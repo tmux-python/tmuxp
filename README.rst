@@ -61,7 +61,7 @@ Name a session:
 
 .. code-block:: bash
 
-    $ tmxup load -s session-name ./mysession.yaml
+    $ tmxup load -s session_name ./mysession.yaml
 
 `simple`_ and `very elaborate`_ config examples
 
