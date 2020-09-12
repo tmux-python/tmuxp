@@ -24,8 +24,7 @@ from tmuxp.cli import (
 )
 
 from .fixtures._util import curjoin, loadfixture
-from tmuxp_plugin_one.plugin import TestPluginOne
-from tmuxp_plugin_two.plugin import TestPluginTwo
+from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 def test_creates_config_dir_not_exists(tmpdir):
     """cli.startup() creates config dir if not exists."""
@@ -270,13 +269,12 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
 
 
 def test_load_plugins():
-    session_config = curjoin("workspacebuildter/plugins_two.yaml")
+    session_config = curjoin("workspacebuildter/plugin_bwb.yaml")
     plugins = load_plugins(session_config)
-    assert len(plugins) == 2
+    assert len(plugins) == 1
 
     test_plugin_class_types = [
-        TestPluginOne().__class__, 
-        TestPluginTwo().__class__
+        PluginBeforeWorkspaceBuilder().__class__, 
     ]
     for plugin in plugins: 
         assert plugin.__class__ in test_plugin_class_types
