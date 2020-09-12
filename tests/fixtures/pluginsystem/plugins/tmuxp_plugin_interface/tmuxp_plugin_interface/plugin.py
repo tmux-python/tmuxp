@@ -1,6 +1,6 @@
-class TestPluginTwo:
+class TmuxpPluginInterface:
     def __init__(self):
-        self.message = f'[+] This is the Tmuxp Test Plugin'
+        pass
 
     def before_workspace_builder(self, session):
         pass
@@ -12,8 +12,7 @@ class TestPluginTwo:
         pass
 
     def on_window_create(self, window):
-        if window.name == 'editor': 
-            pass
+        pass
 
     def after_window_finished(self, window):  
         pass

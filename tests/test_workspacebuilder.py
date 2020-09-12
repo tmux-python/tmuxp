@@ -673,3 +673,20 @@ def test_before_load_true_if_test_passes_with_args(server):
 
     with temp_session(server) as session:
         builder.build(session=session)
+
+
+def test_plugin_system_before_workspace_builder(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_bwb.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    assert len(builder.plugins) > 0
+
+    builder.build(session)
+    assert session.cmd('display-message', '-p', "'#S'") == 'plugin_test_bwb'
+
+
+
