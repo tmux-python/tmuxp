@@ -1,0 +1,18 @@
+session_name: plugin-test-awf-mw
+plugins:
+- 'tmuxp_test_plugin_awf.plugin.PluginAfterWindowFinished'
+windows:
+- window_name: awf_mw_test
+  layout: tiled
+  shell_command_before:
+    - cd ~/
+  panes:
+    - shell_command:
+        - cd /var/log
+        - ls -al | grep \.log
+- window_name: awf_mw_test_2
+  layout: tiled
+  shell_command_before:
+    - cd ~/
+  panes:
+    - echo hello

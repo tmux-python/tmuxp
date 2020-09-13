@@ -206,7 +206,6 @@ class WorkspaceBuilder(object):
 
         # Runs after before_script
         for plugin in self.plugins:
-            print('workspacebuilder - plugin.before_script')
             plugin.before_script(self.session)
 
         for w, wconf in self.iter_create_windows(session):

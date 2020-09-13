@@ -697,7 +697,6 @@ def test_reattach_plugins(server):
     except libtmux.exc.LibTmuxException as error:
         pass
 
-
     proc = builder.session.cmd('display-message', '-p', "'#S'") 
     
     assert proc.stdout[0] == "'plugin_test_r'"

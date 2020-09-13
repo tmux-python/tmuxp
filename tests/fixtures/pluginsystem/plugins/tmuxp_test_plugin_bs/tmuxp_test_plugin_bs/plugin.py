@@ -5,5 +5,4 @@ class PluginBeforeScript(TmuxpPluginInterface):
         self.message = f'[+] This is the Tmuxp Test Plugin'
 
     def before_script(self, session):
-        print('Changing session_name to plugin_test_bs')
         session.rename_session('plugin_test_bs')
