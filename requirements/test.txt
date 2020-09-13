@@ -3,4 +3,3 @@ pytest-rerunfailures<9
 pytest-cov
 coverage
 codecov
-wheel
