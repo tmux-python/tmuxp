@@ -1,6 +1,6 @@
 session_name: plugin-test-bwb
 plugins:
-- 'tmuxp_test_plugin_bwb.plugin.TestPluginBeforeWorkspaceBuild'
+- 'tmuxp_test_plugin_bwb.plugin.PluginBeforeWorkspaceBuilder'
 windows:
 - window_name: editor
   layout: tiled

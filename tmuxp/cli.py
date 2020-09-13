@@ -7,7 +7,6 @@ tmuxp.cli
 """
 from __future__ import absolute_import
 
-import importlib
 import logging
 import os
 import sys
@@ -373,41 +372,13 @@ def scan_config(config, config_dir=None):
     return config
 
 
-def load_plugins(config):
-    plugins = []
-    if 'plugins' in config:
-        for plugin in config['plugins']:
-            try:
-                """
-                click.echo(
-                    click.style('[Loading] ', fg='green')
-                    + click.style(f'Plugin: {plugin}', fg='blue', bold=True)
-                )
-                """
-                module_name = plugin.split('.')
-                module_name = '.'.join(module_name[:-1])
-                plugin_name = plugin.split('.')[-1]
-                plugin = getattr(importlib.import_module(module_name), plugin_name)
-                plugins.append(plugin())
-            except Exception as error:
-                click.echo(
-                    click.wrap_text(
-                        f'Error in loading {plugin}. Please make ' \
-                        f'sure {plugin} is installed.\n\n' \
-                        f'{error}' \
-                    )
-                )
-
-    return plugins
-
-
-def _reattach(session, plugins):
+def _reattach(builder):
     """
     Reattach session (depending on env being inside tmux already or not)
 
     Parameters
     ----------
-    session : :class:`libtmux.Session`
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
 
     Notes
     -----
@@ -418,14 +389,17 @@ def _reattach(session, plugins):
     If not, ``tmux attach-session`` loads the client to the target session.
     """
 
-    for plugin in plugins:
-        plugin.reattach(session)
+    for plugin in builder.plugins:
+        plugin.reattach(builder.session)
+        proc = builder.session.cmd('display-message', '-p', "'#S'") 
+        for line in proc.stdout:
+            print(line)
 
     if 'TMUX' in os.environ:
-        session.switch_client()
+        builder.session.switch_client()
 
     else:
-        session.attach_session()
+        builder.session.attach_session()
 
 
 def load_workspace(
@@ -546,10 +520,8 @@ def load_workspace(
 
     which('tmux')  # raise exception if tmux not found
 
-    plugins = load_plugins(sconfig)
-
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
-        builder = WorkspaceBuilder(sconf=sconfig, server=t, plugins=plugins)
+        builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
         click.echo('%s is empty or parsed no config data' % config_file, err=True)
         return
@@ -564,10 +536,10 @@ def load_workspace(
             or click.confirm(
                 '%s is already running. Attach?'
                 % click.style(session_name, fg='green'),
-                default=True,
+                eefault=True,
             )
         ):
-            _reattach(builder.session, plugins)
+            _reattach(builder)
         return
 
     try:
@@ -625,10 +597,7 @@ def load_workspace(
             builder.session.kill_session()
             click.echo('Session killed.')
         elif choice == 'a':
-            if 'TMUX' in os.environ:
-                builder.session.switch_client()
-            else:
-                builder.session.attach_session()
+            _reattach(builder)
         else:
             sys.exit()
 

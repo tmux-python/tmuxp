@@ -1,6 +1,6 @@
 session_name: plugin-test-bs
 plugins:
-- 'tmuxp_test_plugin_bs.plugin.TestPluginBeforeScript'
+- 'tmuxp_test_plugin_bs.plugin.PluginBeforeScript'
 windows:
 - window_name: editor
   layout: tiled

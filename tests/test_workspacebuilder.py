@@ -18,6 +18,7 @@ from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
+from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 
 def test_split_windows(session):
@@ -675,6 +676,24 @@ def test_before_load_true_if_test_passes_with_args(server):
         builder.build(session=session)
 
 
+def test_load_plugins():
+    plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(plugins_config).get()
+    sconfig = config.expand(sconfig)
+    
+    builder = WorkspaceBuilder(sconf=sconfig)
+
+    assert len(builder.plugins) == 1
+
+    test_plugin_class_types = [
+        PluginBeforeWorkspaceBuilder().__class__, 
+    ]
+    for plugin in builder.plugins: 
+        assert plugin.__class__ in test_plugin_class_types
+
+
 def test_plugin_system_before_workspace_builder(session):
     config_plugins = loadfixture("workspacebuilder/plugin_bwb.yaml")
 
@@ -685,8 +704,59 @@ def test_plugin_system_before_workspace_builder(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     assert len(builder.plugins) > 0
 
-    builder.build(session)
-    assert session.cmd('display-message', '-p', "'#S'") == 'plugin_test_bwb'
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#S'") 
+    
+    assert proc.stdout[0] == "'plugin_test_bwb'"
 
 
+def test_plugin_system_before_script(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_bs.yaml")
 
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#S'") 
+    
+    assert proc.stdout[0] == "'plugin_test_bs'"
+
+
+def test_plugin_system_on_window_create(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_owc.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#W'") 
+    
+    assert proc.stdout[0] == "'plugin_test_owc'"
+
+
+def test_plugin_system_after_window_finished(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_awf.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#W'") 
+    
+    assert proc.stdout[0] == "'plugin_test_awf'"
