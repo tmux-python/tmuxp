@@ -1,6 +1,6 @@
 session_name: plugin-test-owc
 plugins:
-- 'tmuxp_test_plugin_owc.plugin.TestPluginOnWindowCreate'
+- 'tmuxp_test_plugin_owc.plugin.PluginOnWindowCreate'
 windows:
 - window_name: editor
   layout: tiled

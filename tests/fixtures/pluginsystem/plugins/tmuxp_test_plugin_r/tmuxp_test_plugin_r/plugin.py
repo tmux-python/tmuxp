@@ -5,4 +5,4 @@ class PluginReattach(TmuxpPluginInterface):
         self.message = f'[+] This is the Tmuxp Test Plugin'
 
     def reattach(self, session):
-        pass
+        session.rename_session('plugin_test_r')

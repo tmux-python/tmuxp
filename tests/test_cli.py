@@ -7,6 +7,8 @@ import os
 
 import pytest
 
+import kaptan
+
 import click
 from click.testing import CliRunner
 
@@ -19,11 +21,12 @@ from tmuxp.cli import (
     is_pure_name,
     load_workspace,
     scan_config,
-    load_plugins,
+    _reattach
 )
+from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .fixtures._util import curjoin, loadfixture
-from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
+
 
 def test_creates_config_dir_not_exists(tmpdir):
     """cli.startup() creates config dir if not exists."""
@@ -265,18 +268,6 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
         assert 'file not found' in check_cmd('.tmuxp.ini')
         assert 'No tmuxp files found' in check_cmd('../')
         assert 'config not found in config dir' in check_cmd('moo')
-
-
-def test_load_plugins():
-    session_config = curjoin("workspacebuildter/plugin_bwb.yaml")
-    plugins = load_plugins(session_config)
-    assert len(plugins) == 1
-
-    test_plugin_class_types = [
-        PluginBeforeWorkspaceBuilder().__class__, 
-    ]
-    for plugin in plugins: 
-        assert plugin.__class__ in test_plugin_class_types
 
 
 def test_load_workspace(server, monkeypatch):
@@ -688,3 +679,25 @@ def test_ls_cli(monkeypatch, tmpdir):
     runner = CliRunner()
     cli_output = runner.invoke(command_ls).output
     assert cli_output == '\n'.join(stems) + '\n'
+
+
+def test_reattach_plugins(server):
+    config_plugins = loadfixture("workspacebuilder/plugin_r.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    # open it detached
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    try:
+        _reattach(builder)
+    except libtmux.exc.LibTmuxException as error:
+        pass
+
+
+    proc = builder.session.cmd('display-message', '-p', "'#S'") 
+    
+    assert proc.stdout[0] == "'plugin_test_r'"

@@ -6,4 +6,4 @@ class PluginOnWindowCreate(TmuxpPluginInterface):
 
     def on_window_create(self, window):
         if window.name == 'editor': 
-            pass
+            window.rename_window('plugin_test_owc')

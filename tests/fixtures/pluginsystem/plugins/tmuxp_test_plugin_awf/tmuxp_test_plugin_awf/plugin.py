@@ -5,4 +5,5 @@ class PluginAfterWindowFinished(TmuxpPluginInterface):
         self.message = f'[+] This is the Tmuxp Test Plugin'
 
     def after_window_finished(self, window):  
-        pass
+        if window.name == 'editor': 
+            window.rename_window('plugin_test_awf')

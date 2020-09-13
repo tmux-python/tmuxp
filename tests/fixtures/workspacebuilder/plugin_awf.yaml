@@ -1,6 +1,6 @@
 session_name: plugin-test-awf
 plugins:
-- 'tmuxp_test_plugin_awf.plugin.TestPluginAfterWindowFinished'
+- 'tmuxp_test_plugin_awf.plugin.PluginAfterWindowFinished'
 windows:
 - window_name: editor
   layout: tiled
