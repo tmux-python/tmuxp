@@ -1,4 +1,4 @@
-from tmuxp_plugin_interface.plugin import TmuxpPluginInterface
+from tmuxp.plugin import TmuxpPluginInterface
 
 class PluginBeforeWorkspaceBuilder(TmuxpPluginInterface):
     def __init__(self):

@@ -3,7 +3,6 @@ import sys
 
 
 plugin_paths = [
-    "plugins/tmuxp_plugin_interface",
     "plugins/tmuxp_test_plugin_bwb",
     "plugins/tmuxp_test_plugin_bs",
     "plugins/tmuxp_test_plugin_r",
