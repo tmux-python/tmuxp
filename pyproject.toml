@@ -69,6 +69,11 @@ pytest-mock = [
   {version="<3.0.0", python="<3"},
   {version="*", python=">=3"}
 ]
+tmuxp-test-plugin-bwb = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/"}
+tmuxp-test-plugin-bs = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/"}
+tmuxp-test-plugin-r = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/"}
+tmuxp-test-plugin-owc = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/"}
+tmuxp-test-plugin-awf = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/"}
 
 ### Coverage ###
 codecov = "*"
