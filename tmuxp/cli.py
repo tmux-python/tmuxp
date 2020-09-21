@@ -898,50 +898,32 @@ def command_import_tmuxinator(configfile):
 
 
 @cli.command(name='convert')
-@click.option('--yes', '-y', 'confirmed', help='Auto confirms with "yes".', 
-              is_flag=True)
+@click.option(
+    '--yes', '-y', 'confirmed', help='Auto confirms with "yes".', is_flag=True
+)
 @click.argument('config', type=ConfigPath(exists=True), nargs=1)
 def command_convert(confirmed, config):
     """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
-    if 'json' in ext and not confirmed:
-        if click.confirm('convert to <%s> to yaml?' % config):
-            configparser = kaptan.Kaptan()
-            configparser.import_config(config)
-            newfile = config.replace(ext, '.yaml')
-            newconfig = configparser.export('yaml', indent=2, default_flow_style=False)
+    if 'json' in ext:
+        to_filetype = 'yaml'
+    elif 'yaml' in ext:
+        to_filetype = 'json'
+
+    configparser = kaptan.Kaptan()
+    configparser.import_config(config)
+    newfile = config.replace(ext, '.%s' % to_filetype)
+
+    export_kwargs = {'default_flow_style': False} if to_filetype == 'yaml' else {}
+    newconfig = configparser.export(to_filetype, indent=2, **export_kwargs)
+
+    if not confirmed:
+        if click.confirm('convert to <%s> to %s?' % (config, to_filetype)):
             if click.confirm('Save config to %s?' % newfile):
-                buf = open(newfile, 'w')
-                buf.write(newconfig)
-                buf.close()
-                print('New config saved to %s' % newfile)
-    elif 'yaml' in ext and not confirmed:
-        if click.confirm('convert to <%s> to json?' % config):
-            configparser = kaptan.Kaptan()
-            configparser.import_config(config)
-            newfile = config.replace(ext, '.json')
-            newconfig = configparser.export('json', indent=2)
-            print(newconfig)
-            if click.confirm('Save config to <%s>?' % newfile):
-                buf = open(newfile, 'w')
-                buf.write(newconfig)
-                buf.close()
-                print('New config saved to <%s>.' % newfile)
-    elif 'json' in ext and confirmed:
-        configparser = kaptan.Kaptan()
-        configparser.import_config(config)
-        newfile = config.replace(ext, '.yaml')
-        newconfig = configparser.export('yaml', indent=2, default_flow_style=False)
-        buf = open(newfile, 'w')
-        buf.write(newconfig)
-        buf.close()
-        print('New config saved to <%s>.' % newfile)
-    elif 'yaml' in ext and confirmed:
-        configparser = kaptan.Kaptan()
-        configparser.import_config(config)
-        newfile = config.replace(ext, '.json')
-        newconfig = configparser.export('json', indent=2)
+                confirmed = True
+
+    if confirmed:
         buf = open(newfile, 'w')
         buf.write(newconfig)
         buf.close()
