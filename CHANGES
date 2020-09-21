@@ -6,6 +6,7 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
+- :issue:`589` added option for the the confirm command to auto-confirm the prompt.
 - :issue:`623` Move docs from RTD to self-serve site
 - :issue:`623` Modernize Makefiles
 - :issue:`623` New development docs
