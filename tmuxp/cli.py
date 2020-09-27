@@ -536,7 +536,7 @@ def load_workspace(
             or click.confirm(
                 '%s is already running. Attach?'
                 % click.style(session_name, fg='green'),
-                eefault=True,
+                default=True,
             )
         ):
             _reattach(builder)
