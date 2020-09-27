@@ -14,5 +14,5 @@ class TmuxpPluginInterface:
     def on_window_create(self, window):
         pass
 
-    def after_window_finished(self, window):  
+    def after_window_finished(self, window):
         pass
