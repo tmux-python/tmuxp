@@ -117,15 +117,12 @@ class WorkspaceBuilder(object):
                     module_name = plugin.split('.')
                     module_name = '.'.join(module_name[:-1])
                     plugin_name = plugin.split('.')[-1]
-                    plugin = getattr(
-                        importlib.import_module(module_name), 
-                        plugin_name
-                    )
+                    plugin = getattr(importlib.import_module(module_name), plugin_name)
                     plugins.append(plugin())
                 except Exception as error:
                     raise exc.TmuxpException(
-                        'Error in loading {0}. Please make sure {0} is ' + 
-                        'installed.\n\n{1}'.format(plugin, error) 
+                        'Error in loading {0}. Please make sure {0} is '
+                        'installed.\n\n{1}'.format(plugin, error)
                     )
 
         return plugins

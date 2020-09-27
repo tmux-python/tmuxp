@@ -1,11 +1,12 @@
 from tmuxp.plugin import TmuxpPluginInterface
 
+
 class PluginAfterWindowFinished(TmuxpPluginInterface):
     def __init__(self):
-        self.message = f'[+] This is the Tmuxp Test Plugin'
+        self.message = '[+] This is the Tmuxp Test Plugin'
 
-    def after_window_finished(self, window):  
-        if window.name == 'editor': 
+    def after_window_finished(self, window):
+        if window.name == 'editor':
             window.rename_window('plugin_test_awf')
         elif window.name == 'awf_mw_test':
             window.rename_window('plugin_test_awf_mw')

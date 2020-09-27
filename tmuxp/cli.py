@@ -391,7 +391,7 @@ def _reattach(builder):
 
     for plugin in builder.plugins:
         plugin.reattach(builder.session)
-        proc = builder.session.cmd('display-message', '-p', "'#S'") 
+        proc = builder.session.cmd('display-message', '-p', "'#S'")
         for line in proc.stdout:
             print(line)
 

@@ -21,7 +21,7 @@ from tmuxp.cli import (
     is_pure_name,
     load_workspace,
     scan_config,
-    _reattach
+    _reattach,
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
@@ -694,9 +694,9 @@ def test_reattach_plugins(server):
 
     try:
         _reattach(builder)
-    except libtmux.exc.LibTmuxException as error:
+    except libtmux.exc.LibTmuxException:
         pass
 
-    proc = builder.session.cmd('display-message', '-p', "'#S'") 
-    
+    proc = builder.session.cmd('display-message', '-p', "'#S'")
+
     assert proc.stdout[0] == "'plugin_test_r'"

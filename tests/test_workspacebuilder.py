@@ -682,15 +682,15 @@ def test_load_plugins():
     sconfig = kaptan.Kaptan(handler='yaml')
     sconfig = sconfig.import_config(plugins_config).get()
     sconfig = config.expand(sconfig)
-    
+
     builder = WorkspaceBuilder(sconf=sconfig)
 
     assert len(builder.plugins) == 1
 
     test_plugin_class_types = [
-        PluginBeforeWorkspaceBuilder().__class__, 
+        PluginBeforeWorkspaceBuilder().__class__,
     ]
-    for plugin in builder.plugins: 
+    for plugin in builder.plugins:
         assert plugin.__class__ in test_plugin_class_types
 
 
@@ -706,7 +706,7 @@ def test_plugin_system_before_workspace_builder(session):
 
     builder.build(session=session)
 
-    proc = session.cmd('display-message', '-p', "'#S'") 
+    proc = session.cmd('display-message', '-p', "'#S'")
     assert proc.stdout[0] == "'plugin_test_bwb'"
 
 
@@ -722,7 +722,7 @@ def test_plugin_system_before_script(session):
 
     builder.build(session=session)
 
-    proc = session.cmd('display-message', '-p', "'#S'") 
+    proc = session.cmd('display-message', '-p', "'#S'")
     assert proc.stdout[0] == "'plugin_test_bs'"
 
 
@@ -738,7 +738,7 @@ def test_plugin_system_on_window_create(session):
 
     builder.build(session=session)
 
-    proc = session.cmd('display-message', '-p', "'#W'") 
+    proc = session.cmd('display-message', '-p', "'#W'")
     assert proc.stdout[0] == "'plugin_test_owc'"
 
 
@@ -754,7 +754,7 @@ def test_plugin_system_after_window_finished(session):
 
     builder.build(session=session)
 
-    proc = session.cmd('display-message', '-p', "'#W'") 
+    proc = session.cmd('display-message', '-p', "'#W'")
     assert proc.stdout[0] == "'plugin_test_awf'"
 
 
@@ -771,9 +771,9 @@ def test_plugin_system_on_window_create_multiple_windows(session):
     builder.build(session=session)
 
     proc = session.cmd('list-windows', '-F', "'#W'")
-    assert "'plugin_test_owc_mw'" in proc.stdout 
-    assert "'plugin_test_owc_mw_2'" in proc.stdout 
-    
+    assert "'plugin_test_owc_mw'" in proc.stdout
+    assert "'plugin_test_owc_mw_2'" in proc.stdout
+
 
 def test_plugin_system_after_window_finished_multiple_windows(session):
     config_plugins = loadfixture("workspacebuilder/plugin_awf_multiple_windows.yaml")
@@ -788,8 +788,8 @@ def test_plugin_system_after_window_finished_multiple_windows(session):
     builder.build(session=session)
 
     proc = session.cmd('list-windows', '-F', "'#W'")
-    assert "'plugin_test_awf_mw'" in proc.stdout 
-    assert "'plugin_test_awf_mw_2'" in proc.stdout 
+    assert "'plugin_test_awf_mw'" in proc.stdout
+    assert "'plugin_test_awf_mw_2'" in proc.stdout
 
 
 def test_plugin_system_multiple_plugins(session):
@@ -805,11 +805,11 @@ def test_plugin_system_multiple_plugins(session):
     builder.build(session=session)
 
     # Drop through to the before_script plugin hook
-    proc = session.cmd('display-message', '-p', "'#S'") 
+    proc = session.cmd('display-message', '-p', "'#S'")
     assert proc.stdout[0] == "'plugin_test_bs'"
 
     # Drop through to the after_window_finished. This won't succeed
     # unless on_window_create succeeds because of how the test plugin
     # override methods are currently written
-    proc = session.cmd('display-message', '-p', "'#W'") 
+    proc = session.cmd('display-message', '-p', "'#W'")
     assert proc.stdout[0] == "'mp_test_awf'"
