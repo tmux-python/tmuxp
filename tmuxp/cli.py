@@ -601,6 +601,10 @@ def load_workspace(
         else:
             sys.exit()
 
+    # Runs after before_script
+    for plugin in builder.plugins:
+        plugin.before_script(builder.session)
+
     return builder.session
 
 

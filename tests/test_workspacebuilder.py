@@ -710,22 +710,6 @@ def test_plugin_system_before_workspace_builder(session):
     assert proc.stdout[0] == "'plugin_test_bwb'"
 
 
-def test_plugin_system_before_script(session):
-    config_plugins = loadfixture("workspacebuilder/plugin_bs.yaml")
-
-    sconfig = kaptan.Kaptan(handler='yaml')
-    sconfig = sconfig.import_config(config_plugins).get()
-    sconfig = config.expand(sconfig)
-
-    builder = WorkspaceBuilder(sconf=sconfig)
-    assert len(builder.plugins) > 0
-
-    builder.build(session=session)
-
-    proc = session.cmd('display-message', '-p', "'#S'")
-    assert proc.stdout[0] == "'plugin_test_bs'"
-
-
 def test_plugin_system_on_window_create(session):
     config_plugins = loadfixture("workspacebuilder/plugin_owc.yaml")
 
@@ -806,7 +790,7 @@ def test_plugin_system_multiple_plugins(session):
 
     # Drop through to the before_script plugin hook
     proc = session.cmd('display-message', '-p', "'#S'")
-    assert proc.stdout[0] == "'plugin_test_bs'"
+    assert proc.stdout[0] == "'plugin_test_bwb'"
 
     # Drop through to the after_window_finished. This won't succeed
     # unless on_window_create succeeds because of how the test plugin

@@ -28,6 +28,7 @@ Table of Contents
     quickstart
     examples
     cli
+    plugin_system
     developing
     api
     history
