@@ -4,16 +4,13 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-tmxup 1.5.8 (2020-09-*)
------------------------
+current
+-------
 - :issue:`530` Add plugin system for user customization of tmuxp
 - :issue:`530` Add tests for the plugin system
 - :issue:`530` Update existing tests for the plugin system
 - :issue:`530` Add the plugin interface to the tmuxp package
 - :issue:`530` Add in depth documentation for the plugin system
-
-current
--------
 - *Insert changes/features/fixes for next release here*
 
 tmuxp 1.6.1 (2020-11-07)
