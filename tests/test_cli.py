@@ -681,6 +681,22 @@ def test_ls_cli(monkeypatch, tmpdir):
     assert cli_output == '\n'.join(stems) + '\n'
 
 
+def test_plugin_system_before_script(server, monkeypatch):
+    # this is an implementation test. Since this testsuite may be ran within
+    # a tmux session by the developer himself, delete the TMUX variable
+    # temporarily.
+    monkeypatch.delenv('TMUX', raising=False)
+    session_file = curjoin("workspacebuilder/plugin_bs.yaml")
+
+    # open it detached
+    session = load_workspace(
+        session_file, socket_name=server.socket_name, detached=True
+    )
+
+    assert isinstance(session, libtmux.Session)
+    assert session.name == 'plugin_test_bs'
+
+
 def test_reattach_plugins(server):
     config_plugins = loadfixture("workspacebuilder/plugin_r.yaml")
 

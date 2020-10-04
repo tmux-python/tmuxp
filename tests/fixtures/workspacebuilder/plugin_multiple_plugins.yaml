@@ -1,7 +1,6 @@
 session_name: plugin-test-multiple-plugins
 plugins:
 - 'tmuxp_test_plugin_bwb.plugin.PluginBeforeWorkspaceBuilder'
-- 'tmuxp_test_plugin_bs.plugin.PluginBeforeScript'
 - 'tmuxp_test_plugin_owc.plugin.PluginOnWindowCreate'
 - 'tmuxp_test_plugin_awf.plugin.PluginAfterWindowFinished'
 windows:

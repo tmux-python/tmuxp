@@ -201,10 +201,6 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
-        # Runs after before_script
-        for plugin in self.plugins:
-            plugin.before_script(self.session)
-
         for w, wconf in self.iter_create_windows(session):
             assert isinstance(w, Window)
 
