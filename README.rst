@@ -161,6 +161,7 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _Examples: http://tmuxp.git-pull.com/examples.html
 .. _freezing tmux: http://tmuxp.git-pull.com/cli.html#freeze-sessions
+.. _Plugin System: http://tmuxp.git-pull.com/plugin_system.html
 .. _bootstrap_env.py: https://github.com/tmux-python/tmuxp/blob/master/bootstrap_env.py
 .. _travis.yml: http://tmuxp.git-pull.com/developing.html#travis-ci
 .. _testing: http://tmuxp.git-pull.com/developing.html#test-runner
