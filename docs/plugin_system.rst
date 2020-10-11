@@ -34,28 +34,14 @@ JSON
 Developing a Plugin
 -------------------
 
-.. module:: tmuxp 
-
-Plugin API
-^^^^^^^^^^
-
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.before_workspace_builder
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.on_window_create
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.after_window_finished
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.before_script
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.reattach
-
-
-Example Plugin
---------------
-
-Tmuxp expects all plugins to be class within a python submodule named 
+tmuxp expects all plugins to be class within a python submodule named 
 ``plugin`` that is within a python module that is installed in the local 
 python environment. A plugin interface is provided by tmuxp to inherit. 
 
 `poetry`_ is the chosen python package manager for tmuxp. It is highly 
 suggested to use it when developing tmuxp plugins; however, ``pip`` will work 
-just as well.
+just as well. Only one of the configuration files is needed for the packaging tool that the
+package developer desides to use. 
 
 .. code-block:: bash
 
@@ -66,6 +52,7 @@ just as well.
     ├── pyproject.toml  # Poetry's module configuration file
     └── setup.py        # pip's module configuration file
 
+
 The `plugin.py` file could contain something like the following:
 
 .. code-block:: python
@@ -75,6 +62,13 @@ The `plugin.py` file could contain something like the following:
 
     class MyTmuxpPlugin(TmuxpPluginInterface):
         def __init__(self):
+            """
+            Currently optional.
+
+            In the current version of the plugin interface, the __init__
+            isn't being utilized. However, it does provide a space for 
+            later additions to the interface.
+            """
             super.__init__(self)
 
         def before_workspace_builder(self, session):
@@ -87,9 +81,19 @@ The `plugin.py` file could contain something like the following:
 Once this plugin is installed in the local python environment, it can be used
 in a configuration file like the following:
 
-.. code-block: yaml
+.. code-block:: yaml
 
     session_name: plugin example
     plugins:
     - my_plugin_module.plugin.MyTmuxpPlugin
     # ... the rest of your config
+
+
+Plugin API
+----------
+
+.. automethod:: tmuxp.plugin.TmuxpPluginInterface.before_workspace_builder
+.. automethod:: tmuxp.plugin.TmuxpPluginInterface.on_window_create
+.. automethod:: tmuxp.plugin.TmuxpPluginInterface.after_window_finished
+.. automethod:: tmuxp.plugin.TmuxpPluginInterface.before_script
+.. automethod:: tmuxp.plugin.TmuxpPluginInterface.reattach
