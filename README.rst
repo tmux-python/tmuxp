@@ -111,7 +111,6 @@ Snapshot your tmux layout, pane paths, and window/session names.
 
 See more about `freezing tmux`_ sessions.
 
-
 Convert a session file
 ----------------------
 
@@ -132,6 +131,11 @@ You can auto confirm the prompt. In this case no preview will be shown.
    $ tmuxp convert -y filename
    $ tmuxp convert --yes filename
 
+Plugin System
+-------------
+
+tmuxp has a plugin system to allow for custom behavior. See more about the 
+`Plugin System`_. 
 
 Docs / Reading material
 -----------------------
