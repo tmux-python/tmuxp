@@ -665,7 +665,8 @@ def startup(config_dir):
 @click.argument('session_name', nargs=1, required=False)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
-def command_freeze(session_name, socket_name, socket_path):
+@click.option('--force', 'force', help='overwrite the config file', is_flag=True)
+def command_freeze(session_name, socket_name, socket_path, force):
     """Snapshot a session into a config.
 
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the
@@ -722,7 +723,7 @@ def command_freeze(session_name, socket_name, socket_path):
             dest_prompt = click.prompt(
                 'Save to: %s' % save_to, value_proc=get_abs_path, default=save_to
             )
-            if os.path.exists(dest_prompt):
+            if not force and os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue
 
