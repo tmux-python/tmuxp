@@ -4,6 +4,10 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
+current
+-------
+- *Insert changes/features/fixes for next release here*
+
 tmuxp 1.5.6 (2020-10-12)
 ------------------------
 - :issue:`618`: allow passing ``--overwrite`` to ``tmuxp freeze``. Thank you
