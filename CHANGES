@@ -6,6 +6,8 @@ Here you can find the recent changes to tmuxp
 
 tmuxp 1.5-current
 -----------------
+- :issue:`618`: allow passing ``--overwrite`` to ``tmuxp freeze``. Thank you
+  @betoSolares!
 - :issue:`589` added option for the the confirm command to auto-confirm the prompt.
   Thank you @aRkedos!
 - :issue:`626` Add new session name option to cli. Thank you @joseph-flinn!
