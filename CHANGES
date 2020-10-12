@@ -6,9 +6,9 @@ Here you can find the recent changes to tmuxp
 
 tmuxp 1.5-current
 -----------------
-- :issue:`590` Add new session name option to cli
-- :issue:`590` Add test for new session name option
-- :issue:`590` Update docs for new session name option
+- :issue:`626` Add new session name option to cli. Thank you @joseph-flinn!
+- :issue:`626` Add test for new session name option
+- :issue:`626` Update docs for new session name option
 - :issue:`623` Move docs from RTD to self-serve site
 - :issue:`623` Modernize Makefiles
 - :issue:`623` New development docs
