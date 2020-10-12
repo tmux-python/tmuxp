@@ -4,14 +4,11 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-tmuxp 1.5.7 (2020-09-13)
-------------------------
+tmuxp 1.5-current
+-----------------
 - :issue:`590` Add new session name option to cli
 - :issue:`590` Add test for new session name option
-- :issue:`590` Updata docs for new session name option
-
-tmuxp 1.5.6 (2020-08-16)
-------------------------
+- :issue:`590` Update docs for new session name option
 - :issue:`623` Move docs from RTD to self-serve site
 - :issue:`623` Modernize Makefiles
 - :issue:`623` New development docs
