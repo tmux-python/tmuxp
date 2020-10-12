@@ -84,6 +84,13 @@ without being attached. The last one will be attached if there is no
 
     $ tmuxp load <filename1> <filename2> ...
 
+A session name can be provided at the terminal. If multiple sessions 
+are created, the last session is named from the terminal.
+
+.. code-block:: bash
+
+    $ tmxup load -s <new_session_name> <filename1> ...
+
 .. _cli_import:
 
 Import

@@ -4,9 +4,12 @@ Changelog
 
 Here you can find the recent changes to tmuxp
 
-current
--------
+tmuxp 1.5-current
+-----------------
 - :issue:`589` added option for the the confirm command to auto-confirm the prompt.
+- :issue:`626` Add new session name option to cli. Thank you @joseph-flinn!
+- :issue:`626` Add test for new session name option
+- :issue:`626` Update docs for new session name option
 - :issue:`623` Move docs from RTD to self-serve site
 - :issue:`623` Modernize Makefiles
 - :issue:`623` New development docs

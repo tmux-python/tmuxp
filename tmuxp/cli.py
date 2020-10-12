@@ -399,6 +399,7 @@ def load_workspace(
     config_file,
     socket_name=None,
     socket_path=None,
+    new_session_name=None,
     colors=None,
     detached=False,
     answer_yes=False,
@@ -414,6 +415,8 @@ def load_workspace(
         ``tmux -L <socket-name>``
     socket_path: str, optional
         ``tmux -S <socket-path>``
+    new_session_name: str, options
+        ``tmux new -s <new_session_name>``
     colors : str, optional
         '-2'
             Force tmux to support 256 colors
@@ -498,6 +501,9 @@ def load_workspace(
     sconfig = sconfig.import_config(config_file).get()
     # shapes configurations relative to config / profile file location
     sconfig = config.expand(sconfig, os.path.dirname(config_file))
+    # Overwrite session name
+    if new_session_name:
+        sconfig['session_name'] = new_session_name
     # propagate config inheritance (e.g. session -> window, window -> pane)
     sconfig = config.trickle(sconfig)
 
@@ -746,6 +752,7 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option('-s', 'new_session_name', help='start new session with new session name')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
@@ -763,7 +770,16 @@ def command_freeze(session_name, socket_name, socket_path):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
-def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, colors):
+def command_load(
+    ctx,
+    config,
+    socket_name,
+    socket_path,
+    new_session_name,
+    answer_yes,
+    detached,
+    colors,
+):
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -791,6 +807,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, co
     tmux_options = {
         'socket_name': socket_name,
         'socket_path': socket_path,
+        'new_session_name': new_session_name,
         'answer_yes': answer_yes,
         'colors': colors,
         'detached': detached,
@@ -809,7 +826,7 @@ def command_load(ctx, config, socket_name, socket_path, answer_yes, detached, co
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             opt = tmux_options.copy()
-            opt.update({'detached': True})
+            opt.update({'detached': True, 'new_session_name': None})
             load_workspace(cfg, **opt)
 
         # todo: obey the -d in the cli args only if user specifies
