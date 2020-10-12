@@ -406,7 +406,14 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
-@pytest.mark.parametrize("cli_args", [(['convert', '.']), (['convert', '.tmuxp.yaml'])])
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        (['convert', '.']),
+        (['convert', '.tmuxp.yaml']),
+        (['convert', '.tmuxp.yaml', '-y']),
+    ],
+)
 def test_convert(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
     tmpdir.join('.tmuxp.yaml').write(
@@ -420,7 +427,10 @@ session_name: hello
     with tmpdir.as_cwd():
         runner = CliRunner()
 
-        runner.invoke(cli.cli, cli_args, input='y\ny\n')
+        # If autoconfirm (-y) no need to prompt y
+        input_args = 'y\ny\n' if '-y' not in cli_args else ''
+
+        runner.invoke(cli.cli, cli_args, input=input_args)
         assert tmpdir.join('.tmuxp.json').check()
         assert tmpdir.join('.tmuxp.json').open().read() == json.dumps(
             {'session_name': 'hello'}, indent=2

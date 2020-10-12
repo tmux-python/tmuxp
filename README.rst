@@ -111,6 +111,28 @@ Snapshot your tmux layout, pane paths, and window/session names.
 
 See more about `freezing tmux`_ sessions.
 
+
+Convert a session file
+----------------------
+
+Convert a session file from yaml to json and vice versa.
+
+.. code-block:: sh
+
+   $ tmuxp convert filename
+
+This will prompt you for confirmation and shows you the new file that is going
+to be written.
+
+
+You can auto confirm the prompt. In this case no preview will be shown.
+
+.. code-block:: sh
+
+   $ tmuxp convert -y filename
+   $ tmuxp convert --yes filename
+
+
 Docs / Reading material
 -----------------------
 

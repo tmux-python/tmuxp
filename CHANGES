@@ -6,6 +6,7 @@ Here you can find the recent changes to tmuxp
 
 tmuxp 1.5-current
 -----------------
+- :issue:`589` added option for the the confirm command to auto-confirm the prompt.
 - :issue:`626` Add new session name option to cli. Thank you @joseph-flinn!
 - :issue:`626` Add test for new session name option
 - :issue:`626` Update docs for new session name option
