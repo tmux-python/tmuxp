@@ -20,6 +20,7 @@ tmuxp 1.5-current
 - :issue:`623` Move tests to GitHub Actions
 - :issue:`623` Update pyproject.toml to experiment with poetry packaging
 - :issue:`619` isort 5
+- :issue:`629` Update black from 19.10b0 to 20.08b1
 
 tmuxp 1.5.5 (2020-07-26)
 ------------------------
