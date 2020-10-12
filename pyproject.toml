@@ -79,7 +79,7 @@ pytest-cov = [
 ]
 
 ### Format ###
-black = {version="==19.10b0", python="^3.6"}
+black = {version="==20.08b1", python="^3.6"}
 isort = [
   {version="<5", python="<3.6"},
   {version="*", python=">=3.6"}
