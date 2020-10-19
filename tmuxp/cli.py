@@ -8,6 +8,7 @@ tmuxp.cli
 from __future__ import absolute_import
 
 import logging
+import importlib
 import os
 import sys
 
@@ -372,6 +373,43 @@ def scan_config(config, config_dir=None):
     return config
 
 
+def load_plugins(sconf):
+    """
+    Load and return plugins in config
+    """
+    plugins = []
+    if 'plugins' in sconf:
+        for plugin in sconf['plugins']:
+            try:
+                module_name = plugin.split('.')
+                module_name = '.'.join(module_name[:-1])
+                plugin_name = plugin.split('.')[-1]
+                plugin = getattr(importlib.import_module(module_name), plugin_name)
+                plugins.append(plugin())
+            except exc.TmuxpPluginException as error:
+                if (click.confirm(
+                    '%s Skip?' % click.style(error, fg='orange'), default=True
+                )):
+                    pass
+            except Exception as error:
+                raise exc.TmuxpException(
+                    'Error in loading {0}. Please make sure {0} is '
+                    'installed.\n\n{1}'.format(plugin, error)
+                )
+
+        if not detached and (
+            answer_yes
+            or click.confirm(
+                '%s is already running. Attach?'
+                % click.style(session_name, fg='green'),
+                default=True,
+            )
+        ):
+            pass
+
+    return plugins
+
+
 def _reattach(builder):
     """
     Reattach session (depending on env being inside tmux already or not)
@@ -521,7 +559,11 @@ def load_workspace(
     which('tmux')  # raise exception if tmux not found
 
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
-        builder = WorkspaceBuilder(sconf=sconfig, server=t)
+        builder = WorkspaceBuilder(
+            sconf=sconfig, 
+            plugins=load_plugins(sconfig), 
+            server=t
+        )
     except exc.EmptyConfigException:
         click.echo('%s is empty or parsed no config data' % config_file, err=True)
         return

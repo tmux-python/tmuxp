@@ -9,7 +9,6 @@ tmuxp.workspacebuilder
 from __future__ import absolute_import, unicode_literals
 
 import logging
-import importlib
 
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
@@ -69,7 +68,7 @@ class WorkspaceBuilder(object):
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    def __init__(self, sconf, server=None):
+    def __init__(self, sconf, plugins=[], server=None):
         """
         Initialize workspace loading.
 
@@ -77,6 +76,9 @@ class WorkspaceBuilder(object):
         ----------
         sconf : dict
             session config, includes a :py:obj:`list` of ``windows``.
+
+        plugins : list
+            plugins to be used for this session
 
         server : :class:`libtmux.Server`
             tmux server to build session in
@@ -99,7 +101,7 @@ class WorkspaceBuilder(object):
 
         self.sconf = sconf
 
-        self.plugins = self.load_plugins()
+        self.plugins = plugins
 
     def session_exists(self, session_name=None):
         exists = self.server.has_session(session_name)
@@ -108,24 +110,6 @@ class WorkspaceBuilder(object):
 
         self.session = self.server.find_where({'session_name': session_name})
         return True
-
-    def load_plugins(self):
-        plugins = []
-        if 'plugins' in self.sconf:
-            for plugin in self.sconf['plugins']:
-                try:
-                    module_name = plugin.split('.')
-                    module_name = '.'.join(module_name[:-1])
-                    plugin_name = plugin.split('.')[-1]
-                    plugin = getattr(importlib.import_module(module_name), plugin_name)
-                    plugins.append(plugin())
-                except Exception as error:
-                    raise exc.TmuxpException(
-                        'Error in loading {0}. Please make sure {0} is '
-                        'installed.\n\n{1}'.format(plugin, error)
-                    )
-
-        return plugins
 
     def build(self, session=None):
         """

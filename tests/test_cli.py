@@ -23,8 +23,10 @@ from tmuxp.cli import (
     load_workspace,
     scan_config,
     _reattach,
+    load_plugins,
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 from .fixtures._util import curjoin, loadfixture
 
@@ -959,6 +961,24 @@ def test_ls_cli(monkeypatch, tmpdir):
     assert cli_output == '\n'.join(stems) + '\n'
 
 
+def test_load_plugins():
+    plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(plugins_config).get()
+    sconfig = config.expand(sconfig)
+
+    plugins = load_plugins(sconfig)
+
+    assert len(plugins) == 1
+
+    test_plugin_class_types = [
+        PluginBeforeWorkspaceBuilder().__class__,
+    ]
+    for plugin in plugins:
+        assert plugin.__class__ in test_plugin_class_types
+
+
 def test_plugin_system_before_script(server, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
@@ -983,7 +1003,11 @@ def test_reattach_plugins(server):
     sconfig = config.expand(sconfig)
 
     # open it detached
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(
+        sconf=sconfig, 
+        plugins=load_plugins(sconfig), 
+        server=server
+    )
     builder.build()
 
     try:
