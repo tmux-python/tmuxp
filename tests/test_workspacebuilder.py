@@ -15,10 +15,10 @@ from libtmux.test import retry, temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp.cli import load_plugins
 
 from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
-from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 
 def test_split_windows(session):
@@ -676,24 +676,6 @@ def test_before_load_true_if_test_passes_with_args(server):
         builder.build(session=session)
 
 
-def test_load_plugins():
-    plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
-
-    sconfig = kaptan.Kaptan(handler='yaml')
-    sconfig = sconfig.import_config(plugins_config).get()
-    sconfig = config.expand(sconfig)
-
-    builder = WorkspaceBuilder(sconf=sconfig)
-
-    assert len(builder.plugins) == 1
-
-    test_plugin_class_types = [
-        PluginBeforeWorkspaceBuilder().__class__,
-    ]
-    for plugin in builder.plugins:
-        assert plugin.__class__ in test_plugin_class_types
-
-
 def test_plugin_system_before_workspace_builder(session):
     config_plugins = loadfixture("workspacebuilder/plugin_bwb.yaml")
 
@@ -701,7 +683,7 @@ def test_plugin_system_before_workspace_builder(session):
     sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -717,7 +699,7 @@ def test_plugin_system_on_window_create(session):
     sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -733,7 +715,7 @@ def test_plugin_system_after_window_finished(session):
     sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -749,7 +731,7 @@ def test_plugin_system_on_window_create_multiple_windows(session):
     sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -766,7 +748,7 @@ def test_plugin_system_after_window_finished_multiple_windows(session):
     sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -783,7 +765,7 @@ def test_plugin_system_multiple_plugins(session):
     sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
