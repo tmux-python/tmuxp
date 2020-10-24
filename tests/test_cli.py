@@ -528,7 +528,7 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
         (['freeze'], ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
         (  # Create a new one
             ['freeze', 'mysession', '--force'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n']
+            ['\n', 'y\n', './la.yaml\n', 'y\n'],
         ),
         (  # Imply current session if not entered
             ['freeze', '--force'],
@@ -560,7 +560,7 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
         ),
         (  # Imply current session if not entered
             ['freeze', '--force'],
-            ['\n', 'y\n', './exists.yaml\n', 'y\n']
+            ['\n', 'y\n', './exists.yaml\n', 'y\n'],
         ),
     ],
 )
@@ -704,39 +704,43 @@ def test_load_plugins():
 @pytest.mark.skip('Not sure how to clean up the tmux session this makes')
 @pytest.mark.parametrize(
     "cli_args,inputs",
-    [(
-        ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
-        ['y\n'],
-    )],
+    [
+        (
+            ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
+            ['y\n'],
+        )
+    ],
 )
 def test_load_plugins_version_fail_skip(cli_args, inputs):
     runner = CliRunner()
 
-    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs)) 
+    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
     assert '[Loading]' in results.output
 
 
 @pytest.mark.parametrize(
     "cli_args,inputs",
-    [(
-        ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
-        ['n\n'],
-    )],
+    [
+        (
+            ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
+            ['n\n'],
+        )
+    ],
 )
 def test_load_plugins_version_fail_no_skip(cli_args, inputs):
     runner = CliRunner()
 
-    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs)) 
+    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
     assert '[Not Skipping]' in results.output
 
 
-@pytest.mark.parametrize("cli_args", [
-    (['load', 'tests/fixtures/workspacebuilder/plugin_missing_fail.yaml'])
-])
+@pytest.mark.parametrize(
+    "cli_args", [(['load', 'tests/fixtures/workspacebuilder/plugin_missing_fail.yaml'])]
+)
 def test_load_plugins_plugin_missing(cli_args):
     runner = CliRunner()
 
-    results = runner.invoke(cli.cli, cli_args) 
+    results = runner.invoke(cli.cli, cli_args)
     assert '[Plugin Error]' in results.output
 
 
@@ -765,9 +769,7 @@ def test_reattach_plugins(server):
 
     # open it detached
     builder = WorkspaceBuilder(
-        sconf=sconfig, 
-        plugins=load_plugins(sconfig), 
-        server=server
+        sconf=sconfig, plugins=load_plugins(sconfig), server=server
     )
     builder.build()
 

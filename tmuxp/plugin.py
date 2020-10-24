@@ -25,7 +25,8 @@ TMUXP_MAX_VERSION = None
 
 
 class TmuxpPluginInterface:
-    def __init__(self,
+    def __init__(
+        self,
         plugin_name='tmuxp-plugin-interface',
         tmux_min_version=TMUX_MIN_VERSION,
         tmux_max_version=TMUX_MAX_VERSION,
@@ -35,18 +36,18 @@ class TmuxpPluginInterface:
         libtmux_version_incompatible=None,
         tmuxp_min_version=TMUXP_MIN_VERSION,
         tmuxp_max_version=TMUXP_MAX_VERSION,
-        tmuxp_version_incompatible=None
+        tmuxp_version_incompatible=None,
     ):
         """
         Initialize plugin interface.
 
-        The default version values are set to the versions that the plugin 
-        system requires. 
+        The default version values are set to the versions that the plugin
+        system requires.
 
         Parameters
         ----------
         plugin_name : str
-            Name of the child plugin. Used in error message plugin fails to 
+            Name of the child plugin. Used in error message plugin fails to
             load
 
         tmux_min_version : str
@@ -54,13 +55,13 @@ class TmuxpPluginInterface:
 
         tmux_max_version : str
             Min version of tmux that the plugin supports
-            
+
         tmux_version_incompatible : list
             Versions of tmux that are incompatible with the plugin
 
         libtmux_min_version : str
             Min version of libtmux that the plugin supports
-        
+
         libtmux_max_version : str
             Max version of libtmux that the plugin supports
 
@@ -83,30 +84,35 @@ class TmuxpPluginInterface:
         self.tmux_version = get_version()
         self.libtmux_version = libtmux.__version__
         self.tmuxp_version = LooseVersion(__version__)
-        
+
         self.version_constraints = {
             'tmux': {
                 'version': self.tmux_version,
-                'vmin': tmux_min_version, 
+                'vmin': tmux_min_version,
                 'vmax': tmux_max_version,
-                'incompatible': tmux_version_incompatible if tmux_version_incompatible else []
+                'incompatible': tmux_version_incompatible
+                if tmux_version_incompatible
+                else [],
             },
             'libtmux': {
                 'version': self.libtmux_version,
-                'vmin': libtmux_min_version, 
+                'vmin': libtmux_min_version,
                 'vmax': libtmux_max_version,
-                'incompatible': libtmux_version_incompatible if libtmux_version_incompatible else []
+                'incompatible': libtmux_version_incompatible
+                if libtmux_version_incompatible
+                else [],
             },
             'tmuxp': {
                 'version': self.tmuxp_version,
-                'vmin': tmuxp_min_version, 
+                'vmin': tmuxp_min_version,
                 'vmax': tmuxp_max_version,
-                'incompatible': tmuxp_version_incompatible if tmuxp_version_incompatible else []
+                'incompatible': tmuxp_version_incompatible
+                if tmuxp_version_incompatible
+                else [],
             },
         }
 
         self._version_check()
-
 
     def _version_check(self):
         """
@@ -117,12 +123,10 @@ class TmuxpPluginInterface:
                 assert self._pass_version_check(**constraints)
             except AssertionError:
                 raise TmuxpPluginException(
-                    'Incompatible {dep} version: {version}\n{plugin_name} ' \
-                    'requirements:\nmin: {vmin} | max: {vmax} | ' \
+                    'Incompatible {dep} version: {version}\n{plugin_name} '
+                    'requirements:\nmin: {vmin} | max: {vmax} | '
                     'incompatible: {incompatible}\n'.format(
-                        dep=dep,
-                        plugin_name=self.plugin_name,
-                        **constraints
+                        dep=dep, plugin_name=self.plugin_name, **constraints
                     )
                 )
 
@@ -136,14 +140,14 @@ class TmuxpPluginInterface:
             return False
         if version in incompatible:
             return False
-        
+
         return True
 
     def before_workspace_builder(self, session):
         """
         Provide a session hook previous to creating the workspace.
 
-        This runs after the session has been created but before any of 
+        This runs after the session has been created but before any of
         the windows/panes/commands are entered.
 
         Parameters
@@ -187,20 +191,20 @@ class TmuxpPluginInterface:
 
         This runs after the workspace has been loaded with ``tmuxp load``. It
         augments instead of replaces the ``before_script`` section of the
-        configuration. 
+        configuration.
 
-        This hook provides access to the LibTmux.session object for any 
-        behavior that would be used in the ``before_script`` section of the 
+        This hook provides access to the LibTmux.session object for any
+        behavior that would be used in the ``before_script`` section of the
         configuration file that needs access directly to the session object.
-        This runs after the workspace has been loaded with ``tmuxp load``. 
-        
-        The hook augments, rather than replaces, the ``before_script`` section 
-        of the configuration. While it is possible to do all of the 
-        ``before_script`` configuration in this function, if a shell script 
-        is currently being used for the configuration, it would be cleaner to 
+        This runs after the workspace has been loaded with ``tmuxp load``.
+
+        The hook augments, rather than replaces, the ``before_script`` section
+        of the configuration. While it is possible to do all of the
+        ``before_script`` configuration in this function, if a shell script
+        is currently being used for the configuration, it would be cleaner to
         continue using the script in the ``before_section``.
-        
-        If changes to the session need to be made prior to 
+
+        If changes to the session need to be made prior to
         anything being built, please use ``before_workspace_builder`` instead.
 
         Parameters
