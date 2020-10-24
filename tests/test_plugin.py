@@ -18,6 +18,11 @@ from .fixtures.pluginsystem.partials.tmux_version_fail import (
     TmuxVersionFailMaxPlugin,
     TmuxVersionFailIncompatiblePlugin
 )
+from .fixtures.pluginsystem.partials.libtmux_version_fail import (
+    LibtmuxVersionFailMinPlugin,
+    LibtmuxVersionFailMaxPlugin,
+    LibtmuxVersionFailIncompatiblePlugin
+)
 from .fixtures.pluginsystem.partials.tmuxp_version_fail import (
     TmuxpVersionFailMinPlugin,
     TmuxpVersionFailMaxPlugin,
@@ -65,7 +70,7 @@ def test_tmuxp_version_fail_min():
         assert('Incompatible' in error.__str__())
 
 
-def test_tmux_version_fail_max():
+def test_tmuxp_version_fail_max():
     try:
         plugin = TmuxpVersionFailMaxPlugin()
         assert(False)
@@ -73,9 +78,32 @@ def test_tmux_version_fail_max():
         assert('Incompatible' in error.__str__())
 
 
-def test_tmux_version_fail_incompatible():
+def test_tmuxp_version_fail_incompatible():
     try:
         plugin = TmuxpVersionFailIncompatiblePlugin()
+        assert(False)
+    except TmuxpPluginException as error:
+        assert('Incompatible' in error.__str__())
+
+def test_libtmux_version_fail_min():
+    try:
+        plugin = LibtmuxVersionFailMinPlugin()
+        assert(False)
+    except TmuxpPluginException as error:
+        assert('Incompatible' in error.__str__())
+
+
+def test_libtmux_version_fail_max():
+    try:
+        plugin = LibtmuxVersionFailMaxPlugin()
+        assert(False)
+    except TmuxpPluginException as error:
+        assert('Incompatible' in error.__str__())
+
+
+def test_libtmux_version_fail_incompatible():
+    try:
+        plugin = LibtmuxVersionFailIncompatiblePlugin()
         assert(False)
     except TmuxpPluginException as error:
         assert('Incompatible' in error.__str__())

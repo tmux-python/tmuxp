@@ -1,27 +1,27 @@
-from .test_plugin_helpers import TestTmuxpPluginInterface
+from .test_plugin_helpers import MyTestTmuxpPluginInterface
 
 
-class TmuxVersionFailMinPlugin(TestTmuxpPluginInterface):
+class TmuxVersionFailMinPlugin(MyTestTmuxpPluginInterface):
     def __init__(self):
         config = {
             'plugin_name': 'tmux-min-version-fail',
             'tmux_min_version': '1.8',
             'tmux_version': '1.7'
         }
-        TestTmuxpPluginInterface.__init__(self, config)
+        MyTestTmuxpPluginInterface.__init__(self, config)
 
 
-class TmuxVersionFailMaxPlugin(TestTmuxpPluginInterface):
+class TmuxVersionFailMaxPlugin(MyTestTmuxpPluginInterface):
     def __init__(self):
         config = {
             'plugin_name': 'tmux-max-version-fail',
-            'tmux_min_version': '3.0',
+            'tmux_max_version': '3.0',
             'tmux_version': '3.5'
         }
-        TestTmuxpPluginInterface.__init__(self, config)
+        MyTestTmuxpPluginInterface.__init__(self, config)
 
 
-class TmuxVersionFailIncompatiblePlugin(TestTmuxpPluginInterface):
+class TmuxVersionFailIncompatiblePlugin(MyTestTmuxpPluginInterface):
     def __init__(self):
         config = {
             'plugin_name': 'tmux-incompatible-version-fail',
@@ -29,4 +29,4 @@ class TmuxVersionFailIncompatiblePlugin(TestTmuxpPluginInterface):
             'tmux_version': '2.3'
         }
 
-        TestTmuxpPluginInterface.__init__(self, config)
+        MyTestTmuxpPluginInterface.__init__(self, config)
