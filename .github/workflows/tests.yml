@@ -28,7 +28,7 @@ jobs:
     - name: Install poetry
       run: |
         curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
-        python get-poetry.py -y
+        python get-poetry.py -y --version 1.0.10
         echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
         rm get-poetry.py
 
