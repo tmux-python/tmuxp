@@ -387,25 +387,23 @@ def load_plugins(sconf):
                 plugin = getattr(importlib.import_module(module_name), plugin_name)
                 plugins.append(plugin())
             except exc.TmuxpPluginException as error:
-                if (click.confirm(
-                    '%s Skip?' % click.style(error, fg='orange'), default=True
+                if (not click.confirm(
+                    '%sSkip loading %s?' 
+                    % (click.style(str(error), fg='yellow'), plugin_name), 
+                    default=True
                 )):
-                    pass
+                    click.echo(
+                        click.style('[Not Skipping] ', fg='yellow') 
+                        + 'Plugin verions constraint not met. Exiting...'
+                    )
+                    sys.exit(1)
             except Exception as error:
-                raise exc.TmuxpException(
-                    'Error in loading {0}. Please make sure {0} is '
-                    'installed.\n\n{1}'.format(plugin, error)
+                click.echo(
+                    click.style('[Plugin Error] ', fg='red')
+                    + "Couldn\'t load {0}\n".format(plugin)
+                    + click.style('{0}'.format(error), fg='yellow')
                 )
-
-        if not detached and (
-            answer_yes
-            or click.confirm(
-                '%s is already running. Attach?'
-                % click.style(session_name, fg='green'),
-                default=True,
-            )
-        ):
-            pass
+                sys.exit(1)
 
     return plugins
 

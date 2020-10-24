@@ -1,3 +1,4 @@
+import libtmux
 from distutils.version import LooseVersion
 from libtmux.common import get_version
 
@@ -9,6 +10,12 @@ TMUX_MIN_VERSION = '1.8'
 
 #: Most recent version of tmux supported
 TMUX_MAX_VERSION = None
+
+#: Minimum version of libtmux required to run libtmux
+LIBTMUX_MIN_VERSION = '0.8.3'
+
+#: Most recent version of libtmux supported
+LIBTMUX_MAX_VERSION = None
 
 #: Minimum version of tmuxp required to use plugins
 TMUXP_MIN_VERSION = '1.6.0'
@@ -23,43 +30,78 @@ class TmuxpPluginInterface:
         tmux_min_version=TMUX_MIN_VERSION,
         tmux_max_version=TMUX_MAX_VERSION,
         tmux_version_incompatible=None,
+        libtmux_min_version=LIBTMUX_MIN_VERSION,
+        libtmux_max_version=LIBTMUX_MAX_VERSION,
+        libtmux_version_incompatible=None,
         tmuxp_min_version=TMUXP_MIN_VERSION,
         tmuxp_max_version=TMUXP_MAX_VERSION,
         tmuxp_version_incompatible=None
     ):
         """
         Initialize plugin interface.
+
+        The default version values are set to the versions that the plugin 
+        system requires. 
+
+        Parameters
+        ----------
+        plugin_name : str
+            Name of the child plugin. Used in error message plugin fails to 
+            load
+
+        tmux_min_version : str
+            Min version of tmux that the plugin supports
+
+        tmux_max_version : str
+            Min version of tmux that the plugin supports
+            
+        tmux_version_incompatible : list
+            Versions of tmux that are incompatible with the plugin
+
+        libtmux_min_version : str
+            Min version of libtmux that the plugin supports
+        
+        libtmux_max_version : str
+            Max version of libtmux that the plugin supports
+
+        libtmux_version_incompatible : list
+            Versions of libtmux that are incompatible with the plugin
+
+        tmuxp_min_version : str
+            Min version of tmuxp that the plugin supports
+
+        tmuxp_max_version : str
+            Max version of tmuxp that the plugin supports
+
+        tmuxp_version_incompatible : list
+            Versions of tmuxp that are incompatible with the plugin
+
         """
         self.plugin_name = plugin_name
 
-        self.tmux_min_version = tmux_min_version
-        self.tmux_max_version = tmux_max_version
-        self.tmuxp_min_version = tmuxp_min_version
-        self.tmuxp_max_version = tmuxp_max_version
-
-        self.tmux_version_incompatible = []
-        if tmux_version_incompatible:
-            self.tmux_version_incompatible = tmux_version_incompatible
-
-        self.tmuxp_version_incompatible = []
-        if tmuxp_version_incompatible:
-            self.tmuxp_version_incompatible = tmuxp_version_incompatible
-
+        # Dependency versions
         self.tmux_version = get_version()
+        self.libtmux_version = libtmux.__version__
         self.tmuxp_version = LooseVersion(__version__)
         
         self.version_constraints = {
             'tmux': {
                 'version': self.tmux_version,
-                'vmin': self.tmux_min_version, 
-                'vmax': self.tmux_max_version,
-                'incompatible': self.tmux_version_incompatible
+                'vmin': tmux_min_version, 
+                'vmax': tmux_max_version,
+                'incompatible': tmux_version_incompatible if tmux_version_incompatible else []
+            },
+            'libtmux': {
+                'version': self.libtmux_version,
+                'vmin': libtmux_min_version, 
+                'vmax': libtmux_max_version,
+                'incompatible': libtmux_version_incompatible if libtmux_version_incompatible else []
             },
             'tmuxp': {
                 'version': self.tmuxp_version,
-                'vmin': self.tmuxp_min_version, 
-                'vmax': self.tmuxp_max_version,
-                'incompatible': self.tmuxp_version_incompatible
+                'vmin': tmuxp_min_version, 
+                'vmax': tmuxp_max_version,
+                'incompatible': tmuxp_version_incompatible if tmuxp_version_incompatible else []
             },
         }
 
@@ -75,15 +117,14 @@ class TmuxpPluginInterface:
                 assert self._pass_version_check(**constraints)
             except AssertionError:
                 raise TmuxpPluginException(
-                    'Incompatible {dep} version: {version}. {plugin_name} ' \
-                    'requires versions >={vmin} && <={vmax}.'.format(
+                    'Incompatible {dep} version: {version}\n{plugin_name} ' \
+                    'requirements:\nmin: {vmin} | max: {vmax} | ' \
+                    'incompatible: {incompatible}\n'.format(
                         dep=dep,
                         plugin_name=self.plugin_name,
                         **constraints
                     )
                 )
-
-        print('Versions for {0} are good to go'.format(self.plugin_name))
 
     def _pass_version_check(self, version, vmin, vmax, incompatible):
         """

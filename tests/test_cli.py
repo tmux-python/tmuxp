@@ -979,6 +979,45 @@ def test_load_plugins():
         assert plugin.__class__ in test_plugin_class_types
 
 
+@pytest.mark.skip('Not sure how to clean up the tmux session this makes')
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [(
+        ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
+        ['y\n'],
+    )],
+)
+def test_load_plugins_version_fail_skip(cli_args, inputs):
+    runner = CliRunner()
+
+    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs)) 
+    assert '[Loading]' in results.output
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [(
+        ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
+        ['n\n'],
+    )],
+)
+def test_load_plugins_version_fail_no_skip(cli_args, inputs):
+    runner = CliRunner()
+
+    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs)) 
+    assert '[Not Skipping]' in results.output
+
+
+@pytest.mark.parametrize("cli_args", [
+    (['load', 'tests/fixtures/workspacebuilder/plugin_missing_fail.yaml'])
+])
+def test_load_plugins_plugin_missing(cli_args):
+    runner = CliRunner()
+
+    results = runner.invoke(cli.cli, cli_args) 
+    assert '[Plugin Error]' in results.output
+
+
 def test_plugin_system_before_script(server, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable

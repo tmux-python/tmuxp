@@ -74,6 +74,7 @@ tmuxp-test-plugin-bs = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_
 tmuxp-test-plugin-r = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/"}
 tmuxp-test-plugin-owc = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/"}
 tmuxp-test-plugin-awf = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/"}
+tmuxp-test-plugin-fail = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/"}
 
 ### Coverage ###
 codecov = "*"

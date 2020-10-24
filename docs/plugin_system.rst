@@ -89,16 +89,17 @@ The `plugin.py` file could contain something like the following:
             """
             Initialize my custom plugin.
             """
-            super().__init__()
+            # Optional version dependency configuration. See Plugin API docs 
+            # for all supported config parameters
+            config = {
+                'tmuxp_min_version' = '1.6.2'
+            }
 
-            # Optional version dependency configurations:
-            self.plugin_name = 'tmuxp-plugin-my-tmuxp-plugin'
-            self.tmux_min_version = '1.8'
-            self.tmux_max_version = '2.4'
-            self.tmux_version_incompatible = ['2.3']
-            self.tmuxp_min_version = '1.6.0'
-            self.tmuxp_max_version = '1.6.2'
-            self.tmuxp_version_incompatible = ['1.6.1']
+            TmuxpPluginInterface.__init__(
+                self,
+                plugin_name='tmuxp-plugin-my-tmuxp-plugin',
+                **config
+            )
 
         def before_workspace_builder(self, session):
             session.rename_session('my-new-session-name')
