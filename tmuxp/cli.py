@@ -387,13 +387,13 @@ def load_plugins(sconf):
                 plugin = getattr(importlib.import_module(module_name), plugin_name)
                 plugins.append(plugin())
             except exc.TmuxpPluginException as error:
-                if (not click.confirm(
-                    '%sSkip loading %s?' 
-                    % (click.style(str(error), fg='yellow'), plugin_name), 
-                    default=True
-                )):
+                if not click.confirm(
+                    '%sSkip loading %s?'
+                    % (click.style(str(error), fg='yellow'), plugin_name),
+                    default=True,
+                ):
                     click.echo(
-                        click.style('[Not Skipping] ', fg='yellow') 
+                        click.style('[Not Skipping] ', fg='yellow')
                         + 'Plugin verions constraint not met. Exiting...'
                     )
                     sys.exit(1)
@@ -558,9 +558,7 @@ def load_workspace(
 
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
         builder = WorkspaceBuilder(
-            sconf=sconfig, 
-            plugins=load_plugins(sconfig), 
-            server=t
+            sconf=sconfig, plugins=load_plugins(sconfig), server=t
         )
     except exc.EmptyConfigException:
         click.echo('%s is empty or parsed no config data' % config_file, err=True)

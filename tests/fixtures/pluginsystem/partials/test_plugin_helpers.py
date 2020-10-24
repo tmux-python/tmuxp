@@ -1,5 +1,6 @@
 from tmuxp.plugin import TmuxpPluginInterface
 
+
 class MyTestTmuxpPluginInterface(TmuxpPluginInterface):
     def __init__(self, config):
         tmux_version = config.pop('tmux_version', None)

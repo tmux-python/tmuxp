@@ -2,108 +2,101 @@
 """Test for tmuxp plugin api."""
 from __future__ import absolute_import
 
-import json
-import os
-
-import pytest
-
-import libtmux
-from libtmux.common import has_lt_version
-from tmuxp.plugin import TmuxpPluginInterface
 from tmuxp.exc import TmuxpPluginException
 
 from .fixtures.pluginsystem.partials.all_pass import AllVersionPassPlugin
 from .fixtures.pluginsystem.partials.tmux_version_fail import (
     TmuxVersionFailMinPlugin,
     TmuxVersionFailMaxPlugin,
-    TmuxVersionFailIncompatiblePlugin
+    TmuxVersionFailIncompatiblePlugin,
 )
 from .fixtures.pluginsystem.partials.libtmux_version_fail import (
     LibtmuxVersionFailMinPlugin,
     LibtmuxVersionFailMaxPlugin,
-    LibtmuxVersionFailIncompatiblePlugin
+    LibtmuxVersionFailIncompatiblePlugin,
 )
 from .fixtures.pluginsystem.partials.tmuxp_version_fail import (
     TmuxpVersionFailMinPlugin,
     TmuxpVersionFailMaxPlugin,
-    TmuxpVersionFailIncompatiblePlugin 
+    TmuxpVersionFailIncompatiblePlugin,
 )
 
 
 def test_all_pass():
     try:
-        plugin = AllVersionPassPlugin()
-        assert(True)
-    except TmuxpPluginException as error:
-        assert(False)
+        AllVersionPassPlugin()
+        assert True
+    except TmuxpPluginException:
+        assert False
 
 
 def test_tmux_version_fail_min():
     try:
-        plugin = TmuxVersionFailMinPlugin()
-        assert(False)
+        TmuxVersionFailMinPlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_tmux_version_fail_max():
     try:
-        plugin = TmuxVersionFailMaxPlugin()
-        assert(False)
+        TmuxVersionFailMaxPlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_tmux_version_fail_incompatible():
     try:
-        plugin = TmuxVersionFailIncompatiblePlugin()
-        assert(False)
+        TmuxVersionFailIncompatiblePlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_tmuxp_version_fail_min():
     try:
-        plugin = TmuxpVersionFailMinPlugin()
-        assert(False)
+        TmuxpVersionFailMinPlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_tmuxp_version_fail_max():
     try:
-        plugin = TmuxpVersionFailMaxPlugin()
-        assert(False)
+        TmuxpVersionFailMaxPlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_tmuxp_version_fail_incompatible():
     try:
-        plugin = TmuxpVersionFailIncompatiblePlugin()
-        assert(False)
+        TmuxpVersionFailIncompatiblePlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
+
 
 def test_libtmux_version_fail_min():
     try:
-        plugin = LibtmuxVersionFailMinPlugin()
-        assert(False)
+        LibtmuxVersionFailMinPlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_libtmux_version_fail_max():
     try:
-        plugin = LibtmuxVersionFailMaxPlugin()
-        assert(False)
+        LibtmuxVersionFailMaxPlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
 
 
 def test_libtmux_version_fail_incompatible():
     try:
-        plugin = LibtmuxVersionFailIncompatiblePlugin()
-        assert(False)
+        LibtmuxVersionFailIncompatiblePlugin()
+        assert False
     except TmuxpPluginException as error:
-        assert('Incompatible' in error.__str__())
+        assert 'Incompatible' in error.__str__()
