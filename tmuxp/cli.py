@@ -15,11 +15,19 @@ import click
 import kaptan
 from click.exceptions import FileError
 
-from libtmux.common import has_gte_version, has_minimum_version, which
+from libtmux.common import (
+    has_gte_version, 
+    has_minimum_version, 
+    which, 
+    get_version,
+    tmux_cmd,
+    which
+)
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
+from libtmux import __version__ as libtmux_version
 
-from . import config, exc, log, util
+from . import config, exc, log, util, __file__ as tmuxp_path
 from .__about__ import __version__
 from ._compat import PY3, PYMINOR, string_types
 from .workspacebuilder import WorkspaceBuilder, freeze
@@ -1054,3 +1062,56 @@ def command_ls():
             if os.path.isdir(f) or ext not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
                 continue
             print(stem)
+
+
+@cli.command(name='debug-info', short_help='Print out all diagnostic info')
+def command_debug_info():
+    """
+    """
+
+    def prepend_tab(strings):
+        """
+        """
+        return list(map(
+            lambda x: '\t%s' % x,
+            strings
+        ))
+
+    def format_tmux_resp(std_resp):
+        """
+        """
+        return '\n'.join([
+            *prepend_tab(std_resp.stdout),
+            click.style(
+                '\n'.join(prepend_tab(std_resp.stderr)),
+                fg='red'
+            )
+        ])
+
+    output = [
+        'python version: %s' % ' '.join(sys.version.split('\n')),
+        'system PATH: %s' % os.environ['PATH'],
+        'tmux version: %s' % get_version(),
+        'libtmux version: %s' % libtmux_version,
+        'tmuxp version: %s' % __version__,
+        'tmux path: %s' % which('tmux'),
+        'tmuxp path: %s' % tmuxp_path,
+        'shell: %s' % os.environ['SHELL'],
+        'tmux sessions:\n%s' % format_tmux_resp(
+            tmux_cmd('list-sessions')
+        ),
+        'tmux windows:\n%s' %  format_tmux_resp(
+            tmux_cmd('list-windows')
+        ),
+        'tmux panes:\n%s' % format_tmux_resp(
+            tmux_cmd('list-panes')
+        ),
+        'tmux global options:\n%s' % format_tmux_resp(
+            tmux_cmd('show-options', '-g')
+        ),
+        'tmux window options:\n%s' % format_tmux_resp(
+            tmux_cmd('show-window-options', '-g')
+        )
+    ]
+
+    click.echo('\n'.join(output))
