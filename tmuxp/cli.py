@@ -1067,18 +1067,27 @@ def command_ls():
 @cli.command(name='debug-info', short_help='Print out all diagnostic info')
 def command_debug_info():
     """
+    Print debug info to submit with Issues.
     """
 
     def prepend_tab(strings):
         """
+        Prepend tab to strings in list.
         """
         return list(map(
             lambda x: '\t%s' % x,
             strings
         ))
 
+    def generate_output_break():
+        """
+        Generate output break.
+        """
+        return '-' * 25
+
     def format_tmux_resp(std_resp):
         """
+        Format tmux command response for tmuxp stdout.
         """
         return '\n'.join([
             *prepend_tab(std_resp.stdout),
@@ -1089,6 +1098,14 @@ def command_debug_info():
         ])
 
     output = [
+        generate_output_break(),
+        'environment:\n%s' % '\n'.join(prepend_tab([
+            'system: %s' % os.uname().sysname,
+            'arch: %s' % os.uname().machine,
+            'os: {0} {1}'.format(os.uname().nodename, os.uname().version),
+            'kernel: %s' % os.uname().release,
+        ])),
+        generate_output_break(),
         'python version: %s' % ' '.join(sys.version.split('\n')),
         'system PATH: %s' % os.environ['PATH'],
         'tmux version: %s' % get_version(),
@@ -1097,6 +1114,7 @@ def command_debug_info():
         'tmux path: %s' % which('tmux'),
         'tmuxp path: %s' % tmuxp_path,
         'shell: %s' % os.environ['SHELL'],
+        generate_output_break(),
         'tmux sessions:\n%s' % format_tmux_resp(
             tmux_cmd('list-sessions')
         ),
