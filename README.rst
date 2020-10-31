@@ -142,7 +142,6 @@ See the `Quickstart`_.
 
 Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 
-.. _tmuxp on Travis CI: http://travis-ci.org/tmux-python/tmuxp
 .. _Documentation: http://tmuxp.git-pull.com
 .. _Source: https://github.com/tmux-python/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
@@ -158,7 +157,6 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _Examples: http://tmuxp.git-pull.com/examples.html
 .. _freezing tmux: http://tmuxp.git-pull.com/cli.html#freeze-sessions
 .. _bootstrap_env.py: https://github.com/tmux-python/tmuxp/blob/master/bootstrap_env.py
-.. _travis.yml: http://tmuxp.git-pull.com/developing.html#travis-ci
 .. _testing: http://tmuxp.git-pull.com/developing.html#test-runner
 .. _python objects: http://tmuxp.git-pull.com/api.html#api
 .. _tmuxp.yaml: https://github.com/tmux-python/tmuxp/blob/master/.tmuxp.yaml 
@@ -205,9 +203,9 @@ Project details
    :alt: Docs
    :target: https://github.com/tmux-python/tmuxp/actions?query=workflow%3A"Publish+Docs"
 
-.. |build-status| image:: https://img.shields.io/travis/tmux-python/tmuxp.svg
-   :alt: Build Status
-   :target: https://travis-ci.org/tmux-python/tmuxp
+.. |build-status| image:: https://github.com/tmux-python/tmuxp/workflows/tests/badge.svg
+   :alt: Build status
+   :target: https://github.com/tmux-python/tmuxp/actions?query=workflow%3A"tests"
 
 .. |coverage| image:: https://codecov.io/gh/tmux-python/tmuxp/branch/master/graph/badge.svg
     :alt: Code Coverage
