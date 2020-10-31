@@ -874,6 +874,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
+@click.option('--log-file', 'log_file', help='File to log output to')
 def command_load(
     ctx,
     config,
