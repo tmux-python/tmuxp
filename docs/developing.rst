@@ -214,17 +214,17 @@ this will load the ``.tmuxp.yaml`` in the root of the project.
 .. literalinclude:: ../.tmuxp.yaml
     :language: yaml
 
-.. _travis:
+.. _gh_actions:
 
-Travis CI
----------
+Github Actions
+--------------
 
-tmuxp uses `travis-ci`_ for continuous integration / automatic unit
+tmuxp uses `github actions`_ for continuous integration / automatic unit
 testing.
 
-To view the tmux and python versions tested see the `.travis.yml`_.
+To view the tmux and python versions tested see the `.github/workflows/tests.yml`_.
 Builds are done on ``master`` and pull requests and can be viewed on
-the `travis build site`_.
+the `gh build site`_.
 
 Testing options
 ---------------
@@ -234,12 +234,12 @@ tests are being stubborn.
 
 e.g. ``RETRY_TIMEOUT_SECONDS=10 py.test``
 
-.. literalinclude:: ../.travis.yml
+.. literalinclude:: ../.github/workflows/tests.yml
     :language: yaml
 
 .. _py.test usage argument: https://pytest.org/latest/usage.html
 .. _entr: http://entrproject.org/
-.. _travis-ci: http://www.travis-ci.org
-.. _travis build site: http://www.travis-ci.org/tmux-python/tmuxp
-.. _.travis.yml: https://github.com/tmux-python/tmuxp/blob/master/.travis.yml
+.. _github actions: https://github.com/features/actions
+.. _gh build site: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests
+.. _.github/workflows/tests.yml: https://github.com/tmux-python/tmuxp/blob/master/.github/workflows/tests.yml
 .. _issue on github: https://github.com/tmux-python/tmuxp/issues
