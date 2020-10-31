@@ -666,7 +666,12 @@ def startup(config_dir):
 @click.argument('window_name', nargs=1, required=False)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
-def command_cli(session_name, window_name, socket_name, socket_path):
+@click.option(
+    '-c',
+    'command',
+    help='Instead of opening shell, execute python code in libtmux and exit',
+)
+def command_cli(session_name, window_name, socket_name, socket_path, command):
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
     try:
@@ -693,9 +698,12 @@ def command_cli(session_name, window_name, socket_name, socket_path):
         print(e)
         return
 
-    from ._compat import breakpoint as tmuxp_breakpoint
+    if command is not None:
+        exec(command)
+    else:
+        from ._compat import breakpoint as tmuxp_breakpoint
 
-    tmuxp_breakpoint()
+        tmuxp_breakpoint()
 
 
 @cli.command(name='freeze')
