@@ -7,6 +7,13 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
+- :issue:`637` Support for loading directories with periods in it
+
+  ``tmuxp load ~/work/your.project`` will now work
+
+  Earlier workaround was to do ``tmuxp load ~/work/your.project/.tmuxp.yaml``
+
+  Fixes :issue:`212` and :issue:`201`
 
 tmuxp 1.5.6 (2020-10-12)
 ------------------------
