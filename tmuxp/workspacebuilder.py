@@ -140,7 +140,7 @@ class WorkspaceBuilder(object):
                 if 'start_directory' in self.sconf:
                     session = self.server.new_session(
                         session_name=self.sconf['session_name'],
-                        start_directory=self.sconf['start_directory']
+                        start_directory=self.sconf['start_directory'],
                     )
                 else:
                     session = self.server.new_session(

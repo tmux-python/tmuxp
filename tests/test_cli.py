@@ -522,7 +522,7 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
         (['freeze'], ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
         (  # Create a new one
             ['freeze', 'mysession', '--force'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n']
+            ['\n', 'y\n', './la.yaml\n', 'y\n'],
         ),
         (  # Imply current session if not entered
             ['freeze', '--force'],
@@ -554,7 +554,7 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
         ),
         (  # Imply current session if not entered
             ['freeze', '--force'],
-            ['\n', 'y\n', './exists.yaml\n', 'y\n']
+            ['\n', 'y\n', './exists.yaml\n', 'y\n'],
         ),
     ],
 )
