@@ -9,8 +9,8 @@ current
 - *Insert changes/features/fixes for next release here*
 - :issue:`636` New command: ``tmuxp shell``
 
-  Accepts tmux socket_name/socket_path, automatically uses the current
-  tmux session and window and makes them available in pdb context.
+  Automatically preloads session, window, and pane via `libtmux`_
+  api objects and makes them available in a python console.
 
   In python 3.7+, supports ``PYTHONBREAKPOINT``:
 

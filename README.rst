@@ -42,6 +42,8 @@ session, and window in `libtmux`_ objects.
    'your_window'
    (Pdb) window.panes
    [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+   (Pdb) pane
+   Pane(%6 Window(@3 1:your_window, Session($1 your_project))
 
 Python 3.7+ supports `PEP 553`_ ``breakpoint()`` (including
 ``PYTHONBREAKPOINT``). Also supports direct commands via ``-c``:

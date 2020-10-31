@@ -40,9 +40,9 @@ Shell
 Launch into a python console with `libtmux`_ objects. Compare to django's shell.
 
 Automatically will picked the current tmux :class:`server <libtmux.Server>`,
-:class:`session <libtmux.Session>`, and :class:`window <libtmux.Window>` you
-are currently in.  Pass additional arguments to select a specific one of your 
-choice::
+:class:`session <libtmux.Session>`, :class:`window <libtmux.Window>` 
+:class:`pane <libtmux.Pane>` you are currently in.  Pass additional arguments 
+to select a specific one of your choice::
 
     (Pdb) server
     <libtmux.server.Server object at 0x7f7dc8e69d10>
@@ -58,6 +58,8 @@ choice::
     'your_window'
     (Pdb) window.panes
     [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+    (Pdb) pane
+    Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
 
 Python 3.7 supports `PEP 553`_'s ``PYTHONBREAKPOINT`` and supports
 compatible debuggers, for instance `ipdb`_:
@@ -86,6 +88,11 @@ this via ``tmuxp -c``:
 
    $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
    MY_WINDOW
+
+   # Assuming inside a tmux pane or one is attached on default server
+   $ tmuxp shell -c 'print(pane.id); print(pane.window.name)'
+   %2
+   my_window
 
 .. _PEP 553: https://www.python.org/dev/peps/pep-0553/
 .. _ipdb: https://pypi.org/project/ipdb/
