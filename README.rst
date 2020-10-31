@@ -45,7 +45,15 @@ current server, session, and window:
    [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
 
 Python 3.7+ supports `PEP 553`_ ``breakpoint()`` (including
-``PYTHONBREAKPOINT``)
+``PYTHONBREAKPOINT``). Also supports direct commands via ``-c``:
+
+.. code-block:: shell
+
+   $ tmuxp cli -c 'print(window.name)'
+   my_window
+
+   $ tmuxp cli -c 'print(window.name.upper())'
+   MY_WINDOW
 
 Read more on `tmuxp CLI`_
 

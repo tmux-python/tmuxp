@@ -35,6 +35,8 @@ tmux CLI
 
     tmuxp cli <session_name> <window_name>
 
+    tmuxp cli -c 'python code'
+
 Launch into a `libtmux`_ session.
 
 Automatically will picked the current tmux :class:`server <libtmux.Server>`,
@@ -62,8 +64,28 @@ compatible debuggers, for instance `ipdb`_:
 
 .. code-block:: sh
 
-   pip install ipdb
-   env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+   $ pip install ipdb
+   $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+
+You can also pass in python code directly, similar to ``python -c``, do
+this via ``tmuxp -c``:
+
+.. code-block:: shell
+
+   $ tmuxp cli -c 'print(session.name); print(window.name)'
+   my_server
+   my_window
+
+   $ tmuxp cli my_server -c 'print(session.name); print(window.name)'
+   my_server
+   my_window
+
+   $ tmuxp cli my_server my_window -c 'print(session.name); print(window.name)'
+   my_server
+   my_window
+
+   $ tmuxp cli my_server my_window -c 'print(window.name.upper())'
+   MY_WINDOW
 
 .. _PEP 553: https://www.python.org/dev/peps/pep-0553/
 .. _ipdb: https://pypi.org/project/ipdb/

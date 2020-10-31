@@ -12,10 +12,31 @@ current
   Accepts tmux socket_name/socket_path, automatically uses the current
   tmux session and window and makes them available in pdb context.
 
-  In python 3.7+, supports ``PYTHONBREAKPOINT``::
+  In python 3.7+, supports ``PYTHONBREAKPOINT``:
 
-      pip install ipdb
-      env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+  .. code-block:: sh
+
+      $ pip install ipdb
+      $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+
+  You can execute python directly via ``-c``:
+
+  .. code-block:: sh
+
+      $ tmuxp cli -c 'print(session.name); print(window.name)'
+      my_server
+      my_window
+
+      $ tmuxp cli my_server -c 'print(session.name); print(window.name)'
+      my_server
+      my_window
+
+      $ tmuxp cli my_server my_window -c 'print(session.name); print(window.name)'
+      my_server
+      my_window
+
+      $ tmuxp cli my_server my_window -c 'print(window.name.upper())'
+      MY_WINDOW
 
 tmuxp 1.5.8 (2020-10-31)
 -----------------------
