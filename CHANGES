@@ -7,6 +7,15 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
+- :issue:`636` New command: ``tmuxp cli``
+
+  Accepts tmux socket_name/socket_path, automatically uses the current
+  tmux session and window and makes them available in pdb context.
+
+  In python 3.7+, supports ``PYTHONBREAKPOINT``::
+
+      pip install ipdb
+      env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
 
 tmuxp 1.5.8 (2020-10-31)
 -----------------------
