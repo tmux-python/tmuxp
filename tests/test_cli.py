@@ -407,6 +407,64 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
 
 
 @pytest.mark.parametrize(
+    "cli_args,inputs,expected_output",
+    [
+        (
+            ['cli', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            [],
+            '{SERVER_SOCKET_NAME}',
+        ),
+        (
+            [
+                'cli',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '-c',
+                'print(session.name)',
+            ],
+            [],
+            '{SESSION_NAME}',
+        ),
+        (
+            [
+                'cli',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '{WINDOW_NAME}',
+                '-c',
+                'print(server.has_session(session.name))',
+            ],
+            [],
+            'True',
+        ),
+    ],
+)
+def test_cli(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, session):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    window_name = 'my_window'
+    window = session.new_window(window_name=window_name)
+    window.split_window()
+
+    template_ctx = dict(
+        SOCKET_NAME=server.socket_name,
+        SOCKET_PATH=server.socket_path,
+        SESSION_NAME=session.name,
+        WINDOW_NAME=window_name,
+        SERVER_SOCKET_NAME=server.socket_name,
+    )
+
+    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        result = runner.invoke(
+            cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+        )
+        assert expected_output.format(**template_ctx) in result.output
+
+
+@pytest.mark.parametrize(
     "cli_args",
     [
         (['convert', '.']),
