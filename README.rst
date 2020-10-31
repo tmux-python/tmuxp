@@ -17,6 +17,41 @@ Installation
 
    $ pip install --user tmuxp
 
+tmuxp CLI
+---------
+
+*New in 1.6.0*:
+
+``tmuxp cli`` launches into a debugger with `libtmux`_ objects for your
+current server, session, and window:
+
+.. code-block:: shell
+
+   $ tmuxp cli
+
+   (Pdb) server
+   <libtmux.server.Server object at 0x7f7dc8e69d10>
+   (Pdb) server.sessions
+   [Session($1 your_project)]
+   (Pdb) session
+   Session($1 your_project)
+   (Pdb) session.name
+   'your_project'
+   (Pdb) window
+   Window(@3 1:your_window, Session($1 your_project))
+   (Pdb) window.name
+   'your_window'
+   (Pdb) window.panes
+   [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+
+Python 3.7+ supports `PEP 553`_ ``breakpoint()`` (including
+``PYTHONBREAKPOINT``)
+
+Read more on `tmuxp CLI`_
+
+.. _PEP 553: https://www.python.org/dev/peps/pep-0553/
+.. _tmuxp CLI: http://localhost:8031/cli.html#launch-tmux-cli
+
 Load a tmux session
 -------------------
 
