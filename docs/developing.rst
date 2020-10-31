@@ -1,5 +1,3 @@
-.. module:: tmuxp
-
 .. _developing:
 
 ======================
