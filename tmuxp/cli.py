@@ -7,8 +7,8 @@ tmuxp.cli
 """
 from __future__ import absolute_import
 
-import logging
 import importlib
+import logging
 import os
 import sys
 
@@ -394,7 +394,7 @@ def load_plugins(sconf):
                 ):
                     click.echo(
                         click.style('[Not Skipping] ', fg='yellow')
-                        + 'Plugin verions constraint not met. Exiting...'
+                        + 'Plugin versions constraint not met. Exiting...'
                     )
                     sys.exit(1)
             except Exception as error:
