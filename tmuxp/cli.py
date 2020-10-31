@@ -308,6 +308,8 @@ def scan_config(config, config_dir=None):
     is_name = False
     file_error = None
 
+    print('scan_config', config)
+
     config = os.path.expanduser(config)
     # if purename, resolve to confg dir
     if is_pure_name(config):
@@ -322,7 +324,7 @@ def scan_config(config, config_dir=None):
         config = normpath(join(cwd, config))
 
     # no extension, scan
-    if not splitext(config)[1]:
+    if path.isdir(config) or not splitext(config)[1]:
         if is_name:
             candidates = [
                 x
@@ -831,6 +833,8 @@ def command_load(
             load_workspace(cfg, **opt)
 
         # todo: obey the -d in the cli args only if user specifies
+        print(config)
+        print(config[-1])
         load_workspace(config[-1], **tmux_options)
 
 
