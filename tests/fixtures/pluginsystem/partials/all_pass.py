@@ -1,7 +1,7 @@
-from .test_plugin_helpers import MyTestTmuxpPluginInterface
+from .test_plugin_helpers import MyTestTmuxpPlugin
 
 
-class AllVersionPassPlugin(MyTestTmuxpPluginInterface):
+class AllVersionPassPlugin(MyTestTmuxpPlugin):
     def __init__(self):
         config = {
             'plugin_name': 'tmuxp-plugin-my-tmuxp-plugin',
@@ -17,4 +17,4 @@ class AllVersionPassPlugin(MyTestTmuxpPluginInterface):
             'tmux_version': '3.0',
             'tmuxp_version': '1.6.0',
         }
-        MyTestTmuxpPluginInterface.__init__(self, config)
+        MyTestTmuxpPlugin.__init__(self, config)
