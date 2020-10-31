@@ -674,14 +674,27 @@ def startup(config_dir):
 def command_shell(session_name, window_name, socket_name, socket_path, command):
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
+    current_pane = None
+    if os.getenv('TMUX_PANE') is not None:
+        current_pane = next(
+            (
+                p
+                for p in server._list_panes()
+                if p.get('pane_id') == os.getenv('TMUX_PANE')
+            ),
+            None,
+        )
+
     try:
         if session_name:
             session = server.find_where({'session_name': session_name})
+        elif current_pane is not None:
+            session = server.find_where({'session_id': current_pane['session_id']})
         else:
             session = server.list_sessions()[0]
 
         if not session:
-            raise exc.TmuxpException('Session not found.')
+            raise exc.TmuxpException('Session not found: %s' % session_name)
     except exc.TmuxpException as e:
         print(e)
         return
@@ -690,10 +703,21 @@ def command_shell(session_name, window_name, socket_name, socket_path, command):
         if window_name:
             window = session.find_where({'window_name': window_name})
             if not window:
-                raise exc.TmuxpException('Window not found.')
+                raise exc.TmuxpException('Window not found: %s' % window_name)
+        elif current_pane is not None:
+            window = session.find_where({'window_id': current_pane['window_id']})
         else:
             window = session.list_windows()[0]
 
+    except exc.TmuxpException as e:
+        print(e)
+        return
+
+    try:
+        if current_pane is not None:
+            pane = window.find_where({'pane_id': current_pane['pane_id']})  # NOQA: F841
+        else:
+            pane = window.attached_pane  # NOQA: F841
     except exc.TmuxpException as e:
         print(e)
         return
