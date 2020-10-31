@@ -693,12 +693,9 @@ def command_cli(session_name, window_name, socket_name, socket_path):
         print(e)
         return
 
-    try:
-        breakpoint()
-    except Exception:  # Python 3.7+
-        import pdb
+    from ._compat import breakpoint as tmuxp_breakpoint
 
-        pdb.set_trace()
+    tmuxp_breakpoint()
 
 
 @cli.command(name='freeze')
