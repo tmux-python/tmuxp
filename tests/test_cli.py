@@ -437,6 +437,30 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
             [],
             'True',
         ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '{WINDOW_NAME}',
+                '-c',
+                'print(window.name)',
+            ],
+            [],
+            '{WINDOW_NAME}',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '{WINDOW_NAME}',
+                '-c',
+                'print(pane.id)',
+            ],
+            [],
+            '{PANE_ID}',
+        ),
     ],
 )
 def test_shell(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, session):
@@ -450,6 +474,7 @@ def test_shell(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, s
         SOCKET_PATH=server.socket_path,
         SESSION_NAME=session.name,
         WINDOW_NAME=window_name,
+        PANE_ID=window.attached_pane.id,
         SERVER_SOCKET_NAME=server.socket_name,
     )
 
