@@ -661,6 +661,46 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
+@cli.command(name='cli')
+@click.argument('session_name', nargs=1, required=False)
+@click.argument('window_name', nargs=1, required=False)
+@click.option('-S', 'socket_path', help='pass-through for tmux -S')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
+def command_cli(session_name, window_name, socket_name, socket_path):
+    server = Server(socket_name=socket_name, socket_path=socket_path)
+
+    try:
+        if session_name:
+            session = server.find_where({'session_name': session_name})
+        else:
+            session = server.list_sessions()[0]
+
+        if not session:
+            raise exc.TmuxpException('Session not found.')
+    except exc.TmuxpException as e:
+        print(e)
+        return
+
+    try:
+        if window_name:
+            window = session.find_where({'window_name': window_name})
+            if not window:
+                raise exc.TmuxpException('Window not found.')
+        else:
+            window = session.list_windows()[0]
+
+    except exc.TmuxpException as e:
+        print(e)
+        return
+
+    try:
+        breakpoint()
+    except Exception:  # Python 3.7+
+        import pdb
+
+        pdb.set_trace()
+
+
 @cli.command(name='freeze')
 @click.argument('session_name', nargs=1, required=False)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
