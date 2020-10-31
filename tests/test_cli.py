@@ -407,11 +407,12 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "cli_args,inputs,expected_output",
+    "cli_args,inputs,env,expected_output",
     [
         (
             ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
             [],
+            {},
             '{SERVER_SOCKET_NAME}',
         ),
         (
@@ -423,6 +424,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
                 'print(session.name)',
             ],
             [],
+            {},
             '{SESSION_NAME}',
         ),
         (
@@ -435,6 +437,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
                 'print(server.has_session(session.name))',
             ],
             [],
+            {},
             'True',
         ),
         (
@@ -447,6 +450,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
                 'print(window.name)',
             ],
             [],
+            {},
             '{WINDOW_NAME}',
         ),
         (
@@ -459,11 +463,25 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
                 'print(pane.id)',
             ],
             [],
+            {},
+            '{PANE_ID}',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '-c',
+                'print(pane.id)',
+            ],
+            [],
+            {'TMUX_PANE': '{PANE_ID}'},
             '{PANE_ID}',
         ),
     ],
 )
-def test_shell(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, session):
+def test_shell(
+    cli_args, inputs, expected_output, env, tmpdir, monkeypatch, server, session
+):
     monkeypatch.setenv('HOME', str(tmpdir))
     window_name = 'my_window'
     window = session.new_window(window_name=window_name)
@@ -479,6 +497,8 @@ def test_shell(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, s
     )
 
     cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    for k, v in env.items():
+        monkeypatch.setenv(k, v.format(**template_ctx))
 
     with tmpdir.as_cwd():
         runner = CliRunner()
