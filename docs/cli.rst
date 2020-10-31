@@ -22,6 +22,53 @@ In zsh (``~/.zshrc``):
 
     eval "$(_TMUXP_COMPLETE=source_zsh tmuxp)"
 
+.. _cli_cli:
+
+tmux CLI
+--------
+
+::
+
+    tmuxp cli
+
+    tmuxp cli <session_name>
+
+    tmuxp cli <session_name> <window_name>
+
+Launch into a `libtmux`_ session.
+
+Automatically will picked the current tmux :class:`server <libtmux.Server>`,
+:class:`session <libtmux.Session>`, and :class:`window <libtmux.Window>` you
+are currently in.  Pass additional arguments to select a specific one of your 
+choice::
+
+    (Pdb) server
+    <libtmux.server.Server object at 0x7f7dc8e69d10>
+    (Pdb) server.sessions
+    [Session($1 your_project)]
+    (Pdb) session
+    Session($1 your_project)
+    (Pdb) session.name
+    'your_project'
+    (Pdb) window
+    Window(@3 1:your_window, Session($1 your_project))
+    (Pdb) window.name
+    'your_window'
+    (Pdb) window.panes
+    [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+
+Python 3.7 supports `PEP 553`_'s ``PYTHONBREAKPOINT`` and supports
+compatible debuggers, for instance `ipdb`_:
+
+.. code-block:: sh
+
+   pip install ipdb
+   env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+
+.. _PEP 553: https://www.python.org/dev/peps/pep-0553/
+.. _ipdb: https://pypi.org/project/ipdb/
+.. _libtmux: https://libtmux.git-pull.com
+
 .. _cli_freeze:
 
 Freeze sessions
