@@ -81,10 +81,10 @@ The `plugin.py` file could contain something like the following:
 
 .. code-block:: python
     
-    from tmuxp.plugin import TmuxpPluginInterface
+    from tmuxp.plugin import TmuxpPlugin
     import datetime
 
-    class MyTmuxpPlugin(TmuxpPluginInterface):
+    class MyTmuxpPlugin(TmuxpPlugin):
         def __init__(self):
             """
             Initialize my custom plugin.
@@ -95,7 +95,7 @@ The `plugin.py` file could contain something like the following:
                 'tmuxp_min_version' = '1.6.2'
             }
 
-            TmuxpPluginInterface.__init__(
+            TmuxpPlugin.__init__(
                 self,
                 plugin_name='tmuxp-plugin-my-tmuxp-plugin',
                 **config
@@ -123,8 +123,8 @@ in a configuration file like the following:
 Plugin API
 ----------
 
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.before_workspace_builder
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.on_window_create
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.after_window_finished
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.before_script
-.. automethod:: tmuxp.plugin.TmuxpPluginInterface.reattach
+.. automethod:: tmuxp.plugin.TmuxpPlugin.before_workspace_builder
+.. automethod:: tmuxp.plugin.TmuxpPlugin.on_window_create
+.. automethod:: tmuxp.plugin.TmuxpPlugin.after_window_finished
+.. automethod:: tmuxp.plugin.TmuxpPlugin.before_script
+.. automethod:: tmuxp.plugin.TmuxpPlugin.reattach

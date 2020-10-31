@@ -1,7 +1,7 @@
-from tmuxp.plugin import TmuxpPluginInterface
+from tmuxp.plugin import TmuxpPlugin
 
 
-class PluginAfterWindowFinished(TmuxpPluginInterface):
+class PluginAfterWindowFinished(TmuxpPlugin):
     def __init__(self):
         self.message = '[+] This is the Tmuxp Test Plugin'
 

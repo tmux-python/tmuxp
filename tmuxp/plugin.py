@@ -1,5 +1,6 @@
-import libtmux
 from distutils.version import LooseVersion
+
+import libtmux
 from libtmux.common import get_version
 
 from .__about__ import __version__
@@ -24,10 +25,10 @@ TMUXP_MIN_VERSION = '1.6.0'
 TMUXP_MAX_VERSION = None
 
 
-class TmuxpPluginInterface:
+class TmuxpPlugin:
     def __init__(
         self,
-        plugin_name='tmuxp-plugin-interface',
+        plugin_name='tmuxp-plugin',
         tmux_min_version=TMUX_MIN_VERSION,
         tmux_max_version=TMUX_MAX_VERSION,
         tmux_version_incompatible=None,
@@ -39,7 +40,7 @@ class TmuxpPluginInterface:
         tmuxp_version_incompatible=None,
     ):
         """
-        Initialize plugin interface.
+        Initialize plugin.
 
         The default version values are set to the versions that the plugin
         system requires.
