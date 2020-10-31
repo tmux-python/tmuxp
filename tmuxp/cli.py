@@ -684,14 +684,14 @@ def command_shell(session_name, window_name, socket_name, socket_path, command):
 
     current_pane = None
     if os.getenv('TMUX_PANE') is not None:
-        current_pane = next(
-            (
+        try:
+            current_pane = [
                 p
                 for p in server._list_panes()
                 if p.get('pane_id') == os.getenv('TMUX_PANE')
-            ),
-            None,
-        )
+            ][0]
+        except IndexError:
+            pass
 
     try:
         if session_name:
