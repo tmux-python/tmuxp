@@ -856,7 +856,9 @@ def command_freeze(session_name, socket_name, socket_path, force):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
-@click.option('-s', 'new_session_name', help='start new session with new session name')
+@click.option(
+    '-s', 'new_session_name', help='start new session with new session name'
+)
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
@@ -874,7 +876,9 @@ def command_freeze(session_name, socket_name, socket_path, force):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
-@click.option('--log-file', 'log_file', help='File to log output to')
+@click.option(
+    '--log-file', 'log_file', default=None, help='File to log output to'
+)
 def command_load(
     ctx,
     config,
@@ -884,6 +888,7 @@ def command_load(
     answer_yes,
     detached,
     colors,
+    log_file
 ):
     """Load a tmux workspace from each CONFIG.
 
