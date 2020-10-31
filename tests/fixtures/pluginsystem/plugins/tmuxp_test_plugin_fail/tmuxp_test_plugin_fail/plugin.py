@@ -1,10 +1,10 @@
-from tmuxp.plugin import TmuxpPluginInterface
+from tmuxp.plugin import TmuxpPlugin
 
 
-class PluginFailVersion(TmuxpPluginInterface):
+class PluginFailVersion(TmuxpPlugin):
     def __init__(self):
         config = {
             'plugin_name': 'tmuxp-plugin-fail-version',
             'tmuxp_max_version': '0.0.0',
         }
-        TmuxpPluginInterface.__init__(self, **config)
+        TmuxpPlugin.__init__(self, **config)
