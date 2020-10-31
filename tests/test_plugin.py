@@ -2,101 +2,81 @@
 """Test for tmuxp plugin api."""
 from __future__ import absolute_import
 
+import pytest
+
 from tmuxp.exc import TmuxpPluginException
 
 from .fixtures.pluginsystem.partials.all_pass import AllVersionPassPlugin
-from .fixtures.pluginsystem.partials.tmux_version_fail import (
-    TmuxVersionFailMinPlugin,
-    TmuxVersionFailMaxPlugin,
-    TmuxVersionFailIncompatiblePlugin,
-)
 from .fixtures.pluginsystem.partials.libtmux_version_fail import (
-    LibtmuxVersionFailMinPlugin,
-    LibtmuxVersionFailMaxPlugin,
     LibtmuxVersionFailIncompatiblePlugin,
+    LibtmuxVersionFailMaxPlugin,
+    LibtmuxVersionFailMinPlugin,
+)
+from .fixtures.pluginsystem.partials.tmux_version_fail import (
+    TmuxVersionFailIncompatiblePlugin,
+    TmuxVersionFailMaxPlugin,
+    TmuxVersionFailMinPlugin,
 )
 from .fixtures.pluginsystem.partials.tmuxp_version_fail import (
-    TmuxpVersionFailMinPlugin,
-    TmuxpVersionFailMaxPlugin,
     TmuxpVersionFailIncompatiblePlugin,
+    TmuxpVersionFailMaxPlugin,
+    TmuxpVersionFailMinPlugin,
 )
 
 
 def test_all_pass():
-    try:
-        AllVersionPassPlugin()
-        assert True
-    except TmuxpPluginException:
-        assert False
+    AllVersionPassPlugin()
 
 
 def test_tmux_version_fail_min():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         TmuxVersionFailMinPlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'tmux-min-version-fail' in str(exc_info.value)
 
 
 def test_tmux_version_fail_max():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         TmuxVersionFailMaxPlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'tmux-max-version-fail' in str(exc_info.value)
 
 
 def test_tmux_version_fail_incompatible():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         TmuxVersionFailIncompatiblePlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'tmux-incompatible-version-fail' in str(exc_info.value)
 
 
 def test_tmuxp_version_fail_min():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         TmuxpVersionFailMinPlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'tmuxp-min-version-fail' in str(exc_info.value)
 
 
 def test_tmuxp_version_fail_max():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         TmuxpVersionFailMaxPlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'tmuxp-max-version-fail' in str(exc_info.value)
 
 
 def test_tmuxp_version_fail_incompatible():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         TmuxpVersionFailIncompatiblePlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'tmuxp-incompatible-version-fail' in str(exc_info.value)
 
 
 def test_libtmux_version_fail_min():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         LibtmuxVersionFailMinPlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'libtmux-min-version-fail' in str(exc_info.value)
 
 
 def test_libtmux_version_fail_max():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         LibtmuxVersionFailMaxPlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'libtmux-max-version-fail' in str(exc_info.value)
 
 
 def test_libtmux_version_fail_incompatible():
-    try:
+    with pytest.raises(TmuxpPluginException, match=r'Incompatible.*') as exc_info:
         LibtmuxVersionFailIncompatiblePlugin()
-        assert False
-    except TmuxpPluginException as error:
-        assert 'Incompatible' in error.__str__()
+    assert 'libtmux-incompatible-version-fail' in str(exc_info.value)
