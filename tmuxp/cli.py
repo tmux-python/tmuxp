@@ -661,7 +661,7 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-@cli.command(name='cli')
+@cli.command(name='shell')
 @click.argument('session_name', nargs=1, required=False)
 @click.argument('window_name', nargs=1, required=False)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
@@ -671,7 +671,7 @@ def startup(config_dir):
     'command',
     help='Instead of opening shell, execute python code in libtmux and exit',
 )
-def command_cli(session_name, window_name, socket_name, socket_path, command):
+def command_shell(session_name, window_name, socket_name, socket_path, command):
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
     try:

@@ -7,7 +7,7 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
-- :issue:`636` New command: ``tmuxp cli``
+- :issue:`636` New command: ``tmuxp shell``
 
   Accepts tmux socket_name/socket_path, automatically uses the current
   tmux session and window and makes them available in pdb context.
@@ -17,25 +17,25 @@ current
   .. code-block:: sh
 
       $ pip install ipdb
-      $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+      $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 
   You can execute python directly via ``-c``:
 
   .. code-block:: sh
 
-      $ tmuxp cli -c 'print(session.name); print(window.name)'
+      $ tmuxp shell -c 'print(session.name); print(window.name)'
       my_server
       my_window
 
-      $ tmuxp cli my_server -c 'print(session.name); print(window.name)'
+      $ tmuxp shell my_server -c 'print(session.name); print(window.name)'
       my_server
       my_window
 
-      $ tmuxp cli my_server my_window -c 'print(session.name); print(window.name)'
+      $ tmuxp shell my_server my_window -c 'print(session.name); print(window.name)'
       my_server
       my_window
 
-      $ tmuxp cli my_server my_window -c 'print(window.name.upper())'
+      $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
       MY_WINDOW
 
 tmuxp 1.5.8 (2020-10-31)

@@ -22,22 +22,22 @@ In zsh (``~/.zshrc``):
 
     eval "$(_TMUXP_COMPLETE=source_zsh tmuxp)"
 
-.. _cli_cli:
+.. _cli_shell:
 
-tmux CLI
---------
+Shell
+-----
 
 ::
 
-    tmuxp cli
+    tmuxp shell
 
-    tmuxp cli <session_name>
+    tmuxp shell <session_name>
 
-    tmuxp cli <session_name> <window_name>
+    tmuxp shell <session_name> <window_name>
 
-    tmuxp cli -c 'python code'
+    tmuxp shell -c 'python code'
 
-Launch into a `libtmux`_ session.
+Launch into a python console with `libtmux`_ objects. Compare to django's shell.
 
 Automatically will picked the current tmux :class:`server <libtmux.Server>`,
 :class:`session <libtmux.Session>`, and :class:`window <libtmux.Window>` you
@@ -65,26 +65,26 @@ compatible debuggers, for instance `ipdb`_:
 .. code-block:: sh
 
    $ pip install ipdb
-   $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp cli
+   $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 
 You can also pass in python code directly, similar to ``python -c``, do
 this via ``tmuxp -c``:
 
 .. code-block:: shell
 
-   $ tmuxp cli -c 'print(session.name); print(window.name)'
+   $ tmuxp shell -c 'print(session.name); print(window.name)'
    my_server
    my_window
 
-   $ tmuxp cli my_server -c 'print(session.name); print(window.name)'
+   $ tmuxp shell my_server -c 'print(session.name); print(window.name)'
    my_server
    my_window
 
-   $ tmuxp cli my_server my_window -c 'print(session.name); print(window.name)'
+   $ tmuxp shell my_server my_window -c 'print(session.name); print(window.name)'
    my_server
    my_window
 
-   $ tmuxp cli my_server my_window -c 'print(window.name.upper())'
+   $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
    MY_WINDOW
 
 .. _PEP 553: https://www.python.org/dev/peps/pep-0553/

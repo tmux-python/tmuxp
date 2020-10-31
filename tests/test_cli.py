@@ -410,13 +410,13 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     "cli_args,inputs,expected_output",
     [
         (
-            ['cli', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
             [],
             '{SERVER_SOCKET_NAME}',
         ),
         (
             [
-                'cli',
+                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '-c',
@@ -427,7 +427,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'cli',
+                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -439,7 +439,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
     ],
 )
-def test_cli(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, session):
+def test_shell(cli_args, inputs, expected_output, tmpdir, monkeypatch, server, session):
     monkeypatch.setenv('HOME', str(tmpdir))
     window_name = 'my_window'
     window = session.new_window(window_name=window_name)
