@@ -12,6 +12,7 @@ from click.testing import CliRunner
 
 import libtmux
 from libtmux.common import has_lt_version
+from libtmux.exc import LibTmuxException
 from tmuxp import cli, config
 from tmuxp.cli import (
     command_ls,
@@ -507,6 +508,39 @@ def test_shell(
             cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
         )
         assert expected_output.format(**template_ctx) in result.output
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs,env,exception, message",
+    [
+        (
+            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            [],
+            {},
+            LibTmuxException,
+            r'.*{SOCKET_NAME}\s\(No such file or directory\).*',
+        ),
+    ],
+)
+def test_shell_no_server(
+    cli_args, inputs, env, exception, message, tmpdir, monkeypatch, socket_name
+):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    template_ctx = dict(
+        SOCKET_NAME=socket_name,
+    )
+
+    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    for k, v in env.items():
+        monkeypatch.setenv(k, v.format(**template_ctx))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        with pytest.raises(exception, match=message.format(**template_ctx)):
+            runner.invoke(
+                cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+            )
 
 
 @pytest.mark.parametrize(

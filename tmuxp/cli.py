@@ -16,7 +16,7 @@ import kaptan
 from click.exceptions import FileError
 
 from libtmux.common import has_gte_version, has_minimum_version, which
-from libtmux.exc import TmuxCommandNotFound
+from libtmux.exc import LibTmuxException, TmuxCommandNotFound
 from libtmux.server import Server
 
 from . import config, exc, log, util
@@ -681,6 +681,17 @@ def command_shell(session_name, window_name, socket_name, socket_path, command):
     - ``server.attached_session``, ``session.attached_window``, ``window.attached_pane``
     """
     server = Server(socket_name=socket_name, socket_path=socket_path)
+
+    try:
+        server.sessions
+    except LibTmuxException as e:
+        if 'No such file or directory' in str(e):
+            raise LibTmuxException(
+                'no tmux session found. Start a tmux session and try again. \n'
+                'Original error: ' + str(e)
+            )
+        else:
+            raise e
 
     current_pane = None
     if os.getenv('TMUX_PANE') is not None:
