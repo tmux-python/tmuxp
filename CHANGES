@@ -12,6 +12,9 @@ current
   Automatically preloads session, window, and pane via `libtmux`_
   api objects and makes them available in a python console.
 
+  .. image:: _static/tmuxp-shell.gif
+     :width: 100%
+
   In python 3.7+, supports ``PYTHONBREAKPOINT``:
 
   .. code-block:: sh
@@ -39,7 +42,7 @@ current
       MY_WINDOW
 
 tmuxp 1.5.8 (2020-10-31)
------------------------
+------------------------
 - :issue:`639` Passes start_directory through to new tmux session
   Fixes :issue:`631`, thank you @joseph-flinn!
 
