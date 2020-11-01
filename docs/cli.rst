@@ -22,6 +22,85 @@ In zsh (``~/.zshrc``):
 
     eval "$(_TMUXP_COMPLETE=source_zsh tmuxp)"
 
+.. _cli_shell:
+
+Shell
+-----
+
+::
+
+    tmuxp shell
+
+    tmuxp shell <session_name>
+
+    tmuxp shell <session_name> <window_name>
+
+    tmuxp shell -c 'python code'
+
+Launch into a python console with `libtmux`_ objects. Compare to django's shell.
+
+  .. image:: _static/tmuxp-shell.gif
+     :width: 100%
+
+Automatically preloads current tmux :class:`server <libtmux.Server>`,
+:class:`session <libtmux.Session>`, :class:`window <libtmux.Window>` 
+:class:`pane <libtmux.Pane>`. Pass additional arguments to select a
+specific one of your choice::
+
+    (Pdb) server
+    <libtmux.server.Server object at 0x7f7dc8e69d10>
+    (Pdb) server.sessions
+    [Session($1 your_project)]
+    (Pdb) session
+    Session($1 your_project)
+    (Pdb) session.name
+    'your_project'
+    (Pdb) window
+    Window(@3 1:your_window, Session($1 your_project))
+    (Pdb) window.name
+    'your_window'
+    (Pdb) window.panes
+    [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+    (Pdb) pane
+    Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+
+Python 3.7 supports `PEP 553`_'s ``PYTHONBREAKPOINT`` and supports
+compatible debuggers, for instance `ipdb`_:
+
+.. code-block:: sh
+
+   $ pip install ipdb
+   $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
+
+You can also pass in python code directly, similar to ``python -c``, do
+this via ``tmuxp -c``:
+
+.. code-block:: shell
+
+   $ tmuxp shell -c 'print(session.name); print(window.name)'
+   my_server
+   my_window
+
+   $ tmuxp shell my_server -c 'print(session.name); print(window.name)'
+   my_server
+   my_window
+
+   $ tmuxp shell my_server my_window -c 'print(session.name); print(window.name)'
+   my_server
+   my_window
+
+   $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
+   MY_WINDOW
+
+   # Assuming inside a tmux pane or one is attached on default server
+   $ tmuxp shell -c 'print(pane.id); print(pane.window.name)'
+   %2
+   my_window
+
+.. _PEP 553: https://www.python.org/dev/peps/pep-0553/
+.. _ipdb: https://pypi.org/project/ipdb/
+.. _libtmux: https://libtmux.git-pull.com
+
 .. _cli_freeze:
 
 Freeze sessions

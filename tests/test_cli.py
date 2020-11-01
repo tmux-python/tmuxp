@@ -14,6 +14,7 @@ from click.testing import CliRunner
 
 import libtmux
 from libtmux.common import has_lt_version
+from libtmux.exc import LibTmuxException
 from tmuxp import cli, config
 from tmuxp.cli import (
     command_ls,
@@ -410,6 +411,142 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         monkeypatch.setenv('SHELL', 'sh')
         result = runner.invoke(cli.cli, cli_args)
         assert 'Please set' not in result.output
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs,env,expected_output",
+    [
+        (
+            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            [],
+            {},
+            '{SERVER_SOCKET_NAME}',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '-c',
+                'print(session.name)',
+            ],
+            [],
+            {},
+            '{SESSION_NAME}',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '{WINDOW_NAME}',
+                '-c',
+                'print(server.has_session(session.name))',
+            ],
+            [],
+            {},
+            'True',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '{WINDOW_NAME}',
+                '-c',
+                'print(window.name)',
+            ],
+            [],
+            {},
+            '{WINDOW_NAME}',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                '{WINDOW_NAME}',
+                '-c',
+                'print(pane.id)',
+            ],
+            [],
+            {},
+            '{PANE_ID}',
+        ),
+        (
+            [
+                'shell',
+                '-L{SOCKET_NAME}',
+                '-c',
+                'print(pane.id)',
+            ],
+            [],
+            {'TMUX_PANE': '{PANE_ID}'},
+            '{PANE_ID}',
+        ),
+    ],
+)
+def test_shell(
+    cli_args, inputs, expected_output, env, tmpdir, monkeypatch, server, session
+):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    window_name = 'my_window'
+    window = session.new_window(window_name=window_name)
+    window.split_window()
+
+    template_ctx = dict(
+        SOCKET_NAME=server.socket_name,
+        SOCKET_PATH=server.socket_path,
+        SESSION_NAME=session.name,
+        WINDOW_NAME=window_name,
+        PANE_ID=window.attached_pane.id,
+        SERVER_SOCKET_NAME=server.socket_name,
+    )
+
+    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    for k, v in env.items():
+        monkeypatch.setenv(k, v.format(**template_ctx))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        result = runner.invoke(
+            cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+        )
+        assert expected_output.format(**template_ctx) in result.output
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs,env,exception, message",
+    [
+        (
+            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            [],
+            {},
+            LibTmuxException,
+            r'.*{SOCKET_NAME}\s\(No such file or directory\).*',
+        ),
+    ],
+)
+def test_shell_no_server(
+    cli_args, inputs, env, exception, message, tmpdir, monkeypatch, socket_name
+):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    template_ctx = dict(
+        SOCKET_NAME=socket_name,
+    )
+
+    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    for k, v in env.items():
+        monkeypatch.setenv(k, v.format(**template_ctx))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        with pytest.raises(exception, match=message.format(**template_ctx)):
+            runner.invoke(
+                cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+            )
 
 
 @pytest.mark.parametrize(

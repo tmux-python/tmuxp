@@ -12,9 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope='function')
-def server(request):
+def socket_name(request):
+    return 'tmuxp_test%s' % next(namer)
+
+
+@pytest.fixture(scope='function')
+def server(request, socket_name):
     t = Server()
-    t.socket_name = 'tmuxp_test%s' % next(namer)
+    t.socket_name = socket_name
 
     def fin():
         t.kill_server()

@@ -3,8 +3,19 @@
 import sys
 
 PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+PYMINOR = sys.version_info[1]
+PYPATCH = sys.version_info[2]
 
 _identity = lambda x: x
+
+
+if PY3 and PYMINOR >= 7:
+    breakpoint = breakpoint
+else:
+    import pdb
+
+    breakpoint = pdb.set_trace
 
 
 if PY2:

@@ -82,6 +82,50 @@ Load your tmuxp config from anywhere by using the filename, assuming
 
 See `author's tmuxp configs`_ and the projects' `tmuxp.yaml`_.
 
+Shell
+-----
+*New in 1.6.0*:
+
+``tmuxp shell`` launches into a python console preloaded with the attached server,
+session, and window in `libtmux`_ objects.
+
+.. code-block:: shell
+
+   $ tmuxp shell
+
+   (Pdb) server
+   <libtmux.server.Server object at 0x7f7dc8e69d10>
+   (Pdb) server.sessions
+   [Session($1 your_project)]
+   (Pdb) session
+   Session($1 your_project)
+   (Pdb) session.name
+   'your_project'
+   (Pdb) window
+   Window(@3 1:your_window, Session($1 your_project))
+   (Pdb) window.name
+   'your_window'
+   (Pdb) window.panes
+   [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+   (Pdb) pane
+   Pane(%6 Window(@3 1:your_window, Session($1 your_project))
+
+Python 3.7+ supports `PEP 553`_ ``breakpoint()`` (including
+``PYTHONBREAKPOINT``). Also supports direct commands via ``-c``:
+
+.. code-block:: shell
+
+   $ tmuxp shell -c 'print(window.name)'
+   my_window
+
+   $ tmuxp shell -c 'print(window.name.upper())'
+   MY_WINDOW
+
+Read more on `tmuxp shell`_ in the CLI docs.
+
+.. _PEP 553: https://www.python.org/dev/peps/pep-0553/
+.. _tmuxp shell: https://tmuxp.git-pull.com/cli.html#shell
+
 Pre-load hook
 -------------
 Run custom startup scripts (such as installing project dependencies before
@@ -146,7 +190,6 @@ See the `Quickstart`_.
 
 Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 
-.. _tmuxp on Travis CI: http://travis-ci.org/tmux-python/tmuxp
 .. _Documentation: http://tmuxp.git-pull.com
 .. _Source: https://github.com/tmux-python/tmuxp
 .. _中文: http://tmuxp-zh.rtfd.org/
@@ -163,7 +206,6 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _freezing tmux: http://tmuxp.git-pull.com/cli.html#freeze-sessions
 .. _Plugin System: http://tmuxp.git-pull.com/plugin_system.html
 .. _bootstrap_env.py: https://github.com/tmux-python/tmuxp/blob/master/bootstrap_env.py
-.. _travis.yml: http://tmuxp.git-pull.com/developing.html#travis-ci
 .. _testing: http://tmuxp.git-pull.com/developing.html#test-runner
 .. _python objects: http://tmuxp.git-pull.com/api.html#api
 .. _tmuxp.yaml: https://github.com/tmux-python/tmuxp/blob/master/.tmuxp.yaml 
@@ -210,9 +252,9 @@ Project details
    :alt: Docs
    :target: https://github.com/tmux-python/tmuxp/actions?query=workflow%3A"Publish+Docs"
 
-.. |build-status| image:: https://img.shields.io/travis/tmux-python/tmuxp.svg
-   :alt: Build Status
-   :target: https://travis-ci.org/tmux-python/tmuxp
+.. |build-status| image:: https://github.com/tmux-python/tmuxp/workflows/tests/badge.svg
+   :alt: Build status
+   :target: https://github.com/tmux-python/tmuxp/actions?query=workflow%3A"tests"
 
 .. |coverage| image:: https://codecov.io/gh/tmux-python/tmuxp/branch/master/graph/badge.svg
     :alt: Code Coverage

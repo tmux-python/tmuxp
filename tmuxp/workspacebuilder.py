@@ -142,9 +142,15 @@ class WorkspaceBuilder(object):
                     'Session name %s is already running.' % self.sconf['session_name']
                 )
             else:
-                session = self.server.new_session(
-                    session_name=self.sconf['session_name']
-                )
+                if 'start_directory' in self.sconf:
+                    session = self.server.new_session(
+                        session_name=self.sconf['session_name'],
+                        start_directory=self.sconf['start_directory'],
+                    )
+                else:
+                    session = self.server.new_session(
+                        session_name=self.sconf['session_name']
+                    )
 
             assert self.sconf['session_name'] == session.name
             assert len(self.sconf['session_name']) > 0
