@@ -124,7 +124,7 @@ Python 3.7+ supports `PEP 553`_ ``breakpoint()`` (including
 Read more on `tmuxp shell`_ in the CLI docs.
 
 .. _PEP 553: https://www.python.org/dev/peps/pep-0553/
-.. _tmuxp shell: http://localhost:8031/cli.html#shell
+.. _tmuxp shell: https://tmuxp.git-pull.com/cli.html#shell
 
 Pre-load hook
 -------------
