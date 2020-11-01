@@ -8,6 +8,10 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.5.8 (2020-10-31)
+-----------------------
+- :issue: `631` Passes start_directory through to new tmux session
+
 tmuxp 1.5.7 (2020-10-31)
 ------------------------
 - :issue:`637` Support for loading directories with periods in it
