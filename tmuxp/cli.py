@@ -16,7 +16,7 @@ import kaptan
 from click.exceptions import FileError
 
 from libtmux.common import has_gte_version, has_minimum_version, which
-from libtmux.exc import TmuxCommandNotFound
+from libtmux.exc import LibTmuxException, TmuxCommandNotFound
 from libtmux.server import Server
 
 from . import config, exc, log, util
@@ -659,6 +659,94 @@ def startup(config_dir):
 
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
+
+
+@cli.command(name='shell')
+@click.argument('session_name', nargs=1, required=False)
+@click.argument('window_name', nargs=1, required=False)
+@click.option('-S', 'socket_path', help='pass-through for tmux -S')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option(
+    '-c',
+    'command',
+    help='Instead of opening shell, execute python code in libtmux and exit',
+)
+def command_shell(session_name, window_name, socket_name, socket_path, command):
+    """Launch python shell for tmux server, session, window and pane.
+
+    Priority given to loaded session/wndow/pane objects:
+    - session_name and window_name arguments
+    - current shell: environmental variable of TMUX_PANE (which gives us window and
+      session)
+    - ``server.attached_session``, ``session.attached_window``, ``window.attached_pane``
+    """
+    server = Server(socket_name=socket_name, socket_path=socket_path)
+
+    try:
+        server.sessions
+    except LibTmuxException as e:
+        if 'No such file or directory' in str(e):
+            raise LibTmuxException(
+                'no tmux session found. Start a tmux session and try again. \n'
+                'Original error: ' + str(e)
+            )
+        else:
+            raise e
+
+    current_pane = None
+    if os.getenv('TMUX_PANE') is not None:
+        try:
+            current_pane = [
+                p
+                for p in server._list_panes()
+                if p.get('pane_id') == os.getenv('TMUX_PANE')
+            ][0]
+        except IndexError:
+            pass
+
+    try:
+        if session_name:
+            session = server.find_where({'session_name': session_name})
+        elif current_pane is not None:
+            session = server.find_where({'session_id': current_pane['session_id']})
+        else:
+            session = server.list_sessions()[0]
+
+        if not session:
+            raise exc.TmuxpException('Session not found: %s' % session_name)
+    except exc.TmuxpException as e:
+        print(e)
+        return
+
+    try:
+        if window_name:
+            window = session.find_where({'window_name': window_name})
+            if not window:
+                raise exc.TmuxpException('Window not found: %s' % window_name)
+        elif current_pane is not None:
+            window = session.find_where({'window_id': current_pane['window_id']})
+        else:
+            window = session.list_windows()[0]
+
+    except exc.TmuxpException as e:
+        print(e)
+        return
+
+    try:
+        if current_pane is not None:
+            pane = window.find_where({'pane_id': current_pane['pane_id']})  # NOQA: F841
+        else:
+            pane = window.attached_pane  # NOQA: F841
+    except exc.TmuxpException as e:
+        print(e)
+        return
+
+    if command is not None:
+        exec(command)
+    else:
+        from ._compat import breakpoint as tmuxp_breakpoint
+
+        tmuxp_breakpoint()
 
 
 @cli.command(name='freeze')

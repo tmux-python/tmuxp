@@ -82,6 +82,50 @@ Load your tmuxp config from anywhere by using the filename, assuming
 
 See `author's tmuxp configs`_ and the projects' `tmuxp.yaml`_.
 
+Shell
+-----
+*New in 1.6.0*:
+
+``tmuxp shell`` launches into a python console preloaded with the attached server,
+session, and window in `libtmux`_ objects.
+
+.. code-block:: shell
+
+   $ tmuxp shell
+
+   (Pdb) server
+   <libtmux.server.Server object at 0x7f7dc8e69d10>
+   (Pdb) server.sessions
+   [Session($1 your_project)]
+   (Pdb) session
+   Session($1 your_project)
+   (Pdb) session.name
+   'your_project'
+   (Pdb) window
+   Window(@3 1:your_window, Session($1 your_project))
+   (Pdb) window.name
+   'your_window'
+   (Pdb) window.panes
+   [Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
+   (Pdb) pane
+   Pane(%6 Window(@3 1:your_window, Session($1 your_project))
+
+Python 3.7+ supports `PEP 553`_ ``breakpoint()`` (including
+``PYTHONBREAKPOINT``). Also supports direct commands via ``-c``:
+
+.. code-block:: shell
+
+   $ tmuxp shell -c 'print(window.name)'
+   my_window
+
+   $ tmuxp shell -c 'print(window.name.upper())'
+   MY_WINDOW
+
+Read more on `tmuxp shell`_ in the CLI docs.
+
+.. _PEP 553: https://www.python.org/dev/peps/pep-0553/
+.. _tmuxp shell: http://localhost:8031/cli.html#shell
+
 Pre-load hook
 -------------
 Run custom startup scripts (such as installing project dependencies before
