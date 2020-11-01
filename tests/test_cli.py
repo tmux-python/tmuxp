@@ -411,6 +411,12 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     "cli_args,inputs,env,expected_output",
     [
         (
+            ['shell_plus', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            [],
+            {},
+            '{SERVER_SOCKET_NAME}',
+        ),
+        (
             ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
             [],
             {},
