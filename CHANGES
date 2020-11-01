@@ -10,7 +10,8 @@ current
 
 tmuxp 1.5.8 (2020-10-31)
 -----------------------
-- :issue: `631` Passes start_directory through to new tmux session
+- :issue:`639` Passes start_directory through to new tmux session
+  Fixes :issue:`631`, thank you @joseph-flinn!
 
 tmuxp 1.5.7 (2020-10-31)
 ------------------------
