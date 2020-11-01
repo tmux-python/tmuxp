@@ -407,24 +407,18 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
+@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,expected_output",
     [
         (
-            ['shell_plus', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
-            [],
-            {},
-            '{SERVER_SOCKET_NAME}',
-        ),
-        (
-            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            ['-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
             [],
             {},
             '{SERVER_SOCKET_NAME}',
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '-c',
@@ -436,7 +430,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -449,7 +442,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -462,7 +454,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -475,7 +466,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '-c',
                 'print(pane.id)',
@@ -487,7 +477,15 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     ],
 )
 def test_shell(
-    cli_args, inputs, expected_output, env, tmpdir, monkeypatch, server, session
+    cli_cmd,
+    cli_args,
+    inputs,
+    expected_output,
+    env,
+    tmpdir,
+    monkeypatch,
+    server,
+    session,
 ):
     monkeypatch.setenv('HOME', str(tmpdir))
     window_name = 'my_window'
@@ -503,7 +501,8 @@ def test_shell(
         SERVER_SOCKET_NAME=server.socket_name,
     )
 
-    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
 
