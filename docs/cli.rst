@@ -39,10 +39,13 @@ Shell
 
 Launch into a python console with `libtmux`_ objects. Compare to django's shell.
 
-Automatically will picked the current tmux :class:`server <libtmux.Server>`,
+  .. image:: _static/tmuxp-shell.gif
+     :width: 100%
+
+Automatically preloads current tmux :class:`server <libtmux.Server>`,
 :class:`session <libtmux.Session>`, :class:`window <libtmux.Window>` 
-:class:`pane <libtmux.Pane>` you are currently in.  Pass additional arguments 
-to select a specific one of your choice::
+:class:`pane <libtmux.Pane>`. Pass additional arguments to select a
+specific one of your choice::
 
     (Pdb) server
     <libtmux.server.Server object at 0x7f7dc8e69d10>
