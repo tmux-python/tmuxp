@@ -779,6 +779,17 @@ def command_shell_plus(
     """
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
+    try:
+        server.sessions
+    except LibTmuxException as e:
+        if 'No such file or directory' in str(e):
+            raise LibTmuxException(
+                'no tmux session found. Start a tmux session and try again. \n'
+                'Original error: ' + str(e)
+            )
+        else:
+            raise e
+
     current_pane = None
     if os.getenv('TMUX_PANE') is not None:
         try:
