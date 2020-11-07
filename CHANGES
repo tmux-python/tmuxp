@@ -7,6 +7,9 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
+
+tmuxp 1.6.0 (2020-11-06)
+------------------------
 - :issue:`636` New command: ``tmuxp shell`` and :issue:`638` ``tmuxp shell_plus``
 
   Automatically preloads session, window, and pane via `libtmux`_
