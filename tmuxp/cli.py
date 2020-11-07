@@ -954,6 +954,9 @@ def command_load(
     detached mode.
     """
     util.oh_my_zsh_auto_title()
+    if log_file:
+        logfile_handler = logging.FileHandler(log_file)
+        logger.addHandle(logfile_handler)
 
     tmux_options = {
         'socket_name': socket_name,
