@@ -177,6 +177,21 @@ You can auto confirm the prompt. In this case no preview will be shown.
    $ tmuxp convert --yes filename
 
 
+Debug Info
+---------
+
+Collect system info to submit with a Github issue
+
+.. code-block:: sh
+
+    $ tmuxp debug-info
+    --------------------------
+    environment:
+        system: Linux
+        arch: x86_64
+    ...
+
+
 Docs / Reading material
 -----------------------
 
