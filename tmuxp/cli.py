@@ -672,19 +672,21 @@ def startup(config_dir):
     help='Instead of opening shell, execute python code in libtmux and exit',
 )
 @click.option(
-    '--use-pdb/--no-pdb',
-    'use_pdb',
-    help='Use pdb / breakpoint() instead of code.interact()',
-    default=False,
-)
-@click.option(
     '--use-pythonrc/--no-startup',
     'use_pythonrc',
     help='Load the PYTHONSTARTUP environment variable and ~/.pythonrc.py script.',
     default=False,
 )
+@click.option('--pdb', 'shell', flag_value='pdb', help='Use plain pdb')
+@click.option(
+    '--code', 'shell', flag_value='code', help='Use stdlib\'s code.interact()'
+)
+@click.option('--ptipython', 'shell', flag_value='pdb', help='Use ptpython + ipython')
+@click.option('--ptpython', 'shell', flag_value='pdb', help='Use ptpython')
+@click.option('--ipython', 'shell', flag_value='pdb', help='Use ipython')
+@click.option('--bpython', 'shell', flag_value='pdb', help='Use bpython')
 def command_shell(
-    session_name, window_name, socket_name, socket_path, command, use_pdb, use_pythonrc
+    session_name, window_name, socket_name, socket_path, command, shell, use_pythonrc
 ):
     """Launch python shell for tmux server, session, window and pane.
 
@@ -713,7 +715,7 @@ def command_shell(
     if command is not None:
         exec(command)
     else:
-        if use_pdb or (os.getenv('PYTHONBREAKPOINT') and PY3 and PYMINOR >= 7):
+        if shell == 'pdb' or (os.getenv('PYTHONBREAKPOINT') and PY3 and PYMINOR >= 7):
             from ._compat import breakpoint as tmuxp_breakpoint
 
             tmuxp_breakpoint()
@@ -727,6 +729,7 @@ def command_shell(
                 window=window,
                 pane=pane,
                 use_pythonrc=use_pythonrc,
+                shell=shell,
             )
 
 

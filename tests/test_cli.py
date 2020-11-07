@@ -407,7 +407,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
-@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--use-pdb')])
+@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--pdb')])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,expected_output",
     [
@@ -516,7 +516,7 @@ def test_shell(
         assert expected_output.format(**template_ctx) in result.output
 
 
-@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--use-pdb')])
+@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--pdb')])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,template_ctx,exception,message",
     [
