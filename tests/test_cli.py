@@ -407,18 +407,18 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
+@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,expected_output",
     [
         (
-            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
+            ['-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
             [],
             {},
             '{SERVER_SOCKET_NAME}',
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '-c',
@@ -430,7 +430,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -443,7 +442,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -456,7 +454,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '{SESSION_NAME}',
                 '{WINDOW_NAME}',
@@ -469,7 +466,6 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         ),
         (
             [
-                'shell',
                 '-L{SOCKET_NAME}',
                 '-c',
                 'print(pane.id)',
@@ -481,7 +477,164 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
     ],
 )
 def test_shell(
-    cli_args, inputs, expected_output, env, tmpdir, monkeypatch, server, session
+    cli_cmd,
+    cli_args,
+    inputs,
+    expected_output,
+    env,
+    tmpdir,
+    monkeypatch,
+    server,
+    session,
+):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    window_name = 'my_window'
+    window = session.new_window(window_name=window_name)
+    window.split_window()
+
+    template_ctx = dict(
+        SOCKET_NAME=server.socket_name,
+        SOCKET_PATH=server.socket_path,
+        SESSION_NAME=session.name,
+        WINDOW_NAME=window_name,
+        PANE_ID=window.attached_pane.id,
+        SERVER_SOCKET_NAME=server.socket_name,
+    )
+
+    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+
+    for k, v in env.items():
+        monkeypatch.setenv(k, v.format(**template_ctx))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        result = runner.invoke(
+            cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+        )
+        assert expected_output.format(**template_ctx) in result.output
+
+
+@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
+@pytest.mark.parametrize(
+    "cli_args,inputs,env,template_ctx,exception,message",
+    [
+        (
+            ['-LDoesNotExist', '-c', 'print(str(server.socket_name))'],
+            [],
+            {},
+            {},
+            LibTmuxException,
+            r'.*DoesNotExist\s\(No such file or directory\).*',
+        ),
+        (
+            [
+                '-L{SOCKET_NAME}',
+                'nonexistant_session',
+                '-c',
+                'print(str(server.socket_name))',
+            ],
+            [],
+            {},
+            {'session_name': 'nonexistant_session'},
+            None,
+            'Session not found: nonexistant_session',
+        ),
+        (
+            [
+                '-L{SOCKET_NAME}',
+                '{SESSION_NAME}',
+                'nonexistant_window',
+                '-c',
+                'print(str(server.socket_name))',
+            ],
+            [],
+            {},
+            {'window_name': 'nonexistant_window'},
+            None,
+            'Window not found: {WINDOW_NAME}',
+        ),
+    ],
+)
+def test_shell_target_missing(
+    cli_cmd,
+    cli_args,
+    inputs,
+    env,
+    template_ctx,
+    exception,
+    message,
+    tmpdir,
+    monkeypatch,
+    socket_name,
+    server,
+    session,
+):
+    monkeypatch.setenv('HOME', str(tmpdir))
+    window_name = 'my_window'
+    window = session.new_window(window_name=window_name)
+    window.split_window()
+
+    template_ctx = dict(
+        SOCKET_NAME=server.socket_name,
+        SOCKET_PATH=server.socket_path,
+        SESSION_NAME=session.name,
+        WINDOW_NAME=template_ctx.get('window_name', window_name),
+        PANE_ID=template_ctx.get('pane_id'),
+        SERVER_SOCKET_NAME=server.socket_name,
+    )
+    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+
+    for k, v in env.items():
+        monkeypatch.setenv(k, v.format(**template_ctx))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        if exception is not None:
+            with pytest.raises(exception, match=message.format(**template_ctx)):
+                result = runner.invoke(
+                    cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+                )
+        else:
+            result = runner.invoke(
+                cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+            )
+            assert message.format(**template_ctx) in result.output
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs,env,message",
+    [
+        (
+            [
+                'shell_plus',
+                '-L{SOCKET_NAME}',
+            ],
+            [],
+            {},
+            '(InteractiveConsole)',
+        ),
+        (
+            [
+                'shell_plus',
+                '-L{SOCKET_NAME}',
+            ],
+            [],
+            {'PANE_ID': '{PANE_ID}'},
+            '(InteractiveConsole)',
+        ),
+    ],
+)
+def test_shell_plus(
+    cli_args,
+    inputs,
+    env,
+    message,
+    tmpdir,
+    monkeypatch,
+    server,
+    session,
 ):
     monkeypatch.setenv('HOME', str(tmpdir))
     window_name = 'my_window'
@@ -505,42 +658,9 @@ def test_shell(
         runner = CliRunner()
 
         result = runner.invoke(
-            cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
+            cli.cli, cli_args, input=''.join(inputs), catch_exceptions=True
         )
-        assert expected_output.format(**template_ctx) in result.output
-
-
-@pytest.mark.parametrize(
-    "cli_args,inputs,env,exception, message",
-    [
-        (
-            ['shell', '-L{SOCKET_NAME}', '-c', 'print(str(server.socket_name))'],
-            [],
-            {},
-            LibTmuxException,
-            r'.*{SOCKET_NAME}\s\(No such file or directory\).*',
-        ),
-    ],
-)
-def test_shell_no_server(
-    cli_args, inputs, env, exception, message, tmpdir, monkeypatch, socket_name
-):
-    monkeypatch.setenv('HOME', str(tmpdir))
-    template_ctx = dict(
-        SOCKET_NAME=socket_name,
-    )
-
-    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
-    for k, v in env.items():
-        monkeypatch.setenv(k, v.format(**template_ctx))
-
-    with tmpdir.as_cwd():
-        runner = CliRunner()
-
-        with pytest.raises(exception, match=message.format(**template_ctx)):
-            runner.invoke(
-                cli.cli, cli_args, input=''.join(inputs), catch_exceptions=False
-            )
+        assert message.format(**template_ctx) in result.output
 
 
 @pytest.mark.parametrize(

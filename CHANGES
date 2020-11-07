@@ -7,7 +7,7 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
-- :issue:`636` New command: ``tmuxp shell``
+- :issue:`636` New command: ``tmuxp shell`` and :issue:`638` ``tmuxp shell_plus``
 
   Automatically preloads session, window, and pane via `libtmux`_
   api objects and makes them available in a python console.
@@ -40,6 +40,8 @@ current
 
       $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
       MY_WINDOW
+
+  ``tmuxp shell_plus`` has autocompletion
 
 tmuxp 1.5.8 (2020-10-31)
 ------------------------
