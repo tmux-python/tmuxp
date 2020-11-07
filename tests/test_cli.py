@@ -407,7 +407,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
-@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
+@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--use-pdb')])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,expected_output",
     [
@@ -501,7 +501,8 @@ def test_shell(
         SERVER_SOCKET_NAME=server.socket_name,
     )
 
-    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    cli_cmd = list(cli_cmd) if isinstance(cli_cmd, (list, tuple)) else [cli_cmd]
+    cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
@@ -515,7 +516,7 @@ def test_shell(
         assert expected_output.format(**template_ctx) in result.output
 
 
-@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
+@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--use-pdb')])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,template_ctx,exception,message",
     [
@@ -583,7 +584,8 @@ def test_shell_target_missing(
         PANE_ID=template_ctx.get('pane_id'),
         SERVER_SOCKET_NAME=server.socket_name,
     )
-    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    cli_cmd = list(cli_cmd) if isinstance(cli_cmd, (list, tuple)) else [cli_cmd]
+    cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
@@ -608,7 +610,7 @@ def test_shell_target_missing(
     [
         (
             [
-                'shell_plus',
+                'shell',
                 '-L{SOCKET_NAME}',
             ],
             [],
@@ -617,7 +619,7 @@ def test_shell_target_missing(
         ),
         (
             [
-                'shell_plus',
+                'shell',
                 '-L{SOCKET_NAME}',
             ],
             [],

@@ -677,8 +677,14 @@ def startup(config_dir):
     help='Use pdb / breakpoint() instead of code.interact()',
     default=False,
 )
+@click.option(
+    '--use-pythonrc/--no-startup',
+    'use_pythonrc',
+    help='Load the PYTHONSTARTUP environment variable and ~/.pythonrc.py script.',
+    default=False,
+)
 def command_shell(
-    session_name, window_name, socket_name, socket_path, command, use_pdb
+    session_name, window_name, socket_name, socket_path, command, use_pdb, use_pythonrc
 ):
     """Launch python shell for tmux server, session, window and pane.
 
@@ -715,114 +721,13 @@ def command_shell(
         else:
             from .shell import launch
 
-            launch(server=server, session=session, window=window, pane=pane)
-
-
-@cli.command(name='shell_plus')
-@click.argument('session_name', nargs=1, required=False)
-@click.argument('window_name', nargs=1, required=False)
-@click.option('-S', 'socket_path', help='pass-through for tmux -S')
-@click.option('-L', 'socket_name', help='pass-through for tmux -L')
-@click.option(
-    '-c',
-    'command',
-    help='Instead of opening shell, execute python code in libtmux and exit',
-)
-@click.option(
-    '--use-pythonrc/--no-startup',
-    'use_pythonrc',
-    help='Load the PYTHONSTARTUP environment variable and ~/.pythonrc.py script.',
-    default=False,
-)
-def command_shell_plus(
-    session_name,
-    window_name,
-    socket_name,
-    socket_path,
-    command,
-    use_pythonrc,
-):
-    """shell w/ tab completion.
-
-    Credits: django-extensions shell_plus.py 51fef74 (MIT License)
-    """
-    server = Server(socket_name=socket_name, socket_path=socket_path)
-
-    util.raise_if_tmux_not_running(server=server)
-
-    current_pane = util.get_current_pane(server=server)
-
-    session = util.get_session(
-        server=server, session_name=session_name, current_pane=current_pane
-    )
-
-    window = util.get_window(
-        session=session, window_name=window_name, current_pane=current_pane
-    )
-
-    pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
-
-    if command is not None:
-        exec(command)
-    else:
-        # Using normal Python shell
-        import code
-
-        import libtmux
-
-        imported_objects = {
-            'libtmux': libtmux,
-            'Server': libtmux.Server,
-            'Session': libtmux.Session,
-            'Window': libtmux.Window,
-            'Pane': libtmux.Pane,
-            'server': server,
-            'session': session,
-            'window': window,
-            'pane': pane,
-        }
-
-        try:
-            # Try activating rlcompleter, because it's handy.
-            import readline
-        except ImportError:
-            pass
-        else:
-            # We don't have to wrap the following import in a 'try', because
-            # we already know 'readline' was imported successfully.
-            import rlcompleter
-
-            readline.set_completer(rlcompleter.Completer(imported_objects).complete)
-            # Enable tab completion on systems using libedit (e.g. macOS).
-            # These lines are copied from Lib/site.py on Python 3.4.
-            readline_doc = getattr(readline, '__doc__', '')
-            if readline_doc is not None and 'libedit' in readline_doc:
-                readline.parse_and_bind("bind ^I rl_complete")
-            else:
-                readline.parse_and_bind("tab:complete")
-
-        # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow system
-        # conventions and get $PYTHONSTARTUP first then .pythonrc.py.
-        if use_pythonrc:
-            for pythonrc in set(
-                [os.environ.get("PYTHONSTARTUP"), os.path.expanduser('~/.pythonrc.py')]
-            ):
-                if not pythonrc:
-                    continue
-                if not os.path.isfile(pythonrc):
-                    continue
-                with open(pythonrc) as handle:
-                    pythonrc_code = handle.read()
-                # Match the behavior of the cpython shell where an error in
-                # PYTHONSTARTUP prints an exception and continues.
-                try:
-                    exec(compile(pythonrc_code, pythonrc, 'exec'), imported_objects)
-                except Exception:
-                    import traceback
-
-                    traceback.print_exc()
-
-        code.interact(local=imported_objects)
+            launch(
+                server=server,
+                session=session,
+                window=window,
+                pane=pane,
+                use_pythonrc=use_pythonrc,
+            )
 
 
 @cli.command(name='freeze')
