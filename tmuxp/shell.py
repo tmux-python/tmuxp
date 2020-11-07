@@ -9,7 +9,6 @@ from __future__ import absolute_import, unicode_literals
 
 import logging
 import os
-import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -72,11 +71,11 @@ def detect_best_shell():
     return 'code'
 
 
-def get_bpython(options, extra_args):
-    try:
-        from bpython import embed  # NOQA F841
-    except ImportError:
-        return traceback.format_exc()
+def get_bpython(options, extra_args=None):
+    if extra_args is None:
+        extra_args = {}
+
+    from bpython import embed  # NOQA F841
 
     def launch_bpython():
         imported_objects = get_launch_args(**options)
@@ -104,15 +103,11 @@ def get_ipython(options, **extra_args):
 
         return launch_ipython
     except ImportError:
-        str_exc = traceback.format_exc()
         # IPython < 0.11
         # Explicitly pass an empty list as arguments, because otherwise
         # IPython would use sys.argv from this script.
         # Notebook not supported for IPython < 0.11.
-        try:
-            from IPython.Shell import IPShell
-        except ImportError:
-            return str_exc + "\n" + traceback.format_exc()
+        from IPython.Shell import IPShell
 
         def launch_ipython():
             imported_objects = get_launch_args(**options)
@@ -122,30 +117,26 @@ def get_ipython(options, **extra_args):
         return launch_ipython
 
 
-def get_ptpython(self, options):
+def get_ptpython(options, vi_mode=False):
     try:
         from ptpython.repl import embed, run_config
     except ImportError:
-        tb = traceback.format_exc()
-        try:  # prompt_toolkit < v0.27
-            from prompt_toolkit.contrib.repl import embed, run_config
-        except ImportError:
-            return tb
+        from prompt_toolkit.contrib.repl import embed, run_config
 
-    def run_ptpython():
+    def launch_ptpython():
         imported_objects = get_launch_args(**options)
         history_filename = os.path.expanduser('~/.ptpython_history')
         embed(
             globals=imported_objects,
             history_filename=history_filename,
-            vi_mode=options['vi_mode'],
+            vi_mode=vi_mode,
             configure=run_config,
         )
 
-    return run_ptpython
+    return launch_ptpython
 
 
-def get_ptipython(options):
+def get_ptipython(options, vi_mode=False):
     """Based on django-extensions
 
     Run renamed to launch, get_imported_objects renamed to get_launch_args
@@ -154,12 +145,9 @@ def get_ptipython(options):
         from ptpython.ipython import embed
         from ptpython.repl import run_config
     except ImportError:
-        tb = traceback.format_exc()
-        try:  # prompt_toolkit < v0.27
-            from prompt_toolkit.contrib.ipython import embed
-            from prompt_toolkit.contrib.repl import run_config
-        except ImportError:
-            return tb
+        # prompt_toolkit < v0.27
+        from prompt_toolkit.contrib.ipython import embed
+        from prompt_toolkit.contrib.repl import run_config
 
     def launch_ptipython():
         imported_objects = get_launch_args(**options)
@@ -167,7 +155,7 @@ def get_ptipython(options):
         embed(
             user_ns=imported_objects,
             history_filename=history_filename,
-            vi_mode=options['vi_mode'],
+            vi_mode=vi_mode,
             configure=run_config,
         )
 
@@ -226,12 +214,7 @@ def get_code(use_pythonrc, imported_objects):
                 pythonrc_code = handle.read()
             # Match the behavior of the cpython shell where an error in
             # PYTHONSTARTUP prints an exception and continues.
-            try:
-                exec(compile(pythonrc_code, pythonrc, 'exec'), imported_objects)
-            except Exception:
-                import traceback
-
-                traceback.print_exc()
+            exec(compile(pythonrc_code, pythonrc, 'exec'), imported_objects)
 
     def launch_code():
         code.interact(local=imported_objects)
@@ -239,7 +222,7 @@ def get_code(use_pythonrc, imported_objects):
     return launch_code
 
 
-def launch(shell='best', use_pythonrc=False, **kwargs):
+def launch(shell='best', use_pythonrc=False, use_vi_mode=False, **kwargs):
     # Also allowing passing shell='code' to force using code.interact
     imported_objects = get_launch_args(**kwargs)
 
@@ -247,9 +230,9 @@ def launch(shell='best', use_pythonrc=False, **kwargs):
         shell = detect_best_shell()
 
     if shell == 'ptipython':
-        launch = get_ptipython(options=kwargs)
+        launch = get_ptipython(options=kwargs, vi_mode=use_vi_mode)
     elif shell == 'ptpython':
-        launch = get_ptpython(options=kwargs)
+        launch = get_ptpython(options=kwargs, vi_mode=use_vi_mode)
     elif shell == 'ipython':
         launch = get_ipython(options=kwargs)
     elif shell == 'bpython':

@@ -672,21 +672,43 @@ def startup(config_dir):
     help='Instead of opening shell, execute python code in libtmux and exit',
 )
 @click.option(
-    '--use-pythonrc/--no-startup',
-    'use_pythonrc',
-    help='Load the PYTHONSTARTUP environment variable and ~/.pythonrc.py script.',
-    default=False,
+    '--best',
+    'shell',
+    flag_value='best',
+    help='Use best shell available in site packages',
+    default=True,
 )
 @click.option('--pdb', 'shell', flag_value='pdb', help='Use plain pdb')
 @click.option(
     '--code', 'shell', flag_value='code', help='Use stdlib\'s code.interact()'
 )
-@click.option('--ptipython', 'shell', flag_value='pdb', help='Use ptpython + ipython')
-@click.option('--ptpython', 'shell', flag_value='pdb', help='Use ptpython')
-@click.option('--ipython', 'shell', flag_value='pdb', help='Use ipython')
-@click.option('--bpython', 'shell', flag_value='pdb', help='Use bpython')
+@click.option(
+    '--ptipython', 'shell', flag_value='ptipython', help='Use ptpython + ipython'
+)
+@click.option('--ptpython', 'shell', flag_value='ptpython', help='Use ptpython')
+@click.option('--ipython', 'shell', flag_value='ipython', help='Use ipython')
+@click.option('--bpython', 'shell', flag_value='bpython', help='Use bpython')
+@click.option(
+    '--use-pythonrc/--no-startup',
+    'use_pythonrc',
+    help='Load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code',
+    default=False,
+)
+@click.option(
+    '--use-vi-mode/--no-vi-mode',
+    'use_vi_mode',
+    help='Use vi-mode in ptpython/ptipython',
+    default=False,
+)
 def command_shell(
-    session_name, window_name, socket_name, socket_path, command, shell, use_pythonrc
+    session_name,
+    window_name,
+    socket_name,
+    socket_path,
+    command,
+    shell,
+    use_pythonrc,
+    use_vi_mode,
 ):
     """Launch python shell for tmux server, session, window and pane.
 
@@ -724,12 +746,14 @@ def command_shell(
             from .shell import launch
 
             launch(
+                shell=shell,
+                use_pythonrc=use_pythonrc,  # shell: code
+                use_vi_mode=use_vi_mode,  # shell: ptpython, ptipython
+                # tmux environment / libtmux variables
                 server=server,
                 session=session,
                 window=window,
                 pane=pane,
-                use_pythonrc=use_pythonrc,
-                shell=shell,
             )
 
 
