@@ -52,7 +52,8 @@ tmuxp 1.6.0 (2020-11-06)
 - :issue:`636` + :issue:`638` New command: ``tmuxp shell``
 
   Automatically preloads session, window, and pane via `libtmux`_
-  api objects and makes them available in a python console.
+  :ref:`API objects <libtmux:api>` and makes them available in a python
+  console.
 
   .. image:: _static/tmuxp-shell.gif
      :width: 100%
