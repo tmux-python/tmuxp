@@ -889,13 +889,6 @@ def command_shell(
         current_pane = util.get_current_pane(server=server)
 
     try:
-        current_session = session = util.get_session(
-            server=server, current_pane=current_pane
-        )
-    except Exception:
-        current_session = None
-
-    try:
         session = util.get_session(
             server=server, session_name=session_name, current_pane=current_pane
         )
@@ -907,26 +900,6 @@ def command_shell(
         ):
             session = server.new_session(session_name=session_name)
         else:
-            return
-
-    if current_session is not None and current_session.id != session.id:
-        print("in")
-        if not detached and (
-            answer_yes
-            or click.confirm(
-                "Switch / attach to %s and run shell from there?"
-                % click.style(session_name, fg="green"),
-                default=True,
-            )
-        ):
-            if current_session.id != session.id:
-                session.attached_window.attached_pane.send_keys(
-                    "tmuxp shell", enter=True
-                )
-            if "TMUX" in os.environ:
-                session.switch_client()
-            else:
-                session.attach_session()
             return
 
     if current_pane["session_id"] != session.id:
