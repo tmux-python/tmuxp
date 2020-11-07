@@ -16,11 +16,11 @@ import kaptan
 from click.exceptions import FileError
 
 from libtmux.common import (
-    has_gte_version, 
-    has_minimum_version, 
-    which, 
+    has_gte_version,
+    has_minimum_version,
+    which,
     get_version,
-    tmux_cmd
+    tmux_cmd,
 )
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
@@ -855,9 +855,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
-@click.option(
-    '-s', 'new_session_name', help='start new session with new session name'
-)
+@click.option('-s', 'new_session_name', help='start new session with new session name')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
@@ -883,7 +881,7 @@ def command_load(
     new_session_name,
     answer_yes,
     detached,
-    colors
+    colors,
 ):
     """Load a tmux workspace from each CONFIG.
 
@@ -1075,10 +1073,7 @@ def command_debug_info():
         """
         Prepend tab to strings in list.
         """
-        return list(map(
-            lambda x: '\t%s' % x,
-            strings
-        ))
+        return list(map(lambda x: '\t%s' % x, strings))
 
     def output_break():
         """
@@ -1090,22 +1085,26 @@ def command_debug_info():
         """
         Format tmux command response for tmuxp stdout.
         """
-        return '\n'.join([
-            *prepend_tab(std_resp.stdout),
-            click.style(
-                '\n'.join(prepend_tab(std_resp.stderr)),
-                fg='red'
-            )
-        ])
+        return '\n'.join(
+            [
+                *prepend_tab(std_resp.stdout),
+                click.style('\n'.join(prepend_tab(std_resp.stderr)), fg='red'),
+            ]
+        )
 
     output = [
         output_break(),
-        'environment:\n%s' % '\n'.join(prepend_tab([
-            'system: %s' % os.uname().sysname,
-            'arch: %s' % os.uname().machine,
-            'os: {0} {1}'.format(os.uname().nodename, os.uname().version),
-            'kernel: %s' % os.uname().release,
-        ])),
+        'environment:\n%s'
+        % '\n'.join(
+            prepend_tab(
+                [
+                    'system: %s' % os.uname().sysname,
+                    'arch: %s' % os.uname().machine,
+                    'os: {0} {1}'.format(os.uname().nodename, os.uname().version),
+                    'kernel: %s' % os.uname().release,
+                ]
+            )
+        ),
         output_break(),
         'python version: %s' % ' '.join(sys.version.split('\n')),
         'system PATH: %s' % os.environ['PATH'],
@@ -1116,21 +1115,12 @@ def command_debug_info():
         'tmuxp path: %s' % tmuxp_path,
         'shell: %s' % os.environ['SHELL'],
         output_break(),
-        'tmux sessions:\n%s' % format_tmux_resp(
-            tmux_cmd('list-sessions')
-        ),
-        'tmux windows:\n%s' %  format_tmux_resp(
-            tmux_cmd('list-windows')
-        ),
-        'tmux panes:\n%s' % format_tmux_resp(
-            tmux_cmd('list-panes')
-        ),
-        'tmux global options:\n%s' % format_tmux_resp(
-            tmux_cmd('show-options', '-g')
-        ),
-        'tmux window options:\n%s' % format_tmux_resp(
-            tmux_cmd('show-window-options', '-g')
-        )
+        'tmux sessions:\n%s' % format_tmux_resp(tmux_cmd('list-sessions')),
+        'tmux windows:\n%s' % format_tmux_resp(tmux_cmd('list-windows')),
+        'tmux panes:\n%s' % format_tmux_resp(tmux_cmd('list-panes')),
+        'tmux global options:\n%s' % format_tmux_resp(tmux_cmd('show-options', '-g')),
+        'tmux window options:\n%s'
+        % format_tmux_resp(tmux_cmd('show-window-options', '-g')),
     ]
 
     click.echo('\n'.join(output))
