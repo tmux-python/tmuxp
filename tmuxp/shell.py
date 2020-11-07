@@ -13,7 +13,45 @@ import os
 logger = logging.getLogger(__name__)
 
 
-def launch(shell=None, best=True, use_pythonrc=False, **kwargs):
+def has_ipython():
+    try:
+        from IPython import start_ipython  # NOQA F841
+    except ImportError:
+        try:
+            from IPython.Shell import IPShell  # NOQA F841
+        except ImportError:
+            return False
+
+    return True
+
+
+def has_ptpython():
+    try:
+        from ptpython.repl import embed, run_config  # NOQA F841
+    except ImportError:
+        try:
+            from prompt_toolkit.contrib.repl import embed, run_config  # NOQA F841
+        except ImportError:
+            return False
+
+    return True
+
+
+def has_ptipython():
+    try:
+        from ptpython.ipython import embed  # NOQA F841
+        from ptpython.repl import run_config  # NOQA F841
+    except ImportError:
+        try:
+            from prompt_toolkit.contrib.ipython import embed  # NOQA F841
+            from prompt_toolkit.contrib.repl import run_config  # NOQA F841
+        except ImportError:
+            return False
+
+    return True
+
+
+def launch(shell='best', use_pythonrc=False, **kwargs):
     import code
 
     import libtmux
