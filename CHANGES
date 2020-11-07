@@ -7,6 +7,28 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
+- :issue:`641` Improvements to ``shell``
+
+  Thanks `django-extensions`_ (licensed MIT) for the shell detection abstraction.
+
+  - Deprecate ``shell_plus``
+  - ``tmuxp shell`` now detects the best shell available by default
+  - Python 3.7+ with ``PYTHONBREAKPOINT`` set in env will drop into ``pdb`` by
+    default
+  - Drop into ``code.interact`` by default instead of ``pdb`` if no third
+    party shells found
+  - New options, override:
+
+    - ``--pdb``: Use plain old ``breakpoint()`` (python 3.7+) or
+      ``pdb.set_trace``
+    - ``--code``: Drop into ``code.interact``, accepts ``--use-pythonrc``
+    - ``--bpython``: Drop into bpython
+    - ``--ipython``: Drop into ipython
+    - ``--ptpython``: Drop into ptpython, accepts ``--use-vi-mode``
+    - ``--ptipython``: Drop into ipython + ptpython, accepts
+      ``--use-vi-mode``
+
+.. _django-extensions: https://github.com/django-extensions/django-extensions
 
 tmuxp 1.6.0 (2020-11-06)
 ------------------------
