@@ -101,6 +101,20 @@ this via ``tmuxp -c``:
 .. _ipdb: https://pypi.org/project/ipdb/
 .. _libtmux: https://libtmux.git-pull.com
 
+Shell detection
+~~~~~~~~~~~~~~~
+
+``tmuxp shell`` detects the richest shell available in your *site packages*, you can also pick your shell via args:
+
+- ``--pdb``: Use plain old ``breakpoint()`` (python 3.7+) or
+  ``pdb.set_trace``
+- ``--code``: Drop into ``code.interact``, accepts ``--use-pythonrc``
+- ``--bpython``: Drop into bpython
+- ``--ipython``: Drop into ipython
+- ``--ptpython``: Drop into ptpython, accepts ``--use-vi-mode``
+- ``--ptipython``: Drop into ipython + ptpython, accepts
+  ``--use-vi-mode``
+
 .. _cli_freeze:
 
 Freeze sessions

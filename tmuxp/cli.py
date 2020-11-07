@@ -16,12 +16,12 @@ import kaptan
 from click.exceptions import FileError
 
 from libtmux.common import has_gte_version, has_minimum_version, which
-from libtmux.exc import LibTmuxException, TmuxCommandNotFound
+from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
 from . import config, exc, log, util
 from .__about__ import __version__
-from ._compat import string_types
+from ._compat import PY3, PYMINOR, string_types
 from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
@@ -671,7 +671,45 @@ def startup(config_dir):
     'command',
     help='Instead of opening shell, execute python code in libtmux and exit',
 )
-def command_shell(session_name, window_name, socket_name, socket_path, command):
+@click.option(
+    '--best',
+    'shell',
+    flag_value='best',
+    help='Use best shell available in site packages',
+    default=True,
+)
+@click.option('--pdb', 'shell', flag_value='pdb', help='Use plain pdb')
+@click.option(
+    '--code', 'shell', flag_value='code', help='Use stdlib\'s code.interact()'
+)
+@click.option(
+    '--ptipython', 'shell', flag_value='ptipython', help='Use ptpython + ipython'
+)
+@click.option('--ptpython', 'shell', flag_value='ptpython', help='Use ptpython')
+@click.option('--ipython', 'shell', flag_value='ipython', help='Use ipython')
+@click.option('--bpython', 'shell', flag_value='bpython', help='Use bpython')
+@click.option(
+    '--use-pythonrc/--no-startup',
+    'use_pythonrc',
+    help='Load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code',
+    default=False,
+)
+@click.option(
+    '--use-vi-mode/--no-vi-mode',
+    'use_vi_mode',
+    help='Use vi-mode in ptpython/ptipython',
+    default=False,
+)
+def command_shell(
+    session_name,
+    window_name,
+    socket_name,
+    socket_path,
+    command,
+    shell,
+    use_pythonrc,
+    use_vi_mode,
+):
     """Launch python shell for tmux server, session, window and pane.
 
     Priority given to loaded session/wndow/pane objects:
@@ -682,223 +720,41 @@ def command_shell(session_name, window_name, socket_name, socket_path, command):
     """
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
-    try:
-        server.sessions
-    except LibTmuxException as e:
-        if 'No such file or directory' in str(e):
-            raise LibTmuxException(
-                'no tmux session found. Start a tmux session and try again. \n'
-                'Original error: ' + str(e)
-            )
-        else:
-            raise e
+    util.raise_if_tmux_not_running(server=server)
 
-    current_pane = None
-    if os.getenv('TMUX_PANE') is not None:
-        try:
-            current_pane = [
-                p
-                for p in server._list_panes()
-                if p.get('pane_id') == os.getenv('TMUX_PANE')
-            ][0]
-        except IndexError:
-            pass
+    current_pane = util.get_current_pane(server=server)
 
-    try:
-        if session_name:
-            session = server.find_where({'session_name': session_name})
-        elif current_pane is not None:
-            session = server.find_where({'session_id': current_pane['session_id']})
-        else:
-            session = server.list_sessions()[0]
+    session = util.get_session(
+        server=server, session_name=session_name, current_pane=current_pane
+    )
 
-        if not session:
-            raise exc.TmuxpException('Session not found: %s' % session_name)
-    except exc.TmuxpException as e:
-        print(e)
-        return
+    window = util.get_window(
+        session=session, window_name=window_name, current_pane=current_pane
+    )
 
-    try:
-        if window_name:
-            window = session.find_where({'window_name': window_name})
-            if not window:
-                raise exc.TmuxpException('Window not found: %s' % window_name)
-        elif current_pane is not None:
-            window = session.find_where({'window_id': current_pane['window_id']})
-        else:
-            window = session.list_windows()[0]
-
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    try:
-        if current_pane is not None:
-            pane = window.find_where({'pane_id': current_pane['pane_id']})  # NOQA: F841
-        else:
-            pane = window.attached_pane  # NOQA: F841
-    except exc.TmuxpException as e:
-        print(e)
-        return
+    pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
 
     if command is not None:
         exec(command)
     else:
-        from ._compat import breakpoint as tmuxp_breakpoint
+        if shell == 'pdb' or (os.getenv('PYTHONBREAKPOINT') and PY3 and PYMINOR >= 7):
+            from ._compat import breakpoint as tmuxp_breakpoint
 
-        tmuxp_breakpoint()
+            tmuxp_breakpoint()
+            return
+        else:
+            from .shell import launch
 
-
-@cli.command(name='shell_plus')
-@click.argument('session_name', nargs=1, required=False)
-@click.argument('window_name', nargs=1, required=False)
-@click.option('-S', 'socket_path', help='pass-through for tmux -S')
-@click.option('-L', 'socket_name', help='pass-through for tmux -L')
-@click.option(
-    '-c',
-    'command',
-    help='Instead of opening shell, execute python code in libtmux and exit',
-)
-@click.option(
-    '--use-pythonrc/--no-startup',
-    'use_pythonrc',
-    help='Load the PYTHONSTARTUP environment variable and ~/.pythonrc.py script.',
-    default=False,
-)
-def command_shell_plus(
-    session_name,
-    window_name,
-    socket_name,
-    socket_path,
-    command,
-    use_pythonrc,
-):
-    """shell w/ tab completion.
-
-    Credits: django-extensions shell_plus.py 51fef74 (MIT License)
-    """
-    server = Server(socket_name=socket_name, socket_path=socket_path)
-
-    try:
-        server.sessions
-    except LibTmuxException as e:
-        if 'No such file or directory' in str(e):
-            raise LibTmuxException(
-                'no tmux session found. Start a tmux session and try again. \n'
-                'Original error: ' + str(e)
+            launch(
+                shell=shell,
+                use_pythonrc=use_pythonrc,  # shell: code
+                use_vi_mode=use_vi_mode,  # shell: ptpython, ptipython
+                # tmux environment / libtmux variables
+                server=server,
+                session=session,
+                window=window,
+                pane=pane,
             )
-        else:
-            raise e
-
-    current_pane = None
-    if os.getenv('TMUX_PANE') is not None:
-        try:
-            current_pane = [
-                p
-                for p in server._list_panes()
-                if p.get('pane_id') == os.getenv('TMUX_PANE')
-            ][0]
-        except IndexError:
-            pass
-
-    try:
-        if session_name:
-            session = server.find_where({'session_name': session_name})
-        elif current_pane is not None:
-            session = server.find_where({'session_id': current_pane['session_id']})
-        else:
-            session = server.list_sessions()[0]
-
-        if not session:
-            raise exc.TmuxpException('Session not found: %s' % session_name)
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    try:
-        if window_name:
-            window = session.find_where({'window_name': window_name})
-            if not window:
-                raise exc.TmuxpException('Window not found: %s' % window_name)
-        elif current_pane is not None:
-            window = session.find_where({'window_id': current_pane['window_id']})
-        else:
-            window = session.list_windows()[0]
-
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    try:
-        if current_pane is not None:
-            pane = window.find_where({'pane_id': current_pane['pane_id']})  # NOQA: F841
-        else:
-            pane = window.attached_pane  # NOQA: F841
-    except exc.TmuxpException as e:
-        print(e)
-        return
-
-    if command is not None:
-        exec(command)
-    else:
-        # Using normal Python shell
-        import code
-
-        import libtmux
-
-        imported_objects = {
-            'libtmux': libtmux,
-            'Server': libtmux.Server,
-            'Session': libtmux.Session,
-            'Window': libtmux.Window,
-            'Pane': libtmux.Pane,
-            'server': server,
-            'session': session,
-            'window': window,
-            'pane': pane,
-        }
-
-        try:
-            # Try activating rlcompleter, because it's handy.
-            import readline
-        except ImportError:
-            pass
-        else:
-            # We don't have to wrap the following import in a 'try', because
-            # we already know 'readline' was imported successfully.
-            import rlcompleter
-
-            readline.set_completer(rlcompleter.Completer(imported_objects).complete)
-            # Enable tab completion on systems using libedit (e.g. macOS).
-            # These lines are copied from Lib/site.py on Python 3.4.
-            readline_doc = getattr(readline, '__doc__', '')
-            if readline_doc is not None and 'libedit' in readline_doc:
-                readline.parse_and_bind("bind ^I rl_complete")
-            else:
-                readline.parse_and_bind("tab:complete")
-
-        # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow system
-        # conventions and get $PYTHONSTARTUP first then .pythonrc.py.
-        if use_pythonrc:
-            for pythonrc in set(
-                [os.environ.get("PYTHONSTARTUP"), os.path.expanduser('~/.pythonrc.py')]
-            ):
-                if not pythonrc:
-                    continue
-                if not os.path.isfile(pythonrc):
-                    continue
-                with open(pythonrc) as handle:
-                    pythonrc_code = handle.read()
-                # Match the behavior of the cpython shell where an error in
-                # PYTHONSTARTUP prints an exception and continues.
-                try:
-                    exec(compile(pythonrc_code, pythonrc, 'exec'), imported_objects)
-                except Exception:
-                    import traceback
-
-                    traceback.print_exc()
-
-        code.interact(local=imported_objects)
 
 
 @cli.command(name='freeze')

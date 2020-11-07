@@ -13,7 +13,7 @@ from click.testing import CliRunner
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
-from tmuxp import cli, config
+from tmuxp import cli, config, exc
 from tmuxp.cli import (
     command_ls,
     get_config_dir,
@@ -407,7 +407,7 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
-@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
+@pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--pdb')])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,expected_output",
     [
@@ -501,7 +501,8 @@ def test_shell(
         SERVER_SOCKET_NAME=server.socket_name,
     )
 
-    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    cli_cmd = list(cli_cmd) if isinstance(cli_cmd, (list, tuple)) else [cli_cmd]
+    cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
@@ -515,7 +516,13 @@ def test_shell(
         assert expected_output.format(**template_ctx) in result.output
 
 
-@pytest.mark.parametrize("cli_cmd", ['shell', 'shell_plus'])
+@pytest.mark.parametrize(
+    "cli_cmd",
+    [
+        'shell',
+        ('shell', '--pdb'),
+    ],
+)
 @pytest.mark.parametrize(
     "cli_args,inputs,env,template_ctx,exception,message",
     [
@@ -537,7 +544,7 @@ def test_shell(
             [],
             {},
             {'session_name': 'nonexistant_session'},
-            None,
+            exc.TmuxpException,
             'Session not found: nonexistant_session',
         ),
         (
@@ -551,7 +558,7 @@ def test_shell(
             [],
             {},
             {'window_name': 'nonexistant_window'},
-            None,
+            exc.TmuxpException,
             'Window not found: {WINDOW_NAME}',
         ),
     ],
@@ -583,7 +590,8 @@ def test_shell_target_missing(
         PANE_ID=template_ctx.get('pane_id'),
         SERVER_SOCKET_NAME=server.socket_name,
     )
-    cli_args = [cli_cmd] + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    cli_cmd = list(cli_cmd) if isinstance(cli_cmd, (list, tuple)) else [cli_cmd]
+    cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
@@ -604,11 +612,22 @@ def test_shell_target_missing(
 
 
 @pytest.mark.parametrize(
+    "cli_cmd",
+    [
+        # 'shell',
+        # ('shell', '--pdb'),
+        ('shell', '--code'),
+        # ('shell', '--bpython'),
+        # ('shell', '--ptipython'),
+        # ('shell', '--ptpython'),
+        # ('shell', '--ipython'),
+    ],
+)
+@pytest.mark.parametrize(
     "cli_args,inputs,env,message",
     [
         (
             [
-                'shell_plus',
                 '-L{SOCKET_NAME}',
             ],
             [],
@@ -617,7 +636,6 @@ def test_shell_target_missing(
         ),
         (
             [
-                'shell_plus',
                 '-L{SOCKET_NAME}',
             ],
             [],
@@ -627,6 +645,7 @@ def test_shell_target_missing(
     ],
 )
 def test_shell_plus(
+    cli_cmd,
     cli_args,
     inputs,
     env,
@@ -650,7 +669,9 @@ def test_shell_plus(
         SERVER_SOCKET_NAME=server.socket_name,
     )
 
-    cli_args[:] = [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+    cli_cmd = list(cli_cmd) if isinstance(cli_cmd, (list, tuple)) else [cli_cmd]
+    cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
+
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
 
