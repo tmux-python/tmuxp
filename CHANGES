@@ -10,11 +10,15 @@ current
 
 tmuxp 1.7.0a1 (2020-11-07)
 --------------------------
-- :issue:`530` Add plugin system for user customization of tmuxp
-- :issue:`530` Add tests for the plugin system
-- :issue:`530` Update existing tests for the plugin system
-- :issue:`530` Add the plugin interface to the tmuxp package
-- :issue:`530` Add in depth documentation for the plugin system
+- :issue:`530` Plugin system
+
+  - Add plugin system for user customization of tmuxp
+  - Add tests for the plugin system
+  - Update existing tests for the plugin system
+  - Add the plugin interface to the tmuxp package
+  - Add in depth documentation for the plugin system
+
+  Thank you @joseph-flinn!
 
 tmuxp 1.6.1 (2020-11-07)
 ------------------------
