@@ -848,6 +848,10 @@ def startup(config_dir):
     help="Use vi-mode in ptpython/ptipython",
     default=False,
 )
+@click.option("--yes", "-y", "answer_yes", help="yes", is_flag=True)
+@click.option(
+    "-d", "detached", help="Load the session without attaching it", is_flag=True
+)
 def command_shell(
     session_name,
     window_name,
@@ -857,6 +861,8 @@ def command_shell(
     shell,
     use_pythonrc,
     use_vi_mode,
+    detached,
+    answer_yes,
 ):
     """Launch python shell for tmux server, session, window and pane.
 
@@ -866,15 +872,56 @@ def command_shell(
       session)
     - ``server.attached_session``, ``session.attached_window``, ``window.attached_pane``
     """
+    print(f"detached: {detached}")
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
     util.raise_if_tmux_not_running(server=server)
 
     current_pane = util.get_current_pane(server=server)
 
-    session = util.get_session(
-        server=server, session_name=session_name, current_pane=current_pane
-    )
+    try:
+        current_session = session = util.get_session(
+            server=server, current_pane=current_pane
+        )
+    except Exception:
+        current_session = None
+
+    try:
+        session = util.get_session(
+            server=server, session_name=session_name, current_pane=current_pane
+        )
+    except exc.TmuxpException:
+        if answer_yes or click.confirm(
+            "Session %s does not exist. Create?" % session_name
+            if session_name is not None
+            else "Session does not exist. Create?"
+        ):
+            session = server.new_session(session_name=session_name)
+        else:
+            return
+
+    if current_session is not None and current_session.id != session.id:
+        print("in")
+        if not detached and (
+            answer_yes
+            or click.confirm(
+                "Switch / attach to %s and run shell from there?"
+                % click.style(session_name, fg="green"),
+                default=True,
+            )
+        ):
+            if current_session.id != session.id:
+                session.attached_window.attached_pane.send_keys(
+                    "tmuxp shell", enter=True
+                )
+            if "TMUX" in os.environ:
+                session.switch_client()
+            else:
+                session.attach_session()
+            return
+
+    if current_pane["session_id"] != session.id:
+        current_pane = None
 
     window = util.get_window(
         session=session, window_name=window_name, current_pane=current_pane
