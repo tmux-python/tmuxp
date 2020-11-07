@@ -15,6 +15,18 @@ Internals
 
 .. automethod:: tmuxp.util.run_before_script
 
+.. automethod:: tmuxp.util.oh_my_zsh_auto_title
+
+.. automethod:: tmuxp.util.raise_if_tmux_not_running
+
+.. automethod:: tmuxp.util.get_current_pane
+
+.. automethod:: tmuxp.util.get_session
+
+.. automethod:: tmuxp.util.get_window
+
+.. automethod:: tmuxp.util.get_pane
+
 CLI
 ---
 
