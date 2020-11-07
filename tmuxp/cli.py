@@ -1085,12 +1085,10 @@ def command_debug_info():
         """
         Format tmux command response for tmuxp stdout.
         """
-        return '\n'.join(
-            [
-                *prepend_tab(std_resp.stdout),
-                click.style('\n'.join(prepend_tab(std_resp.stderr)), fg='red'),
-            ]
-        )
+        return [
+            '\n'.join(prepend_tab(std_resp.stdout)),
+            click.style('\n'.join(prepend_tab(std_resp.stderr)), fg='red'),
+        ]
 
     output = [
         output_break(),
