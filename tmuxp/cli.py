@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import logging
 import os
+import platform
 import sys
 
 import click
@@ -1099,10 +1100,10 @@ def command_debug_info():
         % '\n'.join(
             prepend_tab(
                 [
-                    'system: %s' % os.uname().sysname,
-                    'arch: %s' % os.uname().machine,
-                    'os: {0} {1}'.format(os.uname().nodename, os.uname().version),
-                    'kernel: %s' % os.uname().release,
+                    'dist: %s' % platform.platform(),
+                    'arch: %s' % platform.machine(),
+                    'uname: %s' % '; '.join(platform.uname()[:3]),
+                    'version: %s' % platform.version(),
                 ]
             )
         ),
