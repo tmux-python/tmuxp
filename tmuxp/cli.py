@@ -19,7 +19,7 @@ from libtmux.common import has_gte_version, has_minimum_version, which
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
-from . import config, exc, log, shell, util
+from . import config, exc, log, util
 from .__about__ import __version__
 from ._compat import string_types
 from .workspacebuilder import WorkspaceBuilder, freeze
@@ -682,19 +682,19 @@ def command_shell(session_name, window_name, socket_name, socket_path, command):
     """
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
-    shell.raise_if_tmux_not_running(server=server)
+    util.raise_if_tmux_not_running(server=server)
 
-    current_pane = shell.get_current_pane(server=server)
+    current_pane = util.get_current_pane(server=server)
 
-    session = shell.get_session(
+    session = util.get_session(
         server=server, session_name=session_name, current_pane=current_pane
     )
 
-    window = shell.get_window(
+    window = util.get_window(
         session=session, window_name=window_name, current_pane=current_pane
     )
 
-    pane = shell.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
+    pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
 
     if command is not None:
         exec(command)
@@ -734,19 +734,19 @@ def command_shell_plus(
     """
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
-    shell.raise_if_tmux_not_running(server=server)
+    util.raise_if_tmux_not_running(server=server)
 
-    current_pane = shell.get_current_pane(server=server)
+    current_pane = util.get_current_pane(server=server)
 
-    session = shell.get_session(
+    session = util.get_session(
         server=server, session_name=session_name, current_pane=current_pane
     )
 
-    window = shell.get_window(
+    window = util.get_window(
         session=session, window_name=window_name, current_pane=current_pane
     )
 
-    pane = shell.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
+    pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
 
     if command is not None:
         exec(command)
