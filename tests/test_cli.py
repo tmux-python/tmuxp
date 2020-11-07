@@ -13,7 +13,7 @@ from click.testing import CliRunner
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
-from tmuxp import cli, config
+from tmuxp import cli, config, exc
 from tmuxp.cli import (
     command_ls,
     get_config_dir,
@@ -537,7 +537,7 @@ def test_shell(
             [],
             {},
             {'session_name': 'nonexistant_session'},
-            None,
+            exc.TmuxpException,
             'Session not found: nonexistant_session',
         ),
         (
@@ -551,7 +551,7 @@ def test_shell(
             [],
             {},
             {'window_name': 'nonexistant_window'},
-            None,
+            exc.TmuxpException,
             'Window not found: {WINDOW_NAME}',
         ),
     ],
