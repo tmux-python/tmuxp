@@ -7,6 +7,9 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - *Insert changes/features/fixes for next release here*
+
+tmuxp 1.6.1 (2020-11-07)
+------------------------
 - :issue:`641` Improvements to ``shell``
 
   Thanks `django-extensions`_ (licensed MIT) for the shell detection abstraction.
