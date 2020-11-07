@@ -880,10 +880,11 @@ def command_shell(
             "No tmux server running, create?",
             default=True,
         ):
-            session = server.new_session(session_name=session_name or "tmuxp shell")
-            window = session.attached_window
-            window_name = window.name
-            current_pane = window.attached_pane
+            session = server.new_session(
+                session_name=session_name or "tmuxp shell",
+                window_command=" ".join(sys.argv),
+            )
+            session.attach_session()
     else:
         current_pane = util.get_current_pane(server=server)
 
