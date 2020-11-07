@@ -155,7 +155,6 @@ Snapshot your tmux layout, pane paths, and window/session names.
 
 See more about `freezing tmux`_ sessions.
 
-
 Convert a session file
 ----------------------
 
@@ -176,6 +175,11 @@ You can auto confirm the prompt. In this case no preview will be shown.
    $ tmuxp convert -y filename
    $ tmuxp convert --yes filename
 
+Plugin System
+-------------
+
+tmuxp has a plugin system to allow for custom behavior. See more about the 
+`Plugin System`_. 
 
 Docs / Reading material
 -----------------------
@@ -200,6 +204,7 @@ Want to learn more about tmux itself? `Read The Tao of Tmux online`_.
 .. _teamocil: https://github.com/remiprev/teamocil
 .. _Examples: http://tmuxp.git-pull.com/examples.html
 .. _freezing tmux: http://tmuxp.git-pull.com/cli.html#freeze-sessions
+.. _Plugin System: http://tmuxp.git-pull.com/plugin_system.html
 .. _bootstrap_env.py: https://github.com/tmux-python/tmuxp/blob/master/bootstrap_env.py
 .. _testing: http://tmuxp.git-pull.com/developing.html#test-runner
 .. _python objects: http://tmuxp.git-pull.com/api.html#api

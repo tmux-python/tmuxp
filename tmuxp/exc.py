@@ -15,6 +15,8 @@ class TmuxpException(Exception):
 
     """Base Exception for Tmuxp Errors."""
 
+    pass
+
 
 class ConfigError(TmuxpException):
 
@@ -26,6 +28,13 @@ class ConfigError(TmuxpException):
 class EmptyConfigException(ConfigError):
 
     """Configuration is empty."""
+
+    pass
+
+
+class TmuxpPluginException(TmuxpException):
+
+    """Base Exception for Tmuxp Errors."""
 
     pass
 

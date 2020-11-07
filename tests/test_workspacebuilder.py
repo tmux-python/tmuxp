@@ -15,6 +15,7 @@ from libtmux.test import retry, temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
 from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp.cli import load_plugins
 
 from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
@@ -673,3 +674,108 @@ def test_before_load_true_if_test_passes_with_args(server):
 
     with temp_session(server) as session:
         builder.build(session=session)
+
+
+def test_plugin_system_before_workspace_builder(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_bwb.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#S'")
+    assert proc.stdout[0] == "'plugin_test_bwb'"
+
+
+def test_plugin_system_on_window_create(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_owc.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#W'")
+    assert proc.stdout[0] == "'plugin_test_owc'"
+
+
+def test_plugin_system_after_window_finished(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_awf.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#W'")
+    assert proc.stdout[0] == "'plugin_test_awf'"
+
+
+def test_plugin_system_on_window_create_multiple_windows(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_owc_multiple_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('list-windows', '-F', "'#W'")
+    assert "'plugin_test_owc_mw'" in proc.stdout
+    assert "'plugin_test_owc_mw_2'" in proc.stdout
+
+
+def test_plugin_system_after_window_finished_multiple_windows(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_awf_multiple_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('list-windows', '-F', "'#W'")
+    assert "'plugin_test_awf_mw'" in proc.stdout
+    assert "'plugin_test_awf_mw_2'" in proc.stdout
+
+
+def test_plugin_system_multiple_plugins(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_multiple_plugins.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    # Drop through to the before_script plugin hook
+    proc = session.cmd('display-message', '-p', "'#S'")
+    assert proc.stdout[0] == "'plugin_test_bwb'"
+
+    # Drop through to the after_window_finished. This won't succeed
+    # unless on_window_create succeeds because of how the test plugin
+    # override methods are currently written
+    proc = session.cmd('display-message', '-p', "'#W'")
+    assert proc.stdout[0] == "'mp_test_awf'"

@@ -3,7 +3,7 @@ skip-string-normalization = true
 
 [tool.poetry]
 name = "tmuxp"
-version = "1.6.1"
+version = "1.7.0a1"
 description = "tmux session manager"
 license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]
@@ -69,6 +69,12 @@ pytest-mock = [
   {version="<3.0.0", python="<3"},
   {version="*", python=">=3"}
 ]
+tmuxp-test-plugin-bwb = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/"}
+tmuxp-test-plugin-bs = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/"}
+tmuxp-test-plugin-r = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/"}
+tmuxp-test-plugin-owc = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/"}
+tmuxp-test-plugin-awf = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/"}
+tmuxp-test-plugin-fail = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/"}
 
 ### Coverage ###
 codecov = "*"

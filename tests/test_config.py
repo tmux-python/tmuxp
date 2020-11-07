@@ -383,3 +383,23 @@ def test_replaces_env_variables(monkeypatch):
     assert "%s/moo" % env_val == sconfig['global_options']['default-shell']
     assert "%s/lol" % env_val == sconfig['options']['default-command']
     assert "logging @ %s" % env_val == sconfig['windows'][1]['window_name']
+
+
+def test_plugins():
+    yaml_config = """
+    session_name: test session
+    plugins: tmuxp-plugin-one.plugin.TestPluginOne
+    windows:
+    - window_name: editor
+      panes:
+      shell_command:
+      - tail -F /var/log/syslog
+      start_directory: /var/log
+    """
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    with pytest.raises(exc.ConfigError) as excinfo:
+        config.validate_schema(sconfig)
+        assert excinfo.matches('only supports list type')

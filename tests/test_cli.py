@@ -7,6 +7,8 @@ import os
 
 import pytest
 
+import kaptan
+
 import click
 from click.testing import CliRunner
 
@@ -20,7 +22,11 @@ from tmuxp.cli import (
     is_pure_name,
     load_workspace,
     scan_config,
+    _reattach,
+    load_plugins,
 )
+from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 from .fixtures._util import curjoin, loadfixture
 
@@ -953,3 +959,103 @@ def test_ls_cli(monkeypatch, tmpdir):
     runner = CliRunner()
     cli_output = runner.invoke(command_ls).output
     assert cli_output == '\n'.join(stems) + '\n'
+
+
+def test_load_plugins():
+    plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(plugins_config).get()
+    sconfig = config.expand(sconfig)
+
+    plugins = load_plugins(sconfig)
+
+    assert len(plugins) == 1
+
+    test_plugin_class_types = [
+        PluginBeforeWorkspaceBuilder().__class__,
+    ]
+    for plugin in plugins:
+        assert plugin.__class__ in test_plugin_class_types
+
+
+@pytest.mark.skip('Not sure how to clean up the tmux session this makes')
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [
+        (
+            ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
+            ['y\n'],
+        )
+    ],
+)
+def test_load_plugins_version_fail_skip(cli_args, inputs):
+    runner = CliRunner()
+
+    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+    assert '[Loading]' in results.output
+
+
+@pytest.mark.parametrize(
+    "cli_args,inputs",
+    [
+        (
+            ['load', 'tests/fixtures/workspacebuilder/plugin_versions_fail.yaml'],
+            ['n\n'],
+        )
+    ],
+)
+def test_load_plugins_version_fail_no_skip(cli_args, inputs):
+    runner = CliRunner()
+
+    results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
+    assert '[Not Skipping]' in results.output
+
+
+@pytest.mark.parametrize(
+    "cli_args", [(['load', 'tests/fixtures/workspacebuilder/plugin_missing_fail.yaml'])]
+)
+def test_load_plugins_plugin_missing(cli_args):
+    runner = CliRunner()
+
+    results = runner.invoke(cli.cli, cli_args)
+    assert '[Plugin Error]' in results.output
+
+
+def test_plugin_system_before_script(server, monkeypatch):
+    # this is an implementation test. Since this testsuite may be ran within
+    # a tmux session by the developer himself, delete the TMUX variable
+    # temporarily.
+    monkeypatch.delenv('TMUX', raising=False)
+    session_file = curjoin("workspacebuilder/plugin_bs.yaml")
+
+    # open it detached
+    session = load_workspace(
+        session_file, socket_name=server.socket_name, detached=True
+    )
+
+    assert isinstance(session, libtmux.Session)
+    assert session.name == 'plugin_test_bs'
+
+
+def test_reattach_plugins(server):
+    config_plugins = loadfixture("workspacebuilder/plugin_r.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    # open it detached
+    builder = WorkspaceBuilder(
+        sconf=sconfig, plugins=load_plugins(sconfig), server=server
+    )
+    builder.build()
+
+    try:
+        _reattach(builder)
+    except libtmux.exc.LibTmuxException:
+        pass
+
+    proc = builder.session.cmd('display-message', '-p', "'#S'")
+
+    assert proc.stdout[0] == "'plugin_test_r'"

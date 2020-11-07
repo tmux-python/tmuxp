@@ -1,0 +1,14 @@
+session_name: plugin-test-multiple-plugins
+plugins:
+- 'tmuxp_test_plugin_bwb.plugin.PluginBeforeWorkspaceBuilder'
+- 'tmuxp_test_plugin_owc.plugin.PluginOnWindowCreate'
+- 'tmuxp_test_plugin_awf.plugin.PluginAfterWindowFinished'
+windows:
+- window_name: mp_test
+  layout: tiled
+  shell_command_before:
+    - cd ~/
+  panes:
+    - shell_command:
+        - cd /var/log
+        - ls -al | grep \.log
