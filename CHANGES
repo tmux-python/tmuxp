@@ -20,6 +20,8 @@ tmuxp 1.7.0a1 (2020-11-07)
 
   Thank you @joseph-flinn!
 
+.. _v1.6.1:
+
 tmuxp 1.6.1 (2020-11-07)
 ------------------------
 - :issue:`641` Improvements to ``shell``
@@ -37,23 +39,28 @@ tmuxp 1.6.1 (2020-11-07)
     - ``--pdb``: Use plain old ``breakpoint()`` (python 3.7+) or
       ``pdb.set_trace``
     - ``--code``: Drop into ``code.interact``, accepts ``--use-pythonrc``
-    - ``--bpython``: Drop into bpython
-    - ``--ipython``: Drop into ipython
-    - ``--ptpython``: Drop into ptpython, accepts ``--use-vi-mode``
-    - ``--ptipython``: Drop into ipython + ptpython, accepts
+    - ``--bpython``: Drop into `bpython`_
+    - ``--ipython``: Drop into `ipython`_
+    - ``--ptpython``: Drop into `ptpython`_, accepts ``--use-vi-mode``
+    - ``--ptipython``: Drop into `ipython`_ + `ptpython`_, accepts
       ``--use-vi-mode``
 
 .. _django-extensions: https://github.com/django-extensions/django-extensions
 
 tmuxp 1.6.0 (2020-11-06)
 ------------------------
-- :issue:`636` New command: ``tmuxp shell`` and :issue:`638` ``tmuxp shell_plus``
+- :issue:`636` + :issue:`638` New command: ``tmuxp shell``
 
   Automatically preloads session, window, and pane via `libtmux`_
   api objects and makes them available in a python console.
 
   .. image:: _static/tmuxp-shell.gif
      :width: 100%
+
+  As of :ref:`1.6.1 (above) <v1.6.1>`, ``tmuxp shell`` will find the most
+  feature-rich shell available. If you have `ipython`_, `ptpython`_, or 
+  `bpython`_ available, it will be selected automatically. Pass ``--pdb``
+  to use standard library pdb, or ``--code`` to use ``code.interact``.
 
   In python 3.7+, supports ``PYTHONBREAKPOINT``:
 
@@ -81,7 +88,9 @@ tmuxp 1.6.0 (2020-11-06)
       $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
       MY_WINDOW
 
-  ``tmuxp shell_plus`` has autocompletion
+.. _bpython: https://bpython-interpreter.org/
+.. _ipython: https://ipython.org/
+.. _ptpython: https://github.com/prompt-toolkit/ptpython
 
 tmuxp 1.5.8 (2020-10-31)
 ------------------------
