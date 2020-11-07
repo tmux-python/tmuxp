@@ -20,8 +20,7 @@ from libtmux.common import (
     has_minimum_version, 
     which, 
     get_version,
-    tmux_cmd,
-    which
+    tmux_cmd
 )
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
