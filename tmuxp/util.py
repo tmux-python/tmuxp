@@ -92,6 +92,15 @@ def raise_if_tmux_not_running(server):
             raise e
 
 
+def is_server_running(server):
+    try:
+        raise_if_tmux_not_running(server=server)
+    except LibTmuxException:
+        return False
+
+    return True
+
+
 def get_current_pane(server):
     """Return Pane if one found in env"""
     if os.getenv("TMUX_PANE") is not None:

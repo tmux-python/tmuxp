@@ -875,9 +875,17 @@ def command_shell(
     print(f"detached: {detached}")
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
-    util.raise_if_tmux_not_running(server=server)
-
-    current_pane = util.get_current_pane(server=server)
+    if not util.is_server_running(server=server):
+        if answer_yes or click.confirm(
+            "No tmux server running, create?",
+            default=True,
+        ):
+            session = server.new_session(session_name=session_name or "tmuxp shell")
+            window = session.attached_window
+            window_name = window.name
+            current_pane = window.attached_pane
+    else:
+        current_pane = util.get_current_pane(server=server)
 
     try:
         current_session = session = util.get_session(
