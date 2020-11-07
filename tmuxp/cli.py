@@ -1081,7 +1081,7 @@ def command_debug_info():
             strings
         ))
 
-    def generate_output_break():
+    def output_break():
         """
         Generate output break.
         """
@@ -1100,14 +1100,14 @@ def command_debug_info():
         ])
 
     output = [
-        generate_output_break(),
+        output_break(),
         'environment:\n%s' % '\n'.join(prepend_tab([
             'system: %s' % os.uname().sysname,
             'arch: %s' % os.uname().machine,
             'os: {0} {1}'.format(os.uname().nodename, os.uname().version),
             'kernel: %s' % os.uname().release,
         ])),
-        generate_output_break(),
+        output_break(),
         'python version: %s' % ' '.join(sys.version.split('\n')),
         'system PATH: %s' % os.environ['PATH'],
         'tmux version: %s' % get_version(),
@@ -1116,7 +1116,7 @@ def command_debug_info():
         'tmux path: %s' % which('tmux'),
         'tmuxp path: %s' % tmuxp_path,
         'shell: %s' % os.environ['SHELL'],
-        generate_output_break(),
+        output_break(),
         'tmux sessions:\n%s' % format_tmux_resp(
             tmux_cmd('list-sessions')
         ),
