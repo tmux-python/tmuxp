@@ -956,7 +956,9 @@ def test_ls_cli(monkeypatch, tmpdir):
     assert cli_output == '\n'.join(stems) + '\n'
 
 
-def test_debug_info_cli():
+def test_debug_info_cli(monkeypatch, tmpdir):
+    monkeypatch.setenv('SHELL', '/bin/bash')
+
     runner = CliRunner()
     cli_output = runner.invoke(command_debug_info).output
     assert 'environment' in cli_output

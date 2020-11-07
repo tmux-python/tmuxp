@@ -24,6 +24,7 @@ from libtmux.common import (
 )
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
+
 from libtmux import __version__ as libtmux_version
 
 from . import config, exc, log, util, __file__ as tmuxp_path
@@ -1085,10 +1086,12 @@ def command_debug_info():
         """
         Format tmux command response for tmuxp stdout.
         """
-        return '\n'.join([
-            '\n'.join(prepend_tab(std_resp.stdout)),
-            click.style('\n'.join(prepend_tab(std_resp.stderr)), fg='red'),
-        ])
+        return '\n'.join(
+            [
+                '\n'.join(prepend_tab(std_resp.stdout)),
+                click.style('\n'.join(prepend_tab(std_resp.stderr)), fg='red'),
+            ]
+        )
 
     output = [
         output_break(),
