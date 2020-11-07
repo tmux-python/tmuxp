@@ -21,7 +21,7 @@ from libtmux.server import Server
 
 from . import config, exc, log, util
 from .__about__ import __version__
-from ._compat import string_types
+from ._compat import PY3, PYMINOR, string_types
 from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
@@ -671,7 +671,15 @@ def startup(config_dir):
     'command',
     help='Instead of opening shell, execute python code in libtmux and exit',
 )
-def command_shell(session_name, window_name, socket_name, socket_path, command):
+@click.option(
+    '--use-pdb/--no-pdb',
+    'use_pdb',
+    help='Use pdb / breakpoint() instead of code.interact()',
+    default=False,
+)
+def command_shell(
+    session_name, window_name, socket_name, socket_path, command, use_pdb
+):
     """Launch python shell for tmux server, session, window and pane.
 
     Priority given to loaded session/wndow/pane objects:
@@ -699,9 +707,15 @@ def command_shell(session_name, window_name, socket_name, socket_path, command):
     if command is not None:
         exec(command)
     else:
-        from ._compat import breakpoint as tmuxp_breakpoint
+        if use_pdb or (os.getenv('PYTHONBREAKPOINT') and PY3 and PYMINOR >= 7):
+            from ._compat import breakpoint as tmuxp_breakpoint
 
-        tmuxp_breakpoint()
+            tmuxp_breakpoint()
+            return
+        else:
+            from .shell import launch
+
+            launch(server=server, session=session, window=window, pane=pane)
 
 
 @cli.command(name='shell_plus')
