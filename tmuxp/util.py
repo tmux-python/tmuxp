@@ -83,7 +83,10 @@ def raise_if_tmux_not_running(server):
     try:
         server.sessions
     except LibTmuxException as e:
-        if 'No such file or directory' in str(e):
+        if any(
+            needle in str(e)
+            for needle in ['No such file or directory', 'no server running on']
+        ):
             raise LibTmuxException(
                 'no tmux session found. Start a tmux session and try again. \n'
                 'Original error: ' + str(e)

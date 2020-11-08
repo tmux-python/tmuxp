@@ -15,8 +15,8 @@ from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
-    command_ls,
     command_debug_info,
+    command_ls,
     get_config_dir,
     is_pure_name,
     load_workspace,
@@ -533,7 +533,7 @@ def test_shell(
             {},
             {},
             LibTmuxException,
-            r'.*DoesNotExist\s\(No such file or directory\).*',
+            r'.*DoesNotExist.*',
         ),
         (
             [
