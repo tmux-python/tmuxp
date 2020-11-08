@@ -8,6 +8,10 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.7.0a2 (2020-11-08)
+--------------------------
+- Port ``tmuxp debug-info`` from :issue:`643` from via v1.6.2
+
 tmuxp 1.7.0a1 (2020-11-07)
 --------------------------
 - :issue:`530` Plugin system
