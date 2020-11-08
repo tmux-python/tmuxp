@@ -16,6 +16,7 @@ from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
     command_ls,
+    command_debug_info,
     get_config_dir,
     is_pure_name,
     load_workspace,
@@ -953,3 +954,24 @@ def test_ls_cli(monkeypatch, tmpdir):
     runner = CliRunner()
     cli_output = runner.invoke(command_ls).output
     assert cli_output == '\n'.join(stems) + '\n'
+
+
+def test_debug_info_cli(monkeypatch, tmpdir):
+    monkeypatch.setenv('SHELL', '/bin/bash')
+
+    runner = CliRunner()
+    cli_output = runner.invoke(command_debug_info).output
+    assert 'environment' in cli_output
+    assert 'python version' in cli_output
+    assert 'system PATH' in cli_output
+    assert 'tmux version' in cli_output
+    assert 'libtmux version' in cli_output
+    assert 'tmuxp version' in cli_output
+    assert 'tmux path' in cli_output
+    assert 'tmuxp path' in cli_output
+    assert 'shell' in cli_output
+    assert 'tmux session' in cli_output
+    assert 'tmux windows' in cli_output
+    assert 'tmux panes' in cli_output
+    assert 'tmux global options' in cli_output
+    assert 'tmux window options' in cli_output

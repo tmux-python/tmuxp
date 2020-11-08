@@ -184,6 +184,22 @@ are created, the last session is named from the terminal.
 
     $ tmxup load -s <new_session_name> <filename1> ...
 
+.. _cli_debug_info:
+
+Debug Info
+----------
+
+Use to collect all relevant information for submitting an issue to the project.
+
+.. code-block:: bash
+
+    $ tmuxp debug-info
+    --------------------------
+    environment:
+        system: Linux
+        arch: x86_64
+    ...
+
 .. _cli_import:
 
 Import
