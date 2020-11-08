@@ -18,6 +18,7 @@ from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
     _reattach,
+    command_debug_info,
     command_ls,
     get_config_dir,
     is_pure_name,
@@ -1058,3 +1059,24 @@ def test_reattach_plugins(server):
     proc = builder.session.cmd('display-message', '-p', "'#S'")
 
     assert proc.stdout[0] == "'plugin_test_r'"
+
+
+def test_debug_info_cli(monkeypatch, tmpdir):
+    monkeypatch.setenv('SHELL', '/bin/bash')
+
+    runner = CliRunner()
+    cli_output = runner.invoke(command_debug_info).output
+    assert 'environment' in cli_output
+    assert 'python version' in cli_output
+    assert 'system PATH' in cli_output
+    assert 'tmux version' in cli_output
+    assert 'libtmux version' in cli_output
+    assert 'tmuxp version' in cli_output
+    assert 'tmux path' in cli_output
+    assert 'tmuxp path' in cli_output
+    assert 'shell' in cli_output
+    assert 'tmux session' in cli_output
+    assert 'tmux windows' in cli_output
+    assert 'tmux panes' in cli_output
+    assert 'tmux global options' in cli_output
+    assert 'tmux window options' in cli_output

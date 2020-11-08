@@ -181,6 +181,21 @@ Plugin System
 tmuxp has a plugin system to allow for custom behavior. See more about the 
 `Plugin System`_. 
 
+Debug Info
+----------
+
+Collect system info to submit with a Github issue:
+
+.. code-block:: sh
+
+   $ tmuxp debug-info
+   ------------------
+   environment:
+       system: Linux
+       arch: x86_64
+
+   # ... so on
+
 Docs / Reading material
 -----------------------
 
