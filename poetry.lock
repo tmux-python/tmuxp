@@ -479,20 +479,20 @@ description = "Store and access your passwords safely."
 name = "keyring"
 optional = false
 python-versions = ">=3.6"
-version = "21.4.0"
+version = "21.5.0"
 
 [package.dependencies]
-SecretStorage = ">=3"
+SecretStorage = ">=3.2"
 jeepney = ">=0.4.2"
 pywin32-ctypes = "<0.1.0 || >0.1.0,<0.1.1 || >0.1.1"
 
 [package.dependencies.importlib-metadata]
 python = "<3.8"
-version = "*"
+version = ">=1"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black (>=0.3.7)", "pytest-cov", "pytest-mypy"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [[package]]
 category = "main"
@@ -608,7 +608,7 @@ marker = "python_version >= \"3.6\" and python_version < \"4.0\""
 name = "pathspec"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "0.8.0"
+version = "0.8.1"
 
 [[package]]
 category = "dev"
@@ -1005,10 +1005,10 @@ marker = "sys_platform == \"linux\""
 name = "secretstorage"
 optional = false
 python-versions = ">=3.5"
-version = "3.1.2"
+version = "3.2.0"
 
 [package.dependencies]
-cryptography = "*"
+cryptography = ">=2.0"
 jeepney = ">=0.4.2"
 
 [[package]]
@@ -1198,6 +1198,108 @@ test = ["pytest", "mock"]
 
 [[package]]
 category = "dev"
+description = ""
+develop = true
+name = "tmuxp-test-plugin-awf"
+optional = false
+python-versions = "~2.7 || ^3.5"
+version = "0.0.2"
+
+[package.dependencies]
+tmuxp = "^1.6.0"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf"
+
+[[package]]
+category = "dev"
+description = ""
+develop = true
+name = "tmuxp-test-plugin-bs"
+optional = false
+python-versions = "~2.7 || ^3.5"
+version = "0.0.2"
+
+[package.dependencies]
+tmuxp = "^1.6.0."
+
+[package.source]
+reference = ""
+type = "directory"
+url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs"
+
+[[package]]
+category = "dev"
+description = ""
+develop = true
+name = "tmuxp-test-plugin-bwb"
+optional = false
+python-versions = "~2.7 || ^3.5"
+version = "0.0.2"
+
+[package.dependencies]
+tmuxp = "^1.6.0"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb"
+
+[[package]]
+category = "dev"
+description = ""
+develop = true
+name = "tmuxp-test-plugin-fail"
+optional = false
+python-versions = "~2.7 || ^3.5"
+version = "0.1.0"
+
+[package.dependencies]
+tmuxp = "^1.6.0"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail"
+
+[[package]]
+category = "dev"
+description = ""
+develop = true
+name = "tmuxp-test-plugin-owc"
+optional = false
+python-versions = "~2.7 || ^3.5"
+version = "0.0.2"
+
+[package.dependencies]
+tmuxp = "^1.6.0"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc"
+
+[[package]]
+category = "dev"
+description = ""
+develop = true
+name = "tmuxp-test-plugin-r"
+optional = false
+python-versions = "~2.7 || ^3.5"
+version = "0.0.2"
+
+[package.dependencies]
+tmuxp = "^1.6.0"
+
+[package.source]
+reference = ""
+type = "directory"
+url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r"
+
+[[package]]
+category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 marker = "python_version >= \"3.6\" and python_version < \"4.0\" or python_version >= \"3\""
 name = "toml"
@@ -1361,7 +1463,7 @@ lint = []
 test = []
 
 [metadata]
-content-hash = "77432007847ff3d4dfb7b62412e8db50dfd30076ba6bb1e019851c7b0502e7ed"
+content-hash = "b2634966ff0baa0d081c246b681bf7794a19c518e81ea6c5f5f43ec9543c1cf0"
 lock-version = "1.0"
 python-versions = "~2.7 || ^3.5"
 
@@ -1602,8 +1704,8 @@ kaptan = [
     {file = "kaptan-0.5.12.tar.gz", hash = "sha256:1abd1f56731422fce5af1acc28801677a51e56f5d3c3e8636db761ed143c3dd2"},
 ]
 keyring = [
-    {file = "keyring-21.4.0-py3-none-any.whl", hash = "sha256:4e34ea2fdec90c1c43d6610b5a5fafa1b9097db1802948e90caf5763974b8f8d"},
-    {file = "keyring-21.4.0.tar.gz", hash = "sha256:9aeadd006a852b78f4b4ef7c7556c2774d2432bbef8ee538a3e9089ac8b11466"},
+    {file = "keyring-21.5.0-py3-none-any.whl", hash = "sha256:12de23258a95f3b13e5b167f7a641a878e91eab8ef16fafc077720a95e6115bb"},
+    {file = "keyring-21.5.0.tar.gz", hash = "sha256:207bd66f2a9881c835dad653da04e196c678bf104f8252141d2d3c4f31051579"},
 ]
 libtmux = [
     {file = "libtmux-0.8.5-py3-none-any.whl", hash = "sha256:640b315497dba2235778d9fe6924e995523f61bfbbca35a0f8036fe07c1627b3"},
@@ -1672,8 +1774,8 @@ pathlib2 = [
     {file = "pathlib2-2.3.5.tar.gz", hash = "sha256:6cd9a47b597b37cc57de1c05e56fb1a1c9cc9fab04fe78c29acd090418529868"},
 ]
 pathspec = [
-    {file = "pathspec-0.8.0-py2.py3-none-any.whl", hash = "sha256:7d91249d21749788d07a2d0f94147accd8f845507400749ea19c1ec9054a12b0"},
-    {file = "pathspec-0.8.0.tar.gz", hash = "sha256:da45173eb3a6f2a5a487efba21f050af2b41948be6ab52b6a1e3ff22bb8b7061"},
+    {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
+    {file = "pathspec-0.8.1.tar.gz", hash = "sha256:86379d6b86d75816baba717e64b1a3a3469deb93bb76d613c9ce79edc5cb68fd"},
 ]
 pillow = [
     {file = "Pillow-6.2.2-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:834dd023b7f987d6b700ad93dc818098d7eb046bd445e9992b3093c6f9d7a95f"},
@@ -1905,8 +2007,8 @@ scandir = [
     {file = "scandir-1.10.0.tar.gz", hash = "sha256:4d4631f6062e658e9007ab3149a9b914f3548cb38bfb021c64f39a025ce578ae"},
 ]
 secretstorage = [
-    {file = "SecretStorage-3.1.2-py3-none-any.whl", hash = "sha256:b5ec909dde94d4ae2fa26af7c089036997030f0cf0a5cb372b4cccabd81c143b"},
-    {file = "SecretStorage-3.1.2.tar.gz", hash = "sha256:15da8a989b65498e29be338b3b279965f1b8f09b9668bd8010da183024c8bff6"},
+    {file = "SecretStorage-3.2.0-py3-none-any.whl", hash = "sha256:ed5279d788af258e4676fa26b6efb6d335a31f1f9f529b6f1e200f388fac33e1"},
+    {file = "SecretStorage-3.2.0.tar.gz", hash = "sha256:46305c3847ee3f7252b284e0eee5590fa6341c891104a2fd2313f8798c615a82"},
 ]
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
@@ -1954,6 +2056,12 @@ sphinxcontrib-websupport = [
     {file = "sphinxcontrib-websupport-1.1.2.tar.gz", hash = "sha256:1501befb0fdf1d1c29a800fdbf4ef5dc5369377300ddbdd16d2cd40e54c6eefc"},
     {file = "sphinxcontrib_websupport-1.1.2-py2.py3-none-any.whl", hash = "sha256:e02f717baf02d0b6c3dd62cf81232ffca4c9d5c331e03766982e3ff9f1d2bc3f"},
 ]
+tmuxp-test-plugin-awf = []
+tmuxp-test-plugin-bs = []
+tmuxp-test-plugin-bwb = []
+tmuxp-test-plugin-fail = []
+tmuxp-test-plugin-owc = []
+tmuxp-test-plugin-r = []
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
