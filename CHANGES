@@ -6,8 +6,12 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
-- :issue:`352` New command ``tmuxp debug-info`` for creating github issues
 - *Insert changes/features/fixes for next release here*
+
+tmuxp 1.6.2 (2020-11-08)
+------------------------
+- :issue:`643` New command ``tmuxp debug-info`` for creating github
+  issues, fixes :issue:`352`. Thank you @joseph-flinn!
 
 tmuxp 1.6.1 (2020-11-07)
 ------------------------
