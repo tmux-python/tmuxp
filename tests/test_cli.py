@@ -7,26 +7,25 @@ import os
 
 import pytest
 
-import kaptan
-
 import click
+import kaptan
 from click.testing import CliRunner
+from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
+    _reattach,
     command_ls,
     get_config_dir,
     is_pure_name,
+    load_plugins,
     load_workspace,
     scan_config,
-    _reattach,
-    load_plugins,
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
-from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 from .fixtures._util import curjoin, loadfixture
 
@@ -538,7 +537,7 @@ def test_shell(
             {},
             {},
             LibTmuxException,
-            r'.*DoesNotExist\s\(No such file or directory\).*',
+            r'.*DoesNotExist.*',
         ),
         (
             [
