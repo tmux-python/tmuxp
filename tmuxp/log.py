@@ -21,6 +21,15 @@ LEVEL_COLORS = {
     'CRITICAL': Fore.RED,
 }
 
+LOG_LEVELS = {
+    'CRITICAL': 50,
+    'ERROR': 40,
+    'WARNING': 30,
+    'INFO': 20,
+    'DEBUG': 10,
+    'NOTSET': 0
+}
+
 
 def default_log_template(self, record):
     """
