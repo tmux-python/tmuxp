@@ -178,19 +178,19 @@ You can auto confirm the prompt. In this case no preview will be shown.
 
 
 Debug Info
----------
+----------
 
-Collect system info to submit with a Github issue
+Collect system info to submit with a Github issue:
 
 .. code-block:: sh
 
-    $ tmuxp debug-info
-    --------------------------
-    environment:
-        system: Linux
-        arch: x86_64
-    ...
+   $ tmuxp debug-info
+   ------------------
+   environment:
+       system: Linux
+       arch: x86_64
 
+   # ... so on
 
 Docs / Reading material
 -----------------------
