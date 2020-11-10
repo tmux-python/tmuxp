@@ -123,6 +123,7 @@ in a configuration file like the following:
 Plugin API
 ----------
 
+.. automethod:: tmuxp.plugin.TmuxpPlugin.__init__
 .. automethod:: tmuxp.plugin.TmuxpPlugin.before_workspace_builder
 .. automethod:: tmuxp.plugin.TmuxpPlugin.on_window_create
 .. automethod:: tmuxp.plugin.TmuxpPlugin.after_window_finished
