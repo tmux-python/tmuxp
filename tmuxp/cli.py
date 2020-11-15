@@ -392,46 +392,7 @@ def scan_config(config, config_dir=None):
     return config
 
 
-<<<<<<< Updated upstream
 def _reattach(session):
-=======
-def load_plugins(sconf):
-    """
-    Load and return plugins in config
-    """
-    plugins = []
-    if 'plugins' in sconf:
-        for plugin in sconf['plugins']:
-            try:
-                module_name = plugin.split('.')
-                module_name = '.'.join(module_name[:-1])
-                plugin_name = plugin.split('.')[-1]
-                plugin = getattr(importlib.import_module(module_name), plugin_name)
-                plugins.append(plugin())
-            except exc.TmuxpPluginException as error:
-                if not click.confirm(
-                    '%sSkip loading %s?'
-                    % (click.style(str(error), fg='yellow'), plugin_name),
-                    default=True,
-                ):
-                    tmuxp_echo(
-                        click.style('[Not Skipping] ', fg='yellow')
-                        + 'Plugin versions constraint not met. Exiting...'
-                    )
-                    sys.exit(1)
-            except Exception as error:
-                tmuxp_echo(
-                    click.style('[Plugin Error] ', fg='red')
-                    + "Couldn\'t load {0}\n".format(plugin)
-                    + click.style('{0}'.format(error), fg='yellow')
-                )
-                sys.exit(1)
-
-    return plugins
-
-
-def _reattach(builder):
->>>>>>> Stashed changes
     """
     Reattach session (depending on env being inside tmux already or not)
 
