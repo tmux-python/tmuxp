@@ -623,7 +623,7 @@ def load_workspace(
 @click.group(context_settings={'obj': {}})
 @click.version_option(__version__, '-V', '--version', message='%(prog)s %(version)s')
 @click.option(
-    '--log_level',
+    '--log-level',
     default='INFO',
     help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)',
 )

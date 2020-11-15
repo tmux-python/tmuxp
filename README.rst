@@ -177,8 +177,15 @@ You can auto confirm the prompt. In this case no preview will be shown.
    $ tmuxp convert --yes filename
 
 
-Debug Info
+Debugging Helpers
 ----------
+
+The `load` command provides a way to log output to a log file for debugging 
+purposes.
+
+.. code-block:: sh
+
+   $ tmuxp load --log-file <log-file-name> .
 
 Collect system info to submit with a Github issue:
 
@@ -191,6 +198,7 @@ Collect system info to submit with a Github issue:
        arch: x86_64
 
    # ... so on
+
 
 Docs / Reading material
 -----------------------
