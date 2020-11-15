@@ -437,7 +437,7 @@ session_name: hello
         input_args = 'y\ny\n' if '-y' not in cli_args else ''
 
         runner.invoke(cli.cli, cli_args, input=input_args)
-        assert 'Loading' in tmpdir.join('log.txt').open().read() 
+        assert 'Loading' in tmpdir.join('log.txt').open().read()
 
 
 @pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--pdb')])

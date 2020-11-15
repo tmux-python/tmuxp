@@ -6,6 +6,7 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
+- Adding option to dump `load` output to log file
 - *Insert changes/features/fixes for next release here*
 
 tmuxp 1.7.0a2 (2020-11-08)

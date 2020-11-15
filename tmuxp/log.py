@@ -27,7 +27,7 @@ LOG_LEVELS = {
     'WARNING': 30,
     'INFO': 20,
     'DEBUG': 10,
-    'NOTSET': 0
+    'NOTSET': 0,
 }
 
 

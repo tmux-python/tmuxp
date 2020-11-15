@@ -368,7 +368,8 @@ def scan_config(config, config_dir=None):
             if len(candidates) > 1:
                 tmuxp_echo(
                     click.style(
-                        'Multiple .tmuxp.{yml,yaml,json} configs in %s' % dirname(config),
+                        'Multiple .tmuxp.{yml,yaml,json} configs in %s'
+                        % dirname(config),
                         fg="red",
                     )
                 )
@@ -710,7 +711,7 @@ def setup_logger(logger=None, level='INFO'):
         # channel.setFormatter(log.LogFormatter())
 
         logger.setLevel(level)
-        #logger.addHandler(channel)
+        # logger.addHandler(channel)
 
 
 def startup(config_dir):
@@ -931,7 +932,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
-@click.option( '--log-file', help='File to log errors/output to')
+@click.option('--log-file', help='File to log errors/output to')
 def command_load(
     ctx,
     config,
