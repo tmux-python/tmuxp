@@ -47,7 +47,7 @@ def tmuxp_echo(message=None, log_level='INFO', **click_kwargs):
     """
     Combines logging.log and click.echo
     """
-    logger.log(log.LOG_LEVELS[log_level], message)
+    logger.log(log.LOG_LEVELS[log_level], click.unstyle(message))
     click.echo(message, **click_kwargs)
 
 
@@ -411,13 +411,13 @@ def load_plugins(sconf):
                     % (click.style(str(error), fg='yellow'), plugin_name),
                     default=True,
                 ):
-                    click.echo(
+                    tmuxp_echo(
                         click.style('[Not Skipping] ', fg='yellow')
                         + 'Plugin versions constraint not met. Exiting...'
                     )
                     sys.exit(1)
             except Exception as error:
-                click.echo(
+                tmuxp_echo(
                     click.style('[Plugin Error] ', fg='red')
                     + "Couldn\'t load {0}\n".format(plugin)
                     + click.style('{0}'.format(error), fg='yellow')
@@ -576,6 +576,11 @@ def load_workspace(
     which('tmux')  # raise exception if tmux not found
 
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
+        tmuxp_echo(
+            click.style('[Loading] ', fg='green')
+            + click.style(config_file, fg='blue', bold=True)
+        )
+
         builder = WorkspaceBuilder(
             sconf=sconfig, plugins=load_plugins(sconfig), server=t
         )
@@ -600,11 +605,6 @@ def load_workspace(
         return
 
     try:
-        tmuxp_echo(
-            click.style('[Loading] ', fg='green')
-            + click.style(config_file, fg='blue', bold=True)
-        )
-
         builder.build()  # load tmux session via workspace builder
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
@@ -931,6 +931,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
+@click.option( '--log-file', help='File to log errors/output to')
 def command_load(
     ctx,
     config,
@@ -940,6 +941,7 @@ def command_load(
     answer_yes,
     detached,
     colors,
+    log_file,
 ):
     """Load a tmux workspace from each CONFIG.
 
@@ -966,6 +968,7 @@ def command_load(
     util.oh_my_zsh_auto_title()
     if log_file:
         logfile_handler = logging.FileHandler(log_file)
+        logfile_handler.setFormatter(log.LogFormatter())
         logger.addHandler(logfile_handler)
 
     tmux_options = {

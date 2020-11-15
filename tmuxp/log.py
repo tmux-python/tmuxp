@@ -98,8 +98,9 @@ class LogFormatter(logging.Formatter):
 
         prefix = self.template(record) % record.__dict__
 
+        parts = prefix.split(record.message)
         formatted = prefix + " " + record.message
-        return formatted.replace("\n", "\n    ")
+        return formatted.replace("\n", "\n" + parts[0] + " ")
 
 
 def debug_log_template(self, record):
