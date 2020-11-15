@@ -558,6 +558,11 @@ def load_workspace(
     # get the canonical path, eliminating any symlinks
     config_file = os.path.realpath(config_file)
 
+    tmuxp_echo(
+        click.style('[Loading] ', fg='green')
+        + click.style(config_file, fg='blue', bold=True)
+    )
+
     # kaptan allows us to open a yaml or json file as a dict
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
@@ -576,11 +581,6 @@ def load_workspace(
     which('tmux')  # raise exception if tmux not found
 
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
-        tmuxp_echo(
-            click.style('[Loading] ', fg='green')
-            + click.style(config_file, fg='blue', bold=True)
-        )
-
         builder = WorkspaceBuilder(
             sconf=sconfig, plugins=load_plugins(sconfig), server=t
         )
