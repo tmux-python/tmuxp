@@ -21,6 +21,15 @@ LEVEL_COLORS = {
     'CRITICAL': Fore.RED,
 }
 
+LOG_LEVELS = {
+    'CRITICAL': 50,
+    'ERROR': 40,
+    'WARNING': 30,
+    'INFO': 20,
+    'DEBUG': 10,
+    'NOTSET': 0,
+}
+
 
 def default_log_template(self, record):
     """
@@ -89,8 +98,9 @@ class LogFormatter(logging.Formatter):
 
         prefix = self.template(record) % record.__dict__
 
+        parts = prefix.split(record.message)
         formatted = prefix + " " + record.message
-        return formatted.replace("\n", "\n    ")
+        return formatted.replace("\n", "\n" + parts[0] + " ")
 
 
 def debug_log_template(self, record):

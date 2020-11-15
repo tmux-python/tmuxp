@@ -408,6 +408,33 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         assert 'Please set' not in result.output
 
 
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        (['load', '.', '--log-file', 'log.txt']),
+    ],
+)
+def test_load_log_file(cli_args, tmpdir, monkeypatch):
+    # create dummy tmuxp yaml that breaks to prevent actually loading tmux
+    tmpdir.join('.tmuxp.yaml').write(
+        """
+session_name: hello
+        """
+    )
+    tmpdir.join('.oh-my-zsh').ensure(dir=True)
+    monkeypatch.setenv('HOME', str(tmpdir))
+
+    with tmpdir.as_cwd():
+        print('tmpdir: {0}'.format(tmpdir))
+        runner = CliRunner()
+
+        # If autoconfirm (-y) no need to prompt y
+        input_args = 'y\ny\n' if '-y' not in cli_args else ''
+
+        runner.invoke(cli.cli, cli_args, input=input_args)
+        assert 'Loading' in tmpdir.join('log.txt').open().read()
+
+
 @pytest.mark.parametrize("cli_cmd", ['shell', ('shell', '--pdb')])
 @pytest.mark.parametrize(
     "cli_args,inputs,env,expected_output",
