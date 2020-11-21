@@ -29,13 +29,13 @@ jobs:
       run: |
         curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
         python get-poetry.py -y --version 1.0.10
-        echo "::set-env name=PATH::$HOME/.poetry/bin:$PATH"
+        echo "PATH={$HOME}/.poetry/bin:{$PATH}" >> $GITHUB_ENV
         rm get-poetry.py
 
     - name: Get poetry cache paths from config
       run: |
-        echo ::set-env name=poetry_cache_dir::$(poetry config --list | sed -n 's/.*cache-dir = //p' | sed -e 's/^"//' -e 's/"$//')
-        echo ::set-env name=poetry_virtualenvs_path::$(poetry config --list | sed -n 's/.*virtualenvs.path = .* # //p' | sed -e 's/^"//' -e 's/"$//')
+        echo "poetry_cache_dir=$(poetry config --list | sed -n 's/.*cache-dir = //p' | sed -e 's/^\"//' -e 's/\"$//')" >> $GITHUB_ENV
+        echo "poetry_virtualenvs_path::$(poetry config --list | sed -n 's/.*virtualenvs.path = .* # //p' | sed -e 's/^\"//' -e 's/\"$//')" >> $GITHUB_ENV
 
     - name: Configure poetry
       shell: bash
