@@ -42,11 +42,15 @@ def get_cwd():
     return os.getcwd()
 
 
-def tmuxp_echo(message=None, log_level='INFO', **click_kwargs):
+def tmuxp_echo(message=None, log_level='INFO', style_log=False, **click_kwargs):
     """
     Combines logging.log and click.echo
     """
-    logger.log(log.LOG_LEVELS[log_level], click.unstyle(message))
+    if style_log:
+        logger.log(log.LOG_LEVELS[log_level], message)
+    else:
+        logger.log(log.LOG_LEVELS[log_level], click.unstyle(message))
+
     click.echo(message, **click_kwargs)
 
 
