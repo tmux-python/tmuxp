@@ -42,6 +42,18 @@ def get_cwd():
     return os.getcwd()
 
 
+def tmuxp_echo(message=None, log_level='INFO', style_log=False, **click_kwargs):
+    """
+    Combines logging.log and click.echo
+    """
+    if style_log:
+        logger.log(log.LOG_LEVELS[log_level], message)
+    else:
+        logger.log(log.LOG_LEVELS[log_level], click.unstyle(message))
+
+    click.echo(message, **click_kwargs)
+
+
 def get_config_dir():
     """
     Return tmuxp configuration directory.
@@ -246,8 +258,8 @@ def scan_config_argument(ctx, param, value, config_dir=None):
         config_dir = config_dir()
 
     if not config:
-        click.echo("Enter at least one CONFIG")
-        click.echo(ctx.get_help(), color=ctx.color)
+        tmuxp_echo("Enter at least one CONFIG")
+        tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
     if isinstance(value, string_types):
@@ -357,11 +369,14 @@ def scan_config(config, config_dir=None):
             ]
 
             if len(candidates) > 1:
-                click.secho(
-                    'Multiple .tmuxp.{yml,yaml,json} configs in %s' % dirname(config),
-                    fg="red",
+                tmuxp_echo(
+                    click.style(
+                        'Multiple .tmuxp.{yml,yaml,json} configs in %s'
+                        % dirname(config),
+                        fg="red",
+                    )
                 )
-                click.echo(
+                tmuxp_echo(
                     click.wrap_text(
                         'This is undefined behavior, use only one. '
                         'Use file names e.g. myproject.json, coolproject.yaml. '
@@ -505,6 +520,11 @@ def load_workspace(
     # get the canonical path, eliminating any symlinks
     config_file = os.path.realpath(config_file)
 
+    tmuxp_echo(
+        click.style('[Loading] ', fg='green')
+        + click.style(config_file, fg='blue', bold=True)
+    )
+
     # kaptan allows us to open a yaml or json file as a dict
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
@@ -525,7 +545,7 @@ def load_workspace(
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
         builder = WorkspaceBuilder(sconf=sconfig, server=t)
     except exc.EmptyConfigException:
-        click.echo('%s is empty or parsed no config data' % config_file, err=True)
+        tmuxp_echo('%s is empty or parsed no config data' % config_file, err=True)
         return
 
     session_name = sconfig['session_name']
@@ -545,11 +565,6 @@ def load_workspace(
         return
 
     try:
-        click.echo(
-            click.style('[Loading] ', fg='green')
-            + click.style(config_file, fg='blue', bold=True)
-        )
-
         builder.build()  # load tmux session via workspace builder
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
@@ -586,8 +601,8 @@ def load_workspace(
     except exc.TmuxpException as e:
         import traceback
 
-        click.echo(traceback.format_exc(), err=True)
-        click.echo(e, err=True)
+        tmuxp_echo(traceback.format_exc(), err=True)
+        tmuxp_echo(e, err=True)
 
         choice = click.prompt(
             'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
@@ -597,7 +612,7 @@ def load_workspace(
 
         if choice == 'k':
             builder.session.kill_session()
-            click.echo('Session killed.')
+            tmuxp_echo('Session killed.')
         elif choice == 'a':
             if 'TMUX' in os.environ:
                 builder.session.switch_client()
@@ -612,7 +627,7 @@ def load_workspace(
 @click.group(context_settings={'obj': {}})
 @click.version_option(__version__, '-V', '--version', message='%(prog)s %(version)s')
 @click.option(
-    '--log_level',
+    '--log-level',
     default='INFO',
     help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)',
 )
@@ -625,12 +640,12 @@ def cli(log_level):
     try:
         has_minimum_version()
     except TmuxCommandNotFound:
-        click.echo('tmux not found. tmuxp requires you install tmux first.')
+        tmuxp_echo('tmux not found. tmuxp requires you install tmux first.')
         sys.exit()
     except exc.TmuxpException as e:
-        click.echo(e, err=True)
+        tmuxp_echo(e, err=True)
         sys.exit()
-    setup_logger(level=log_level.upper())
+    setup_logger(logger=logger, level=log_level.upper())
 
 
 def setup_logger(logger=None, level='INFO'):
@@ -649,12 +664,12 @@ def setup_logger(logger=None, level='INFO'):
         logger = logging.getLogger()
 
     if not logger.handlers:  # setup logger handlers
-        channel = logging.StreamHandler()
-        channel.setFormatter(log.DebugLogFormatter())
-
+        # channel = logging.StreamHandler()
+        # channel.setFormatter(log.DebugLogFormatter())
         # channel.setFormatter(log.LogFormatter())
+
         logger.setLevel(level)
-        logger.addHandler(channel)
+        # logger.addHandler(channel)
 
 
 def startup(config_dir):
@@ -875,6 +890,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
+@click.option('--log-file', help='File to log errors/output to')
 def command_load(
     ctx,
     config,
@@ -884,6 +900,7 @@ def command_load(
     answer_yes,
     detached,
     colors,
+    log_file,
 ):
     """Load a tmux workspace from each CONFIG.
 
@@ -908,6 +925,10 @@ def command_load(
     detached mode.
     """
     util.oh_my_zsh_auto_title()
+    if log_file:
+        logfile_handler = logging.FileHandler(log_file)
+        logfile_handler.setFormatter(log.LogFormatter())
+        logger.addHandler(logfile_handler)
 
     tmux_options = {
         'socket_name': socket_name,
@@ -919,8 +940,8 @@ def command_load(
     }
 
     if not config:
-        click.echo("Enter at least one CONFIG")
-        click.echo(ctx.get_help(), color=ctx.color)
+        tmuxp_echo("Enter at least one CONFIG")
+        tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
     if isinstance(config, string_types):
@@ -962,7 +983,7 @@ def import_config(configfile, importfunc):
     else:
         sys.exit('Unknown config format.')
 
-    click.echo(
+    tmuxp_echo(
         newconfig + '---------------------------------------------------------------'
         '\n'
         'Configuration import does its best to convert files.\n'
@@ -984,9 +1005,9 @@ def import_config(configfile, importfunc):
         buf.write(newconfig)
         buf.close()
 
-        click.echo('Saved to %s.' % dest)
+        tmuxp_echo('Saved to %s.' % dest)
     else:
-        click.echo(
+        tmuxp_echo(
             'tmuxp has examples in JSON and YAML format at '
             '<http://tmuxp.git-pull.com/examples.html>\n'
             'View tmuxp docs at <http://tmuxp.git-pull.com/>'
@@ -1125,4 +1146,4 @@ def command_debug_info():
         % format_tmux_resp(tmux_cmd('show-window-options', '-g')),
     ]
 
-    click.echo('\n'.join(output))
+    tmuxp_echo('\n'.join(output))

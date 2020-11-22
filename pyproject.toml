@@ -3,7 +3,7 @@ skip-string-normalization = true
 
 [tool.poetry]
 name = "tmuxp"
-version = "1.6.2"
+version = "1.6.3"
 description = "tmux session manager"
 license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]

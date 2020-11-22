@@ -184,12 +184,23 @@ are created, the last session is named from the terminal.
 
     $ tmxup load -s <new_session_name> <filename1> ...
 
+The output of the ``load`` command can be logged to a file for 
+debugging purposes. the log level can be controlled with the global
+``--log-level`` option (defaults to INFO).
+
+.. code-block:: bash
+
+    $ tmuxp load <filename> --log-file <log_filename>
+    $ tmuxp --log-level <LEVEL> load <filename> --log-file <log_filename>
+
+
 .. _cli_debug_info:
 
 Debug Info
 ----------
 
-Use to collect all relevant information for submitting an issue to the project.
+Use to collect all relevant information for submitting an issue to 
+the project.
 
 .. code-block:: bash
 
