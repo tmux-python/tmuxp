@@ -8,6 +8,11 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.7.0a3 (2020-11-22)
+--------------------------
+- Port ``tmuxp load <filename> --log-level outputfile.log`` from
+  1.6.3
+
 tmuxp 1.7.0a2 (2020-11-08)
 --------------------------
 - Port ``tmuxp debug-info`` from :issue:`643` from via v1.6.2
@@ -24,7 +29,7 @@ tmuxp 1.7.0a1 (2020-11-07)
 
   Thank you @joseph-flinn!
 
-  tmuxp 1.6.3 (2020-11-22)
+tmuxp 1.6.3 (2020-11-22)
 ------------------------
 - :issue:`647` Adding option to dump `load` output to log file, thank you
   @joseph-flinn!
