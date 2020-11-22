@@ -178,9 +178,9 @@ You can auto confirm the prompt. In this case no preview will be shown.
 
 
 Debugging Helpers
-----------
+-----------------
 
-The `load` command provides a way to log output to a log file for debugging 
+The ``load`` command provides a way to log output to a log file for debugging 
 purposes.
 
 .. code-block:: sh
