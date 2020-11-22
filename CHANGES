@@ -24,6 +24,17 @@ tmuxp 1.7.0a1 (2020-11-07)
 
   Thank you @joseph-flinn!
 
+  tmuxp 1.6.3 (2020-11-22)
+------------------------
+- :issue:`647` Adding option to dump `load` output to log file, thank you
+  @joseph-flinn!
+
+  ``tmuxp load file.yaml --log-file yourfile.txt``
+
+  Adjust log levels:
+
+  ``tmuxp --log-level DEBUG load file.yaml --log-file yourfile.txt``
+
 tmuxp 1.6.2 (2020-11-08)
 ------------------------
 - :issue:`643` New command ``tmuxp debug-info`` for creating github

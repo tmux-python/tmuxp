@@ -21,8 +21,26 @@ LEVEL_COLORS = {
     'CRITICAL': Fore.RED,
 }
 
+LOG_LEVELS = {
+    'CRITICAL': 50,
+    'ERROR': 40,
+    'WARNING': 30,
+    'INFO': 20,
+    'DEBUG': 10,
+    'NOTSET': 0,
+}
 
-def default_log_template(self, record):
+
+def set_style(
+    message, stylized, style_before=None, style_after=None, prefix='', suffix=''
+):
+    if stylized:
+        return prefix + style_before + message + style_after + suffix
+
+    return prefix + message + suffix
+
+
+def default_log_template(self, record, stylized=False):
     """
     Return the prefix for the log message. Template for Formatter.
 
@@ -39,37 +57,34 @@ def default_log_template(self, record):
     """
 
     reset = Style.RESET_ALL
-    levelname = (
-        LEVEL_COLORS.get(record.levelname)
-        + Style.BRIGHT
-        + '(%(levelname)s)'
-        + Style.RESET_ALL
-        + ' '
+    levelname = set_style(
+        '(%(levelname)s)',
+        stylized,
+        style_before=(LEVEL_COLORS.get(record.levelname) + Style.BRIGHT),
+        style_after=Style.RESET_ALL,
+        suffix=' ',
     )
-    asctime = (
-        '['
-        + Fore.BLACK
-        + Style.DIM
-        + Style.BRIGHT
-        + '%(asctime)s'
-        + Fore.RESET
-        + Style.RESET_ALL
-        + ']'
+    asctime = set_style(
+        '%(asctime)s',
+        stylized,
+        style_before=(Fore.BLACK + Style.DIM + Style.BRIGHT),
+        style_after=(Fore.RESET + Style.RESET_ALL),
+        prefix='[',
+        suffix=']',
     )
-    name = (
-        ' '
-        + Fore.WHITE
-        + Style.DIM
-        + Style.BRIGHT
-        + '%(name)s'
-        + Fore.RESET
-        + Style.RESET_ALL
-        + ' '
+    name = set_style(
+        '%(name)s',
+        stylized,
+        style_before=(Fore.WHITE + Style.DIM + Style.BRIGHT),
+        style_after=(Fore.RESET + Style.RESET_ALL),
+        prefix=' ',
+        suffix=' ',
     )
 
-    tpl = reset + levelname + asctime + name + reset
+    if stylized:
+        return reset + levelname + asctime + name + reset
 
-    return tpl
+    return levelname + asctime + name
 
 
 class LogFormatter(logging.Formatter):
@@ -89,8 +104,9 @@ class LogFormatter(logging.Formatter):
 
         prefix = self.template(record) % record.__dict__
 
+        parts = prefix.split(record.message)
         formatted = prefix + " " + record.message
-        return formatted.replace("\n", "\n    ")
+        return formatted.replace("\n", "\n" + parts[0] + " ")
 
 
 def debug_log_template(self, record):
