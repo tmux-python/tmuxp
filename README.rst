@@ -138,7 +138,7 @@ You can also load sessions in the background by passing ``-d`` flag
 Screenshot
 ----------
 
-.. image:: https://raw.github.com/tmux-python/tmuxp/master/doc/_static/tmuxp-demo.gif
+.. image:: https://raw.github.com/tmux-python/tmuxp/master/docs/_static/tmuxp-demo.gif
     :scale: 100%
     :width: 45%
     :align: center
