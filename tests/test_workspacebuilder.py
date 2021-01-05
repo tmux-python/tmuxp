@@ -779,3 +779,60 @@ def test_plugin_system_multiple_plugins(session):
     # override methods are currently written
     proc = session.cmd('display-message', '-p', "'#W'")
     assert proc.stdout[0] == "'mp_test_awf'"
+
+
+def test_load_configs_same_session(server):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 3
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+    assert len(server.sessions) == 2
+    assert len(server.sessions[1]._windows) == 2
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build(server.sessions[1], True)
+
+    assert len(server.sessions) == 2
+    assert len(server.sessions[1]._windows) == 4
+
+
+def test_load_configs_separate_sessions(server):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 3
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 2
+    assert len(server.sessions[0]._windows) == 3
+    assert len(server.sessions[1]._windows) == 2

@@ -169,6 +169,23 @@ directory may be loaded with:
 
     $ tmuxp load .
 
+If you try to load a config file from within a tmux session, it will ask you
+if you want to load and attach to the new session, or just load detached.
+You can also load a config file and append the windows to the current active session.
+
+::
+
+    Already inside TMUX, switch to session? yes/no
+    Or (a)ppend windows in the current active session?
+    [y/n/a]:
+
+All of these options can be preselected to skip the prompt:
+
+.. code-block:: bash
+    $ tmuxp load -y config # load attached
+    $ tmuxp load -d config # load detached
+    $ tmuxp load -a config # append windows
+
 Multiple sessions can be loaded at once. The first ones will be created
 without being attached. The last one will be attached if there is no
 ``-d`` flag on the command line.

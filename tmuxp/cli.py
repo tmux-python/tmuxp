@@ -448,7 +448,6 @@ def _reattach(builder):
 
     If not, ``tmux attach-session`` loads the client to the target session.
     """
-
     for plugin in builder.plugins:
         plugin.reattach(builder.session)
         proc = builder.session.cmd('display-message', '-p', "'#S'")
@@ -462,6 +461,85 @@ def _reattach(builder):
         builder.session.attach_session()
 
 
+def _load_attached(builder, detached):
+    """
+    Load config in new session and attach
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    detached : bool
+    """
+    builder.build()
+
+    if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
+        # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
+        tmux_env = os.environ.pop('TMUX')
+
+        if has_gte_version('2.6'):
+            set_layout_hook(builder.session, 'client-session-changed')
+
+        builder.session.switch_client()  # switch client to new session
+
+        os.environ['TMUX'] = tmux_env  # set TMUX back again
+    else:
+        if has_gte_version('2.6'):
+            # if attaching for first time
+            set_layout_hook(builder.session, 'client-attached')
+
+            # for cases where user switches client for first time
+            set_layout_hook(builder.session, 'client-session-changed')
+
+        if not detached:
+            builder.session.attach_session()
+
+
+def _load_detached(builder):
+    """
+    Load config in new session but don't attach
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    """
+    builder.build()
+
+    if has_gte_version('2.6'):  # prepare for both cases
+        set_layout_hook(builder.session, 'client-attached')
+        set_layout_hook(builder.session, 'client-session-changed')
+
+    print('Session created in detached state.')
+
+
+def _load_append_windows_to_current_session(builder):
+    """
+    Load config as new windows in current session
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    """
+    current_attached_session = builder.find_current_attached_session()
+    builder.build(current_attached_session, append=True)
+    if has_gte_version('2.6'):  # prepare for both cases
+        set_layout_hook(builder.session, 'client-attached')
+        set_layout_hook(builder.session, 'client-session-changed')
+
+
+def _setup_plugins(builder):
+    """
+    Runs after before_script
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    """
+    for plugin in builder.plugins:
+        plugin.before_script(builder.session)
+
+    return builder.session
+
+
 def load_workspace(
     config_file,
     socket_name=None,
@@ -470,6 +548,7 @@ def load_workspace(
     colors=None,
     detached=False,
     answer_yes=False,
+    append=False,
 ):
     """
     Load a tmux "workspace" session via tmuxp file.
@@ -490,7 +569,11 @@ def load_workspace(
     detached : bool
         Force detached state. default False.
     answer_yes : bool
-        Assume yes when given prompt. default False.
+        Assume yes when given prompt to attach in new session.
+        Default False.
+    append : bool
+       Assume current when given prompt to append windows in same session.
+       Default False.
 
     Notes
     -----
@@ -595,9 +678,8 @@ def load_workspace(
 
     session_name = sconfig['session_name']
 
-    # if the session already exists, prompt the user to attach. tmuxp doesn't
-    # support incremental session building or appending (yet, PR's welcome!)
-    if builder.session_exists(session_name):
+    # if the session already exists, prompt the user to attach
+    if builder.session_exists(session_name) and not append:
         if not detached and (
             answer_yes
             or click.confirm(
@@ -610,38 +692,37 @@ def load_workspace(
         return
 
     try:
-        builder.build()  # load tmux session via workspace builder
+        if detached:
+            _load_detached(builder)
+            return _setup_plugins(builder)
+
+        if append:
+            if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
+                _load_append_windows_to_current_session(builder)
+            else:
+                _load_attached(builder, detached)
+
+            return _setup_plugins(builder)
+
+        # append and answer_yes have no meaning if specified together
+        elif answer_yes:
+            _load_attached(builder, detached)
+            return _setup_plugins(builder)
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            if not detached and (
-                answer_yes or click.confirm('Already inside TMUX, switch to session?')
-            ):
-                # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
-                tmux_env = os.environ.pop('TMUX')
+            msg = "Already inside TMUX, switch to session? yes/no\n"\
+            "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            options = ['y', 'n', 'a']
+            choice = click.prompt(msg, value_proc=_validate_choices(options))
 
-                if has_gte_version('2.6'):
-                    set_layout_hook(builder.session, 'client-session-changed')
-
-                builder.session.switch_client()  # switch client to new session
-
-                os.environ['TMUX'] = tmux_env  # set TMUX back again
-                return builder.session
-            else:  # session created in the background, from within tmux
-                if has_gte_version('2.6'):  # prepare for both cases
-                    set_layout_hook(builder.session, 'client-attached')
-                    set_layout_hook(builder.session, 'client-session-changed')
-
-                sys.exit('Session created in detached state.')
-        else:  # tmuxp ran from inside tmux
-            if has_gte_version('2.6'):
-                # if attaching for first time
-                set_layout_hook(builder.session, 'client-attached')
-
-                # for cases where user switches client for first time
-                set_layout_hook(builder.session, 'client-session-changed')
-
-            if not detached:
-                builder.session.attach_session()
+            if choice == 'y':
+                _load_attached(builder, detached)
+            elif choice == 'a':
+                _load_append_windows_to_current_session(builder)
+            else:
+                _load_detached(builder)
+        else:
+            _load_attached(builder, detached)
 
     except exc.TmuxpException as e:
         import traceback
@@ -663,11 +744,8 @@ def load_workspace(
         else:
             sys.exit()
 
-    # Runs after before_script
-    for plugin in builder.plugins:
-        plugin.before_script(builder.session)
+    return _setup_plugins(builder)
 
-    return builder.session
 
 
 @click.group(context_settings={'obj': {}})
@@ -924,6 +1002,12 @@ def command_freeze(session_name, socket_name, socket_path, force):
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
 )
 @click.option(
+    '-a',
+    'append',
+    help='Load configuration, appending windows to the current session',
+    is_flag=True
+)
+@click.option(
     'colors',
     '-2',
     flag_value=256,
@@ -945,6 +1029,7 @@ def command_load(
     new_session_name,
     answer_yes,
     detached,
+    append,
     colors,
     log_file,
 ):
@@ -983,6 +1068,7 @@ def command_load(
         'answer_yes': answer_yes,
         'colors': colors,
         'detached': detached,
+        'append': append,
     }
 
     if not config:

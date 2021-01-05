@@ -17,7 +17,7 @@ from libtmux.session import Session
 from libtmux.window import Window
 
 from . import exc
-from .util import run_before_script
+from .util import run_before_script, get_current_pane
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +111,7 @@ class WorkspaceBuilder(object):
         self.session = self.server.find_where({'session_name': session_name})
         return True
 
-    def build(self, session=None):
+    def build(self, session=None, append=False):
         """
         Build tmux workspace in session.
 
@@ -125,6 +125,8 @@ class WorkspaceBuilder(object):
         ----------
         session : :class:`libtmux.Session`
             session to build workspace in
+        append : bool
+            append windows in current active session
         """
 
         if not session:
@@ -191,7 +193,7 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
-        for w, wconf in self.iter_create_windows(session):
+        for w, wconf in self.iter_create_windows(session, append):
             assert isinstance(w, Window)
 
             for plugin in self.plugins:
@@ -222,7 +224,7 @@ class WorkspaceBuilder(object):
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, s):
+    def iter_create_windows(self, session, append=False):
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -235,6 +237,8 @@ class WorkspaceBuilder(object):
         ----------
         session : :class:`libtmux.Session`
             session to create windows in
+        append : bool
+            append windows in current active session
 
         Returns
         -------
@@ -248,11 +252,12 @@ class WorkspaceBuilder(object):
             else:
                 window_name = wconf['window_name']
 
+            is_first_window_pass = self.first_window_pass(i, session, append)
+
             w1 = None
-            if i == int(1):  # if first window, use window 1
-                w1 = s.attached_window
+            if is_first_window_pass:  # if first window, use window 1
+                w1 = session.attached_window
                 w1.move_window(99)
-                pass
 
             if 'start_directory' in wconf:
                 sd = wconf['start_directory']
@@ -264,7 +269,7 @@ class WorkspaceBuilder(object):
             else:
                 ws = None
 
-            w = s.new_window(
+            w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
@@ -272,10 +277,11 @@ class WorkspaceBuilder(object):
                 window_shell=ws,
             )
 
-            if i == int(1) and w1:  # if first window, use window 1
-                w1.kill_window()
+            if is_first_window_pass:  # if first window, use window 1
+                session.attached_window.kill_window()
+
             assert isinstance(w, Window)
-            s.server._update_windows()
+            session.server._update_windows()
             if 'options' in wconf and isinstance(wconf['options'], dict):
                 for key, val in wconf['options'].items():
                     w.set_window_option(key, val)
@@ -283,7 +289,7 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 w.select_window()
 
-            s.server._update_windows()
+            session.server._update_windows()
 
             yield w, wconf
 
@@ -368,6 +374,24 @@ class WorkspaceBuilder(object):
         if 'options_after' in wconf and isinstance(wconf['options_after'], dict):
             for key, val in wconf['options_after'].items():
                 w.set_window_option(key, val)
+
+    def find_current_attached_session(self):
+        current_active_pane = get_current_pane(self.server)
+
+        if not current_active_pane:
+            raise exc.TmuxpException("No session active.")
+
+        return next(
+            (
+                s
+                for s in self.server.list_sessions()
+                if s["session_id"] == current_active_pane["session_id"]
+            ),
+            None,
+        )
+
+    def first_window_pass(self, i, session, append):
+        return len(session.windows) == 1 and i == 1 and not append
 
 
 def freeze(session):
