@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import json
 import os
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -18,6 +19,8 @@ from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
     _reattach,
+    _load_attached,
+    _load_append_windows_to_current_session,
     command_debug_info,
     command_ls,
     get_config_dir,
@@ -1086,6 +1089,107 @@ def test_reattach_plugins(server):
     proc = builder.session.cmd('display-message', '-p', "'#S'")
 
     assert proc.stdout[0] == "'plugin_test_r'"
+
+
+def test_load_attached(server, monkeypatch):
+    # Load a session and attach from outside tmux
+    monkeypatch.delenv('TMUX', raising=False)
+
+    attach_session_mock = MagicMock()
+    attach_session_mock.return_value.stderr = None
+
+    monkeypatch.setattr("libtmux.session.Session.attach_session", attach_session_mock)
+
+    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    _load_attached(builder, False)
+
+    assert builder.session.attach_session.call_count == 1
+
+
+def test_load_attached_detached(server, monkeypatch):
+    # Load a session but don't attach
+    monkeypatch.delenv('TMUX', raising=False)
+
+    attach_session_mock = MagicMock()
+    attach_session_mock.return_value.stderr = None
+
+    monkeypatch.setattr("libtmux.session.Session.attach_session", attach_session_mock)
+
+    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    _load_attached(builder, True)
+
+    assert builder.session.attach_session.call_count == 0
+
+
+def test_load_attached_within_tmux(server, monkeypatch):
+    # Load a session and attach from within tmux
+    monkeypatch.setenv('TMUX', "/tmp/tmux-1234/default,123,0")
+
+    switch_client_mock = MagicMock()
+    switch_client_mock.return_value.stderr = None
+
+    monkeypatch.setattr("libtmux.session.Session.switch_client", switch_client_mock)
+
+    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    _load_attached(builder, False)
+
+    assert builder.session.switch_client.call_count == 1
+
+
+def test_load_attached_within_tmux_detached(server, monkeypatch):
+    # Load a session and attach from within tmux
+    monkeypatch.setenv('TMUX', "/tmp/tmux-1234/default,123,0")
+
+    switch_client_mock = MagicMock()
+    switch_client_mock.return_value.stderr = None
+
+    monkeypatch.setattr("libtmux.session.Session.switch_client", switch_client_mock)
+
+    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    _load_attached(builder, True)
+
+    assert builder.session.switch_client.call_count == 1
+
+def test_load_append_windows_to_current_session(server, monkeypatch):
+    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.list_sessions()) == 1
+    assert len(server._list_windows()) == 3
+
+    # Assign an active pane to the session
+    monkeypatch.setenv("TMUX_PANE", server._list_panes()[0]["pane_id"])
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    _load_append_windows_to_current_session(builder)
+
+    assert len(server.list_sessions()) == 1
+    assert len(server._list_windows()) == 6
+
 
 
 def test_debug_info_cli(monkeypatch, tmpdir):

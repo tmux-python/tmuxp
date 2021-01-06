@@ -463,7 +463,7 @@ def _reattach(builder):
 
 def _load_attached(builder, detached):
     """
-    Load config in new session and attach
+    Load config in new session
 
     Parameters
     ----------
