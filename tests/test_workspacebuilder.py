@@ -836,3 +836,33 @@ def test_load_configs_separate_sessions(server):
     assert len(server.sessions) == 2
     assert len(server.sessions[0]._windows) == 3
     assert len(server.sessions[1]._windows) == 2
+
+
+def test_find_current_active_pane(server, monkeypatch):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.list_sessions()) == 2
+
+    # Assign an active pane to the session
+    second_session = server.list_sessions()[1]
+    first_pane_on_second_session_id = (
+        second_session.list_windows()[0].list_panes()[0]["pane_id"]
+    )
+    monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    assert builder.find_current_attached_session() == second_session
