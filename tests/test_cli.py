@@ -4,7 +4,11 @@ from __future__ import absolute_import
 
 import json
 import os
-from unittest.mock import MagicMock
+
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
 
 import pytest
 
