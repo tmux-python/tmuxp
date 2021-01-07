@@ -29,6 +29,11 @@ tmuxp 1.7.0a1 (2020-11-07)
 
   Thank you @joseph-flinn!
 
+tmuxp 1.6.4 (2021-01-06)
+------------------------
+- :issue:`651` Fix packaging issue with click, thanks @dougharris! Fixes
+  :issue:`649`
+
 tmuxp 1.6.3 (2020-11-22)
 ------------------------
 - :issue:`647` Adding option to dump `load` output to log file, thank you
