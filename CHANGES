@@ -8,6 +8,11 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.6.4 (2021-01-22)
+------------------------
+- :issue:`651` Fix packaging issue with click, thanks @dougharris! Fixes
+  :issue:`649`
+
 tmuxp 1.6.3 (2020-11-22)
 ------------------------
 - :issue:`647` Adding option to dump `load` output to log file, thank you
