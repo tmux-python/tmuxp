@@ -8,6 +8,10 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.7.0a4 (2021-01-06)
+--------------------------
+- Port click package fix from 1.6.4
+
 tmuxp 1.7.0a3 (2020-11-22)
 --------------------------
 - Port ``tmuxp load <filename> --log-level outputfile.log`` from
