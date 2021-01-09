@@ -710,8 +710,10 @@ def load_workspace(
             return _setup_plugins(builder)
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            msg = "Already inside TMUX, switch to session? yes/no\n"\
-            "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            msg = (
+                "Already inside TMUX, switch to session? yes/no\n"
+                "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            )
             options = ['y', 'n', 'a']
             choice = click.prompt(msg, value_proc=_validate_choices(options))
 
@@ -745,7 +747,6 @@ def load_workspace(
             sys.exit()
 
     return _setup_plugins(builder)
-
 
 
 @click.group(context_settings={'obj': {}})
@@ -1005,7 +1006,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
     '-a',
     'append',
     help='Load configuration, appending windows to the current session',
-    is_flag=True
+    is_flag=True,
 )
 @click.option(
     'colors',

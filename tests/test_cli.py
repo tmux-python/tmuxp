@@ -1174,6 +1174,7 @@ def test_load_attached_within_tmux_detached(server, monkeypatch):
 
     assert builder.session.switch_client.call_count == 1
 
+
 def test_load_append_windows_to_current_session(server, monkeypatch):
     yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -1193,7 +1194,6 @@ def test_load_append_windows_to_current_session(server, monkeypatch):
 
     assert len(server.list_sessions()) == 1
     assert len(server._list_windows()) == 6
-
 
 
 def test_debug_info_cli(monkeypatch, tmpdir):
