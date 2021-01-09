@@ -8,6 +8,36 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.7.0 (2021-01-09)
+------------------------
+
+This will be the last Python 2.7 release of tmuxp. Bug fixes for python
+2.7 will live in the `1.7.x branch`_.
+
+- :issue:`530` New feature: Plugin system
+
+  - Add plugin system for user customization of tmuxp
+  - Add tests for the plugin system
+  - Update existing tests for the plugin system
+  - Add the plugin interface to the tmuxp package
+  - Add in depth documentation for the plugin system
+
+  Thank you @joseph-flinn!
+- :issue:`656` New feature: Ability to append windows to a session
+
+  ``tmuxp load -a configfile`` will append a configuration to your current
+  tmux session.
+
+  Thank you @will-ockmore!
+- :issue:`647` Improvement: Logging to file:
+
+  ``tmuxp load <filename> --log-level outputfile.log``
+- :issue:`643` New command: Debug information
+
+  Port ``tmuxp debug-info`` from via v1.6.2
+
+.. _1.7.x branch: https://github.com/tmux-python/tmuxp/tree/v1.7.x
+
 tmuxp 1.7.0a4 (2021-01-06)
 --------------------------
 - Port click package fix from 1.6.4

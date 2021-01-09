@@ -1,6 +1,6 @@
 __title__ = 'tmuxp'
 __package_name__ = 'tmuxp'
-__version__ = '1.7.0a4'
+__version__ = '1.7.0'
 __description__ = 'tmux session manager'
 __email__ = 'tony@git-pull.com'
 __author__ = 'Tony Narlock'
