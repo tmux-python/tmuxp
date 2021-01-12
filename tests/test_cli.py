@@ -868,9 +868,9 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
 @pytest.mark.parametrize(
     "cli_args,inputs",
     [
-        (['freeze', 'mysession'], ['\n', 'y\n', './la.yaml\n', 'y\n']),
+        (['freeze', 'myfrozensession'], ['\n', 'y\n', './la.yaml\n', 'y\n']),
         (  # Exists
-            ['freeze', 'mysession'],
+            ['freeze', 'myfrozensession'],
             ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
         ),
         (  # Imply current session if not entered
@@ -878,21 +878,21 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
             ['\n', 'y\n', './la.yaml\n', 'y\n'],
         ),
         (['freeze'], ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
-        (  # Create a new one
-            ['freeze', 'mysession', '--force'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n'],
-        ),
-        (  # Imply current session if not entered
-            ['freeze', '--force'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n'],
-        ),
     ],
 )
 def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
     monkeypatch.setenv('HOME', str(tmpdir))
     tmpdir.join('exists.yaml').ensure()
 
-    server.new_session(session_name='mysession')
+    server.new_session(session_name='myfirstsession')
+    server.new_session(session_name='myfrozensession')
+
+    # Assign an active pane to the session
+    second_session = server.list_sessions()[1]
+    first_pane_on_second_session_id = (
+        second_session.list_windows()[0].list_panes()[0]["pane_id"]
+    )
+    monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     with tmpdir.as_cwd():
         runner = CliRunner()
@@ -901,6 +901,11 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
         out = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
         print(out.output)
         assert tmpdir.join('la.yaml').check()
+
+        yaml_config = tmpdir.join('la.yaml').open().read()
+        frozen_config = kaptan.Kaptan(handler='yaml').import_config(yaml_config).get()
+
+        assert frozen_config['session_name'] == 'myfrozensession'
 
 
 @pytest.mark.parametrize(
