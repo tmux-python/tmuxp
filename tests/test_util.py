@@ -64,7 +64,7 @@ def test_get_session_should_default_to_local_attached_session(server, monkeypatc
     assert get_session(server) == second_session
 
 
-def test_get_session_should_raise_exception_if_no_session(server):
+def test_get_session_should_return_first_session_if_no_active_session(server):
     first_session = server.new_session(session_name='myfirstsession')
     server.new_session(session_name='mysecondsession')
 
