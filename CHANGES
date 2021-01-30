@@ -6,6 +6,7 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
+- :issue:`662` CI: Only update docs when changed
 - *Insert changes/features/fixes for next release here*
 
 tmuxp 1.7.0 (2021-01-09)
