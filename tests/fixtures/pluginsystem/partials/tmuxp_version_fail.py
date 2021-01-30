@@ -5,8 +5,8 @@ class TmuxpVersionFailMinPlugin(MyTestTmuxpPlugin):
     def __init__(self):
         config = {
             'plugin_name': 'tmuxp-min-version-fail',
-            'tmuxp_min_version': '1.6.0',
-            'tmuxp_version': '1.5.6',
+            'tmuxp_min_version': '1.7.0',
+            'tmuxp_version': '1.6.3',
         }
         MyTestTmuxpPlugin.__init__(self, config)
 
