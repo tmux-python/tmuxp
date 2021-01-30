@@ -17,21 +17,20 @@ import click
 import kaptan
 from click.exceptions import FileError
 
+from libtmux import __version__ as libtmux_version
 from libtmux.common import (
+    get_version,
     has_gte_version,
     has_minimum_version,
-    which,
-    get_version,
     tmux_cmd,
+    which,
 )
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
-from libtmux import __version__ as libtmux_version
-
-from . import config, exc, log, util, __file__ as tmuxp_path
+from . import __file__ as tmuxp_path, config, exc, log, util
 from .__about__ import __version__
-from ._compat import PY3, PYMINOR, string_types
+from ._compat import PY3, PYMINOR
 from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
@@ -263,7 +262,7 @@ def scan_config_argument(ctx, param, value, config_dir=None):
         tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         value = scan_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
@@ -712,8 +711,10 @@ def load_workspace(
             return _setup_plugins(builder)
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            msg = "Already inside TMUX, switch to session? yes/no\n"\
-            "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            msg = (
+                "Already inside TMUX, switch to session? yes/no\n"
+                "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            )
             options = ['y', 'n', 'a']
             choice = click.prompt(msg, value_proc=_validate_choices(options))
 
@@ -747,7 +748,6 @@ def load_workspace(
             sys.exit()
 
     return _setup_plugins(builder)
-
 
 
 @click.group(context_settings={'obj': {}})
@@ -1008,7 +1008,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
     '-a',
     'append',
     help='Load configuration, appending windows to the current session',
-    is_flag=True
+    is_flag=True,
 )
 @click.option(
     'colors',
@@ -1081,7 +1081,7 @@ def command_load(
         tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
-    if isinstance(config, string_types):
+    if isinstance(config, str):
         load_workspace(config, **tmux_options)
 
     elif isinstance(config, tuple):

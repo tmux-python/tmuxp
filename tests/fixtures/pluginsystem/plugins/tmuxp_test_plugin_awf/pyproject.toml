@@ -5,7 +5,7 @@ description = "A tmuxp plugin to test after_window_finished part of the tmuxp pl
 authors = ["Joseph Flinn <joseph.s.flinn@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "~2.7 || ^3.5"
+python = "^3.5"
 tmuxp = "^1.7.0"
 
 [tool.poetry.dev-dependencies]

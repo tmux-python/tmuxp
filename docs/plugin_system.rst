@@ -67,7 +67,7 @@ directory. The resulting file looks something like this:
     authors = ["Author Name <author.name@<domain>.com>"]
 
     [tool.poetry.dependencies]
-    python = "~2.7 || ^3.5"
+    python = "^3.5"
     tmuxp = "^1.6.0"
 
     [tool.poetry.dev-dependencies]
