@@ -994,7 +994,7 @@ def test_ls_cli(monkeypatch, tmpdir):
     assert cli_output == '\n'.join(stems) + '\n'
 
 
-def test_load_plugins():
+def test_load_plugins(monkeypatch_plugin_test_packages):
     from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
     plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
@@ -1024,7 +1024,9 @@ def test_load_plugins():
         )
     ],
 )
-def test_load_plugins_version_fail_skip(cli_args, inputs):
+def test_load_plugins_version_fail_skip(
+    monkeypatch_plugin_test_packages, cli_args, inputs
+):
     runner = CliRunner()
 
     results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
@@ -1040,7 +1042,9 @@ def test_load_plugins_version_fail_skip(cli_args, inputs):
         )
     ],
 )
-def test_load_plugins_version_fail_no_skip(cli_args, inputs):
+def test_load_plugins_version_fail_no_skip(
+    monkeypatch_plugin_test_packages, cli_args, inputs
+):
     runner = CliRunner()
 
     results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
@@ -1050,14 +1054,16 @@ def test_load_plugins_version_fail_no_skip(cli_args, inputs):
 @pytest.mark.parametrize(
     "cli_args", [(['load', 'tests/fixtures/workspacebuilder/plugin_missing_fail.yaml'])]
 )
-def test_load_plugins_plugin_missing(cli_args):
+def test_load_plugins_plugin_missing(monkeypatch_plugin_test_packages, cli_args):
     runner = CliRunner()
 
     results = runner.invoke(cli.cli, cli_args)
     assert '[Plugin Error]' in results.output
 
 
-def test_plugin_system_before_script(server, monkeypatch):
+def test_plugin_system_before_script(
+    monkeypatch_plugin_test_packages, server, monkeypatch
+):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -1073,7 +1079,7 @@ def test_plugin_system_before_script(server, monkeypatch):
     assert session.name == 'plugin_test_bs'
 
 
-def test_reattach_plugins(server):
+def test_reattach_plugins(monkeypatch_plugin_test_packages, server):
     config_plugins = loadfixture("workspacebuilder/plugin_r.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')

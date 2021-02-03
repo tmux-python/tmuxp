@@ -11,8 +11,8 @@ from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture(autouse=True, scope='function')
-def site_packages_test_fixtures(monkeypatch):
+@pytest.fixture(scope='function')
+def monkeypatch_plugin_test_packages(monkeypatch):
     paths = [
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/",
