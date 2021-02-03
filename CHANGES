@@ -8,6 +8,11 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.7.2 (2021-02-03)
+------------------------
+- :issue:`666` CI: Move test plugin packages from pyproject.toml to 
+  pytest fixtures. Fixes :issue:`658`
+
 tmuxp 1.7.1 (2021-02-03)
 ------------------------
 - :issue:`665` Support for passing tmux config file (``-f``), thanks
@@ -15,7 +20,6 @@ tmuxp 1.7.1 (2021-02-03)
 
 tmuxp 1.7.0 (2021-01-09)
 ------------------------
-
 This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 2.7 will live in the `1.7.x branch`_.
 
