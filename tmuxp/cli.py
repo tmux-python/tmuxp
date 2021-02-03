@@ -544,6 +544,7 @@ def load_workspace(
     config_file,
     socket_name=None,
     socket_path=None,
+    tmux_config_file=None,
     new_session_name=None,
     colors=None,
     detached=False,
@@ -663,7 +664,8 @@ def load_workspace(
     sconfig = config.trickle(sconfig)
 
     t = Server(  # create tmux server object
-        socket_name=socket_name, socket_path=socket_path, colors=colors
+        socket_name=socket_name, socket_path=socket_path,
+        config_file=tmux_config_file, colors=colors,
     )
 
     which('tmux')  # raise exception if tmux not found
@@ -996,6 +998,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option('-f', 'tmux_config_file', help='pass-through for tmux -f')
 @click.option('-s', 'new_session_name', help='start new session with new session name')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
@@ -1026,6 +1029,7 @@ def command_load(
     config,
     socket_name,
     socket_path,
+    tmux_config_file,
     new_session_name,
     answer_yes,
     detached,
@@ -1064,6 +1068,7 @@ def command_load(
     tmux_options = {
         'socket_name': socket_name,
         'socket_path': socket_path,
+        'tmux_config_file': tmux_config_file,
         'new_session_name': new_session_name,
         'answer_yes': answer_yes,
         'colors': colors,
