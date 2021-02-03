@@ -14,8 +14,8 @@ from libtmux.common import has_gte_version
 from libtmux.test import retry, temp_session
 from tmuxp import config, exc
 from tmuxp._compat import text_type
-from tmuxp.workspacebuilder import WorkspaceBuilder
 from tmuxp.cli import load_plugins
+from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from . import example_dir, fixtures_dir
 from .fixtures._util import loadfixture
@@ -676,7 +676,9 @@ def test_before_load_true_if_test_passes_with_args(server):
         builder.build(session=session)
 
 
-def test_plugin_system_before_workspace_builder(session):
+def test_plugin_system_before_workspace_builder(
+    monkeypatch_plugin_test_packages, session
+):
     config_plugins = loadfixture("workspacebuilder/plugin_bwb.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -692,7 +694,7 @@ def test_plugin_system_before_workspace_builder(session):
     assert proc.stdout[0] == "'plugin_test_bwb'"
 
 
-def test_plugin_system_on_window_create(session):
+def test_plugin_system_on_window_create(monkeypatch_plugin_test_packages, session):
     config_plugins = loadfixture("workspacebuilder/plugin_owc.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -708,7 +710,7 @@ def test_plugin_system_on_window_create(session):
     assert proc.stdout[0] == "'plugin_test_owc'"
 
 
-def test_plugin_system_after_window_finished(session):
+def test_plugin_system_after_window_finished(monkeypatch_plugin_test_packages, session):
     config_plugins = loadfixture("workspacebuilder/plugin_awf.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -741,7 +743,9 @@ def test_plugin_system_on_window_create_multiple_windows(session):
     assert "'plugin_test_owc_mw_2'" in proc.stdout
 
 
-def test_plugin_system_after_window_finished_multiple_windows(session):
+def test_plugin_system_after_window_finished_multiple_windows(
+    monkeypatch_plugin_test_packages, session
+):
     config_plugins = loadfixture("workspacebuilder/plugin_awf_multiple_windows.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -758,7 +762,7 @@ def test_plugin_system_after_window_finished_multiple_windows(session):
     assert "'plugin_test_awf_mw_2'" in proc.stdout
 
 
-def test_plugin_system_multiple_plugins(session):
+def test_plugin_system_multiple_plugins(monkeypatch_plugin_test_packages, session):
     config_plugins = loadfixture("workspacebuilder/plugin_multiple_plugins.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -858,9 +862,9 @@ def test_find_current_active_pane(server, monkeypatch):
 
     # Assign an active pane to the session
     second_session = server.list_sessions()[1]
-    first_pane_on_second_session_id = (
-        second_session.list_windows()[0].list_panes()[0]["pane_id"]
-    )
+    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
+        "pane_id"
+    ]
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
