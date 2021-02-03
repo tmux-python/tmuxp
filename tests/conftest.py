@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import logging
+import os
 
 import pytest
 
@@ -9,6 +9,20 @@ from libtmux.server import Server
 from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(autouse=True, scope='function')
+def site_packages_test_fixtures(monkeypatch):
+    paths = [
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/",
+    ]
+    for path in paths:
+        monkeypatch.syspath_prepend(os.path.abspath(os.path.relpath(path)))
 
 
 @pytest.fixture(scope='function')
