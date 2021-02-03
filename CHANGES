@@ -7,6 +7,10 @@ Here you can find the recent changes to tmuxp
 current
 -------
 - :issue:`662` CI: Only update docs when changed
+- :issue:`665` Support for passing tmux config file (``-f``), thanks
+  @jfindlay! Fixes :issue:`654`
+- :issue:`666` CI: Move test plugin packages from pyproject.toml to 
+  pytest fixtures. Fixes :issue:`658`
 - *Insert changes/features/fixes for next release here*
 
 tmuxp 1.7.1 (2021-02-03)
