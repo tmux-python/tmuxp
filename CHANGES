@@ -10,9 +10,8 @@ current
 
 tmuxp 1.7.1 (2021-02-03)
 ------------------------
-- :issue:`655` Support for passing tmux config file (``-f``), thanks
-  @jfindlay! Fixes
-    :issue:`654`
+- :issue:`665` Support for passing tmux config file (``-f``), thanks
+  @jfindlay! Fixes :issue:`654`
 
 tmuxp 1.7.0 (2021-01-09)
 ------------------------
