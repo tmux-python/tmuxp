@@ -15,16 +15,15 @@ import pytest
 import click
 import kaptan
 from click.testing import CliRunner
-from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
-    _reattach,
-    _load_attached,
     _load_append_windows_to_current_session,
+    _load_attached,
+    _reattach,
     command_debug_info,
     command_ls,
     get_config_dir,
@@ -996,6 +995,8 @@ def test_ls_cli(monkeypatch, tmpdir):
 
 
 def test_load_plugins():
+    from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
+
     plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -1174,6 +1175,7 @@ def test_load_attached_within_tmux_detached(server, monkeypatch):
 
     assert builder.session.switch_client.call_count == 1
 
+
 def test_load_append_windows_to_current_session(server, monkeypatch):
     yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -1193,7 +1195,6 @@ def test_load_append_windows_to_current_session(server, monkeypatch):
 
     assert len(server.list_sessions()) == 1
     assert len(server._list_windows()) == 6
-
 
 
 def test_debug_info_cli(monkeypatch, tmpdir):
