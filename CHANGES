@@ -9,6 +9,11 @@ current
 - :issue:`662` CI: Only update docs when changed
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.7.1 (2021-02-03)
+------------------------
+- :issue:`655` Support for passing tmux config file (``-f``), thanks
+  @jfindlay! Fixes :issue:`654`
+
 tmuxp 1.6.5 (2021-02-03)
 ------------------------
 - :issue:`655` Support for passing tmux config file (``-f``), thanks @jfindlay! Fixes
