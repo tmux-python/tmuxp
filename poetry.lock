@@ -116,7 +116,7 @@ description = "An easy safelist-based HTML-sanitizing tool."
 name = "bleach"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "3.2.3"
+version = "3.3.0"
 
 [package.dependencies]
 packaging = "*"
@@ -474,7 +474,7 @@ marker = "python_version < \"3\" or python_version >= \"3\""
 name = "jinja2"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "2.11.2"
+version = "2.11.3"
 
 [package.dependencies]
 MarkupSafe = ">=0.23"
@@ -935,7 +935,7 @@ marker = "python_version < \"3\" or python_version >= \"3\""
 name = "pytz"
 optional = false
 python-versions = "*"
-version = "2020.5"
+version = "2021.1"
 
 [[package]]
 category = "dev"
@@ -1250,108 +1250,6 @@ test = ["pytest", "mock"]
 
 [[package]]
 category = "dev"
-description = ""
-develop = true
-name = "tmuxp-test-plugin-awf"
-optional = false
-python-versions = "~2.7 || ^3.5"
-version = "0.0.2"
-
-[package.dependencies]
-tmuxp = "^1.7.0"
-
-[package.source]
-reference = ""
-type = "directory"
-url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf"
-
-[[package]]
-category = "dev"
-description = ""
-develop = true
-name = "tmuxp-test-plugin-bs"
-optional = false
-python-versions = "~2.7 || ^3.5"
-version = "0.0.2"
-
-[package.dependencies]
-tmuxp = "^1.7.0"
-
-[package.source]
-reference = ""
-type = "directory"
-url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs"
-
-[[package]]
-category = "dev"
-description = ""
-develop = true
-name = "tmuxp-test-plugin-bwb"
-optional = false
-python-versions = "~2.7 || ^3.5"
-version = "0.0.2"
-
-[package.dependencies]
-tmuxp = "^1.7.0"
-
-[package.source]
-reference = ""
-type = "directory"
-url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb"
-
-[[package]]
-category = "dev"
-description = ""
-develop = true
-name = "tmuxp-test-plugin-fail"
-optional = false
-python-versions = "~2.7 || ^3.5"
-version = "0.1.0"
-
-[package.dependencies]
-tmuxp = "^1.7.0"
-
-[package.source]
-reference = ""
-type = "directory"
-url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail"
-
-[[package]]
-category = "dev"
-description = ""
-develop = true
-name = "tmuxp-test-plugin-owc"
-optional = false
-python-versions = "~2.7 || ^3.5"
-version = "0.0.2"
-
-[package.dependencies]
-tmuxp = "^1.7.0"
-
-[package.source]
-reference = ""
-type = "directory"
-url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc"
-
-[[package]]
-category = "dev"
-description = ""
-develop = true
-name = "tmuxp-test-plugin-r"
-optional = false
-python-versions = "~2.7 || ^3.5"
-version = "0.0.2"
-
-[package.dependencies]
-tmuxp = "^1.7.0"
-
-[package.source]
-reference = ""
-type = "directory"
-url = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r"
-
-[[package]]
-category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 marker = "python_version >= \"3.6\" and python_version < \"4.0\" or python_version >= \"3\""
 name = "toml"
@@ -1435,7 +1333,7 @@ version = "3.7.4.3"
 [[package]]
 category = "dev"
 description = "Backported and Experimental Type Hints for Python 3.5+"
-marker = "python_version >= \"3\" and python_version < \"3.8\" or python_version >= \"3.6\" and python_version < \"4.0\" or python_version < \"3.8\""
+marker = "python_version >= \"3\" and python_version < \"3.8\" or python_version >= \"3.6\" and python_version < \"4.0\""
 name = "typing-extensions"
 optional = false
 python-versions = "*"
@@ -1497,7 +1395,7 @@ testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 [[package]]
 category = "dev"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-marker = "python_version >= \"3\" and python_version < \"3.8\" or python_version < \"3.8\""
+marker = "python_version >= \"3\" and python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=3.6"
@@ -1516,7 +1414,7 @@ lint = []
 test = []
 
 [metadata]
-content-hash = "b2634966ff0baa0d081c246b681bf7794a19c518e81ea6c5f5f43ec9543c1cf0"
+content-hash = "77432007847ff3d4dfb7b62412e8db50dfd30076ba6bb1e019851c7b0502e7ed"
 lock-version = "1.0"
 python-versions = "~2.7 || ^3.5"
 
@@ -1557,8 +1455,8 @@ black = [
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
 ]
 bleach = [
-    {file = "bleach-3.2.3-py2.py3-none-any.whl", hash = "sha256:2d3b3f7e7d69148bb683b26a3f21eabcf62fa8fb7bc75d0e7a13bcecd9568d4d"},
-    {file = "bleach-3.2.3.tar.gz", hash = "sha256:c6ad42174219b64848e2e2cd434e44f56cd24a93a9b4f8bc52cfed55a1cd5aad"},
+    {file = "bleach-3.3.0-py2.py3-none-any.whl", hash = "sha256:6123ddc1052673e52bab52cdc955bcb57a015264a1c57d37bea2f6b817af0125"},
+    {file = "bleach-3.3.0.tar.gz", hash = "sha256:98b3170739e5e83dd9dc19633f074727ad848cbedb6026708c8ac2d3b697a433"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -1757,8 +1655,8 @@ jeepney = [
     {file = "jeepney-0.6.0.tar.gz", hash = "sha256:7d59b6622675ca9e993a6bd38de845051d315f8b0c72cca3aef733a20b648657"},
 ]
 jinja2 = [
-    {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},
-    {file = "Jinja2-2.11.2.tar.gz", hash = "sha256:89aab215427ef59c34ad58735269eb58b1a5808103067f7bb9d5836c651b3bb0"},
+    {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
+    {file = "Jinja2-2.11.3.tar.gz", hash = "sha256:a6d58433de0ae800347cab1fa3043cebbabe8baa9d29e668f1c768cb87a333c6"},
 ]
 kaptan = [
     {file = "kaptan-0.5.12.tar.gz", hash = "sha256:1abd1f56731422fce5af1acc28801677a51e56f5d3c3e8636db761ed143c3dd2"},
@@ -1986,8 +1884,8 @@ pytest-rerunfailures = [
     {file = "pytest_rerunfailures-9.1.1-py3-none-any.whl", hash = "sha256:2eb7d0ad651761fbe80e064b0fd415cf6730cdbc53c16a145fd84b66143e609f"},
 ]
 pytz = [
-    {file = "pytz-2020.5-py2.py3-none-any.whl", hash = "sha256:16962c5fb8db4a8f63a26646d8886e9d769b6c511543557bc84e9569fb9a9cb4"},
-    {file = "pytz-2020.5.tar.gz", hash = "sha256:180befebb1927b16f6b57101720075a984c019ac16b1b7575673bea42c6c3da5"},
+    {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
+    {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
 ]
 pywin32-ctypes = [
     {file = "pywin32-ctypes-0.2.0.tar.gz", hash = "sha256:24ffc3b341d457d48e8922352130cf2644024a4ff09762a2261fd34c36ee5942"},
@@ -2153,12 +2051,6 @@ sphinxcontrib-websupport = [
     {file = "sphinxcontrib-websupport-1.1.2.tar.gz", hash = "sha256:1501befb0fdf1d1c29a800fdbf4ef5dc5369377300ddbdd16d2cd40e54c6eefc"},
     {file = "sphinxcontrib_websupport-1.1.2-py2.py3-none-any.whl", hash = "sha256:e02f717baf02d0b6c3dd62cf81232ffca4c9d5c331e03766982e3ff9f1d2bc3f"},
 ]
-tmuxp-test-plugin-awf = []
-tmuxp-test-plugin-bs = []
-tmuxp-test-plugin-bwb = []
-tmuxp-test-plugin-fail = []
-tmuxp-test-plugin-owc = []
-tmuxp-test-plugin-r = []
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
