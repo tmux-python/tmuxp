@@ -1,14 +1,16 @@
 {
   "environment": {
     "EDITOR": "/usr/bin/vim",
-    "HOME": "/tmp/hm",
+    "DJANGO_SETTINGS_MODULE": "my_app.settings.local",
+    "SERVER_PORT": "8009",
   },  
   "windows": [
     {
       "panes": [
         null, 
+	"./manage.py runserver 0.0.0.0:${SERVER_PORT}"
       ], 
-      "window_name": "Blank pane test"
+      "window_name": "Django project"
     }, 
   ], 
   "session_name": "Environment variables test"

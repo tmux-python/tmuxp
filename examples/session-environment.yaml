@@ -1,10 +1,10 @@
 session_name: Environment variables test
 environment:
   EDITOR: /usr/bin/vim
-  HOME: /tmp/hm
+  DJANGO_SETTINGS_MODULE: my_app.settings.local
+  SERVER_PORT: "8009"
 windows:
-  # Emptiness will simply open a blank pane, if no shell_command_before.
-  # All these are equivalent
-  - window_name: Blank pane test
+  - window_name: Django project
     panes:
     -
+    - ./manage.py runserver 0.0.0.0:${SERVER_PORT}
