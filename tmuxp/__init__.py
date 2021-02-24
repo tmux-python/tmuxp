@@ -5,7 +5,7 @@
 tmuxp
 ~~~~~
 
-:copyright: Copyright 2013-2018 Tony Narlock.
+:copyright: Copyright 2013- Tony Narlock.
 :license: MIT, see LICENSE for details
 
 """
