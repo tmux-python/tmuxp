@@ -28,6 +28,7 @@ jobs:
           docs:
             - 'docs/**/*.rst'
             - 'docs/**/*.md'
+            - 'examples/**'
           python_files:
             - 'tmuxp/**'
     - name: Should publish
