@@ -20,8 +20,8 @@ using ``$ tmux -L test_case``.
 Install the latest code from git
 --------------------------------
 
-Using pip
-^^^^^^^^^
+Get the source
+^^^^^^^^^^^^^^
 
 To begin developing, check out the code from github:
 
@@ -29,6 +29,9 @@ To begin developing, check out the code from github:
 
     $ git clone git@github.com:tmux-python/tmuxp.git
     $ cd tmuxp
+
+Advanced: Manual virtual
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now create a virtualenv, if you don't know how to, you can create a
 virtualenv with:
@@ -57,8 +60,12 @@ adjust the code and the installed software will reflect the changes.
 
     $ tmuxp
 
-Using poetry
-^^^^^^^^^^^^
+Simple: Using poetry
+^^^^^^^^^^^^^^^^^^^^
+
+The easiest way to configure a dev environment is through `poetry`_. This
+automatically will manage virtualenv and python dependencies for tmuxp.
+For information on installing poetry visit the `poetry's documentation`_.
 
 To begin developing, check out the code from github:
 
@@ -91,6 +98,8 @@ Then activate it to your current tty / terminal session with:
 
 That is it! You are now ready to code!
 
+.. _poetry: https://python-poetry.org/
+.. _poetry's documentation: https://python-poetry.org/docs/
 
 Test Runner
 -----------
