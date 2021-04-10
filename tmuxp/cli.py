@@ -750,7 +750,6 @@ def load_workspace(
 
 
 @click.group(context_settings={'obj': {}, 'help_option_names':['-h', '--help']})
-@click.group(context_settings={'obj': {}})
 @click.version_option(__version__, '-V', '--version', message='%(prog)s %(version)s')
 @click.option(
     '--log-level',
