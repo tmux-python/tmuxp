@@ -564,7 +564,7 @@ def load_workspace(
         ``tmux -S <socket-path>``
     new_session_name: str, options
         ``tmux new -s <new_session_name>``
-    colors : str, optional
+    colors : int, optional
         '-2'
             Force tmux to support 256 colors
     detached : bool
@@ -1013,6 +1013,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
 @click.option(
     'colors',
     '-2',
+    type=int,
     flag_value=256,
     default=True,
     help='Force tmux to assume the terminal supports 256 colours.',
@@ -1020,6 +1021,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
 @click.option(
     'colors',
     '-8',
+    type=int,
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
