@@ -1071,7 +1071,7 @@ def command_load(
         'tmux_config_file': tmux_config_file,
         'new_session_name': new_session_name,
         'answer_yes': answer_yes,
-        'colors': colors,
+        'colors': int(colors),
         'detached': detached,
         'append': append,
     }
