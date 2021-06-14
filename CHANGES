@@ -11,10 +11,11 @@ current
   @jfindlay! Fixes :issue:`654`
 - :issue:`666` CI: Move test plugin packages from pyproject.toml to 
   pytest fixtures. Fixes :issue:`658`
-- Bump minimum version 3.5 -> 3.6
-- Drop python 2.7 support
-- Modernize syntax (remove ``__future__`` and modesets)
-- Update black to 21.6b0
+- :issue:`661`
+  - Bump minimum version 3.5 -> 3.6
+  - Drop python 2.7 support
+  - Modernize syntax (remove ``__future__`` and modesets)
+  - Update black to 21.6b0
 - *Insert changes/features/fixes for next release here*
 
 tmuxp 1.7.2 (2021-02-03)
