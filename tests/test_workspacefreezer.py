@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
 """Test for tmuxp workspacefreezer."""
-
-from __future__ import absolute_import, unicode_literals
-
 import time
 
 import kaptan

@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 """Test for tmuxp plugin api."""
-from __future__ import absolute_import
-
 import pytest
 
 from tmuxp.exc import TmuxpPluginException

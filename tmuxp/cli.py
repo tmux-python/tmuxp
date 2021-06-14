@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """Command line tool for managing tmux workspaces and tmuxp configurations.
 
 tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import
-
 import importlib
 import logging
 import os
@@ -663,8 +660,10 @@ def load_workspace(
     sconfig = config.trickle(sconfig)
 
     t = Server(  # create tmux server object
-        socket_name=socket_name, socket_path=socket_path,
-        config_file=tmux_config_file, colors=colors,
+        socket_name=socket_name,
+        socket_path=socket_path,
+        config_file=tmux_config_file,
+        colors=colors,
     )
 
     which('tmux')  # raise exception if tmux not found

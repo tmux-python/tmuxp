@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Log utilities for tmuxp.
 
 tmuxp.log
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
 import time
 

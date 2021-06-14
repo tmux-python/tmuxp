@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Configuration parsing and export for tmuxp.
 
 tmuxp.config
