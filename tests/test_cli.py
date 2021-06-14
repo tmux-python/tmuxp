@@ -148,6 +148,8 @@ def test_tmuxp_configdir_xdg_config_dir(tmpdir, monkeypatch):
 
 def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
     monkeypatch.setenv('HOME', str(homedir))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir.join('.config')))
+
     projectdir.join('.tmuxp.yaml').ensure()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
@@ -966,6 +968,7 @@ def test_pass_config_dir_ClickPath(tmpdir):
 
 def test_ls_cli(monkeypatch, tmpdir):
     monkeypatch.setenv("HOME", str(tmpdir))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmpdir.join('.config')))
 
     filenames = [
         '.git/',
