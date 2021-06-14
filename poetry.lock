@@ -411,7 +411,7 @@ description = "scripting library / orm for tmux"
 name = "libtmux"
 optional = false
 python-versions = "*"
-version = "0.8.5"
+version = "0.9.0"
 
 [[package]]
 category = "dev"
@@ -1130,7 +1130,7 @@ lint = []
 test = []
 
 [metadata]
-content-hash = "b68c28d11a493ba4c02fbf993639a22d2d0d5fb28d23dcd0c3febc3211d5644a"
+content-hash = "e43047a3bc9b35df4c2d822a1867acbeae0ed95e21e57dfe7e99fa91d3abe4f6"
 lock-version = "1.0"
 python-versions = "^3.5"
 
@@ -1358,8 +1358,8 @@ keyring = [
     {file = "keyring-23.0.1.tar.gz", hash = "sha256:045703609dd3fccfcdb27da201684278823b72af515aedec1a8515719a038cb8"},
 ]
 libtmux = [
-    {file = "libtmux-0.8.5-py3-none-any.whl", hash = "sha256:640b315497dba2235778d9fe6924e995523f61bfbbca35a0f8036fe07c1627b3"},
-    {file = "libtmux-0.8.5.tar.gz", hash = "sha256:1d35b9f8451944d31c5ed22ed9e6c8e18034adcc75718fcc5b27fbd9621543e1"},
+    {file = "libtmux-0.9.0-py3-none-any.whl", hash = "sha256:9684fa7c42e05275d0872b9d1f329b921211a107bc6cf98cb569b8f7f68a9096"},
+    {file = "libtmux-0.9.0.tar.gz", hash = "sha256:c42727cbbcd02403cffb79c8ba8ea4f95ff1bd8c9328612fea537acd25e5ae16"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
