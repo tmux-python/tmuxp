@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 """Exceptions for tmuxp.
 
 tmuxp.exc
 ~~~~~~~~~
 
 """
-
-from __future__ import absolute_import, unicode_literals
-
 from ._compat import implements_to_string
 
 

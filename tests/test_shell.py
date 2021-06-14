@@ -1,10 +1,9 @@
 from tmuxp import shell
-from tmuxp._compat import string_types
 
 
 def test_detect_best_shell():
     result = shell.detect_best_shell()
-    assert isinstance(result, string_types)
+    assert isinstance(result, str)
 
 
 def test_shell_detect():

@@ -1,5 +1,5 @@
-pytest<6.3
-pytest-rerunfailures<11
+pytest
+pytest-rerunfailures
 pytest-cov
 coverage
 codecov

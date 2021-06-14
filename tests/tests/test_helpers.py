@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
 """Tests for .'s helper and utility functions."""
-
-from __future__ import absolute_import, unicode_literals
-
 import pytest
 
 from libtmux.test import get_test_session_name, temp_session

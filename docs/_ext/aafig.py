@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     sphinxcontrib.aafig
     ~~~~~~~~~~~~~~~~~~~
@@ -11,9 +10,6 @@
     :author: Leandro Lucarella <llucax@gmail.com>
     :license: BOLA, see LICENSE for details
 """
-
-from __future__ import unicode_literals
-
 import posixpath
 from os import path
 

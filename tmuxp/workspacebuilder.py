@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 """Create a tmux workspace from a configuration :py:obj:`dict`.
 
 tmuxp.workspacebuilder
 ~~~~~~~~~~~~~~~~~~~~~~
 
 """
-
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from libtmux.exc import TmuxSessionExists
@@ -17,7 +13,7 @@ from libtmux.session import Session
 from libtmux.window import Window
 
 from . import exc
-from .util import run_before_script, get_current_pane
+from .util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 

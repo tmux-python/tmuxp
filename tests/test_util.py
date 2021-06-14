@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
 """Tests for utility functions in tmux."""
-
-from __future__ import absolute_import, unicode_literals
-
 import os
 
 import pytest

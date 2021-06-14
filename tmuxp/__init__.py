@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # flake8: NOQA
 """tmux session manager.
 
@@ -9,8 +8,6 @@ tmuxp
 :license: MIT, see LICENSE for details
 
 """
-from __future__ import absolute_import, unicode_literals
-
 from . import cli, config, util
 from .__about__ import (
     __author__,

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 import os
 
@@ -49,12 +48,14 @@ def session(server):
 
     if not server.has_session(session_name):
         server.cmd(
-            '-f', '/dev/null',  # use a blank config to reduce side effects
+            '-f',
+            '/dev/null',  # use a blank config to reduce side effects
             'new-session',
             '-d',  # detached
-            '-s', session_name,
+            '-s',
+            session_name,
             '/bin/sh',  # use /bin/sh as a shell to reduce side effects
-                        # normally, it'd be -c, but new-session is special
+            # normally, it'd be -c, but new-session is special
         )
 
     # find current sessions prefixed with tmuxp
