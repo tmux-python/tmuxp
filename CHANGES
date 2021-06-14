@@ -6,9 +6,11 @@ Here you can find the recent changes to tmuxp
 
 current
 -------
+- *Insert changes/features/fixes for next release here*
+
+tmuxp 1.8.0 (2021-06-14)
+------------------------
 - :issue:`662` CI: Only update docs when changed
-- :issue:`665` Support for passing tmux config file (``-f``), thanks
-  @jfindlay! Fixes :issue:`654`
 - :issue:`666` CI: Move test plugin packages from pyproject.toml to 
   pytest fixtures. Fixes :issue:`658`
 - :issue:`661`
@@ -16,7 +18,6 @@ current
   - Drop python 2.7 support
   - Modernize syntax (remove ``__future__`` and modesets)
   - Update black to 21.6b0
-- *Insert changes/features/fixes for next release here*
 
 tmuxp 1.7.2 (2021-02-03)
 ------------------------
