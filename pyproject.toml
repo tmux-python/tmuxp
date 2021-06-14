@@ -61,7 +61,7 @@ codecov = "*"
 coverage = "*"
 
 ### Format ###
-black = {version="==20.08b1", python="^3.6"}
+black = {version="==21.6b0", python="^3.6.2"}
 isort = [
   {version="<5", python="<3.6"},
   {version="*", python=">=3.6"}
