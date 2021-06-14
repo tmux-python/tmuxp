@@ -21,6 +21,12 @@ You can upgrade to the latest release with:
 
 Then install :ref:`completion`.
 
+If you are a Homebrew user you can install it with:
+
+.. code-block:: bash
+
+    $ brew install tmuxp
+
 CLI
 ---
 

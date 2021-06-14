@@ -13,9 +13,19 @@ available on Leanpub and `Amazon Kindle`_. Read and browse the book for free
 Installation
 ------------
 
+Pip
+^^^
+
 .. code-block:: shell
 
    $ pip install --user tmuxp
+
+Homebrew
+^^^^^^^^
+
+.. code-block:: shell
+
+   $ brew install tmuxp
 
 Load a tmux session
 -------------------
