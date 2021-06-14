@@ -15,7 +15,6 @@ classifiers = [
   "Environment :: Web Environment",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.5",
   "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
@@ -36,7 +35,7 @@ Repository = "https://github.com/tmux-python/tmuxp"
 tmuxp = 'tmuxp:cli.cli'
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6"
 click = "^7"
 kaptan = ">=0.5.10"
 libtmux = "<0.10"
