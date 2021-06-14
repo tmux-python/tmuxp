@@ -14,6 +14,7 @@ tmuxp 1.8.0 (2021-06-14)
 - :issue:`666` CI: Move test plugin packages from pyproject.toml to 
   pytest fixtures. Fixes :issue:`658`
 - :issue:`661`
+
   - Bump minimum version 3.5 -> 3.6
   - Drop python 2.7 support
   - Modernize syntax (remove ``__future__`` and modesets)
