@@ -8,6 +8,10 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.8.1 (2021-06-14)
+------------------------
+- :issue:`681` Bump version to make homebrew release easier
+
 tmuxp 1.8.0.post0 (2021-06-14)
 ------------------------------
 - :issue:`681` tmuxp is now available on homebrew!  Thank you @jvcarli!
