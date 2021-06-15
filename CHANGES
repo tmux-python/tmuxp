@@ -8,6 +8,11 @@ current
 -------
 - *Insert changes/features/fixes for next release here*
 
+tmuxp 1.8.2 (2021-06-15)
+------------------------
+- :issue:`474` Re-release with ``python setup.py sdist bdist_wheel`` to
+  fix missing test files
+
 tmuxp 1.8.1 (2021-06-14)
 ------------------------
 - :issue:`681` Bump version to make homebrew release easier
