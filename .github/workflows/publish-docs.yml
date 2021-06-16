@@ -18,6 +18,7 @@ jobs:
       run: |
         git config --global user.name 'travis-ci'	
         git config --global user.email 'travis@nowhere.edu'
+
     - name: Filter changed file paths to outputs
       uses: dorny/paths-filter@v2.7.0
       id: changes
@@ -32,9 +33,11 @@ jobs:
             - 'examples/**'
           python_files:
             - 'tmuxp/**'
+
     - name: Should publish
       if: steps.changes.outputs.docs == 'true' || steps.changes.outputs.root_docs == 'true' || steps.changes.outputs.python_files == 'true'
       run: echo "PUBLISH=$(echo true)" >> $GITHUB_ENV
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
