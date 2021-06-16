@@ -3,6 +3,7 @@
 ## current
 
 - _Insert changes/features/fixes for next release here_
+- Remove `manual/`, move to https://github.com/tmux-python/tmux-manuals
 
 ## tmuxp 1.9.1 (2021-06-16)
 - libtmux: Update to 0.10.1+ to include `Window.select_window()` fix
