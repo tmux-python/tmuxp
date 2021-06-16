@@ -1,7 +1,5 @@
 (history)=
 
-# History
-
 ```{module} tmuxp
 
 ```
