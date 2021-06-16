@@ -39,3 +39,6 @@ flake8:
 
 watch_flake8:
 	if command -v entr > /dev/null; then ${PY_FILES} | entr -c $(MAKE) flake8; else $(MAKE) flake8 entr_warn; fi
+
+prettier:
+	prettier --parser=markdown -w *.md docs/*.md docs/**/*.md CHANGES
