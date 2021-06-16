@@ -3,7 +3,7 @@
 # Developing and Testing
 
 ```{eval-rst}
-.. todo:: 
+.. todo::
     link to sliderepl or ipython notebook slides
 ```
 
@@ -113,7 +113,6 @@ $ poetry shell
 That is it! You are now ready to code!
 
 [poetry]: https://python-poetry.org/
-
 [poetry's documentation]: https://python-poetry.org/docs/
 
 ## Test Runner
@@ -174,10 +173,11 @@ open in a separate terminal.
 Create two terminals:
 
 > > - Terminal 1: `$ tmux -L test_case`
+>
 > - Terminal 2: `$ cd` into the tmuxp project and into the
 >   `virtualenv` if you are using one, see details on installing the dev
 >   version of tmuxp above. Then:
->   
+>
 >   ```
 >   $ py.test tests/test_workspacebuilder.py
 >   ```
@@ -195,7 +195,7 @@ This requires `entr(1)`.
 
 :::
 
-Install [entr][entr].  Packages are available available on most Linux and BSD
+Install [entr][entr]. Packages are available available on most Linux and BSD
 variants, including Debian, Ubuntu, FreeBSD, OS X.
 
 To run all tests upon editing any `.py` file:
@@ -279,15 +279,8 @@ e.g. `RETRY_TIMEOUT_SECONDS=10 py.test`
 ```
 
 [py.test usage argument]: https://pytest.org/latest/usage.html
-
 [entr]: http://entrproject.org/
-
 [github actions]: https://github.com/features/actions
-
 [gh build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests
-
 [.github/workflows/tests.yml]: https://github.com/tmux-python/tmuxp/blob/master/.github/workflows/tests.yml
-
 [issue on github]: https://github.com/tmux-python/tmuxp/issues
-
-

@@ -145,5 +145,3 @@ plugins:
 ```{eval-rst}
 .. automethod:: tmuxp.plugin.TmuxpPlugin.reattach
 ```
-
-

@@ -5,6 +5,7 @@
 ## tmux session manager
 
 ```{include} ../README.md
+
 ```
 
 ```{image} _static/tmuxp-demo.gif
@@ -29,5 +30,3 @@ about_tmux
 glossary
 
 ```
-
-

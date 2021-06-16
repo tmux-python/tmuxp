@@ -2,7 +2,7 @@
 
 # The Tao of tmux
 
-:::{figure} /_static/tao-tmux-screenshot.png
+:::{figure} /\_static/tao-tmux-screenshot.png
 :scale: 60%
 :align: center
 
@@ -47,7 +47,7 @@ Pane                Application            Performs operations
 ```
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
     :textual:
 
     +----------------------------------------------------------------+
@@ -90,7 +90,7 @@ One screen can be used to edit a file, and another may be used to
 `$ tail -F` a logfile.
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
 
    +--------+--------+
    | $ bash | $ bash |
@@ -104,7 +104,7 @@ One screen can be used to edit a file, and another may be used to
 ```
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
 
    +--------+--------+
    | $ bash | $ bash |
@@ -120,7 +120,7 @@ One screen can be used to edit a file, and another may be used to
 tmux supports as manys terminals as you want.
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
    :textual:
 
    +---------+---------+
@@ -158,7 +158,7 @@ You can leave tmux and all applications running (detach), log out, make a
 sandwich, and re-(attach), all applications are still running!
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
    :textual:
 
    +--------+--------+
@@ -241,15 +241,10 @@ If **compiling from source**, the dependencies are [libevent][libevent] and
 [ncurses][ncurses].
 
 [tmux homepage]: http://tmux.sourceforge.net/
-
 [libevent]: http://www.monkey.org/~provos/libevent/
-
 [ncurses]: http://invisible-island.net/ncurses/
-
 [macports]: http://www.macports.org/
-
 [fink]: http://fink.thetis.ig42.org/
-
 [homebrew]: http://www.brew.sh
 
 ## Using tmux
@@ -287,7 +282,7 @@ This could be because:
 Tmux hot keys have to be pressed in a special way. **Read this
 carefully**, then try it yourself.
 
-First, you press the *prefix* key. This is `C-b` by default.
+First, you press the _prefix_ key. This is `C-b` by default.
 
 Release. Then pause. For less than second. Then type what's next.
 
@@ -298,7 +293,7 @@ Then press `o`.
 
 ### Session Name
 
-Sessions can be *named upon creation*.
+Sessions can be _named upon creation_.
 
 ```{code-block} bash
 
@@ -306,7 +301,7 @@ $ tmux new-session [-s session-name]
 
 ```
 
-Sessions can be *renamed after creation*.
+Sessions can be _renamed after creation_.
 
 ```{eval_rst}
 =============== =========================================================
@@ -320,7 +315,7 @@ Short cut       ``Prefix`` + ``$``
 
 ### Window Name
 
-Windows can be *named upon creation*.
+Windows can be _named upon creation_.
 
 ```{code-block} bash
 
@@ -328,7 +323,7 @@ $ tmux new-window [-n window-name]
 
 ```
 
-Windows can be *renamed after creation*.
+Windows can be _renamed after creation_.
 
 ```{eval_rst}
 =============== ==========================================================
@@ -588,7 +583,7 @@ $(shell-command)
 
 So if `/usr/local/bin/tmux-mem-cpu-load` outputs stats to
 `stdout`, then `$(tmux-mem-cpu-load)` is going to output the first
-line to the status line.  The interval is determined by the
+line to the status line. The interval is determined by the
 `status-interval`:
 
 ```
@@ -596,7 +591,6 @@ set -g status-interval 1
 ```
 
 [tmux-mem-cpu-load]: https://github.com/thewtex/tmux-mem-cpu-load
-
 [basic-cpu-and-memory.tmux]: https://github.com/zaiste/tmuxified/blob/master/scripts/basic-cpu-and-memory.tmux
 
 ### Examples
@@ -714,9 +708,9 @@ $ nroff -mdoc tmux.1|less
 
 ::::{container} rightside-book
 
-*The Tao of tmux* is available on [Leanpub][leanpub] and [Kindle][kindle] (Amazon).
+_The Tao of tmux_ is available on [Leanpub][leanpub] and [Kindle][kindle] (Amazon).
 
-:::{figure} _static/img/books/amazon-logo.png
+:::{figure} \_static/img/books/amazon-logo.png
 :scale: 19%
 :target: http://amzn.to/2gPfRhC
 :alt: Amazon Kindle
@@ -728,9 +722,7 @@ Read and browse the book for [free on the web][free on the web].
 ::::
 
 [free on the web]: https://leanpub.com/the-tao-of-tmux/read
-
 [leanpub]: https://leanpub.com/the-tao-of-tmux
-
 [kindle]: http://amzn.to/2gPfRhC
 
 :::::::
@@ -738,5 +730,3 @@ Read and browse the book for [free on the web][free on the web].
 ### License
 
 This page is licensed [Creative Commons BY-NC-ND 3.0 US][creative commons by-nc-nd 3.0 us].
-
-

@@ -41,14 +41,16 @@ tmuxp shell -c 'python code'
 Launch into a python console with [libtmux][libtmux] objects. Compare to django's shell.
 
 > > ```{image} _static/tmuxp-shell.gif
-> :width: 100%
-> 
+> > :width: 100%
+> > ```
+>
 > ```
-> 
-Automatically preloads current tmux {class}`server <libtmux.Server>`,
-{class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`
-{class}`pane <libtmux.Pane>`. Pass additional arguments to select a
-specific one of your choice:
+>
+> Automatically preloads current tmux {class}`server <libtmux.Server>`,
+> {class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`
+> {class}`pane <libtmux.Pane>`. Pass additional arguments to select a
+> specific one of your choice:
+> ```
 
 ```
 (Pdb) server
@@ -107,14 +109,12 @@ my_window
 ```
 
 [pep 553]: https://www.python.org/dev/peps/pep-0553/
-
 [ipdb]: https://pypi.org/project/ipdb/
-
 [libtmux]: https://libtmux.git-pull.com
 
 ### Shell detection
 
-`tmuxp shell` detects the richest shell available in your *site packages*, you can also pick your shell via args:
+`tmuxp shell` detects the richest shell available in your _site packages_, you can also pick your shell via args:
 
 - `--pdb`: Use plain old `breakpoint()` (python 3.7+) or
   `pdb.set_trace`
@@ -274,6 +274,4 @@ tmuxp convert /path/to/file.{json,yaml}
 ```
 
 tmuxp automatically will prompt to convert `.yaml` to `.json` and
-`.json` to  `.yaml`.
-
-
+`.json` to `.yaml`.

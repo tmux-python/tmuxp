@@ -4,8 +4,7 @@
 
 :::{seealso}
 
-See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart
-<libtmux:quickstart>` to see how you can control tmux via python API calls.
+See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart <libtmux:quickstart>` to see how you can control tmux via python API calls.
 
 :::
 
@@ -143,5 +142,3 @@ See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart
 ```{eval-rst}
 .. autoexception:: tmuxp.exc.BeforeLoadScriptNotExists
 ```
-
-

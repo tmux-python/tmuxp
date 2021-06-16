@@ -10,7 +10,7 @@ punctual.
 ::::{sidebar} short hand
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
    :textual:
 
     +-------------------+
@@ -67,7 +67,7 @@ Note `''` counts as an empty carriage return.
 ::::{sidebar} 2 pane
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
 
     +-----------------+
     | $ pwd           |
@@ -101,7 +101,7 @@ Note `''` counts as an empty carriage return.
 ::::{sidebar} 3 panes
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
 
     +-----------------+
     | $ pwd           |
@@ -135,7 +135,7 @@ Note `''` counts as an empty carriage return.
 ::::{sidebar} 4 panes
 
 ```{eval-rst}
-.. aafig:: 
+.. aafig::
 
     +--------+--------+
     | $ pwd  | $ pwd  |
@@ -402,7 +402,7 @@ A successful script will exit with a status of `0`.
 Important: the script file must be chmod executable `+x` or `755`.
 
 Run a python script (and check for it's return code), the script is
-*relative to the ``.tmuxp.yaml``'s root* (Windows and panes omitted in
+_relative to the `.tmuxp.yaml`'s root_ (Windows and panes omitted in
 this example):
 
 ```{code-block} yaml
@@ -461,9 +461,9 @@ $ tmuxp load ~/workspaces/myproject.yaml
 See examples of `tmuxp` in the wild. Have a project config to show off?
 Edit this page.
 
-* <https://github.com/tony/dockerfiles/blob/master/.tmuxp.yaml>
-* <https://github.com/tony/vcspull/blob/master/.tmuxp.yaml>
-* <https://github.com/tony/sphinxcontrib-github/blob/master/.tmuxp.yaml>
+- <https://github.com/tony/dockerfiles/blob/master/.tmuxp.yaml>
+- <https://github.com/tony/vcspull/blob/master/.tmuxp.yaml>
+- <https://github.com/tony/sphinxcontrib-github/blob/master/.tmuxp.yaml>
 
 You can use `start_directory: ./` to make the directories relative to
 the config file / project root.
@@ -516,7 +516,6 @@ windows:
 ```
 
 [pipenv]: https://docs.pipenv.org/
-
 [poetry]: https://python-poetry.org/
 
 ## Kung fu
@@ -533,5 +532,3 @@ See: {meth}`tmuxp.config.validate_schema`.
 Add yours? Submit a pull request to the [github][github] site!
 
 [github]: https://github.com/tmux-python/tmuxp
-
-

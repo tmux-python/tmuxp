@@ -3,7 +3,7 @@
 # Glossary
 
 ```{eval-rst}
-.. glossary:: 
+.. glossary::
 
     tmuxp
         A tool to manage workspaces with tmux. A pythonic abstraction of
@@ -64,5 +64,3 @@
 ```
 
 [kaptan on github]: https://github.com/emre/kaptan
-
-

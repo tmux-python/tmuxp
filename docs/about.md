@@ -20,10 +20,9 @@ To jump right in, see {ref}`quickstart` and {ref}`examples`.
 Interested in some kung-fu or joining the effort? {ref}`api` and
 {ref}`developing`.
 
-[MIT-licensed][mit-licensed]. Code on [github](<http://github.com/tmux-python/tmuxp>).
+[MIT-licensed][mit-licensed]. Code on [github](http://github.com/tmux-python/tmuxp).
 
 [bugsnag]: https://blog.bugsnag.com/benefits-of-using-tmux/
-
 [pragmatic coders]: http://pragmaticcoders.com/blog/tmuxp-preconfigured-sessions/
 
 ## Differences from tmuxinator / teamocil
@@ -81,9 +80,10 @@ See {ref}`libtmux's internals <libtmux:Internals>`.
 **Conversion** `$ tmuxp convert <filename>` can convert files to and
 from JSON and YAML.
 
-[^id4]: While freezing and importing sessions is a great way to save time,
-  tweaking will probably be required - There is no substitute to a
-  config made with love.
+[^id4]:
+    While freezing and importing sessions is a great way to save time,
+    tweaking will probably be required - There is no substitute to a
+    config made with love.
 
 [libtmux]: https://libtmux.git-pull.com
 
@@ -103,17 +103,9 @@ from JSON and YAML.
   `$ tmuxp -f<config-file>` for config file.
 
 [attempt at 1.7 test]: https://travis-ci.org/tmux-python/tmuxp/jobs/12348263
-
 [kaptan]: https://github.com/emre/kaptan
-
 [mit-licensed]: http://opensource.org/licenses/MIT
-
 [tmuxinator]: https://github.com/aziz/tmuxinator
-
 [teamocil]: https://github.com/remiprev/teamocil
-
 [erb]: http://ruby-doc.org/stdlib-2.0.0/libdoc/erb/rdoc/ERB.html
-
 [edit this page]: https://github.com/tmux-python/tmuxp/edit/master/doc/about.rst
-
-

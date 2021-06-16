@@ -121,13 +121,7 @@ AL - [Abstraction Layer][abstraction layer]
 | {meth}`libtmux.Pane.send_keys`        | `$ tmux send-keys`         |
 
 [import]: http://tmuxp.git-pull.com/cli.html#import
-
 [tmuxinator]: https://github.com/aziz/tmuxinator
-
 [teamocil]: https://github.com/remiprev/teamocil
-
 [abstraction layer]: http://en.wikipedia.org/wiki/Abstraction_layer
-
 [object relational mapper]: http://en.wikipedia.org/wiki/Object-relational_mapping
-
-
