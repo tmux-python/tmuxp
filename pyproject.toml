@@ -76,7 +76,7 @@ twine = "*"
 
 [tool.poetry.extras]
 docs = ["sphinx", "recommonmark", "sphinx-issues", "alagitpull", "aafigure", "pillow"]
-test = ["pytest", "pathlib2", "pytest-rerunfailures", "pytest-mock"]
+test = ["pytest", "pytest-rerunfailures", "pytest-mock"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
 lint = ["flake8"]
