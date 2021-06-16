@@ -354,7 +354,7 @@ description = "scripting library / orm for tmux"
 name = "libtmux"
 optional = false
 python-versions = "*"
-version = "0.9.0"
+version = "0.10.0"
 
 [[package]]
 category = "dev"
@@ -967,7 +967,7 @@ lint = []
 test = []
 
 [metadata]
-content-hash = "a6016efed57089caf7829ace922fb60fc48930b36825834650bc22b7c36e62c1"
+content-hash = "1b78b0efe66005d54edd9b183d9bf4925f34e3c7b3303dfb8f1fb33efd879bf4"
 lock-version = "1.0"
 python-versions = "^3.6"
 
@@ -1196,8 +1196,8 @@ keyring = [
     {file = "keyring-23.0.1.tar.gz", hash = "sha256:045703609dd3fccfcdb27da201684278823b72af515aedec1a8515719a038cb8"},
 ]
 libtmux = [
-    {file = "libtmux-0.9.0-py3-none-any.whl", hash = "sha256:9684fa7c42e05275d0872b9d1f329b921211a107bc6cf98cb569b8f7f68a9096"},
-    {file = "libtmux-0.9.0.tar.gz", hash = "sha256:c42727cbbcd02403cffb79c8ba8ea4f95ff1bd8c9328612fea537acd25e5ae16"},
+    {file = "libtmux-0.10.0-py3-none-any.whl", hash = "sha256:a6884df0400be68f05d13afcc606d90db81090a25ff887716e2111c299d071d2"},
+    {file = "libtmux-0.10.0.tar.gz", hash = "sha256:cc1d64e72fc64d3d8ccf7c50fb0294c84894f07a74d53eef3df74c4fe98af521"},
 ]
 markdown-it-py = [
     {file = "markdown-it-py-1.1.0.tar.gz", hash = "sha256:36be6bb3ad987bfdb839f5ba78ddf094552ca38ccbd784ae4f74a4e1419fc6e3"},
