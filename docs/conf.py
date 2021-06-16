@@ -4,7 +4,6 @@ import sys
 from os.path import dirname, relpath
 
 import alagitpull
-from recommonmark.transform import AutoStructify
 
 import tmuxp
 
@@ -24,14 +23,17 @@ with open("../tmuxp/__about__.py") as fp:
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.todo',
     'sphinx.ext.napoleon',
     'sphinx.ext.linkcode',
     'aafig',
     'alagitpull',
     'sphinx_issues',
-    'recommonmark',
+    'myst_parser',
 ]
+
+myst_enable_extensions = ["colon_fence"]
 
 issues_github_path = about['__github__'].replace('https://github.com/', '')
 
@@ -40,22 +42,6 @@ templates_path = ['_templates']
 source_suffix = {'.rst': 'restructuredtext', '.md': 'markdown'}
 
 master_doc = 'index'
-
-# app setup hook
-def setup(app):
-    app.add_config_value(
-        'recommonmark_config',
-        {
-            #'url_resolver': lambda url: github_doc_root + url,
-            'enable_auto_toc_tree': True,
-            'auto_toc_tree_section': 'Contents',
-            'auto_code_block': True,
-            'enable_eval_rst': True,
-        },
-        True,
-    )
-    app.add_transform(AutoStructify)
-
 
 project = about['__title__']
 copyright = about['__copyright__']

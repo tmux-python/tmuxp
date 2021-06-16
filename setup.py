@@ -14,9 +14,9 @@ with open('requirements/test.txt') as f:
     tests_reqs = [line for line in f.read().split('\n') if line]
 
 if sys.version_info[0] > 2:
-    readme = open('README.rst', encoding='utf-8').read()
+    readme = open('README.md', encoding='utf-8').read()
 else:
-    readme = open('README.rst').read()
+    readme = open('README.md').read()
 
 history = open('CHANGES').read().replace('.. :changelog:', '')
 
