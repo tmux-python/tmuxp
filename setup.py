@@ -36,6 +36,7 @@ setup(
     author_email=about['__email__'],
     description=about['__description__'],
     long_description=readme,
+    long_description_content_type="text/markdown",
     packages=['tmuxp'],
     include_package_data=True,
     install_requires=install_reqs,
