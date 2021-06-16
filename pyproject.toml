@@ -25,7 +25,7 @@ classifiers = [
 ]
 keywords = ["tmux", "session manager", "terminal", "ncurses"]
 homepage = "http://github.com/tmux-python/tmuxp/"
-readme = "README.rst"
+readme = "README.md"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/tmux-python/tmuxp/issues"
