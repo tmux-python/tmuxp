@@ -1,14 +1,14 @@
-.. _about_tmux:
+(about-tmux)=
 
-###############
-The Tao of tmux
-###############
+# The Tao of tmux
 
-.. figure:: /_static/tao-tmux-screenshot.png
-    :scale: 60%
-    :align: center
+:::{figure} /_static/tao-tmux-screenshot.png
+:scale: 60%
+:align: center
 
-    ISC-licensed terminal multiplexer.
+ISC-licensed terminal multiplexer.
+
+:::
 
 tmux is geared for developers and admins who interact regularly with
 CLI (text-only interfaces)
@@ -29,13 +29,11 @@ the text dimension. Inside tmux you can:
 - have multiple windows (window) in the workspace (session)
 - switch between multiple workspaces, like virtual desktops
 
-=============
-Thinking tmux
-=============
+## Thinking tmux
 
-Text-based window manager
--------------------------
+### Text-based window manager
 
+```{eval_rst}
 =================== ====================== ===============================
 **tmux**            **"Desktop"-Speak**    **Plain English**
 ------------------- ---------------------- -------------------------------
@@ -46,8 +44,10 @@ Window              Virtual Desktop or     A desktop that stores it own
                     applications           screen
 Pane                Application            Performs operations
 =================== ====================== ===============================
+```
 
-.. aafig::
+```{eval-rst}
+.. aafig:: 
     :textual:
 
     +----------------------------------------------------------------+
@@ -65,27 +65,32 @@ Pane                Application            Performs operations
     +----------------------------------------------------------------+
     | session                                                        |
     \----------------------------------------------------------------/
+```
 
-- 1 :term:`Server`.
+- 1 {term}`Server`.
 
-  - has 1 or more :term:`Session`.
+  - has 1 or more {term}`Session`.
 
-    - has 1 or more :term:`Window`.
+    - has 1 or more {term}`Window`.
 
-      - has 1 or more :term:`Pane`.
+      - has 1 or more {term}`Pane`.
 
-.. seealso:: :ref:`glossary` has a dictionary of tmux words.
+:::{seealso}
 
-CLI Power Tool
---------------
+{ref}`glossary` has a dictionary of tmux words.
+
+:::
+
+### CLI Power Tool
 
 Multiple applications or terminals to run on the same screen by splitting
 up 1 terminal into multiple.
 
 One screen can be used to edit a file, and another may be used to
-``$ tail -F`` a logfile.
+`$ tail -F` a logfile.
 
-.. aafig::
+```{eval-rst}
+.. aafig:: 
 
    +--------+--------+
    | $ bash | $ bash |
@@ -96,8 +101,10 @@ One screen can be used to edit a file, and another may be used to
    |        |        |
    |        |        |
    +--------+--------+
+```
 
-.. aafig::
+```{eval-rst}
+.. aafig:: 
 
    +--------+--------+
    | $ bash | $ bash |
@@ -108,10 +115,12 @@ One screen can be used to edit a file, and another may be used to
    |        |        |
    |        |        |
    +--------+--------+
+```
 
 tmux supports as manys terminals as you want.
 
-.. aafig::
+```{eval-rst}
+.. aafig:: 
    :textual:
 
    +---------+---------+
@@ -139,16 +148,17 @@ tmux supports as manys terminals as you want.
    +-------------------+
    | '1:sys  2:vim*'   |
    +-------------------+
+```
 
 You can switch between the windows you create.
 
-Resume everything later
------------------------
+### Resume everything later
 
 You can leave tmux and all applications running (detach), log out, make a
 sandwich, and re-(attach), all applications are still running!
 
-.. aafig::
+```{eval-rst}
+.. aafig:: 
    :textual:
 
    +--------+--------+
@@ -197,24 +207,22 @@ sandwich, and re-(attach), all applications are still running!
    |        |        |
    |        |        |
    +--------+--------+
+```
 
-Manage workflow
----------------
+### Manage workflow
 
 - System administrators monitor logs and services.
 - Programmers like to have an editor open with a CLI nearby.
 
 Applications running on a remote server can be launched inside of a tmux
-session, detached, and reattached next timeyour `"train of thought"`_ and
+session, detached, and reattached next timeyour ["train of thought"]["train of thought"] and
 work.
 
 Multitasking. Preserving the thinking you have.
 
-.. _"train of thought": http://en.wikipedia.org/wiki/Train_of_thought
+["train of thought"]: http://en.wikipedia.org/wiki/Train_of_thought
 
-===============
-Installing tmux
-===============
+## Installing tmux
 
 tmux is packaged on most Linux and BSD systems.
 
@@ -224,76 +232,83 @@ slightly different between distributions.
 
 This documentation is written for version **1.8**. It's important that
 you have the latest stable release of tmux. The latest stable version is
-viewable on the `tmux homepage`_.
+viewable on the [tmux homepage][tmux homepage].
 
 **Mac OS X** users may install that latest stable version of tmux through
-`MacPorts`_, `fink`_ or `Homebrew`_ (aka brew).
+[MacPorts][macports], [fink][fink] or [Homebrew][homebrew] (aka brew).
 
-If **compiling from source**, the dependencies are `libevent`_ and
-`ncurses`_.
+If **compiling from source**, the dependencies are [libevent][libevent] and
+[ncurses][ncurses].
 
-.. _tmux homepage: http://tmux.sourceforge.net/
-.. _libevent: http://www.monkey.org/~provos/libevent/
-.. _ncurses: http://invisible-island.net/ncurses/
-.. _MacPorts: http://www.macports.org/
-.. _Fink: http://fink.thetis.ig42.org/
-.. _Homebrew: http://www.brew.sh
+[tmux homepage]: http://tmux.sourceforge.net/
 
-==========
-Using tmux
-==========
+[libevent]: http://www.monkey.org/~provos/libevent/
 
-Start a new session
--------------------
+[ncurses]: http://invisible-island.net/ncurses/
 
-.. code-block:: bash
+[macports]: http://www.macports.org/
 
-    $ tmux
+[fink]: http://fink.thetis.ig42.org/
+
+[homebrew]: http://www.brew.sh
+
+## Using tmux
+
+### Start a new session
+
+```{code-block} bash
+
+$ tmux
+
+```
 
 That's all it takes to launch yourself into a tmux session.
 
-.. admonition:: Common pitfall
-    :class: note
+:::{admonition} Common pitfall
+:class: note
 
-    Running ``$ tmux list-sessions`` or any other command for listing tmux
-    entities (such as ``$ tmux list-windows`` or ``$ tmux list-panes``).
-    This can generate the error "failed to connect to server".
+Running `$ tmux list-sessions` or any other command for listing tmux
+entities (such as `$ tmux list-windows` or `$ tmux list-panes`).
+This can generate the error "failed to connect to server".
 
-    This could be because:
+This could be because:
 
-    - tmux server has killed its' last session, killing the server.
-    - tmux server has encountered a crash. (tmux is highly stable,
-      this will rarely happen)
-    - tmux has not be launched yet at all.
+- tmux server has killed its' last session, killing the server.
+- tmux server has encountered a crash. (tmux is highly stable,
+  this will rarely happen)
+- tmux has not be launched yet at all.
 
-.. _Prefix key:
+:::
 
-The prefix key
---------------
+(prefix-key)=
+
+### The prefix key
 
 Tmux hot keys have to be pressed in a special way. **Read this
 carefully**, then try it yourself.
 
-First, you press the *prefix* key. This is ``C-b`` by default.
+First, you press the *prefix* key. This is `C-b` by default.
 
 Release. Then pause. For less than second. Then type what's next.
 
-``C-b o`` means: Press ``Ctrl`` and ``b`` at the same time. Release,
-Then press ``o``.
+`C-b o` means: Press `Ctrl` and `b` at the same time. Release,
+Then press `o`.
 
-**Remember, prefix + short cut!** ``C`` is ``Ctrl`` key.
+**Remember, prefix + short cut!** `C` is `Ctrl` key.
 
-Session Name
-------------
+### Session Name
 
 Sessions can be *named upon creation*.
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux new-session [-s session-name]
+$ tmux new-session [-s session-name]
+
+```
 
 Sessions can be *renamed after creation*.
 
+```{eval_rst}
 =============== =========================================================
 Command         .. code-block:: bash
 
@@ -301,18 +316,21 @@ Command         .. code-block:: bash
 
 Short cut       ``Prefix`` + ``$``
 =============== =========================================================
+```
 
-Window Name
------------
+### Window Name
 
 Windows can be *named upon creation*.
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux new-window [-n window-name]
+$ tmux new-window [-n window-name]
+
+```
 
 Windows can be *renamed after creation*.
 
+```{eval_rst}
 =============== ==========================================================
 Command         .. code-block:: bash
 
@@ -320,10 +338,11 @@ Command         .. code-block:: bash
 
 Short cut       ``Prefix`` + ``,``
 =============== ==========================================================
+```
 
-Creating new windows
---------------------
+### Creating new windows
 
+```{eval_rst}
 =============== =========================================================
 Command         .. code-block:: bash
 
@@ -333,34 +352,43 @@ Short cut       ``Prefix`` + ``c``
 
                 You may then rename window.
 =============== =========================================================
+```
 
-Traverse windows
-----------------
+### Traverse windows
 
 By number
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux select-window
+$ tmux select-window
+
+```
 
 Next
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux next-window
+$ tmux next-window
+
+```
 
 Previous
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux previous-window
+$ tmux previous-window
+
+```
 
 Last-window
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux last-window
+$ tmux last-window
 
+```
+
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
@@ -375,36 +403,43 @@ Short cut             Action
                       marker.
 
 ===================   ====================================================
+```
 
-Move windows
-------------
+### Move windows
 
 Move window
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux move-window [-t dst-window]
+$ tmux move-window [-t dst-window]
+
+```
 
 Swap the window
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux swap-window [-t dst-window]
+$ tmux swap-window [-t dst-window]
 
+```
+
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
 ``.``                 Prompt for an index to move the current window.
 ===================   ====================================================
+```
 
+### Move panes
 
-Move panes
-----------
+```{code-block} bash
 
-.. code-block:: bash
+$ tmux move-pane [-t dst-pane]
 
-    $ tmux move-pane [-t dst-pane]
+```
 
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
@@ -412,157 +447,176 @@ Short cut             Action
 ``{``                 Swap the current pane with the previous pane.
 ``}``                 Swap the current pane with the next pane.
 ===================   ====================================================
+```
 
-
-Traverse panes
---------------
+### Traverse panes
 
 Shortcut to move between panes.
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux last-window
+$ tmux last-window
 
-.. code-block:: bash
+```
 
-    $ tmux next-window
+```{code-block} bash
 
+$ tmux next-window
+
+```
+
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
 ``Up, Down``          Change to the pane above, below, to the left, or to
 ``Left, Right``       the right of the current pane.
 ===================   ====================================================
+```
 
+Recipe: tmux conf to `hjkl` commands, add this to your
+`~/.tmux.conf`:
 
-Recipe: tmux conf to ``hjkl`` commands, add this to your
-``~/.tmux.conf``::
+```
+# hjkl pane traversal
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+```
 
-    # hjkl pane traversal
-    bind h select-pane -L
-    bind j select-pane -D
-    bind k select-pane -U
-    bind l select-pane -R
+### Kill window
 
-Kill window
------------
+```{code-block} bash
 
-.. code-block:: bash
+$ tmux kill-window [-t target-window]
 
-    $ tmux kill-window [-t target-window]
+```
 
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
 ``&``                 Kill the current window.
 ===================   ====================================================
+```
 
-Kill pane
----------
+### Kill pane
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux kill-pane [-t target-pane]
+$ tmux kill-pane [-t target-pane]
 
+```
+
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
 ``x``                 Kill the current pane.
 ===================   ====================================================
+```
 
-Splitting windows into panes
-----------------------------
+### Splitting windows into panes
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ tmux split-window [-c start-directory] <shell-command>
+$ tmux split-window [-c start-directory] <shell-command>
+
+```
 
 Tmux windows can be split into multiple panes.
 
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
 ``%``                 Split the current pane into two, left and right.
 ``"``                 Split the current pane into two, top and bottom.
 ===================   ====================================================
+```
 
-================
-Configuring tmux
-================
+## Configuring tmux
 
-Tmux can be configured via a configuration at ``~/.tmux.conf``.
+Tmux can be configured via a configuration at `~/.tmux.conf`.
 
 Depending on your tmux version, there is different options available.
 
-Vi-style copy and paste
------------------------
+### Vi-style copy and paste
 
-.. code-block:: sh
+```{code-block} sh
 
-    # Vi copypaste mode
-    set-window-option -g mode-keys vi
-    bind-key -t vi-copy 'v' begin-selection
-    bind-key -t vi-copy 'y' copy-selection
+# Vi copypaste mode
+set-window-option -g mode-keys vi
+bind-key -t vi-copy 'v' begin-selection
+bind-key -t vi-copy 'y' copy-selection
 
-Aggressive resizing for clients
--------------------------------
+```
 
-.. code-block:: sh
+### Aggressive resizing for clients
 
-    setw -g aggressive-resize on
+```{code-block} sh
 
-Reload config
--------------
+setw -g aggressive-resize on
 
-``<Prefix>`` + ``r``.
+```
 
-.. code-block:: sh
+### Reload config
 
-    bind r source-file ~/.tmux.conf \; display-message "Config reloaded."
+`<Prefix>` + `r`.
 
-Status lines
-------------
+```{code-block} sh
+
+bind r source-file ~/.tmux.conf \; display-message "Config reloaded."
+
+```
+
+### Status lines
 
 Tmux allows configuring a status line that displays system information,
-window list, and even pipe in the ``stdout`` of an application.
+window list, and even pipe in the `stdout` of an application.
 
-You can use `tmux-mem-cpu-load`_ to get stats (requires compilation) and
-`basic-cpu-and-memory.tmux`_. You can pipe in a bash command to a tmux
+You can use [tmux-mem-cpu-load][tmux-mem-cpu-load] to get stats (requires compilation) and
+[basic-cpu-and-memory.tmux][basic-cpu-and-memory.tmux]. You can pipe in a bash command to a tmux
 status line like:
 
-.. code-block:: sh
+```{code-block} sh
 
-    $(shell-command)
+$(shell-command)
 
-So if ``/usr/local/bin/tmux-mem-cpu-load`` outputs stats to
-``stdout``, then ``$(tmux-mem-cpu-load)`` is going to output the first
+```
+
+So if `/usr/local/bin/tmux-mem-cpu-load` outputs stats to
+`stdout`, then `$(tmux-mem-cpu-load)` is going to output the first
 line to the status line.  The interval is determined by the
-``status-interval``::
+`status-interval`:
 
-    set -g status-interval 1
+```
+set -g status-interval 1
+```
 
-.. _tmux-mem-cpu-load: https://github.com/thewtex/tmux-mem-cpu-load
-.. _basic-cpu-and-memory.tmux: https://github.com/zaiste/tmuxified/blob/master/scripts/basic-cpu-and-memory.tmux
+[tmux-mem-cpu-load]: https://github.com/thewtex/tmux-mem-cpu-load
 
-Examples
---------
+[basic-cpu-and-memory.tmux]: https://github.com/zaiste/tmuxified/blob/master/scripts/basic-cpu-and-memory.tmux
 
-- https://github.com/tony/tmux-config - works with tmux 1.5+. Supports
-  screen's ``ctrl-a`` :ref:`Prefix key`. Support for system cpu, memory,
+### Examples
+
+- <https://github.com/tony/tmux-config> - works with tmux 1.5+. Supports
+  screen's `ctrl-a` {ref}`Prefix key`. Support for system cpu, memory,
   uptime stats.
 - Add yours, edit this page on github.
 
-=========
-Reference
-=========
+## Reference
 
-Short cuts
-----------
+### Short cuts
 
-.. tip::
+:::{tip}
 
-    :ref:`Prefix key` is pressed before a short cut!
+{ref}`Prefix key` is pressed before a short cut!
 
+:::
+
+```{eval_rst}
 ===================   ====================================================
 Short cut             Action
 -------------------   ----------------------------------------------------
@@ -624,50 +678,65 @@ Short cut             Action
 ``M-Up, M-Down``      Resize the current pane in steps of five cells.
 ``M-Left, M-Right``
 ===================   ====================================================
+```
 
-Source: tmux manpage [1]_.
+Source: tmux manpage [^id2].
 
-To get the text documentation of a ``.1`` manual file:
+To get the text documentation of a `.1` manual file:
 
-.. code-block:: bash
+```{code-block} bash
 
-    $ nroff -mdoc tmux.1|less
+$ nroff -mdoc tmux.1|less
 
-.. [1] http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1
+```
 
-.. _Creative Commons BY-NC-ND 3.0 US: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
+[^id2]: <http://sourceforge.net/p/tmux/tmux-code/ci/master/tree/tmux.1>
 
-The Book
---------
+[creative commons by-nc-nd 3.0 us]: http://creativecommons.org/licenses/by-nc-nd/3.0/us/
 
-.. container:: book-container
+### The Book
 
-   .. container:: leftside-book
+:::::::{container} book-container
 
-      .. figure:: https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
-          :scale: 100%
-          :width: 301
-          :height: 390
-          :align: left
-          :target: https://leanpub.com/the-tao-of-tmux
-          :alt: The Tao of tmux
+::::{container} leftside-book
 
-   .. container:: rightside-book
+:::{figure} https://s3.amazonaws.com/titlepages.leanpub.com/the-tao-of-tmux/large
+:scale: 100%
+:width: 301
+:height: 390
+:align: left
+:target: https://leanpub.com/the-tao-of-tmux
+:alt: The Tao of tmux
 
-      *The Tao of tmux* is available on `Leanpub`_ and `Kindle`_ (Amazon).
+:::
 
-      .. figure:: _static/img/books/amazon-logo.png
-        :scale: 19%
-        :target: http://amzn.to/2gPfRhC
-        :alt: Amazon Kindle
+::::
 
-      Read and browse the book for `free on the web`_.
+::::{container} rightside-book
 
-   .. _free on the web: https://leanpub.com/the-tao-of-tmux/read
-   .. _Leanpub: https://leanpub.com/the-tao-of-tmux
-   .. _Kindle: http://amzn.to/2gPfRhC
+*The Tao of tmux* is available on [Leanpub][leanpub] and [Kindle][kindle] (Amazon).
 
-License
--------
+:::{figure} _static/img/books/amazon-logo.png
+:scale: 19%
+:target: http://amzn.to/2gPfRhC
+:alt: Amazon Kindle
 
-This page is licensed `Creative Commons BY-NC-ND 3.0 US`_.
+:::
+
+Read and browse the book for [free on the web][free on the web].
+
+::::
+
+[free on the web]: https://leanpub.com/the-tao-of-tmux/read
+
+[leanpub]: https://leanpub.com/the-tao-of-tmux
+
+[kindle]: http://amzn.to/2gPfRhC
+
+:::::::
+
+### License
+
+This page is licensed [Creative Commons BY-NC-ND 3.0 US][creative commons by-nc-nd 3.0 us].
+
+

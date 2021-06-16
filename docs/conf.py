@@ -33,6 +33,8 @@ extensions = [
     'myst_parser',
 ]
 
+myst_enable_extensions = ["colon_fence"]
+
 issues_github_path = about['__github__'].replace('https://github.com/', '')
 
 templates_path = ['_templates']

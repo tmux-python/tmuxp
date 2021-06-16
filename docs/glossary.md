@@ -1,11 +1,9 @@
-.. _glossary:
+(glossary)=
 
-========
-Glossary
-========
+# Glossary
 
-
-.. glossary::
+```{eval-rst}
+.. glossary:: 
 
     tmuxp
         A tool to manage workspaces with tmux. A pythonic abstraction of
@@ -63,5 +61,8 @@ Glossary
     Target
         A target, cited in the manual as ``[-t target]`` can be a session,
         window or pane.
+```
 
-.. _kaptan on github: https://github.com/emre/kaptan
+[kaptan on github]: https://github.com/emre/kaptan
+
+
