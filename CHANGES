@@ -3,6 +3,9 @@
 ## current
 
 - _Insert changes/features/fixes for next release here_
+- #689: Update poetry to 1.1
+  - CI: Use poetry 1.1.7 and `install-poetry.py` installer
+  - Relock poetry.lock at 1.1 (w/ 1.1.7's fix)
 
 ## tmuxp 1.9.2 (2021-06-17)
 - #686: Allow click 8.0.x
