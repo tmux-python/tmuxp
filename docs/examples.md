@@ -387,6 +387,36 @@ pane during creation.
 
 ```
 
+
+## Multi-line commands
+
+You can use YAML's multiline syntax to easily split multiple
+commands into the same shell command: https://stackoverflow.com/a/21699210
+
+```{code-block} yaml
+
+session_name: my project
+shell_command_before: 
+- >
+  [ -d `.venv/bin/activate` ] &&
+  source .venv/bin/activate &&
+  reset
+- sleep 1
+windows:
+- window_name: first window
+  layout: main-horizontal
+  focus: true
+  panes:
+  - focus: True
+  - blank
+  - >
+    poetry run ./manage.py migrate &&
+    npm -C js run start
+  - poetry run ./manage.py runserver
+  options:
+    main-pane-height: 35
+```
+
 ## Bootstrap project before launch
 
 You can use `before_script` to run a script before the tmux session
