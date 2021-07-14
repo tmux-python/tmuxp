@@ -212,7 +212,7 @@ are created, the last session is named from the terminal.
 
 ```{code-block} bash
 
-$ tmxup load -s <new_session_name> <filename1> ...
+$ tmuxp load -s <new_session_name> <filename1> ...
 
 ```
 

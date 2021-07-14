@@ -74,7 +74,7 @@ $ tmuxp load mysession ./another/project/
 Name a session:
 
 ```bash
-$ tmxup load -s session_name ./mysession.yaml
+$ tmuxp load -s session_name ./mysession.yaml
 ```
 
 [simple](http://tmuxp.git-pull.com/examples.html#short-hand-inline) and
