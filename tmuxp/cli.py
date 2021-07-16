@@ -926,9 +926,17 @@ def command_shell(
     default=False,
     help="Don't prompt for confirmation",
 )
+@click.option(
+    '-q',
+    '--quiet',
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Don't prompt for confirmation",
+)
 @click.option('--force', 'force', help='overwrite the config file', is_flag=True)
 def command_freeze(
-    session_name, socket_name, config_format, save_to, socket_path, yes, force
+    session_name, socket_name, config_format, save_to, socket_path, yes, quiet, force
 ):
     """Snapshot a session into a config.
 
@@ -954,22 +962,24 @@ def command_freeze(
     newconfig = config.inline(sconf)
     configparser.import_config(newconfig)
 
-    print(
-        '---------------------------------------------------------------'
-        '\n'
-        'Freeze does its best to snapshot live tmux sessions.\n'
-    )
+    if not quiet:
+        print(
+            '---------------------------------------------------------------'
+            '\n'
+            'Freeze does its best to snapshot live tmux sessions.\n'
+        )
     if not (
         yes
         or click.confirm(
             'The new config *WILL* require adjusting afterwards. Save config?'
         )
     ):
-        print(
-            'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.git-pull.com/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.git-pull.com/>.'
-        )
+        if not quiet:
+            print(
+                'tmuxp has examples in JSON and YAML format at '
+                '<http://tmuxp.git-pull.com/examples.html>\n'
+                'View tmuxp docs at <http://tmuxp.git-pull.com/>.'
+            )
         sys.exit()
 
     dest = save_to
@@ -1017,16 +1027,8 @@ def command_freeze(
         buf.write(newconfig)
         buf.close()
 
-        print('Saved to %s.' % dest)
-
-    if config_format == 'yaml':
-        newconfig = configparser.export(
-            'yaml', indent=2, default_flow_style=False, safe=True
-        )
-    elif config_format == 'json':
-        newconfig = configparser.export('json', indent=2)
-    else:
-        sys.exit('Unknown config format.')
+        if not quiet:
+            print('Saved to %s.' % dest)
 
 
 @cli.command(name='load', short_help='Load tmuxp workspaces.')
