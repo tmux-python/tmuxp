@@ -3,6 +3,7 @@
 ## current
 
 - _Insert changes/features/fixes for next release here_
+- #700: Add `-h` / `--help` option, thanks @GHPS
 - #689: Update poetry to 1.1
   - CI: Use poetry 1.1.7 and `install-poetry.py` installer
   - Relock poetry.lock at 1.1 (w/ 1.1.7's fix)
