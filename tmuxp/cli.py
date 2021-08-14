@@ -9,6 +9,7 @@ import logging
 import os
 import platform
 import sys
+from subprocess import call
 
 import click
 import kaptan
@@ -1207,6 +1208,15 @@ def command_convert(confirmed, config):
         buf.write(newconfig)
         buf.close()
         print('New config saved to <%s>.' % newfile)
+
+
+@cli.command(name='edit', short_help='Run $EDITOR on config.')
+@click.argument('config', type=ConfigPath(exists=True), nargs=1)
+def command_edit_config(config):
+    config = scan_config(config)
+
+    sys_editor = os.environ.get('EDITOR', 'vim')
+    call([sys_editor, config])
 
 
 @cli.command(
