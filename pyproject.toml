@@ -63,7 +63,7 @@ codecov = "*"
 coverage = "*"
 
 ### Format ###
-black = {version="==21.6b0", python="^3.6.2"}
+black = {version="==21.8b0", python="^3.6.2"}
 isort = "*"
 
 ### Lint ###
