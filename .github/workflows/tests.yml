@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.x' ]
+        python-version: [ '3.9' ]
         tmux-version: [ '2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', 'master' ]
     steps:
     - uses: actions/checkout@v1
