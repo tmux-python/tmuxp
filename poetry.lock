@@ -335,7 +335,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 
 [[package]]
 name = "libtmux"
-version = "0.10.1"
+version = "0.10.2"
 description = "scripting library / orm for tmux"
 category = "main"
 optional = false
@@ -958,7 +958,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "18d15c70db360dab7c9faaa2c595d17262eb7e1a8df10e7636107fa23b0f1155"
+content-hash = "98b6c694f089b4b35b8a97c6d9e2c3d7b2dea77e3e2712f0d0e3a3e162d99942"
 
 [metadata.files]
 aafigure = [
@@ -1172,8 +1172,8 @@ keyring = [
     {file = "keyring-23.2.1.tar.gz", hash = "sha256:6334aee6073db2fb1f30892697b1730105b5e9a77ce7e61fca6b435225493efe"},
 ]
 libtmux = [
-    {file = "libtmux-0.10.1-py3-none-any.whl", hash = "sha256:db307412e58214e0ca2db32ecdbe2649ae8f38c6540279624367681dcdbe3014"},
-    {file = "libtmux-0.10.1.tar.gz", hash = "sha256:c8bc81499616ba899538704e419463a1c83ba7ca21e53b1efc6abbe98eb26b61"},
+    {file = "libtmux-0.10.2-py2.py3-none-any.whl", hash = "sha256:bad47d65f9e948b50697d9ca244bba4b52e5daf13bbc8052d2b017768c893050"},
+    {file = "libtmux-0.10.2.tar.gz", hash = "sha256:a0e958b85ec14cdaabecfa738a0dd51846f05e5c5e9d6749a2bf5160b9f7e1d2"},
 ]
 markdown-it-py = [
     {file = "markdown-it-py-1.1.0.tar.gz", hash = "sha256:36be6bb3ad987bfdb839f5ba78ddf094552ca38ccbd784ae4f74a4e1419fc6e3"},
