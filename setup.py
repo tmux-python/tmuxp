@@ -26,6 +26,7 @@ setup(
     version=about['__version__'],
     url=about['__github__'],
     project_urls={
+        'Changes': about['__changes__'],
         'Documentation': about['__docs__'],
         'Code': about['__github__'],
         'Issue tracker': about['__tracker__'],
