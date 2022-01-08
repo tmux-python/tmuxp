@@ -29,6 +29,7 @@ extensions = [
     'sphinx.ext.linkcode',
     'aafig',
     'alagitpull',
+    'sphinx_issues',
     'myst_parser',
 ]
 
