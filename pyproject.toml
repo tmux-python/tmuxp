@@ -32,6 +32,7 @@ readme = "README.md"
 "Bug Tracker" = "https://github.com/tmux-python/tmuxp/issues"
 Documentation = "https://tmuxp.git-pull.com"
 Repository = "https://github.com/tmux-python/tmuxp"
+Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
 
 [tool.poetry.scripts]
 tmuxp = 'tmuxp:cli.cli'
