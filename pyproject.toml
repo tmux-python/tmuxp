@@ -26,6 +26,15 @@ classifiers = [
 keywords = ["tmux", "session manager", "terminal", "ncurses"]
 homepage = "http://github.com/tmux-python/tmuxp/"
 readme = "README.md"
+packages = [
+    { include = "tmuxp" }
+]
+include = [
+    "CHANGES", ".tmuxp.yaml",
+    { path = "tests", format = "sdist" },
+    { path = "examples", format = "sdist" },
+    { path = "docs", format = "sdist" },
+]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/tmux-python/tmuxp/issues"
