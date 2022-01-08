@@ -52,8 +52,8 @@ jobs:
     - name: Install poetry
       if: env.PUBLISH == 'true'
       run: |
-        curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/install-poetry.py
-        python install-poetry.py -y --version 1.1.7
+        curl -O -sSL https://install.python-poetry.org/install-poetry.py
+        python install-poetry.py -y --version 1.1.12
         echo "PATH=${HOME}/.poetry/bin:${PATH}" >> $GITHUB_ENV
         rm install-poetry.py
 
