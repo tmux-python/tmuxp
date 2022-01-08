@@ -12,6 +12,16 @@
 
   Inside a project: `tmuxp edit .`
 
+### Removed support
+- Python 3.6 support has been removed (#726)
+
+### Development
+
+- We are trying `.pre-commit-config.yaml` in pull requests to automate
+  black, isort and flake8 for those who forget (#726)
+- Poetry update 1.1.7 -> 1.1.12 and use new installer URL (#726)
+- Black updated 21.9b0 -> 21.12b0 (#726)
+
 ## tmuxp 1.9.3 (2021-10-30)
 
 - #700: Add `-h` / `--help` option, thanks @GHPS
