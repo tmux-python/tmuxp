@@ -13,6 +13,7 @@
   Inside a project: `tmuxp edit .`
 
 ## tmuxp 1.9.3 (2021-10-30)
+
 - #700: Add `-h` / `--help` option, thanks @GHPS
 - #689: Update poetry to 1.1
   - CI: Use poetry 1.1.7 and `install-poetry.py` installer
@@ -20,15 +21,18 @@
 - #696: Typo fix, thanks @inkch
 
 ## tmuxp 1.9.2 (2021-06-17)
+
 - #686: Allow click 8.0.x
 - Remove `manual/`, move to https://github.com/tmux-python/tmux-manuals
 
 ## tmuxp 1.9.1 (2021-06-16)
+
 - libtmux: Update to 0.10.1+ to include `Window.select_window()` fix
 
   https://github.com/tmux-python/libtmux/pull/271
 
 ## tmuxp 1.9.0 (2021-06-16)
+
 - libtmux: Update to 0.10.x
 
 ## tmuxp 1.8.2 (2021-06-15)

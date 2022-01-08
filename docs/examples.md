@@ -387,7 +387,6 @@ pane during creation.
 
 ```
 
-
 ## Multi-line commands
 
 You can use YAML's multiline syntax to easily split multiple
@@ -396,7 +395,7 @@ commands into the same shell command: https://stackoverflow.com/a/21699210
 ```{code-block} yaml
 
 session_name: my project
-shell_command_before: 
+shell_command_before:
 - >
   [ -d `.venv/bin/activate` ] &&
   source .venv/bin/activate &&
