@@ -4,6 +4,14 @@
 
 - _Insert changes/features/fixes for next release here_
 
+#### What's new
+
+- `tmuxp edit` for configuration changes (#707, @GlebPoljakov)
+
+  Inside of configuration directory: `tmuxp edit yourconfig`
+
+  Inside a project: `tmuxp edit .`
+
 ## tmuxp 1.9.3 (2021-10-30)
 - #700: Add `-h` / `--help` option, thanks @GHPS
 - #689: Update poetry to 1.1
