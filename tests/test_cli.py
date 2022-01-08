@@ -761,6 +761,7 @@ def test_import(cli_args, monkeypatch):
     assert 'tmuxinator' in result.output
     assert 'teamocil' in result.output
 
+
 @pytest.mark.parametrize(
     "cli_args",
     [
@@ -773,6 +774,7 @@ def test_help(cli_args, monkeypatch):
 
     result = runner.invoke(cli.cli, cli_args)
     assert 'Usage: cli [OPTIONS] COMMAND [ARGS]...' in result.output
+
 
 @pytest.mark.parametrize(
     "cli_args,inputs",
