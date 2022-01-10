@@ -30,7 +30,8 @@ packages = [
     { include = "tmuxp" }
 ]
 include = [
-    "CHANGES", ".tmuxp.yaml",
+    { path = "CHANGES", format = "sdist" },
+    { path = ".tmuxp.yaml", format = "sdist" },
     { path = "tests", format = "sdist" },
     { path = "examples", format = "sdist" },
     { path = "docs", format = "sdist" },
