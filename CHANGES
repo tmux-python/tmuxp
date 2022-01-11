@@ -4,6 +4,8 @@
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.9.4 (2022-01-10)
+
 #### Packaging
 
 - `poetry build` used to package in place of `python setup.py build` (#729)
