@@ -10,8 +10,8 @@
 
 - `poetry build` used to package in place of `python setup.py build` (#729)
 
-  Package maintainers: If you run into any issues at
-  [#625](https://github.com/tmux-python/tmuxp/issues/625).
+  Package maintainers: If you run into any issues check in at
+  [#625](https://github.com/tmux-python/tmuxp/issues/625) and file an issue.
 
   Additionally, `libtmux` has been pinned to a similar release at
   [0.10.3](https://pypi.org/project/libtmux/0.10.3/) which has used the new
