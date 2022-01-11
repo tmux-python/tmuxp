@@ -1,3 +1,0 @@
-isort
-flake8
-twine

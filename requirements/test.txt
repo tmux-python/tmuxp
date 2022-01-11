@@ -1,5 +1,0 @@
-pytest
-pytest-rerunfailures
-pytest-cov
-coverage
-codecov
