@@ -80,13 +80,9 @@ isort = "*"
 ### Lint ###
 flake8 = "*"
 
-### Deploy ###
-twine = "*"
-
 [tool.poetry.extras]
 docs = ["sphinx", "myst_parser", "sphinx-issues", "alagitpull", "sphinx-autodoc-typehints", "aafigure", "pillow"]
 test = ["pytest", "pytest-rerunfailures", "pytest-mock"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
 lint = ["flake8"]
-deploy = ["twine"]
