@@ -4,6 +4,21 @@
 
 - _Insert changes/features/fixes for next release here_
 
+#### Packaging
+
+- `poetry build` used to package in place of `python setup.py build` (#729)
+
+  Package maintainers: If you run into any issues at
+  [#625](https://github.com/tmux-python/tmuxp/issues/625).
+
+  Additionally, `libtmux` has been pinned to a similar release at
+  [0.10.3](https://pypi.org/project/libtmux/0.10.3/) which has used the new
+  build process.
+
+- `poetry publish` instead of `twine upload dist/*` (#729)
+
+  Similar to the above, reach out to the #625 issue if you bump into problems.
+
 #### What's new
 
 - `tmuxp edit` for configuration changes (#707, @GlebPoljakov)
@@ -13,6 +28,7 @@
   Inside a project: `tmuxp edit .`
 
 ### Removed support
+
 - Python 3.6 support has been removed (#726)
 
 ### Development
