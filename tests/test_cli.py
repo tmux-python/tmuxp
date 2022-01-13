@@ -728,15 +728,16 @@ def test_shell_plus(
         (['convert', '.']),
         (['convert', '.tmuxp.yaml']),
         (['convert', '.tmuxp.yaml', '-y']),
+        (['convert', '.tmuxp.yml']),
+        (['convert', '.tmuxp.yml', '-y']),
     ],
 )
 def test_convert(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
-    tmpdir.join('.tmuxp.yaml').write(
-        """
-session_name: hello
-    """
-    )
+    filename = '.tmuxp.yaml' if cli_args[1] == '.' else cli_args[1]
+    file_ext = filename.rsplit('.', 1)[-1]
+    assert file_ext in ['yaml', 'yml'], file_ext
+    tmpdir.join(filename).write('\nsession_name: hello\n')
     tmpdir.join('.oh-my-zsh').ensure(dir=True)
     monkeypatch.setenv('HOME', str(tmpdir))
 
@@ -751,6 +752,31 @@ session_name: hello
         assert tmpdir.join('.tmuxp.json').open().read() == json.dumps(
             {'session_name': 'hello'}, indent=2
         )
+
+
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        (['convert', '.']),
+        (['convert', '.tmuxp.json']),
+        (['convert', '.tmuxp.json', '-y']),
+    ],
+)
+def test_convert_json(cli_args, tmpdir, monkeypatch):
+    # create dummy tmuxp yaml so we don't get yelled at
+    tmpdir.join('.tmuxp.json').write('{"session_name": "hello"}')
+    tmpdir.join('.oh-my-zsh').ensure(dir=True)
+    monkeypatch.setenv('HOME', str(tmpdir))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        # If autoconfirm (-y) no need to prompt y
+        input_args = 'y\ny\n' if '-y' not in cli_args else ''
+
+        runner.invoke(cli.cli, cli_args, input=input_args)
+        assert tmpdir.join('.tmuxp.yaml').check()
+        assert tmpdir.join('.tmuxp.yaml').open().read() == 'session_name: hello\n'
 
 
 @pytest.mark.parametrize("cli_args", [(['import'])])
