@@ -1,6 +1,5 @@
-from distutils.version import LooseVersion
-
 import libtmux
+from libtmux._compat import LooseVersion
 from libtmux.common import get_version
 
 from .__about__ import __version__
