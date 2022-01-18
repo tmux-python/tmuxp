@@ -1192,7 +1192,9 @@ def command_convert(confirmed, config):
     elif ext in ['.yaml', '.yml']:
         to_filetype = 'json'
     else:
-        raise click.BadParameter('Unknown filetype: %s (valid: [.json, .yaml, .yml])' % (ext, ))
+        raise click.BadParameter(
+            'Unknown filetype: %s (valid: [.json, .yaml, .yml])' % (ext,)
+        )
 
     configparser = kaptan.Kaptan()
     configparser.import_config(config)
