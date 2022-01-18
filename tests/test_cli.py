@@ -734,7 +734,9 @@ def test_shell_plus(
 )
 def test_convert(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
-    filename = '.tmuxp.yaml' if cli_args[1] == '.' else cli_args[1]
+    filename = cli_args[1]
+    if filename == '.':
+        filename = '.tmuxp.yaml'
     file_ext = filename.rsplit('.', 1)[-1]
     assert file_ext in ['yaml', 'yml'], file_ext
     tmpdir.join(filename).write('\nsession_name: hello\n')
