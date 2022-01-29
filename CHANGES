@@ -4,6 +4,39 @@
 
 - _Insert changes/features/fixes for next release here_
 
+#### What's new
+
+- #672: Panes now accept `shell` for their initial command.
+
+  Equivalent to `tmux split-windows`'s `[shell-command]`
+
+  ```yaml
+  session_name: Pane shell example
+  windows:
+    - window_name: first
+      window_shell: /usr/bin/python2
+      layout: even-vertical
+      suppress_history: false
+      options:
+        remain-on-exit: true
+      panes:
+        - shell: /usr/bin/python3
+          shell_command:
+            - print('This is python 3')
+        - shell: /usr/bin/vim -u none
+          shell_command:
+            - iAll panes have the `remain-on-exit` setting on.
+            - When you exit out of the shell or application, the panes will remain.
+            - Use tmux command `:kill-pane` to remove the pane.
+            - Use tmux command `:respawn-pane` to restart the shell in the pane.
+            - Use <Escape> and then `:q!` to get out of this vim window. :-)
+        - shell_command:
+            - print('Hello World 2')
+        - shell: /usr/bin/top
+  ```
+
+  Credit: @jerri
+
 #### Bugs
 
 - #725: Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi!
