@@ -1186,10 +1186,15 @@ def command_convert(confirmed, config):
     """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
-    if 'json' in ext:
+    ext = ext.lower()
+    if ext == '.json':
         to_filetype = 'yaml'
-    elif 'yaml' in ext:
+    elif ext in ['.yaml', '.yml']:
         to_filetype = 'json'
+    else:
+        raise click.BadParameter(
+            'Unknown filetype: %s (valid: [.json, .yaml, .yml])' % (ext,)
+        )
 
     configparser = kaptan.Kaptan()
     configparser.import_config(config)
