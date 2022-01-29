@@ -37,6 +37,11 @@
 
   Credit: @jerri
 
+#### Improvements
+
+- #660: `tmuxp freeze` will now detect the attached session if no session name
+  is specified. Credit: @will-ockmore.
+
 #### Bugs
 
 - #725: Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi!
