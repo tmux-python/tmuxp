@@ -889,9 +889,9 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
 
     # Assign an active pane to the session
     second_session = server.list_sessions()[1]
-    first_pane_on_second_session_id = (
-        second_session.list_windows()[0].list_panes()[0]["pane_id"]
-    )
+    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
+        "pane_id"
+    ]
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     with tmpdir.as_cwd():

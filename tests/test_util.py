@@ -5,7 +5,7 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import run_before_script, get_session
+from tmuxp.util import get_session, run_before_script
 
 from . import fixtures_dir
 
