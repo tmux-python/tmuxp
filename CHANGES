@@ -4,6 +4,10 @@
 
 - _Insert changes/features/fixes for next release here_
 
+#### Bugs
+
+- #725: Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi!
+
 ## tmuxp 1.9.4 (2022-01-10)
 
 #### Packaging
