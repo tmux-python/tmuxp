@@ -924,7 +924,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
         if session_name:
             session = t.find_where({'session_name': session_name})
         else:
-            session = t.list_sessions()[0]
+            session = util.get_session(t)
 
         if not session:
             raise exc.TmuxpException('Session not found.')

@@ -5,7 +5,7 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import run_before_script
+from tmuxp.util import get_session, run_before_script
 
 from . import fixtures_dir
 
@@ -49,3 +49,23 @@ def test_beforeload_returns_stderr_messages():
     with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
         run_before_script(script_file)
         assert excinfo.match(r'failed with returncode')
+
+
+def test_get_session_should_default_to_local_attached_session(server, monkeypatch):
+    server.new_session(session_name='myfirstsession')
+    second_session = server.new_session(session_name='mysecondsession')
+
+    # Assign an active pane to the session
+    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
+        'pane_id'
+    ]
+    monkeypatch.setenv('TMUX_PANE', first_pane_on_second_session_id)
+
+    assert get_session(server) == second_session
+
+
+def test_get_session_should_return_first_session_if_no_active_session(server):
+    first_session = server.new_session(session_name='myfirstsession')
+    server.new_session(session_name='mysecondsession')
+
+    assert get_session(server) == first_session

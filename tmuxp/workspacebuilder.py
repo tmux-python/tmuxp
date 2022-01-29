@@ -348,7 +348,7 @@ class WorkspaceBuilder(object):
                     attach=True,
                     start_directory=get_pane_start_directory(),
                     shell=get_pane_shell(),
-                    target=p.id
+                    target=p.id,
                 )
 
             assert isinstance(p, Pane)
