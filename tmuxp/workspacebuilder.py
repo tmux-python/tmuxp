@@ -265,6 +265,13 @@ class WorkspaceBuilder(object):
             else:
                 ws = None
 
+            # If the first pane specifies a shell, use that instead.
+            try:
+                if wconf['panes'][0]['shell'] != '':
+                    ws = wconf['panes'][0]['shell']
+            except (KeyError, IndexError):
+                pass
+
             w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
@@ -328,8 +335,20 @@ class WorkspaceBuilder(object):
                     else:
                         return None
 
+                def get_pane_shell():
+
+                    if 'shell' in pconf:
+                        return pconf['shell']
+                    elif 'window_shell' in wconf:
+                        return wconf['window_shell']
+                    else:
+                        return None
+
                 p = w.split_window(
-                    attach=True, start_directory=get_pane_start_directory(), target=p.id
+                    attach=True,
+                    start_directory=get_pane_start_directory(),
+                    shell=get_pane_shell(),
+                    target=p.id
                 )
 
             assert isinstance(p, Pane)
