@@ -6,6 +6,13 @@
 
 #### What's new
 
+- #479: Support loading tmux server with config file by passing `-f`
+
+  Note: This matches the behavior of `tmux`'s `-f`, the  configuration will only
+  once when the server is started. If you need to apply source to a server after
+  it is running then use `tmux source-file`.
+
+  Credit: @lins05, via #734
 - #672: Panes now accept `shell` for their initial command.
 
   Equivalent to `tmux split-windows`'s `[shell-command]`
