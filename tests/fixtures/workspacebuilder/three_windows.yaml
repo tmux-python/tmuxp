@@ -1,0 +1,14 @@
+session_name: sample_three_windows
+windows:
+- window_name: first
+  panes:
+    - shell_command:
+      - echo 'first window'
+- window_name: second
+  panes:
+    - shell_command:
+      - echo 'second window'
+- window_name: third
+  panes:
+    - shell_command:
+      - echo 'third window'

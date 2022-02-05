@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
 """Test for tmuxp workspacebuilder."""
-
-from __future__ import absolute_import, unicode_literals
-
 import os
 
 import pytest
@@ -13,7 +9,7 @@ from libtmux import Window
 from libtmux.common import has_gte_version
 from libtmux.test import retry, temp_session
 from tmuxp import config, exc
-from tmuxp._compat import text_type
+from tmuxp.cli import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from . import example_dir, fixtures_dir
@@ -325,14 +321,14 @@ def test_window_shell(session):
 
     for w, wconf in builder.iter_create_windows(s):
         if 'window_shell' in wconf:
-            assert wconf['window_shell'] == text_type('top')
+            assert wconf['window_shell'] == str('top')
 
         while retry():
             session.server._update_windows()
             if w['window_name'] != 'top':
                 break
 
-        assert w.name != text_type('top')
+        assert w.name != str('top')
 
 
 def test_environment_variables(session):
@@ -391,7 +387,7 @@ def test_automatic_rename_option(session):
         if w.name == 'sh':
             break
 
-    assert w.name == text_type('sh')
+    assert w.name == 'sh'
 
     w.select_pane('-D')
 
@@ -400,7 +396,7 @@ def test_automatic_rename_option(session):
         if w['window_name'] != 'sh':
             break
 
-    assert w.name != text_type('sh')
+    assert w.name != 'sh'
 
 
 def test_blank_pane_count(session):
@@ -458,7 +454,7 @@ def test_start_directory(session, tmpdir):
 
 
 def test_start_directory_relative(session, tmpdir):
-    """Same as above test, but with relative start directory, mimicing
+    """Same as above test, but with relative start directory, mimicking
     loading it from a location of project file. Like::
 
     $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
@@ -673,3 +669,199 @@ def test_before_load_true_if_test_passes_with_args(server):
 
     with temp_session(server) as session:
         builder.build(session=session)
+
+
+def test_plugin_system_before_workspace_builder(
+    monkeypatch_plugin_test_packages, session
+):
+    config_plugins = loadfixture("workspacebuilder/plugin_bwb.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#S'")
+    assert proc.stdout[0] == "'plugin_test_bwb'"
+
+
+def test_plugin_system_on_window_create(monkeypatch_plugin_test_packages, session):
+    config_plugins = loadfixture("workspacebuilder/plugin_owc.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#W'")
+    assert proc.stdout[0] == "'plugin_test_owc'"
+
+
+def test_plugin_system_after_window_finished(monkeypatch_plugin_test_packages, session):
+    config_plugins = loadfixture("workspacebuilder/plugin_awf.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('display-message', '-p', "'#W'")
+    assert proc.stdout[0] == "'plugin_test_awf'"
+
+
+def test_plugin_system_on_window_create_multiple_windows(session):
+    config_plugins = loadfixture("workspacebuilder/plugin_owc_multiple_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('list-windows', '-F', "'#W'")
+    assert "'plugin_test_owc_mw'" in proc.stdout
+    assert "'plugin_test_owc_mw_2'" in proc.stdout
+
+
+def test_plugin_system_after_window_finished_multiple_windows(
+    monkeypatch_plugin_test_packages, session
+):
+    config_plugins = loadfixture("workspacebuilder/plugin_awf_multiple_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    proc = session.cmd('list-windows', '-F', "'#W'")
+    assert "'plugin_test_awf_mw'" in proc.stdout
+    assert "'plugin_test_awf_mw_2'" in proc.stdout
+
+
+def test_plugin_system_multiple_plugins(monkeypatch_plugin_test_packages, session):
+    config_plugins = loadfixture("workspacebuilder/plugin_multiple_plugins.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = config.expand(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    assert len(builder.plugins) > 0
+
+    builder.build(session=session)
+
+    # Drop through to the before_script plugin hook
+    proc = session.cmd('display-message', '-p', "'#S'")
+    assert proc.stdout[0] == "'plugin_test_bwb'"
+
+    # Drop through to the after_window_finished. This won't succeed
+    # unless on_window_create succeeds because of how the test plugin
+    # override methods are currently written
+    proc = session.cmd('display-message', '-p', "'#W'")
+    assert proc.stdout[0] == "'mp_test_awf'"
+
+
+def test_load_configs_same_session(server):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 3
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+    assert len(server.sessions) == 2
+    assert len(server.sessions[1]._windows) == 2
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build(server.sessions[1], True)
+
+    assert len(server.sessions) == 2
+    assert len(server.sessions[1]._windows) == 4
+
+
+def test_load_configs_separate_sessions(server):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 1
+    assert len(server.sessions[0]._windows) == 3
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.sessions) == 2
+    assert len(server.sessions[0]._windows) == 3
+    assert len(server.sessions[1]._windows) == 2
+
+
+def test_find_current_active_pane(server, monkeypatch):
+    yaml_config = loadfixture("workspacebuilder/three_windows.yaml")
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    yaml_config = loadfixture("workspacebuilder/two_windows.yaml")
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    assert len(server.list_sessions()) == 2
+
+    # Assign an active pane to the session
+    second_session = server.list_sessions()[1]
+    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
+        "pane_id"
+    ]
+    monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    assert builder.find_current_attached_session() == second_session

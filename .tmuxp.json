@@ -1,41 +1,41 @@
 {
-  "before_script": "pipenv install --dev --skip-lock", 
+  "session_name": "tmuxp",
+  "start_directory": "./",
+  "before_script": "./.tmuxp-before-script.sh",
+  "shell_command_before": [
+    "[ -f .venv/bin/activate ] && source .venv/bin/activate && reset"
+  ],
   "windows": [
     {
+      "window_name": "tmuxp",
+      "focus": true,
+      "layout": "main-horizontal",
+      "options": {
+        "main-pane-height": 35
+      },
       "panes": [
         {
           "focus": true
-        }, 
-        "pane", 
+        },
+        "pane",
         "make watch_test"
-      ], 
-      "layout": "main-horizontal", 
+      ]
+    },
+    {
+      "window_name": "docs",
+      "layout": "main-horizontal",
       "options": {
         "main-pane-height": 35
-      }, 
-      "focus": true, 
-      "window_name": "tmuxp"
-    }, 
-    {
+      },
+      "start_directory": "docs/",
       "panes": [
         {
           "focus": true
-        }, 
-        "pane", 
-        "make serve", 
-        "make watch"
-      ], 
-      "start_directory": "doc/", 
-      "layout": "main-horizontal", 
-      "window_name": "docs", 
-      "options": {
-        "main-pane-height": 35
-      }
+        },
+        "pane",
+        "make serve",
+        "make SPHINXBUILD='poetry run sphinx-build' watch"
+      ]
     }
-  ], 
-  "session_name": "tmuxp", 
-  "start_directory": "./", 
-  "shell_command_before": [
-    "[ -d `pipenv --venv` ] && source `pipenv --venv`/bin/activate && reset"
   ]
 }

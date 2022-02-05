@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
 """Test for tmuxp configuration import, inlining, expanding and export."""
-
-from __future__ import absolute_import, unicode_literals
-
 import os
 
 import pytest
@@ -236,6 +232,24 @@ def test_trickle_relative_start_directory():
     assert test_config == fixtures.trickle.expected
 
 
+def test_trickle_window_with_no_pane_config():
+    test_yaml = """
+    session_name: test_session
+    windows:
+    - window_name: test_1
+      panes:
+      - shell_command:
+        - ls -l
+    - window_name: test_no_panes
+    """
+    sconfig = load_yaml(test_yaml)
+    config.validate_schema(sconfig)
+
+    assert config.expand(config.trickle(sconfig))['windows'][1]['panes'][0] == {
+        'shell_command': []
+    }
+
+
 def test_expands_blank_panes():
     """Expand blank config into full form.
 
@@ -365,3 +379,23 @@ def test_replaces_env_variables(monkeypatch):
     assert "%s/moo" % env_val == sconfig['global_options']['default-shell']
     assert "%s/lol" % env_val == sconfig['options']['default-command']
     assert "logging @ %s" % env_val == sconfig['windows'][1]['window_name']
+
+
+def test_plugins():
+    yaml_config = """
+    session_name: test session
+    plugins: tmuxp-plugin-one.plugin.TestPluginOne
+    windows:
+    - window_name: editor
+      panes:
+      shell_command:
+      - tail -F /var/log/syslog
+      start_directory: /var/log
+    """
+
+    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    with pytest.raises(exc.ConfigError) as excinfo:
+        config.validate_schema(sconfig)
+        assert excinfo.matches('only supports list type')

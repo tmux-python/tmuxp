@@ -1,0 +1,6 @@
+session_name: plugin-test-missing-fail
+plugins:
+- 'tmuxp_test_plugin_fail.plugin.PluginFailMissing'
+windows:
+- panes:
+    - echo "hey"

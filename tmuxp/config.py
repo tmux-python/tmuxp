@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
 """Configuration parsing and export for tmuxp.
 
 tmuxp.config
 ~~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, unicode_literals
-
 import copy
 import logging
 import os
 
 from . import exc
-from ._compat import string_types
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +38,9 @@ def validate_schema(sconf):
         if 'window_name' not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
-        if 'panes' not in window:
-            raise exc.ConfigError(
-                'config window %s requires list of panes' % window['window_name']
-            )
+    if 'plugins' in sconf:
+        if not isinstance(sconf['plugins'], list):
+            raise exc.ConfigError('"plugins" only supports list type')
 
     return True
 
@@ -65,7 +60,7 @@ def is_config_file(filename, extensions=['.yml', '.yaml', '.json']):
     -------
     bool
     """
-    extensions = [extensions] if isinstance(extensions, string_types) else extensions
+    extensions = [extensions] if isinstance(extensions, str) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
@@ -225,7 +220,7 @@ def expand(sconf, cwd=None, parent=None):
     if 'global_options' in sconf:
         for key in sconf['global_options']:
             val = sconf['global_options'][key]
-            if isinstance(val, string_types):
+            if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in ['.', './']):
                     val = os.path.normpath(os.path.join(cwd, val))
@@ -233,7 +228,7 @@ def expand(sconf, cwd=None, parent=None):
     if 'options' in sconf:
         for key in sconf['options']:
             val = sconf['options'][key]
-            if isinstance(val, string_types):
+            if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in ['.', './']):
                     val = os.path.normpath(os.path.join(cwd, val))
@@ -263,11 +258,11 @@ def expand(sconf, cwd=None, parent=None):
                 os.path.join(cwd, sconf['before_script'])
             )
 
-    if 'shell_command' in sconf and isinstance(sconf['shell_command'], string_types):
+    if 'shell_command' in sconf and isinstance(sconf['shell_command'], str):
         sconf['shell_command'] = [sconf['shell_command']]
 
     if 'shell_command_before' in sconf and isinstance(
-        sconf['shell_command_before'], string_types
+        sconf['shell_command_before'], str
     ):
         sconf['shell_command_before'] = [sconf['shell_command_before']]
 
@@ -288,7 +283,7 @@ def expand(sconf, cwd=None, parent=None):
             p = copy.deepcopy(pconf)
             pconf = sconf['panes'][p_index] = {}
 
-            if isinstance(p, string_types):
+            if isinstance(p, str):
                 p = {'shell_command': [p]}
             elif not p:
                 p = {'shell_command': []}
@@ -297,7 +292,7 @@ def expand(sconf, cwd=None, parent=None):
             if 'shell_command' in p:
                 cmd = p['shell_command']
 
-                if isinstance(p['shell_command'], string_types):
+                if isinstance(p['shell_command'], str):
                     cmd = [cmd]
 
                 if not cmd or any(a == cmd for a in [None, 'blank', 'pane']):
@@ -369,6 +364,11 @@ def trickle(sconf):
         if suppress_history is not None:
             if 'suppress_history' not in windowconfig:
                 windowconfig['suppress_history'] = suppress_history
+
+        # If panes were NOT specified for a window, assume that a single pane
+        # with no shell commands is desired
+        if 'panes' not in windowconfig:
+            windowconfig['panes'] = [{'shell_command': []}]
 
         for paneconfig in windowconfig['panes']:
             commands_before = []
@@ -442,12 +442,12 @@ def import_tmuxinator(sconf):
     if 'pre' in sconf and 'pre_window' in sconf:
         tmuxp_config['shell_command'] = sconf['pre']
 
-        if isinstance(sconf['pre'], string_types):
+        if isinstance(sconf['pre'], str):
             tmuxp_config['shell_command_before'] = [sconf['pre_window']]
         else:
             tmuxp_config['shell_command_before'] = sconf['pre_window']
     elif 'pre' in sconf:
-        if isinstance(sconf['pre'], string_types):
+        if isinstance(sconf['pre'], str):
             tmuxp_config['shell_command_before'] = [sconf['pre']]
         else:
             tmuxp_config['shell_command_before'] = sconf['pre']
@@ -462,7 +462,7 @@ def import_tmuxinator(sconf):
 
             windowdict = {'window_name': k}
 
-            if isinstance(v, string_types) or v is None:
+            if isinstance(v, str) or v is None:
                 windowdict['panes'] = [v]
                 tmuxp_config['windows'].append(windowdict)
                 continue

@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 """Create a tmux workspace from a configuration :py:obj:`dict`.
 
 tmuxp.workspacebuilder
 ~~~~~~~~~~~~~~~~~~~~~~
 
 """
-
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from libtmux.exc import TmuxSessionExists
@@ -17,7 +13,7 @@ from libtmux.session import Session
 from libtmux.window import Window
 
 from . import exc
-from .util import run_before_script
+from .util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +64,7 @@ class WorkspaceBuilder(object):
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    def __init__(self, sconf, server=None):
+    def __init__(self, sconf, plugins=[], server=None):
         """
         Initialize workspace loading.
 
@@ -76,6 +72,9 @@ class WorkspaceBuilder(object):
         ----------
         sconf : dict
             session config, includes a :py:obj:`list` of ``windows``.
+
+        plugins : list
+            plugins to be used for this session
 
         server : :class:`libtmux.Server`
             tmux server to build session in
@@ -98,6 +97,8 @@ class WorkspaceBuilder(object):
 
         self.sconf = sconf
 
+        self.plugins = plugins
+
     def session_exists(self, session_name=None):
         exists = self.server.has_session(session_name)
         if not exists:
@@ -106,7 +107,7 @@ class WorkspaceBuilder(object):
         self.session = self.server.find_where({'session_name': session_name})
         return True
 
-    def build(self, session=None):
+    def build(self, session=None, append=False):
         """
         Build tmux workspace in session.
 
@@ -120,6 +121,8 @@ class WorkspaceBuilder(object):
         ----------
         session : :class:`libtmux.Session`
             session to build workspace in
+        append : bool
+            append windows in current active session
         """
 
         if not session:
@@ -137,9 +140,15 @@ class WorkspaceBuilder(object):
                     'Session name %s is already running.' % self.sconf['session_name']
                 )
             else:
-                session = self.server.new_session(
-                    session_name=self.sconf['session_name']
-                )
+                if 'start_directory' in self.sconf:
+                    session = self.server.new_session(
+                        session_name=self.sconf['session_name'],
+                        start_directory=self.sconf['start_directory'],
+                    )
+                else:
+                    session = self.server.new_session(
+                        session_name=self.sconf['session_name']
+                    )
 
             assert self.sconf['session_name'] == session.name
             assert len(self.sconf['session_name']) > 0
@@ -152,6 +161,9 @@ class WorkspaceBuilder(object):
         assert session.id
 
         assert isinstance(session, Session)
+
+        for plugin in self.plugins:
+            plugin.before_workspace_builder(self.session)
 
         focus = None
 
@@ -177,8 +189,11 @@ class WorkspaceBuilder(object):
             for option, value in self.sconf['environment'].items():
                 self.session.set_environment(option, value)
 
-        for w, wconf in self.iter_create_windows(session):
+        for w, wconf in self.iter_create_windows(session, append):
             assert isinstance(w, Window)
+
+            for plugin in self.plugins:
+                plugin.on_window_create(w)
 
             focus_pane = None
             for p, pconf in self.iter_create_panes(w, wconf):
@@ -196,13 +211,16 @@ class WorkspaceBuilder(object):
 
             self.config_after_window(w, wconf)
 
+            for plugin in self.plugins:
+                plugin.after_window_finished(w)
+
             if focus_pane:
                 focus_pane.select_pane()
 
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, s):
+    def iter_create_windows(self, session, append=False):
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -215,6 +233,8 @@ class WorkspaceBuilder(object):
         ----------
         session : :class:`libtmux.Session`
             session to create windows in
+        append : bool
+            append windows in current active session
 
         Returns
         -------
@@ -228,11 +248,12 @@ class WorkspaceBuilder(object):
             else:
                 window_name = wconf['window_name']
 
+            is_first_window_pass = self.first_window_pass(i, session, append)
+
             w1 = None
-            if i == int(1):  # if first window, use window 1
-                w1 = s.attached_window
+            if is_first_window_pass:  # if first window, use window 1
+                w1 = session.attached_window
                 w1.move_window(99)
-                pass
 
             if 'start_directory' in wconf:
                 sd = wconf['start_directory']
@@ -244,7 +265,14 @@ class WorkspaceBuilder(object):
             else:
                 ws = None
 
-            w = s.new_window(
+            # If the first pane specifies a shell, use that instead.
+            try:
+                if wconf['panes'][0]['shell'] != '':
+                    ws = wconf['panes'][0]['shell']
+            except (KeyError, IndexError):
+                pass
+
+            w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
@@ -252,10 +280,11 @@ class WorkspaceBuilder(object):
                 window_shell=ws,
             )
 
-            if i == int(1) and w1:  # if first window, use window 1
-                w1.kill_window()
+            if is_first_window_pass:  # if first window, use window 1
+                session.attached_window.kill_window()
+
             assert isinstance(w, Window)
-            s.server._update_windows()
+            session.server._update_windows()
             if 'options' in wconf and isinstance(wconf['options'], dict):
                 for key, val in wconf['options'].items():
                     w.set_window_option(key, val)
@@ -263,7 +292,7 @@ class WorkspaceBuilder(object):
             if 'focus' in wconf and wconf['focus']:
                 w.select_window()
 
-            s.server._update_windows()
+            session.server._update_windows()
 
             yield w, wconf
 
@@ -306,8 +335,20 @@ class WorkspaceBuilder(object):
                     else:
                         return None
 
+                def get_pane_shell():
+
+                    if 'shell' in pconf:
+                        return pconf['shell']
+                    elif 'window_shell' in wconf:
+                        return wconf['window_shell']
+                    else:
+                        return None
+
                 p = w.split_window(
-                    attach=True, start_directory=get_pane_start_directory(), target=p.id
+                    attach=True,
+                    start_directory=get_pane_start_directory(),
+                    shell=get_pane_shell(),
+                    target=p.id,
                 )
 
             assert isinstance(p, Pane)
@@ -348,6 +389,24 @@ class WorkspaceBuilder(object):
         if 'options_after' in wconf and isinstance(wconf['options_after'], dict):
             for key, val in wconf['options_after'].items():
                 w.set_window_option(key, val)
+
+    def find_current_attached_session(self):
+        current_active_pane = get_current_pane(self.server)
+
+        if not current_active_pane:
+            raise exc.TmuxpException("No session active.")
+
+        return next(
+            (
+                s
+                for s in self.server.list_sessions()
+                if s["session_id"] == current_active_pane["session_id"]
+            ),
+            None,
+        )
+
+    def first_window_pass(self, i, session, append):
+        return len(session.windows) == 1 and i == 1 and not append
 
 
 def freeze(session):

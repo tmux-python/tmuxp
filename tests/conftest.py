@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import logging
+import os
 
 import pytest
 
@@ -12,9 +11,28 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope='function')
-def server(request):
+def monkeypatch_plugin_test_packages(monkeypatch):
+    paths = [
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/",
+    ]
+    for path in paths:
+        monkeypatch.syspath_prepend(os.path.abspath(os.path.relpath(path)))
+
+
+@pytest.fixture(scope='function')
+def socket_name(request):
+    return 'tmuxp_test%s' % next(namer)
+
+
+@pytest.fixture(scope='function')
+def server(request, socket_name):
     t = Server()
-    t.socket_name = 'tmuxp_test%s' % next(namer)
+    t.socket_name = socket_name
 
     def fin():
         t.kill_server()
@@ -29,7 +47,16 @@ def session(server):
     session_name = 'tmuxp'
 
     if not server.has_session(session_name):
-        server.cmd('new-session', '-d', '-s', session_name)
+        server.cmd(
+            '-f',
+            '/dev/null',  # use a blank config to reduce side effects
+            'new-session',
+            '-d',  # detached
+            '-s',
+            session_name,
+            '/bin/sh',  # use /bin/sh as a shell to reduce side effects
+            # normally, it'd be -c, but new-session is special
+        )
 
     # find current sessions prefixed with tmuxp
     old_test_sessions = [
@@ -55,7 +82,7 @@ def session(server):
     except exc.LibTmuxException:
         # server.attach_session(session.get('session_id'))
         pass
-        
+
     for old_test_session in old_test_sessions:
         logger.debug('Old test test session %s found. Killing it.' % old_test_session)
         server.kill_session(old_test_session)

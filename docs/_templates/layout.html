@@ -1,0 +1,45 @@
+{% extends "!layout.html" %}
+{%- block extrahead %}
+  {{ super() }}
+  {%- if theme_show_meta_manifest_tag == true %}
+  <link rel="manifest" href="/manifest.json">
+  {% endif -%}
+  {%- if theme_show_meta_og_tags == true %}
+  <meta name="description" content="{{ theme_project_description }}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ theme_project_url }}/">
+  <meta property="og:title" content="{{ theme_project_title }}">
+  <meta property="og:description" content="{{ theme_project_description }}">
+  <meta property="og:image" itemprop="image" content="{{ theme_project_url }}/_static/img/icons/icon-192x192.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="{{ theme_project_url }} ">
+  <meta property="twitter:title" content="{{ theme_project_title }}">
+  <meta property="twitter:description" content="{{ theme_project_description }}">
+  <meta property="twitter:image" content="{{ theme_project_url }}/_static/img/icons/icon-512x512.png">
+  {% endif -%}
+  {%- if theme_show_meta_app_icon_tags == true %}
+  <meta name="theme-color" content="#ffffff">
+  <meta name="application-name" content="{{ theme_project_name }}">
+ 
+  <link rel="shortcut icon" href="/_static/favicon.ico">
+  <link rel="icon" type="image/png" sizes="512x512" href="/_static/img/icons/icon-512x512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/_static/img/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/_static/img/icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/_static/img/icons/icon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/_static/img/icons/icon-16x16.png">
+  
+  <!-- Apple -->
+  <meta name="apple-mobile-web-app-title" content="{{ theme_project_name }}">
+  
+  <link rel="apple-touch-icon" sizes="192x192" href="/_static/img/icons/icon-192x192.png">
+  <link rel="mask-icon" href="/_static/img/tmuxp.svg" color="grey">
+
+  <!-- Microsoft -->
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/_static/img/icons/ms-icon-144x144.png">
+  {% endif -%}
+{% endblock %}

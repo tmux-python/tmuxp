@@ -1,0 +1,95 @@
+[tool.black]
+skip-string-normalization = true
+
+[tool.poetry]
+name = "tmuxp"
+version = "1.9.4"
+description = "tmux session manager"
+license = "MIT"
+authors = ["Tony Narlock <tony@git-pull.com>"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX",
+  "Operating System :: MacOS :: MacOS X",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Utilities",
+  "Topic :: System :: Shells"
+]
+keywords = ["tmux", "session manager", "terminal", "ncurses"]
+homepage = "http://github.com/tmux-python/tmuxp/"
+readme = "README.md"
+packages = [
+    { include = "tmuxp" }
+]
+include = [
+    { path = "CHANGES", format = "sdist" },
+    { path = ".tmuxp.yaml", format = "sdist" },
+    { path = ".tmuxp-before-script.sh", format = "sdist" },
+    { path = "tests", format = "sdist" },
+    { path = "examples", format = "sdist" },
+    { path = "docs", format = "sdist" },
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/tmux-python/tmuxp/issues"
+Documentation = "https://tmuxp.git-pull.com"
+Repository = "https://github.com/tmux-python/tmuxp"
+Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
+
+[tool.poetry.scripts]
+tmuxp = 'tmuxp:cli.cli'
+
+[tool.poetry.dependencies]
+python = "^3.7"
+click = ">7,<8.1"
+kaptan = ">=0.5.10"
+libtmux = "~0.10.3"
+colorama = ">=0.3.9"
+
+[tool.poetry.dev-dependencies]
+### Docs ###
+sphinx = "*"
+alagitpull = "~0.1.0"
+sphinx-issues = "^1.2.0"
+aafigure = ">=0.6"
+pillow = "*"
+sphinx-autodoc-typehints = "~1.14.1"
+myst_parser = "~0.16.1"
+
+### Testing ###
+pytest = "*"
+pytest-rerunfailures = "*"
+pytest-mock = "*"
+pytest-cov = "*"
+tox = {version = "^3.24.5", extras = ["test"]}
+tox-poetry-installer = {extras = ["poetry"], version = "^0.8.3"}
+
+### Coverage ###
+codecov = "*"
+coverage = "*"
+
+### Format ###
+black = "==21.12b0"
+isort = "*"
+
+### Lint ###
+flake8 = "*"
+
+[tool.poetry.extras]
+docs = ["sphinx", "myst_parser", "sphinx-issues", "alagitpull", "sphinx-autodoc-typehints", "aafigure", "pillow"]
+test = ["pytest", "pytest-rerunfailures", "pytest-mock", "tox", "tox-poetry-installer"]
+coverage = ["codecov", "coverage", "pytest-cov"]
+format = ["black", "isort"]
+lint = ["flake8"]
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

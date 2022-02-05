@@ -1,43 +1,64 @@
-# -*- coding: utf-8 -*-
 """Command line tool for managing tmux workspaces and tmuxp configurations.
 
 tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import
-
+import importlib
 import logging
 import os
+import platform
 import sys
+from subprocess import call
 
 import click
 import kaptan
 from click.exceptions import FileError
 
-from libtmux.common import has_gte_version, has_minimum_version, which
+from libtmux import __version__ as libtmux_version
+from libtmux.common import (
+    get_version,
+    has_gte_version,
+    has_minimum_version,
+    tmux_cmd,
+    which,
+)
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
-from . import config, exc, log, util
+from . import __file__ as tmuxp_path, config, exc, log, util
 from .__about__ import __version__
-from ._compat import string_types
+from ._compat import PY3, PYMINOR
 from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
+
+VALID_CONFIG_DIR_FILE_EXTENSIONS = ['.yaml', '.yml', '.json']
 
 
 def get_cwd():
     return os.getcwd()
 
 
+def tmuxp_echo(message=None, log_level='INFO', style_log=False, **click_kwargs):
+    """
+    Combines logging.log and click.echo
+    """
+    if style_log:
+        logger.log(log.LOG_LEVELS[log_level], message)
+    else:
+        logger.log(log.LOG_LEVELS[log_level], click.unstyle(message))
+
+    click.echo(message, **click_kwargs)
+
+
 def get_config_dir():
     """
     Return tmuxp configuration directory.
 
-    ``TMUXP_CONFIGDIR`` environmental variable has precedence if set. We also 
-    evaluate XDG default directory from XDG_CONFIG_HOME environmental variable 
-    if set or its default. Then the old default ~/.tmuxp is returned for 
+    ``TMUXP_CONFIGDIR`` environmental variable has precedence if set. We also
+    evaluate XDG default directory from XDG_CONFIG_HOME environmental variable
+    if set or its default. Then the old default ~/.tmuxp is returned for
     compatibility.
 
     Returns
@@ -50,7 +71,7 @@ def get_config_dir():
     if 'TMUXP_CONFIGDIR' in os.environ:
         paths.append(os.environ['TMUXP_CONFIGDIR'])
     if 'XDG_CONFIG_HOME' in os.environ:
-        paths.append(os.environ['XDG_CONFIG_HOME'])
+        paths.append(os.path.join(os.environ['XDG_CONFIG_HOME'], 'tmuxp'))
     else:
         paths.append('~/.config/tmuxp/')
     paths.append('~/.tmuxp')
@@ -162,14 +183,15 @@ def set_layout_hook(session, hook_name):
     """
     cmd = ['set-hook', '-t', session.id, hook_name]
     hook_cmd = []
+    attached_window = session.attached_window
     for window in session.windows:
         # unfortunately, select-layout won't work unless
         # we've literally selected the window at least once
         # with the client
         hook_cmd.append('selectw -t {}'.format(window.id))
         # edit: removed -t, or else it won't respect main-pane-w/h
-        hook_cmd.append('selectl'.format(window.id))
-        hook_cmd.append('selectw -p'.format(window.id))
+        hook_cmd.append('selectl')
+        hook_cmd.append('selectw -p')
 
     # unset the hook immediately after executing
     hook_cmd.append(
@@ -177,6 +199,7 @@ def set_layout_hook(session, hook_name):
             target_session=session.id, hook_name=hook_name
         )
     )
+    hook_cmd.append('selectw -t {}'.format(attached_window.id))
 
     # join the hook's commands with semicolons
     hook_cmd = '{}'.format('; '.join(hook_cmd))
@@ -233,11 +256,11 @@ def scan_config_argument(ctx, param, value, config_dir=None):
         config_dir = config_dir()
 
     if not config:
-        click.echo("Enter at least one CONFIG")
-        click.echo(ctx.get_help(), color=ctx.color)
+        tmuxp_echo("Enter at least one CONFIG")
+        tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         value = scan_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
@@ -318,13 +341,13 @@ def scan_config(config, config_dir=None):
         config = normpath(join(cwd, config))
 
     # no extension, scan
-    if not splitext(config)[1]:
+    if path.isdir(config) or not splitext(config)[1]:
         if is_name:
             candidates = [
                 x
                 for x in [
                     '%s%s' % (join(config_dir, config), ext)
-                    for ext in ['.yaml', '.yml', '.json']
+                    for ext in VALID_CONFIG_DIR_FILE_EXTENSIONS
                 ]
                 if exists(x)
             ]
@@ -344,11 +367,14 @@ def scan_config(config, config_dir=None):
             ]
 
             if len(candidates) > 1:
-                click.secho(
-                    'Multiple .tmuxp.{yml,yaml,json} configs in %s' % dirname(config),
-                    fg="red",
+                tmuxp_echo(
+                    click.style(
+                        'Multiple .tmuxp.{yml,yaml,json} configs in %s'
+                        % dirname(config),
+                        fg="red",
+                    )
                 )
-                click.echo(
+                tmuxp_echo(
                     click.wrap_text(
                         'This is undefined behavior, use only one. '
                         'Use file names e.g. myproject.json, coolproject.yaml. '
@@ -368,13 +394,48 @@ def scan_config(config, config_dir=None):
     return config
 
 
-def _reattach(session):
+def load_plugins(sconf):
+    """
+    Load and return plugins in config
+    """
+    plugins = []
+    if 'plugins' in sconf:
+        for plugin in sconf['plugins']:
+            try:
+                module_name = plugin.split('.')
+                module_name = '.'.join(module_name[:-1])
+                plugin_name = plugin.split('.')[-1]
+                plugin = getattr(importlib.import_module(module_name), plugin_name)
+                plugins.append(plugin())
+            except exc.TmuxpPluginException as error:
+                if not click.confirm(
+                    '%sSkip loading %s?'
+                    % (click.style(str(error), fg='yellow'), plugin_name),
+                    default=True,
+                ):
+                    click.echo(
+                        click.style('[Not Skipping] ', fg='yellow')
+                        + 'Plugin versions constraint not met. Exiting...'
+                    )
+                    sys.exit(1)
+            except Exception as error:
+                click.echo(
+                    click.style('[Plugin Error] ', fg='red')
+                    + "Couldn\'t load {0}\n".format(plugin)
+                    + click.style('{0}'.format(error), fg='yellow')
+                )
+                sys.exit(1)
+
+    return plugins
+
+
+def _reattach(builder):
     """
     Reattach session (depending on env being inside tmux already or not)
 
     Parameters
     ----------
-    session : :class:`libtmux.Session`
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
 
     Notes
     -----
@@ -384,11 +445,96 @@ def _reattach(session):
 
     If not, ``tmux attach-session`` loads the client to the target session.
     """
+    for plugin in builder.plugins:
+        plugin.reattach(builder.session)
+        proc = builder.session.cmd('display-message', '-p', "'#S'")
+        for line in proc.stdout:
+            print(line)
+
     if 'TMUX' in os.environ:
-        session.switch_client()
+        builder.session.switch_client()
 
     else:
-        session.attach_session()
+        builder.session.attach_session()
+
+
+def _load_attached(builder, detached):
+    """
+    Load config in new session
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    detached : bool
+    """
+    builder.build()
+
+    if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
+        # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
+        tmux_env = os.environ.pop('TMUX')
+
+        if has_gte_version('2.6'):
+            set_layout_hook(builder.session, 'client-session-changed')
+
+        builder.session.switch_client()  # switch client to new session
+
+        os.environ['TMUX'] = tmux_env  # set TMUX back again
+    else:
+        if has_gte_version('2.6'):
+            # if attaching for first time
+            set_layout_hook(builder.session, 'client-attached')
+
+            # for cases where user switches client for first time
+            set_layout_hook(builder.session, 'client-session-changed')
+
+        if not detached:
+            builder.session.attach_session()
+
+
+def _load_detached(builder):
+    """
+    Load config in new session but don't attach
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    """
+    builder.build()
+
+    if has_gte_version('2.6'):  # prepare for both cases
+        set_layout_hook(builder.session, 'client-attached')
+        set_layout_hook(builder.session, 'client-session-changed')
+
+    print('Session created in detached state.')
+
+
+def _load_append_windows_to_current_session(builder):
+    """
+    Load config as new windows in current session
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    """
+    current_attached_session = builder.find_current_attached_session()
+    builder.build(current_attached_session, append=True)
+    if has_gte_version('2.6'):  # prepare for both cases
+        set_layout_hook(builder.session, 'client-attached')
+        set_layout_hook(builder.session, 'client-session-changed')
+
+
+def _setup_plugins(builder):
+    """
+    Runs after before_script
+
+    Parameters
+    ----------
+    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    """
+    for plugin in builder.plugins:
+        plugin.before_script(builder.session)
+
+    return builder.session
 
 
 def load_workspace(
@@ -396,9 +542,11 @@ def load_workspace(
     socket_name=None,
     socket_path=None,
     tmux_config_file=None,
+    new_session_name=None,
     colors=None,
     detached=False,
     answer_yes=False,
+    append=False,
 ):
     """
     Load a tmux "workspace" session via tmuxp file.
@@ -413,13 +561,19 @@ def load_workspace(
         ``tmux -S <socket-path>``
     tmux_config_file: str, optional
         ``tmux -f <config-file>``
+    new_session_name: str, options
+        ``tmux new -s <new_session_name>``
     colors : str, optional
         '-2'
             Force tmux to support 256 colors
     detached : bool
         Force detached state. default False.
     answer_yes : bool
-        Assume yes when given prompt. default False.
+        Assume yes when given prompt to attach in new session.
+        Default False.
+    append : bool
+       Assume current when given prompt to append windows in same session.
+       Default False.
 
     Notes
     -----
@@ -492,34 +646,43 @@ def load_workspace(
     # get the canonical path, eliminating any symlinks
     config_file = os.path.realpath(config_file)
 
+    tmuxp_echo(
+        click.style('[Loading] ', fg='green')
+        + click.style(config_file, fg='blue', bold=True)
+    )
+
     # kaptan allows us to open a yaml or json file as a dict
     sconfig = kaptan.Kaptan()
     sconfig = sconfig.import_config(config_file).get()
     # shapes configurations relative to config / profile file location
     sconfig = config.expand(sconfig, os.path.dirname(config_file))
+    # Overwrite session name
+    if new_session_name:
+        sconfig['session_name'] = new_session_name
     # propagate config inheritance (e.g. session -> window, window -> pane)
     sconfig = config.trickle(sconfig)
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
-        colors=colors,
         config_file=tmux_config_file,
+        colors=colors,
     )
 
     which('tmux')  # raise exception if tmux not found
 
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
-        builder = WorkspaceBuilder(sconf=sconfig, server=t)
+        builder = WorkspaceBuilder(
+            sconf=sconfig, plugins=load_plugins(sconfig), server=t
+        )
     except exc.EmptyConfigException:
-        click.echo('%s is empty or parsed no config data' % config_file, err=True)
+        tmuxp_echo('%s is empty or parsed no config data' % config_file, err=True)
         return
 
     session_name = sconfig['session_name']
 
-    # if the session already exists, prompt the user to attach. tmuxp doesn't
-    # support incremental session building or appending (yet, PR's welcome!)
-    if builder.session_exists(session_name):
+    # if the session already exists, prompt the user to attach
+    if builder.session_exists(session_name) and not append:
         if not detached and (
             answer_yes
             or click.confirm(
@@ -528,53 +691,49 @@ def load_workspace(
                 default=True,
             )
         ):
-            _reattach(builder.session)
+            _reattach(builder)
         return
 
     try:
-        click.echo(
-            click.style('[Loading] ', fg='green')
-            + click.style(config_file, fg='blue', bold=True)
-        )
+        if detached:
+            _load_detached(builder)
+            return _setup_plugins(builder)
 
-        builder.build()  # load tmux session via workspace builder
+        if append:
+            if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
+                _load_append_windows_to_current_session(builder)
+            else:
+                _load_attached(builder, detached)
+
+            return _setup_plugins(builder)
+
+        # append and answer_yes have no meaning if specified together
+        elif answer_yes:
+            _load_attached(builder, detached)
+            return _setup_plugins(builder)
 
         if 'TMUX' in os.environ:  # tmuxp ran from inside tmux
-            if not detached and (
-                answer_yes or click.confirm('Already inside TMUX, switch to session?')
-            ):
-                # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
-                tmux_env = os.environ.pop('TMUX')
+            msg = (
+                "Already inside TMUX, switch to session? yes/no\n"
+                "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            )
+            options = ['y', 'n', 'a']
+            choice = click.prompt(msg, value_proc=_validate_choices(options))
 
-                if has_gte_version('2.6'):
-                    set_layout_hook(builder.session, 'client-session-changed')
-
-                builder.session.switch_client()  # switch client to new session
-
-                os.environ['TMUX'] = tmux_env  # set TMUX back again
-                return builder.session
-            else:  # session created in the background, from within tmux
-                if has_gte_version('2.6'):  # prepare for both cases
-                    set_layout_hook(builder.session, 'client-attached')
-                    set_layout_hook(builder.session, 'client-session-changed')
-
-                sys.exit('Session created in detached state.')
-        else:  # tmuxp ran from inside tmux
-            if has_gte_version('2.6'):
-                # if attaching for first time
-                set_layout_hook(builder.session, 'client-attached')
-
-                # for cases where user switches client for first time
-                set_layout_hook(builder.session, 'client-session-changed')
-
-            if not detached:
-                builder.session.attach_session()
+            if choice == 'y':
+                _load_attached(builder, detached)
+            elif choice == 'a':
+                _load_append_windows_to_current_session(builder)
+            else:
+                _load_detached(builder)
+        else:
+            _load_attached(builder, detached)
 
     except exc.TmuxpException as e:
         import traceback
 
-        click.echo(traceback.format_exc(), err=True)
-        click.echo(e, err=True)
+        tmuxp_echo(traceback.format_exc(), err=True)
+        tmuxp_echo(e, err=True)
 
         choice = click.prompt(
             'Error loading workspace. (k)ill, (a)ttach, (d)etach?',
@@ -584,22 +743,19 @@ def load_workspace(
 
         if choice == 'k':
             builder.session.kill_session()
-            click.echo('Session killed.')
+            tmuxp_echo('Session killed.')
         elif choice == 'a':
-            if 'TMUX' in os.environ:
-                builder.session.switch_client()
-            else:
-                builder.session.attach_session()
+            _reattach(builder)
         else:
             sys.exit()
 
-    return builder.session
+    return _setup_plugins(builder)
 
 
-@click.group(context_settings={'obj': {}})
+@click.group(context_settings={'obj': {}, 'help_option_names': ['-h', '--help']})
 @click.version_option(__version__, '-V', '--version', message='%(prog)s %(version)s')
 @click.option(
-    '--log_level',
+    '--log-level',
     default='INFO',
     help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)',
 )
@@ -608,16 +764,16 @@ def cli(log_level):
 
     Pass the "--help" argument to any command to see detailed help.
     See detailed documentation and examples at:
-    http://tmuxp.readthedocs.io/en/latest/"""
+    http://tmuxp.git-pull.com/"""
     try:
         has_minimum_version()
     except TmuxCommandNotFound:
-        click.echo('tmux not found. tmuxp requires you install tmux first.')
+        tmuxp_echo('tmux not found. tmuxp requires you install tmux first.')
         sys.exit()
     except exc.TmuxpException as e:
-        click.echo(e, err=True)
+        tmuxp_echo(e, err=True)
         sys.exit()
-    setup_logger(level=log_level.upper())
+    setup_logger(logger=logger, level=log_level.upper())
 
 
 def setup_logger(logger=None, level='INFO'):
@@ -636,12 +792,12 @@ def setup_logger(logger=None, level='INFO'):
         logger = logging.getLogger()
 
     if not logger.handlers:  # setup logger handlers
-        channel = logging.StreamHandler()
-        channel.setFormatter(log.DebugLogFormatter())
-
+        # channel = logging.StreamHandler()
+        # channel.setFormatter(log.DebugLogFormatter())
         # channel.setFormatter(log.LogFormatter())
+
         logger.setLevel(level)
-        logger.addHandler(channel)
+        # logger.addHandler(channel)
 
 
 def startup(config_dir):
@@ -657,11 +813,108 @@ def startup(config_dir):
         os.makedirs(config_dir)
 
 
-@cli.command(name='freeze')
-@click.argument('session_name', nargs=1)
+@cli.command(name='shell')
+@click.argument('session_name', nargs=1, required=False)
+@click.argument('window_name', nargs=1, required=False)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
-def command_freeze(session_name, socket_name, socket_path):
+@click.option(
+    '-c',
+    'command',
+    help='Instead of opening shell, execute python code in libtmux and exit',
+)
+@click.option(
+    '--best',
+    'shell',
+    flag_value='best',
+    help='Use best shell available in site packages',
+    default=True,
+)
+@click.option('--pdb', 'shell', flag_value='pdb', help='Use plain pdb')
+@click.option(
+    '--code', 'shell', flag_value='code', help='Use stdlib\'s code.interact()'
+)
+@click.option(
+    '--ptipython', 'shell', flag_value='ptipython', help='Use ptpython + ipython'
+)
+@click.option('--ptpython', 'shell', flag_value='ptpython', help='Use ptpython')
+@click.option('--ipython', 'shell', flag_value='ipython', help='Use ipython')
+@click.option('--bpython', 'shell', flag_value='bpython', help='Use bpython')
+@click.option(
+    '--use-pythonrc/--no-startup',
+    'use_pythonrc',
+    help='Load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code',
+    default=False,
+)
+@click.option(
+    '--use-vi-mode/--no-vi-mode',
+    'use_vi_mode',
+    help='Use vi-mode in ptpython/ptipython',
+    default=False,
+)
+def command_shell(
+    session_name,
+    window_name,
+    socket_name,
+    socket_path,
+    command,
+    shell,
+    use_pythonrc,
+    use_vi_mode,
+):
+    """Launch python shell for tmux server, session, window and pane.
+
+    Priority given to loaded session/wndow/pane objects:
+    - session_name and window_name arguments
+    - current shell: environmental variable of TMUX_PANE (which gives us window and
+      session)
+    - ``server.attached_session``, ``session.attached_window``, ``window.attached_pane``
+    """
+    server = Server(socket_name=socket_name, socket_path=socket_path)
+
+    util.raise_if_tmux_not_running(server=server)
+
+    current_pane = util.get_current_pane(server=server)
+
+    session = util.get_session(
+        server=server, session_name=session_name, current_pane=current_pane
+    )
+
+    window = util.get_window(
+        session=session, window_name=window_name, current_pane=current_pane
+    )
+
+    pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
+
+    if command is not None:
+        exec(command)
+    else:
+        if shell == 'pdb' or (os.getenv('PYTHONBREAKPOINT') and PY3 and PYMINOR >= 7):
+            from ._compat import breakpoint as tmuxp_breakpoint
+
+            tmuxp_breakpoint()
+            return
+        else:
+            from .shell import launch
+
+            launch(
+                shell=shell,
+                use_pythonrc=use_pythonrc,  # shell: code
+                use_vi_mode=use_vi_mode,  # shell: ptpython, ptipython
+                # tmux environment / libtmux variables
+                server=server,
+                session=session,
+                window=window,
+                pane=pane,
+            )
+
+
+@cli.command(name='freeze')
+@click.argument('session_name', nargs=1, required=False)
+@click.option('-S', 'socket_path', help='pass-through for tmux -S')
+@click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option('--force', 'force', help='overwrite the config file', is_flag=True)
+def command_freeze(session_name, socket_name, socket_path, force):
     """Snapshot a session into a config.
 
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the
@@ -670,7 +923,10 @@ def command_freeze(session_name, socket_name, socket_path):
     t = Server(socket_name=socket_name, socket_path=socket_path)
 
     try:
-        session = t.find_where({'session_name': session_name})
+        if session_name:
+            session = t.find_where({'session_name': session_name})
+        else:
+            session = util.get_session(t)
 
         if not session:
             raise exc.TmuxpException('Session not found.')
@@ -695,11 +951,10 @@ def command_freeze(session_name, socket_name, socket_path):
     else:
         sys.exit('Unknown config format.')
 
-    print(newconfig)
     print(
         '---------------------------------------------------------------'
         '\n'
-        'Freeze does it best to snapshot live tmux sessions.\n'
+        'Freeze does its best to snapshot live tmux sessions.\n'
     )
     if click.confirm(
         'The new config *WILL* require adjusting afterwards. Save config?'
@@ -713,12 +968,9 @@ def command_freeze(session_name, socket_name, socket_path):
                 )
             )
             dest_prompt = click.prompt(
-                'Save to: %s' % save_to,
-                value_proc=get_abs_path,
-                default=save_to,
-                confirmation_prompt=True,
+                'Save to: %s' % save_to, value_proc=get_abs_path, default=save_to
             )
-            if os.path.exists(dest_prompt):
+            if not force and os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
                 continue
 
@@ -737,8 +989,8 @@ def command_freeze(session_name, socket_name, socket_path):
     else:
         print(
             'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.readthedocs.io/>.'
+            '<http://tmuxp.git-pull.com/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.git-pull.com/>.'
         )
         sys.exit()
 
@@ -749,9 +1001,16 @@ def command_freeze(session_name, socket_name, socket_path):
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
 @click.option('-f', 'tmux_config_file', help='pass-through for tmux -f')
+@click.option('-s', 'new_session_name', help='start new session with new session name')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
     '-d', 'detached', help='Load the session without attaching it', is_flag=True
+)
+@click.option(
+    '-a',
+    'append',
+    help='Load configuration, appending windows to the current session',
+    is_flag=True,
 )
 @click.option(
     'colors',
@@ -766,7 +1025,20 @@ def command_freeze(session_name, socket_name, socket_path):
     flag_value=88,
     help='Like -2, but indicates that the terminal supports 88 colours.',
 )
-def command_load(ctx, config, socket_name, socket_path, tmux_config_file, answer_yes, detached, colors):
+@click.option('--log-file', help='File to log errors/output to')
+def command_load(
+    ctx,
+    config,
+    socket_name,
+    socket_path,
+    tmux_config_file,
+    new_session_name,
+    answer_yes,
+    detached,
+    append,
+    colors,
+    log_file,
+):
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -790,22 +1062,28 @@ def command_load(ctx, config, socket_name, socket_path, tmux_config_file, answer
     detached mode.
     """
     util.oh_my_zsh_auto_title()
+    if log_file:
+        logfile_handler = logging.FileHandler(log_file)
+        logfile_handler.setFormatter(log.LogFormatter())
+        logger.addHandler(logfile_handler)
 
     tmux_options = {
         'socket_name': socket_name,
         'socket_path': socket_path,
         'tmux_config_file': tmux_config_file,
+        'new_session_name': new_session_name,
         'answer_yes': answer_yes,
         'colors': colors,
         'detached': detached,
+        'append': append,
     }
 
     if not config:
-        click.echo("Enter at least one CONFIG")
-        click.echo(ctx.get_help(), color=ctx.color)
+        tmuxp_echo("Enter at least one CONFIG")
+        tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
-    if isinstance(config, string_types):
+    if isinstance(config, str):
         load_workspace(config, **tmux_options)
 
     elif isinstance(config, tuple):
@@ -813,7 +1091,7 @@ def command_load(ctx, config, socket_name, socket_path, tmux_config_file, answer
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             opt = tmux_options.copy()
-            opt.update({'detached': True})
+            opt.update({'detached': True, 'new_session_name': None})
             load_workspace(cfg, **opt)
 
         # todo: obey the -d in the cli args only if user specifies
@@ -844,7 +1122,7 @@ def import_config(configfile, importfunc):
     else:
         sys.exit('Unknown config format.')
 
-    click.echo(
+    tmuxp_echo(
         newconfig + '---------------------------------------------------------------'
         '\n'
         'Configuration import does its best to convert files.\n'
@@ -866,12 +1144,12 @@ def import_config(configfile, importfunc):
         buf.write(newconfig)
         buf.close()
 
-        click.echo('Saved to %s.' % dest)
+        tmuxp_echo('Saved to %s.' % dest)
     else:
-        click.echo(
+        tmuxp_echo(
             'tmuxp has examples in JSON and YAML format at '
-            '<http://tmuxp.readthedocs.io/en/latest/examples.html>\n'
-            'View tmuxp docs at <http://tmuxp.readthedocs.io/>'
+            '<http://tmuxp.git-pull.com/examples.html>\n'
+            'View tmuxp docs at <http://tmuxp.git-pull.com/>'
         )
         sys.exit()
 
@@ -902,31 +1180,123 @@ def command_import_tmuxinator(configfile):
 
 
 @cli.command(name='convert')
+@click.option(
+    '--yes', '-y', 'confirmed', help='Auto confirms with "yes".', is_flag=True
+)
 @click.argument('config', type=ConfigPath(exists=True), nargs=1)
-def command_convert(config):
+def command_convert(confirmed, config):
     """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
-    if 'json' in ext:
-        if click.confirm('convert to <%s> to yaml?' % config):
-            configparser = kaptan.Kaptan()
-            configparser.import_config(config)
-            newfile = config.replace(ext, '.yaml')
-            newconfig = configparser.export('yaml', indent=2, default_flow_style=False)
+    ext = ext.lower()
+    if ext == '.json':
+        to_filetype = 'yaml'
+    elif ext in ['.yaml', '.yml']:
+        to_filetype = 'json'
+    else:
+        raise click.BadParameter(
+            'Unknown filetype: %s (valid: [.json, .yaml, .yml])' % (ext,)
+        )
+
+    configparser = kaptan.Kaptan()
+    configparser.import_config(config)
+    newfile = config.replace(ext, '.%s' % to_filetype)
+
+    export_kwargs = {'default_flow_style': False} if to_filetype == 'yaml' else {}
+    newconfig = configparser.export(to_filetype, indent=2, **export_kwargs)
+
+    if not confirmed:
+        if click.confirm('convert to <%s> to %s?' % (config, to_filetype)):
             if click.confirm('Save config to %s?' % newfile):
-                buf = open(newfile, 'w')
-                buf.write(newconfig)
-                buf.close()
-                print('New config saved to %s' % newfile)
-    elif 'yaml' in ext:
-        if click.confirm('convert to <%s> to json?' % config):
-            configparser = kaptan.Kaptan()
-            configparser.import_config(config)
-            newfile = config.replace(ext, '.json')
-            newconfig = configparser.export('json', indent=2)
-            print(newconfig)
-            if click.confirm('Save config to <%s>?' % newfile):
-                buf = open(newfile, 'w')
-                buf.write(newconfig)
-                buf.close()
-                print('New config saved to <%s>.' % newfile)
+                confirmed = True
+
+    if confirmed:
+        buf = open(newfile, 'w')
+        buf.write(newconfig)
+        buf.close()
+        print('New config saved to <%s>.' % newfile)
+
+
+@cli.command(name='edit', short_help='Run $EDITOR on config.')
+@click.argument('config', type=ConfigPath(exists=True), nargs=1)
+def command_edit_config(config):
+    config = scan_config(config)
+
+    sys_editor = os.environ.get('EDITOR', 'vim')
+    call([sys_editor, config])
+
+
+@cli.command(
+    name='ls', short_help='List configured sessions in {}.'.format(get_config_dir())
+)
+def command_ls():
+    tmuxp_dir = get_config_dir()
+    if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
+        for f in sorted(os.listdir(tmuxp_dir)):
+            stem, ext = os.path.splitext(f)
+            if os.path.isdir(f) or ext not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
+                continue
+            print(stem)
+
+
+@cli.command(name='debug-info', short_help='Print out all diagnostic info')
+def command_debug_info():
+    """
+    Print debug info to submit with Issues.
+    """
+
+    def prepend_tab(strings):
+        """
+        Prepend tab to strings in list.
+        """
+        return list(map(lambda x: '\t%s' % x, strings))
+
+    def output_break():
+        """
+        Generate output break.
+        """
+        return '-' * 25
+
+    def format_tmux_resp(std_resp):
+        """
+        Format tmux command response for tmuxp stdout.
+        """
+        return '\n'.join(
+            [
+                '\n'.join(prepend_tab(std_resp.stdout)),
+                click.style('\n'.join(prepend_tab(std_resp.stderr)), fg='red'),
+            ]
+        )
+
+    output = [
+        output_break(),
+        'environment:\n%s'
+        % '\n'.join(
+            prepend_tab(
+                [
+                    'dist: %s' % platform.platform(),
+                    'arch: %s' % platform.machine(),
+                    'uname: %s' % '; '.join(platform.uname()[:3]),
+                    'version: %s' % platform.version(),
+                ]
+            )
+        ),
+        output_break(),
+        'python version: %s' % ' '.join(sys.version.split('\n')),
+        'system PATH: %s' % os.environ['PATH'],
+        'tmux version: %s' % get_version(),
+        'libtmux version: %s' % libtmux_version,
+        'tmuxp version: %s' % __version__,
+        'tmux path: %s' % which('tmux'),
+        'tmuxp path: %s' % tmuxp_path,
+        'shell: %s' % os.environ['SHELL'],
+        output_break(),
+        'tmux sessions:\n%s' % format_tmux_resp(tmux_cmd('list-sessions')),
+        'tmux windows:\n%s' % format_tmux_resp(tmux_cmd('list-windows')),
+        'tmux panes:\n%s' % format_tmux_resp(tmux_cmd('list-panes')),
+        'tmux global options:\n%s' % format_tmux_resp(tmux_cmd('show-options', '-g')),
+        'tmux window options:\n%s'
+        % format_tmux_resp(tmux_cmd('show-window-options', '-g')),
+    ]
+
+    tmuxp_echo('\n'.join(output))
