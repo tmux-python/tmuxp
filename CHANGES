@@ -3,6 +3,7 @@
 ## current
 
 - _Insert changes/features/fixes for next release here_
+- {issue}`627` Tweaking `tmuxp freeze` UX flow
 
 #### What's new
 

@@ -966,7 +966,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
                 )
             )
             dest_prompt = click.prompt(
-                'Save to: %s' % save_to, value_proc=get_abs_path, default=save_to
+                'Path to new config:', value_proc=get_abs_path, default=save_to
             )
             if not force and os.path.exists(dest_prompt):
                 print('%s exists. Pick a new filename.' % dest_prompt)
