@@ -3,7 +3,6 @@
 ## current
 
 - _Insert changes/features/fixes for next release here_
-- {issue}`627` Tweaking `tmuxp freeze` UX flow
 
 #### What's new
 
@@ -40,12 +39,13 @@
 
 #### Improvements
 
-- #660: `tmuxp freeze` will now detect the attached session if no session name
-  is specified. Credit: @will-ockmore.
+- Improve `tmuxp freeze` UX flow, credit @joseph-flinn (#657, in re: #627)
+- `tmuxp freeze` will now detect the attached session if no session name
+  is specified. Credit: @will-ockmore. (#660)
 
 #### Bugs
 
-- #725: Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi!
+- Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi! (#725)
 
 ## tmuxp 1.9.4 (2022-01-10)
 
