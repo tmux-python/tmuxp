@@ -77,7 +77,7 @@ codecov = "*"
 coverage = "*"
 
 ### Format ###
-black = "==21.12b0"
+black = "*"
 isort = "*"
 
 ### Lint ###
