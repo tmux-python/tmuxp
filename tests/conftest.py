@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import logging
+import os
 
 import pytest
 
@@ -9,6 +8,20 @@ from libtmux.server import Server
 from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(scope='function')
+def monkeypatch_plugin_test_packages(monkeypatch):
+    paths = [
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/",
+        "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/",
+    ]
+    for path in paths:
+        monkeypatch.syspath_prepend(os.path.abspath(os.path.relpath(path)))
 
 
 @pytest.fixture(scope='function')
@@ -34,7 +47,16 @@ def session(server):
     session_name = 'tmuxp'
 
     if not server.has_session(session_name):
-        server.cmd('new-session', '-d', '-s', session_name)
+        server.cmd(
+            '-f',
+            '/dev/null',  # use a blank config to reduce side effects
+            'new-session',
+            '-d',  # detached
+            '-s',
+            session_name,
+            '/bin/sh',  # use /bin/sh as a shell to reduce side effects
+            # normally, it'd be -c, but new-session is special
+        )
 
     # find current sessions prefixed with tmuxp
     old_test_sessions = [

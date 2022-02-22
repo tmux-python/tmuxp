@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 """Test for tmuxp plugin api."""
-from __future__ import absolute_import
-
 import pytest
 
 from tmuxp.exc import TmuxpPluginException
@@ -22,6 +19,11 @@ from .fixtures.pluginsystem.partials.tmuxp_version_fail import (
     TmuxpVersionFailMaxPlugin,
     TmuxpVersionFailMinPlugin,
 )
+
+
+@pytest.fixture(autouse=True)
+def autopatch_sitedir(monkeypatch_plugin_test_packages):
+    pass
 
 
 def test_all_pass():

@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '2.7', '3.x' ]
-        tmux-version: [ '2.6', '2.7', '2.8', '3.0a', '3.1b', 'master' ]
+        python-version: [ '3.10' ]
+        tmux-version: [ '2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', 'master' ]
     steps:
     - uses: actions/checkout@v1
 
@@ -27,10 +27,13 @@ jobs:
 
     - name: Install poetry
       run: |
-        curl -O -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
-        python get-poetry.py -y --version 1.0.10
+        curl -O -sSL https://install.python-poetry.org/install-poetry.py
+        python install-poetry.py -y --version 1.1.12
         echo "PATH=${HOME}/.poetry/bin:${PATH}" >> $GITHUB_ENV
-        rm get-poetry.py
+        rm install-poetry.py
+
+    - name: Add ~/.local/bin to PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Get poetry cache paths from config
       run: |
@@ -47,8 +50,8 @@ jobs:
       with:
         path: |
           .venv
-          {{ env.poetry_cache_dir }}
-          {{ env.poetry_virtualenvs_path }}
+          ${{ env.poetry_cache_dir }}
+          ${{ env.poetry_virtualenvs_path }}
         key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Ensure cache is healthy

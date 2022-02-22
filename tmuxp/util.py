@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """Utility and helper methods for tmuxp.
 
 tmuxp.util
 ~~~~~~~~~~
 
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
 import os
 import shlex
@@ -114,10 +111,17 @@ def get_session(server, session_name=None, current_pane=None):
     elif current_pane is not None:
         session = server.find_where({'session_id': current_pane['session_id']})
     else:
-        session = server.list_sessions()[0]
+        current_pane = get_current_pane(server)
+        if current_pane:
+            session = server.find_where({'session_id': current_pane['session_id']})
+        else:
+            session = server.list_sessions()[0]
 
     if not session:
-        raise exc.TmuxpException('Session not found: %s' % session_name)
+        if session_name:
+            raise exc.TmuxpException('Session not found: %s' % session_name)
+        else:
+            raise exc.TmuxpException('Session not found')
 
     return session
 

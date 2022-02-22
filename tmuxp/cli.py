@@ -1,37 +1,34 @@
-# -*- coding: utf-8 -*-
 """Command line tool for managing tmux workspaces and tmuxp configurations.
 
 tmuxp.cli
 ~~~~~~~~~
 
 """
-from __future__ import absolute_import
-
 import importlib
 import logging
 import os
 import platform
 import sys
+from subprocess import call
 
 import click
 import kaptan
 from click.exceptions import FileError
 
+from libtmux import __version__ as libtmux_version
 from libtmux.common import (
+    get_version,
     has_gte_version,
     has_minimum_version,
-    which,
-    get_version,
     tmux_cmd,
+    which,
 )
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
-from libtmux import __version__ as libtmux_version
-
-from . import config, exc, log, util, __file__ as tmuxp_path
+from . import __file__ as tmuxp_path, config, exc, log, util
 from .__about__ import __version__
-from ._compat import PY3, PYMINOR, string_types
+from ._compat import PY3, PYMINOR
 from .workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
@@ -263,7 +260,7 @@ def scan_config_argument(ctx, param, value, config_dir=None):
         tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
-    if isinstance(value, string_types):
+    if isinstance(value, str):
         value = scan_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
@@ -544,6 +541,7 @@ def load_workspace(
     config_file,
     socket_name=None,
     socket_path=None,
+    tmux_config_file=None,
     new_session_name=None,
     colors=None,
     detached=False,
@@ -663,7 +661,10 @@ def load_workspace(
     sconfig = config.trickle(sconfig)
 
     t = Server(  # create tmux server object
-        socket_name=socket_name, socket_path=socket_path, colors=colors
+        socket_name=socket_name,
+        socket_path=socket_path,
+        config_file=tmux_config_file,
+        colors=colors,
     )
 
     which('tmux')  # raise exception if tmux not found
@@ -749,7 +750,7 @@ def load_workspace(
     return _setup_plugins(builder)
 
 
-@click.group(context_settings={'obj': {}})
+@click.group(context_settings={'obj': {}, 'help_option_names': ['-h', '--help']})
 @click.version_option(__version__, '-V', '--version', message='%(prog)s %(version)s')
 @click.option(
     '--log-level',
@@ -923,7 +924,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
         if session_name:
             session = t.find_where({'session_name': session_name})
         else:
-            session = t.list_sessions()[0]
+            session = util.get_session(t)
 
         if not session:
             raise exc.TmuxpException('Session not found.')
@@ -997,6 +998,7 @@ def command_freeze(session_name, socket_name, socket_path, force):
 @click.argument('config', type=ConfigPath(exists=True), nargs=-1)
 @click.option('-S', 'socket_path', help='pass-through for tmux -S')
 @click.option('-L', 'socket_name', help='pass-through for tmux -L')
+@click.option('-f', 'tmux_config_file', help='pass-through for tmux -f')
 @click.option('-s', 'new_session_name', help='start new session with new session name')
 @click.option('--yes', '-y', 'answer_yes', help='yes', is_flag=True)
 @click.option(
@@ -1027,6 +1029,7 @@ def command_load(
     config,
     socket_name,
     socket_path,
+    tmux_config_file,
     new_session_name,
     answer_yes,
     detached,
@@ -1065,6 +1068,7 @@ def command_load(
     tmux_options = {
         'socket_name': socket_name,
         'socket_path': socket_path,
+        'tmux_config_file': tmux_config_file,
         'new_session_name': new_session_name,
         'answer_yes': answer_yes,
         'colors': colors,
@@ -1077,7 +1081,7 @@ def command_load(
         tmuxp_echo(ctx.get_help(), color=ctx.color)
         ctx.exit()
 
-    if isinstance(config, string_types):
+    if isinstance(config, str):
         load_workspace(config, **tmux_options)
 
     elif isinstance(config, tuple):
@@ -1182,10 +1186,15 @@ def command_convert(confirmed, config):
     """Convert a tmuxp config between JSON and YAML."""
 
     _, ext = os.path.splitext(config)
-    if 'json' in ext:
+    ext = ext.lower()
+    if ext == '.json':
         to_filetype = 'yaml'
-    elif 'yaml' in ext:
+    elif ext in ['.yaml', '.yml']:
         to_filetype = 'json'
+    else:
+        raise click.BadParameter(
+            'Unknown filetype: %s (valid: [.json, .yaml, .yml])' % (ext,)
+        )
 
     configparser = kaptan.Kaptan()
     configparser.import_config(config)
@@ -1204,6 +1213,15 @@ def command_convert(confirmed, config):
         buf.write(newconfig)
         buf.close()
         print('New config saved to <%s>.' % newfile)
+
+
+@cli.command(name='edit', short_help='Run $EDITOR on config.')
+@click.argument('config', type=ConfigPath(exists=True), nargs=1)
+def command_edit_config(config):
+    config = scan_config(config)
+
+    sys_editor = os.environ.get('EDITOR', 'vim')
+    call([sys_editor, config])
 
 
 @cli.command(

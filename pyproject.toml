@@ -3,7 +3,7 @@ skip-string-normalization = true
 
 [tool.poetry]
 name = "tmuxp"
-version = "1.7.0"
+version = "1.9.4"
 description = "tmux session manager"
 license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]
@@ -15,92 +15,81 @@ classifiers = [
   "Environment :: Web Environment",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 2.7",
-  "Programming Language :: Python :: 3.5",
-  "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Utilities",
   "Topic :: System :: Shells"
 ]
 keywords = ["tmux", "session manager", "terminal", "ncurses"]
 homepage = "http://github.com/tmux-python/tmuxp/"
-readme = "README.rst"
+readme = "README.md"
+packages = [
+    { include = "tmuxp" }
+]
+include = [
+    { path = "CHANGES", format = "sdist" },
+    { path = ".tmuxp.yaml", format = "sdist" },
+    { path = ".tmuxp-before-script.sh", format = "sdist" },
+    { path = "tests", format = "sdist" },
+    { path = "examples", format = "sdist" },
+    { path = "docs", format = "sdist" },
+]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/tmux-python/tmuxp/issues"
 Documentation = "https://tmuxp.git-pull.com"
 Repository = "https://github.com/tmux-python/tmuxp"
+Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
 
 [tool.poetry.scripts]
 tmuxp = 'tmuxp:cli.cli'
 
 [tool.poetry.dependencies]
-python = "~2.7 || ^3.5"
-click = ">=7<8"
+python = "^3.7"
+click = ">7,<8.1"
 kaptan = ">=0.5.10"
-libtmux = "<0.9"
+libtmux = "~0.10.3"
 colorama = ">=0.3.9"
 
 [tool.poetry.dev-dependencies]
 ### Docs ###
-sphinx = [
-  {version="<2", python="<3"},
-  {version="*", python=">=3"}
-]
-recommonmark = {version = "^0.6.0"}
-alagitpull = {version = "~0.1.0"}
-sphinx-issues = {version = "^1.2.0"}
+sphinx = "*"
+alagitpull = "~0.1.0"
+sphinx-issues = "^1.2.0"
 aafigure = ">=0.6"
-pillow = [
-  {version="<7", python="<3"},
-  {version="*", python=">=3"}
-]
+pillow = "*"
+sphinx-autodoc-typehints = "~1.14.1"
+myst_parser = "~0.16.1"
 
 ### Testing ###
-pytest = [
-  {version="<4.7.0", python="<3"},
-  {version="*", python=">=3"}
-]
-pathlib2 = {version="<2.3.5", python="<3"}  # Untangle pytest peer-dependency
+pytest = "*"
 pytest-rerunfailures = "*"
-pytest-mock = [
-  {version="<3.0.0", python="<3"},
-  {version="*", python=">=3"}
-]
-tmuxp-test-plugin-bwb = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/"}
-tmuxp-test-plugin-bs = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/"}
-tmuxp-test-plugin-r = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_r/"}
-tmuxp-test-plugin-owc = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_owc/"}
-tmuxp-test-plugin-awf = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_awf/"}
-tmuxp-test-plugin-fail = { path = "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/"}
+pytest-mock = "*"
+pytest-cov = "*"
+tox = {version = "^3.24.5", extras = ["test"]}
+tox-poetry-installer = {extras = ["poetry"], version = "^0.8.3"}
 
 ### Coverage ###
 codecov = "*"
 coverage = "*"
-pytest-cov = [
-  {version="<2.10.0", python="<3"},
-  {version="*", python=">=3"}
-]
 
 ### Format ###
-black = {version="==20.08b1", python="^3.6"}
-isort = [
-  {version="<5", python="<3.6"},
-  {version="*", python=">=3.6"}
-]
+black = "*"
+isort = "*"
 
 ### Lint ###
 flake8 = "*"
 
-### Deploy ###
-twine = "*"
-
 [tool.poetry.extras]
-docs = ["sphinx", "recommonmark", "sphinx-issues", "alagitpull", "aafigure", "pillow"]
-test = ["pytest", "pathlib2", "pytest-rerunfailures", "pytest-mock"]
+docs = ["sphinx", "myst_parser", "sphinx-issues", "alagitpull", "sphinx-autodoc-typehints", "aafigure", "pillow"]
+test = ["pytest", "pytest-rerunfailures", "pytest-mock", "tox", "tox-poetry-installer"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
 lint = ["flake8"]
-deploy = ["twine"]
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

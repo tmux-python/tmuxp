@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """Utility and helper methods for tmuxp.
 
 tmuxp.shell
 ~~~~~~~~~~~
 
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
 import os
 

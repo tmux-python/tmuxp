@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
 """Test for tmuxp command line interface."""
-from __future__ import absolute_import
-
 import json
 import os
 
@@ -15,16 +12,15 @@ import pytest
 import click
 import kaptan
 from click.testing import CliRunner
-from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
 from tmuxp.cli import (
-    _reattach,
-    _load_attached,
     _load_append_windows_to_current_session,
+    _load_attached,
+    _reattach,
     command_debug_info,
     command_ls,
     get_config_dir,
@@ -149,6 +145,8 @@ def test_tmuxp_configdir_xdg_config_dir(tmpdir, monkeypatch):
 
 def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
     monkeypatch.setenv('HOME', str(homedir))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir.join('.config')))
+
     projectdir.join('.tmuxp.yaml').ensure()
     user_config_name = 'myconfig'
     user_config = configdir.join('%s.yaml' % user_config_name).ensure()
@@ -730,15 +728,18 @@ def test_shell_plus(
         (['convert', '.']),
         (['convert', '.tmuxp.yaml']),
         (['convert', '.tmuxp.yaml', '-y']),
+        (['convert', '.tmuxp.yml']),
+        (['convert', '.tmuxp.yml', '-y']),
     ],
 )
 def test_convert(cli_args, tmpdir, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
-    tmpdir.join('.tmuxp.yaml').write(
-        """
-session_name: hello
-    """
-    )
+    filename = cli_args[1]
+    if filename == '.':
+        filename = '.tmuxp.yaml'
+    file_ext = filename.rsplit('.', 1)[-1]
+    assert file_ext in ['yaml', 'yml'], file_ext
+    tmpdir.join(filename).write('\nsession_name: hello\n')
     tmpdir.join('.oh-my-zsh').ensure(dir=True)
     monkeypatch.setenv('HOME', str(tmpdir))
 
@@ -755,6 +756,31 @@ session_name: hello
         )
 
 
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        (['convert', '.']),
+        (['convert', '.tmuxp.json']),
+        (['convert', '.tmuxp.json', '-y']),
+    ],
+)
+def test_convert_json(cli_args, tmpdir, monkeypatch):
+    # create dummy tmuxp yaml so we don't get yelled at
+    tmpdir.join('.tmuxp.json').write('{"session_name": "hello"}')
+    tmpdir.join('.oh-my-zsh').ensure(dir=True)
+    monkeypatch.setenv('HOME', str(tmpdir))
+
+    with tmpdir.as_cwd():
+        runner = CliRunner()
+
+        # If autoconfirm (-y) no need to prompt y
+        input_args = 'y\ny\n' if '-y' not in cli_args else ''
+
+        runner.invoke(cli.cli, cli_args, input=input_args)
+        assert tmpdir.join('.tmuxp.yaml').check()
+        assert tmpdir.join('.tmuxp.yaml').open().read() == 'session_name: hello\n'
+
+
 @pytest.mark.parametrize("cli_args", [(['import'])])
 def test_import(cli_args, monkeypatch):
     runner = CliRunner()
@@ -762,6 +788,20 @@ def test_import(cli_args, monkeypatch):
     result = runner.invoke(cli.cli, cli_args)
     assert 'tmuxinator' in result.output
     assert 'teamocil' in result.output
+
+
+@pytest.mark.parametrize(
+    "cli_args",
+    [
+        (['--help']),
+        (['-h']),
+    ],
+)
+def test_help(cli_args, monkeypatch):
+    runner = CliRunner()
+
+    result = runner.invoke(cli.cli, cli_args)
+    assert 'Usage: cli [OPTIONS] COMMAND [ARGS]...' in result.output
 
 
 @pytest.mark.parametrize(
@@ -828,9 +868,9 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
 @pytest.mark.parametrize(
     "cli_args,inputs",
     [
-        (['freeze', 'mysession'], ['\n', 'y\n', './la.yaml\n', 'y\n']),
+        (['freeze', 'myfrozensession'], ['\n', 'y\n', './la.yaml\n', 'y\n']),
         (  # Exists
-            ['freeze', 'mysession'],
+            ['freeze', 'myfrozensession'],
             ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
         ),
         (  # Imply current session if not entered
@@ -838,21 +878,21 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
             ['\n', 'y\n', './la.yaml\n', 'y\n'],
         ),
         (['freeze'], ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
-        (  # Create a new one
-            ['freeze', 'mysession', '--force'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n'],
-        ),
-        (  # Imply current session if not entered
-            ['freeze', '--force'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n'],
-        ),
     ],
 )
 def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
     monkeypatch.setenv('HOME', str(tmpdir))
     tmpdir.join('exists.yaml').ensure()
 
-    server.new_session(session_name='mysession')
+    server.new_session(session_name='myfirstsession')
+    server.new_session(session_name='myfrozensession')
+
+    # Assign an active pane to the session
+    second_session = server.list_sessions()[1]
+    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
+        "pane_id"
+    ]
+    monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     with tmpdir.as_cwd():
         runner = CliRunner()
@@ -861,6 +901,11 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
         out = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
         print(out.output)
         assert tmpdir.join('la.yaml').check()
+
+        yaml_config = tmpdir.join('la.yaml').open().read()
+        frozen_config = kaptan.Kaptan(handler='yaml').import_config(yaml_config).get()
+
+        assert frozen_config['session_name'] == 'myfrozensession'
 
 
 @pytest.mark.parametrize(
@@ -967,6 +1012,7 @@ def test_pass_config_dir_ClickPath(tmpdir):
 
 def test_ls_cli(monkeypatch, tmpdir):
     monkeypatch.setenv("HOME", str(tmpdir))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmpdir.join('.config')))
 
     filenames = [
         '.git/',
@@ -995,7 +1041,9 @@ def test_ls_cli(monkeypatch, tmpdir):
     assert cli_output == '\n'.join(stems) + '\n'
 
 
-def test_load_plugins():
+def test_load_plugins(monkeypatch_plugin_test_packages):
+    from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
+
     plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')
@@ -1023,7 +1071,9 @@ def test_load_plugins():
         )
     ],
 )
-def test_load_plugins_version_fail_skip(cli_args, inputs):
+def test_load_plugins_version_fail_skip(
+    monkeypatch_plugin_test_packages, cli_args, inputs
+):
     runner = CliRunner()
 
     results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
@@ -1039,7 +1089,9 @@ def test_load_plugins_version_fail_skip(cli_args, inputs):
         )
     ],
 )
-def test_load_plugins_version_fail_no_skip(cli_args, inputs):
+def test_load_plugins_version_fail_no_skip(
+    monkeypatch_plugin_test_packages, cli_args, inputs
+):
     runner = CliRunner()
 
     results = runner.invoke(cli.cli, cli_args, input=''.join(inputs))
@@ -1049,14 +1101,16 @@ def test_load_plugins_version_fail_no_skip(cli_args, inputs):
 @pytest.mark.parametrize(
     "cli_args", [(['load', 'tests/fixtures/workspacebuilder/plugin_missing_fail.yaml'])]
 )
-def test_load_plugins_plugin_missing(cli_args):
+def test_load_plugins_plugin_missing(monkeypatch_plugin_test_packages, cli_args):
     runner = CliRunner()
 
     results = runner.invoke(cli.cli, cli_args)
     assert '[Plugin Error]' in results.output
 
 
-def test_plugin_system_before_script(server, monkeypatch):
+def test_plugin_system_before_script(
+    monkeypatch_plugin_test_packages, server, monkeypatch
+):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -1072,7 +1126,7 @@ def test_plugin_system_before_script(server, monkeypatch):
     assert session.name == 'plugin_test_bs'
 
 
-def test_reattach_plugins(server):
+def test_reattach_plugins(monkeypatch_plugin_test_packages, server):
     config_plugins = loadfixture("workspacebuilder/plugin_r.yaml")
 
     sconfig = kaptan.Kaptan(handler='yaml')

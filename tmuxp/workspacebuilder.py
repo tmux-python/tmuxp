@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 """Create a tmux workspace from a configuration :py:obj:`dict`.
 
 tmuxp.workspacebuilder
 ~~~~~~~~~~~~~~~~~~~~~~
 
 """
-
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from libtmux.exc import TmuxSessionExists
@@ -17,7 +13,7 @@ from libtmux.session import Session
 from libtmux.window import Window
 
 from . import exc
-from .util import run_before_script, get_current_pane
+from .util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 
@@ -269,6 +265,13 @@ class WorkspaceBuilder(object):
             else:
                 ws = None
 
+            # If the first pane specifies a shell, use that instead.
+            try:
+                if wconf['panes'][0]['shell'] != '':
+                    ws = wconf['panes'][0]['shell']
+            except (KeyError, IndexError):
+                pass
+
             w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
@@ -332,8 +335,20 @@ class WorkspaceBuilder(object):
                     else:
                         return None
 
+                def get_pane_shell():
+
+                    if 'shell' in pconf:
+                        return pconf['shell']
+                    elif 'window_shell' in wconf:
+                        return wconf['window_shell']
+                    else:
+                        return None
+
                 p = w.split_window(
-                    attach=True, start_directory=get_pane_start_directory(), target=p.id
+                    attach=True,
+                    start_directory=get_pane_start_directory(),
+                    shell=get_pane_shell(),
+                    target=p.id,
                 )
 
             assert isinstance(p, Pane)

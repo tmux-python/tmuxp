@@ -1,10 +1,8 @@
-.. _glossary:
+(glossary)=
 
-========
-Glossary
-========
+# Glossary
 
-
+```{eval-rst}
 .. glossary::
 
     tmuxp
@@ -63,5 +61,6 @@ Glossary
     Target
         A target, cited in the manual as ``[-t target]`` can be a session,
         window or pane.
+```
 
-.. _kaptan on github: https://github.com/emre/kaptan
+[kaptan on github]: https://github.com/emre/kaptan
