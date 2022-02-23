@@ -20,7 +20,7 @@ In zsh (`~/.zshrc`):
 
 ```{code-block} sh
 
-eval "$(_TMUXP_COMPLETE=source_zsh tmuxp)"
+eval "$(_TMUXP_COMPLETE=zsh_source tmuxp)"
 
 ```
 
