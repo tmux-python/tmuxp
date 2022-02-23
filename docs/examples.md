@@ -310,7 +310,7 @@ without `window_index` will use the lowest available window index.
 ## Shell per pane
 
 Every pane can have its own shell or application started. This allows for usage
-of the ``remain-on-exit`` setting to be used properly, but also to have
+of the `remain-on-exit` setting to be used properly, but also to have
 different shells on different panes.
 
 ### YAML
