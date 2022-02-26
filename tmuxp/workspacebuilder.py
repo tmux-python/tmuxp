@@ -86,7 +86,7 @@ class WorkspaceBuilder(object):
         """
 
         if not sconf:
-            raise exc.EmptyConfigException('session configuration is empty.')
+            raise exc.EmptyConfigException("session configuration is empty.")
 
         # config.validate_schema(sconf)
 
@@ -104,7 +104,7 @@ class WorkspaceBuilder(object):
         if not exists:
             return exists
 
-        self.session = self.server.find_where({'session_name': session_name})
+        self.session = self.server.find_where({"session_name": session_name})
         return True
 
     def build(self, session=None, append=False):
@@ -128,30 +128,30 @@ class WorkspaceBuilder(object):
         if not session:
             if not self.server:
                 raise exc.TmuxpException(
-                    'WorkspaceBuilder.build requires server to be passed '
-                    + 'on initialization, or pass in session object to here.'
+                    "WorkspaceBuilder.build requires server to be passed "
+                    + "on initialization, or pass in session object to here."
                 )
 
-            if self.server.has_session(self.sconf['session_name']):
+            if self.server.has_session(self.sconf["session_name"]):
                 self.session = self.server.find_where(
-                    {'session_name': self.sconf['session_name']}
+                    {"session_name": self.sconf["session_name"]}
                 )
                 raise TmuxSessionExists(
-                    'Session name %s is already running.' % self.sconf['session_name']
+                    "Session name %s is already running." % self.sconf["session_name"]
                 )
             else:
-                if 'start_directory' in self.sconf:
+                if "start_directory" in self.sconf:
                     session = self.server.new_session(
-                        session_name=self.sconf['session_name'],
-                        start_directory=self.sconf['start_directory'],
+                        session_name=self.sconf["session_name"],
+                        start_directory=self.sconf["start_directory"],
                     )
                 else:
                     session = self.server.new_session(
-                        session_name=self.sconf['session_name']
+                        session_name=self.sconf["session_name"]
                     )
 
-            assert self.sconf['session_name'] == session.name
-            assert len(self.sconf['session_name']) > 0
+            assert self.sconf["session_name"] == session.name
+            assert len(self.sconf["session_name"]) > 0
 
         self.session = session
         self.server = session.server
@@ -167,26 +167,26 @@ class WorkspaceBuilder(object):
 
         focus = None
 
-        if 'before_script' in self.sconf:
+        if "before_script" in self.sconf:
             try:
                 cwd = None
 
                 # we want to run the before_script file cwd'd from the
                 # session start directory, if it exists.
-                if 'start_directory' in self.sconf:
-                    cwd = self.sconf['start_directory']
-                run_before_script(self.sconf['before_script'], cwd=cwd)
+                if "start_directory" in self.sconf:
+                    cwd = self.sconf["start_directory"]
+                run_before_script(self.sconf["before_script"], cwd=cwd)
             except Exception as e:
                 self.session.kill_session()
                 raise e
-        if 'options' in self.sconf:
-            for option, value in self.sconf['options'].items():
+        if "options" in self.sconf:
+            for option, value in self.sconf["options"].items():
                 self.session.set_option(option, value)
-        if 'global_options' in self.sconf:
-            for option, value in self.sconf['global_options'].items():
+        if "global_options" in self.sconf:
+            for option, value in self.sconf["global_options"].items():
                 self.session.set_option(option, value, _global=True)
-        if 'environment' in self.sconf:
-            for option, value in self.sconf['environment'].items():
+        if "environment" in self.sconf:
+            for option, value in self.sconf["environment"].items():
                 self.session.set_environment(option, value)
 
         for w, wconf in self.iter_create_windows(session, append):
@@ -200,13 +200,13 @@ class WorkspaceBuilder(object):
                 assert isinstance(p, Pane)
                 p = p
 
-                if 'layout' in wconf:
-                    w.select_layout(wconf['layout'])
+                if "layout" in wconf:
+                    w.select_layout(wconf["layout"])
 
-                if 'focus' in pconf and pconf['focus']:
+                if "focus" in pconf and pconf["focus"]:
                     focus_pane = p
 
-            if 'focus' in wconf and wconf['focus']:
+            if "focus" in wconf and wconf["focus"]:
                 focus = w
 
             self.config_after_window(w, wconf)
@@ -242,11 +242,11 @@ class WorkspaceBuilder(object):
             Newly created window, and the section from the tmuxp configuration
             that was used to create the window.
         """
-        for i, wconf in enumerate(self.sconf['windows'], start=1):
-            if 'window_name' not in wconf:
+        for i, wconf in enumerate(self.sconf["windows"], start=1):
+            if "window_name" not in wconf:
                 window_name = None
             else:
-                window_name = wconf['window_name']
+                window_name = wconf["window_name"]
 
             is_first_window_pass = self.first_window_pass(i, session, append)
 
@@ -255,20 +255,20 @@ class WorkspaceBuilder(object):
                 w1 = session.attached_window
                 w1.move_window(99)
 
-            if 'start_directory' in wconf:
-                sd = wconf['start_directory']
+            if "start_directory" in wconf:
+                sd = wconf["start_directory"]
             else:
                 sd = None
 
-            if 'window_shell' in wconf:
-                ws = wconf['window_shell']
+            if "window_shell" in wconf:
+                ws = wconf["window_shell"]
             else:
                 ws = None
 
             # If the first pane specifies a shell, use that instead.
             try:
-                if wconf['panes'][0]['shell'] != '':
-                    ws = wconf['panes'][0]['shell']
+                if wconf["panes"][0]["shell"] != "":
+                    ws = wconf["panes"][0]["shell"]
             except (KeyError, IndexError):
                 pass
 
@@ -276,7 +276,7 @@ class WorkspaceBuilder(object):
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
-                window_index=wconf.get('window_index', ''),
+                window_index=wconf.get("window_index", ""),
                 window_shell=ws,
             )
 
@@ -285,11 +285,11 @@ class WorkspaceBuilder(object):
 
             assert isinstance(w, Window)
             session.server._update_windows()
-            if 'options' in wconf and isinstance(wconf['options'], dict):
-                for key, val in wconf['options'].items():
+            if "options" in wconf and isinstance(wconf["options"], dict):
+                for key, val in wconf["options"].items():
                     w.set_window_option(key, val)
 
-            if 'focus' in wconf and wconf['focus']:
+            if "focus" in wconf and wconf["focus"]:
                 w.select_window()
 
             session.server._update_windows()
@@ -317,30 +317,30 @@ class WorkspaceBuilder(object):
         """
         assert isinstance(w, Window)
 
-        pane_base_index = int(w.show_window_option('pane-base-index', g=True))
+        pane_base_index = int(w.show_window_option("pane-base-index", g=True))
 
         p = None
 
-        for pindex, pconf in enumerate(wconf['panes'], start=pane_base_index):
+        for pindex, pconf in enumerate(wconf["panes"], start=pane_base_index):
             if pindex == int(pane_base_index):
                 p = w.attached_pane
             else:
 
                 def get_pane_start_directory():
 
-                    if 'start_directory' in pconf:
-                        return pconf['start_directory']
-                    elif 'start_directory' in wconf:
-                        return wconf['start_directory']
+                    if "start_directory" in pconf:
+                        return pconf["start_directory"]
+                    elif "start_directory" in wconf:
+                        return wconf["start_directory"]
                     else:
                         return None
 
                 def get_pane_shell():
 
-                    if 'shell' in pconf:
-                        return pconf['shell']
-                    elif 'window_shell' in wconf:
-                        return wconf['window_shell']
+                    if "shell" in pconf:
+                        return pconf["shell"]
+                    elif "window_shell" in wconf:
+                        return wconf["window_shell"]
                     else:
                         return None
 
@@ -352,21 +352,21 @@ class WorkspaceBuilder(object):
                 )
 
             assert isinstance(p, Pane)
-            if 'layout' in wconf:
-                w.select_layout(wconf['layout'])
+            if "layout" in wconf:
+                w.select_layout(wconf["layout"])
 
-            if 'suppress_history' in pconf:
-                suppress = pconf['suppress_history']
-            elif 'suppress_history' in wconf:
-                suppress = wconf['suppress_history']
+            if "suppress_history" in pconf:
+                suppress = pconf["suppress_history"]
+            elif "suppress_history" in wconf:
+                suppress = wconf["suppress_history"]
             else:
                 suppress = True
 
-            for cmd in pconf['shell_command']:
+            for cmd in pconf["shell_command"]:
                 p.send_keys(cmd, suppress_history=suppress)
 
-            if 'focus' in pconf and pconf['focus']:
-                w.select_pane(p['pane_id'])
+            if "focus" in pconf and pconf["focus"]:
+                w.select_pane(p["pane_id"])
 
             w.server._update_panes()
 
@@ -386,8 +386,8 @@ class WorkspaceBuilder(object):
         wconf : dict
             config section for window
         """
-        if 'options_after' in wconf and isinstance(wconf['options_after'], dict):
-            for key, val in wconf['options_after'].items():
+        if "options_after" in wconf and isinstance(wconf["options_after"], dict):
+            for key, val in wconf["options_after"].items():
                 w.set_window_option(key, val)
 
     def find_current_attached_session(self):
@@ -423,17 +423,17 @@ def freeze(session):
     dict
         tmuxp compatible workspace config
     """
-    sconf = {'session_name': session['session_name'], 'windows': []}
+    sconf = {"session_name": session["session_name"], "windows": []}
 
     for w in session.windows:
         wconf = {
-            'options': w.show_window_options(),
-            'window_name': w.name,
-            'layout': w.layout,
-            'panes': [],
+            "options": w.show_window_options(),
+            "window_name": w.name,
+            "layout": w.layout,
+            "panes": [],
         }
-        if w.get('window_active', '0') == '1':
-            wconf['focus'] = 'true'
+        if w.get("window_active", "0") == "1":
+            wconf["focus"] = "true"
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
@@ -441,35 +441,35 @@ def freeze(session):
             return w.panes[0].current_path == p.current_path
 
         if all(pane_has_same_path(p) for p in w.panes):
-            wconf['start_directory'] = w.panes[0].current_path
+            wconf["start_directory"] = w.panes[0].current_path
 
         for p in w.panes:
-            pconf = {'shell_command': []}
+            pconf = {"shell_command": []}
 
-            if 'start_directory' not in wconf:
-                pconf['shell_command'].append('cd ' + p.current_path)
+            if "start_directory" not in wconf:
+                pconf["shell_command"].append("cd " + p.current_path)
 
-            if p.get('pane_active', '0') == '1':
-                pconf['focus'] = 'true'
+            if p.get("pane_active", "0") == "1":
+                pconf["focus"] = "true"
 
             current_cmd = p.current_command
 
             def filter_interpretters_and_shells():
-                return current_cmd.startswith('-') or any(
-                    current_cmd.endswith(cmd) for cmd in ['python', 'ruby', 'node']
+                return current_cmd.startswith("-") or any(
+                    current_cmd.endswith(cmd) for cmd in ["python", "ruby", "node"]
                 )
 
             if filter_interpretters_and_shells():
                 current_cmd = None
 
             if current_cmd:
-                pconf['shell_command'].append(current_cmd)
+                pconf["shell_command"].append(current_cmd)
             else:
-                if not len(pconf['shell_command']):
-                    pconf = 'pane'
+                if not len(pconf["shell_command"]):
+                    pconf = "pane"
 
-            wconf['panes'].append(pconf)
+            wconf["panes"].append(pconf)
 
-        sconf['windows'].append(wconf)
+        sconf["windows"].append(wconf)
 
     return sconf

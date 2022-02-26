@@ -11,7 +11,7 @@ from . import fixtures_dir
 
 
 def test_raise_BeforeLoadScriptNotExists_if_not_exists():
-    script_file = os.path.join(fixtures_dir, 'script_noexists.sh')
+    script_file = os.path.join(fixtures_dir, "script_noexists.sh")
 
     with pytest.raises(BeforeLoadScriptNotExists):
         run_before_script(script_file)
@@ -21,51 +21,51 @@ def test_raise_BeforeLoadScriptNotExists_if_not_exists():
 
 
 def test_raise_BeforeLoadScriptError_if_retcode():
-    script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+    script_file = os.path.join(fixtures_dir, "script_failed.sh")
 
     with pytest.raises(BeforeLoadScriptError):
         run_before_script(script_file)
 
 
 def test_return_stdout_if_ok(capsys):
-    script_file = os.path.join(fixtures_dir, 'script_complete.sh')
+    script_file = os.path.join(fixtures_dir, "script_complete.sh")
 
     run_before_script(script_file)
     out, err = capsys.readouterr()
-    assert 'hello' in out
+    assert "hello" in out
 
 
 def test_beforeload_returncode():
-    script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+    script_file = os.path.join(fixtures_dir, "script_failed.sh")
 
     with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
         run_before_script(script_file)
-        assert excinfo.match(r'113')
+        assert excinfo.match(r"113")
 
 
 def test_beforeload_returns_stderr_messages():
-    script_file = os.path.join(fixtures_dir, 'script_failed.sh')
+    script_file = os.path.join(fixtures_dir, "script_failed.sh")
 
     with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
         run_before_script(script_file)
-        assert excinfo.match(r'failed with returncode')
+        assert excinfo.match(r"failed with returncode")
 
 
 def test_get_session_should_default_to_local_attached_session(server, monkeypatch):
-    server.new_session(session_name='myfirstsession')
-    second_session = server.new_session(session_name='mysecondsession')
+    server.new_session(session_name="myfirstsession")
+    second_session = server.new_session(session_name="mysecondsession")
 
     # Assign an active pane to the session
     first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
-        'pane_id'
+        "pane_id"
     ]
-    monkeypatch.setenv('TMUX_PANE', first_pane_on_second_session_id)
+    monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     assert get_session(server) == second_session
 
 
 def test_get_session_should_return_first_session_if_no_active_session(server):
-    first_session = server.new_session(session_name='myfirstsession')
-    server.new_session(session_name='mysecondsession')
+    first_session = server.new_session(session_name="myfirstsession")
+    server.new_session(session_name="mysecondsession")
 
     assert get_session(server) == first_session

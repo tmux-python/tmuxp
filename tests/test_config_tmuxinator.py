@@ -9,7 +9,7 @@ from tmuxp import config
 
 from .fixtures import config_tmuxinator as fixtures
 
-TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
+TMUXP_DIR = os.path.join(os.path.dirname(__file__), ".tmuxp")
 
 
 @pytest.mark.parametrize(
@@ -33,7 +33,7 @@ TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
     ],
 )
 def test_config_to_dict(tmuxinator_yaml, tmuxinator_dict, tmuxp_dict):
-    configparser = kaptan.Kaptan(handler='yaml')
+    configparser = kaptan.Kaptan(handler="yaml")
     test_config = configparser.import_config(tmuxinator_yaml)
     yaml_to_dict = test_config.get()
     assert yaml_to_dict == tmuxinator_dict

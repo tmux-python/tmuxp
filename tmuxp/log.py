@@ -11,25 +11,25 @@ import time
 from colorama import Fore, Style
 
 LEVEL_COLORS = {
-    'DEBUG': Fore.BLUE,  # Blue
-    'INFO': Fore.GREEN,  # Green
-    'WARNING': Fore.YELLOW,
-    'ERROR': Fore.RED,
-    'CRITICAL': Fore.RED,
+    "DEBUG": Fore.BLUE,  # Blue
+    "INFO": Fore.GREEN,  # Green
+    "WARNING": Fore.YELLOW,
+    "ERROR": Fore.RED,
+    "CRITICAL": Fore.RED,
 }
 
 LOG_LEVELS = {
-    'CRITICAL': 50,
-    'ERROR': 40,
-    'WARNING': 30,
-    'INFO': 20,
-    'DEBUG': 10,
-    'NOTSET': 0,
+    "CRITICAL": 50,
+    "ERROR": 40,
+    "WARNING": 30,
+    "INFO": 20,
+    "DEBUG": 10,
+    "NOTSET": 0,
 }
 
 
 def set_style(
-    message, stylized, style_before=None, style_after=None, prefix='', suffix=''
+    message, stylized, style_before=None, style_after=None, prefix="", suffix=""
 ):
     if stylized:
         return prefix + style_before + message + style_after + suffix
@@ -55,27 +55,27 @@ def default_log_template(self, record, stylized=False):
 
     reset = Style.RESET_ALL
     levelname = set_style(
-        '(%(levelname)s)',
+        "(%(levelname)s)",
         stylized,
         style_before=(LEVEL_COLORS.get(record.levelname) + Style.BRIGHT),
         style_after=Style.RESET_ALL,
-        suffix=' ',
+        suffix=" ",
     )
     asctime = set_style(
-        '%(asctime)s',
+        "%(asctime)s",
         stylized,
         style_before=(Fore.BLACK + Style.DIM + Style.BRIGHT),
         style_after=(Fore.RESET + Style.RESET_ALL),
-        prefix='[',
-        suffix=']',
+        prefix="[",
+        suffix="]",
     )
     name = set_style(
-        '%(name)s',
+        "%(name)s",
         stylized,
         style_before=(Fore.WHITE + Style.DIM + Style.BRIGHT),
         style_after=(Fore.RESET + Style.RESET_ALL),
-        prefix=' ',
-        suffix=' ',
+        prefix=" ",
+        suffix=" ",
     )
 
     if stylized:
@@ -96,7 +96,7 @@ class LogFormatter(logging.Formatter):
         except Exception as e:
             record.message = "Bad message (%r): %r" % (e, record.__dict__)
 
-        date_format = '%H:%m:%S'
+        date_format = "%H:%m:%S"
         record.asctime = time.strftime(date_format, self.converter(record.created))
 
         prefix = self.template(record) % record.__dict__
@@ -126,39 +126,39 @@ def debug_log_template(self, record):
     levelname = (
         LEVEL_COLORS.get(record.levelname)
         + Style.BRIGHT
-        + '(%(levelname)1.1s)'
+        + "(%(levelname)1.1s)"
         + Style.RESET_ALL
-        + ' '
+        + " "
     )
     asctime = (
-        '['
+        "["
         + Fore.BLACK
         + Style.DIM
         + Style.BRIGHT
-        + '%(asctime)s'
+        + "%(asctime)s"
         + Fore.RESET
         + Style.RESET_ALL
-        + ']'
+        + "]"
     )
     name = (
-        ' '
+        " "
         + Fore.WHITE
         + Style.DIM
         + Style.BRIGHT
-        + '%(name)s'
+        + "%(name)s"
         + Fore.RESET
         + Style.RESET_ALL
-        + ' '
+        + " "
     )
-    module_funcName = Fore.GREEN + Style.BRIGHT + '%(module)s.%(funcName)s()'
+    module_funcName = Fore.GREEN + Style.BRIGHT + "%(module)s.%(funcName)s()"
     lineno = (
         Fore.BLACK
         + Style.DIM
         + Style.BRIGHT
-        + ':'
+        + ":"
         + Style.RESET_ALL
         + Fore.CYAN
-        + '%(lineno)d'
+        + "%(lineno)d"
     )
 
     tpl = reset + levelname + asctime + name + module_funcName + lineno + reset

@@ -11,7 +11,7 @@ from .fixtures._util import loadfixture
 
 def test_freeze_config(session):
     yaml_config = loadfixture("workspacefreezer/sampleconfig.yaml")
-    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
     builder = WorkspaceBuilder(sconf=sconfig)
@@ -29,5 +29,5 @@ def test_freeze_config(session):
 
     kaptanconf = kaptan.Kaptan()
     kaptanconf = kaptanconf.import_config(sconf)
-    kaptanconf.export('json', indent=2)
-    kaptanconf.export('yaml', indent=2, default_flow_style=False, safe=True)
+    kaptanconf.export("json", indent=2)
+    kaptanconf.export("yaml", indent=2, default_flow_style=False, safe=True)

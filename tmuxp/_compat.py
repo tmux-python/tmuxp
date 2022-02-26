@@ -26,4 +26,4 @@ def console_to_str(s):
     try:
         return s.decode(console_encoding)
     except UnicodeDecodeError:
-        return s.decode('utf_8')
+        return s.decode("utf_8")

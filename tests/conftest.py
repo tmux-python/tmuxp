@@ -10,7 +10,7 @@ from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def monkeypatch_plugin_test_packages(monkeypatch):
     paths = [
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
@@ -24,12 +24,12 @@ def monkeypatch_plugin_test_packages(monkeypatch):
         monkeypatch.syspath_prepend(os.path.abspath(os.path.relpath(path)))
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def socket_name(request):
-    return 'tmuxp_test%s' % next(namer)
+    return "tmuxp_test%s" % next(namer)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def server(request, socket_name):
     t = Server()
     t.socket_name = socket_name
@@ -42,27 +42,27 @@ def server(request, socket_name):
     return t
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def session(server):
-    session_name = 'tmuxp'
+    session_name = "tmuxp"
 
     if not server.has_session(session_name):
         server.cmd(
-            '-f',
-            '/dev/null',  # use a blank config to reduce side effects
-            'new-session',
-            '-d',  # detached
-            '-s',
+            "-f",
+            "/dev/null",  # use a blank config to reduce side effects
+            "new-session",
+            "-d",  # detached
+            "-s",
             session_name,
-            '/bin/sh',  # use /bin/sh as a shell to reduce side effects
+            "/bin/sh",  # use /bin/sh as a shell to reduce side effects
             # normally, it'd be -c, but new-session is special
         )
 
     # find current sessions prefixed with tmuxp
     old_test_sessions = [
-        s.get('session_name')
+        s.get("session_name")
         for s in server._sessions
-        if s.get('session_name').startswith(TEST_SESSION_PREFIX)
+        if s.get("session_name").startswith(TEST_SESSION_PREFIX)
     ]
 
     TEST_SESSION_NAME = get_test_session_name(server=server)
@@ -77,22 +77,22 @@ def session(server):
     the newly created session for that testcase.
     """
     try:
-        server.switch_client(session.get('session_id'))
+        server.switch_client(session.get("session_id"))
         pass
     except exc.LibTmuxException:
         # server.attach_session(session.get('session_id'))
         pass
 
     for old_test_session in old_test_sessions:
-        logger.debug('Old test test session %s found. Killing it.' % old_test_session)
+        logger.debug("Old test test session %s found. Killing it." % old_test_session)
         server.kill_session(old_test_session)
-    assert TEST_SESSION_NAME == session.get('session_name')
-    assert TEST_SESSION_NAME != 'tmuxp'
+    assert TEST_SESSION_NAME == session.get("session_name")
+    assert TEST_SESSION_NAME != "tmuxp"
 
     return session
 
 
 @pytest.fixture()
 def tmpdir(tmpdir_factory):
-    fn = tmpdir_factory.mktemp('tmuxp')
+    fn = tmpdir_factory.mktemp("tmuxp")
     return fn
