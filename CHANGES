@@ -57,6 +57,11 @@
 
 - Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi! (#725)
 
+#### Development
+
+- Run through black + isort with string normalization (#738). This way we can
+  use black without any configuration. (One-time, big diff)
+
 ## tmuxp 1.9.4 (2022-01-10)
 
 #### Packaging
