@@ -10,11 +10,11 @@ from tmuxp import config, exc
 from . import example_dir
 from .fixtures import config as fixtures
 
-TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
+TMUXP_DIR = os.path.join(os.path.dirname(__file__), ".tmuxp")
 
 
 def load_yaml(yaml):
-    return kaptan.Kaptan(handler='yaml').import_config(yaml).get()
+    return kaptan.Kaptan(handler="yaml").import_config(yaml).get()
 
 
 def load_config(_file):
@@ -22,12 +22,12 @@ def load_config(_file):
 
 
 def test_export_json(tmpdir):
-    json_config_file = tmpdir.join('config.json')
+    json_config_file = tmpdir.join("config.json")
 
     configparser = kaptan.Kaptan()
     configparser.import_config(fixtures.sampleconfig.sampleconfigdict)
 
-    json_config_data = configparser.export('json', indent=2)
+    json_config_data = configparser.export("json", indent=2)
 
     json_config_file.write(json_config_data)
 
@@ -37,13 +37,13 @@ def test_export_json(tmpdir):
 
 
 def test_export_yaml(tmpdir):
-    yaml_config_file = tmpdir.join('config.yaml')
+    yaml_config_file = tmpdir.join("config.yaml")
 
     configparser = kaptan.Kaptan()
     sampleconfig = config.inline(fixtures.sampleconfig.sampleconfigdict)
     configparser.import_config(sampleconfig)
 
-    yaml_config_data = configparser.export('yaml', indent=2, default_flow_style=False)
+    yaml_config_data = configparser.export("yaml", indent=2, default_flow_style=False)
 
     yaml_config_file.write(yaml_config_data)
 
@@ -54,25 +54,25 @@ def test_export_yaml(tmpdir):
 def test_scan_config(tmpdir):
     configs = []
 
-    garbage_file = tmpdir.join('config.psd')
-    garbage_file.write('wat')
+    garbage_file = tmpdir.join("config.psd")
+    garbage_file.write("wat")
 
     for r, d, f in os.walk(str(tmpdir)):
-        for filela in (x for x in f if x.endswith(('.json', '.ini', 'yaml'))):
+        for filela in (x for x in f if x.endswith((".json", ".ini", "yaml"))):
             configs.append(str(tmpdir.join(filela)))
 
     files = 0
-    if tmpdir.join('config.json').check():
+    if tmpdir.join("config.json").check():
         files += 1
-        assert str(tmpdir.join('config.json')) in configs
+        assert str(tmpdir.join("config.json")) in configs
 
-    if tmpdir.join('config.yaml').check():
+    if tmpdir.join("config.yaml").check():
         files += 1
-        assert str(tmpdir.join('config.yaml')) in configs
+        assert str(tmpdir.join("config.yaml")) in configs
 
-    if tmpdir.join('config.ini').check():
+    if tmpdir.join("config.ini").check():
         files += 1
-        assert str(tmpdir.join('config.ini')) in configs
+        assert str(tmpdir.join("config.ini")) in configs
 
     assert len(configs) == files
 
@@ -96,35 +96,35 @@ def test_config_expand2():
 """Tests for :meth:`config.inline()`."""
 
 ibefore_config = {  # inline config
-    'session_name': 'sampleconfig',
-    'start_directory': '~',
-    'windows': [
+    "session_name": "sampleconfig",
+    "start_directory": "~",
+    "windows": [
         {
-            'shell_command': ['top'],
-            'window_name': 'editor',
-            'panes': [{'shell_command': ['vim']}, {'shell_command': ['cowsay "hey"']}],
-            'layout': 'main-verticle',
+            "shell_command": ["top"],
+            "window_name": "editor",
+            "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
+            "layout": "main-verticle",
         },
         {
-            'window_name': 'logging',
-            'panes': [{'shell_command': ['tail -F /var/log/syslog']}],
+            "window_name": "logging",
+            "panes": [{"shell_command": ["tail -F /var/log/syslog"]}],
         },
-        {'options': {'automatic-rename': True}, 'panes': [{'shell_command': ['htop']}]},
+        {"options": {"automatic-rename": True}, "panes": [{"shell_command": ["htop"]}]},
     ],
 }
 
 iafter_config = {
-    'session_name': 'sampleconfig',
-    'start_directory': '~',
-    'windows': [
+    "session_name": "sampleconfig",
+    "start_directory": "~",
+    "windows": [
         {
-            'shell_command': 'top',
-            'window_name': 'editor',
-            'panes': ['vim', 'cowsay "hey"'],
-            'layout': 'main-verticle',
+            "shell_command": "top",
+            "window_name": "editor",
+            "panes": ["vim", 'cowsay "hey"'],
+            "layout": "main-verticle",
         },
-        {'window_name': 'logging', 'panes': ['tail -F /var/log/syslog']},
-        {'options': {'automatic-rename': True}, 'panes': ['htop']},
+        {"window_name": "logging", "panes": ["tail -F /var/log/syslog"]},
+        {"options": {"automatic-rename": True}, "panes": ["htop"]},
     ],
 }
 
@@ -139,40 +139,40 @@ def test_inline_config():
 """Test config inheritance for the nested 'start_command'."""
 
 inheritance_config_before = {
-    'session_name': 'sampleconfig',
-    'start_directory': '/',
-    'windows': [
+    "session_name": "sampleconfig",
+    "start_directory": "/",
+    "windows": [
         {
-            'window_name': 'editor',
-            'start_directory': '~',
-            'panes': [{'shell_command': ['vim']}, {'shell_command': ['cowsay "hey"']}],
-            'layout': 'main-verticle',
+            "window_name": "editor",
+            "start_directory": "~",
+            "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
+            "layout": "main-verticle",
         },
         {
-            'window_name': 'logging',
-            'panes': [{'shell_command': ['tail -F /var/log/syslog']}],
+            "window_name": "logging",
+            "panes": [{"shell_command": ["tail -F /var/log/syslog"]}],
         },
-        {'window_name': 'shufu', 'panes': [{'shell_command': ['htop']}]},
-        {'options': {'automatic-rename': True}, 'panes': [{'shell_command': ['htop']}]},
+        {"window_name": "shufu", "panes": [{"shell_command": ["htop"]}]},
+        {"options": {"automatic-rename": True}, "panes": [{"shell_command": ["htop"]}]},
     ],
 }
 
 inheritance_config_after = {
-    'session_name': 'sampleconfig',
-    'start_directory': '/',
-    'windows': [
+    "session_name": "sampleconfig",
+    "start_directory": "/",
+    "windows": [
         {
-            'window_name': 'editor',
-            'start_directory': '~',
-            'panes': [{'shell_command': ['vim']}, {'shell_command': ['cowsay "hey"']}],
-            'layout': 'main-verticle',
+            "window_name": "editor",
+            "start_directory": "~",
+            "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
+            "layout": "main-verticle",
         },
         {
-            'window_name': 'logging',
-            'panes': [{'shell_command': ['tail -F /var/log/syslog']}],
+            "window_name": "logging",
+            "panes": [{"shell_command": ["tail -F /var/log/syslog"]}],
         },
-        {'window_name': 'shufu', 'panes': [{'shell_command': ['htop']}]},
-        {'options': {'automatic-rename': True}, 'panes': [{'shell_command': ['htop']}]},
+        {"window_name": "shufu", "panes": [{"shell_command": ["htop"]}]},
+        {"options": {"automatic-rename": True}, "panes": [{"shell_command": ["htop"]}]},
     ],
 }
 
@@ -245,8 +245,8 @@ def test_trickle_window_with_no_pane_config():
     sconfig = load_yaml(test_yaml)
     config.validate_schema(sconfig)
 
-    assert config.expand(config.trickle(sconfig))['windows'][1]['panes'][0] == {
-        'shell_command': []
+    assert config.expand(config.trickle(sconfig))["windows"][1]["panes"][0] == {
+        "shell_command": []
     }
 
 
@@ -278,7 +278,7 @@ def test_expands_blank_panes():
 
     """
 
-    yaml_config_file = os.path.join(example_dir, 'blank-panes.yaml')
+    yaml_config_file = os.path.join(example_dir, "blank-panes.yaml")
     test_config = load_config(yaml_config_file)
     assert config.expand(test_config) == fixtures.expand_blank.expected
 
@@ -297,7 +297,7 @@ def test_no_session_name():
       - htop
     """
 
-    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
     with pytest.raises(exc.ConfigError) as excinfo:
@@ -310,7 +310,7 @@ def test_no_windows():
     session_name: test session
     """
 
-    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
     with pytest.raises(exc.ConfigError) as excinfo:
@@ -333,7 +333,7 @@ def test_no_window_name():
       - htop
     """
 
-    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
     with pytest.raises(exc.ConfigError) as excinfo:
@@ -372,13 +372,13 @@ def test_replaces_env_variables(monkeypatch):
 
     monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = config.expand(sconfig)
-    assert "%s/test" % env_val == sconfig['start_directory']
-    assert "%s/test2" % env_val in sconfig['shell_command_before']
-    assert "%s/test3" % env_val == sconfig['before_script']
-    assert "hi - %s" % env_val == sconfig['session_name']
-    assert "%s/moo" % env_val == sconfig['global_options']['default-shell']
-    assert "%s/lol" % env_val == sconfig['options']['default-command']
-    assert "logging @ %s" % env_val == sconfig['windows'][1]['window_name']
+    assert "%s/test" % env_val == sconfig["start_directory"]
+    assert "%s/test2" % env_val in sconfig["shell_command_before"]
+    assert "%s/test3" % env_val == sconfig["before_script"]
+    assert "hi - %s" % env_val == sconfig["session_name"]
+    assert "%s/moo" % env_val == sconfig["global_options"]["default-shell"]
+    assert "%s/lol" % env_val == sconfig["options"]["default-command"]
+    assert "logging @ %s" % env_val == sconfig["windows"][1]["window_name"]
 
 
 def test_plugins():
@@ -393,9 +393,9 @@ def test_plugins():
       start_directory: /var/log
     """
 
-    sconfig = kaptan.Kaptan(handler='yaml')
+    sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
-        assert excinfo.matches('only supports list type')
+        assert excinfo.matches("only supports list type")

@@ -9,7 +9,7 @@ from tmuxp import config
 
 from .fixtures import config_teamocil as fixtures
 
-TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
+TMUXP_DIR = os.path.join(os.path.dirname(__file__), ".tmuxp")
 
 
 @pytest.mark.parametrize(
@@ -38,7 +38,7 @@ TMUXP_DIR = os.path.join(os.path.dirname(__file__), '.tmuxp')
     ],
 )
 def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
-    configparser = kaptan.Kaptan(handler='yaml')
+    configparser = kaptan.Kaptan(handler="yaml")
     test_config = configparser.import_config(teamocil_yaml)
     yaml_to_dict = test_config.get()
     assert yaml_to_dict == teamocil_dict
@@ -48,14 +48,14 @@ def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
     config.validate_schema(config.import_teamocil(teamocil_dict))
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def multisession_config():
     """Return loaded multisession teamocil config as a dictionary.
 
     Also prevents re-running assertion the loads the yaml, since ordering of
     deep list items like panes will be inconsistent."""
     teamocil_yaml = fixtures.layouts.teamocil_yaml
-    configparser = kaptan.Kaptan(handler='yaml')
+    configparser = kaptan.Kaptan(handler="yaml")
     test_config = configparser.import_config(teamocil_yaml)
     teamocil_dict = fixtures.layouts.teamocil_dict
 
@@ -66,14 +66,14 @@ def multisession_config():
 @pytest.mark.parametrize(
     "session_name,expected",
     [
-        ('two-windows', fixtures.layouts.two_windows),
-        ('two-windows-with-filters', fixtures.layouts.two_windows_with_filters),
+        ("two-windows", fixtures.layouts.two_windows),
+        ("two-windows-with-filters", fixtures.layouts.two_windows_with_filters),
         (
-            'two-windows-with-custom-command-options',
+            "two-windows-with-custom-command-options",
             fixtures.layouts.two_windows_with_custom_command_options,
         ),
         (
-            'three-windows-within-a-session',
+            "three-windows-within-a-session",
             fixtures.layouts.three_windows_within_a_session,
         ),
     ],

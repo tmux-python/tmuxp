@@ -1,6 +1,3 @@
-[tool.black]
-skip-string-normalization = true
-
 [tool.poetry]
 name = "tmuxp"
 version = "1.9.4"

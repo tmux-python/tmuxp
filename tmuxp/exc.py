@@ -54,10 +54,10 @@ class BeforeLoadScriptError(Exception):
         self.cmd = cmd
         self.output = output
         self.message = (
-            'before_script failed with returncode {returncode}.\n'
-            'command: {cmd}\n'
-            'Error output:\n'
-            '{output}'
+            "before_script failed with returncode {returncode}.\n"
+            "command: {cmd}\n"
+            "Error output:\n"
+            "{output}"
         ).format(returncode=self.returncode, cmd=self.cmd, output=self.output)
 
     def __str__(self):
