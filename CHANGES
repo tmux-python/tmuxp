@@ -6,6 +6,16 @@
 
 #### What's new
 
+- #701: `tmuxp freeze` now accepts `--quiet` and `--yes` along with the
+  `--config-format` and filename (`--save-to`). This means you can do it all in
+  one command:
+
+  `tmuxp freeze -yqo .tmuxp.yaml`
+
+  Or bind it to `.tmux.conf` itself: `bind -T root C-s run-shell "tmuxp freeze -yqo .tmuxp.yaml"`
+
+  Credit: [@davidatbu](https://github.com/davidatbu)
+
 - #672: Panes now accept `shell` for their initial command.
 
   Equivalent to `tmux split-windows`'s `[shell-command]`
