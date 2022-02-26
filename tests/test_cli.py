@@ -868,16 +868,16 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
 @pytest.mark.parametrize(
     "cli_args,inputs",
     [
-        (['freeze', 'myfrozensession'], ['\n', 'y\n', './la.yaml\n', 'y\n']),
+        (['freeze', 'myfrozensession'], ['y\n', './la.yaml\n', 'y\n']),
         (  # Exists
             ['freeze', 'myfrozensession'],
-            ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
+            ['y\n', './exists.yaml\n', './la.yaml\n', 'y\n'],
         ),
         (  # Imply current session if not entered
             ['freeze'],
-            ['\n', 'y\n', './la.yaml\n', 'y\n'],
+            ['y\n', './la.yaml\n', 'y\n'],
         ),
-        (['freeze'], ['\n', 'y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
+        (['freeze'], ['y\n', './exists.yaml\n', './la.yaml\n', 'y\n']),  # Exists
     ],
 )
 def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
