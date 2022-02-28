@@ -408,7 +408,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 
 [[package]]
 name = "libtmux"
-version = "0.10.3"
+version = "0.11.0b0"
 description = "scripting library / orm for tmux"
 category = "main"
 optional = false
@@ -1137,7 +1137,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "39a6043ae1172fc1f9e0cc5de7b96680a359367ace2d9793d7e0d84291683d90"
+content-hash = "21927f33488d3ccf3b612b03ec68f424083b845ac040610712418d321799224b"
 
 [metadata.files]
 aafigure = [
@@ -1403,8 +1403,8 @@ keyring = [
     {file = "keyring-22.3.0.tar.gz", hash = "sha256:16927a444b2c73f983520a48dec79ddab49fe76429ea05b8d528d778c8339522"},
 ]
 libtmux = [
-    {file = "libtmux-0.10.3-py3-none-any.whl", hash = "sha256:ec20f1d9c265ceb2846ef98480c5279985f23eb43fe8f9eded79c03e9d7ae254"},
-    {file = "libtmux-0.10.3.tar.gz", hash = "sha256:c7fbd837f0a9e4d33a157523e4ca6ef95e80256842e094ffd766c3dbd78d1957"},
+    {file = "libtmux-0.11.0b0-py3-none-any.whl", hash = "sha256:a0c758efce6da2455af8ac8841084488eba47e3e6a1af18bd0e3af4acab796d3"},
+    {file = "libtmux-0.11.0b0.tar.gz", hash = "sha256:3883db0ae3f8b59b75598e50db01d4d2eae6fbd217a18f9fc610e075769a8b8a"},
 ]
 lockfile = [
     {file = "lockfile-0.12.2-py2.py3-none-any.whl", hash = "sha256:6c3cb24f344923d30b2785d5ad75182c8ea7ac1b6171b08657258ec7429d50fa"},
