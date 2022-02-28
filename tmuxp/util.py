@@ -28,6 +28,7 @@ def run_before_script(script_file, cwd=None):
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
             cwd=cwd,
+            close_fds=True,
         )
         for line in iter(proc.stdout.readline, b""):
             sys.stdout.write(console_to_str(line))
