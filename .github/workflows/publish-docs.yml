@@ -115,7 +115,8 @@ jobs:
     - name: Generate list of changed files for CloudFront to invalidate
       if: env.PUBLISH == 'true'
       run: |
-        pushd docs/_build/html; FILES=$(find . -name \* -print | grep html | cut -c2- | sort | uniq | tr '\n' ' '); popd
+        FILES=$(find docs/_build/html -exec realpath --relative-to docs/_build/html {} \; | awk '{print "/"$0}' | grep "html\|searchindex.js\|custom.css\|.svg");
+
         for file in $FILES; do
           echo $file
           # add bare directory to list of updated paths when we see index.html
