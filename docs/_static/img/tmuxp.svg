@@ -1,1 +1,87 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 84"><defs><style>.cls-1{fill:#8db1d1;}.cls-2{fill:#3975a6;}.cls-3{fill:#ffcd24;}.cls-4{fill:#221f1f;}</style></defs><title>tmuxp</title><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path class="cls-1" d="M79.33,0H44.66V34.81H84V4.67A4.67,4.67,0,0,0,79.33,0Z"/><path class="cls-2" d="M0,4.67V79.33A4.67,4.67,0,0,0,4.67,84H39.34V0H4.67A4.67,4.67,0,0,0,0,4.67Z"/><path class="cls-3" d="M44.66,84H79.33A4.67,4.67,0,0,0,84,79.33V40.13H44.66Z"/><path class="cls-4" d="M4.67,84H79.33A4.67,4.67,0,0,0,84,79.33v-2.7H0v2.7A4.67,4.67,0,0,0,4.67,84Z"/></g></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 84 84"
+   version="1.1"
+   id="svg1659"
+   sodipodi:docname="tmuxp - filled.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview1661"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-bbox="true"
+     inkscape:zoom="7.3488598"
+     inkscape:cx="45.789416"
+     inkscape:cy="36.604318"
+     inkscape:window-width="2100"
+     inkscape:window-height="1201"
+     inkscape:window-x="151"
+     inkscape:window-y="147"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="Layer_1-2" />
+  <defs
+     id="defs1645">
+    <style
+       id="style1643">.cls-1{fill:#8db1d1;}.cls-2{fill:#3975a6;}.cls-3{fill:#ffcd24;}.cls-4{fill:#221f1f;}</style>
+  </defs>
+  <title
+     id="title1647">tmuxp</title>
+  <g
+     id="Layer_2"
+     data-name="Layer 2">
+    <g
+       id="Layer_1-2"
+       data-name="Layer 1">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.970494"
+         id="rect11365"
+         width="53.110855"
+         height="79.334"
+         x="30.889145"
+         y="0.1341086"
+         ry="4.5358915" />
+      <path
+         class="cls-1"
+         d="M79.33,0H44.66V34.81H84V4.67A4.67,4.67,0,0,0,79.33,0Z"
+         id="path6126"
+         style="fill-rule:evenodd" />
+      <path
+         class="cls-2"
+         d="M0,4.67V79.33A4.67,4.67,0,0,0,4.67,84H39.34V0H4.67A4.67,4.67,0,0,0,0,4.67Z"
+         id="path6132"
+         style="fill-rule:evenodd" />
+      <path
+         class="cls-3"
+         d="M44.66,84H79.33A4.67,4.67,0,0,0,84,79.33V40.13H44.66Z"
+         id="path6129"
+         style="fill-rule:evenodd" />
+      <path
+         class="cls-4"
+         d="M4.67,84H79.33A4.67,4.67,0,0,0,84,79.33v-2.7H0v2.7A4.67,4.67,0,0,0,4.67,84Z"
+         id="path6123"
+         style="fill-rule:evenodd" />
+    </g>
+  </g>
+  <metadata
+     id="metadata11052">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>tmuxp</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>
