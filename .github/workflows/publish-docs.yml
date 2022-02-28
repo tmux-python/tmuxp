@@ -124,7 +124,7 @@ jobs:
         done | sort | uniq | tr '\n' ' ' > .updated_files
 
     - name: Invalidate on CloudFront
-      uses: chetan/invalidate-cloudfront-action@master
+      uses: chetan/invalidate-cloudfront-action@v2.3
       if: env.PUBLISH == 'true'
       env:
         DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION }}
@@ -132,3 +132,9 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         PATHS_FROM: .updated_files
+
+    - name: Purge cache on Cloudflare
+      uses: jakejarvis/cloudflare-purge-action@v0.3.0
+      env:
+        CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+        CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
