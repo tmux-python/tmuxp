@@ -1,0 +1,40 @@
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.25rem;
+  margin-top: 1.25rem;
+  scroll-margin-top: 0.5rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  margin-top: 1.25rem;
+  scroll-margin-top: 0.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+  scroll-margin-top: 0.5rem;
+}
+
+.sidebar-tree p.indented-block {
+  padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal) 0 var(--sidebar-item-spacing-horizontal);
+  margin-bottom: 0;
+}
+
+.sidebar-tree p.indented-block span.indent {
+  margin-left: var(--sidebar-item-spacing-horizontal);
+  display: block;
+}
+
+.sidebar-tree p.indented-block > :not(.project-name) {
+  font-size: var(--toc-font-size);
+}
+
+.sidebar-tree p.indented-block .project-name {
+  font-size: var(--sidebar-item-font-size);
+  font-weight: bold;
+  margin-right: calc(var(--sidebar-item-spacing-horizontal) / 2.5);
+}
+

@@ -54,11 +54,16 @@ colorama = ">=0.3.9"
 [tool.poetry.dev-dependencies]
 ### Docs ###
 sphinx = "*"
-alagitpull = "~0.1.0"
-sphinx-issues = "^3.0.0"
 aafigure = ">=0.6"
 pillow = "*"
+furo = "^2022.2.23"
+sphinx-autobuild = "^2021.3.14"
 sphinx-autodoc-typehints = "~1.17.0"
+sphinx-click = "*"
+sphinx-issues = "^3.0.0"
+sphinx-inline-tabs = { version = "*", python = "^3.7" }
+sphinxext-opengraph = "*"
+sphinx-copybutton = "^0.5.0"
 myst_parser = "~0.17.0"
 
 ### Testing ###
@@ -66,6 +71,7 @@ pytest = "*"
 pytest-rerunfailures = "*"
 pytest-mock = "*"
 pytest-cov = "*"
+pytest-watcher = "^0.2.3"
 tox = {version = "^3.24.5", extras = ["test"]}
 tox-poetry-installer = {extras = ["poetry"], version = "^0.8.3"}
 
@@ -81,8 +87,8 @@ isort = "*"
 flake8 = "*"
 
 [tool.poetry.extras]
-docs = ["sphinx", "myst_parser", "sphinx-issues", "alagitpull", "sphinx-autodoc-typehints", "aafigure", "pillow"]
-test = ["pytest", "pytest-rerunfailures", "pytest-mock", "tox", "tox-poetry-installer"]
+docs = ["sphinx", "sphinx-issues", "sphinx-click", "sphinx-autodoc-typehints", "sphinx-autobuild", "sphinx-copybutton", "sphinxext-opengraph", "sphinx-inline-tabs", "myst_parser", "furo", "aafigure", "pillow"]
+test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher", "tox", "tox-poetry-installer"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
 lint = ["flake8"]
