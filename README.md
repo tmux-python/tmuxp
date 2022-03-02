@@ -5,7 +5,7 @@ tmuxp, tmux session manager. built on
 [![Docs](https://github.com/tmux-python/tmuxp/workflows/Publish%20Docs/badge.svg)](https://github.com/tmux-python/tmuxp/actions?query=workflow%3A%22Publish+Docs%22)
 [![Build status](https://github.com/tmux-python/tmuxp/workflows/tests/badge.svg)](https://github.com/tmux-python/tmuxp/actions?query=workflow%3A%22tests%22)
 [![Code Coverage](https://codecov.io/gh/tmux-python/tmuxp/branch/master/graph/badge.svg)](https://codecov.io/gh/tmux-python/tmuxp)
-![License](https://img.shields.io/github/license/tmux-python/tmuxp.svg)
+[![License](https://img.shields.io/github/license/tmux-python/tmuxp.svg)](https://github.com/tmux-python/tmuxp/blob/master/LICENSE)
 
 **We need help!** tmuxp is a trusted session manager for tmux. If you
 could lend your time to helping answer issues and QA pull requests,
