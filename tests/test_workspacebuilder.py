@@ -514,7 +514,7 @@ def test_pane_order(session):
         HOME=os.path.realpath(os.path.expanduser("~"))
     )
 
-    # test order of `panes` (and pane_index) above aganist pane_dirs
+    # test order of `panes` (and pane_index) above against pane_dirs
     pane_paths = [
         "/usr/bin",
         "/usr",
