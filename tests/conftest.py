@@ -78,7 +78,6 @@ def session(server):
     """
     try:
         server.switch_client(session.get("session_id"))
-        pass
     except exc.LibTmuxException:
         # server.attach_session(session.get('session_id'))
         pass

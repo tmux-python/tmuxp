@@ -5,7 +5,7 @@ import os
 try:
     from unittest.mock import MagicMock
 except ImportError:
-    from mock import MagicMock
+    from unittest.mock import MagicMock
 
 import pytest
 
@@ -435,7 +435,7 @@ session_name: hello
     monkeypatch.setenv("HOME", str(tmpdir))
 
     with tmpdir.as_cwd():
-        print("tmpdir: {0}".format(tmpdir))
+        print(f"tmpdir: {tmpdir}")
         runner = CliRunner()
 
         # If autoconfirm (-y) no need to prompt y
@@ -1030,7 +1030,7 @@ def test_ls_cli(monkeypatch, tmpdir):
     stems = [os.path.splitext(f)[0] for f in filenames if f not in ignored_filenames]
 
     for filename in filenames:
-        location = tmpdir.join(".tmuxp/{}".format(filename))
+        location = tmpdir.join(f".tmuxp/{filename}")
         if filename.endswith("/"):
             location.ensure_dir()
         else:

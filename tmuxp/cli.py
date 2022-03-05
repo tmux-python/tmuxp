@@ -143,7 +143,7 @@ def _validate_choices(options):
     def func(value):
         if value not in options:
             raise click.BadParameter(
-                "Possible choices are: {0}.".format(", ".join(options))
+                "Possible choices are: {}.".format(", ".join(options))
             )
         return value
 
@@ -188,7 +188,7 @@ def set_layout_hook(session, hook_name):
         # unfortunately, select-layout won't work unless
         # we've literally selected the window at least once
         # with the client
-        hook_cmd.append("selectw -t {}".format(window.id))
+        hook_cmd.append(f"selectw -t {window.id}")
         # edit: removed -t, or else it won't respect main-pane-w/h
         hook_cmd.append("selectl")
         hook_cmd.append("selectw -p")
@@ -199,7 +199,7 @@ def set_layout_hook(session, hook_name):
             target_session=session.id, hook_name=hook_name
         )
     )
-    hook_cmd.append("selectw -t {}".format(attached_window.id))
+    hook_cmd.append(f"selectw -t {attached_window.id}")
 
     # join the hook's commands with semicolons
     hook_cmd = "{}".format("; ".join(hook_cmd))
@@ -236,7 +236,7 @@ def is_pure_name(path):
 
 class ConfigPath(click.Path):
     def __init__(self, config_dir=None, *args, **kwargs):
-        super(ConfigPath, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.config_dir = config_dir
 
     def convert(self, value, param, ctx):
@@ -245,7 +245,7 @@ class ConfigPath(click.Path):
             config_dir = config_dir()
 
         value = scan_config(value, config_dir=config_dir)
-        return super(ConfigPath, self).convert(value, param, ctx)
+        return super().convert(value, param, ctx)
 
 
 def scan_config_argument(ctx, param, value, config_dir=None):
@@ -264,7 +264,7 @@ def scan_config_argument(ctx, param, value, config_dir=None):
         value = scan_config(value, config_dir=config_dir)
 
     elif isinstance(value, tuple):
-        value = tuple([scan_config(v, config_dir=config_dir) for v in value])
+        value = tuple(scan_config(v, config_dir=config_dir) for v in value)
 
     return value
 
@@ -346,7 +346,7 @@ def scan_config(config, config_dir=None):
             candidates = [
                 x
                 for x in [
-                    "%s%s" % (join(config_dir, config), ext)
+                    f"{join(config_dir, config)}{ext}"
                     for ext in VALID_CONFIG_DIR_FILE_EXTENSIONS
                 ]
                 if exists(x)
@@ -421,8 +421,8 @@ def load_plugins(sconf):
             except Exception as error:
                 click.echo(
                     click.style("[Plugin Error] ", fg="red")
-                    + "Couldn't load {0}\n".format(plugin)
-                    + click.style("{0}".format(error), fg="yellow")
+                    + f"Couldn't load {plugin}\n"
+                    + click.style(f"{error}", fg="yellow")
                 )
                 sys.exit(1)
 
@@ -985,7 +985,7 @@ def command_freeze(
         save_to = os.path.abspath(
             os.path.join(
                 get_config_dir(),
-                "%s.%s" % (sconf.get("session_name"), config_format or "yaml"),
+                "{}.{}".format(sconf.get("session_name"), config_format or "yaml"),
             )
         )
         dest_prompt = click.prompt(
@@ -1135,7 +1135,6 @@ def command_load(
 @cli.group(name="import")
 def import_config_cmd():
     """Import a teamocil/tmuxinator config."""
-    pass
 
 
 def import_config(configfile, importfunc):
@@ -1229,7 +1228,7 @@ def command_convert(confirmed, config):
         to_filetype = "json"
     else:
         raise click.BadParameter(
-            "Unknown filetype: %s (valid: [.json, .yaml, .yml])" % (ext,)
+            f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
         )
 
     configparser = kaptan.Kaptan()
@@ -1240,7 +1239,7 @@ def command_convert(confirmed, config):
     newconfig = configparser.export(to_filetype, indent=2, **export_kwargs)
 
     if not confirmed:
-        if click.confirm("convert to <%s> to %s?" % (config, to_filetype)):
+        if click.confirm(f"convert to <{config}> to {to_filetype}?"):
             if click.confirm("Save config to %s?" % newfile):
                 confirmed = True
 
@@ -1260,9 +1259,7 @@ def command_edit_config(config):
     call([sys_editor, config])
 
 
-@cli.command(
-    name="ls", short_help="List configured sessions in {}.".format(get_config_dir())
-)
+@cli.command(name="ls", short_help=f"List configured sessions in {get_config_dir()}.")
 def command_ls():
     tmuxp_dir = get_config_dir()
     if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):

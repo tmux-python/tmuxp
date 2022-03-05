@@ -182,7 +182,7 @@ def test_suppress_history(session):
             if assertCase(sent_cmd, history_cmd):
                 correct = True
                 break
-        assert correct, "Unknown sent command: [%s] in %s" % (sent_cmd, assertCase)
+        assert correct, f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
 def test_session_options(session):
@@ -215,11 +215,11 @@ def test_global_options(session):
 
 def test_global_session_env_options(session, monkeypatch):
     visual_silence = "on"
-    monkeypatch.setenv(str("VISUAL_SILENCE"), str(visual_silence))
+    monkeypatch.setenv("VISUAL_SILENCE", str(visual_silence))
     repeat_time = 738
-    monkeypatch.setenv(str("REPEAT_TIME"), str(repeat_time))
+    monkeypatch.setenv("REPEAT_TIME", str(repeat_time))
     main_pane_height = 8
-    monkeypatch.setenv(str("MAIN_PANE_HEIGHT"), str(main_pane_height))
+    monkeypatch.setenv("MAIN_PANE_HEIGHT", str(main_pane_height))
 
     yaml_config = loadfixture("workspacebuilder/env_var_options.yaml")
     s = session
@@ -321,14 +321,14 @@ def test_window_shell(session):
 
     for w, wconf in builder.iter_create_windows(s):
         if "window_shell" in wconf:
-            assert wconf["window_shell"] == str("top")
+            assert wconf["window_shell"] == "top"
 
         while retry():
             session.server._update_windows()
             if w["window_name"] != "top":
                 break
 
-        assert w.name != str("top")
+        assert w.name != "top"
 
 
 def test_environment_variables(session):

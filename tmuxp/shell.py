@@ -200,9 +200,10 @@ def get_code(use_pythonrc, imported_objects):
     # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow system
     # conventions and get $PYTHONSTARTUP first then .pythonrc.py.
     if use_pythonrc:
-        for pythonrc in set(
-            [os.environ.get("PYTHONSTARTUP"), os.path.expanduser("~/.pythonrc.py")]
-        ):
+        for pythonrc in {
+            os.environ.get("PYTHONSTARTUP"),
+            os.path.expanduser("~/.pythonrc.py"),
+        }:
             if not pythonrc:
                 continue
             if not os.path.isfile(pythonrc):

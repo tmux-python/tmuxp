@@ -100,8 +100,8 @@ htmlhelp_basename = "%sdoc" % about["__title__"]
 latex_documents = [
     (
         "index",
-        "{0}.tex".format(about["__package_name__"]),
-        "{0} Documentation".format(about["__title__"]),
+        "{}.tex".format(about["__package_name__"]),
+        "{} Documentation".format(about["__title__"]),
         about["__author__"],
         "manual",
     )
@@ -111,7 +111,7 @@ man_pages = [
     (
         "index",
         about["__package_name__"],
-        "{0} Documentation".format(about["__title__"]),
+        "{} Documentation".format(about["__title__"]),
         about["__author__"],
         1,
     )
@@ -120,8 +120,8 @@ man_pages = [
 texinfo_documents = [
     (
         "index",
-        "{0}".format(about["__package_name__"]),
-        "{0} Documentation".format(about["__title__"]),
+        "{}".format(about["__package_name__"]),
+        "{} Documentation".format(about["__title__"]),
         about["__author__"],
         about["__package_name__"],
         about["__description__"],
@@ -196,14 +196,14 @@ def linkcode_resolve(domain, info):  # NOQA: C901
     fn = relpath(fn, start=dirname(tmuxp.__file__))
 
     if "dev" in about["__version__"]:
-        return "%s/blob/master/%s/%s%s" % (
+        return "{}/blob/master/{}/{}{}".format(
             about["__github__"],
             about["__package_name__"],
             fn,
             linespec,
         )
     else:
-        return "%s/blob/v%s/%s/%s%s" % (
+        return "{}/blob/v{}/{}/{}{}".format(
             about["__github__"],
             about["__version__"],
             about["__package_name__"],
