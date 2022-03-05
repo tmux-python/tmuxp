@@ -48,7 +48,7 @@ def get_basename(text, options, prefix="aafig"):
         del options["format"]
     hashkey = text + str(options)
     id = sha(hashkey.encode("utf-8")).hexdigest()
-    return "%s-%s" % (prefix, id)
+    return f"{prefix}-{id}"
 
 
 class AafigError(SphinxError):
@@ -135,7 +135,7 @@ def render_aafig_images(app, doctree):
         img["uri"] = fname
         # FIXME: find some way to avoid this hack in aafigure
         if extra:
-            (width, height) = [x.split('"')[1] for x in extra.split()]
+            (width, height) = (x.split('"')[1] for x in extra.split())
             if "width" not in img:
                 img["width"] = width
             if "height" not in img:
@@ -151,7 +151,7 @@ def render_aafigure(app, text, options):
         raise AafigError("aafigure module not installed")
 
     fname = get_basename(text, options)
-    fname = "%s.%s" % (get_basename(text, options), options["format"])
+    fname = "{}.{}".format(get_basename(text, options), options["format"])
     if app.builder.format == "html":
         # HTML
         imgpath = relative_uri(app.builder.env.docname, "_images")
@@ -177,7 +177,7 @@ def render_aafigure(app, text, options):
                 f = None
                 try:
                     try:
-                        f = open(metadata_fname, "r")
+                        f = open(metadata_fname)
                         extra = f.read()
                     except Exception:
                         raise AafigError()

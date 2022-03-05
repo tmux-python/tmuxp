@@ -18,7 +18,7 @@ from .util import get_current_pane, run_before_script
 logger = logging.getLogger(__name__)
 
 
-class WorkspaceBuilder(object):
+class WorkspaceBuilder:
 
     """
     Load workspace from session :py:obj:`dict`.

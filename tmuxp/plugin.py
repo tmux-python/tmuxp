@@ -156,7 +156,6 @@ class TmuxpPlugin:
         session : :class:`libtmux.Session`
             session to hook into
         """
-        pass
 
     def on_window_create(self, window):
         """
@@ -169,7 +168,6 @@ class TmuxpPlugin:
         window: :class:`libtmux.Window`
             window to hook into
         """
-        pass
 
     def after_window_finished(self, window):
         """
@@ -184,7 +182,6 @@ class TmuxpPlugin:
         window: :class:`libtmux.Window`
             window to hook into
         """
-        pass
 
     def before_script(self, session):
         """
@@ -213,7 +210,6 @@ class TmuxpPlugin:
         session : :class:`libtmux.Session`
             session to hook into
         """
-        pass
 
     def reattach(self, session):
         """
@@ -224,4 +220,3 @@ class TmuxpPlugin:
         session : :class:`libtmux.Session`
             session to hook into
         """
-        pass
