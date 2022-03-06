@@ -1,5 +1,6 @@
 """Test for tmuxp workspacebuilder."""
 import os
+import pathlib
 
 import pytest
 
@@ -422,10 +423,11 @@ def test_blank_pane_count(session):
     assert len(window4._panes) == 2
 
 
-def test_start_directory(session, tmpdir):
+def test_start_directory(session, tmp_path: pathlib.Path):
     yaml_config = loadfixture("workspacebuilder/start_directory.yaml")
-    test_dir = str(tmpdir.mkdir("foo bar"))
-    test_config = yaml_config.format(TMP_DIR=str(tmpdir), TEST_DIR=test_dir)
+    test_dir = tmp_path / "foo bar"
+    test_dir.mkdir()
+    test_config = yaml_config.format(TEST_DIR=test_dir)
 
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(test_config).get()
