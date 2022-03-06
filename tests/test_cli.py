@@ -1,11 +1,7 @@
 """Test for tmuxp command line interface."""
 import json
 import os
-
-try:
-    from unittest.mock import MagicMock
-except ImportError:
-    from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 
