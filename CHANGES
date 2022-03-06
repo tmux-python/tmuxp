@@ -61,6 +61,12 @@
 
 - Run through black + isort with string normalization (#738). This way we can
   use black without any configuration. (One-time, big diff)
+- Run codebase through pyupgrade (#745)
+- Add `codeql-analysis.yml` to try it out
+
+#### Documentation
+
+- Move to `furo` sphinx theme
 
 ## tmuxp 1.9.4 (2022-01-10)
 
