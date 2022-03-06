@@ -455,7 +455,7 @@ def test_start_directory(session, tmp_path: pathlib.Path):
             assert result
 
 
-def test_start_directory_relative(session, tmpdir):
+def test_start_directory_relative(session, tmp_path: pathlib.Path):
     """Same as above test, but with relative start directory, mimicking
     loading it from a location of project file. Like::
 
@@ -469,8 +469,10 @@ def test_start_directory_relative(session, tmpdir):
     """
     yaml_config = loadfixture("workspacebuilder/start_directory_relative.yaml")
 
-    test_dir = str(tmpdir.mkdir("foo bar"))
-    config_dir = str(tmpdir.mkdir("testRelConfigDir"))
+    test_dir = tmp_path / "foo bar"
+    test_dir.mkdir()
+    config_dir = tmp_path / "testRelConfigDir"
+    config_dir.mkdir()
     test_config = yaml_config.format(TEST_DIR=test_dir)
 
     sconfig = kaptan.Kaptan(handler="yaml")
@@ -488,7 +490,7 @@ def test_start_directory_relative(session, tmpdir):
 
     assert session == builder.session
 
-    dirs = ["/usr/bin", "/dev", test_dir, config_dir, config_dir]
+    dirs = ["/usr/bin", "/dev", str(test_dir), str(config_dir), str(config_dir)]
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:

@@ -1,6 +1,7 @@
 """Test for tmuxp command line interface."""
 import json
 import os
+import pathlib
 from unittest.mock import MagicMock
 
 import pytest
@@ -30,46 +31,52 @@ from tmuxp.workspacebuilder import WorkspaceBuilder
 from .fixtures._util import curjoin, loadfixture
 
 
-def test_creates_config_dir_not_exists(tmpdir):
+def test_creates_config_dir_not_exists(tmp_path: pathlib.Path):
     """cli.startup() creates config dir if not exists."""
 
-    cli.startup(str(tmpdir))
-    assert os.path.exists(str(tmpdir))
+    cli.startup(tmp_path)
+    assert os.path.exists(tmp_path)
 
 
-def test_in_dir_from_config_dir(tmpdir):
+def test_in_dir_from_config_dir(tmp_path: pathlib.Path):
     """config.in_dir() finds configs config dir."""
 
-    cli.startup(str(tmpdir))
-    tmpdir.join("myconfig.yaml").write("")
-    tmpdir.join("myconfig.json").write("")
-    configs_found = config.in_dir(str(tmpdir))
+    cli.startup(tmp_path)
+    yaml_config = tmp_path / "myconfig.yaml"
+    yaml_config.write_text("", encoding="utf-8")
+    json_config = tmp_path / "myconfig.json"
+    json_config.write_text("", encoding="utf-8")
+    configs_found = config.in_dir(tmp_path)
 
     assert len(configs_found) == 2
 
 
-def test_ignore_non_configs_from_current_dir(tmpdir):
+def test_ignore_non_configs_from_current_dir(tmp_path: pathlib.Path):
     """cli.in_dir() ignore non-config from config dir."""
 
-    cli.startup(str(tmpdir))
+    cli.startup(tmp_path)
 
-    tmpdir.join("myconfig.psd").write("")
-    tmpdir.join("watmyconfig.json").write("")
-    configs_found = config.in_dir(str(tmpdir))
+    junk_config = tmp_path / "myconfig.psd"
+    junk_config.write_text("", encoding="utf-8")
+    conf = tmp_path / "watmyconfig.json"
+    conf.write_text("", encoding="utf-8")
+    configs_found = config.in_dir(tmp_path)
     assert len(configs_found) == 1
 
 
-def test_get_configs_cwd(tmpdir):
+def test_get_configs_cwd(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch):
     """config.in_cwd() find config in shell current working directory."""
 
-    confdir = tmpdir.mkdir("tmuxpconf2")
-    with confdir.as_cwd():
-        config1 = open(".tmuxp.json", "w+b")
-        config1.close()
+    confdir = tmp_path / "tmuxpconf2"
+    confdir.mkdir()
 
-        configs_found = config.in_cwd()
-        assert len(configs_found) == 1
-        assert ".tmuxp.json" in configs_found
+    monkeypatch.chdir(confdir)
+    config1 = open(".tmuxp.json", "w+b")
+    config1.close()
+
+    configs_found = config.in_cwd()
+    assert len(configs_found) == 1
+    assert ".tmuxp.json" in configs_found
 
 
 @pytest.mark.parametrize(
@@ -112,133 +119,150 @@ def test_is_pure_name(path, expect):
 
 
 @pytest.fixture
-def homedir(tmpdir):
-    return tmpdir.join("home").mkdir()
+def homedir(tmp_path: pathlib.Path):
+    home = tmp_path / "home"
+    home.mkdir()
+    return home
 
 
 @pytest.fixture
 def configdir(homedir):
-    return homedir.join(".tmuxp").mkdir()
+    conf = homedir / ".tmuxp"
+    conf.mkdir()
+    return conf
 
 
 @pytest.fixture
 def projectdir(homedir):
-    return homedir.join("work").join("project")
+    proj = homedir / "work" / "project"
+    proj.mkdir(parents=True)
+    return proj
 
 
-def test_tmuxp_configdir_env_var(tmpdir, monkeypatch):
-    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmpdir))
+def test_tmuxp_configdir_env_var(tmp_path: pathlib.Path, monkeypatch):
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
 
-    assert get_config_dir() == tmpdir
+    assert get_config_dir() == str(tmp_path)
 
 
-def test_tmuxp_configdir_xdg_config_dir(tmpdir, monkeypatch):
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmpdir))
-    tmux_dir = tmpdir.mkdir("tmuxp")
+def test_tmuxp_configdir_xdg_config_dir(tmp_path: pathlib.Path, monkeypatch):
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    tmux_dir = tmp_path / "tmuxp"
+    tmux_dir.mkdir()
 
     assert get_config_dir() == str(tmux_dir)
 
 
-def test_resolve_dot(tmpdir, homedir, configdir, projectdir, monkeypatch):
+def test_resolve_dot(
+    tmp_path: pathlib.Path,
+    homedir: pathlib.Path,
+    configdir: pathlib.Path,
+    projectdir: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
     monkeypatch.setenv("HOME", str(homedir))
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir.join(".config")))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir / ".config"))
 
-    projectdir.join(".tmuxp.yaml").ensure()
+    tmuxp_conf_path = projectdir / ".tmuxp.yaml"
+    tmuxp_conf_path.write_text("", encoding="utf-8")
     user_config_name = "myconfig"
-    user_config = configdir.join("%s.yaml" % user_config_name).ensure()
+    user_config = configdir / f"{user_config_name}.yaml"
+    user_config.write_text("", encoding="utf-8")
 
-    project_config = str(projectdir.join(".tmuxp.yaml"))
+    project_config = tmuxp_conf_path
 
-    with projectdir.as_cwd():
-        expect = project_config
-        assert scan_config(".") == expect
-        assert scan_config("./") == expect
-        assert scan_config("") == expect
-        assert scan_config("../project") == expect
-        assert scan_config("../project/") == expect
-        assert scan_config(".tmuxp.yaml") == expect
-        assert scan_config("../../.tmuxp/%s.yaml" % user_config_name) == str(
-            user_config
-        )
-        assert scan_config("myconfig") == str(user_config)
-        assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    monkeypatch.chdir(projectdir)
 
-        with pytest.raises(Exception):
-            scan_config(".tmuxp.json")
-        with pytest.raises(Exception):
-            scan_config(".tmuxp.ini")
-        with pytest.raises(Exception):
-            scan_config("../")
-        with pytest.raises(Exception):
-            scan_config("mooooooo")
+    expect = str(project_config)
+    assert scan_config(".") == expect
+    assert scan_config("./") == expect
+    assert scan_config("") == expect
+    assert scan_config("../project") == expect
+    assert scan_config("../project/") == expect
+    assert scan_config(".tmuxp.yaml") == expect
+    assert scan_config("../../.tmuxp/%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("myconfig") == str(user_config)
+    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
 
-    with homedir.as_cwd():
-        expect = project_config
-        assert scan_config("work/project") == expect
-        assert scan_config("work/project/") == expect
-        assert scan_config("./work/project") == expect
-        assert scan_config("./work/project/") == expect
-        assert scan_config(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
-        assert scan_config("./.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-        assert scan_config("myconfig") == str(user_config)
-        assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    with pytest.raises(Exception):
+        scan_config(".tmuxp.json")
+    with pytest.raises(Exception):
+        scan_config(".tmuxp.ini")
+    with pytest.raises(Exception):
+        scan_config("../")
+    with pytest.raises(Exception):
+        scan_config("mooooooo")
 
-        with pytest.raises(Exception):
-            scan_config("")
-        with pytest.raises(Exception):
-            scan_config(".")
-        with pytest.raises(Exception):
-            scan_config(".tmuxp.yaml")
-        with pytest.raises(Exception):
-            scan_config("../")
-        with pytest.raises(Exception):
-            scan_config("mooooooo")
+    monkeypatch.chdir(homedir)
 
-    with configdir.as_cwd():
-        expect = project_config
-        assert scan_config("../work/project") == expect
-        assert scan_config("../../home/work/project") == expect
-        assert scan_config("../work/project/") == expect
-        assert scan_config("%s.yaml" % user_config_name) == str(user_config)
-        assert scan_config("./%s.yaml" % user_config_name) == str(user_config)
-        assert scan_config("myconfig") == str(user_config)
-        assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    expect = str(project_config)
+    assert scan_config("work/project") == expect
+    assert scan_config("work/project/") == expect
+    assert scan_config("./work/project") == expect
+    assert scan_config("./work/project/") == expect
+    assert scan_config(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("./.tmuxp/%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("myconfig") == str(user_config)
+    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
 
-        with pytest.raises(Exception):
-            scan_config("")
-        with pytest.raises(Exception):
-            scan_config(".")
-        with pytest.raises(Exception):
-            scan_config(".tmuxp.yaml")
-        with pytest.raises(Exception):
-            scan_config("../")
-        with pytest.raises(Exception):
-            scan_config("mooooooo")
+    with pytest.raises(Exception):
+        scan_config("")
+    with pytest.raises(Exception):
+        scan_config(".")
+    with pytest.raises(Exception):
+        scan_config(".tmuxp.yaml")
+    with pytest.raises(Exception):
+        scan_config("../")
+    with pytest.raises(Exception):
+        scan_config("mooooooo")
 
-    with tmpdir.as_cwd():
-        expect = project_config
-        assert scan_config("home/work/project") == expect
-        assert scan_config("./home/work/project/") == expect
-        assert scan_config("home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-        assert scan_config("./home/.tmuxp/%s.yaml" % user_config_name) == str(
-            user_config
-        )
-        assert scan_config("myconfig") == str(user_config)
-        assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    monkeypatch.chdir(configdir)
 
-        with pytest.raises(Exception):
-            scan_config("")
-        with pytest.raises(Exception):
-            scan_config(".")
-        with pytest.raises(Exception):
-            scan_config(".tmuxp.yaml")
-        with pytest.raises(Exception):
-            scan_config("../")
-        with pytest.raises(Exception):
-            scan_config("mooooooo")
+    expect = str(project_config)
+    assert scan_config("../work/project") == expect
+    assert scan_config("../../home/work/project") == expect
+    assert scan_config("../work/project/") == expect
+    assert scan_config("%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("./%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("myconfig") == str(user_config)
+    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+
+    with pytest.raises(Exception):
+        scan_config("")
+    with pytest.raises(Exception):
+        scan_config(".")
+    with pytest.raises(Exception):
+        scan_config(".tmuxp.yaml")
+    with pytest.raises(Exception):
+        scan_config("../")
+    with pytest.raises(Exception):
+        scan_config("mooooooo")
+
+    monkeypatch.chdir(tmp_path)
+
+    expect = str(project_config)
+    assert scan_config("home/work/project") == expect
+    assert scan_config("./home/work/project/") == expect
+    assert scan_config("home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("./home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
+    assert scan_config("myconfig") == str(user_config)
+    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+
+    with pytest.raises(Exception):
+        scan_config("")
+    with pytest.raises(Exception):
+        scan_config(".")
+    with pytest.raises(Exception):
+        scan_config(".tmuxp.yaml")
+    with pytest.raises(Exception):
+        scan_config("../")
+    with pytest.raises(Exception):
+        scan_config("mooooooo")
 
 
-def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
+def test_scan_config_arg(
+    homedir, configdir, projectdir, monkeypatch: pytest.MonkeyPatch
+):
     runner = CliRunner()
 
     @click.command()
@@ -247,31 +271,33 @@ def test_scan_config_arg(homedir, configdir, projectdir, monkeypatch):
         click.echo(config)
 
     monkeypatch.setenv("HOME", str(homedir))
-    projectdir.join(".tmuxp.yaml").ensure()
+    tmuxp_config_path = projectdir / ".tmuxp.yaml"
+    tmuxp_config_path.write_text("", encoding="utf-8")
     user_config_name = "myconfig"
-    user_config = configdir.join("%s.yaml" % user_config_name).ensure()
+    user_config = configdir / f"{user_config_name}.yaml"
+    user_config.write_text("", encoding="utf-8")
 
-    project_config = str(projectdir.join(".tmuxp.yaml"))
+    project_config = projectdir / ".tmuxp.yaml"
 
     def check_cmd(config_arg):
         return runner.invoke(config_cmd, [config_arg]).output
 
-    with projectdir.as_cwd():
-        expect = project_config
-        assert expect in check_cmd(".")
-        assert expect in check_cmd("./")
-        assert expect in check_cmd("")
-        assert expect in check_cmd("../project")
-        assert expect in check_cmd("../project/")
-        assert expect in check_cmd(".tmuxp.yaml")
-        assert str(user_config) in check_cmd("../../.tmuxp/%s.yaml" % user_config_name)
-        assert user_config.purebasename in check_cmd("myconfig")
-        assert str(user_config) in check_cmd("~/.tmuxp/myconfig.yaml")
+    monkeypatch.chdir(projectdir)
+    expect = str(project_config)
+    assert expect in check_cmd(".")
+    assert expect in check_cmd("./")
+    assert expect in check_cmd("")
+    assert expect in check_cmd("../project")
+    assert expect in check_cmd("../project/")
+    assert expect in check_cmd(".tmuxp.yaml")
+    assert str(user_config) in check_cmd("../../.tmuxp/%s.yaml" % user_config_name)
+    assert user_config.stem in check_cmd("myconfig")
+    assert str(user_config) in check_cmd("~/.tmuxp/myconfig.yaml")
 
-        assert "file not found" in check_cmd(".tmuxp.json")
-        assert "file not found" in check_cmd(".tmuxp.ini")
-        assert "No tmuxp files found" in check_cmd("../")
-        assert "config not found in config dir" in check_cmd("moo")
+    assert "file not found" in check_cmd(".tmuxp.json")
+    assert "file not found" in check_cmd(".tmuxp.ini")
+    assert "No tmuxp files found" in check_cmd("../")
+    assert "config not found in config dir" in check_cmd("moo")
 
 
 def test_load_workspace(server, monkeypatch):
@@ -312,7 +338,9 @@ def test_load_workspace_named_session(server, monkeypatch):
 @pytest.mark.skipif(
     has_lt_version("2.1"), reason="exact session name matches only tmux >= 2.1"
 )
-def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
+def test_load_workspace_name_match_regression_252(
+    tmp_path: pathlib.Path, server, monkeypatch
+):
     monkeypatch.delenv("TMUX", raising=False)
     session_file = curjoin("workspacebuilder/two_pane.yaml")
 
@@ -324,56 +352,61 @@ def test_load_workspace_name_match_regression_252(tmpdir, server, monkeypatch):
     assert isinstance(session, libtmux.Session)
     assert session.name == "sampleconfig"
 
-    projfile = tmpdir.join("simple.yaml")
+    projfile = tmp_path / "simple.yaml"
 
-    projfile.write(
+    projfile.write_text(
         """
 session_name: sampleconfi
 start_directory: './'
 windows:
 - panes:
-    - echo 'hey'"""
+    - echo 'hey'""",
+        encoding="utf-8",
     )
 
     # open it detached
     session = load_workspace(
-        projfile.strpath, socket_name=server.socket_name, detached=True
+        str(projfile), socket_name=server.socket_name, detached=True
     )
     assert session.name == "sampleconfi"
 
 
-def test_load_symlinked_workspace(server, tmpdir, monkeypatch):
+def test_load_symlinked_workspace(server, tmp_path, monkeypatch):
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
 
-    realtemp = tmpdir.mkdir("myrealtemp")
-    linktemp = tmpdir.join("symlinktemp")
-    linktemp.mksymlinkto(realtemp)
-    projfile = linktemp.join("simple.yaml")
+    realtemp = tmp_path / "myrealtemp"
+    realtemp.mkdir()
+    linktemp = tmp_path / "symlinktemp"
+    linktemp.symlink_to(realtemp)
+    projfile = linktemp / "simple.yaml"
 
-    projfile.write(
+    projfile.write_text(
         """
 session_name: samplesimple
 start_directory: './'
 windows:
 - panes:
-    - echo 'hey'"""
+    - echo 'hey'""",
+        encoding="utf-8",
     )
 
     # open it detached
     session = load_workspace(
-        projfile.strpath, socket_name=server.socket_name, detached=True
+        str(projfile), socket_name=server.socket_name, detached=True
     )
     pane = session.attached_window.attached_pane
 
     assert isinstance(session, libtmux.Session)
     assert session.name == "samplesimple"
-    assert pane.current_path == realtemp.strpath
+    assert pane.current_path == str(realtemp)
 
 
-def test_regression_00132_session_name_with_dots(tmpdir, server, session):
+def test_regression_00132_session_name_with_dots(
+    tmp_path: pathlib.Path, server, session
+):
     yaml_config = curjoin("workspacebuilder/regression_00132_dots.yaml")
     cli_args = [yaml_config]
     inputs = []
@@ -386,32 +419,34 @@ def test_regression_00132_session_name_with_dots(tmpdir, server, session):
 
 
 @pytest.mark.parametrize("cli_args", [(["load", "."]), (["load", ".tmuxp.yaml"])])
-def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
+def test_load_zsh_autotitle_warning(cli_args, tmp_path, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
-    tmpdir.join(".tmuxp.yaml").ensure()
-    tmpdir.join(".oh-my-zsh").ensure(dir=True)
-    monkeypatch.setenv("HOME", str(tmpdir))
+    yaml_config = tmp_path / ".tmuxp.yaml"
+    yaml_config.write_text("", encoding="utf-8")
+    oh_my_zsh_path = tmp_path / ".oh-my-zsh"
+    oh_my_zsh_path.mkdir()
+    monkeypatch.setenv("HOME", str(tmp_path))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
 
-        monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
-        monkeypatch.setenv("SHELL", "zsh")
-        result = runner.invoke(cli.cli, cli_args)
-        assert "Please set" in result.output
+    monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
+    monkeypatch.setenv("SHELL", "zsh")
+    result = runner.invoke(cli.cli, cli_args)
+    assert "Please set" in result.output
 
-        monkeypatch.setenv("DISABLE_AUTO_TITLE", "false")
-        result = runner.invoke(cli.cli, cli_args)
-        assert "Please set" in result.output
+    monkeypatch.setenv("DISABLE_AUTO_TITLE", "false")
+    result = runner.invoke(cli.cli, cli_args)
+    assert "Please set" in result.output
 
-        monkeypatch.setenv("DISABLE_AUTO_TITLE", "true")
-        result = runner.invoke(cli.cli, cli_args)
-        assert "Please set" not in result.output
+    monkeypatch.setenv("DISABLE_AUTO_TITLE", "true")
+    result = runner.invoke(cli.cli, cli_args)
+    assert "Please set" not in result.output
 
-        monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
-        monkeypatch.setenv("SHELL", "sh")
-        result = runner.invoke(cli.cli, cli_args)
-        assert "Please set" not in result.output
+    monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
+    monkeypatch.setenv("SHELL", "sh")
+    result = runner.invoke(cli.cli, cli_args)
+    assert "Please set" not in result.output
 
 
 @pytest.mark.parametrize(
@@ -420,25 +455,29 @@ def test_load_zsh_autotitle_warning(cli_args, tmpdir, monkeypatch):
         (["load", ".", "--log-file", "log.txt"]),
     ],
 )
-def test_load_log_file(cli_args, tmpdir, monkeypatch):
+def test_load_log_file(cli_args, tmp_path, monkeypatch):
     # create dummy tmuxp yaml that breaks to prevent actually loading tmux
-    tmpdir.join(".tmuxp.yaml").write(
+    tmuxp_config_path = tmp_path / ".tmuxp.yaml"
+    tmuxp_config_path.write_text(
         """
 session_name: hello
-        """
+        """,
+        encoding="utf-8",
     )
-    tmpdir.join(".oh-my-zsh").ensure(dir=True)
-    monkeypatch.setenv("HOME", str(tmpdir))
+    oh_my_zsh_path = tmp_path / ".oh-my-zsh"
+    oh_my_zsh_path.mkdir()
+    monkeypatch.setenv("HOME", str(tmp_path))
 
-    with tmpdir.as_cwd():
-        print(f"tmpdir: {tmpdir}")
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    print(f"tmp_path: {tmp_path}")
+    runner = CliRunner()
 
-        # If autoconfirm (-y) no need to prompt y
-        input_args = "y\ny\n" if "-y" not in cli_args else ""
+    # If autoconfirm (-y) no need to prompt y
+    input_args = "y\ny\n" if "-y" not in cli_args else ""
 
-        runner.invoke(cli.cli, cli_args, input=input_args)
-        assert "Loading" in tmpdir.join("log.txt").open().read()
+    runner.invoke(cli.cli, cli_args, input=input_args)
+    log_file_path = tmp_path / "log.txt"
+    assert "Loading" in log_file_path.open().read()
 
 
 @pytest.mark.parametrize("cli_cmd", ["shell", ("shell", "--pdb")])
@@ -516,12 +555,12 @@ def test_shell(
     inputs,
     expected_output,
     env,
-    tmpdir,
+    tmp_path,
     monkeypatch,
     server,
     session,
 ):
-    monkeypatch.setenv("HOME", str(tmpdir))
+    monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
     window.split_window()
@@ -541,13 +580,13 @@ def test_shell(
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
 
-        result = runner.invoke(
-            cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
-        )
-        assert expected_output.format(**template_ctx) in result.output
+    result = runner.invoke(
+        cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
+    )
+    assert expected_output.format(**template_ctx) in result.output
 
 
 @pytest.mark.parametrize(
@@ -605,13 +644,13 @@ def test_shell_target_missing(
     template_ctx,
     exception,
     message,
-    tmpdir,
+    tmp_path,
     monkeypatch,
     socket_name,
     server,
     session,
 ):
-    monkeypatch.setenv("HOME", str(tmpdir))
+    monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
     window.split_window()
@@ -630,19 +669,19 @@ def test_shell_target_missing(
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
 
-        if exception is not None:
-            with pytest.raises(exception, match=message.format(**template_ctx)):
-                result = runner.invoke(
-                    cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
-                )
-        else:
+    if exception is not None:
+        with pytest.raises(exception, match=message.format(**template_ctx)):
             result = runner.invoke(
                 cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
             )
-            assert message.format(**template_ctx) in result.output
+    else:
+        result = runner.invoke(
+            cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
+        )
+        assert message.format(**template_ctx) in result.output
 
 
 @pytest.mark.parametrize(
@@ -684,12 +723,12 @@ def test_shell_plus(
     inputs,
     env,
     message,
-    tmpdir,
+    tmp_path,
     monkeypatch,
     server,
     session,
 ):
-    monkeypatch.setenv("HOME", str(tmpdir))
+    monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
     window.split_window()
@@ -709,13 +748,13 @@ def test_shell_plus(
     for k, v in env.items():
         monkeypatch.setenv(k, v.format(**template_ctx))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
 
-        result = runner.invoke(
-            cli.cli, cli_args, input="".join(inputs), catch_exceptions=True
-        )
-        assert message.format(**template_ctx) in result.output
+    result = runner.invoke(
+        cli.cli, cli_args, input="".join(inputs), catch_exceptions=True
+    )
+    assert message.format(**template_ctx) in result.output
 
 
 @pytest.mark.parametrize(
@@ -728,28 +767,29 @@ def test_shell_plus(
         (["convert", ".tmuxp.yml", "-y"]),
     ],
 )
-def test_convert(cli_args, tmpdir, monkeypatch):
+def test_convert(cli_args, tmp_path, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
     filename = cli_args[1]
     if filename == ".":
         filename = ".tmuxp.yaml"
     file_ext = filename.rsplit(".", 1)[-1]
     assert file_ext in ["yaml", "yml"], file_ext
-    tmpdir.join(filename).write("\nsession_name: hello\n")
-    tmpdir.join(".oh-my-zsh").ensure(dir=True)
-    monkeypatch.setenv("HOME", str(tmpdir))
+    config_file_path = tmp_path / filename
+    config_file_path.write_text("\nsession_name: hello\n", encoding="utf-8")
+    oh_my_zsh_path = tmp_path / ".oh-my-zsh"
+    oh_my_zsh_path.mkdir()
+    monkeypatch.setenv("HOME", str(tmp_path))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
 
-        # If autoconfirm (-y) no need to prompt y
-        input_args = "y\ny\n" if "-y" not in cli_args else ""
+    # If autoconfirm (-y) no need to prompt y
+    input_args = "y\ny\n" if "-y" not in cli_args else ""
 
-        runner.invoke(cli.cli, cli_args, input=input_args)
-        assert tmpdir.join(".tmuxp.json").check()
-        assert tmpdir.join(".tmuxp.json").open().read() == json.dumps(
-            {"session_name": "hello"}, indent=2
-        )
+    runner.invoke(cli.cli, cli_args, input=input_args)
+    tmuxp_json = tmp_path / ".tmuxp.json"
+    assert tmuxp_json.exists()
+    assert tmuxp_json.open().read() == json.dumps({"session_name": "hello"}, indent=2)
 
 
 @pytest.mark.parametrize(
@@ -760,21 +800,24 @@ def test_convert(cli_args, tmpdir, monkeypatch):
         (["convert", ".tmuxp.json", "-y"]),
     ],
 )
-def test_convert_json(cli_args, tmpdir, monkeypatch):
+def test_convert_json(cli_args, tmp_path, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
-    tmpdir.join(".tmuxp.json").write('{"session_name": "hello"}')
-    tmpdir.join(".oh-my-zsh").ensure(dir=True)
-    monkeypatch.setenv("HOME", str(tmpdir))
+    json_config = tmp_path / ".tmuxp.json"
+    json_config.write_text('{"session_name": "hello"}', encoding="utf-8")
+    oh_my_zsh_path = tmp_path / ".oh-my-zsh"
+    oh_my_zsh_path.mkdir()
+    monkeypatch.setenv("HOME", str(tmp_path))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
 
-        # If autoconfirm (-y) no need to prompt y
-        input_args = "y\ny\n" if "-y" not in cli_args else ""
+    # If autoconfirm (-y) no need to prompt y
+    input_args = "y\ny\n" if "-y" not in cli_args else ""
 
-        runner.invoke(cli.cli, cli_args, input=input_args)
-        assert tmpdir.join(".tmuxp.yaml").check()
-        assert tmpdir.join(".tmuxp.yaml").open().read() == "session_name: hello\n"
+    runner.invoke(cli.cli, cli_args, input=input_args)
+    tmuxp_yaml = tmp_path / ".tmuxp.yaml"
+    assert tmuxp_yaml.exists()
+    assert tmuxp_yaml.open().read() == "session_name: hello\n"
 
 
 @pytest.mark.parametrize("cli_args", [(["import"])])
@@ -817,17 +860,26 @@ def test_help(cli_args, monkeypatch):
         ),
     ],
 )
-def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
+def test_import_teamocil(cli_args, inputs, tmp_path, monkeypatch):
     teamocil_config = loadfixture("config_teamocil/test4.yaml")
-    teamocil_dir = tmpdir.join(".teamocil").mkdir()
-    teamocil_dir.join("config.yaml").write(teamocil_config)
-    tmpdir.join("exists.yaml").ensure()
-    monkeypatch.setenv("HOME", str(tmpdir))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
-        runner.invoke(cli.cli, cli_args, input="".join(inputs))
-        assert tmpdir.join("la.yaml").check()
+    teamocil_path = tmp_path / ".teamocil"
+    teamocil_path.mkdir()
+
+    teamocil_config_path = teamocil_path / "config.yaml"
+    teamocil_config_path.write_text(teamocil_config, encoding="utf-8")
+
+    exists_yaml = tmp_path / "exists.yaml"
+    exists_yaml.write_text("", encoding="utf-8")
+
+    monkeypatch.setenv("HOME", str(tmp_path))
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    runner.invoke(cli.cli, cli_args, input="".join(inputs))
+
+    new_config_yaml = tmp_path / "la.yaml"
+    assert new_config_yaml.exists()
 
 
 @pytest.mark.parametrize(
@@ -847,18 +899,26 @@ def test_import_teamocil(cli_args, inputs, tmpdir, monkeypatch):
         ),
     ],
 )
-def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
+def test_import_tmuxinator(cli_args, inputs, tmp_path, monkeypatch):
     tmuxinator_config = loadfixture("config_tmuxinator/test3.yaml")
-    tmuxinator_dir = tmpdir.join(".tmuxinator").mkdir()
-    tmuxinator_dir.join("config.yaml").write(tmuxinator_config)
-    tmpdir.join("exists.yaml").ensure()
-    monkeypatch.setenv("HOME", str(tmpdir))
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
-        out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-        print(out.output)
-        assert tmpdir.join("la.yaml").check()
+    tmuxinator_path = tmp_path / ".tmuxinator"
+    tmuxinator_path.mkdir()
+
+    tmuxinator_config_path = tmuxinator_path / "config.yaml"
+    tmuxinator_config_path.write_text(tmuxinator_config, encoding="utf-8")
+
+    exists_yaml = tmp_path / "exists.yaml"
+    exists_yaml.write_text("", encoding="utf-8")
+
+    monkeypatch.setenv("HOME", str(tmp_path))
+
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
+    print(out.output)
+    new_config_yaml = tmp_path / "la.yaml"
+    assert new_config_yaml.exists()
 
 
 @pytest.mark.parametrize(
@@ -876,9 +936,10 @@ def test_import_tmuxinator(cli_args, inputs, tmpdir, monkeypatch):
         (["freeze"], ["y\n", "./exists.yaml\n", "./la.yaml\n", "y\n"]),  # Exists
     ],
 )
-def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
-    monkeypatch.setenv("HOME", str(tmpdir))
-    tmpdir.join("exists.yaml").ensure()
+def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    exists_yaml = tmp_path / "exists.yaml"
+    exists_yaml.write_text("", encoding="utf-8")
 
     server.new_session(session_name="myfirstsession")
     server.new_session(session_name="myfrozensession")
@@ -890,18 +951,20 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
     ]
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
-        # Use tmux server (socket name) used in the test
-        cli_args = cli_args + ["-L", server.socket_name]
-        out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-        print(out.output)
-        assert tmpdir.join("la.yaml").check()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    # Use tmux server (socket name) used in the test
+    cli_args = cli_args + ["-L", server.socket_name]
+    out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
+    print(out.output)
 
-        yaml_config = tmpdir.join("la.yaml").open().read()
-        frozen_config = kaptan.Kaptan(handler="yaml").import_config(yaml_config).get()
+    yaml_config_path = tmp_path / "la.yaml"
+    assert yaml_config_path.exists()
 
-        assert frozen_config["session_name"] == "myfrozensession"
+    yaml_config = yaml_config_path.open().read()
+    frozen_config = kaptan.Kaptan(handler="yaml").import_config(yaml_config).get()
+
+    assert frozen_config["session_name"] == "myfrozensession"
 
 
 @pytest.mark.parametrize(
@@ -917,28 +980,31 @@ def test_freeze(server, cli_args, inputs, tmpdir, monkeypatch):
         ),
     ],
 )
-def test_freeze_overwrite(server, cli_args, inputs, tmpdir, monkeypatch):
-    monkeypatch.setenv("HOME", str(tmpdir))
-    tmpdir.join("exists.yaml").ensure()
+def test_freeze_overwrite(server, cli_args, inputs, tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    exists_yaml = tmp_path / "exists.yaml"
+    exists_yaml.write_text("", encoding="utf-8")
 
     server.new_session(session_name="mysession")
 
-    with tmpdir.as_cwd():
-        runner = CliRunner()
-        # Use tmux server (socket name) used in the test
-        cli_args = cli_args + ["-L", server.socket_name]
-        out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-        print(out.output)
-        assert tmpdir.join("exists.yaml").check()
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+    # Use tmux server (socket name) used in the test
+    cli_args = cli_args + ["-L", server.socket_name]
+    out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
+    print(out.output)
+
+    yaml_config_path = tmp_path / "exists.yaml"
+    assert yaml_config_path.exists()
 
 
-def test_get_abs_path(tmpdir):
-    expect = str(tmpdir)
-    with tmpdir.as_cwd():
-        cli.get_abs_path("../") == os.path.dirname(expect)
-        cli.get_abs_path(".") == expect
-        cli.get_abs_path("./") == expect
-        cli.get_abs_path(expect) == expect
+def test_get_abs_path(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch):
+    expect = str(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    cli.get_abs_path("../") == os.path.dirname(expect)
+    cli.get_abs_path(".") == expect
+    cli.get_abs_path("./") == expect
+    cli.get_abs_path(expect) == expect
 
 
 def test_get_tmuxinator_dir(monkeypatch):
@@ -949,15 +1015,14 @@ def test_get_tmuxinator_dir(monkeypatch):
     assert cli.get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
 
 
-def test_get_cwd(tmpdir):
+def test_get_cwd(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch):
+    assert cli.get_cwd() == os.getcwd()
+    monkeypatch.chdir(tmp_path)
+    assert cli.get_cwd() == str(tmp_path)
     assert cli.get_cwd() == os.getcwd()
 
-    with tmpdir.as_cwd():
-        assert cli.get_cwd() == str(tmpdir)
-        assert cli.get_cwd() == os.getcwd()
 
-
-def test_get_teamocil_dir(monkeypatch):
+def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch):
     assert cli.get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
 
     monkeypatch.setenv("HOME", "/moo")
@@ -975,13 +1040,17 @@ def test_validate_choices():
         assert validate("choice3")
 
 
-def test_pass_config_dir_ClickPath(tmpdir):
-    configdir = tmpdir.join("myconfigdir")
+def test_pass_config_dir_ClickPath(
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+):
+
+    configdir = tmp_path / "myconfigdir"
     configdir.mkdir()
     user_config_name = "myconfig"
-    user_config = configdir.join("%s.yaml" % user_config_name).ensure()
+    user_config = configdir / f"{user_config_name}.yaml"
+    user_config.touch()
 
-    expect = str(configdir.join("myconfig.yaml"))
+    expect = str(user_config)
 
     runner = CliRunner()
 
@@ -997,18 +1066,19 @@ def test_pass_config_dir_ClickPath(tmpdir):
     def check_cmd(config_arg):
         return runner.invoke(config_cmd, [config_arg]).output
 
-    with configdir.as_cwd():
-        assert expect in check_cmd("myconfig")
-        assert expect in check_cmd("myconfig.yaml")
-        assert expect in check_cmd("./myconfig.yaml")
-        assert str(user_config) in check_cmd(str(configdir.join("myconfig.yaml")))
+    monkeypatch.chdir(configdir)
 
-        assert "file not found" in check_cmd(".tmuxp.json")
+    assert expect in check_cmd("myconfig")
+    assert expect in check_cmd("myconfig.yaml")
+    assert expect in check_cmd("./myconfig.yaml")
+    assert str(user_config) in check_cmd(str(configdir / "myconfig.yaml"))
+
+    assert "file not found" in check_cmd(".tmuxp.json")
 
 
-def test_ls_cli(monkeypatch, tmpdir):
-    monkeypatch.setenv("HOME", str(tmpdir))
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmpdir.join(".config")))
+def test_ls_cli(monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
 
     filenames = [
         ".git/",
@@ -1026,11 +1096,11 @@ def test_ls_cli(monkeypatch, tmpdir):
     stems = [os.path.splitext(f)[0] for f in filenames if f not in ignored_filenames]
 
     for filename in filenames:
-        location = tmpdir.join(f".tmuxp/{filename}")
+        location = tmp_path / f".tmuxp/{filename}"
         if filename.endswith("/"):
-            location.ensure_dir()
+            location.mkdir(parents=True)
         else:
-            location.ensure()
+            location.touch()
 
     runner = CliRunner()
     cli_output = runner.invoke(command_ls).output
@@ -1246,7 +1316,7 @@ def test_load_append_windows_to_current_session(server, monkeypatch):
     assert len(server._list_windows()) == 6
 
 
-def test_debug_info_cli(monkeypatch, tmpdir):
+def test_debug_info_cli(monkeypatch, tmp_path: pathlib.Path):
     monkeypatch.setenv("SHELL", "/bin/bash")
 
     runner = CliRunner()
