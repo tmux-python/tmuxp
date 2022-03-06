@@ -438,7 +438,7 @@ def test_start_directory(session, tmp_path: pathlib.Path):
     builder.build(session=session)
 
     assert session == builder.session
-    dirs = ["/usr/bin", "/dev", test_dir, "/usr", "/usr"]
+    dirs = ["/usr/bin", "/dev", str(test_dir), "/usr", "/usr"]
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
