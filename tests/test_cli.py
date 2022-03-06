@@ -43,9 +43,9 @@ def test_in_dir_from_config_dir(tmp_path: pathlib.Path):
 
     cli.startup(tmp_path)
     yaml_config = tmp_path / "myconfig.yaml"
-    yaml_config.write_text("", encoding="utf-8")
+    yaml_config.touch()
     json_config = tmp_path / "myconfig.json"
-    json_config.write_text("", encoding="utf-8")
+    json_config.touch()
     configs_found = config.in_dir(tmp_path)
 
     assert len(configs_found) == 2
@@ -57,9 +57,9 @@ def test_ignore_non_configs_from_current_dir(tmp_path: pathlib.Path):
     cli.startup(tmp_path)
 
     junk_config = tmp_path / "myconfig.psd"
-    junk_config.write_text("", encoding="utf-8")
+    junk_config.touch()
     conf = tmp_path / "watmyconfig.json"
-    conf.write_text("", encoding="utf-8")
+    conf.touch()
     configs_found = config.in_dir(tmp_path)
     assert len(configs_found) == 1
 
@@ -164,10 +164,10 @@ def test_resolve_dot(
     monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir / ".config"))
 
     tmuxp_conf_path = projectdir / ".tmuxp.yaml"
-    tmuxp_conf_path.write_text("", encoding="utf-8")
+    tmuxp_conf_path.touch()
     user_config_name = "myconfig"
     user_config = configdir / f"{user_config_name}.yaml"
-    user_config.write_text("", encoding="utf-8")
+    user_config.touch()
 
     project_config = tmuxp_conf_path
 
@@ -272,10 +272,10 @@ def test_scan_config_arg(
 
     monkeypatch.setenv("HOME", str(homedir))
     tmuxp_config_path = projectdir / ".tmuxp.yaml"
-    tmuxp_config_path.write_text("", encoding="utf-8")
+    tmuxp_config_path.touch()
     user_config_name = "myconfig"
     user_config = configdir / f"{user_config_name}.yaml"
-    user_config.write_text("", encoding="utf-8")
+    user_config.touch()
 
     project_config = projectdir / ".tmuxp.yaml"
 
@@ -422,7 +422,7 @@ def test_regression_00132_session_name_with_dots(
 def test_load_zsh_autotitle_warning(cli_args, tmp_path, monkeypatch):
     # create dummy tmuxp yaml so we don't get yelled at
     yaml_config = tmp_path / ".tmuxp.yaml"
-    yaml_config.write_text("", encoding="utf-8")
+    yaml_config.touch()
     oh_my_zsh_path = tmp_path / ".oh-my-zsh"
     oh_my_zsh_path.mkdir()
     monkeypatch.setenv("HOME", str(tmp_path))
@@ -870,7 +870,7 @@ def test_import_teamocil(cli_args, inputs, tmp_path, monkeypatch):
     teamocil_config_path.write_text(teamocil_config, encoding="utf-8")
 
     exists_yaml = tmp_path / "exists.yaml"
-    exists_yaml.write_text("", encoding="utf-8")
+    exists_yaml.touch()
 
     monkeypatch.setenv("HOME", str(tmp_path))
 
@@ -909,7 +909,7 @@ def test_import_tmuxinator(cli_args, inputs, tmp_path, monkeypatch):
     tmuxinator_config_path.write_text(tmuxinator_config, encoding="utf-8")
 
     exists_yaml = tmp_path / "exists.yaml"
-    exists_yaml.write_text("", encoding="utf-8")
+    exists_yaml.touch()
 
     monkeypatch.setenv("HOME", str(tmp_path))
 
@@ -939,7 +939,7 @@ def test_import_tmuxinator(cli_args, inputs, tmp_path, monkeypatch):
 def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
     exists_yaml = tmp_path / "exists.yaml"
-    exists_yaml.write_text("", encoding="utf-8")
+    exists_yaml.touch()
 
     server.new_session(session_name="myfirstsession")
     server.new_session(session_name="myfrozensession")
@@ -983,7 +983,7 @@ def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
 def test_freeze_overwrite(server, cli_args, inputs, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
     exists_yaml = tmp_path / "exists.yaml"
-    exists_yaml.write_text("", encoding="utf-8")
+    exists_yaml.touch()
 
     server.new_session(session_name="mysession")
 
