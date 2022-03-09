@@ -32,14 +32,14 @@ eval "$(_TMUXP_COMPLETE=zsh_source tmuxp)"
 
 ## Shell
 
-```
-tmuxp shell
+```console
+$ tmuxp shell
 
-tmuxp shell <session_name>
+$ tmuxp shell <session_name>
 
-tmuxp shell <session_name> <window_name>
+$ tmuxp shell <session_name> <window_name>
 
-tmuxp shell -c 'python code'
+$ tmuxp shell -c 'python code'
 ```
 
 Launch into a python console with [libtmux][libtmux] objects. Compare to django's shell.
