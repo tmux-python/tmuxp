@@ -35,9 +35,9 @@ eval "$(_TMUXP_COMPLETE=zsh_source tmuxp)"
 ```console
 $ tmuxp shell
 
-$ tmuxp shell <session_name>
+$ tmuxp shell [session_name]
 
-$ tmuxp shell <session_name> <window_name>
+$ tmuxp shell [session_name] [window_name]
 
 $ tmuxp shell -c 'python code'
 ```
@@ -129,10 +129,10 @@ my_window
 
 ## Freeze sessions
 
-```
-tmuxp freeze
-tmuxp freeze <session_name>
-tmuxp freeze --force <session_name>
+```console
+$ tmuxp freeze
+$ tmuxp freeze [session_name]
+$ tmuxp freeze --force [session_name]
 ```
 
 You can save the state of your tmux session by freezing it.
@@ -174,7 +174,7 @@ Absolute and relative directory paths are supported.
 
 ```console
 
-$ tmuxp load <filename>
+$ tmuxp load [filename]
 
 ```
 
@@ -211,7 +211,7 @@ without being attached. The last one will be attached if there is no
 
 ```console
 
-$ tmuxp load <filename1> <filename2> ...
+$ tmuxp load [filename1] [filename2] ...
 
 ```
 
@@ -220,7 +220,7 @@ are created, the last session is named from the terminal.
 
 ```console
 
-$ tmuxp load -s <new_session_name> <filename1> ...
+$ tmuxp load -s [new_session_name] [filename1] ...
 
 ```
 
@@ -230,8 +230,8 @@ debugging purposes. the log level can be controlled with the global
 
 ```console
 
-$ tmuxp load <filename> --log-file <log_filename>
-$ tmuxp --log-level <LEVEL> load <filename> --log-file <log_filename>
+$ tmuxp load [filename] --log-file [log_filename]
+$ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
 
 ```
 
@@ -261,24 +261,24 @@ environment:
 
 ### From teamocil
 
-```
-tmuxp import teamocil /path/to/file.{json,yaml}
+```console
+$ tmuxp import teamocil /path/to/file.{json,yaml}
 ```
 
 (import-tmuxinator)=
 
 ### From tmuxinator
 
-```
-tmuxp import tmuxinator /path/to/file.{json,yaml}
+```console
+$ tmuxp import tmuxinator /path/to/file.{json,yaml}
 ```
 
 (convert-config)=
 
 ## Convert between YAML and JSON
 
-```
-tmuxp convert /path/to/file.{json,yaml}
+```console
+$ tmuxp convert /path/to/file.{json,yaml}
 ```
 
 tmuxp automatically will prompt to convert `.yaml` to `.json` and
