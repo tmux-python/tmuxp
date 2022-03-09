@@ -55,7 +55,7 @@ When publishing plugins to pypi, tmuxp advocates for standardized naming:
 module configuration file with poetry, run `poetry init` in the module
 directory. The resulting file looks something like this:
 
-```{code-block} toml
+```toml
 
 [tool.poetry]
 name = "tmuxp-plugin-my-tmuxp-plugin"
@@ -77,7 +77,7 @@ build-backend = "poetry.masonry.api"
 
 The {}`plugin.py` file could contain something like the following:
 
-```{code-block} python
+```python
 
 from tmuxp.plugin import TmuxpPlugin
 import datetime
@@ -111,13 +111,11 @@ class MyTmuxpPlugin(TmuxpPlugin):
 Once this plugin is installed in the local python environment, it can be used
 in a configuration file like the following:
 
-```{code-block} yaml
-
+```yaml
 session_name: plugin example
 plugins:
-- my_plugin_module.plugin.MyTmuxpPlugin
+  - my_plugin_module.plugin.MyTmuxpPlugin
 # ... the rest of your config
-
 ```
 
 ## Plugin API

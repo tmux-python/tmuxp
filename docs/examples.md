@@ -27,19 +27,24 @@ punctual.
 
 ::::
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/shorthands.yaml
 :language: yaml
 
 ```
 
-### JSON
+
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/shorthands.json
 :language: json
 
 ```
+
+````
 
 ## Blank panes
 
@@ -48,19 +53,23 @@ No need to repeat `pwd` or a dummy command. A `null`, `'blank'`,
 
 Note `''` counts as an empty carriage return.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/blank-panes.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/blank-panes.json
 :language: json
 
 ```
+
+````
 
 ## 2 panes
 
@@ -82,19 +91,23 @@ Note `''` counts as an empty carriage return.
 
 ::::
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/2-pane-vertical.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/2-pane-vertical.json
 :language: json
 
 ```
+
+````
 
 ## 3 panes
 
@@ -116,19 +129,23 @@ Note `''` counts as an empty carriage return.
 
 ::::
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/3-pane.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/3-pane.json
 :language: json
 
 ```
+
+````
 
 ## 4 panes
 
@@ -150,37 +167,45 @@ Note `''` counts as an empty carriage return.
 
 ::::
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/4-pane.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/4-pane.json
 :language: json
 
 ```
 
+````
+
 ## Start Directory
 
 Equivalent to `tmux new-window -c <start-directory>`.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/start-directory.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/start-directory.json
 :language: json
 
 ```
+
+````
 
 ## Environment variable replacing
 
@@ -200,7 +225,7 @@ terminal `tmuxp` invokes in.
 
 In this case of this example, assuming the username "user":
 
-```
+```console
 $ MY_ENV_VAR=foo tmuxp load examples/env-variables.yaml
 ```
 
@@ -217,56 +242,67 @@ please make a ticket on the [issue tracker][issue tracker].
 
 [issue tracker]: https://github.com/tmux-python/tmuxp/issues
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/env-variables.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/env-variables.json
 :language: json
 
 ```
 
+````
+
 ## Environment variables
 
 tmuxp will set session environment variables.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/session-environment.yaml
 :language: yaml
 
 ```
+````
 
-### JSON
+````{tab} JSON
 
 ```{literalinclude} ../examples/session-environment.json
 :language: json
 
 ```
 
+````
+
 ## Focusing
 
 tmuxp allows `focus: true` for assuring windows and panes are attached /
 selected upon loading.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/focus-window-and-panes.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/focus-window-and-panes.json
 :language: json
 
 ```
+
+````
 
 ## Terminal History
 
@@ -274,38 +310,46 @@ tmuxp allows `suppress_history: false` to override the default command /
 suppression when building the workspace.
 This will add the `shell_command` to the bash history in the pane.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/suppress-history.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/suppress-history.json
 :language: json
 
 ```
 
+````
+
 ## Window Index
 
 You can specify a window's index using the `window_index` property. Windows
 without `window_index` will use the lowest available window index.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/window-index.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/window-index.json
 :language: json
 
 ```
+
+````
 
 ## Shell per pane
 
@@ -313,19 +357,23 @@ Every pane can have its own shell or application started. This allows for usage
 of the `remain-on-exit` setting to be used properly, but also to have
 different shells on different panes.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/pane-shell.yaml
 :language: yaml
 
 ```
 
-### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/pane-shell.json
 :language: json
 
 ```
+
+````
 
 ## Set tmux options
 
@@ -335,19 +383,20 @@ and window options.
 Including `automatic-rename`, `default-shell`,
 `default-command`, etc.
 
-### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/options.yaml
 :language: yaml
 
 ```
+````
 
-### JSON
-
+````{tab} JSON
 ```{literalinclude} ../examples/options.json
 :language: json
 
 ```
+````
 
 ## Set window options after pane creation
 
@@ -355,35 +404,35 @@ Apply window options after panes have been created. Useful for
 `synchronize-panes` option after executing individual commands in each
 pane during creation.
 
-### YAML
-
+````{tab} YAML
 ```{literalinclude} ../examples/2-pane-synchronized.yaml
 :language: yaml
 
 ```
+````
 
-### JSON
-
+````{tab} JSON
 ```{literalinclude} ../examples/2-pane-synchronized.json
 :language: json
 
 ```
+````
 
 ## Main pane height
 
-### YAML
-
+````{tab} YAML
 ```{literalinclude} ../examples/main-pane-height.yaml
 :language: yaml
 
 ```
+````
 
-### JSON
-
+````{tab} JSON
 ```{literalinclude} ../examples/main-pane-height.json
 :language: json
 
 ```
+````
 
 ## Super-advanced dev environment
 
@@ -393,27 +442,27 @@ pane during creation.
 
 :::
 
-### YAML
-
+````{tab} YAML
 ```{literalinclude} ../.tmuxp.yaml
 :language: yaml
 
 ```
+````
 
-### JSON
-
+````{tab} JSON
 ```{literalinclude} ../.tmuxp.json
 :language: json
 
 ```
+````
 
 ## Multi-line commands
 
 You can use YAML's multiline syntax to easily split multiple
 commands into the same shell command: https://stackoverflow.com/a/21699210
 
-```{code-block} yaml
-
+````{tab} YAML
+```yaml
 session_name: my project
 shell_command_before:
 - >
@@ -435,6 +484,7 @@ windows:
   options:
     main-pane-height: 35
 ```
+````
 
 ## Bootstrap project before launch
 
@@ -454,42 +504,48 @@ Run a python script (and check for it's return code), the script is
 _relative to the `.tmuxp.yaml`'s root_ (Windows and panes omitted in
 this example):
 
-```{code-block} yaml
-
+````{tab} YAML
+```yaml
 session_name: my session
 before_script: ./bootstrap.py
 # ... the rest of your config
 
 ```
+````
 
-```{code-block} json
-
+````{tab} JSON
+```json
 {
     "session_name": "my session",
     "before_script": "./bootstrap.py"
 }
 
 ```
+````
 
 Run a shell script + check for return code on an absolute path. (Windows
 and panes omitted in this example)
 
-```{code-block} yaml
+````{tab} YAML
 
+```yaml
 session_name: another example
 before_script: /absolute/path/this.sh # abs path to shell script
 # ... the rest of your config
 
 ```
+````
 
-```{code-block} json
+````{tab} JSON
 
+```json
 {
     "session_name": "my session",
     "before_script": "/absolute/path/this.sh"
 }
 
 ```
+````
 
 [exit status]: http://tldp.org/LDP/abs/html/exit-status.html
 
@@ -529,8 +585,9 @@ the config file / project root.
 If you use [pipenv][pipenv] / [poetry][poetry], you can use a script like this to ensure
 your packages are installed:
 
-```{code-block} yaml
+````{tab} YAML
 
+```yaml
 # assuming your .tmuxp.yaml is in your project root directory
 session_name: my pipenv project
 start_directory: ./
@@ -543,12 +600,14 @@ windows:
   - pipenv run ./manage.py runserver
 
 ```
+````
 
 You can also source yourself into the virtual environment using
 `shell_command_before`:
 
-```{code-block} yaml
+````{tab} YAML
 
+```yaml
 # assuming your .tmuxp.yaml is in your project root directory
 session_name: my pipenv project
 start_directory: ./
@@ -563,6 +622,7 @@ windows:
   - ./manage.py runserver
 
 ```
+````
 
 [pipenv]: https://docs.pipenv.org/
 [poetry]: https://python-poetry.org/
