@@ -44,19 +44,16 @@ $ tmuxp shell -c 'python code'
 
 Launch into a python console with [libtmux] objects. Compare to django's shell.
 
-> > ```{image} _static/tmuxp-shell.gif
-> > :width: 100%
-> > ```
->
-> ```
->
-> Automatically preloads current tmux {class}`server <libtmux.Server>`,
-> {class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`
-> {class}`pane <libtmux.Pane>`. Pass additional arguments to select a
-> specific one of your choice:
-> ```
-
+```{image} _static/tmuxp-shell.gif
+:width: 100%
 ```
+
+Automatically preloads current tmux {class}`server <libtmux.Server>`,
+{class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`
+{class}`pane <libtmux.Pane>`. Pass additional arguments to select a
+specific one of your choice:
+
+```console
 (Pdb) server
 <libtmux.server.Server object at 0x7f7dc8e69d10>
 (Pdb) server.sessions
