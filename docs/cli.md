@@ -84,7 +84,7 @@ $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 You can also pass in python code directly, similar to `python -c`, do
 this via `tmuxp -c`:
 
-```consoleell
+```console
 
 $ tmuxp shell -c 'print(session.name); print(window.name)'
 my_server
