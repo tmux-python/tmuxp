@@ -14,7 +14,7 @@ See the [click library's documentation on shell completion](https://click.pallet
 
 In bash (`~/.bashrc`):
 
-```{code-block} sh
+```console
 
 eval "$(_TMUXP_COMPLETE=bash_source tmuxp)"
 
@@ -22,7 +22,7 @@ eval "$(_TMUXP_COMPLETE=bash_source tmuxp)"
 
 In zsh (`~/.zshrc`):
 
-```{code-block} sh
+```console
 
 eval "$(_TMUXP_COMPLETE=zsh_source tmuxp)"
 
@@ -78,7 +78,7 @@ Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
 Python 3.7 supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and supports
 compatible debuggers, for instance [ipdb][ipdb]:
 
-```{code-block} sh
+```console
 
 $ pip install --user ipdb
 $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
@@ -87,7 +87,7 @@ $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 You can also pass in python code directly, similar to `python -c`, do
 this via `tmuxp -c`:
 
-```{code-block} shell
+```consoleell
 
 $ tmuxp shell -c 'print(session.name); print(window.name)'
 my_server
@@ -157,25 +157,25 @@ shorthands:
 2. The name of the project file in your {}`$HOME/.tmuxp` folder
 3. The direct path of the tmuxp file you want to load
 
-```
+```console
 # path to folder with .tmuxp.{yaml,yml,json}
-tmuxp load .
-tmuxp load ../
-tmuxp load path/to/folder/
-tmuxp load /path/to/folder/
+$ tmuxp load .
+$ tmuxp load ../
+$ tmuxp load path/to/folder/
+$ tmuxp load /path/to/folder/
 
 # name of the config, assume $HOME/.tmuxp/myconfig.yaml
-tmuxp load myconfig
+$ tmuxp load myconfig
 
 # direct path to json/yaml file
-tmuxp load ./myfile.yaml
-tmuxp load /abs/path/to/myfile.yaml
-tmuxp load ~/myfile.yaml
+$ tmuxp load ./myfile.yaml
+$ tmuxp load /abs/path/to/myfile.yaml
+$ tmuxp load ~/myfile.yaml
 ```
 
 Absolute and relative directory paths are supported.
 
-```{code-block} bash
+```console
 
 $ tmuxp load <filename>
 
@@ -184,7 +184,7 @@ $ tmuxp load <filename>
 Files named `.tmuxp.yaml` or `.tmuxp.json` in the current working
 directory may be loaded with:
 
-```{code-block} bash
+```console
 
 $ tmuxp load .
 
@@ -202,15 +202,17 @@ Or (a)ppend windows in the current active session?
 
 All of these options can be preselected to skip the prompt:
 
-```{code-block} bash $ tmuxp load -y config # load attached $ tmuxp load -d config # load detached $ tmuxp load -a config # append windows
-
+```console
+$ tmuxp load -y config  # load attached
+$ tmuxp load -d config  # load detached
+$ tmuxp load -a config  # append windows
 ```
 
 Multiple sessions can be loaded at once. The first ones will be created
 without being attached. The last one will be attached if there is no
 `-d` flag on the command line.
 
-```{code-block} bash
+```console
 
 $ tmuxp load <filename1> <filename2> ...
 
@@ -219,7 +221,7 @@ $ tmuxp load <filename1> <filename2> ...
 A session name can be provided at the terminal. If multiple sessions
 are created, the last session is named from the terminal.
 
-```{code-block} bash
+```console
 
 $ tmuxp load -s <new_session_name> <filename1> ...
 
@@ -229,7 +231,7 @@ The output of the `load` command can be logged to a file for
 debugging purposes. the log level can be controlled with the global
 `--log-level` option (defaults to INFO).
 
-```{code-block} bash
+```console
 
 $ tmuxp load <filename> --log-file <log_filename>
 $ tmuxp --log-level <LEVEL> load <filename> --log-file <log_filename>
@@ -243,7 +245,7 @@ $ tmuxp --log-level <LEVEL> load <filename> --log-file <log_filename>
 Use to collect all relevant information for submitting an issue to
 the project.
 
-```{code-block} bash
+```console
 
 $ tmuxp debug-info
 --------------------------

@@ -23,7 +23,7 @@ using `$ tmux -L test_case`.
 
 To begin developing, check out the code from github:
 
-```{code-block} bash
+```console
 
 $ git clone git@github.com:tmux-python/tmuxp.git
 $ cd tmuxp
@@ -35,7 +35,7 @@ $ cd tmuxp
 Now create a virtualenv, if you don't know how to, you can create a
 virtualenv with:
 
-```{code-block} bash
+```console
 
 $ virtualenv .venv
 
@@ -43,7 +43,7 @@ $ virtualenv .venv
 
 Then activate it to your current tty / terminal session with:
 
-```{code-block} bash
+```console
 
 $ source .venv/bin/activate
 
@@ -51,7 +51,7 @@ $ source .venv/bin/activate
 
 Good! Now let's run this:
 
-```{code-block} bash
+```console
 
 $ pip install -e .
 
@@ -61,7 +61,7 @@ This has `pip`, a python package manager install the python package
 in the current directory. `-e` means `--editable`, which means you can
 adjust the code and the installed software will reflect the changes.
 
-```{code-block} bash
+```console
 
 $ tmuxp
 
@@ -75,7 +75,7 @@ For information on installing poetry visit the [poetry's documentation][poetry's
 
 To begin developing, check out the code from github:
 
-```{code-block} bash
+```console
 
 $ git clone git@github.com:tmux-python/tmuxp.git
 $ cd tmuxp
@@ -85,7 +85,7 @@ $ cd tmuxp
 You can create a virtualenv, and install all of the locked
 packages as listed in poetry.lock:
 
-```{code-block} bash
+```console
 
 $ poetry install
 
@@ -95,7 +95,7 @@ If you ever need to update packages during your development session, the
 following command can be used to update all packages as per poetry settings or
 individual package (second command):
 
-```{code-block} bash
+```console
 
 $ poetry update
 $ poetry update requests
@@ -104,7 +104,7 @@ $ poetry update requests
 
 Then activate it to your current tty / terminal session with:
 
-```{code-block} bash
+```console
 
 $ poetry shell
 
@@ -122,7 +122,7 @@ since you are in the virtual environment, your {}`PATH` environment was
 updated to include a special version of `python` inside your `.venv`
 folder with its own packages.
 
-```{code-block} bash
+```console
 
 $ make test
 
@@ -139,7 +139,7 @@ If you found a problem or are trying to write a test, you can file an
 
 Test only a file:
 
-```{code-block} bash
+```console
 
 $ py.test tests/test_config.py
 
@@ -147,7 +147,7 @@ $ py.test tests/test_config.py
 
 will test the `tests/test_config.py` tests.
 
-```{code-block} bash
+```console
 
 $ py.test tests/test_config.py::test_export_json
 
@@ -157,7 +157,7 @@ tests `test_export_json` inside of `tests/test_config.py`.
 
 Multiple can be separated by spaces:
 
-```{code-block} bash
+```console
 
 $ py.test tests/test_{window,pane}.py tests/test_config.py::test_export_json
 
@@ -200,7 +200,7 @@ variants, including Debian, Ubuntu, FreeBSD, OS X.
 
 To run all tests upon editing any `.py` file:
 
-```{code-block} bash
+```console
 
 $ make watch_test
 
@@ -209,7 +209,7 @@ $ make watch_test
 You can also re-run a specific test file or any other [py.test usage
 argument][py.test usage argument]:
 
-```{code-block} bash
+```console
 
 $ make watch_test test=tests/test_config.py
 
@@ -221,7 +221,7 @@ $ make watch_test test='-x tests/test_config.py tests/test_util.py'
 
 Rebuild the documentation when an `.rst` file is edited:
 
-```{code-block} bash
+```console
 
 $ cd doc
 $ make watch
@@ -242,7 +242,7 @@ $ make SPHINXBUILD='poetry run sphinx-build' watch
 
 After you {ref}`install_dev_env`, when inside the tmuxp checkout:
 
-```{code-block} bash
+```console
 
 $ tmuxp load .
 

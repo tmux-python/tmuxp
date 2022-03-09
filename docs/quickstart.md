@@ -6,7 +6,7 @@
 
 Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
 
-```{code-block} bash
+```console
 
 $ pip install --user tmuxp
 
@@ -14,7 +14,7 @@ $ pip install --user tmuxp
 
 You can upgrade to the latest release with:
 
-```{code-block} bash
+```console
 
 $ pip install --user tmuxp -U
 
@@ -24,7 +24,7 @@ Then install {ref}`completion`.
 
 If you are a Homebrew user you can install it with:
 
-```{code-block} bash
+```console
 
 $ brew install tmuxp
 
@@ -56,7 +56,7 @@ Create a file, `~/.tmuxp/example.yaml`:
 
 ```
 
-```{code-block} bash
+```console
 
 $ tmuxp load example.yaml
 
@@ -66,7 +66,7 @@ This creates your tmuxp session.
 
 Load multiple tmux sessions at once:
 
-```{code-block} bash
+```console
 
 $ tmuxp load example.yaml anothersession.yaml
 
@@ -79,7 +79,7 @@ the current active session.
 You can also have a custom tmuxp config directory by setting the
 `TMUX_CONFIGDIR` in your environment variables.
 
-```{code-block} bash
+```console
 
 $ TMUXP_CONFIGDIR=$HOME/.tmuxpmoo tmuxp load cpython
 
@@ -87,7 +87,7 @@ $ TMUXP_CONFIGDIR=$HOME/.tmuxpmoo tmuxp load cpython
 
 Or in your `~/.bashrc` / `~/.zshrc` you can set:
 
-```{code-block} bash
+```console
 
 export TMUXP_CONFIGDIR=$HOME/.yourconfigdir/tmuxp
 

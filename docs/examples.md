@@ -501,7 +501,7 @@ You can load your software project in tmux by placing a `.tmuxp.yaml` or
 tmuxp supports loading configs via absolute filename with `tmuxp load`
 and via `$ tmuxp load .` if config is in directory.
 
-```{code-block} bash
+```console
 
 $ tmuxp load ~/workspaces/myproject.yaml
 

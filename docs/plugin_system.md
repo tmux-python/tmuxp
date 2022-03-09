@@ -39,7 +39,7 @@ suggested to use it when developing plugins; however, `pip` will work
 just as well. Only one of the configuration files is needed for the packaging
 tool that the package developer desides to use.
 
-```{code-block} bash
+```console
 
 python_module
 ├── tmuxp_plugin_my_plugin_module
