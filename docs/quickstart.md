@@ -8,7 +8,7 @@ Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
 
 ```{code-block} bash
 
-$ pip install tmuxp
+$ pip install --user tmuxp
 
 ```
 
@@ -16,7 +16,7 @@ You can upgrade to the latest release with:
 
 ```{code-block} bash
 
-$ pip install tmuxp -U
+$ pip install --user tmuxp -U
 
 ```
 

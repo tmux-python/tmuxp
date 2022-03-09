@@ -80,9 +80,8 @@ compatible debuggers, for instance [ipdb][ipdb]:
 
 ```{code-block} sh
 
-$ pip install ipdb
+$ pip install --user ipdb
 $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
-
 ```
 
 You can also pass in python code directly, similar to `python -c`, do
