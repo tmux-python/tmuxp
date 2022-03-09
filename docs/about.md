@@ -80,7 +80,8 @@ See {ref}`libtmux's internals <libtmux:Internals>`.
 **Conversion** `$ tmuxp convert <filename>` can convert files to and
 from JSON and YAML.
 
-[^id4]:
+[^id4]: On freezing
+
     While freezing and importing sessions is a great way to save time,
     tweaking will probably be required - There is no substitute to a
     config made with love.
