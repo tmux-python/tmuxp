@@ -449,7 +449,7 @@ Depending on your tmux version, there is different options available.
 
 ### Vi-style copy and paste
 
-```sh
+```console
 # Vi copypaste mode
 set-window-option -g mode-keys vi
 bind-key -t vi-copy 'v' begin-selection
@@ -458,7 +458,7 @@ bind-key -t vi-copy 'y' copy-selection
 
 ### Aggressive resizing for clients
 
-```sh
+```console
 setw -g aggressive-resize on
 ```
 
@@ -466,7 +466,7 @@ setw -g aggressive-resize on
 
 `<Prefix>` + `r`.
 
-```sh
+```console
 bind r source-file ~/.tmux.conf \; display-message "Config reloaded."
 ```
 
@@ -479,7 +479,7 @@ You can use [tmux-mem-cpu-load][tmux-mem-cpu-load] to get stats (requires compil
 [basic-cpu-and-memory.tmux][basic-cpu-and-memory.tmux]. You can pipe in a bash command to a tmux
 status line like:
 
-```sh
+```console
 $(shell-command)
 ```
 

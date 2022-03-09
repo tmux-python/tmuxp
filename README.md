@@ -21,13 +21,13 @@ web](https://leanpub.com/the-tao-of-tmux/read).
 
 ## Pip
 
-```shell
+```console
 $ pip install --user tmuxp
 ```
 
 ## Homebrew
 
-```shell
+```console
 $ brew install tmuxp
 ```
 
@@ -55,19 +55,19 @@ windows:
 
 Save as _mysession.yaml_, and load:
 
-```sh
+```console
 $ tmuxp load ./mysession.yaml
 ```
 
 Projects with _.tmuxp.yaml_ or _.tmuxp.json_ load via directory:
 
-```sh
+```console
 $ tmuxp load path/to/my/project/
 ```
 
 Load multiple at once (in bg, offer to attach last):
 
-```sh
+```console
 $ tmuxp load mysession ./another/project/
 ```
 
@@ -93,7 +93,7 @@ tmuxp checks for configs in user directories:
 Load your tmuxp config from anywhere by using the filename, assuming
 _\~/.config/tmuxp/mysession.yaml_ (or _.json_):
 
-```sh
+```console
 $ tmuxp load mysession
 ```
 
@@ -109,7 +109,7 @@ _New in 1.6.0_:
 server, session, and window in
 [libtmux](https://github.com/tmux-python/libtmux) objects.
 
-```shell
+```console
 $ tmuxp shell
 
 (Pdb) server
@@ -134,7 +134,7 @@ Python 3.7+ supports [PEP
 553](https://www.python.org/dev/peps/pep-0553/) `breakpoint()`
 (including `PYTHONBREAKPOINT`). Also supports direct commands via `-c`:
 
-```shell
+```console
 $ tmuxp shell -c 'print(window.name)'
 my_window
 
@@ -166,7 +166,7 @@ You can also load sessions in the background by passing `-d` flag
 
 Snapshot your tmux layout, pane paths, and window/session names.
 
-```sh
+```console
 $ tmuxp freeze session-name
 ```
 
@@ -177,7 +177,7 @@ tmux](http://tmuxp.git-pull.com/cli.html#freeze-sessions) sessions.
 
 Convert a session file from yaml to json and vice versa.
 
-```sh
+```console
 $ tmuxp convert filename
 ```
 
@@ -186,7 +186,7 @@ going to be written.
 
 You can auto confirm the prompt. In this case no preview will be shown.
 
-```sh
+```console
 $ tmuxp convert -y filename
 $ tmuxp convert --yes filename
 ```
@@ -201,13 +201,13 @@ the [Plugin System](http://tmuxp.git-pull.com/plugin_system.html).
 The `load` command provides a way to log output to a log file for
 debugging purposes.
 
-```sh
+```console
 $ tmuxp load --log-file <log-file-name> .
 ```
 
 Collect system info to submit with a Github issue:
 
-```sh
+```console
 $ tmuxp debug-info
 ------------------
 environment:
