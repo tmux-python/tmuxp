@@ -3,21 +3,21 @@ import inspect
 import os
 import sys
 from os.path import dirname, relpath
+from pathlib import Path
 
 import tmuxp
 
 # Get the project root dir, which is the parent dir of this
-cwd = os.getcwd()
-project_root = os.path.dirname(cwd)
+cwd = Path.cwd()
+project_root = cwd.parent
 
-sys.path.insert(0, project_root)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "_ext")))
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(cwd / "_ext"))
 
 # package data
 about = {}
 with open("../tmuxp/__about__.py") as fp:
     exec(fp.read(), about)
-
 
 extensions = [
     "sphinx.ext.autodoc",
