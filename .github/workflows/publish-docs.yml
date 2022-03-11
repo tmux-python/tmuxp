@@ -28,8 +28,7 @@ jobs:
             - CHANGES
             - README.*
           docs:
-            - 'docs/**/*.rst'
-            - 'docs/**/*.md'
+            - 'docs/**'
             - 'examples/**'
           python_files:
             - 'tmuxp/**'
