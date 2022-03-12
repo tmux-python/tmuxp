@@ -1021,3 +1021,109 @@ def test_load_workspace_enter(
         assert output in captured_pane
     else:
         assert output not in captured_pane
+
+
+@pytest.mark.parametrize(
+    "yaml,sleep,output",
+    [
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "___$((1 + 5))___"
+      sleep_before: 2
+    - cmd: echo "___$((1 + 3))___"
+      sleep_before: 1
+    """
+            ),
+            1.5,
+            "___4___",
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "___$((1 + 5))___"
+      sleep_before: 2
+    - cmd: echo "___$((1 + 3))___"
+      sleep_before: 1
+    """
+            ),
+            3,
+            "___4___",
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "___$((1 + 3))___"
+    sleep_before: 2
+    """
+            ),
+            2,
+            "___4___",
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "___$((1 + 3))___"
+    sleep_before: 2
+    """
+            ),
+            2,
+            "___4___",
+        ],
+    ],
+    ids=[
+        "command_level_sleep_3_shortform",
+        "command_level_pane_sleep_3_longform",
+        "pane_sleep_2_shortform",
+        "pane_sleep_2_longform",
+    ],
+)
+def test_load_workspace_sleep(
+    tmp_path: pathlib.Path,
+    server: libtmux.Server,
+    monkeypatch: pytest.MonkeyPatch,
+    yaml,
+    sleep: int,
+    output,
+):
+    yaml_config = tmp_path / "simple.yaml"
+    yaml_config.write_text(
+        yaml,
+        encoding="utf-8",
+    )
+    sconfig = kaptan.Kaptan(handler="yaml")
+    sconfig = sconfig.import_config(str(yaml_config)).get()
+    sconfig = config.expand(sconfig)
+    sconfig = config.trickle(sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    t = time.process_time()
+
+    time.sleep(1)
+    session = builder.session
+    pane = session.attached_pane
+
+    while (time.process_time() - t) * 1000 < sleep:
+        captured_pane = "\n".join(pane.capture_pane())
+
+        assert output not in captured_pane
+        time.sleep(0.1)
+    captured_pane = "\n".join(pane.capture_pane())
+    assert output in captured_pane
