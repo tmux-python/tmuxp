@@ -217,3 +217,13 @@ def linkcode_resolve(domain, info):  # NOQA: C901
             fn,
             linespec,
         )
+
+
+def remove_tabs_js(app, exc):
+    if app.builder.format == "html" and not exc:
+        tabs_js = Path(app.builder.outdir) / "_static" / "tabs.js"
+        tabs_js.unlink()
+
+
+def setup(app):
+    app.connect("build-finished", remove_tabs_js)
