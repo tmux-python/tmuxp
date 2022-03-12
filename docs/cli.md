@@ -231,17 +231,21 @@ Or (a)ppend windows in the current active session?
 
 All of these options can be preselected to skip the prompt:
 
-```console
-$ tmuxp load -y config  # load attached
-```
+- Attach / open client after load:
 
-```console
-$ tmuxp load -d config  # load detached
-```
+  ```console
+  $ tmuxp load -y config
+  ```
+- Detached / open in background:
 
-```console
-$ tmuxp load -a config  # append windows
-```
+  ```console
+  $ tmuxp load -d config
+  ```
+- Append windows to existing session
+
+  ```console
+  $ tmuxp load -a config
+  ```
 
 Multiple sessions can be loaded at once. The first ones will be created
 without being attached. The last one will be attached if there is no
@@ -264,6 +268,9 @@ debugging purposes. the log level can be controlled with the global
 
 ```console
 $ tmuxp load [filename] --log-file [log_filename]
+```
+
+```console
 $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
 ```
 
@@ -293,25 +300,61 @@ environment:
 
 ### From teamocil
 
+````{tab} YAML
+
 ```console
-$ tmuxp import teamocil /path/to/file.{json,yaml}
+$ tmuxp import teamocil /path/to/file.yaml
 ```
+
+````
+
+````{tab} JSON
+
+```console
+$ tmuxp import teamocil /path/to/file.json
+```
+
+````
 
 (import-tmuxinator)=
 
 ### From tmuxinator
 
+````{tab} YAML
+
 ```console
-$ tmuxp import tmuxinator /path/to/file.{json,yaml}
+$ tmuxp import tmuxinator /path/to/file.yaml
 ```
+
+````
+
+````{tab} JSON
+
+```console
+$ tmuxp import tmuxinator /path/to/file.json
+```
+
+````
 
 (convert-config)=
 
 ## Convert between YAML and JSON
 
+````{tab} YAML -> JSON
+
 ```console
-$ tmuxp convert /path/to/file.{json,yaml}
+$ tmuxp convert /path/to/file.yaml
 ```
+
+````
+
+````{tab} JSON -> YAML
+
+```console
+$ tmuxp convert /path/to/file.json
+```
+
+````
 
 tmuxp automatically will prompt to convert `.yaml` to `.json` and
 `.json` to `.yaml`.
