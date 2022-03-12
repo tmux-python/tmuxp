@@ -3,7 +3,7 @@ import pathlib
 FIXTURE_PATH = pathlib.Path(__file__).parent
 
 
-def loadfixture(_file):  # return fixture data, relative to __file__
+def load_fixture(_file):  # return fixture data, relative to __file__
     return open(FIXTURE_PATH / _file).read()
 
 

@@ -1,6 +1,6 @@
-from .._util import loadfixture
+from .._util import load_fixture
 
-teamocil_yaml = loadfixture("config_teamocil/test1.yaml")
+teamocil_yaml = load_fixture("config_teamocil/test1.yaml")
 teamocil_conf = {
     "windows": [
         {

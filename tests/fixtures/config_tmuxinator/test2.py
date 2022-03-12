@@ -1,6 +1,6 @@
-from .._util import loadfixture
+from .._util import load_fixture
 
-tmuxinator_yaml = loadfixture("config_tmuxinator/test2.yaml")
+tmuxinator_yaml = load_fixture("config_tmuxinator/test2.yaml")
 
 tmuxinator_dict = {
     "project_name": "sample",

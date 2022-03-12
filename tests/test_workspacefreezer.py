@@ -6,11 +6,11 @@ import kaptan
 from tmuxp import config
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
-from .fixtures._util import loadfixture
+from .fixtures._util import load_fixture
 
 
 def test_freeze_config(session):
-    yaml_config = loadfixture("workspacefreezer/sampleconfig.yaml")
+    yaml_config = load_fixture("workspacefreezer/sampleconfig.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 

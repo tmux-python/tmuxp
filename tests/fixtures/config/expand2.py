@@ -1,8 +1,8 @@
 import os
 
-from .._util import loadfixture
+from .._util import load_fixture
 
-unexpanded_yaml = loadfixture("config/expand2-unexpanded.yaml")
-expanded_yaml = loadfixture("config/expand2-expanded.yaml").format(
+unexpanded_yaml = load_fixture("config/expand2-unexpanded.yaml")
+expanded_yaml = load_fixture("config/expand2-expanded.yaml").format(
     HOME=os.path.expanduser("~")
 )

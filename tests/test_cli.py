@@ -28,7 +28,7 @@ from tmuxp.cli import (
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from .fixtures._util import FIXTURE_PATH, loadfixture
+from .fixtures._util import FIXTURE_PATH, load_fixture
 
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path):
@@ -861,7 +861,7 @@ def test_help(cli_args, monkeypatch):
     ],
 )
 def test_import_teamocil(cli_args, inputs, tmp_path, monkeypatch):
-    teamocil_config = loadfixture("config_teamocil/test4.yaml")
+    teamocil_config = load_fixture("config_teamocil/test4.yaml")
 
     teamocil_path = tmp_path / ".teamocil"
     teamocil_path.mkdir()
@@ -900,7 +900,7 @@ def test_import_teamocil(cli_args, inputs, tmp_path, monkeypatch):
     ],
 )
 def test_import_tmuxinator(cli_args, inputs, tmp_path, monkeypatch):
-    tmuxinator_config = loadfixture("config_tmuxinator/test3.yaml")
+    tmuxinator_config = load_fixture("config_tmuxinator/test3.yaml")
 
     tmuxinator_path = tmp_path / ".tmuxinator"
     tmuxinator_path.mkdir()
@@ -1110,7 +1110,7 @@ def test_ls_cli(monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path):
 def test_load_plugins(monkeypatch_plugin_test_packages):
     from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
-    plugins_config = loadfixture("workspacebuilder/plugin_bwb.yaml")
+    plugins_config = load_fixture("workspacebuilder/plugin_bwb.yaml")
 
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(plugins_config).get()
@@ -1193,7 +1193,7 @@ def test_plugin_system_before_script(
 
 
 def test_reattach_plugins(monkeypatch_plugin_test_packages, server):
-    config_plugins = loadfixture("workspacebuilder/plugin_r.yaml")
+    config_plugins = load_fixture("workspacebuilder/plugin_r.yaml")
 
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(config_plugins).get()
@@ -1224,7 +1224,7 @@ def test_load_attached(server, monkeypatch):
 
     monkeypatch.setattr("libtmux.session.Session.attach_session", attach_session_mock)
 
-    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    yaml_config = load_fixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
@@ -1244,7 +1244,7 @@ def test_load_attached_detached(server, monkeypatch):
 
     monkeypatch.setattr("libtmux.session.Session.attach_session", attach_session_mock)
 
-    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    yaml_config = load_fixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
@@ -1264,7 +1264,7 @@ def test_load_attached_within_tmux(server, monkeypatch):
 
     monkeypatch.setattr("libtmux.session.Session.switch_client", switch_client_mock)
 
-    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    yaml_config = load_fixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
@@ -1284,7 +1284,7 @@ def test_load_attached_within_tmux_detached(server, monkeypatch):
 
     monkeypatch.setattr("libtmux.session.Session.switch_client", switch_client_mock)
 
-    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    yaml_config = load_fixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
@@ -1296,7 +1296,7 @@ def test_load_attached_within_tmux_detached(server, monkeypatch):
 
 
 def test_load_append_windows_to_current_session(server, monkeypatch):
-    yaml_config = loadfixture("workspacebuilder/two_pane.yaml")
+    yaml_config = load_fixture("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
