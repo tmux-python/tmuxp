@@ -5,6 +5,7 @@ tmuxp.workspacebuilder
 
 """
 import logging
+import time
 
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
@@ -363,8 +364,14 @@ class WorkspaceBuilder:
                 suppress = True
 
             enter = pconf.get("enter", True)
+            sleep = pconf.get("sleep", None)
+
             for cmd in pconf["shell_command"]:
                 enter = cmd.get("enter", enter)
+                sleep = cmd.get("sleep", sleep)
+
+                if sleep is not None:
+                    time.sleep(sleep)
 
                 p.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
 
