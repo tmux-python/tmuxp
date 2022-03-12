@@ -28,7 +28,7 @@ from tmuxp.cli import (
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from .fixtures._util import curjoin, loadfixture
+from .fixtures._util import FIXTURE_PATH, loadfixture
 
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path):
@@ -305,7 +305,7 @@ def test_load_workspace(server, monkeypatch):
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = curjoin("workspacebuilder/two_pane.yaml")
+    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -321,7 +321,7 @@ def test_load_workspace_named_session(server, monkeypatch):
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = curjoin("workspacebuilder/two_pane.yaml")
+    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -342,7 +342,7 @@ def test_load_workspace_name_match_regression_252(
     tmp_path: pathlib.Path, server, monkeypatch
 ):
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = curjoin("workspacebuilder/two_pane.yaml")
+    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -407,8 +407,8 @@ windows:
 def test_regression_00132_session_name_with_dots(
     tmp_path: pathlib.Path, server, session
 ):
-    yaml_config = curjoin("workspacebuilder/regression_00132_dots.yaml")
-    cli_args = [yaml_config]
+    yaml_config = FIXTURE_PATH / "workspacebuilder" / "regression_00132_dots.yaml"
+    cli_args = [str(yaml_config)]
     inputs = []
     runner = CliRunner()
     result = runner.invoke(
@@ -1181,7 +1181,7 @@ def test_plugin_system_before_script(
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = curjoin("workspacebuilder/plugin_bs.yaml")
+    session_file = FIXTURE_PATH / "workspacebuilder" / "plugin_bs.yaml"
 
     # open it detached
     session = load_workspace(
