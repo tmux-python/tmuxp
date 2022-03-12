@@ -362,8 +362,10 @@ class WorkspaceBuilder:
             else:
                 suppress = True
 
+            enter = pconf.get("enter", True)
+
             for cmd in pconf["shell_command"]:
-                p.send_keys(cmd, suppress_history=suppress)
+                p.send_keys(cmd, suppress_history=suppress, enter=enter)
 
             if "focus" in pconf and pconf["focus"]:
                 w.select_pane(p["pane_id"])
