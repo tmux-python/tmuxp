@@ -34,11 +34,17 @@ eval "$(_TMUXP_COMPLETE=zsh_source tmuxp)"
 
 ```console
 $ tmuxp shell
+```
 
+```console
 $ tmuxp shell [session_name]
+```
 
+```console
 $ tmuxp shell [session_name] [window_name]
+```
 
+```console
 $ tmuxp shell -c 'python code'
 ```
 
@@ -76,8 +82,10 @@ Python 3.7 supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and supports
 compatible debuggers, for instance [ipdb][ipdb]:
 
 ```console
-
 $ pip install --user ipdb
+```
+
+```console
 $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 ```
 
@@ -85,27 +93,34 @@ You can also pass in python code directly, similar to `python -c`, do
 this via `tmuxp -c`:
 
 ```console
-
 $ tmuxp shell -c 'print(session.name); print(window.name)'
 my_server
 my_window
+```
 
+```console
 $ tmuxp shell my_server -c 'print(session.name); print(window.name)'
 my_server
 my_window
+```
 
+```console
 $ tmuxp shell my_server my_window -c 'print(session.name); print(window.name)'
 my_server
 my_window
+```
 
+```console
 $ tmuxp shell my_server my_window -c 'print(window.name.upper())'
 MY_WINDOW
+```
 
-# Assuming inside a tmux pane or one is attached on default server
+Assuming inside a tmux pane or one is attached on default server:
+
+```console
 $ tmuxp shell -c 'print(pane.id); print(pane.window.name)'
 %2
 my_window
-
 ```
 
 [pep 553]: https://www.python.org/dev/peps/pep-0553/
@@ -154,37 +169,54 @@ shorthands:
 2. The name of the project file in your {}`$HOME/.tmuxp` folder
 3. The direct path of the tmuxp file you want to load
 
+Path to folder with `.tmuxp.yaml`, `.tmuxp.yml`, `.tmuxp.json`:
+
 ```console
-# path to folder with .tmuxp.{yaml,yml,json}
 $ tmuxp load .
+```
+
+```console
 $ tmuxp load ../
+```
+
+```console
 $ tmuxp load path/to/folder/
+```
+
+```console
 $ tmuxp load /path/to/folder/
+```
 
-# name of the config, assume $HOME/.tmuxp/myconfig.yaml
+Name of the config, assume `$HOME/.tmuxp/myconfig.yaml`:
+```console
 $ tmuxp load myconfig
+```
 
-# direct path to json/yaml file
+Direct path to json/yaml file:
+
+```console
 $ tmuxp load ./myfile.yaml
+```
+
+```console
 $ tmuxp load /abs/path/to/myfile.yaml
+```
+
+```console
 $ tmuxp load ~/myfile.yaml
 ```
 
 Absolute and relative directory paths are supported.
 
 ```console
-
 $ tmuxp load [filename]
-
 ```
 
 Files named `.tmuxp.yaml` or `.tmuxp.json` in the current working
 directory may be loaded with:
 
 ```console
-
 $ tmuxp load .
-
 ```
 
 If you try to load a config file from within a tmux session, it will ask you
@@ -201,7 +233,13 @@ All of these options can be preselected to skip the prompt:
 
 ```console
 $ tmuxp load -y config  # load attached
+```
+
+```console
 $ tmuxp load -d config  # load detached
+```
+
+```console
 $ tmuxp load -a config  # append windows
 ```
 
@@ -210,18 +248,14 @@ without being attached. The last one will be attached if there is no
 `-d` flag on the command line.
 
 ```console
-
 $ tmuxp load [filename1] [filename2] ...
-
 ```
 
 A session name can be provided at the terminal. If multiple sessions
 are created, the last session is named from the terminal.
 
 ```console
-
 $ tmuxp load -s [new_session_name] [filename1] ...
-
 ```
 
 The output of the `load` command can be logged to a file for
@@ -229,10 +263,8 @@ debugging purposes. the log level can be controlled with the global
 `--log-level` option (defaults to INFO).
 
 ```console
-
 $ tmuxp load [filename] --log-file [log_filename]
 $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
-
 ```
 
 (cli-debug-info)=
