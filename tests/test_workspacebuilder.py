@@ -1,11 +1,14 @@
 """Test for tmuxp workspacebuilder."""
 import os
 import pathlib
+import textwrap
+import time
 
 import pytest
 
 import kaptan
 
+import libtmux
 from libtmux import Window
 from libtmux.common import has_gte_version
 from libtmux.test import retry, temp_session
@@ -869,3 +872,99 @@ def test_find_current_active_pane(server, monkeypatch):
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
 
     assert builder.find_current_attached_session() == second_session
+
+
+@pytest.mark.parametrize(
+    "yaml,output,should_see",
+    [
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command: echo "___$((1 + 3))___"
+    enter: false
+    """
+            ),
+            "___4___",
+            False,
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - echo "___$((1 + 3))___"
+    enter: false
+    """
+            ),
+            "___4___",
+            False,
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should execute
+windows:
+- panes:
+  - shell_command: echo "___$((1 + 3))___"
+  """
+            ),
+            "___4___",
+            True,
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should execute
+windows:
+- panes:
+  - shell_command:
+    - echo "___$((1 + 3))___"
+  """
+            ),
+            "___4___",
+            True,
+        ],
+    ],
+    ids=[
+        "pane_enter_false_shortform",
+        "pane_enter_false_longform",
+        "pane_enter_default_shortform",
+        "pane_enter_default_longform",
+    ],
+)
+def test_load_workspace_enter(
+    tmp_path: pathlib.Path,
+    server: libtmux.Server,
+    monkeypatch: pytest.MonkeyPatch,
+    yaml,
+    output,
+    should_see,
+):
+    yaml_config = tmp_path / "simple.yaml"
+    yaml_config.write_text(
+        yaml,
+        encoding="utf-8",
+    )
+    sconfig = kaptan.Kaptan(handler="yaml")
+    sconfig = sconfig.import_config(str(yaml_config)).get()
+    sconfig = config.expand(sconfig)
+    sconfig = config.trickle(sconfig)
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    time.sleep(1)
+
+    session = builder.session
+    pane = session.attached_pane
+
+    captured_pane = "\n".join(pane.capture_pane())
+
+    if should_see:
+        assert output in captured_pane
+    else:
+        assert output not in captured_pane
