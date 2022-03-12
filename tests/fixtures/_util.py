@@ -1,6 +1,8 @@
 import os
 import pathlib
 
+FIXTURE_PATH = pathlib.Path(__file__).parent
+
 
 def curjoin(_file):  # return filepath relative to __file__ (this file)
     return os.path.join(os.path.dirname(__file__), _file)
