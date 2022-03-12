@@ -328,6 +328,33 @@ This will add the `shell_command` to the bash history in the pane.
 
 ````
 
+## Skip command execution
+
+```{versionadded} 1.10.0b1
+`enter: false` option
+```
+
+Omit sending {kbd}`enter` to key commands. Equivalent to
+[`send_keys(enter=False)`](libtmux.Pane.send_keys).
+
+````{tab} YAML
+
+```{literalinclude} ../examples/skip-send.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON
+
+```{literalinclude} ../examples/skip-send.json
+:language: json
+
+```
+
+````
+
 ## Window Index
 
 You can specify a window's index using the `window_index` property. Windows
