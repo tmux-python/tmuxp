@@ -10,7 +10,6 @@ import kaptan
 from tmuxp import config, exc
 
 from . import EXAMPLE_PATH
-from .fixtures import config as fixtures
 
 TMUXP_DIR = pathlib.Path(__file__).parent / ".tmuxp"
 
@@ -32,6 +31,8 @@ def load_config(path: Union[str, pathlib.Path]) -> str:
 
 
 def test_export_json(tmp_path: pathlib.Path):
+    from .fixtures import config as fixtures
+
     json_config_file = tmp_path / "config.json"
 
     configparser = kaptan.Kaptan()
@@ -47,6 +48,8 @@ def test_export_json(tmp_path: pathlib.Path):
 
 
 def test_export_yaml(tmp_path: pathlib.Path):
+    from .fixtures import config as fixtures
+
     yaml_config_file = tmp_path / "config.yaml"
 
     configparser = kaptan.Kaptan()
@@ -92,17 +95,18 @@ def test_scan_config(tmp_path: pathlib.Path):
 
 def test_config_expand1():
     """Expand shell commands from string to list."""
+    from .fixtures import config as fixtures
+
     test_config = config.expand(fixtures.expand1.before_config)
     assert test_config == fixtures.expand1.after_config
 
 
 def test_config_expand2():
     """Expand shell commands from string to list."""
+    from .fixtures import config as fixtures
 
     unexpanded_dict = load_yaml(fixtures.expand2.unexpanded_yaml)
-
     expanded_dict = load_yaml(fixtures.expand2.expanded_yaml)
-
     assert config.expand(unexpanded_dict) == expanded_dict
 
 
@@ -220,6 +224,8 @@ def test_inheritance_config():
 
 def test_shell_command_before():
     """Config inheritance for the nested 'start_command'."""
+    from .fixtures import config as fixtures
+
     test_config = fixtures.shell_command_before.config_unexpanded
     test_config = config.expand(test_config)
 
@@ -230,6 +236,8 @@ def test_shell_command_before():
 
 
 def test_in_session_scope():
+    from .fixtures import config as fixtures
+
     sconfig = load_yaml(fixtures.shell_command_before_session.before)
 
     config.validate_schema(sconfig)
@@ -241,6 +249,8 @@ def test_in_session_scope():
 
 
 def test_trickle_relative_start_directory():
+    from .fixtures import config as fixtures
+
     test_config = config.trickle(fixtures.trickle.before)
     assert test_config == fixtures.trickle.expected
 
@@ -290,6 +300,7 @@ def test_expands_blank_panes():
             'shell_command': ['']
 
     """
+    from .fixtures import config as fixtures
 
     yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
     test_config = load_config(yaml_config_file)

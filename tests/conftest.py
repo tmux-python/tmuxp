@@ -1,5 +1,7 @@
+import getpass
 import logging
 import os
+import pathlib
 
 import pytest
 
@@ -8,6 +10,23 @@ from libtmux.server import Server
 from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(autouse=True, scope="session")
+def home_path(tmp_path_factory: pytest.TempPathFactory):
+    return tmp_path_factory.mktemp("home")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def user_path(home_path: pathlib.Path):
+    p = home_path / getpass.getuser()
+    p.mkdir()
+    return p
+
+
+@pytest.fixture(autouse=True)
+def home_path_default(user_path: pathlib.Path):
+    os.environ["HOME"] = str(user_path)
 
 
 @pytest.fixture(scope="function")
