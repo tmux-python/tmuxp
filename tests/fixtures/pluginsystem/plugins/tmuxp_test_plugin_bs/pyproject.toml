@@ -6,7 +6,7 @@ authors = ["Joseph Flinn <joseph.s.flinn@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-tmuxp = "^1.7.0."
+tmuxp = "^1.7.0"
 
 [tool.poetry.dev-dependencies]
 
