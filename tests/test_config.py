@@ -9,7 +9,7 @@ import kaptan
 
 from tmuxp import config, exc
 
-from . import example_dir
+from . import EXAMPLE_PATH
 from .fixtures import config as fixtures
 
 TMUXP_DIR = pathlib.Path(__file__).parent / ".tmuxp"
@@ -291,7 +291,7 @@ def test_expands_blank_panes():
 
     """
 
-    yaml_config_file = example_dir / "blank-panes.yaml"
+    yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
     test_config = load_config(yaml_config_file)
     assert config.expand(test_config) == fixtures.expand_blank.expected
 

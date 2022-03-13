@@ -6,6 +6,6 @@ tmuxp.tests
 """
 import pathlib
 
-tests_dir = pathlib.Path(__file__).parent
-example_dir = tests_dir.parent / "examples"
-fixtures_dir = tests_dir / "fixtures"
+TESTS_PATH = pathlib.Path(__file__).parent
+EXAMPLE_PATH = TESTS_PATH.parent / "examples"
+FIXTURES_PATH = TESTS_PATH / "fixtures"
