@@ -1,4 +1,5 @@
 PY_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]py$$' 2> /dev/null
+TEST_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]\(yaml\|py\)$$' 2> /dev/null
 DOC_FILES= find . -type f -not -path '*/\.*' | grep -i '.*[.]rst\$\|.*[.]md\$\|.*[.]css\$\|.*[.]py\$\|mkdocs\.yml\|CHANGES\|TODO\|.*conf\.py' 2> /dev/null
 SHELL := /bin/bash
 
@@ -23,7 +24,7 @@ start:
 	$(MAKE) test; poetry run ptw .
 
 watch_test:
-	if command -v entr > /dev/null; then ${PY_FILES} | entr -c $(MAKE) test; else $(MAKE) test entr_warn; fi
+	if command -v entr > /dev/null; then ${TEST_FILES} | entr -c $(MAKE) test; else $(MAKE) test entr_warn; fi
 
 build_docs:
 	$(MAKE) -C docs html
