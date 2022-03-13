@@ -277,11 +277,11 @@ def expand(sconf, cwd=None, parent=None):
     if "windows" in sconf:
         sconf["windows"] = [expand(window, parent=sconf) for window in sconf["windows"]]
     elif "panes" in sconf:
-
-        for pconf in sconf["panes"]:
-            p_index = sconf["panes"].index(pconf)
+        pane_configs = sconf["panes"]
+        for pconf in pane_configs:
+            p_index = pane_configs.index(pconf)
             p = copy.deepcopy(pconf)
-            pconf = sconf["panes"][p_index] = {}
+            pconf = pane_configs[p_index] = {}
 
             if isinstance(p, str):
                 p = {"shell_command": [p]}
@@ -307,7 +307,7 @@ def expand(sconf, cwd=None, parent=None):
                 p["shell_command"] = []
 
             pconf.update(p)
-        sconf["panes"] = [expand(pane, parent=sconf) for pane in sconf["panes"]]
+        sconf["panes"] = [expand(pane, parent=sconf) for pane in pane_configs]
 
     return sconf
 
