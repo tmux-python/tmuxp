@@ -385,7 +385,7 @@ def trickle(session_config):
         if "panes" not in window_config:
             window_config["panes"] = [{"shell_command": []}]
 
-        for pane_config in window_config["panes"]:
+        for pane_idx, pane_config in enumerate(window_config["panes"]):
             commands_before = []
 
             # Prepend shell_command_before to commands
@@ -399,8 +399,7 @@ def trickle(session_config):
             if "shell_command" in pane_config:
                 commands_before.extend(pane_config["shell_command"])
 
-            p_index = window_config["panes"].index(pane_config)
-            window_config["panes"][p_index]["shell_command"] = commands_before
+            window_config["panes"][pane_idx]["shell_command"] = commands_before
             # pane_config['shell_command'] = commands_before
 
     return session_config
