@@ -356,6 +356,33 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````
 
+## Pause / delay command execution
+
+```{versionadded} 1.10.0bX
+`sleep: [seconds]` option
+```
+
+Omit sending {kbd}`enter` to key commands. Equivalent to
+[`time.sleep()`](time.sleep) before [`send_keys(enter=False)`](libtmux.Pane.send_keys).
+
+````{tab} YAML
+
+```{literalinclude} ../examples/sleep.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON
+
+```{literalinclude} ../examples/sleep.json
+:language: json
+
+```
+
+````
+
 ## Window Index
 
 You can specify a window's index using the `window_index` property. Windows

@@ -1,0 +1,13 @@
+{
+  "session_name": "Should sleep 3 seconds before sending pane commands",
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": "echo \"___$((1 + 3))___\"",
+          "sleep": 3
+        }
+      ]
+    }
+  ]
+}
