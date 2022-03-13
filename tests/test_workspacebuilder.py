@@ -924,12 +924,70 @@ windows:
             "___4___",
             True,
         ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "___$((1 + 3))___"
+      enter: false
+    """
+            ),
+            "___4___",
+            False,
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "___$((1 + 3))___"
+      enter: false
+    """
+            ),
+            "___4___",
+            False,
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should execute
+windows:
+- panes:
+  - shell_command: echo "___$((1 + 3))___"
+  """
+            ),
+            "___4___",
+            True,
+        ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should execute
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo "other command"
+    - cmd: echo "___$((1 + 3))___"
+  """
+            ),
+            "___4___",
+            True,
+        ],
     ],
     ids=[
         "pane_enter_false_shortform",
         "pane_enter_false_longform",
         "pane_enter_default_shortform",
         "pane_enter_default_longform",
+        "pane_command_enter_false_shortform",
+        "pane_command_enter_false_longform",
+        "pane_command_enter_default_shortform",
+        "pane_command_enter_default_longform",
     ],
 )
 def test_load_workspace_enter(
