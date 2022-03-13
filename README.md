@@ -19,17 +19,25 @@ web](https://leanpub.com/the-tao-of-tmux/read).
 
 # Installation
 
-## Pip
+pip:
 
 ```console
 $ pip install --user tmuxp
 ```
 
-## Homebrew
+Homebrew:
 
 ```console
 $ brew install tmuxp
 ```
+
+Debian / ubuntu:
+
+```console
+$ sudo apt install tmuxp
+```
+
+Find the package for your distro on repology: https://repology.org/project/tmuxp/versions
 
 # Load a tmux session
 
