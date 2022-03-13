@@ -20,9 +20,9 @@ expected = {
         {
             "window_name": "Empty string (return)",
             "panes": [
-                {"shell_command": [""]},
-                {"shell_command": [""]},
-                {"shell_command": [""]},
+                {"shell_command": [{"cmd": ""}]},
+                {"shell_command": [{"cmd": ""}]},
+                {"shell_command": [{"cmd": ""}]},
             ],
         },
         {

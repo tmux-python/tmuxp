@@ -114,7 +114,7 @@ def expandshell(_path):
     """
     Return expanded path based on user's ``$HOME`` and ``env``.
 
-    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`
+    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvar`s
 
     Parameters
     ----------
@@ -175,24 +175,31 @@ def inline(session_config):
 def expand_cmd(p: Dict) -> Dict:
     if isinstance(p, str):
         p = {"shell_command": [p]}
+    elif isinstance(p, list):
+        p = {"shell_command": p}
     elif not p:
         p = {"shell_command": []}
 
     assert isinstance(p, dict)
     if "shell_command" in p:
-        cmd = p["shell_command"]
+        cmds = p["shell_command"]
 
         if isinstance(p["shell_command"], str):
-            cmd = [cmd]
+            cmds = [cmds]
 
-        if not cmd or any(a == cmd for a in [None, "blank", "pane"]):
-            cmd = []
+        if not cmds or any(a == cmds for a in [None, "blank", "pane"]):
+            cmds = []
 
-        if isinstance(cmd, list) and len(cmd) == int(1):
-            if any(a in cmd for a in [None, "blank", "pane"]):
-                cmd = []
+        if isinstance(cmds, list) and len(cmds) == int(1):
+            if any(a in cmds for a in [None, "blank", "pane"]):
+                cmds = []
 
-        p["shell_command"] = cmd
+        for cmd_idx, cmd in enumerate(cmds):
+            if isinstance(cmd, str):
+                cmds[cmd_idx] = {"cmd": cmd}
+            cmds[cmd_idx]["cmd"] = expandshell(cmds[cmd_idx]["cmd"])
+
+        p["shell_command"] = cmds
     else:
         p["shell_command"] = []
     return p
@@ -295,19 +302,10 @@ def expand(session_config, cwd=None, parent=None):
     ):
         session_config["shell_command"] = [session_config["shell_command"]]
 
-    if "shell_command_before" in session_config and isinstance(
-        session_config["shell_command_before"], str
-    ):
-        session_config["shell_command_before"] = [
-            session_config["shell_command_before"]
-        ]
+    if "shell_command_before" in session_config:
+        shell_command_before = session_config["shell_command_before"]
 
-    if "shell_command_before" in session_config and isinstance(
-        session_config["shell_command_before"], list
-    ):
-        session_config["shell_command_before"] = [
-            expandshell(scmd) for scmd in session_config["shell_command_before"]
-        ]
+        session_config["shell_command_before"] = expand_cmd(shell_command_before)
 
     # recurse into window and pane config items
     if "windows" in session_config:
@@ -390,11 +388,17 @@ def trickle(session_config):
 
             # Prepend shell_command_before to commands
             if "shell_command_before" in session_config:
-                commands_before.extend(session_config["shell_command_before"])
+                commands_before.extend(
+                    session_config["shell_command_before"]["shell_command"]
+                )
             if "shell_command_before" in window_config:
-                commands_before.extend(window_config["shell_command_before"])
+                commands_before.extend(
+                    window_config["shell_command_before"]["shell_command"]
+                )
             if "shell_command_before" in pane_config:
-                commands_before.extend(pane_config["shell_command_before"])
+                commands_before.extend(
+                    pane_config["shell_command_before"]["shell_command"]
+                )
 
             if "shell_command" in pane_config:
                 commands_before.extend(pane_config["shell_command"])

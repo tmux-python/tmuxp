@@ -67,6 +67,31 @@
 
 - Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi! (#725)
 
+#### Internal API
+
+- #752: Command structure (internal API)
+
+  To pave the way for per-command options such as `enter: false` (#52), commands are now a different format:
+
+  Before, [`str`](str):
+
+  ```python
+  "echo hello"
+  ```
+
+  After, [`dict`](dict):
+
+  ```python
+  {
+     "cmd": "echo hello"
+  }
+  ```
+
+  This is purely internal. Normal usage should be the same since the
+  configuration emits the equivalent result.
+
+- #752: Configuration parsing refactorings
+
 #### Development
 
 - Run through black + isort with string normalization (#738). This way we can

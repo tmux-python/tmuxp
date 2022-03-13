@@ -4,18 +4,18 @@ windows:
 - layout: main-vertical
   panes:
   - shell_command:
-    - vim
+    - cmd: vim
     start_directory: '~'
   - shell_command:
-    - echo "hey"
-    - cd ../
+    - cmd: echo "hey"
+    - cmd: cd ../
   window_name: editor
 - panes:
   - shell_command:
-    - pane
+    - cmd: pane
     start_directory: /usr/bin
   window_name: logging
 - window_name: test
   panes:
   - shell_command:
-    - top
+    - cmd: top

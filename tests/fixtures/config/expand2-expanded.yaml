@@ -6,27 +6,27 @@ windows:
   focus: true
   panes:
   - shell_command:
-    - cd ~
+    - cmd: cd ~
   - shell_command:
-    - cd /usr
+    - cmd: cd /usr
     focus: true
   - shell_command:
-    - cd ~
-    - echo "moo"
-    - top
+    - cmd: cd ~
+    - cmd: echo "moo"
+    - cmd: top
 - window_name: window 2
   panes:
   - shell_command:
-    - top
+    - cmd: top
     focus: true
   - shell_command:
-    - echo "hey"
+    - cmd: echo "hey"
   - shell_command:
-    - echo "moo"
+    - cmd: echo "moo"
 - window_name: window 3
   panes:
   - shell_command:
-    - cd /
+    - cmd: cd /
     focus: true
   - shell_command: []
   - shell_command: []
