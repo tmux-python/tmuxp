@@ -11,8 +11,6 @@ from tmuxp import config, exc
 
 from . import EXAMPLE_PATH
 
-TMUXP_DIR = pathlib.Path(__file__).parent / ".tmuxp"
-
 
 @pytest.fixture
 def config_fixture():
