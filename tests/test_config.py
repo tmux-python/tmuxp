@@ -14,6 +14,18 @@ from . import EXAMPLE_PATH
 TMUXP_DIR = pathlib.Path(__file__).parent / ".tmuxp"
 
 
+@pytest.fixture
+def config_fixture():
+    """Deferred import of tmuxp.tests.fixtures.*
+
+    pytest setup (conftest.py) patches os.environ["HOME"], delay execution of
+    os.path.expanduser until here.
+    """
+    from .fixtures import config as config_fixture
+
+    return config_fixture
+
+
 def load_yaml(path: Union[str, pathlib.Path]) -> str:
     return (
         kaptan.Kaptan(handler="yaml")
@@ -30,13 +42,11 @@ def load_config(path: Union[str, pathlib.Path]) -> str:
     )
 
 
-def test_export_json(tmp_path: pathlib.Path):
-    from .fixtures import config as fixtures
-
+def test_export_json(tmp_path: pathlib.Path, config_fixture):
     json_config_file = tmp_path / "config.json"
 
     configparser = kaptan.Kaptan()
-    configparser.import_config(fixtures.sampleconfig.sampleconfigdict)
+    configparser.import_config(config_fixture.sampleconfig.sampleconfigdict)
 
     json_config_data = configparser.export("json", indent=2)
 
@@ -44,16 +54,14 @@ def test_export_json(tmp_path: pathlib.Path):
 
     new_config = kaptan.Kaptan()
     new_config_data = new_config.import_config(str(json_config_file)).get()
-    assert fixtures.sampleconfig.sampleconfigdict == new_config_data
+    assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
 
 
-def test_export_yaml(tmp_path: pathlib.Path):
-    from .fixtures import config as fixtures
-
+def test_export_yaml(tmp_path: pathlib.Path, config_fixture):
     yaml_config_file = tmp_path / "config.yaml"
 
     configparser = kaptan.Kaptan()
-    sampleconfig = config.inline(fixtures.sampleconfig.sampleconfigdict)
+    sampleconfig = config.inline(config_fixture.sampleconfig.sampleconfigdict)
     configparser.import_config(sampleconfig)
 
     yaml_config_data = configparser.export("yaml", indent=2, default_flow_style=False)
@@ -61,7 +69,7 @@ def test_export_yaml(tmp_path: pathlib.Path):
     yaml_config_file.write_text(yaml_config_data, encoding="utf-8")
 
     new_config_data = load_config(str(yaml_config_file))
-    assert fixtures.sampleconfig.sampleconfigdict == new_config_data
+    assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_scan_config(tmp_path: pathlib.Path):
@@ -93,20 +101,16 @@ def test_scan_config(tmp_path: pathlib.Path):
     assert len(configs) == files
 
 
-def test_config_expand1():
+def test_config_expand1(config_fixture):
     """Expand shell commands from string to list."""
-    from .fixtures import config as fixtures
-
-    test_config = config.expand(fixtures.expand1.before_config)
-    assert test_config == fixtures.expand1.after_config
+    test_config = config.expand(config_fixture.expand1.before_config)
+    assert test_config == config_fixture.expand1.after_config
 
 
-def test_config_expand2():
+def test_config_expand2(config_fixture):
     """Expand shell commands from string to list."""
-    from .fixtures import config as fixtures
-
-    unexpanded_dict = load_yaml(fixtures.expand2.unexpanded_yaml)
-    expanded_dict = load_yaml(fixtures.expand2.expanded_yaml)
+    unexpanded_dict = load_yaml(config_fixture.expand2.unexpanded_yaml)
+    expanded_dict = load_yaml(config_fixture.expand2.expanded_yaml)
     assert config.expand(unexpanded_dict) == expanded_dict
 
 
@@ -222,37 +226,31 @@ def test_inheritance_config():
     assert config == inheritance_config_after
 
 
-def test_shell_command_before():
+def test_shell_command_before(config_fixture):
     """Config inheritance for the nested 'start_command'."""
-    from .fixtures import config as fixtures
-
-    test_config = fixtures.shell_command_before.config_unexpanded
+    test_config = config_fixture.shell_command_before.config_unexpanded
     test_config = config.expand(test_config)
 
-    assert test_config == fixtures.shell_command_before.config_expanded
+    assert test_config == config_fixture.shell_command_before.config_expanded
 
     test_config = config.trickle(test_config)
-    assert test_config == fixtures.shell_command_before.config_after
+    assert test_config == config_fixture.shell_command_before.config_after
 
 
-def test_in_session_scope():
-    from .fixtures import config as fixtures
-
-    sconfig = load_yaml(fixtures.shell_command_before_session.before)
+def test_in_session_scope(config_fixture):
+    sconfig = load_yaml(config_fixture.shell_command_before_session.before)
 
     config.validate_schema(sconfig)
 
     assert config.expand(sconfig) == sconfig
     assert config.expand(config.trickle(sconfig)) == load_yaml(
-        fixtures.shell_command_before_session.expected
+        config_fixture.shell_command_before_session.expected
     )
 
 
-def test_trickle_relative_start_directory():
-    from .fixtures import config as fixtures
-
-    test_config = config.trickle(fixtures.trickle.before)
-    assert test_config == fixtures.trickle.expected
+def test_trickle_relative_start_directory(config_fixture):
+    test_config = config.trickle(config_fixture.trickle.before)
+    assert test_config == config_fixture.trickle.expected
 
 
 def test_trickle_window_with_no_pane_config():
@@ -273,7 +271,7 @@ def test_trickle_window_with_no_pane_config():
     }
 
 
-def test_expands_blank_panes():
+def test_expands_blank_panes(config_fixture):
     """Expand blank config into full form.
 
     Handle ``NoneType`` and 'blank'::
@@ -300,11 +298,9 @@ def test_expands_blank_panes():
             'shell_command': ['']
 
     """
-    from .fixtures import config as fixtures
-
     yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
     test_config = load_config(yaml_config_file)
-    assert config.expand(test_config) == fixtures.expand_blank.expected
+    assert config.expand(test_config) == config_fixture.expand_blank.expected
 
 
 def test_no_session_name():
