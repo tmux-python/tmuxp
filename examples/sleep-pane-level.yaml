@@ -1,0 +1,13 @@
+session_name: Pause / skip command execution (pane-level)
+windows:
+- panes:
+  - 
+    # Wait 2 seconds before sending all commands in this pane
+    sleep_before: 2
+    shell_command:
+    - echo "___$((11 + 1))___"
+    - cmd: echo "___$((1 + 3))___"
+    - cmd: echo "___$((1 + 3))___"
+    - cmd: echo "Stuff rendering here!"
+    - cmd: echo "2 seconds later"
+
