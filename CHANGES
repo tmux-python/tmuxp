@@ -77,7 +77,7 @@
 
 - #752: Command structure (internal API)
 
-  To pave the way for per-command options such as `enter: false` (#52), commands are now a different format:
+  To pave the way for per-command options such as `enter: false` (#53), commands are now a different format:
 
   Before, [`str`](str):
 
