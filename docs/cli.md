@@ -188,6 +188,7 @@ $ tmuxp load /path/to/folder/
 ```
 
 Name of the config, assume `$HOME/.tmuxp/myconfig.yaml`:
+
 ```console
 $ tmuxp load myconfig
 ```
@@ -236,11 +237,13 @@ All of these options can be preselected to skip the prompt:
   ```console
   $ tmuxp load -y config
   ```
+
 - Detached / open in background:
 
   ```console
   $ tmuxp load -d config
   ```
+
 - Append windows to existing session
 
   ```console

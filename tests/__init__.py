@@ -4,8 +4,8 @@ tmuxp.tests
 ~~~~~~~~~~~
 
 """
-import os
+import pathlib
 
-current_dir = os.path.abspath(os.path.dirname(__file__))
-example_dir = os.path.abspath(os.path.join(current_dir, "..", "examples"))
-fixtures_dir = os.path.realpath(os.path.join(current_dir, "fixtures"))
+TESTS_PATH = pathlib.Path(__file__).parent
+EXAMPLE_PATH = TESTS_PATH.parent / "examples"
+FIXTURES_PATH = TESTS_PATH / "fixtures"

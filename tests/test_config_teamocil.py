@@ -1,6 +1,4 @@
 """Test for tmuxp teamocil configuration."""
-import os
-
 import pytest
 
 import kaptan
@@ -8,8 +6,6 @@ import kaptan
 from tmuxp import config
 
 from .fixtures import config_teamocil as fixtures
-
-TMUXP_DIR = os.path.join(os.path.dirname(__file__), ".tmuxp")
 
 
 @pytest.mark.parametrize(

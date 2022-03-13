@@ -16,7 +16,7 @@ from tmuxp import config, exc
 from tmuxp.cli import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from . import example_dir, fixtures_dir
+from . import EXAMPLE_PATH, FIXTURES_PATH
 from .fixtures._util import load_fixture
 
 
@@ -405,8 +405,8 @@ def test_automatic_rename_option(session):
 
 def test_blank_pane_count(session):
     """:todo: Verify blank panes of various types build into workspaces."""
-    yaml_config_file = os.path.join(example_dir, "blank-panes.yaml")
-    test_config = kaptan.Kaptan().import_config(yaml_config_file).get()
+    yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
+    test_config = kaptan.Kaptan().import_config(str(yaml_config_file)).get()
     test_config = config.expand(test_config)
     builder = WorkspaceBuilder(sconf=test_config)
     builder.build(session=session)
@@ -589,8 +589,7 @@ def test_before_load_throw_error_if_retcode_error(server):
     config_script_fails = load_fixture("workspacebuilder/config_script_fails.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_fails.format(
-        fixtures_dir=fixtures_dir,
-        script_failed=os.path.join(fixtures_dir, "script_failed.sh"),
+        script_failed=FIXTURES_PATH / "script_failed.sh",
     )
 
     sconfig = sconfig.import_config(yaml).get()
@@ -615,8 +614,7 @@ def test_before_load_throw_error_if_file_not_exists(server):
     )
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_not_exists.format(
-        fixtures_dir=fixtures_dir,
-        script_not_exists=os.path.join(fixtures_dir, "script_not_exists.sh"),
+        script_not_exists=FIXTURES_PATH / "script_not_exists.sh",
     )
     sconfig = sconfig.import_config(yaml).get()
     sconfig = config.expand(sconfig)
@@ -639,11 +637,11 @@ def test_before_load_true_if_test_passes(server):
     config_script_completes = load_fixture(
         "workspacebuilder/config_script_completes.yaml"
     )
-    assert os.path.exists(os.path.join(fixtures_dir, "script_complete.sh"))
+    script_complete_sh = FIXTURES_PATH / "script_complete.sh"
+    assert script_complete_sh.exists()
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_completes.format(
-        fixtures_dir=fixtures_dir,
-        script_complete=os.path.join(fixtures_dir, "script_complete.sh"),
+        script_complete=script_complete_sh,
     )
 
     sconfig = sconfig.import_config(yaml).get()
@@ -660,13 +658,10 @@ def test_before_load_true_if_test_passes_with_args(server):
     config_script_completes = load_fixture(
         "workspacebuilder/config_script_completes.yaml"
     )
-
-    assert os.path.exists(os.path.join(fixtures_dir, "script_complete.sh"))
+    script_complete_sh = FIXTURES_PATH / "script_complete.sh"
+    assert script_complete_sh.exists()
     sconfig = kaptan.Kaptan(handler="yaml")
-    yaml = config_script_completes.format(
-        fixtures_dir=fixtures_dir,
-        script_complete=os.path.join(fixtures_dir, "script_complete.sh") + " -v",
-    )
+    yaml = config_script_completes.format(script_complete=script_complete_sh)
 
     sconfig = sconfig.import_config(yaml).get()
     sconfig = config.expand(sconfig)
