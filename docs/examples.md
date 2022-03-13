@@ -375,6 +375,50 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````
 
+## Pausing commands
+
+```{versionadded} 1.10.0b4
+`sleep_before` and `sleep_after` options added. Pane and command-level support.
+```
+
+Omit sending {kbd}`enter` to key commands. Equivalent to having
+a [`time.sleep`](time.sleep) before and after  [`send_keys`](libtmux.Pane.send_keys).
+
+````{tab} YAML
+
+```{literalinclude} ../examples/sleep.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON
+
+```{literalinclude} ../examples/sleep.json
+:language: json
+
+```
+
+````
+
+````{tab} YAML (pane-level)
+
+```{literalinclude} ../examples/sleep-pane-level.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON (pane-level)
+
+```{literalinclude} ../examples/sleep-pane-level.json
+:language: json
+
+```
+
+````
 
 ## Window Index
 
