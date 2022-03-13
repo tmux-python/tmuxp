@@ -332,6 +332,8 @@ This will add the `shell_command` to the bash history in the pane.
 
 ```{versionadded} 1.10.0b1
 `enter: false` option. Pane-level support.
+```
+
 ```{versionadded} 1.10.0b3
 Support command-level skipping.
 ```
