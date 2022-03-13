@@ -473,30 +473,29 @@ def import_tmuxinator(session_config):
             "rbenv shell %s" % session_config["rbenv"]
         )
 
-    for w in session_config["windows"]:
-        for k, v in w.items():
-
-            windowdict = {"window_name": k}
+    for window_config in session_config["windows"]:
+        for k, v in window_config.items():
+            window_config = {"window_name": k}
 
             if isinstance(v, str) or v is None:
-                windowdict["panes"] = [v]
-                tmuxp_config["windows"].append(windowdict)
+                window_config["panes"] = [v]
+                tmuxp_config["windows"].append(window_config)
                 continue
             elif isinstance(v, list):
-                windowdict["panes"] = v
-                tmuxp_config["windows"].append(windowdict)
+                window_config["panes"] = v
+                tmuxp_config["windows"].append(window_config)
                 continue
 
             if "pre" in v:
-                windowdict["shell_command_before"] = v["pre"]
+                window_config["shell_command_before"] = v["pre"]
             if "panes" in v:
-                windowdict["panes"] = v["panes"]
+                window_config["panes"] = v["panes"]
             if "root" in v:
-                windowdict["start_directory"] = v["root"]
+                window_config["start_directory"] = v["root"]
 
             if "layout" in v:
-                windowdict["layout"] = v["layout"]
-            tmuxp_config["windows"].append(windowdict)
+                window_config["layout"] = v["layout"]
+            tmuxp_config["windows"].append(window_config)
     return tmuxp_config
 
 
