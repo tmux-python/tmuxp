@@ -589,7 +589,6 @@ def test_before_load_throw_error_if_retcode_error(server):
     config_script_fails = load_fixture("workspacebuilder/config_script_fails.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_fails.format(
-        fixtures_dir=FIXTURES_PATH,
         script_failed=FIXTURES_PATH / "script_failed.sh",
     )
 
@@ -615,7 +614,6 @@ def test_before_load_throw_error_if_file_not_exists(server):
     )
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_not_exists.format(
-        fixtures_dir=FIXTURES_PATH,
         script_not_exists=FIXTURES_PATH / "script_not_exists.sh",
     )
     sconfig = sconfig.import_config(yaml).get()
@@ -643,7 +641,6 @@ def test_before_load_true_if_test_passes(server):
     assert script_complete_sh.exists()
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_completes.format(
-        fixtures_dir=FIXTURES_PATH,
         script_complete=script_complete_sh,
     )
 
@@ -664,9 +661,7 @@ def test_before_load_true_if_test_passes_with_args(server):
     script_complete_sh = FIXTURES_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
     sconfig = kaptan.Kaptan(handler="yaml")
-    yaml = config_script_completes.format(
-        fixtures_dir=FIXTURES_PATH, script_complete=script_complete_sh
-    )
+    yaml = config_script_completes.format(script_complete=script_complete_sh)
 
     sconfig = sconfig.import_config(yaml).get()
     sconfig = config.expand(sconfig)
