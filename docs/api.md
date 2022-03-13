@@ -3,9 +3,8 @@
 # API Reference
 
 :::{seealso}
-
-See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart <libtmux:quickstart>` to see how you can control tmux via python API calls.
-
+See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart <libtmux:quickstart>` to see how you can control
+tmux via python API calls.
 :::
 
 ```{module} tmuxp
@@ -13,6 +12,11 @@ See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart <libtmux:quickstart>
 ```
 
 ## Internals
+
+:::{warning}
+These APIs are purely internal not covered by versioning policies, they can and will break between versions.
+If you need an internal API stabilized please [file an issue](https://github.com/tmux-python/tmuxp/issues).
+:::
 
 ```{eval-rst}
 .. automethod:: tmuxp.util.run_before_script
