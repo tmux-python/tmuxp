@@ -12,19 +12,23 @@ your tmuxp configuration file.
 
 ### Example Configurations
 
-#### YAML
+````{tab} YAML
 
 ```{literalinclude} ../examples/plugin-system.yaml
 :language: yaml
 
 ```
 
-#### JSON
+````
+
+````{tab} JSON
 
 ```{literalinclude} ../examples/plugin-system.json
 :language: json
 
 ```
+
+````
 
 [poetry]: https://python-poetry.org/
 
