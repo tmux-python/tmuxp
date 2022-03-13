@@ -1,5 +1,6 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
 import os
+import pathlib
 
 import pytest
 
@@ -10,7 +11,7 @@ from tmuxp import config, exc
 from . import example_dir
 from .fixtures import config as fixtures
 
-TMUXP_DIR = os.path.join(os.path.dirname(__file__), ".tmuxp")
+TMUXP_DIR = pathlib.Path(__file__).parent / ".tmuxp"
 
 
 def load_yaml(yaml):
@@ -21,23 +22,23 @@ def load_config(_file):
     return kaptan.Kaptan().import_config(_file).get()
 
 
-def test_export_json(tmpdir):
-    json_config_file = tmpdir.join("config.json")
+def test_export_json(tmp_path: pathlib.Path):
+    json_config_file = tmp_path / "config.json"
 
     configparser = kaptan.Kaptan()
     configparser.import_config(fixtures.sampleconfig.sampleconfigdict)
 
     json_config_data = configparser.export("json", indent=2)
 
-    json_config_file.write(json_config_data)
+    json_config_file.write_text(json_config_data, encoding="utf-8")
 
     new_config = kaptan.Kaptan()
     new_config_data = new_config.import_config(str(json_config_file)).get()
     assert fixtures.sampleconfig.sampleconfigdict == new_config_data
 
 
-def test_export_yaml(tmpdir):
-    yaml_config_file = tmpdir.join("config.yaml")
+def test_export_yaml(tmp_path: pathlib.Path):
+    yaml_config_file = tmp_path / "config.yaml"
 
     configparser = kaptan.Kaptan()
     sampleconfig = config.inline(fixtures.sampleconfig.sampleconfigdict)
@@ -45,34 +46,37 @@ def test_export_yaml(tmpdir):
 
     yaml_config_data = configparser.export("yaml", indent=2, default_flow_style=False)
 
-    yaml_config_file.write(yaml_config_data)
+    yaml_config_file.write_text(yaml_config_data, encoding="utf-8")
 
     new_config_data = load_config(str(yaml_config_file))
     assert fixtures.sampleconfig.sampleconfigdict == new_config_data
 
 
-def test_scan_config(tmpdir):
+def test_scan_config(tmp_path: pathlib.Path):
     configs = []
 
-    garbage_file = tmpdir.join("config.psd")
-    garbage_file.write("wat")
+    garbage_file = tmp_path / "config.psd"
+    garbage_file.write_text("wat", encoding="utf-8")
 
-    for r, d, f in os.walk(str(tmpdir)):
+    for r, d, f in os.walk(str(tmp_path)):
         for filela in (x for x in f if x.endswith((".json", ".ini", "yaml"))):
-            configs.append(str(tmpdir.join(filela)))
+            configs.append(str(tmp_path / filela))
 
     files = 0
-    if tmpdir.join("config.json").check():
+    config_json = tmp_path / "config.json"
+    config_yaml = tmp_path / "config.yaml"
+    config_ini = tmp_path / "config.ini"
+    if config_json.exists():
         files += 1
-        assert str(tmpdir.join("config.json")) in configs
+        assert str(config_json) in configs
 
-    if tmpdir.join("config.yaml").check():
+    if config_yaml.exists():
         files += 1
-        assert str(tmpdir.join("config.yaml")) in configs
+        assert str(config_yaml) in configs
 
-    if tmpdir.join("config.ini").check():
+    if config_ini.exists():
         files += 1
-        assert str(tmpdir.join("config.ini")) in configs
+        assert str(config_ini) in configs
 
     assert len(configs) == files
 
