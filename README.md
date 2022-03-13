@@ -73,7 +73,7 @@ $ tmuxp load mysession ./another/project/
 
 Name a session:
 
-```bash
+```console
 $ tmuxp load -s session_name ./mysession.yaml
 ```
 
