@@ -1,6 +1,7 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
 import os
 import pathlib
+from typing import Union
 
 import pytest
 
@@ -14,12 +15,20 @@ from .fixtures import config as fixtures
 TMUXP_DIR = pathlib.Path(__file__).parent / ".tmuxp"
 
 
-def load_yaml(yaml):
-    return kaptan.Kaptan(handler="yaml").import_config(yaml).get()
+def load_yaml(path: Union[str, pathlib.Path]) -> str:
+    return (
+        kaptan.Kaptan(handler="yaml")
+        .import_config(str(path) if isinstance(path, pathlib.Path) else path)
+        .get()
+    )
 
 
-def load_config(_file):
-    return kaptan.Kaptan().import_config(_file).get()
+def load_config(path: Union[str, pathlib.Path]) -> str:
+    return (
+        kaptan.Kaptan()
+        .import_config(str(path) if isinstance(path, pathlib.Path) else path)
+        .get()
+    )
 
 
 def test_export_json(tmp_path: pathlib.Path):
@@ -282,7 +291,7 @@ def test_expands_blank_panes():
 
     """
 
-    yaml_config_file = os.path.join(example_dir, "blank-panes.yaml")
+    yaml_config_file = example_dir / "blank-panes.yaml"
     test_config = load_config(yaml_config_file)
     assert config.expand(test_config) == fixtures.expand_blank.expected
 
