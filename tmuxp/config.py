@@ -13,13 +13,13 @@ from . import exc
 logger = logging.getLogger(__name__)
 
 
-def validate_schema(sconf):
+def validate_schema(session_config):
     """
     Return True if config schema is correct.
 
     Parameters
     ----------
-    sconf : dict
+    session_config : dict
         session configuration
 
     Returns
@@ -28,18 +28,18 @@ def validate_schema(sconf):
     """
 
     # verify session_name
-    if "session_name" not in sconf:
+    if "session_name" not in session_config:
         raise exc.ConfigError('config requires "session_name"')
 
-    if "windows" not in sconf:
+    if "windows" not in session_config:
         raise exc.ConfigError('config requires list of "windows"')
 
-    for window in sconf["windows"]:
+    for window in session_config["windows"]:
         if "window_name" not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
-    if "plugins" in sconf:
-        if not isinstance(sconf["plugins"], list):
+    if "plugins" in session_config:
+        if not isinstance(session_config["plugins"], list):
             raise exc.ConfigError('"plugins" only supports list type')
 
     return True
@@ -129,13 +129,13 @@ def expandshell(_path):
     return os.path.expandvars(os.path.expanduser(_path))
 
 
-def inline(sconf):
+def inline(session_config):
     """
     Return config in inline form, opposite of :meth:`config.expand`.
 
     Parameters
     ----------
-    sconf : dict
+    session_config : dict
 
     Returns
     -------
@@ -144,28 +144,32 @@ def inline(sconf):
     """
 
     if (
-        "shell_command" in sconf
-        and isinstance(sconf["shell_command"], list)
-        and len(sconf["shell_command"]) == 1
+        "shell_command" in session_config
+        and isinstance(session_config["shell_command"], list)
+        and len(session_config["shell_command"]) == 1
     ):
-        sconf["shell_command"] = sconf["shell_command"][0]
+        session_config["shell_command"] = session_config["shell_command"][0]
 
-        if len(sconf.keys()) == int(1):
-            sconf = sconf["shell_command"]
+        if len(session_config.keys()) == int(1):
+            session_config = session_config["shell_command"]
     if (
-        "shell_command_before" in sconf
-        and isinstance(sconf["shell_command_before"], list)
-        and len(sconf["shell_command_before"]) == 1
+        "shell_command_before" in session_config
+        and isinstance(session_config["shell_command_before"], list)
+        and len(session_config["shell_command_before"]) == 1
     ):
-        sconf["shell_command_before"] = sconf["shell_command_before"][0]
+        session_config["shell_command_before"] = session_config["shell_command_before"][
+            0
+        ]
 
     # recurse into window and pane config items
-    if "windows" in sconf:
-        sconf["windows"] = [inline(window) for window in sconf["windows"]]
-    if "panes" in sconf:
-        sconf["panes"] = [inline(pane) for pane in sconf["panes"]]
+    if "windows" in session_config:
+        session_config["windows"] = [
+            inline(window) for window in session_config["windows"]
+        ]
+    if "panes" in session_config:
+        session_config["panes"] = [inline(pane) for pane in session_config["panes"]]
 
-    return sconf
+    return session_config
 
 
 def expand_cmd(p: Dict) -> Dict:
@@ -194,7 +198,7 @@ def expand_cmd(p: Dict) -> Dict:
     return p
 
 
-def expand(sconf, cwd=None, parent=None):
+def expand(session_config, cwd=None, parent=None):
     """Return config with shorthand and inline properties expanded.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
@@ -213,7 +217,7 @@ def expand(sconf, cwd=None, parent=None):
 
     Parameters
     ----------
-    sconf : dict
+    session_config : dict
         the configuration for the session
     cwd : str
         directory to expand relative paths against. should be the dir of the
@@ -232,39 +236,41 @@ def expand(sconf, cwd=None, parent=None):
     if not cwd:
         cwd = os.getcwd()
 
-    if "session_name" in sconf:
-        sconf["session_name"] = expandshell(sconf["session_name"])
-    if "window_name" in sconf:
-        sconf["window_name"] = expandshell(sconf["window_name"])
-    if "environment" in sconf:
-        for key in sconf["environment"]:
-            val = sconf["environment"][key]
+    if "session_name" in session_config:
+        session_config["session_name"] = expandshell(session_config["session_name"])
+    if "window_name" in session_config:
+        session_config["window_name"] = expandshell(session_config["window_name"])
+    if "environment" in session_config:
+        for key in session_config["environment"]:
+            val = session_config["environment"][key]
             val = expandshell(val)
             if any(val.startswith(a) for a in [".", "./"]):
                 val = os.path.normpath(os.path.join(cwd, val))
-            sconf["environment"][key] = val
-    if "global_options" in sconf:
-        for key in sconf["global_options"]:
-            val = sconf["global_options"][key]
+            session_config["environment"][key] = val
+    if "global_options" in session_config:
+        for key in session_config["global_options"]:
+            val = session_config["global_options"][key]
             if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in [".", "./"]):
                     val = os.path.normpath(os.path.join(cwd, val))
-            sconf["global_options"][key] = val
-    if "options" in sconf:
-        for key in sconf["options"]:
-            val = sconf["options"][key]
+            session_config["global_options"][key] = val
+    if "options" in session_config:
+        for key in session_config["options"]:
+            val = session_config["options"][key]
             if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in [".", "./"]):
                     val = os.path.normpath(os.path.join(cwd, val))
-            sconf["options"][key] = val
+            session_config["options"][key] = val
 
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
-    if "start_directory" in sconf:
-        sconf["start_directory"] = expandshell(sconf["start_directory"])
-        start_path = sconf["start_directory"]
+    if "start_directory" in session_config:
+        session_config["start_directory"] = expandshell(
+            session_config["start_directory"]
+        )
+        start_path = session_config["start_directory"]
         if any(start_path.startswith(a) for a in [".", "./"]):
             # if window has a session, or pane has a window with a
             # start_directory of . or ./, make sure the start_directory can be
@@ -275,44 +281,53 @@ def expand(sconf, cwd=None, parent=None):
             if parent:
                 cwd = parent["start_directory"]
             start_path = os.path.normpath(os.path.join(cwd, start_path))
-            sconf["start_directory"] = start_path
+            session_config["start_directory"] = start_path
 
-    if "before_script" in sconf:
-        sconf["before_script"] = expandshell(sconf["before_script"])
-        if any(sconf["before_script"].startswith(a) for a in [".", "./"]):
-            sconf["before_script"] = os.path.normpath(
-                os.path.join(cwd, sconf["before_script"])
+    if "before_script" in session_config:
+        session_config["before_script"] = expandshell(session_config["before_script"])
+        if any(session_config["before_script"].startswith(a) for a in [".", "./"]):
+            session_config["before_script"] = os.path.normpath(
+                os.path.join(cwd, session_config["before_script"])
             )
 
-    if "shell_command" in sconf and isinstance(sconf["shell_command"], str):
-        sconf["shell_command"] = [sconf["shell_command"]]
-
-    if "shell_command_before" in sconf and isinstance(
-        sconf["shell_command_before"], str
+    if "shell_command" in session_config and isinstance(
+        session_config["shell_command"], str
     ):
-        sconf["shell_command_before"] = [sconf["shell_command_before"]]
+        session_config["shell_command"] = [session_config["shell_command"]]
 
-    if "shell_command_before" in sconf and isinstance(
-        sconf["shell_command_before"], list
+    if "shell_command_before" in session_config and isinstance(
+        session_config["shell_command_before"], str
     ):
-        sconf["shell_command_before"] = [
-            expandshell(scmd) for scmd in sconf["shell_command_before"]
+        session_config["shell_command_before"] = [
+            session_config["shell_command_before"]
+        ]
+
+    if "shell_command_before" in session_config and isinstance(
+        session_config["shell_command_before"], list
+    ):
+        session_config["shell_command_before"] = [
+            expandshell(scmd) for scmd in session_config["shell_command_before"]
         ]
 
     # recurse into window and pane config items
-    if "windows" in sconf:
-        sconf["windows"] = [expand(window, parent=sconf) for window in sconf["windows"]]
-    elif "panes" in sconf:
-        pane_configs = sconf["panes"]
-        for pane_idx, pconf in enumerate(pane_configs):
+    if "windows" in session_config:
+        session_config["windows"] = [
+            expand(window, parent=session_config)
+            for window in session_config["windows"]
+        ]
+    elif "panes" in session_config:
+        pane_configs = session_config["panes"]
+        for pane_idx, pane_config in enumerate(pane_configs):
             pane_configs[pane_idx] = {}
-            pane_configs[pane_idx].update(expand_cmd(pconf))
-        sconf["panes"] = [expand(pane, parent=sconf) for pane in pane_configs]
+            pane_configs[pane_idx].update(expand_cmd(pane_config))
+        session_config["panes"] = [
+            expand(pane, parent=session_config) for pane in pane_configs
+        ]
 
-    return sconf
+    return session_config
 
 
-def trickle(sconf):
+def trickle(session_config):
     """Return a dict with "trickled down" / inherited config values.
 
     This will only work if config has been expanded to full form with
@@ -324,7 +339,7 @@ def trickle(sconf):
 
     Parameters
     ----------
-    sconf : dict
+    session_config : dict
         the session configuration.
 
     Returns
@@ -335,70 +350,70 @@ def trickle(sconf):
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 
-    if "start_directory" in sconf:
-        session_start_directory = sconf["start_directory"]
+    if "start_directory" in session_config:
+        session_start_directory = session_config["start_directory"]
     else:
         session_start_directory = None
 
-    if "suppress_history" in sconf:
-        suppress_history = sconf["suppress_history"]
+    if "suppress_history" in session_config:
+        suppress_history = session_config["suppress_history"]
     else:
         suppress_history = None
 
-    for windowconfig in sconf["windows"]:
+    for window_config in session_config["windows"]:
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
-            if "start_directory" not in windowconfig:
-                windowconfig["start_directory"] = session_start_directory
+            if "start_directory" not in window_config:
+                window_config["start_directory"] = session_start_directory
             else:
                 if not any(
-                    windowconfig["start_directory"].startswith(a) for a in ["~", "/"]
+                    window_config["start_directory"].startswith(a) for a in ["~", "/"]
                 ):
                     window_start_path = os.path.join(
-                        session_start_directory, windowconfig["start_directory"]
+                        session_start_directory, window_config["start_directory"]
                     )
-                    windowconfig["start_directory"] = window_start_path
+                    window_config["start_directory"] = window_start_path
 
         # We only need to trickle to the window, workspace builder checks wconf
         if suppress_history is not None:
-            if "suppress_history" not in windowconfig:
-                windowconfig["suppress_history"] = suppress_history
+            if "suppress_history" not in window_config:
+                window_config["suppress_history"] = suppress_history
 
         # If panes were NOT specified for a window, assume that a single pane
         # with no shell commands is desired
-        if "panes" not in windowconfig:
-            windowconfig["panes"] = [{"shell_command": []}]
+        if "panes" not in window_config:
+            window_config["panes"] = [{"shell_command": []}]
 
-        for paneconfig in windowconfig["panes"]:
+        for pane_config in window_config["panes"]:
             commands_before = []
 
             # Prepend shell_command_before to commands
-            if "shell_command_before" in sconf:
-                commands_before.extend(sconf["shell_command_before"])
-            if "shell_command_before" in windowconfig:
-                commands_before.extend(windowconfig["shell_command_before"])
-            if "shell_command_before" in paneconfig:
-                commands_before.extend(paneconfig["shell_command_before"])
+            if "shell_command_before" in session_config:
+                commands_before.extend(session_config["shell_command_before"])
+            if "shell_command_before" in window_config:
+                commands_before.extend(window_config["shell_command_before"])
+            if "shell_command_before" in pane_config:
+                commands_before.extend(pane_config["shell_command_before"])
 
-            if "shell_command" in paneconfig:
-                commands_before.extend(paneconfig["shell_command"])
+            if "shell_command" in pane_config:
+                commands_before.extend(pane_config["shell_command"])
 
-            p_index = windowconfig["panes"].index(paneconfig)
-            windowconfig["panes"][p_index]["shell_command"] = commands_before
-            # paneconfig['shell_command'] = commands_before
+            p_index = window_config["panes"].index(pane_config)
+            window_config["panes"][p_index]["shell_command"] = commands_before
+            # pane_config['shell_command'] = commands_before
 
-    return sconf
+    return session_config
 
 
-def import_tmuxinator(sconf):
+def import_tmuxinator(session_config):
     """Return tmuxp config from a `tmuxinator`_ yaml config.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
 
     Parameters
     ----------
-    sconf : dict
+    session_config : dict
         python dict for session configuration.
 
     Returns
@@ -408,56 +423,58 @@ def import_tmuxinator(sconf):
 
     tmuxp_config = {}
 
-    if "project_name" in sconf:
-        tmuxp_config["session_name"] = sconf.pop("project_name")
-    elif "name" in sconf:
-        tmuxp_config["session_name"] = sconf.pop("name")
+    if "project_name" in session_config:
+        tmuxp_config["session_name"] = session_config.pop("project_name")
+    elif "name" in session_config:
+        tmuxp_config["session_name"] = session_config.pop("name")
     else:
         tmuxp_config["session_name"] = None
 
-    if "project_root" in sconf:
-        tmuxp_config["start_directory"] = sconf.pop("project_root")
-    elif "root" in sconf:
-        tmuxp_config["start_directory"] = sconf.pop("root")
+    if "project_root" in session_config:
+        tmuxp_config["start_directory"] = session_config.pop("project_root")
+    elif "root" in session_config:
+        tmuxp_config["start_directory"] = session_config.pop("root")
 
-    if "cli_args" in sconf:
-        tmuxp_config["config"] = sconf["cli_args"]
-
-        if "-f" in tmuxp_config["config"]:
-            tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
-    elif "tmux_options" in sconf:
-        tmuxp_config["config"] = sconf["tmux_options"]
+    if "cli_args" in session_config:
+        tmuxp_config["config"] = session_config["cli_args"]
 
         if "-f" in tmuxp_config["config"]:
             tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
+    elif "tmux_options" in session_config:
+        tmuxp_config["config"] = session_config["tmux_options"]
 
-    if "socket_name" in sconf:
-        tmuxp_config["socket_name"] = sconf["socket_name"]
+        if "-f" in tmuxp_config["config"]:
+            tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
+
+    if "socket_name" in session_config:
+        tmuxp_config["socket_name"] = session_config["socket_name"]
 
     tmuxp_config["windows"] = []
 
-    if "tabs" in sconf:
-        sconf["windows"] = sconf.pop("tabs")
+    if "tabs" in session_config:
+        session_config["windows"] = session_config.pop("tabs")
 
-    if "pre" in sconf and "pre_window" in sconf:
-        tmuxp_config["shell_command"] = sconf["pre"]
+    if "pre" in session_config and "pre_window" in session_config:
+        tmuxp_config["shell_command"] = session_config["pre"]
 
-        if isinstance(sconf["pre"], str):
-            tmuxp_config["shell_command_before"] = [sconf["pre_window"]]
+        if isinstance(session_config["pre"], str):
+            tmuxp_config["shell_command_before"] = [session_config["pre_window"]]
         else:
-            tmuxp_config["shell_command_before"] = sconf["pre_window"]
-    elif "pre" in sconf:
-        if isinstance(sconf["pre"], str):
-            tmuxp_config["shell_command_before"] = [sconf["pre"]]
+            tmuxp_config["shell_command_before"] = session_config["pre_window"]
+    elif "pre" in session_config:
+        if isinstance(session_config["pre"], str):
+            tmuxp_config["shell_command_before"] = [session_config["pre"]]
         else:
-            tmuxp_config["shell_command_before"] = sconf["pre"]
+            tmuxp_config["shell_command_before"] = session_config["pre"]
 
-    if "rbenv" in sconf:
+    if "rbenv" in session_config:
         if "shell_command_before" not in tmuxp_config:
             tmuxp_config["shell_command_before"] = []
-        tmuxp_config["shell_command_before"].append("rbenv shell %s" % sconf["rbenv"])
+        tmuxp_config["shell_command_before"].append(
+            "rbenv shell %s" % session_config["rbenv"]
+        )
 
-    for w in sconf["windows"]:
+    for w in session_config["windows"]:
         for k, v in w.items():
 
             windowdict = {"window_name": k}
@@ -484,14 +501,14 @@ def import_tmuxinator(sconf):
     return tmuxp_config
 
 
-def import_teamocil(sconf):
+def import_teamocil(session_config):
     """Return tmuxp config from a `teamocil`_ yaml config.
 
     .. _teamocil: https://github.com/remiprev/teamocil
 
     Parameters
     ----------
-    sconf : dict
+    session_config : dict
         python dict for session configuration
 
     Notes
@@ -508,20 +525,20 @@ def import_teamocil(sconf):
 
     tmuxp_config = {}
 
-    if "session" in sconf:
-        sconf = sconf["session"]
+    if "session" in session_config:
+        session_config = session_config["session"]
 
-    if "name" in sconf:
-        tmuxp_config["session_name"] = sconf["name"]
+    if "name" in session_config:
+        tmuxp_config["session_name"] = session_config["name"]
     else:
         tmuxp_config["session_name"] = None
 
-    if "root" in sconf:
-        tmuxp_config["start_directory"] = sconf.pop("root")
+    if "root" in session_config:
+        tmuxp_config["start_directory"] = session_config.pop("root")
 
     tmuxp_config["windows"] = []
 
-    for w in sconf["windows"]:
+    for w in session_config["windows"]:
 
         windowdict = {"window_name": w["name"]}
 
