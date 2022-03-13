@@ -331,8 +331,9 @@ This will add the `shell_command` to the bash history in the pane.
 ## Skip command execution
 
 ```{versionadded} 1.10.0b1
-`enter: false` option. This is only available at the pane (not command level)
-until [#751](https://github.com/tmux-python/tmuxp/issues/751) is published.
+`enter: false` option. Pane-level support.
+```{versionadded} 1.10.0b3
+Support command-level skipping.
 ```
 
 Omit sending {kbd}`enter` to key commands. Equivalent to
@@ -355,6 +356,25 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 ```
 
 ````
+
+````{tab} YAML (pane-level)
+
+```{literalinclude} ../examples/skip-send-pane-level.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON (pane-level)
+
+```{literalinclude} ../examples/skip-send-pane-level.json
+:language: json
+
+```
+
+````
+
 
 ## Window Index
 

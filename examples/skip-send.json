@@ -1,11 +1,16 @@
 {
-  "session_name": "Should not execute",
+  "session_name": "Skip command execution (command-level)",
   "windows": [
     {
       "panes": [
         {
-          "shell_command": "echo \"___$((1 + 3))___\"",
-          "enter": false
+          "shell_command": [
+            "echo \"___$((11 + 1))___\"",
+            {
+              "cmd": "echo \"___$((1 + 3))___\"",
+              "enter": false
+            }
+          ]
         }
       ]
     }
