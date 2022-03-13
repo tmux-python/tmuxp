@@ -4,15 +4,15 @@ windows:
 - layout: main-vertical
   panes:
   - shell_command:
-    - vim
+    - cmd: vim
   - shell_command:
-    - echo "hey"
+    - cmd: echo "hey"
   window_name: editor
 - panes:
   - shell_command:
-    - tail | echo 'hi'
+    - cmd: tail | echo 'hi'
   window_name: logging
 - window_name: test
   panes:
   - shell_command:
-    - htop
+    - cmd: htop

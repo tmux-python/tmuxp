@@ -5,8 +5,8 @@ windows:
   layout: main-horizontal
   panes:
   - shell_command:
-    - vim
+    - cmd: vim
   - shell_command:
-    - echo "hey"
+    - cmd: echo "hey"
   - shell_command:
-    - echo "moo"
+    - cmd: echo "moo"

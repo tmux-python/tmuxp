@@ -6,9 +6,9 @@ windows:
     automatic-rename: on
   panes:
   - shell_command:
-    - sh
+    - cmd: sh
     start_directory: '~'
   - shell_command:
-    - echo "hey"
+    - cmd: echo "hey"
   - shell_command:
-    - echo "moo"
+    - cmd: echo "moo"

@@ -3,8 +3,8 @@ windows:
 - window_name: first
   panes:
     - shell_command:
-      - echo 'first window'
+      - cmd: echo 'first window'
 - window_name: second
   panes:
     - shell_command:
-      - echo 'second window'
+      - cmd: echo 'second window'

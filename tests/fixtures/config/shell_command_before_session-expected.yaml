@@ -1,23 +1,24 @@
 shell_command_before:
-  - 'echo "hi"'
+  shell_command:
+    - cmd: 'echo "hi"'
 session_name: 'test'
 windows:
 - window_name: editor
   panes:
   - shell_command:
-    - 'echo "hi"'
-    - vim
-    - :Ex
+    - cmd: 'echo "hi"'
+    - cmd: vim
+    - cmd: :Ex
   - shell_command:
-    - 'echo "hi"'
+    - cmd: 'echo "hi"'
   - shell_command:
-    - 'echo "hi"'
-    - cd /usr
+    - cmd: 'echo "hi"'
+    - cmd: cd /usr
 - window_name: logging
   panes:
   - shell_command:
-    - 'echo "hi"'
+    - cmd: 'echo "hi"'
   - shell_command:
-    - 'echo "hi"'
-    - top
-    - emacs
+    - cmd: 'echo "hi"'
+    - cmd: top
+    - cmd: emacs
