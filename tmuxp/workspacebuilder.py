@@ -363,8 +363,9 @@ class WorkspaceBuilder:
                 suppress = True
 
             enter = pconf.get("enter", True)
-
             for cmd in pconf["shell_command"]:
+                enter = cmd.get("enter", enter)
+
                 p.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
 
             if "focus" in pconf and pconf["focus"]:
