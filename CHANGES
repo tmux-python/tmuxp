@@ -6,6 +6,18 @@
 
 #### What's new
 
+- #749: Sleep before command execution, via `sleep: false` (per-pane only)
+
+  ```yaml
+  session_name: Should not execute
+  windows:
+  - panes:
+    - shell_command: echo "___$((1 + 3))___"
+      sleep: 2
+  ```
+
+  This will pause 2 seconds before execution
+
 - #747: Skip execution via `enter: false`
 
   ```yaml
