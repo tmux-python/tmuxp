@@ -4,9 +4,9 @@ tmuxp.config
 ~~~~~~~~~~~~
 
 """
-import copy
 import logging
 import os
+from typing import Dict
 
 from . import exc
 
@@ -168,6 +168,32 @@ def inline(sconf):
     return sconf
 
 
+def expand_cmd(p: Dict) -> Dict:
+    if isinstance(p, str):
+        p = {"shell_command": [p]}
+    elif not p:
+        p = {"shell_command": []}
+
+    assert isinstance(p, dict)
+    if "shell_command" in p:
+        cmd = p["shell_command"]
+
+        if isinstance(p["shell_command"], str):
+            cmd = [cmd]
+
+        if not cmd or any(a == cmd for a in [None, "blank", "pane"]):
+            cmd = []
+
+        if isinstance(cmd, list) and len(cmd) == int(1):
+            if any(a in cmd for a in [None, "blank", "pane"]):
+                cmd = []
+
+        p["shell_command"] = cmd
+    else:
+        p["shell_command"] = []
+    return p
+
+
 def expand(sconf, cwd=None, parent=None):
     """Return config with shorthand and inline properties expanded.
 
@@ -278,35 +304,9 @@ def expand(sconf, cwd=None, parent=None):
         sconf["windows"] = [expand(window, parent=sconf) for window in sconf["windows"]]
     elif "panes" in sconf:
         pane_configs = sconf["panes"]
-        for pconf in pane_configs:
-            p_index = pane_configs.index(pconf)
-            p = copy.deepcopy(pconf)
-            pconf = pane_configs[p_index] = {}
-
-            if isinstance(p, str):
-                p = {"shell_command": [p]}
-            elif not p:
-                p = {"shell_command": []}
-
-            assert isinstance(p, dict)
-            if "shell_command" in p:
-                cmd = p["shell_command"]
-
-                if isinstance(p["shell_command"], str):
-                    cmd = [cmd]
-
-                if not cmd or any(a == cmd for a in [None, "blank", "pane"]):
-                    cmd = []
-
-                if isinstance(cmd, list) and len(cmd) == int(1):
-                    if any(a in cmd for a in [None, "blank", "pane"]):
-                        cmd = []
-
-                p["shell_command"] = cmd
-            else:
-                p["shell_command"] = []
-
-            pconf.update(p)
+        for pane_idx, pconf in enumerate(pane_configs):
+            pane_configs[pane_idx] = {}
+            pane_configs[pane_idx].update(expand_cmd(pconf))
         sconf["panes"] = [expand(pane, parent=sconf) for pane in pane_configs]
 
     return sconf
