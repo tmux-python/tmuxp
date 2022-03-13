@@ -1,5 +1,5 @@
 {
-  "session_name": "Skip all pane commands",
+  "session_name": "Skip command execution (pane-level)",
   "windows": [
     {
       "panes": [
