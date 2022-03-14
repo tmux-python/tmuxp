@@ -39,6 +39,22 @@ $ sudo apt install tmuxp
 
 Find the package for your distro on repology: <https://repology.org/project/tmuxp/versions>
 
+Developmental releases:
+
+- [pip](https://pip.pypa.io/en/stable/):
+
+  ```console
+  $ pip install --user --upgrade --pre tmuxp
+  ```
+
+- [pipx](https://pypa.github.io/pipx/docs/):
+
+  ```console
+  $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
+  ```
+
+  Then use `tmuxp@next load [session]`.
+
 # Load a tmux session
 
 Load tmux sessions via json and YAML,
