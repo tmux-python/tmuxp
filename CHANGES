@@ -1,6 +1,21 @@
 # Changelog
 
-## current
+To install the unreleased tmuxp version, see [developmental releases](https://tmuxp.git-pull.com/quickstart.html#developmental-releases).
+
+[pip](https://pip.pypa.io/en/stable/):
+
+```console
+$ pip install --user --upgrade --pre tmuxp
+```
+
+[pipx](https://pypa.github.io/pipx/docs/):
+
+```console
+$ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
+// Usage: tmuxp@next load yoursession
+```
+
+## 0.10 - unreleased
 
 - _Insert changes/features/fixes for next release here_
 
