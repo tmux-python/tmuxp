@@ -1086,12 +1086,28 @@ windows:
             2,
             "___4___",
         ],
+        [
+            textwrap.dedent(
+                """
+session_name: Should not execute
+shell_command_before:
+  - cmd: echo "sleeping before"
+    sleep_before: 2
+windows:
+- panes:
+  - echo "___$((1 + 3))___"
+    """
+            ),
+            2,
+            "___4___",
+        ],
     ],
     ids=[
         "command_level_sleep_3_shortform",
         "command_level_pane_sleep_3_longform",
         "pane_sleep_2_shortform",
         "pane_sleep_2_longform",
+        "shell_before_before_command_level",
     ],
 )
 def test_load_workspace_sleep(
