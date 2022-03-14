@@ -1,39 +1,33 @@
 {
   "windows": [
     {
-      "panes": [
-        "echo 'window in the history!'"
-      ],
+      "panes": ["echo 'window in the history!'"],
       "focus": true,
       "suppress_history": false,
       "window_name": "appended"
     },
     {
-      "panes": [
-        "echo 'window not in the history!'"
-      ],
+      "panes": ["echo 'window not in the history!'"],
       "suppress_history": true,
       "window_name": "suppressed"
     },
     {
-      "panes": [
-        "echo 'session in the history!'"
-      ],
+      "panes": ["echo 'session in the history!'"],
       "window_name": "default"
     },
     {
       "panes": [
         {
           "shell_command": "echo 'command in the history!'",
-	  "suppress_history": false
+          "suppress_history": false
         },
-	{
-	  "shell_command": "echo 'command not in the history!'",
-	  "suppress_history": true
-	},
-	{
-	  "shell_command": "echo 'window not in the history!'"
-	}
+        {
+          "shell_command": "echo 'command not in the history!'",
+          "suppress_history": true
+        },
+        {
+          "shell_command": "echo 'window not in the history!'"
+        }
       ],
       "suppress_history": true,
       "window_name": "mixed"

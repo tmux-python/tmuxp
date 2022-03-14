@@ -1,11 +1,11 @@
 session_name: test global options
-start_directory: '~'
+start_directory: "~"
 global_options:
   repeat-time: 493
-  status-position: 'top'
+  status-position: "top"
 windows:
-- window_name: moo
-  panes:
-  - pane
-  - pane
-  - pane
+  - window_name: moo
+    panes:
+      - pane
+      - pane
+      - pane

@@ -1,8 +1,8 @@
 windows:
-- editor:
-    layout: main-vertical
-    panes:
+  - editor:
+      layout: main-vertical
+      panes:
         - vim
         - guard
-- server: bundle exec rails s
-- logs: tail -f logs/development.log
+  - server: bundle exec rails s
+  - logs: tail -f logs/development.log

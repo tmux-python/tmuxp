@@ -3,71 +3,63 @@
     {
       "panes": [
         {
-          "shell_command": [
-            "echo \"\\033c", 
-            "it trickles down from session-level\""
-          ]
-        }, 
+          "shell_command": ["echo \"\\033c", "it trickles down from session-level\""]
+        },
         "echo hello"
-      ], 
+      ],
       "window_name": "should be /var/"
-    }, 
+    },
     {
       "panes": [
         {
           "shell_command": [
-            "echo '\\033c", 
-            "window start_directory concatenates to session start_directory", 
+            "echo '\\033c",
+            "window start_directory concatenates to session start_directory",
             "if it is not absolute'"
           ]
-        }, 
+        },
         "echo hello"
-      ], 
-      "start_directory": "log", 
+      ],
+      "start_directory": "log",
       "window_name": "should be /var/log"
-    }, 
+    },
     {
       "panes": [
         {
-          "shell_command": [
-            "echo \\\\033c ~ has precedence. note: remember to quote ~ in YAML"
-          ]
-        }, 
+          "shell_command": ["echo \\\\033c ~ has precedence. note: remember to quote ~ in YAML"]
+        },
         "echo hello"
-      ], 
-      "start_directory": "~", 
+      ],
+      "start_directory": "~",
       "window_name": "should be ~"
-    }, 
+    },
     {
-      "panes": [
-        "echo '\\033c absolute paths also have precedence.'", 
-        "echo hello"
-      ], 
-      "start_directory": "/bin", 
+      "panes": ["echo '\\033c absolute paths also have precedence.'", "echo hello"],
+      "start_directory": "/bin",
       "window_name": "should be /bin"
-    }, 
+    },
     {
       "panes": [
         {
           "shell_command": [
-            "echo '\\033c", 
-            "./ is relative to config file location", 
-            "../ will be parent of config file", 
+            "echo '\\033c",
+            "./ is relative to config file location",
+            "../ will be parent of config file",
             "./test will be \\\"test\\\" dir inside dir of config file'"
           ]
-        }, 
+        },
         {
           "shell_command": [
-            "echo '\\033c", 
-            "This way you can load up workspaces from projects and maintain", 
+            "echo '\\033c",
+            "This way you can load up workspaces from projects and maintain",
             "relative paths.'"
           ]
         }
-      ], 
-      "start_directory": "./", 
+      ],
+      "start_directory": "./",
       "window_name": "should be config's dir"
     }
-  ], 
-  "session_name": "start directory", 
+  ],
+  "session_name": "start directory",
   "start_directory": "/var/"
 }

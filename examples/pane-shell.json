@@ -12,9 +12,7 @@
       "panes": [
         {
           "shell": "/usr/bin/python3",
-          "shell_command": [
-            "print('This is python 3')"
-          ]
+          "shell_command": ["print('This is python 3')"]
         },
         {
           "shell": "/usr/bin/vim -u none",
@@ -27,9 +25,7 @@
           ]
         },
         {
-          "shell_command": [
-            "print('Hello World 2')"
-          ]
+          "shell_command": ["print('Hello World 2')"]
         },
         {
           "shell": "/usr/bin/top"

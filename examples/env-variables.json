@@ -1,33 +1,28 @@
 {
-  "before_script": "${MY_ENV_VAR}/test3.sh", 
+  "before_script": "${MY_ENV_VAR}/test3.sh",
   "windows": [
     {
       "panes": [
         {
-          "shell_command": [
-            "tail -F /var/log/syslog"
-          ]
+          "shell_command": ["tail -F /var/log/syslog"]
         }
-      ], 
-      "start_directory": "/var/log", 
+      ],
+      "start_directory": "/var/log",
       "window_name": "editor"
-    }, 
+    },
     {
       "panes": [
         {
-          "shell_command": [
-            "htop", 
-            "ls $PWD"
-          ]
+          "shell_command": ["htop", "ls $PWD"]
         }
-      ], 
-      "window_name": "logging for ${USER}", 
+      ],
+      "window_name": "logging for ${USER}",
       "options": {
         "automatic-rename": true
       }
     }
-  ], 
-  "shell_command_before": "echo ${PWD}", 
-  "start_directory": "${PWD}/test", 
+  ],
+  "shell_command_before": "echo ${PWD}",
+  "start_directory": "${PWD}/test",
   "session_name": "session - ${USER} (${MY_ENV_VAR})"
 }

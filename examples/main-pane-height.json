@@ -3,29 +3,23 @@
     {
       "panes": [
         {
-          "shell_command": [
-            "top"
-          ], 
+          "shell_command": ["top"],
           "start_directory": "~"
-        }, 
+        },
         {
-          "shell_command": [
-            "echo \"hey\""
-          ]
-        }, 
+          "shell_command": ["echo \"hey\""]
+        },
         {
-          "shell_command": [
-            "echo \"moo\""
-          ]
+          "shell_command": ["echo \"moo\""]
         }
-      ], 
-      "layout": "main-horizontal", 
+      ],
+      "layout": "main-horizontal",
       "options": {
         "main-pane-height": 30
-      }, 
+      },
       "window_name": "editor"
     }
-  ], 
-  "session_name": "main pane height", 
+  ],
+  "session_name": "main pane height",
   "start_directory": "~"
 }

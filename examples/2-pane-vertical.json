@@ -1,12 +1,9 @@
 {
   "windows": [
     {
-      "panes": [
-        "echo hello",
-        "echo hello"
-      ], 
+      "panes": ["echo hello", "echo hello"],
       "window_name": "my test window"
     }
-  ], 
+  ],
   "session_name": "2-pane-vertical"
 }

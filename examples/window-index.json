@@ -1,22 +1,16 @@
 {
   "windows": [
     {
-      "panes": [
-        "echo \"this window's index will be zero\""
-      ],
+      "panes": ["echo \"this window's index will be zero\""],
       "window_name": "zero"
     },
     {
-      "panes": [
-        "echo \"this window's index will be five\""
-      ],
+      "panes": ["echo \"this window's index will be five\""],
       "window_index": 5,
       "window_name": "five"
     },
     {
-      "panes": [
-        "echo \"this window's index will be one\""
-      ],
+      "panes": ["echo \"this window's index will be one\""],
       "window_name": "one"
     }
   ],

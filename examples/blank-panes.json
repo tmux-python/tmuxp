@@ -1,39 +1,31 @@
 {
   "windows": [
     {
-      "panes": [
-        null, 
-        "pane", 
-        "blank"
-      ], 
+      "panes": [null, "pane", "blank"],
       "window_name": "Blank pane test"
-    }, 
+    },
     {
       "panes": [
-        null, 
+        null,
         {
           "shell_command": null
-        }, 
+        },
         {
-          "shell_command": [
-            null
-          ]
+          "shell_command": [null]
         }
-      ], 
+      ],
       "window_name": "More blank panes"
-    }, 
+    },
     {
       "panes": [
-        "", 
+        "",
         {
           "shell_command": ""
-        }, 
+        },
         {
-          "shell_command": [
-            ""
-          ]
+          "shell_command": [""]
         }
-      ], 
+      ],
       "window_name": "Empty string (return)"
     },
     {
@@ -47,6 +39,6 @@
       ],
       "window_name": "Blank with options"
     }
-  ], 
+  ],
   "session_name": "Blank pane test"
 }

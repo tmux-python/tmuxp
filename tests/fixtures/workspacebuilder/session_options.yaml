@@ -1,11 +1,11 @@
 session_name: test session options
-start_directory: '~'
+start_directory: "~"
 options:
   default-shell: /bin/sh
   default-command: /bin/sh
 windows:
-- window_name: moo
-  panes:
-  - pane
-  - pane
-  - pane
+  - window_name: moo
+    panes:
+      - pane
+      - pane
+      - pane

@@ -1,12 +1,12 @@
 session_name: sampleconfig
-start_directory: '~'
+start_directory: "~"
 windows:
-- window_name: test
-  layout: main-horizontal
-  panes:
-  - shell_command:
-    - cmd: vim
-  - shell_command:
-    - cmd: echo "hey"
-  - shell_command:
-    - cmd: echo "moo"
+  - window_name: test
+    layout: main-horizontal
+    panes:
+      - shell_command:
+          - cmd: vim
+      - shell_command:
+          - cmd: echo "hey"
+      - shell_command:
+          - cmd: echo "moo"

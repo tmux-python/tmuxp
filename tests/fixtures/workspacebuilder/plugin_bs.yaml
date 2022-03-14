@@ -1,15 +1,15 @@
 session_name: plugin-test-bs
 plugins:
-- 'tmuxp_test_plugin_bs.plugin.PluginBeforeScript'
+  - "tmuxp_test_plugin_bs.plugin.PluginBeforeScript"
 windows:
-- window_name: editor
-  layout: tiled
-  shell_command_before:
-    - cmd: cd ~/
-  panes:
-    - shell_command:
-      - cmd: cd /var/log
-      - cmd: ls -al | grep \.log
-    - cmd: echo hello
-    - cmd: echo hello
-    - cmd: echo hello
+  - window_name: editor
+    layout: tiled
+    shell_command_before:
+      - cmd: cd ~/
+    panes:
+      - shell_command:
+          - cmd: cd /var/log
+          - cmd: ls -al | grep \.log
+      - cmd: echo hello
+      - cmd: echo hello
+      - cmd: echo hello

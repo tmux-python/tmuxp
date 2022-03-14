@@ -1,9 +1,9 @@
 session_name: test env vars
-start_directory: '~'
+start_directory: "~"
 environment:
   FOO: BAR
   PATH: /tmp
 windows:
-- window_name: editor
-  panes:
-  - pane
+  - window_name: editor
+    panes:
+      - pane

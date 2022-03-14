@@ -3,20 +3,15 @@
     {
       "panes": [
         {
-          "shell_command": [
-            "cd /var/log", 
-            "ls -al | grep \\.log"
-          ]
+          "shell_command": ["cd /var/log", "ls -al | grep \\.log"]
         },
         "echo hello",
         "echo hello"
-      ], 
-      "shell_command_before": [
-        "cd ~/"
-      ], 
-      "layout": "main-vertical", 
+      ],
+      "shell_command_before": ["cd ~/"],
+      "layout": "main-vertical",
       "window_name": "dev window"
     }
-  ], 
+  ],
   "session_name": "3-panes"
 }

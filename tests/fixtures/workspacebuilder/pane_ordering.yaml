@@ -1,11 +1,11 @@
 session_name: sampleconfig
-start_directory: {HOME}
+start_directory: { HOME }
 windows:
-- options:
-    automatic-rename: on
-  layout: tiled
-  panes:
-  - cd /usr/bin
-  - cd /usr
-  - cd /usr/sbin
-  - cd {HOME}
+  - options:
+      automatic-rename: on
+    layout: tiled
+    panes:
+      - cd /usr/bin
+      - cd /usr
+      - cd /usr/sbin
+      - cd {HOME}
