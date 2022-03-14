@@ -7,17 +7,13 @@
 Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
 
 ```console
-
 $ pip install --user tmuxp
-
 ```
 
 You can upgrade to the latest release with:
 
 ```console
-
 $ pip install --user tmuxp -U
-
 ```
 
 Then install {ref}`completion`.
@@ -25,10 +21,24 @@ Then install {ref}`completion`.
 If you are a Homebrew user you can install it with:
 
 ```console
-
 $ brew install tmuxp
-
 ```
+
+### Developmental releases
+
+- [pip](https://pip.pypa.io/en/stable/):
+
+  ```console
+  $ pip install --user --upgrade --pre tmuxp
+  ```
+
+- [pipx](https://pypa.github.io/pipx/docs/):
+
+  ```console
+  $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
+  ```
+
+  Then use `tmuxp@next load [session]`.
 
 ## CLI
 
