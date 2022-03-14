@@ -386,6 +386,16 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 Omit sending {kbd}`enter` to key commands. Equivalent to having
 a [`time.sleep`](time.sleep) before and after  [`send_keys`](libtmux.Pane.send_keys).
 
+This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, sourcing a configuration, launching a tui app, etc).
+
+````{tab} Virtualenv
+
+```{literalinclude} ../examples/sleep-virtualenv.yaml
+:language: yaml
+
+```
+````
+
 ````{tab} YAML
 
 ```{literalinclude} ../examples/sleep.yaml
