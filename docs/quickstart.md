@@ -32,19 +32,36 @@ New versions of tmuxp are published to PyPI as alpha, beta, or release candidate
 In their versions you will see notfication like `a1`, `b1`, and `rc1`, respectively.
 `1.10.0b4` would mean the 4th beta release of `1.10.0` before general availability.
 
-- [pip](https://pip.pypa.io/en/stable/):
+- [pip]\:
 
   ```console
   $ pip install --user --upgrade --pre tmuxp
   ```
 
-- [pipx](https://pypa.github.io/pipx/docs/):
+- [pipx]\:
 
   ```console
   $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   ```
 
   Then use `tmuxp@next load [session]`.
+
+via trunk (can break easily):
+
+- [pip]\:
+
+  ```console
+  $ pip install --user -e git+https://github.com/tmux-python/tmuxp.git#egg=tmuxp
+  ```
+
+- [pipx]\:
+
+  ```console
+  $ pipx install --suffix=@master 'tmuxp @ git+https://github.com/tmux-python/tmuxp.git@master' --force
+  ```
+
+[pip]: https://pip.pypa.io/en/stable/
+[pipx]: https://pypa.github.io/pipx/docs/
 
 ## CLI
 
