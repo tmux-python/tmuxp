@@ -1110,6 +1110,7 @@ windows:
         "shell_before_before_command_level",
     ],
 )
+@pytest.mark.flaky(reruns=3)
 def test_load_workspace_sleep(
     tmp_path: pathlib.Path,
     server: libtmux.Server,
