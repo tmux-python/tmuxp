@@ -1,0 +1,28 @@
+{
+  "session_name": "Pause / skip command execution (command-level)",
+  "windows": [
+    {
+      "panes": [
+        {
+          "shell_command": [
+            "echo \"___$((11 + 1))___\"",
+            {
+              "cmd": "echo \"___$((1 + 3))___\"",
+              "sleep_before": 2
+            },
+            {
+              "cmd": "echo \"___$((1 + 3))___\""
+            },
+            {
+              "cmd": "echo \"Stuff rendering here!\"",
+              "sleep_after": 2
+            },
+            {
+              "cmd": "echo \"2 seconds later\""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

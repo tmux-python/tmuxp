@@ -332,6 +332,8 @@ This will add the `shell_command` to the bash history in the pane.
 
 ```{versionadded} 1.10.0b1
 `enter: false` option. Pane-level support.
+```
+
 ```{versionadded} 1.10.0b3
 Support command-level skipping.
 ```
@@ -375,6 +377,64 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````
 
+## Pausing commands
+
+```{versionadded} 1.10.0b4
+`sleep_before` and `sleep_after` options added. Pane and command-level support.
+```
+
+```{warning}
+This will delay loading as it runs synchronously for each pane. In future version asynchronous support, (i.e. [`asyncio`](asyncio)) will speed up this up.
+```
+
+Omit sending {kbd}`enter` to key commands. Equivalent to having
+a [`time.sleep`](time.sleep) before and after  [`send_keys`](libtmux.Pane.send_keys).
+
+This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, sourcing a configuration, launching a tui app, etc).
+
+````{tab} Virtualenv
+
+```{literalinclude} ../examples/sleep-virtualenv.yaml
+:language: yaml
+
+```
+````
+
+````{tab} YAML
+
+```{literalinclude} ../examples/sleep.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON
+
+```{literalinclude} ../examples/sleep.json
+:language: json
+
+```
+
+````
+
+````{tab} YAML (pane-level)
+
+```{literalinclude} ../examples/sleep-pane-level.yaml
+:language: yaml
+
+```
+
+````
+
+````{tab} JSON (pane-level)
+
+```{literalinclude} ../examples/sleep-pane-level.json
+:language: json
+
+```
+
+````
 
 ## Window Index
 

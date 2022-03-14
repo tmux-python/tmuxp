@@ -1,0 +1,11 @@
+session_name: virtualenv
+shell_command_before:
+# - cmd: source $(poetry env info --path)/bin/activate
+# - cmd: source `pipenv --venv`/bin/activate
+- cmd: source .venv/bin/activate
+  sleep_before: 1
+  sleep_after: 1
+windows:
+- panes:
+  - shell_command:
+    - ./manage.py runserver

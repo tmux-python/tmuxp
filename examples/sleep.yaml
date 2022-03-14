@@ -1,0 +1,16 @@
+session_name: Pause / skip command execution (command-level)
+windows:
+- panes:
+  - shell_command:
+    # Executes immediately
+    - echo "___$((11 + 1))___"
+    # Delays before sending 2 seconds
+    - cmd: echo "___$((1 + 3))___"
+      sleep_before: 2
+    # Executes immediately
+    - cmd: echo "___$((1 + 3))___"
+    # Pauses 2 seconds after
+    - cmd: echo "Stuff rendering here!"
+      sleep_after: 2
+    # Executes after earlier commands (after 2 sec)
+    - cmd: echo "2 seconds later"
