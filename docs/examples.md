@@ -383,6 +383,10 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 `sleep_before` and `sleep_after` options added. Pane and command-level support.
 ```
 
+```{warning}
+This will delay loading as it runs synchronously for each pane. In future version asynchronous support, (i.e. [`asyncio`](asyncio)) will speed up this up.
+```
+
 Omit sending {kbd}`enter` to key commands. Equivalent to having
 a [`time.sleep`](time.sleep) before and after  [`send_keys`](libtmux.Pane.send_keys).
 
