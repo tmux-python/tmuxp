@@ -37,7 +37,7 @@ Debian / ubuntu:
 $ sudo apt install tmuxp
 ```
 
-Find the package for your distro on repology: https://repology.org/project/tmuxp/versions
+Find the package for your distro on repology: <https://repology.org/project/tmuxp/versions>
 
 # Load a tmux session
 
