@@ -64,10 +64,10 @@ directly shell commands. tmuxp processes configuration via ORM layer.
 support. See {ref}`commands`.
 
 **Import config** import configs from Teamocil / Tmuxinator [^id4]. See
-{ref}`cli_import`.
+{ref}`cli-import`.
 
 **Session freezing** Supports session freezing into YAML and JSON
-format [^id4]. See {ref}`cli_freeze`.
+format [^id4]. See {ref}`cli-freeze`.
 
 **JSON config** JSON config support. See {ref}`Examples`.
 
@@ -91,7 +91,7 @@ from JSON and YAML.
 ## Minor tweaks
 
 - Unit tests against live tmux version to test statefulness of tmux
-  sessions, windows and panes. See {ref}`travis`.
+  sessions, windows and panes. See {ref}`gh-actions`.
 - Load + switch to new session from inside tmux.
 - Resume session if config loaded.
 - Pre-commands virtualenv / rvm / any other commands.

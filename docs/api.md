@@ -7,10 +7,6 @@ See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart <libtmux:quickstart>
 tmux via python API calls.
 :::
 
-```{module} tmuxp
-
-```
-
 ## Internals
 
 :::{warning}

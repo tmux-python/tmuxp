@@ -240,7 +240,7 @@ $ make SPHINXBUILD='poetry run sphinx-build' watch
 
 ```
 
-After you {ref}`install_dev_env`, when inside the tmuxp checkout:
+After you {ref}`install-dev-env`, when inside the tmuxp checkout:
 
 ```console
 
