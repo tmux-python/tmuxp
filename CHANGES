@@ -4,7 +4,7 @@
 
 - _Insert changes/features/fixes for next release here_
 
-#### What's new
+### What's new
 
 - #747: Skip execution via `enter: false`
 
@@ -84,17 +84,17 @@
 
   Credit: @jerri
 
-#### Improvements
+### Improvements
 
 - Improve `tmuxp freeze` UX flow, credit @joseph-flinn (#657, in re: #627)
 - `tmuxp freeze` will now detect the attached session if no session name
   is specified. Credit: @will-ockmore. (#660)
 
-#### Bugs
+### Bugs
 
 - Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi! (#725)
 
-#### Internal API
+### Internal API
 
 - #752: Command structure (internal API)
 
@@ -119,20 +119,20 @@
 
 - #752: Configuration parsing refactorings
 
-#### Development
+### Development
 
 - Run through black + isort with string normalization (#738). This way we can
   use black without any configuration. (One-time, big diff)
 - Run codebase through pyupgrade (#745)
 - Add `codeql-analysis.yml` to try it out
 
-#### Documentation
+### Documentation
 
 - Move to `furo` sphinx theme
 
 ## tmuxp 1.9.4 (2022-01-10)
 
-#### Packaging
+### Packaging
 
 - `poetry build` used to package in place of `python setup.py build` (#729)
 
@@ -147,7 +147,7 @@
 
   Similar to the above, reach out to the #625 issue if you bump into problems.
 
-#### What's new
+### What's new
 
 - `tmuxp edit` for configuration changes (#707, @GlebPoljakov)
 
