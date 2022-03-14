@@ -239,7 +239,7 @@ If **compiling from source**, the dependencies are
 
 ### Start a new session
 
-```bash
+```console
 $ tmux
 ```
 
@@ -281,7 +281,7 @@ press `o`.
 
 Sessions can be _named upon creation_.
 
-```bash
+```console
 $ tmux new-session [-s session-name]
 ```
 
@@ -301,7 +301,7 @@ Short cut       ``Prefix`` + ``$``
 
 Windows can be _named upon creation_.
 
-```bash
+```console
 $ tmux new-window [-n window-name]
 ```
 
@@ -335,25 +335,25 @@ Short cut       ``Prefix`` + ``c``
 
 By number
 
-```bash
+```console
 $ tmux select-window
 ```
 
 Next
 
-```bash
+```console
 $ tmux next-window
 ```
 
 Previous
 
-```bash
+```console
 $ tmux previous-window
 ```
 
 Last-window
 
-```bash
+```console
 $ tmux last-window
 ```
 
@@ -370,13 +370,13 @@ $ tmux last-window
 
 Move window
 
-```bash
+```console
 $ tmux move-window [-t dst-window]
 ```
 
 Swap the window
 
-```bash
+```console
 $ tmux swap-window [-t dst-window]
 ```
 
@@ -386,7 +386,7 @@ $ tmux swap-window [-t dst-window]
 
 ### Move panes
 
-```bash
+```console
 $ tmux move-pane [-t dst-pane]
 ```
 
@@ -400,11 +400,11 @@ $ tmux move-pane [-t dst-pane]
 
 Shortcut to move between panes.
 
-```bash
+```console
 $ tmux last-window
 ```
 
-```bash
+```console
 $ tmux next-window
 ```
 
@@ -423,7 +423,7 @@ Recipe: tmux conf to `hjkl` commands, add this to your `~/.tmux.conf`:
 
 ### Kill window
 
-```bash
+```console
 $ tmux kill-window [-t target-window]
 ```
 
@@ -433,7 +433,7 @@ $ tmux kill-window [-t target-window]
 
 ### Kill pane
 
-```bash
+```console
 $ tmux kill-pane [-t target-pane]
 ```
 
@@ -443,7 +443,7 @@ $ tmux kill-pane [-t target-pane]
 
 ### Splitting windows into panes
 
-```bash
+```console
 $ tmux split-window [-c start-directory] <shell-command>
 ```
 
@@ -577,7 +577,7 @@ Source: tmux manpage[1].
 
 To get the text documentation of a `.1` manual file:
 
-```bash
+```console
 $ nroff -mdoc tmux.1|less
 ```
 
