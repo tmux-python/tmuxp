@@ -388,7 +388,7 @@ This will delay loading as it runs synchronously for each pane. In future versio
 ```
 
 Omit sending {kbd}`enter` to key commands. Equivalent to having
-a [`time.sleep`](time.sleep) before and after  [`send_keys`](libtmux.Pane.send_keys).
+a [`time.sleep`](time.sleep) before and after [`send_keys`](libtmux.Pane.send_keys).
 
 This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, sourcing a configuration, launching a tui app, etc).
 
@@ -546,7 +546,7 @@ pane during creation.
 
 :::{seealso}
 
-{ref}`tmuxp developer config` in the {ref}`developing` section.
+{ref}`tmuxp-developer-config` in the {ref}`developing` section.
 
 :::
 
