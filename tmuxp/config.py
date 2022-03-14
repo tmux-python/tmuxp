@@ -114,7 +114,7 @@ def expandshell(_path):
     """
     Return expanded path based on user's ``$HOME`` and ``env``.
 
-    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvar`s
+    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`.
 
     Parameters
     ----------
