@@ -518,7 +518,7 @@ line. The interval is determined by the `status-interval`:
 
 :::{tip}
 
-{ref}`Prefix key` is pressed before a short cut!
+{ref}`prefix-key` is pressed before a short cut!
 
 :::
 
