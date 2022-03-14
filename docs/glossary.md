@@ -61,6 +61,6 @@
     Target
         A target, cited in the manual as ``[-t target]`` can be a session,
         window or pane.
-```
 
-[kaptan on github]: https://github.com/emre/kaptan
+.. _kaptan on github: https://github.com/emre/kaptan
+```
