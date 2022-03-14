@@ -638,6 +638,7 @@ def load_workspace(
     References
     ----------
     .. [1] cmd-switch-client.c hook. GitHub repo for tmux.
+
        https://github.com/tmux/tmux/blob/2.6/cmd-switch-client.c#L132.
        Accessed April 8th, 2018.
     """
