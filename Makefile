@@ -52,3 +52,6 @@ watch_flake8:
 
 format_markdown:
 	prettier --parser=markdown -w *.md docs/*.md docs/**/*.md CHANGES
+
+format_configs:
+	npx prettier '.github/**/*.{yml,yaml}' 'tests/**/*.{yml,yaml}' 'examples/**/*.{yml,yaml}' 'examples/**/*.json' -w
