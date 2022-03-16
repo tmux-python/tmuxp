@@ -849,6 +849,10 @@ def startup(config_dir):
     help="Use vi-mode in ptpython/ptipython",
     default=False,
 )
+@click.option("--yes", "-y", "answer_yes", help="yes", is_flag=True)
+@click.option(
+    "-d", "detached", help="Load the session without attaching it", is_flag=True
+)
 def command_shell(
     session_name,
     window_name,
@@ -858,6 +862,8 @@ def command_shell(
     shell,
     use_pythonrc,
     use_vi_mode,
+    detached,
+    answer_yes,
 ):
     """Launch python shell for tmux server, session, window and pane.
 
@@ -867,15 +873,38 @@ def command_shell(
       session)
     - ``server.attached_session``, ``session.attached_window``, ``window.attached_pane``
     """
+    print(f"detached: {detached}")
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
-    util.raise_if_tmux_not_running(server=server)
+    if not util.is_server_running(server=server):
+        if answer_yes or click.confirm(
+            "No tmux server running, create?",
+            default=True,
+        ):
+            session = server.new_session(
+                session_name=session_name or "tmuxp shell",
+                window_command=" ".join(sys.argv),
+            )
+            session.attach_session()
+    else:
+        current_pane = util.get_current_pane(server=server)
 
-    current_pane = util.get_current_pane(server=server)
+    try:
+        session = util.get_session(
+            server=server, session_name=session_name, current_pane=current_pane
+        )
+    except exc.TmuxpException:
+        if answer_yes or click.confirm(
+            "Session %s does not exist. Create?" % session_name
+            if session_name is not None
+            else "Session does not exist. Create?"
+        ):
+            session = server.new_session(session_name=session_name)
+        else:
+            return
 
-    session = util.get_session(
-        server=server, session_name=session_name, current_pane=current_pane
-    )
+    if current_pane["session_id"] != session.id:
+        current_pane = None
 
     window = util.get_window(
         session=session, window_name=window_name, current_pane=current_pane
