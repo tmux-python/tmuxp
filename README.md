@@ -1,8 +1,8 @@
 tmuxp, tmux session manager. built on
 [libtmux](https://github.com/tmux-python/libtmux).
 
-[![Python Package](https://img.shields.io/pypi/v/tmuxp.svg)](http://badge.fury.io/py/tmuxp)
-[![Docs](https://github.com/tmux-python/tmuxp/workflows/Publish%20Docs/badge.svg)](https://github.com/tmux-python/tmuxp/actions?query=workflow%3A%22Publish+Docs%22)
+[![Python Package](https://img.shields.io/pypi/v/tmuxp.svg)](https://pypi.org/project/tmuxp/)
+[![Docs](https://github.com/tmux-python/tmuxp/workflows/Publish%20Docs/badge.svg)](https://tmuxp.git-pull.com/)
 [![Build status](https://github.com/tmux-python/tmuxp/workflows/tests/badge.svg)](https://github.com/tmux-python/tmuxp/actions?query=workflow%3A%22tests%22)
 [![Code Coverage](https://codecov.io/gh/tmux-python/tmuxp/branch/master/graph/badge.svg)](https://codecov.io/gh/tmux-python/tmuxp)
 [![License](https://img.shields.io/github/license/tmux-python/tmuxp.svg)](https://github.com/tmux-python/tmuxp/blob/master/LICENSE)
@@ -10,7 +10,7 @@ tmuxp, tmux session manager. built on
 **We need help!** tmuxp is a trusted session manager for tmux. If you
 could lend your time to helping answer issues and QA pull requests,
 please do! See [issue
-#290](https://github.com/tmux-python/tmuxp/issues/290)!
+#290](https://github.com/tmux-python/tmuxp/discussions/290)!
 
 **New to tmux?** [The Tao of tmux](https://leanpub.com/the-tao-of-tmux)
 is available on Leanpub and [Amazon Kindle](http://amzn.to/2gPfRhC).
