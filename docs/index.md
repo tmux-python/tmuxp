@@ -15,10 +15,9 @@
 :start-after: "# Freeze a tmux session"
 ```
 
-## Table of Contents
-
 ```{toctree}
 :maxdepth: 2
+:hidden:
 
 about
 quickstart
