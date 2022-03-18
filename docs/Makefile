@@ -155,6 +155,11 @@ doctest:
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
+redirects:
+	$(SPHINXBUILD) -b rediraffewritediff $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The redirects are in rediraffe_redirects."
+
 checkbuild:
 	rm -rf $(BUILDDIR)
 	$(SPHINXBUILD) -n -q ./ $(BUILDDIR)
