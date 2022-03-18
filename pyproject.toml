@@ -64,6 +64,7 @@ sphinx-issues = "^3.0.0"
 sphinx-inline-tabs = { version = "*", python = "^3.7" }
 sphinxext-opengraph = "*"
 sphinx-copybutton = "^0.5.0"
+sphinxext-rediraffe = "*"
 myst_parser = "~0.17.0"
 
 ### Testing ###
@@ -87,7 +88,7 @@ isort = "*"
 flake8 = "*"
 
 [tool.poetry.extras]
-docs = ["sphinx", "sphinx-issues", "sphinx-click", "sphinx-autodoc-typehints", "sphinx-autobuild", "sphinx-copybutton", "sphinxext-opengraph", "sphinx-inline-tabs", "myst_parser", "furo", "aafigure", "pillow"]
+docs = ["sphinx", "sphinx-issues", "sphinx-click", "sphinx-autodoc-typehints", "sphinx-autobuild", "sphinx-copybutton", "sphinxext-opengraph", "sphinx-inline-tabs", "sphinxext-rediraffe", "myst_parser", "furo", "aafigure", "pillow"]
 test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher", "tox", "tox-poetry-installer"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
