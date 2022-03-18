@@ -165,7 +165,7 @@ $ tmuxp shell -c 'print(window.name.upper())'
 MY_WINDOW
 ```
 
-Read more on [tmuxp shell](https://tmuxp.git-pull.com/cli.html#shell) in
+Read more on [tmuxp shell](https://tmuxp.git-pull.com/commands/#shell) in
 the CLI docs.
 
 # Pre-load hook
@@ -194,7 +194,7 @@ $ tmuxp freeze session-name
 ```
 
 See more about [freezing
-tmux](http://tmuxp.git-pull.com/cli.html#freeze-sessions) sessions.
+tmux](http://tmuxp.git-pull.com/commands/#freeze-sessions) sessions.
 
 # Convert a session file
 

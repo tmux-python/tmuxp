@@ -63,11 +63,11 @@ via trunk (can break easily):
 [pip]: https://pip.pypa.io/en/stable/
 [pipx]: https://pypa.github.io/pipx/docs/
 
-## CLI
+## Commands
 
 :::{seealso}
 
-{ref}`examples`, {ref}`cli`, {ref}`completion`.
+{ref}`examples`, {ref}`commands`, {ref}`completion`.
 
 :::
 
@@ -153,7 +153,7 @@ AL - [Abstraction Layer][abstraction layer]
 | {meth}`libtmux.Window.split_window`   | `$ tmux split-window`      |
 | {meth}`libtmux.Pane.send_keys`        | `$ tmux send-keys`         |
 
-[import]: http://tmuxp.git-pull.com/cli.html#import
+[import]: http://tmuxp.git-pull.com/commands/#import
 [tmuxinator]: https://github.com/aziz/tmuxinator
 [teamocil]: https://github.com/remiprev/teamocil
 [abstraction layer]: http://en.wikipedia.org/wiki/Abstraction_layer

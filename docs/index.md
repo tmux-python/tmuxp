@@ -22,7 +22,7 @@
 about
 quickstart
 examples
-cli
+commands/index
 plugin_system
 
 ```

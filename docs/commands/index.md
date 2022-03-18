@@ -2,7 +2,7 @@
 
 (commands)=
 
-# Command Line Interface
+# Commands
 
 (completion)=
 
