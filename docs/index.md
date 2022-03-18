@@ -1,9 +1,5 @@
 (index)=
 
-# tmuxp
-
-## tmux session manager
-
 ```{include} ../README.md
 :end-before: <img
 ```
