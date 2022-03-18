@@ -24,10 +24,17 @@ quickstart
 examples
 cli
 plugin_system
-developing
-api
-history
+
+```
+
+```{toctree}
+:caption: Project
+:hidden:
+
 about_tmux
 glossary
-
+api
+developing
+history
+GitHub <https://github.com/tmux-python/tmuxp>
 ```
