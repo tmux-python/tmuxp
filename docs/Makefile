@@ -156,7 +156,7 @@ doctest:
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
 redirects:
-	$(SPHINXBUILD) -b rediraffewritediff $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	$(SPHINXBUILD) -b rediraffewritediff $(ALLSPHINXOPTS) $(BUILDDIR)/redirects
 	@echo
 	@echo "Build finished. The redirects are in rediraffe_redirects."
 
