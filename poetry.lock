@@ -425,7 +425,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 
 [[package]]
 name = "libtmux"
-version = "0.11.0b2"
+version = "0.11.0b3"
 description = "scripting library / orm for tmux"
 category = "main"
 optional = false
@@ -1227,7 +1227,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.13.3"
+version = "20.13.4"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -1285,7 +1285,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "a1f3dcf451664b20e031c672df348ef29ce5d2c8111c8fcaae40952c866def71"
+content-hash = "7d9b83497473321bd6a6100d29b854c8dd4a8f10ad016714b35d1eac94d8c499"
 
 [metadata.files]
 aafigure = [
@@ -1555,8 +1555,8 @@ keyring = [
     {file = "keyring-22.3.0.tar.gz", hash = "sha256:16927a444b2c73f983520a48dec79ddab49fe76429ea05b8d528d778c8339522"},
 ]
 libtmux = [
-    {file = "libtmux-0.11.0b2-py3-none-any.whl", hash = "sha256:a5c7f2e399106c861e5eb7e0efafe8668570c9762402922ea19685cb63304ee8"},
-    {file = "libtmux-0.11.0b2.tar.gz", hash = "sha256:04e268681d3cff9f01f7f68a0fab33fd2f06c5ecb6e67ef19a630e4a26ba41a3"},
+    {file = "libtmux-0.11.0b3-py3-none-any.whl", hash = "sha256:16e435769aad8ea50fe0120eca38afb6fe03010312e6173da21953c334ceeb72"},
+    {file = "libtmux-0.11.0b3.tar.gz", hash = "sha256:a75ed9180b80b9c599971c028711ff20b75682752b20147aa5b153f47243dfc0"},
 ]
 livereload = [
     {file = "livereload-2.6.3.tar.gz", hash = "sha256:776f2f865e59fde56490a56bcc6773b6917366bce0c267c60ee8aaf1a0959869"},
@@ -2017,8 +2017,8 @@ urllib3 = [
     {file = "urllib3-1.26.9.tar.gz", hash = "sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.13.3-py2.py3-none-any.whl", hash = "sha256:dd448d1ded9f14d1a4bfa6bfc0c5b96ae3be3f2d6c6c159b23ddcfd701baa021"},
-    {file = "virtualenv-20.13.3.tar.gz", hash = "sha256:e9dd1a1359d70137559034c0f5433b34caf504af2dc756367be86a5a32967134"},
+    {file = "virtualenv-20.13.4-py2.py3-none-any.whl", hash = "sha256:c3e01300fb8495bc00ed70741f5271fc95fed067eb7106297be73d30879af60c"},
+    {file = "virtualenv-20.13.4.tar.gz", hash = "sha256:ce8901d3bbf3b90393498187f2d56797a8a452fb2d0d7efc6fd837554d6f679c"},
 ]
 watchdog = [
     {file = "watchdog-2.1.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:9693f35162dc6208d10b10ddf0458cc09ad70c30ba689d9206e02cd836ce28a3"},
