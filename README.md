@@ -8,15 +8,13 @@ A session manager for tmux. Built on [libtmux](https://github.com/tmux-python/li
 [![Code Coverage](https://codecov.io/gh/tmux-python/tmuxp/branch/master/graph/badge.svg)](https://codecov.io/gh/tmux-python/tmuxp)
 [![License](https://img.shields.io/github/license/tmux-python/tmuxp.svg)](https://github.com/tmux-python/tmuxp/blob/master/LICENSE)
 
-**We need help!** tmuxp is a trusted session manager for tmux. If you
-could lend your time to helping answer issues and QA pull requests,
-please do! See [issue
-#290](https://github.com/tmux-python/tmuxp/discussions/290)!
-
 **New to tmux?** [The Tao of tmux](https://leanpub.com/the-tao-of-tmux)
 is available on Leanpub and [Amazon Kindle](http://amzn.to/2gPfRhC).
 Read and browse the book for free [on the
 web](https://leanpub.com/the-tao-of-tmux/read).
+
+**Have some spare time?** Help us triage and code review and the tracker. See [issue
+#290](https://github.com/tmux-python/tmuxp/discussions/290)!
 
 # Installation
 
