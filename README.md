@@ -153,7 +153,7 @@ Window(@3 1:your_window, Session($1 your_project))
 Pane(%6 Window(@3 1:your_window, Session($1 your_project))
 ```
 
-Python 3.7+ supports [PEP
+Supports [PEP
 553](https://www.python.org/dev/peps/pep-0553/) `breakpoint()`
 (including `PYTHONBREAKPOINT`). Also supports direct commands via `-c`:
 
@@ -250,6 +250,12 @@ See the [Quickstart](http://tmuxp.git-pull.com/quickstart.html).
 Want to learn more about tmux itself? [Read The Tao of Tmux
 online](http://tmuxp.git-pull.com/about_tmux.html).
 
+# Python support
+
+Maintenance-only / security and bug fixes:
+
+- Python 3.7 and 3.8: [`v1.11.x`](https://github.com/tmux-python/libtmux/tree/v0.11.x)
+
 # Donations
 
 Your donations fund development of new features, testing and support.
@@ -262,7 +268,7 @@ See donation options at <https://git-pull.com/support.html>.
 # Project details
 
 - tmux support: 1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
-- python support: >= 3.7, pypy, pypy3
+- python support: >= 3.9, pypy, pypy3
 - Source: <https://github.com/tmux-python/tmuxp>
 - Docs: <https://tmuxp.git-pull.com>
 - API: <https://tmuxp.git-pull.com/api.html>
