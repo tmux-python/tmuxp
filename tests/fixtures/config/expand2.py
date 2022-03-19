@@ -1,8 +1,8 @@
 import os
 
-from .._util import read_config_file
+from .. import _util as test_utils
 
-unexpanded_yaml = read_config_file("config/expand2-unexpanded.yaml")
-expanded_yaml = read_config_file("config/expand2-expanded.yaml").format(
+unexpanded_yaml = test_utils.read_config_file("config/expand2-unexpanded.yaml")
+expanded_yaml = test_utils.read_config_file("config/expand2-expanded.yaml").format(
     HOME=os.path.expanduser("~")
 )
