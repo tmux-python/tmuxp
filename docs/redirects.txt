@@ -1,1 +1,2 @@
 "cli.md" "commands/index.md"
+"examples.md" "configuration/examples.md"
