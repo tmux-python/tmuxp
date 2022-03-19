@@ -255,6 +255,13 @@ this will load the `.tmuxp.yaml` in the root of the project.
 
 ```
 
+`.tmuxp-before-script.sh` ran by `before_script`:
+
+```{literalinclude} ../.tmuxp-before-script.sh
+:language: console
+
+```
+
 (gh-actions)=
 
 ## Github Actions
