@@ -110,7 +110,7 @@ session. You can also load a configuration, and append the windows to
 the current active session.
 
 You can also have a custom tmuxp config directory by setting the
-`TMUX_CONFIGDIR` in your environment variables.
+`TMUXP_CONFIGDIR` in your environment variables.
 
 ```console
 
