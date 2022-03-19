@@ -12,7 +12,7 @@ Used for:
 
 Notes:
 
-- May differ from the config filename
+- Session names may differ from config filename.
 
   e.g. _apple.yaml_:
 
@@ -31,9 +31,9 @@ Notes:
 
   Above:
 
-  - tmuxp loads a file named _apple.yaml_ from a current directory
+  - tmuxp loads a file named _apple.yaml_ from the current directory.
   - tmuxp built a tmux session called _banana_.
-  - `-d` means _detached_, loading in background
+  - `-d` means _detached_, loading in background.
 
   ```console
   $ tmux attach -t banana
