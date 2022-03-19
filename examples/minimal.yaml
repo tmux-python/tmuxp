@@ -1,0 +1,4 @@
+session_name: My tmux session
+windows:
+  - panes:
+    -
