@@ -2,9 +2,13 @@
 
 # Environmental variables
 
+(TMUXP_CONFIGDIR)=
+
 ## `TMUXP_CONFIGDIR`
 
 Example: `TMUXP_CONFIGDIR=$HOME/.mytmuxpconfigdir tmuxp load cpython`
+
+(LIBTMUX_TMUX_FORMAT_SEPARATOR)=
 
 ## `LIBTMUX_TMUX_FORMAT_SEPARATOR`
 
