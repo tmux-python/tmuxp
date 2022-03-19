@@ -21,7 +21,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### What's new
 
-- #747: Skip execution via `enter: false`
+- {issue}`747`: Skip execution via `enter: false`
+
+  See {ref}`enter`.
+
+  :::{note}
+
+  _Experimental setting_: behavior and api is subject to change until stable.
+
+  :::
 
   ```yaml
   session_name: Should not execute
@@ -37,7 +45,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
           enter: false
   ```
 
-- #750: Pause execution via `sleep_before: [int]` and `sleep_after: [int]`
+- {issue}`750`: Pause execution via `sleep_before: [int]` and `sleep_after: [int]`
+
+  See {ref}`sleep`.
+
+  :::{note}
+
+  _Experimental setting_: behavior and api is subject to change until stable.
+
+  :::
 
   ```yaml
   session_name: Pause / skip command execution (command-level)
@@ -58,7 +74,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
             - cmd: echo "2 seconds later"
   ```
 
-- #701: `tmuxp freeze` now accepts `--quiet` and `--yes` along with the
+- {issue}`701`: `tmuxp freeze` now accepts `--quiet` and `--yes` along with the
   `--config-format` and filename (`--save-to`). This means you can do it all in
   one command:
 
@@ -68,7 +84,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   Credit: [@davidatbu](https://github.com/davidatbu)
 
-- #672: Panes now accept `shell` for their initial command.
+- {issue}`672`: Panes now accept `shell` for their initial command.
 
   Equivalent to `tmux split-windows`'s `[shell-command]`
 
@@ -101,19 +117,19 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Improvements
 
-- Improve `tmuxp freeze` UX flow, credit @joseph-flinn (#657, in re: #627)
+- Improve `tmuxp freeze` UX flow, credit @joseph-flinn ({issue}`657`, in re: {issue}`627`)
 - `tmuxp freeze` will now detect the attached session if no session name
-  is specified. Credit: @will-ockmore. (#660)
+  is specified. Credit: @will-ockmore. ({issue}`660`)
 
 ### Bugs
 
-- Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi! (#725)
+- Fix loading of `.yml` files with `tmuxp convert`, thank you @kalixi! ({issue}`725`)
 
 ### Internal API
 
-- #752: Command structure (internal API)
+- {issue}`752`: Command structure (internal API)
 
-  To pave the way for per-command options such as `enter: false` (#53), commands are now a different format:
+  To pave the way for per-command options such as `enter: false` ({issue}`53`), commands are now a different format:
 
   Before, [`str`](str):
 
@@ -132,13 +148,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   This is purely internal. Normal usage should be the same since the
   configuration emits the equivalent result.
 
-- #752: Configuration parsing refactorings
+- {issue}`752`: Configuration parsing refactorings
 
 ### Development
 
-- Run through black + isort with string normalization (#738). This way we can
+- Run through black + isort with string normalization ({issue}`738`). This way we can
   use black without any configuration. (One-time, big diff)
-- Run codebase through pyupgrade (#745)
+- Run codebase through pyupgrade ({issue}`745`)
 - Add `codeql-analysis.yml` to try it out
 
 ### Documentation
@@ -151,22 +167,21 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Packaging
 
-- `poetry build` used to package in place of `python setup.py build` (#729)
+- `poetry build` used to package in place of `python setup.py build` ({issue}`729`)
 
-  Package maintainers: If you run into any issues check in at
-  [#625](https://github.com/tmux-python/tmuxp/issues/625) and file an issue.
+  Package maintainers: If you run into any issues check in at {issue}`625` and file an issue.
 
   Additionally, `libtmux` has been pinned to a similar release at
   [0.10.3](https://pypi.org/project/libtmux/0.10.3/) which has used the new
   build process.
 
-- `poetry publish` instead of `twine upload dist/*` (#729)
+- `poetry publish` instead of `twine upload dist/*` ({issue}`729`)
 
-  Similar to the above, reach out to the #625 issue if you bump into problems.
+  Similar to the above, reach out to the {issue}`625` issue if you bump into problems.
 
 ### What's new
 
-- `tmuxp edit` for configuration changes (#707, @GlebPoljakov)
+- `tmuxp edit` for configuration changes ({issue}`707`, @GlebPoljakov)
 
   Inside of configuration directory: `tmuxp edit yourconfig`
 
@@ -174,26 +189,26 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Removed support
 
-- Python 3.6 support has been removed (#726)
+- Python 3.6 support has been removed ({issue}`726`)
 
 ### Development
 
 - We are trying `.pre-commit-config.yaml` in pull requests to automate
-  black, isort and flake8 for those who forget (#726)
-- Poetry update 1.1.7 -> 1.1.12 and use new installer URL (#726)
-- Black updated 21.9b0 -> 21.12b0 (#726)
+  black, isort and flake8 for those who forget ({issue}`726`)
+- Poetry update 1.1.7 -> 1.1.12 and use new installer URL ({issue}`726`)
+- Black updated 21.9b0 -> 21.12b0 ({issue}`726`)
 
 ## tmuxp 1.9.3 (2021-10-30)
 
-- #700: Add `-h` / `--help` option, thanks @GHPS
-- #689: Update poetry to 1.1
+- {issue}`700`: Add `-h` / `--help` option, thanks @GHPS
+- {issue}`689`: Update poetry to 1.1
   - CI: Use poetry 1.1.7 and `install-poetry.py` installer
   - Relock poetry.lock at 1.1 (w/ 1.1.7's fix)
-- #696: Typo fix, thanks @inkch
+- {issue}`696`: Typo fix, thanks @inkch
 
 ## tmuxp 1.9.2 (2021-06-17)
 
-- #686: Allow click 8.0.x
+- {issue}`686`: Allow click 8.0.x
 - Remove `manual/`, move to https://github.com/tmux-python/tmux-manuals
 
 ## tmuxp 1.9.1 (2021-06-16)
