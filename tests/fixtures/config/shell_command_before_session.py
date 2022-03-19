@@ -1,4 +1,6 @@
-from .._util import read_config_file
+from .. import _util as test_utils
 
-before = read_config_file("config/shell_command_before_session.yaml")
-expected = read_config_file("config/shell_command_before_session-expected.yaml")
+before = test_utils.read_config_file("config/shell_command_before_session.yaml")
+expected = test_utils.read_config_file(
+    "config/shell_command_before_session-expected.yaml"
+)

@@ -1,6 +1,6 @@
-from .._util import read_config_file
+from .. import _util as test_utils
 
-tmuxinator_yaml = read_config_file("config_tmuxinator/test2.yaml")
+tmuxinator_yaml = test_utils.read_config_file("config_tmuxinator/test2.yaml")
 
 tmuxinator_dict = {
     "project_name": "sample",
