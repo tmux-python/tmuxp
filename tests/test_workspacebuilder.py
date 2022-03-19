@@ -17,7 +17,7 @@ from tmuxp.cli import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from . import EXAMPLE_PATH, FIXTURES_PATH
-from .fixtures import _util as test_utils
+from .fixtures import utils as test_utils
 
 
 def test_split_windows(session):
