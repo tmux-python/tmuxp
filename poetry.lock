@@ -425,7 +425,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 
 [[package]]
 name = "libtmux"
-version = "0.11.0b3"
+version = "0.11.0b4"
 description = "scripting library / orm for tmux"
 category = "main"
 optional = false
@@ -1285,7 +1285,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "7d9b83497473321bd6a6100d29b854c8dd4a8f10ad016714b35d1eac94d8c499"
+content-hash = "bfe80127219ae86a1900d3f364e8d129657ed7521ee0ccb0d1ee38bc1cf20b36"
 
 [metadata.files]
 aafigure = [
@@ -1555,8 +1555,8 @@ keyring = [
     {file = "keyring-22.3.0.tar.gz", hash = "sha256:16927a444b2c73f983520a48dec79ddab49fe76429ea05b8d528d778c8339522"},
 ]
 libtmux = [
-    {file = "libtmux-0.11.0b3-py3-none-any.whl", hash = "sha256:16e435769aad8ea50fe0120eca38afb6fe03010312e6173da21953c334ceeb72"},
-    {file = "libtmux-0.11.0b3.tar.gz", hash = "sha256:a75ed9180b80b9c599971c028711ff20b75682752b20147aa5b153f47243dfc0"},
+    {file = "libtmux-0.11.0b4-py3-none-any.whl", hash = "sha256:9031bfd2eb645fd9d04a571b4a17068f5d1aa0c8d5e1f0741d7b41ea7180a87e"},
+    {file = "libtmux-0.11.0b4.tar.gz", hash = "sha256:9da93087e5ae6eb54f974ceec778389c4036ca6393aeff1e87e5977583f92867"},
 ]
 livereload = [
     {file = "livereload-2.6.3.tar.gz", hash = "sha256:776f2f865e59fde56490a56bcc6773b6917366bce0c267c60ee8aaf1a0959869"},
