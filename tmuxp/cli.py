@@ -858,10 +858,11 @@ def command_shell(
     """Launch python shell for tmux server, session, window and pane.
 
     Priority given to loaded session/wndow/pane objects:
+
     - session_name and window_name arguments
-    - current shell: environmental variable of TMUX_PANE (which gives us window and
-      session)
-    - ``server.attached_session``, ``session.attached_window``, ``window.attached_pane``
+    - current shell: envvar ``TMUX_PANE`` for determing window and session
+    - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.attached_window`,
+      :attr:`libtmux.Window.attached_pane`
     """
     server = Server(socket_name=socket_name, socket_path=socket_path)
 
