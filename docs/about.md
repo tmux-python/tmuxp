@@ -25,7 +25,7 @@ Interested in some kung-fu or joining the effort? {ref}`api` and
 [bugsnag]: https://blog.bugsnag.com/benefits-of-using-tmux/
 [pragmatic coders]: http://pragmaticcoders.com/blog/tmuxp-preconfigured-sessions/
 
-## Differences from tmuxinator / teamocil
+## Compared to tmuxinator / teamocil
 
 ### Similarities
 
