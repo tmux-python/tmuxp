@@ -1,4 +1,4 @@
-from .. import _util as test_utils
+from .. import utils as test_utils
 
 teamocil_yaml = test_utils.read_config_file("config_teamocil/test1.yaml")
 teamocil_conf = {

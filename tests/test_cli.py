@@ -28,7 +28,7 @@ from tmuxp.cli import (
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from .fixtures import _util as test_utils
+from .fixtures import utils as test_utils
 from .fixtures._util import FIXTURE_PATH
 
 

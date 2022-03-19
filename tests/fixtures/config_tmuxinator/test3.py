@@ -1,4 +1,4 @@
-from .. import _util as test_utils
+from .. import utils as test_utils
 
 tmuxinator_yaml = test_utils.read_config_file("config_tmuxinator/test3.yaml")
 
