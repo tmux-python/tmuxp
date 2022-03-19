@@ -36,10 +36,6 @@ logger = logging.getLogger(__name__)
 VALID_CONFIG_DIR_FILE_EXTENSIONS = [".yaml", ".yml", ".json"]
 
 
-def get_cwd():
-    return os.getcwd()
-
-
 def tmuxp_echo(message=None, log_level="INFO", style_log=False, **click_kwargs):
     """
     Combines logging.log and click.echo

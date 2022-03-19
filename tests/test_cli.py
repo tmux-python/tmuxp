@@ -1015,13 +1015,6 @@ def test_get_tmuxinator_dir(monkeypatch):
     assert cli.get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
 
 
-def test_get_cwd(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch):
-    assert cli.get_cwd() == os.getcwd()
-    monkeypatch.chdir(tmp_path)
-    assert cli.get_cwd() == str(tmp_path)
-    assert cli.get_cwd() == os.getcwd()
-
-
 def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch):
     assert cli.get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
 
