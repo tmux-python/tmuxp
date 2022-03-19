@@ -26,10 +26,10 @@ from libtmux.common import (
 from libtmux.exc import TmuxCommandNotFound
 from libtmux.server import Server
 
-from . import __file__ as tmuxp_path, config, exc, log, util
-from .__about__ import __version__
-from ._compat import PY3, PYMINOR
-from .workspacebuilder import WorkspaceBuilder, freeze
+from .. import __file__ as tmuxp_path, config, exc, log, util
+from ..__about__ import __version__
+from .._compat import PY3, PYMINOR
+from ..workspacebuilder import WorkspaceBuilder, freeze
 
 logger = logging.getLogger(__name__)
 
@@ -889,7 +889,7 @@ def command_shell(
             tmuxp_breakpoint()
             return
         else:
-            from .shell import launch
+            from ..shell import launch
 
             launch(
                 shell=shell,
