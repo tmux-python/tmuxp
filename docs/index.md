@@ -21,7 +21,6 @@
 
 about
 quickstart
-examples
 commands/index
 configuration/index
 plugin_system

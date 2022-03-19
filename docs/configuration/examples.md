@@ -29,7 +29,7 @@ punctual.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/shorthands.yaml
+```{literalinclude} ../../examples/shorthands.yaml
 :language: yaml
 
 ```
@@ -39,7 +39,7 @@ punctual.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/shorthands.json
+```{literalinclude} ../../examples/shorthands.json
 :language: json
 
 ```
@@ -55,7 +55,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/blank-panes.yaml
+```{literalinclude} ../../examples/blank-panes.yaml
 :language: yaml
 
 ```
@@ -64,7 +64,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/blank-panes.json
+```{literalinclude} ../../examples/blank-panes.json
 :language: json
 
 ```
@@ -93,7 +93,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/2-pane-vertical.yaml
+```{literalinclude} ../../examples/2-pane-vertical.yaml
 :language: yaml
 
 ```
@@ -102,7 +102,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/2-pane-vertical.json
+```{literalinclude} ../../examples/2-pane-vertical.json
 :language: json
 
 ```
@@ -131,7 +131,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/3-pane.yaml
+```{literalinclude} ../../examples/3-pane.yaml
 :language: yaml
 
 ```
@@ -140,7 +140,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/3-pane.json
+```{literalinclude} ../../examples/3-pane.json
 :language: json
 
 ```
@@ -169,7 +169,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/4-pane.yaml
+```{literalinclude} ../../examples/4-pane.yaml
 :language: yaml
 
 ```
@@ -178,7 +178,7 @@ Note `''` counts as an empty carriage return.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/4-pane.json
+```{literalinclude} ../../examples/4-pane.json
 :language: json
 
 ```
@@ -191,7 +191,7 @@ Equivalent to `tmux new-window -c <start-directory>`.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/start-directory.yaml
+```{literalinclude} ../../examples/start-directory.yaml
 :language: yaml
 
 ```
@@ -200,7 +200,7 @@ Equivalent to `tmux new-window -c <start-directory>`.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/start-directory.json
+```{literalinclude} ../../examples/start-directory.json
 :language: json
 
 ```
@@ -244,7 +244,7 @@ please make a ticket on the [issue tracker][issue tracker].
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/env-variables.yaml
+```{literalinclude} ../../examples/env-variables.yaml
 :language: yaml
 
 ```
@@ -253,7 +253,7 @@ please make a ticket on the [issue tracker][issue tracker].
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/env-variables.json
+```{literalinclude} ../../examples/env-variables.json
 :language: json
 
 ```
@@ -266,7 +266,7 @@ tmuxp will set session environment variables.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/session-environment.yaml
+```{literalinclude} ../../examples/session-environment.yaml
 :language: yaml
 
 ```
@@ -274,7 +274,7 @@ tmuxp will set session environment variables.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/session-environment.json
+```{literalinclude} ../../examples/session-environment.json
 :language: json
 
 ```
@@ -288,7 +288,7 @@ selected upon loading.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/focus-window-and-panes.yaml
+```{literalinclude} ../../examples/focus-window-and-panes.yaml
 :language: yaml
 
 ```
@@ -297,7 +297,7 @@ selected upon loading.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/focus-window-and-panes.json
+```{literalinclude} ../../examples/focus-window-and-panes.json
 :language: json
 
 ```
@@ -312,7 +312,7 @@ This will add the `shell_command` to the bash history in the pane.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/suppress-history.yaml
+```{literalinclude} ../../examples/suppress-history.yaml
 :language: yaml
 
 ```
@@ -321,7 +321,7 @@ This will add the `shell_command` to the bash history in the pane.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/suppress-history.json
+```{literalinclude} ../../examples/suppress-history.json
 :language: json
 
 ```
@@ -349,7 +349,7 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/skip-send.yaml
+```{literalinclude} ../../examples/skip-send.yaml
 :language: yaml
 
 ```
@@ -358,7 +358,7 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/skip-send.json
+```{literalinclude} ../../examples/skip-send.json
 :language: json
 
 ```
@@ -367,7 +367,7 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````{tab} YAML (pane-level)
 
-```{literalinclude} ../examples/skip-send-pane-level.yaml
+```{literalinclude} ../../examples/skip-send-pane-level.yaml
 :language: yaml
 
 ```
@@ -376,7 +376,7 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````{tab} JSON (pane-level)
 
-```{literalinclude} ../examples/skip-send-pane-level.json
+```{literalinclude} ../../examples/skip-send-pane-level.json
 :language: json
 
 ```
@@ -408,7 +408,7 @@ This is especially useful for expensive commands where the terminal needs some b
 
 ````{tab} Virtualenv
 
-```{literalinclude} ../examples/sleep-virtualenv.yaml
+```{literalinclude} ../../examples/sleep-virtualenv.yaml
 :language: yaml
 
 ```
@@ -416,7 +416,7 @@ This is especially useful for expensive commands where the terminal needs some b
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/sleep.yaml
+```{literalinclude} ../../examples/sleep.yaml
 :language: yaml
 
 ```
@@ -425,7 +425,7 @@ This is especially useful for expensive commands where the terminal needs some b
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/sleep.json
+```{literalinclude} ../../examples/sleep.json
 :language: json
 
 ```
@@ -434,7 +434,7 @@ This is especially useful for expensive commands where the terminal needs some b
 
 ````{tab} YAML (pane-level)
 
-```{literalinclude} ../examples/sleep-pane-level.yaml
+```{literalinclude} ../../examples/sleep-pane-level.yaml
 :language: yaml
 
 ```
@@ -443,7 +443,7 @@ This is especially useful for expensive commands where the terminal needs some b
 
 ````{tab} JSON (pane-level)
 
-```{literalinclude} ../examples/sleep-pane-level.json
+```{literalinclude} ../../examples/sleep-pane-level.json
 :language: json
 
 ```
@@ -457,7 +457,7 @@ without `window_index` will use the lowest available window index.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/window-index.yaml
+```{literalinclude} ../../examples/window-index.yaml
 :language: yaml
 
 ```
@@ -466,7 +466,7 @@ without `window_index` will use the lowest available window index.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/window-index.json
+```{literalinclude} ../../examples/window-index.json
 :language: json
 
 ```
@@ -481,7 +481,7 @@ different shells on different panes.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/pane-shell.yaml
+```{literalinclude} ../../examples/pane-shell.yaml
 :language: yaml
 
 ```
@@ -490,7 +490,7 @@ different shells on different panes.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/pane-shell.json
+```{literalinclude} ../../examples/pane-shell.json
 :language: json
 
 ```
@@ -507,14 +507,14 @@ Including `automatic-rename`, `default-shell`,
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/options.yaml
+```{literalinclude} ../../examples/options.yaml
 :language: yaml
 
 ```
 ````
 
 ````{tab} JSON
-```{literalinclude} ../examples/options.json
+```{literalinclude} ../../examples/options.json
 :language: json
 
 ```
@@ -527,14 +527,14 @@ Apply window options after panes have been created. Useful for
 pane during creation.
 
 ````{tab} YAML
-```{literalinclude} ../examples/2-pane-synchronized.yaml
+```{literalinclude} ../../examples/2-pane-synchronized.yaml
 :language: yaml
 
 ```
 ````
 
 ````{tab} JSON
-```{literalinclude} ../examples/2-pane-synchronized.json
+```{literalinclude} ../../examples/2-pane-synchronized.json
 :language: json
 
 ```
@@ -543,14 +543,14 @@ pane during creation.
 ## Main pane height
 
 ````{tab} YAML
-```{literalinclude} ../examples/main-pane-height.yaml
+```{literalinclude} ../../examples/main-pane-height.yaml
 :language: yaml
 
 ```
 ````
 
 ````{tab} JSON
-```{literalinclude} ../examples/main-pane-height.json
+```{literalinclude} ../../examples/main-pane-height.json
 :language: json
 
 ```

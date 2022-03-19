@@ -1,7 +1,8 @@
-# Reference
+# Configuration
 
 ```{toctree}
 
 environmental-variables
+examples
 
 ```
