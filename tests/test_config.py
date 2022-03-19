@@ -10,7 +10,7 @@ import kaptan
 
 from tmuxp import config, exc
 
-from . import EXAMPLE_PATH
+from .constants import EXAMPLE_PATH
 
 if typing.TYPE_CHECKING:
     from .fixtures import config as ConfigFixture
