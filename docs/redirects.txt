@@ -1,3 +1,4 @@
 "cli.md" "commands/index.md"
 "examples.md" "configuration/examples.md"
 "plugin_system.md" "plugins/index.md"
+"commands/index.md" "cli/index.md"

@@ -21,7 +21,7 @@
 
 about
 quickstart
-commands/index
+cli/index
 configuration/index
 plugins/index
 
