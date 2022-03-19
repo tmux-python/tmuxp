@@ -13,7 +13,7 @@ $ pip install --user tmuxp
 You can upgrade to the latest release with:
 
 ```console
-$ pip install --user tmuxp -U
+$ pip install --user --upgrade tmuxp
 ```
 
 Then install {ref}`completion`.
