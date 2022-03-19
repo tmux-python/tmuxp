@@ -23,7 +23,7 @@ about
 quickstart
 commands/index
 configuration/index
-plugin_system
+plugins/index
 
 ```
 
