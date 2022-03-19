@@ -1,6 +1,6 @@
-from .._util import read_config_file
+from .. import _util as test_utils
 
-teamocil_yaml = read_config_file("config_teamocil/test3.yaml")
+teamocil_yaml = test_utils.read_config_file("config_teamocil/test3.yaml")
 
 teamocil_dict = {
     "windows": [
