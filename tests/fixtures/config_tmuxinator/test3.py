@@ -1,6 +1,6 @@
-from .._util import load_fixture
+from .._util import read_config_file
 
-tmuxinator_yaml = load_fixture("config_tmuxinator/test3.yaml")
+tmuxinator_yaml = read_config_file("config_tmuxinator/test3.yaml")
 
 tmuxinator_dict = {
     "name": "sample",
