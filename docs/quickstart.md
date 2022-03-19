@@ -132,8 +132,7 @@ You can also [Import][import] configs [teamocil][teamocil] and [tmuxinator][tmux
 
 :::{seealso}
 
-{ref}`libtmux python API documentation <libtmux:api>` and {ref}`developing`,
-{ref}`internals`.
+{ref}`libtmux python API documentation <libtmux:api>` and {ref}`developing`.
 
 :::
 
