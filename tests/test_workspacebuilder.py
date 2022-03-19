@@ -1129,11 +1129,11 @@ def test_load_workspace_sleep(
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
-    builder.build()
 
     t = time.process_time()
 
-    time.sleep(1)
+    builder.build()
+    time.sleep(0.5)
     session = builder.session
     pane = session.attached_pane
 
