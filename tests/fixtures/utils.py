@@ -1,6 +1,6 @@
 import pathlib
 
-FIXTURE_PATH = pathlib.Path(__file__).parent
+from ..constants import FIXTURE_PATH
 
 
 def read_config_file(_file):  # return fixture data, relative to __file__

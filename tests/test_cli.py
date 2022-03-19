@@ -28,8 +28,8 @@ from tmuxp.cli import (
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
+from .constants import FIXTURE_PATH
 from .fixtures import utils as test_utils
-from .fixtures._util import FIXTURE_PATH
 
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path):

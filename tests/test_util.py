@@ -5,11 +5,11 @@ from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
 from tmuxp.util import get_session, run_before_script
 
-from . import FIXTURES_PATH
+from .constants import FIXTURE_PATH
 
 
 def test_raise_BeforeLoadScriptNotExists_if_not_exists():
-    script_file = FIXTURES_PATH / "script_noexists.sh"
+    script_file = FIXTURE_PATH / "script_noexists.sh"
 
     with pytest.raises(BeforeLoadScriptNotExists):
         run_before_script(script_file)
@@ -19,14 +19,14 @@ def test_raise_BeforeLoadScriptNotExists_if_not_exists():
 
 
 def test_raise_BeforeLoadScriptError_if_retcode():
-    script_file = FIXTURES_PATH / "script_failed.sh"
+    script_file = FIXTURE_PATH / "script_failed.sh"
 
     with pytest.raises(BeforeLoadScriptError):
         run_before_script(script_file)
 
 
 def test_return_stdout_if_ok(capsys):
-    script_file = FIXTURES_PATH / "script_complete.sh"
+    script_file = FIXTURE_PATH / "script_complete.sh"
 
     run_before_script(script_file)
     out, err = capsys.readouterr()
@@ -34,7 +34,7 @@ def test_return_stdout_if_ok(capsys):
 
 
 def test_beforeload_returncode():
-    script_file = FIXTURES_PATH / "script_failed.sh"
+    script_file = FIXTURE_PATH / "script_failed.sh"
 
     with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
         run_before_script(script_file)
@@ -42,7 +42,7 @@ def test_beforeload_returncode():
 
 
 def test_beforeload_returns_stderr_messages():
-    script_file = FIXTURES_PATH / "script_failed.sh"
+    script_file = FIXTURE_PATH / "script_failed.sh"
 
     with pytest.raises(exc.BeforeLoadScriptError) as excinfo:
         run_before_script(script_file)
