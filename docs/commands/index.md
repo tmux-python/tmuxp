@@ -78,7 +78,7 @@ Window(@3 1:your_window, Session($1 your_project))
 Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
 ```
 
-Python 3.7 supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and supports
+Supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and
 compatible debuggers, for instance [ipdb][ipdb]:
 
 ```console
