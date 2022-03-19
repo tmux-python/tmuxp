@@ -1,6 +1,6 @@
-(plugin-system)=
+(plugins)=
 
-# Plugin System
+# Plugins
 
 The plugin system allows users to customize and extend different aspects of
 tmuxp without the need to change tmuxp itself.
