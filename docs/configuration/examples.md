@@ -1,6 +1,6 @@
 (examples)=
 
-# Example Configurations
+# Examples
 
 ## Short hand / inline style
 
