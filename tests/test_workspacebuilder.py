@@ -16,7 +16,7 @@ from tmuxp import config, exc
 from tmuxp.cli import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
-from . import EXAMPLE_PATH, FIXTURES_PATH
+from .constants import EXAMPLE_PATH, FIXTURE_PATH
 from .fixtures import utils as test_utils
 
 
@@ -597,7 +597,7 @@ def test_before_load_throw_error_if_retcode_error(server):
     )
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_fails.format(
-        script_failed=FIXTURES_PATH / "script_failed.sh",
+        script_failed=FIXTURE_PATH / "script_failed.sh",
     )
 
     sconfig = sconfig.import_config(yaml).get()
@@ -622,7 +622,7 @@ def test_before_load_throw_error_if_file_not_exists(server):
     )
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_not_exists.format(
-        script_not_exists=FIXTURES_PATH / "script_not_exists.sh",
+        script_not_exists=FIXTURE_PATH / "script_not_exists.sh",
     )
     sconfig = sconfig.import_config(yaml).get()
     sconfig = config.expand(sconfig)
@@ -645,7 +645,7 @@ def test_before_load_true_if_test_passes(server):
     config_script_completes = test_utils.read_config_file(
         "workspacebuilder/config_script_completes.yaml"
     )
-    script_complete_sh = FIXTURES_PATH / "script_complete.sh"
+    script_complete_sh = FIXTURE_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_completes.format(
@@ -666,7 +666,7 @@ def test_before_load_true_if_test_passes_with_args(server):
     config_script_completes = test_utils.read_config_file(
         "workspacebuilder/config_script_completes.yaml"
     )
-    script_complete_sh = FIXTURES_PATH / "script_complete.sh"
+    script_complete_sh = FIXTURE_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
     sconfig = kaptan.Kaptan(handler="yaml")
     yaml = config_script_completes.format(script_complete=script_complete_sh)
