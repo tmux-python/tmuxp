@@ -144,6 +144,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 ### Documentation
 
 - Move to `furo` sphinx theme
+- Reorganize documentation into sections
+- Added examples for `enter: false` and `sleep: [second]`
 
 ## tmuxp 1.9.4 (2022-01-10)
 
