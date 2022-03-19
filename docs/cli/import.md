@@ -6,6 +6,12 @@
 
 ## From teamocil
 
+```{eval-rst}
+.. click:: tmuxp.cli:command_import_teamocil
+    :prog: tmuxp import teamocil
+    :nested: full
+```
+
 ````{tab} YAML
 
 ```console
@@ -25,6 +31,12 @@ $ tmuxp import teamocil /path/to/file.json
 (import-tmuxinator)=
 
 ## From tmuxinator
+
+```{eval-rst}
+.. click:: tmuxp.cli:command_import_tmuxinator
+    :prog: tmuxp import tmuxinator
+    :nested: short
+```
 
 ````{tab} YAML
 

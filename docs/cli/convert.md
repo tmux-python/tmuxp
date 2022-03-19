@@ -1,7 +1,5 @@
 (convert-config)=
 
-(tmuxp-config)=
-
 # tmuxp convert
 
 Convert between YAML and JSON
@@ -24,3 +22,12 @@ $ tmuxp convert /path/to/file.json
 
 tmuxp automatically will prompt to convert `.yaml` to `.json` and
 `.json` to `.yaml`.
+
+## Reference
+
+```{eval-rst}
+.. click:: tmuxp.cli:cli
+    :prog: tmuxp convert
+    :commands: convert
+    :nested: full
+```

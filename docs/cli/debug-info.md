@@ -17,3 +17,12 @@ environment:
 ...
 
 ```
+
+## Reference
+
+```{eval-rst}
+.. click:: tmuxp.cli:cli
+    :prog: tmuxp debug-info
+    :commands: debug-info
+    :nested: full
+```

@@ -118,3 +118,12 @@ $ tmuxp load [filename] --log-file [log_filename]
 ```console
 $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
 ```
+
+(tmuxp-load-reference)=
+
+```{eval-rst}
+.. click:: tmuxp.cli:cli
+    :prog: tmuxp load
+    :commands: load
+    :nested: full
+```
