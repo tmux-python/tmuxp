@@ -12,8 +12,6 @@ classifiers = [
   "Environment :: Web Environment",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: Implementation :: PyPy",
@@ -45,7 +43,7 @@ Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
 tmuxp = 'tmuxp:cli.cli'
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 click = ">7,<8.1"
 kaptan = ">=0.5.10"
 libtmux = "~0.11.0"
@@ -61,7 +59,7 @@ sphinx-autobuild = "^2021.3.14"
 sphinx-autodoc-typehints = "~1.17.0"
 sphinx-click = "*"
 sphinx-issues = "^3.0.0"
-sphinx-inline-tabs = { version = "*", python = "^3.7" }
+sphinx-inline-tabs = "*"
 sphinxext-opengraph = "*"
 sphinx-copybutton = "^0.5.0"
 sphinxext-rediraffe = "*"

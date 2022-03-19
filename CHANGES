@@ -19,6 +19,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Compatibility
+
+- Python 3.7 and 3.8 support has been removed
+
+  Bug fixes and security updates will go to the
+  [`v1.10.x`](https://github.com/tmux-python/tmuxp/tree/v1.10.x) branch
+
 ## tmuxp 1.10.0 (2022-03-19)
 
 ### Compatibility
