@@ -27,13 +27,6 @@ Interested in some kung-fu or joining the effort? {ref}`api` and
 
 ## Differences from tmuxinator / teamocil
 
-:::{note}
-
-If you use teamocil / tmuxinator and can clarify or add differences,
-please free to [edit this page][edit this page] on github.
-
-:::
-
 ### Similarities
 
 **Load sessions** Loads tmux sessions from config
