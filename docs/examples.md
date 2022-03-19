@@ -328,14 +328,20 @@ This will add the `shell_command` to the bash history in the pane.
 
 ````
 
+(enter)=
+
 ## Skip command execution
 
-```{versionadded} 1.10.0b1
-`enter: false` option. Pane-level support.
-```
+See more at {ref}`enter`.
 
-```{versionadded} 1.10.0b3
-Support command-level skipping.
+:::{note}
+
+_Experimental setting_: behavior and api is subject to change until stable.
+
+:::
+
+```{versionadded} 1.10.0
+`enter: false` option. Pane-level support.
 ```
 
 Omit sending {kbd}`enter` to key commands. Equivalent to
@@ -377,14 +383,22 @@ Omit sending {kbd}`enter` to key commands. Equivalent to
 
 ````
 
+(sleep)=
+
 ## Pausing commands
 
-```{versionadded} 1.10.0b4
+:::{note}
+
+_Experimental setting_: behavior and api is subject to change until stable.
+
+:::
+
+```{versionadded} 1.10.0
 `sleep_before` and `sleep_after` options added. Pane and command-level support.
 ```
 
 ```{warning}
-This will delay loading as it runs synchronously for each pane. In future version asynchronous support, (i.e. [`asyncio`](asyncio)) will speed up this up.
+**Blocking.** This will delay loading as it runs synchronously for each pane as [`asyncio`](asyncio)) is not implemented yet.
 ```
 
 Omit sending {kbd}`enter` to key commands. Equivalent to having
