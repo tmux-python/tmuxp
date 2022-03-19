@@ -38,9 +38,9 @@ session_name: My session
 windows:
 - window_name: Window 1
   panes:
-  - shell_commands:
+  - shell_command:
     - cmd: echo "pane 1"
-  - shell_commands:
+  - shell_command:
     - cmd: echo "pane 2"
 ```
 
@@ -91,7 +91,7 @@ Breaking down the basic configuration into sections:
    ```yaml
    windows:
      panes:
-       - shell_commands:
+       - shell_command:
            - cmd: echo "pane 1 - cmd 1"
              # command options
            - cmd: echo "pane 1 - cmd 2"
