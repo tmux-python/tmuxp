@@ -50,7 +50,7 @@ $ tmuxp shell -c 'python code'
 
 Launch into a python console with [libtmux] objects. Compare to django's shell.
 
-```{image} _static/tmuxp-shell.gif
+```{image} ../_static/tmuxp-shell.gif
 :width: 100%
 ```
 

@@ -14,7 +14,7 @@ your tmuxp configuration file.
 
 ````{tab} YAML
 
-```{literalinclude} ../examples/plugin-system.yaml
+```{literalinclude} ../../examples/plugin-system.yaml
 :language: yaml
 
 ```
@@ -23,7 +23,7 @@ your tmuxp configuration file.
 
 ````{tab} JSON
 
-```{literalinclude} ../examples/plugin-system.json
+```{literalinclude} ../../examples/plugin-system.json
 :language: json
 
 ```
