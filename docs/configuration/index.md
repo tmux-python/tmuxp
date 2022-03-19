@@ -9,25 +9,24 @@ Panes hierarchy. Both JSON and YAML is accepted.
 
 ## Launching your session
 
-When you have `tmuxp` installed in your environment alongside tmux, you can use:
+When you have `tmuxp` installed in your environment alongside tmux, you can load
+a workspace with:
 
 ```console
 $ tmuxp load ./path/to/file
 ```
 
-to load your workspace and launch directly into tmux.
+tmuxp will offers to assist when:
 
-In certain cases, tmuxp will try help you when:
-
-- _If your session already exists_: tmuxp will prompt you to re-attach. It does this
+- _Session already exists_: tmuxp will prompt you to re-attach. It does this
   by checking if the configuration's `session_name` matches a session already
   running on the same server.
-- _If you're inside a tmux client already_, `tmuxp` will let you create a new session and switch to it, or append the windows to your existing
+- _When inside a tmux client_, `tmuxp` will let you create a new session and switch to it, or append the windows to your existing
   session.
 
 ## What's in a config?
 
-1. A session name: `session_name: your session`
+1. A session name
 2. A list of _windows_
 3. A list of _panes_ for each window
 4. A list of _commands_ for each pane
@@ -39,8 +38,10 @@ session_name: My session
 windows:
 - window_name: Window 1
   panes:
-  - echo "pane 1"
-  - echo "pane 2"
+  - shell_commands:
+    - cmd: echo "pane 1"
+  - shell_commands:
+    - cmd: echo "pane 2"
 ```
 
 ````
@@ -55,6 +56,45 @@ windows:
 As of 1.11.x.
 
 ````
+
+Breaking down the basic configuration into sections:
+
+1. A session name
+
+   ```yaml
+   session_name: My session
+   ```
+
+2. A list of _windows_
+
+   ```yaml
+   windows:
+   - window_name: Window 1
+     panes: ...
+     # window settings
+   - window_name: Window 2
+     panes: ...
+     # window settings
+   ```
+3. A list of _panes_ for each window
+
+   ```yaml
+   windows:
+     panes:
+     - # pane settings
+     - # pane settings
+   ```
+4. A list of _commands_ for each pane
+
+   ```yaml
+   windows:
+     panes:
+     - shell_commands:
+       - cmd: echo "pane 1 - cmd 1"
+         # command options
+       - cmd: echo "pane 1 - cmd 2"
+         # command options
+   ```
 
 ## Reference and usage
 
