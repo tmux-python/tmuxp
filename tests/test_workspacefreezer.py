@@ -6,7 +6,7 @@ import kaptan
 from tmuxp import config
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
-from .fixtures import _util as test_utils
+from .fixtures import utils as test_utils
 
 
 def test_freeze_config(session):
