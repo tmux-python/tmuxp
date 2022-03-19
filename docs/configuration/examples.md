@@ -565,14 +565,14 @@ pane during creation.
 :::
 
 ````{tab} YAML
-```{literalinclude} ../.tmuxp.yaml
+```{literalinclude} ../../.tmuxp.yaml
 :language: yaml
 
 ```
 ````
 
 ````{tab} JSON
-```{literalinclude} ../.tmuxp.json
+```{literalinclude} ../../.tmuxp.json
 :language: json
 
 ```
