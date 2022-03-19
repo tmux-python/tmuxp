@@ -14,11 +14,6 @@ jobs:
         python-version: [ '3.10' ]
     steps:
     - uses: actions/checkout@v1
-    - name: Configure git
-      run: |
-        git config --global user.name 'travis-ci'	
-        git config --global user.email 'travis@nowhere.edu'
-
     - name: Filter changed file paths to outputs
       uses: dorny/paths-filter@v2.7.0
       id: changes
