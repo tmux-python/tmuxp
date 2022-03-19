@@ -30,6 +30,7 @@ In certain cases, tmuxp will try help you when:
 1. A session name: `session_name: your session`
 2. A list of _windows_
 3. A list of _panes_ for each window
+4. A list of _commands_ for each pane
 
 ````{tab} Basics
 
