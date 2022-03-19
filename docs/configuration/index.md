@@ -133,6 +133,12 @@ then use:
 $ tmuxp load apple
 ```
 
+:::{seealso}
+
+This path can be overridden by {ref}`TMUXP_CONFIGDIR`
+
+:::
+
 [xdg base directory]: https://specifications.freedesktop.org/basedir-spec/latest/
 
 ### Project-specific
