@@ -1,30 +1,29 @@
 (cli-shell)=
 
-(tmuxp-shell)=
-
 # tmuxp shell
 
-```console
-$ tmuxp shell
+```{eval-rst}
+.. click:: tmuxp.cli:command_shell
+    :prog: tmuxp shell
+    :commands: shell
+    :nested: none
 ```
 
-```console
-$ tmuxp shell [session_name]
-```
-
-```console
-$ tmuxp shell [session_name] [window_name]
-```
+## Directly enter commands
 
 ```console
 $ tmuxp shell -c 'python code'
 ```
 
-Launch into a python console with [libtmux] objects. Compare to django's shell.
+## Example
 
 ```{image} ../_static/tmuxp-shell.gif
 :width: 100%
 ```
+
+## Guide
+
+Launch into a python console with [libtmux] objects. Compare to django's shell.
 
 Automatically preloads current tmux {class}`server <libtmux.Server>`,
 {class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`

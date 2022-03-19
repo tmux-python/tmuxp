@@ -23,3 +23,12 @@ Tmuxp will offer to save your session state to `.json` or `.yaml`.
 If no session is specified, it will default to the attached session.
 
 If the `--force` argument is passed, it will overwrite any existing config file with the same name.
+
+(cli-freeze-reference)=
+
+```{eval-rst}
+.. click:: tmuxp.cli:cli
+    :prog: tmuxp freeze
+    :commands: freeze
+    :nested: full
+```
