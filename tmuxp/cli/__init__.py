@@ -19,7 +19,7 @@ from ..__about__ import __version__
 from ..log import setup_logger
 from .convert import command_convert
 from .debug_info import command_debug_info
-from .edit import command_edit_config
+from .edit import command_edit
 from .freeze import command_freeze
 from .import_config import import_config_cmd
 from .load import command_load
@@ -68,7 +68,7 @@ def startup(config_dir):
 
 # Register sub-commands here
 cli.add_command(command_convert)
-cli.add_command(command_edit_config)
+cli.add_command(command_edit)
 cli.add_command(command_debug_info)
 cli.add_command(command_load)
 cli.add_command(command_ls)
