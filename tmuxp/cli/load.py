@@ -7,7 +7,9 @@ tmuxp.cli
 import importlib
 import logging
 import os
+import pathlib
 import sys
+from typing import List
 
 import click
 import kaptan
@@ -17,7 +19,7 @@ from libtmux.server import Server
 
 from .. import config, exc, log, util
 from ..workspacebuilder import WorkspaceBuilder
-from .utils import ConfigPath, _validate_choices, tmuxp_echo
+from .utils import ConfigPath, _validate_choices, get_config_dir, tmuxp_echo
 
 
 def set_layout_hook(session, hook_name):
@@ -438,9 +440,38 @@ def load_workspace(
     return _setup_plugins(builder)
 
 
+def config_file_completion(ctx, params, incomplete):
+    config_dir = pathlib.Path(get_config_dir())
+    choices: List[pathlib.Path] = []
+
+    # CWD Paths
+    choices += sorted(
+        [
+            pathlib.Path(os.path.relpath(p, pathlib.Path.cwd()))
+            for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
+            if config.in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
+        ]
+    )
+    # CWD look one directory up
+    choices += [
+        pathlib.Path(f"./{os.path.relpath(p, pathlib.Path.cwd())}")
+        for p in pathlib.Path.cwd().glob("*/.tmuxp.*")
+    ]
+
+    # Project configs
+    choices += sorted([(config_dir / c).stem for c in config.in_dir(str(config_dir))])
+
+    return sorted([str(c) for c in choices if str(c).startswith(incomplete)])
+
+
 @click.command(name="load", short_help="Load tmuxp workspaces.")
 @click.pass_context
-@click.argument("config", type=ConfigPath(exists=True), nargs=-1)
+@click.argument(
+    "config",
+    type=ConfigPath(exists=True),
+    nargs=-1,
+    shell_complete=config_file_completion,
+)
 @click.option("-S", "socket_path", help="pass-through for tmux -S")
 @click.option("-L", "socket_name", help="pass-through for tmux -L")
 @click.option("-f", "tmux_config_file", help="pass-through for tmux -f")
