@@ -45,27 +45,27 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## CLI
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli._reattach
+.. automethod:: tmuxp.cli.utils.get_config_dir
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.get_config_dir
+.. automethod:: tmuxp.cli.utils._validate_choices
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.get_teamocil_dir
+.. automethod:: tmuxp.cli.import_config.get_teamocil_dir
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.get_tmuxinator_dir
+.. automethod:: tmuxp.cli.import_config.get_tmuxinator_dir
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.load_workspace
+.. automethod:: tmuxp.cli.load.load_workspace
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli._validate_choices
+.. automethod:: tmuxp.cli.load._reattach
 ```
 
 ## Configuration

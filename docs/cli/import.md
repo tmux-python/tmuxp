@@ -7,7 +7,7 @@
 ## From teamocil
 
 ```{eval-rst}
-.. click:: tmuxp.cli:command_import_teamocil
+.. click:: tmuxp.cli.import_config:command_import_teamocil
     :prog: tmuxp import teamocil
     :nested: full
 ```
@@ -33,7 +33,7 @@ $ tmuxp import teamocil /path/to/file.json
 ## From tmuxinator
 
 ```{eval-rst}
-.. click:: tmuxp.cli:command_import_tmuxinator
+.. click:: tmuxp.cli.import_config:command_import_tmuxinator
     :prog: tmuxp import tmuxinator
     :nested: short
 ```
