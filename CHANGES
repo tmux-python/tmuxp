@@ -19,6 +19,11 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Maintenance
+
+- {issue}`762`: CLI: Break up into modules in _cli.py_ -> _cli/{command}_
+- {issue}`761`: Refactor _tests/_ constants and fixtures
+
 ## tmuxp 1.10.0 (2022-03-19)
 
 ### Compatibility
