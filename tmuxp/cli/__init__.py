@@ -768,31 +768,7 @@ def cli(log_level):
     except exc.TmuxpException as e:
         tmuxp_echo(e, err=True)
         sys.exit()
-    setup_logger(logger=logger, level=log_level.upper())
-
-
-def setup_logger(logger=None, level="INFO"):
-    """
-    Setup logging for CLI use.
-
-    Tries to do some conditionals to prevent handlers from being added twice.
-    Just to be safe.
-
-    Parameters
-    ----------
-    logger : :py:class:`Logger`
-        logger instance for tmuxp
-    """
-    if not logger:  # if no logger exists, make one
-        logger = logging.getLogger()
-
-    if not logger.handlers:  # setup logger handlers
-        # channel = logging.StreamHandler()
-        # channel.setFormatter(log.DebugLogFormatter())
-        # channel.setFormatter(log.LogFormatter())
-
-        logger.setLevel(level)
-        # logger.addHandler(channel)
+    log.setup_logger(logger=logger, level=log_level.upper())
 
 
 def startup(config_dir):
