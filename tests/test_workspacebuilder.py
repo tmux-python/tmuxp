@@ -13,7 +13,7 @@ from libtmux import Window
 from libtmux.common import has_gte_version
 from libtmux.test import retry, temp_session
 from tmuxp import config, exc
-from tmuxp.cli import load_plugins
+from tmuxp.cli.load import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import EXAMPLE_PATH, FIXTURE_PATH

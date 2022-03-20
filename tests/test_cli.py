@@ -14,16 +14,22 @@ import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
-from tmuxp.cli import (
+from tmuxp.cli.debug_info import command_debug_info
+from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
+from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
     _load_attached,
     _reattach,
-    command_debug_info,
-    command_ls,
-    get_config_dir,
-    is_pure_name,
     load_plugins,
     load_workspace,
+)
+from tmuxp.cli.ls import command_ls
+from tmuxp.cli.utils import (
+    ConfigPath,
+    _validate_choices,
+    get_abs_path,
+    get_config_dir,
+    is_pure_name,
     scan_config,
 )
 from tmuxp.workspacebuilder import WorkspaceBuilder
@@ -267,7 +273,7 @@ def test_scan_config_arg(
     runner = CliRunner()
 
     @click.command()
-    @click.argument("config", type=cli.ConfigPath(exists=True), nargs=-1)
+    @click.argument("config", type=ConfigPath(exists=True), nargs=-1)
     def config_cmd(config):
         click.echo(config)
 
@@ -470,15 +476,15 @@ session_name: hello
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    print(f"tmp_path: {tmp_path}")
     runner = CliRunner()
 
     # If autoconfirm (-y) no need to prompt y
     input_args = "y\ny\n" if "-y" not in cli_args else ""
 
-    runner.invoke(cli.cli, cli_args, input=input_args)
+    result = runner.invoke(cli.cli, cli_args, input=input_args)
     log_file_path = tmp_path / "log.txt"
     assert "Loading" in log_file_path.open().read()
+    assert result is not None
 
 
 @pytest.mark.parametrize("cli_cmd", ["shell", ("shell", "--pdb")])
@@ -1002,30 +1008,30 @@ def test_freeze_overwrite(server, cli_args, inputs, tmp_path, monkeypatch):
 def test_get_abs_path(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch):
     expect = str(tmp_path)
     monkeypatch.chdir(tmp_path)
-    cli.get_abs_path("../") == os.path.dirname(expect)
-    cli.get_abs_path(".") == expect
-    cli.get_abs_path("./") == expect
-    cli.get_abs_path(expect) == expect
+    get_abs_path("../") == os.path.dirname(expect)
+    get_abs_path(".") == expect
+    get_abs_path("./") == expect
+    get_abs_path(expect) == expect
 
 
 def test_get_tmuxinator_dir(monkeypatch):
-    assert cli.get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
+    assert get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
 
     monkeypatch.setenv("HOME", "/moo")
-    assert cli.get_tmuxinator_dir() == "/moo/.tmuxinator/"
-    assert cli.get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
+    assert get_tmuxinator_dir() == "/moo/.tmuxinator/"
+    assert get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
 
 
 def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch):
-    assert cli.get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
+    assert get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
 
     monkeypatch.setenv("HOME", "/moo")
-    assert cli.get_teamocil_dir() == "/moo/.teamocil/"
-    assert cli.get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
+    assert get_teamocil_dir() == "/moo/.teamocil/"
+    assert get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
 
 
 def test_validate_choices():
-    validate = cli._validate_choices(["choice1", "choice2"])
+    validate = _validate_choices(["choice1", "choice2"])
 
     assert validate("choice1")
     assert validate("choice2")
@@ -1051,7 +1057,7 @@ def test_pass_config_dir_ClickPath(
     @click.command()
     @click.argument(
         "config",
-        type=cli.ConfigPath(exists=True, config_dir=(str(configdir))),
+        type=ConfigPath(exists=True, config_dir=(str(configdir))),
         nargs=-1,
     )
     def config_cmd(config):
