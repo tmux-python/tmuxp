@@ -13,7 +13,12 @@ shorthands:
 
 Path to folder with `.tmuxp.yaml`, `.tmuxp.yml`, `.tmuxp.json`:
 
+````{tab} Project based
+
+Projects with a file named `.tmuxp.yaml` or `.tmuxp.json` can be loaded:
+
 ```console
+// current directory
 $ tmuxp load .
 ```
 
@@ -28,6 +33,10 @@ $ tmuxp load path/to/folder/
 ```console
 $ tmuxp load /path/to/folder/
 ```
+
+````
+
+````{tab} User based
 
 Name of the config, assume `$HOME/.tmuxp/myconfig.yaml`:
 
@@ -49,18 +58,19 @@ $ tmuxp load /abs/path/to/myfile.yaml
 $ tmuxp load ~/myfile.yaml
 ```
 
+````
+
+````{tab} Direct
+
 Absolute and relative directory paths are supported.
 
 ```console
 $ tmuxp load [filename]
 ```
 
-Files named `.tmuxp.yaml` or `.tmuxp.json` in the current working
-directory may be loaded with:
+````
 
-```console
-$ tmuxp load .
-```
+## Inside sessions
 
 If you try to load a config file from within a tmux session, it will ask you
 if you want to load and attach to the new session, or just load detached.
@@ -71,6 +81,8 @@ Already inside TMUX, switch to session? yes/no
 Or (a)ppend windows in the current active session?
 [y/n/a]:
 ```
+
+## Options
 
 All of these options can be preselected to skip the prompt:
 
@@ -92,6 +104,8 @@ All of these options can be preselected to skip the prompt:
   $ tmuxp load -a config
   ```
 
+## Loading multiple sessions
+
 Multiple sessions can be loaded at once. The first ones will be created
 without being attached. The last one will be attached if there is no
 `-d` flag on the command line.
@@ -100,12 +114,16 @@ without being attached. The last one will be attached if there is no
 $ tmuxp load [filename1] [filename2] ...
 ```
 
+## Custom session name
+
 A session name can be provided at the terminal. If multiple sessions
 are created, the last session is named from the terminal.
 
 ```console
 $ tmuxp load -s [new_session_name] [filename1] ...
 ```
+
+## Logging
 
 The output of the `load` command can be logged to a file for
 debugging purposes. the log level can be controlled with the global
@@ -119,10 +137,12 @@ $ tmuxp load [filename] --log-file [log_filename]
 $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
 ```
 
+## Reference
+
 (tmuxp-load-reference)=
 
 ```{eval-rst}
-.. click:: tmuxp.cli:cli
+.. click:: tmuxp.cli.load:command_load
     :prog: tmuxp load
     :commands: load
     :nested: full

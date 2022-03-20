@@ -3,7 +3,7 @@
 # tmuxp shell
 
 ```{eval-rst}
-.. click:: tmuxp.cli:command_shell
+.. click:: tmuxp.cli.shell:command_shell
     :prog: tmuxp shell
     :commands: shell
     :nested: none

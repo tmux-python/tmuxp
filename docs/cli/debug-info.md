@@ -22,7 +22,7 @@ environment:
 
 ```{eval-rst}
 .. click:: tmuxp.cli:cli
-    :prog: tmuxp debug-info
+    :prog: tmuxp
     :commands: debug-info
     :nested: full
 ```

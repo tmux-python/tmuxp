@@ -27,7 +27,7 @@ If the `--force` argument is passed, it will overwrite any existing config file 
 (cli-freeze-reference)=
 
 ```{eval-rst}
-.. click:: tmuxp.cli:cli
+.. click:: tmuxp.cli.freeze:command_freeze
     :prog: tmuxp freeze
     :commands: freeze
     :nested: full
