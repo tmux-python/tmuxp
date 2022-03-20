@@ -21,7 +21,7 @@ from .convert import command_convert
 from .debug_info import command_debug_info
 from .edit import command_edit
 from .freeze import command_freeze
-from .import_config import import_config_cmd
+from .import_config import command_import
 from .load import command_load
 from .shell import command_shell
 from .utils import tmuxp_echo
@@ -74,4 +74,4 @@ cli.add_command(command_load)
 cli.add_command(command_ls)
 cli.add_command(command_freeze)
 cli.add_command(command_shell)
-cli.add_command(import_config_cmd)
+cli.add_command(command_import)

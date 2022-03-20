@@ -53,7 +53,7 @@ def _resolve_path_no_overwrite(config):
 
 
 @click.group(name="import")
-def import_config_cmd():
+def command_import():
     """Import a teamocil/tmuxinator config."""
 
 
@@ -107,7 +107,7 @@ def import_config(configfile, importfunc):
         sys.exit()
 
 
-@import_config_cmd.command(
+@command_import.command(
     name="tmuxinator", short_help="Convert and import a tmuxinator config."
 )
 @click.argument(
@@ -157,7 +157,7 @@ def command_convert(confirmed, config):
         print("New config saved to <%s>." % newfile)
 
 
-@import_config_cmd.command(
+@command_import.command(
     name="teamocil", short_help="Convert and import a teamocil config."
 )
 @click.argument(
