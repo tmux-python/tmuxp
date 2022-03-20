@@ -10,12 +10,14 @@
 
 load
 shell
+ls
 ```
 
 ```{toctree}
 :caption: Configuration
 :maxdepth: 1
 
+edit
 import
 convert
 freeze

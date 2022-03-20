@@ -26,7 +26,7 @@ tmuxp automatically will prompt to convert `.yaml` to `.json` and
 ## Reference
 
 ```{eval-rst}
-.. click:: tmuxp.cli:cli
+.. click:: tmuxp.cli.convert:command_convert
     :prog: tmuxp convert
     :commands: convert
     :nested: full

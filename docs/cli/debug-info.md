@@ -21,8 +21,8 @@ environment:
 ## Reference
 
 ```{eval-rst}
-.. click:: tmuxp.cli:cli
-    :prog: tmuxp
+.. click:: tmuxp.cli.debug_info:command_debug_info
+    :prog: tmuxp debug-info
     :commands: debug-info
     :nested: full
 ```
