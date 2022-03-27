@@ -28,7 +28,6 @@ extensions = [
     "sphinx.ext.linkcode",
     "aafig",
     "sphinx_issues",
-    "myst_parser",
     "sphinx_click.ext",  # sphinx-click
     "sphinx_inline_tabs",
     "sphinx_copybutton",
