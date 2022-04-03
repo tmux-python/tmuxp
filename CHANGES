@@ -24,6 +24,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - {issue}`762`: CLI: Break up into modules in _cli.py_ -> _cli/{command}_
 - {issue}`761`: Refactor _tests/_ constants and fixtures
 
+### Development
+
+- Remove tox and tox-poetry-installer
+
+  This created issues with running poetry while inside the virtualenv.
+
 ## tmuxp 1.10.0 (2022-03-19)
 
 ### Compatibility
