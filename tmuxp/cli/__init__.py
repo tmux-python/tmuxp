@@ -10,6 +10,7 @@ import sys
 
 import click
 
+from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import has_minimum_version
 from libtmux.exc import TmuxCommandNotFound
 from tmuxp.cli.ls import command_ls
@@ -30,7 +31,12 @@ logger = logging.getLogger(__name__)
 
 
 @click.group(context_settings={"obj": {}, "help_option_names": ["-h", "--help"]})
-@click.version_option(__version__, "-V", "--version", message="%(prog)s %(version)s")
+@click.version_option(
+    __version__,
+    "-V",
+    "--version",
+    message=f"%(prog)s %(version)s, libtmux {libtmux_version}",
+)
 @click.option(
     "--log-level",
     default="INFO",
