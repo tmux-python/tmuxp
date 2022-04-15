@@ -603,7 +603,7 @@ python-versions = "*"
 
 [[package]]
 name = "soupsieve"
-version = "2.3.2"
+version = "2.3.2.post1"
 description = "A modern CSS selector implementation for Beautiful Soup."
 category = "dev"
 optional = false
@@ -673,7 +673,7 @@ type_comments = ["typed-ast (>=1.4.0)"]
 
 [[package]]
 name = "sphinx-click"
-version = "4.0.1"
+version = "4.0.2"
 description = "Sphinx extension that automatically documents click applications"
 category = "dev"
 optional = false
@@ -1273,8 +1273,8 @@ snowballstemmer = [
     {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
 ]
 soupsieve = [
-    {file = "soupsieve-2.3.2-py3-none-any.whl", hash = "sha256:a714129d3021ec17ce5be346b1007300558b378332c289a1a20e7d4de6ff18a5"},
-    {file = "soupsieve-2.3.2.tar.gz", hash = "sha256:0bcc6d7432153063e3df09c3ac9442af3eba488715bfcad6a4c38ccb2a523124"},
+    {file = "soupsieve-2.3.2.post1-py3-none-any.whl", hash = "sha256:3b2503d3c7084a42b1ebd08116e5f81aadfaea95863628c80a3b774a11b7c759"},
+    {file = "soupsieve-2.3.2.post1.tar.gz", hash = "sha256:fc53893b3da2c33de295667a0e19f078c14bf86544af307354de5fcf12a3f30d"},
 ]
 sphinx = [
     {file = "Sphinx-4.3.2-py3-none-any.whl", hash = "sha256:6a11ea5dd0bdb197f9c2abc2e0ce73e01340464feaece525e64036546d24c851"},
@@ -1289,8 +1289,8 @@ sphinx-autodoc-typehints = [
     {file = "sphinx_autodoc_typehints-1.17.1.tar.gz", hash = "sha256:844d7237d3f6280b0416f5375d9556cfd84df1945356fcc34b82e8aaacab40f3"},
 ]
 sphinx-click = [
-    {file = "sphinx-click-4.0.1.tar.gz", hash = "sha256:6d0bc3de8b77a1e7623061d1f1b4fcb3ba4af0471a14c5f3f40d9852156163f9"},
-    {file = "sphinx_click-4.0.1-py3-none-any.whl", hash = "sha256:7569b9eec0102344a4f9fa18b1d916624ab71a47a95d2ef6113b5b7f9402bc2b"},
+    {file = "sphinx-click-4.0.2.tar.gz", hash = "sha256:abdaae87da5280607f0df35e01a78625f5c858ba0d1a5a553d0a803d87a88bba"},
+    {file = "sphinx_click-4.0.2-py3-none-any.whl", hash = "sha256:0a158612397e094e4537a381e101f8d44acb794885ba614a804b548d62570bab"},
 ]
 sphinx-copybutton = [
     {file = "sphinx-copybutton-0.5.0.tar.gz", hash = "sha256:a0c059daadd03c27ba750da534a92a63e7a36a7736dcf684f26ee346199787f6"},
