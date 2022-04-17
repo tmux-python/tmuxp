@@ -19,10 +19,10 @@ jobs:
           - python-version: '3.7'
             tmux-version: 'master'
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -51,7 +51,7 @@ jobs:
       run: poetry config virtualenvs.in-project true
 
     - name: Set up poetry cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache
       with:
         path: |
@@ -67,7 +67,7 @@ jobs:
 
     - name: Setup tmux build cache for tmux ${{ matrix.tmux-version }}
       id: tmux-build-cache
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ~/tmux-builds/tmux-${{ matrix.tmux-version }}
         key: tmux-${{ matrix.tmux-version }}
@@ -100,6 +100,6 @@ jobs:
         ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
         tmux -V
         poetry run py.test --cov=./ --cov-report=xml
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
