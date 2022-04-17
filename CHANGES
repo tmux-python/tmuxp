@@ -35,6 +35,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   This created issues with running poetry while inside the virtualenv.
 
+## tmuxp 1.10.1 (2022-04-17)
+
+### Compatibility
+
+- {issue}`#372` (backport): Allow click 8.1.x
+
 ## tmuxp 1.10.0 (2022-03-19)
 
 ### Compatibility
