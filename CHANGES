@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Compatibility
+
+- {issue}`#372`: Allow click 8.1.x
+
 ### Maintenance
 
 - {issue}`762`: CLI: Break up into modules in _cli.py_ -> _cli/{command}_
