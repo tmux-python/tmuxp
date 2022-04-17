@@ -25,6 +25,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - {issue}`#372` (backport): Allow click 8.1.x
 
+## tmuxp 1.10.0 (2022-03-19)
+
 ### Compatibility
 
 - Final python 3.7 and 3.8 release
