@@ -359,6 +359,12 @@ def test_automatic_rename_option(session):
     sconfig = kaptan.Kaptan(handler="yaml")
     sconfig = sconfig.import_config(yaml_config).get()
 
+    # This should be a command guaranteed to be terminal name across systems
+    portable_command = sconfig["windows"][0]["panes"][0]["shell_command"][0]["cmd"]
+    # If a command is like "man ls", get the command base name, "ls"
+    if " " in portable_command:
+        portable_command = portable_command.split(" ")[0]
+
     builder = WorkspaceBuilder(sconf=sconfig)
 
     window_count = len(session._windows)  # current window count
@@ -380,31 +386,36 @@ def test_automatic_rename_option(session):
     assert s.name != "tmuxp"
     w = s.windows[0]
 
-    while retry():
+    t = time.process_time()
+    while (time.process_time() - t) * 1000 < 20:
         session.server._update_windows()
-        if w.name != "sh":
+        if w.name != portable_command:
             break
+        time.sleep(0.2)
 
-    assert w.name != "sh"
+    assert w.name != portable_command
 
     pane_base_index = w.show_window_option("pane-base-index", g=True)
     w.select_pane(pane_base_index)
 
-    while retry():
+    t = time.process_time()
+    while (time.process_time() - t) * 1000 < 20:
         session.server._update_windows()
-        if w.name == "sh":
+        if w.name == portable_command:
             break
+        time.sleep(0.2)
 
-    assert w.name == "sh"
+    assert w.name == portable_command
 
     w.select_pane("-D")
 
-    while retry():
+    t = time.process_time()
+    while (time.process_time() - t) * 1000 < 20:
         session.server._update_windows()
-        if w["window_name"] != "sh":
+        if w["window_name"] != portable_command:
             break
-
-    assert w.name != "sh"
+        time.sleep(0.2)
+    assert w.name != portable_command
 
 
 def test_blank_pane_count(session):
