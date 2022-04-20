@@ -12,8 +12,16 @@ from . import exc
 from .utils import _validate_choices, get_abs_path, get_config_dir
 
 
+def session_completion(ctx, params, incomplete):
+    t = Server()
+    choices = [session.name for session in t.list_sessions()]
+    return sorted([str(c) for c in choices if str(c).startswith(incomplete)])
+
+
 @click.command(name="freeze")
-@click.argument("session_name", nargs=1, required=False)
+@click.argument(
+    "session_name", nargs=1, required=False, shell_complete=session_completion
+)
 @click.option("-S", "socket_path", help="pass-through for tmux -S")
 @click.option("-L", "socket_name", help="pass-through for tmux -L")
 @click.option(
