@@ -60,7 +60,7 @@ def command_shell(
     Priority given to loaded session/wndow/pane objects:
 
     - session_name and window_name arguments
-    - current shell: envvar ``TMUX_PANE`` for determing window and session
+    - current shell: envvar ``TMUX_PANE`` for determining window and session
     - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.attached_window`,
       :attr:`libtmux.Window.attached_pane`
     """
