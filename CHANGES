@@ -22,6 +22,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 ### Compatibility
 
 - {issue}`#372`: Allow click 8.1.x
+- {issue}`#770`: Fix shell completion for `tmuxp load` {kbd}`tab` and `tmuxp freeze`
+  {kbd}`tab`
 
 ### Maintenance
 
