@@ -37,6 +37,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   This created issues with running poetry while inside the virtualenv.
 
+- Publish packages to PyPI via github action by setting git tag.
+
 ## tmuxp 1.10.1 (2022-04-17)
 
 ### Compatibility
