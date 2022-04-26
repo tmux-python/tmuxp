@@ -1,4 +1,4 @@
-<div class="sidebar-tree projects">
+<div class="sidebar-tree projects" id="sidebar-projects">
   <p class="caption" role="heading">
     <span class="caption-text"
       >team git-pull / <a href="https://www.git-pull.com/">Tony Narlock</a></span
@@ -29,3 +29,17 @@
     </span>
   </p>
 </div>
+<script type="text/javascript">
+(() => {
+  const sidebar = document.getElementById("sidebar-projects")
+  sidebar.querySelectorAll(`a[href*="${window.location.hostname}"]`)
+    .forEach((link) => {
+      if (!link.classList.contains("active")) {
+        const d = document.createElement('span');
+        d.innerHTML = link.innerHTML;
+        d.classList.add("active");
+        link.parentNode.replaceChild(d, link);
+      }
+    });
+})()
+</script>

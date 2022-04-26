@@ -16,7 +16,8 @@ h4 {
 }
 
 .sidebar-tree p.indented-block {
-  padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal) 0 var(--sidebar-item-spacing-horizontal);
+  padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal) 0
+    var(--sidebar-item-spacing-horizontal);
   margin-bottom: 0;
 }
 
@@ -25,13 +26,12 @@ h4 {
   display: block;
 }
 
-.sidebar-tree p.indented-block > :not(.project-name) {
-  font-size: var(--toc-font-size);
-}
-
 .sidebar-tree p.indented-block .project-name {
   font-size: var(--sidebar-item-font-size);
   font-weight: bold;
   margin-right: calc(var(--sidebar-item-spacing-horizontal) / 2.5);
 }
 
+.sidebar-tree .active {
+  font-weight: bold;
+}
