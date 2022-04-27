@@ -165,7 +165,7 @@ $ tmuxp shell -c 'print(window.name.upper())'
 MY_WINDOW
 ```
 
-Read more on [tmuxp shell](https://tmuxp.git-pull.com/cli/#shell) in
+Read more on [tmuxp shell](https://tmuxp.git-pull.com/cli/shell.html) in
 the CLI docs.
 
 # Pre-load hook
