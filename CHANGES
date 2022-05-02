@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.11.1 (2022-05-02)
+
+### Bug fix
+
+- {issue}`775`: Assure click 8+
+
+  tmuxp 1.10 supports click 7.x.
+
 ## tmuxp 1.11.0 (2022-04-24)
 
 ### Compatibility
@@ -26,6 +34,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - {issue}`773`: Allow click 8.1.x
 - {issue}`770`: Fix shell completion for `tmuxp load` {kbd}`tab` and `tmuxp freeze`
   {kbd}`tab`
+- Note: Requires click 8+ ({issue}`770`)
 
 ### Maintenance
 
