@@ -117,15 +117,88 @@ That is it! You are now ready to code!
 
 ## Test Runner
 
+[pytest] is used for tests.
+
 As you seen above, the `tmuxp` command will now be available to you,
 since you are in the virtual environment, your {}`PATH` environment was
 updated to include a special version of `python` inside your `.venv`
 folder with its own packages.
 
+### Rerun on file change
+
+via [pytest-watcher] (works out of the box):
+
 ```console
+$ make start
+```
 
+via [entr(1)] (requires installation):
+
+```console
+$ make watch_test
+```
+
+[pytest-watcher]: https://github.com/olzhasar/pytest-watcher
+
+### Manual (just the command, please)
+
+```console
+$ poetry run py.test
+```
+
+or:
+
+```console
 $ make test
+```
 
+### pytest options
+
+`PYTEST_ADDOPTS` can be set in the commands below. For more
+information read [docs.pytest.com] for the latest documentation.
+
+[docs.pytest.com]: https://docs.pytest.org/
+
+Verbose:
+
+```console
+$ env PYTEST_ADDOPTS="-verbose" make start
+```
+
+Pick a file:
+
+```console
+$ env PYTEST_ADDOPTS="tests/test_workspacebuilder.py" poetry run make start
+```
+
+Drop into `test_automatic_rename_option()` in `tests/test_workspacebuilder.py`:
+
+```console
+$ env PYTEST_ADDOPTS="-s -x -vv tests/test_workspacebuilder.py" poetry run make start
+```
+
+Drop into `test_automatic_rename_option()` in `tests/test_workspacebuilder.py` and stop on first error:
+
+```console
+$ env PYTEST_ADDOPTS="-s -x -vv tests/test_workspacebuilder.py::test_automatic_rename_option" poetry run make start
+```
+
+Drop into `pdb` on first error:
+
+```console
+$ env PYTEST_ADDOPTS="-x -s --pdb" make start
+```
+
+If you have [ipython] installed:
+
+```console
+$ env PYTEST_ADDOPTS="--pdbcls=IPython.terminal.debugger:TerminalPdb" make start
+```
+
+[ipython]: https://ipython.org/
+
+```console
+$ make test
 ```
 
 You probably didn't see anything but tests scroll by.
@@ -140,17 +213,13 @@ If you found a problem or are trying to write a test, you can file an
 Test only a file:
 
 ```console
-
 $ py.test tests/test_config.py
-
 ```
 
 will test the `tests/test_config.py` tests.
 
 ```console
-
 $ py.test tests/test_config.py::test_export_json
-
 ```
 
 tests `test_export_json` inside of `tests/test_config.py`.
@@ -158,9 +227,7 @@ tests `test_export_json` inside of `tests/test_config.py`.
 Multiple can be separated by spaces:
 
 ```console
-
 $ py.test tests/test_{window,pane}.py tests/test_config.py::test_export_json
-
 ```
 
 (test-builder-visually)=
@@ -172,15 +239,15 @@ open in a separate terminal.
 
 Create two terminals:
 
-> > - Terminal 1: `$ tmux -L test_case`
->
-> - Terminal 2: `$ cd` into the tmuxp project and into the
->   `virtualenv` if you are using one, see details on installing the dev
->   version of tmuxp above. Then:
->
->   ```
->   $ py.test tests/test_workspacebuilder.py
->   ```
+- Terminal 1: `$ tmux -L test_case`
+
+- Terminal 2: `$ cd` into the tmuxp project and into the
+  `virtualenv` if you are using one, see details on installing the dev
+  version of tmuxp above. Then:
+
+  ```console
+  $ py.test tests/test_workspacebuilder.py
+  ```
 
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users.
@@ -195,26 +262,24 @@ This requires `entr(1)`.
 
 :::
 
-Install [entr][entr]. Packages are available available on most Linux and BSD
+Install [entr]. Packages are available available on most Linux and BSD
 variants, including Debian, Ubuntu, FreeBSD, OS X.
 
 To run all tests upon editing any `.py` file:
 
 ```console
-
 $ make watch_test
-
 ```
 
 You can also re-run a specific test file or any other [py.test usage
 argument][py.test usage argument]:
 
 ```console
-
 $ make watch_test test=tests/test_config.py
+```
 
+```console
 $ make watch_test test='-x tests/test_config.py tests/test_util.py'
-
 ```
 
 ## Rebuild sphinx docs on save
@@ -222,13 +287,17 @@ $ make watch_test test='-x tests/test_config.py tests/test_util.py'
 Rebuild the documentation when an `.rst` file is edited:
 
 ```console
-
 $ cd doc
+```
+
+```console
 $ make watch
+```
 
-# If you're not source'd via `poetry shell`, you can use this:
+If you're not source'd via `poetry shell`, you can use this:
+
+```console
 $ make SPHINXBUILD='poetry run sphinx-build' watch
-
 ```
 
 (tmuxp-developer-config)=
