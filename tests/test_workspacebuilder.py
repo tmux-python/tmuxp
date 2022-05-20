@@ -11,7 +11,7 @@ import kaptan
 import libtmux
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import retry, temp_session
+from libtmux.test import retry, retry_until, temp_session
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
@@ -102,13 +102,13 @@ def test_focus_pane_index(session):
 
     pane_path = "/usr"
 
-    while retry():
+    def pane_path_matches():
         p = w.attached_pane
         p.server._update_panes()
         if p.current_path == pane_path:
-            break
+            return True
 
-    assert p.current_path == pane_path
+    assert retry_until(pane_path_matches, 2, interval=0.25, raises=False)
 
     proc = session.cmd("show-option", "-gv", "base-index")
     base_index = int(proc.stdout[0])
