@@ -87,11 +87,11 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "certifi"
-version = "2022.5.18"
+version = "2022.5.18.1"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [[package]]
 name = "charset-normalizer"
@@ -954,8 +954,8 @@ black = [
     {file = "black-22.3.0.tar.gz", hash = "sha256:35020b8886c022ced9282b51b5a875b6d1ab0c387b31a065b84db7c33085ca79"},
 ]
 certifi = [
-    {file = "certifi-2022.5.18-py3-none-any.whl", hash = "sha256:8d15a5a7fde18536a249c49e07e8e462b8fc13de21b3c80e8a68315dfa227c99"},
-    {file = "certifi-2022.5.18.tar.gz", hash = "sha256:6ae10321df3e464305a46e997da41ea56c1d311fb9ff1dd4e04d6f14653ec63a"},
+    {file = "certifi-2022.5.18.1-py3-none-any.whl", hash = "sha256:f1d53542ee8cbedbe2118b5686372fb33c297fcd6379b050cca0ef13a597382a"},
+    {file = "certifi-2022.5.18.1.tar.gz", hash = "sha256:9c5705e395cd70084351dd8ad5c41e65655e08ce46f2ec9cf6c2c08390f71eb7"},
 ]
 charset-normalizer = [
     {file = "charset-normalizer-2.0.12.tar.gz", hash = "sha256:2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597"},
