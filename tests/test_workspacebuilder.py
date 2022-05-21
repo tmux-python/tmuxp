@@ -11,7 +11,7 @@ import kaptan
 import libtmux
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import retry, temp_session
+from libtmux.test import retry, retry_until, temp_session
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
@@ -386,36 +386,24 @@ def test_automatic_rename_option(session):
     assert s.name != "tmuxp"
     w = s.windows[0]
 
-    t = time.process_time()
-    while (time.process_time() - t) * 1000 < 20:
+    def check_window_name_mismatch() -> bool:
         session.server._update_windows()
-        if w.name != portable_command:
-            break
-        time.sleep(0.2)
+        return w.name != portable_command
 
-    assert w.name != portable_command
+    assert retry_until(check_window_name_mismatch, 2, interval=0.25)
 
     pane_base_index = w.show_window_option("pane-base-index", g=True)
     w.select_pane(pane_base_index)
 
-    t = time.process_time()
-    while (time.process_time() - t) * 1000 < 20:
+    def check_window_name_match() -> bool:
         session.server._update_windows()
-        if w.name == portable_command:
-            break
-        time.sleep(0.2)
+        return w.name == portable_command
 
-    assert w.name == portable_command
+    assert retry_until(check_window_name_match, 2, interval=0.25)
 
     w.select_pane("-D")
 
-    t = time.process_time()
-    while (time.process_time() - t) * 1000 < 20:
-        session.server._update_windows()
-        if w["window_name"] != portable_command:
-            break
-        time.sleep(0.2)
-    assert w.name != portable_command
+    assert retry_until(check_window_name_mismatch, 2, interval=0.25)
 
 
 def test_blank_pane_count(session):
