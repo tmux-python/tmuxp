@@ -6,7 +6,7 @@ windows:
     automatic-rename: on
   panes:
   - shell_command:
-    - cmd: sh
+    - cmd: man ls
     start_directory: '~'
   - shell_command:
     - cmd: echo "hey"
