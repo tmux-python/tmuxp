@@ -11,7 +11,7 @@ import kaptan
 import libtmux
 from libtmux import Window
 from libtmux.common import has_gte_version
-from libtmux.test import retry, retry_until, temp_session
+from libtmux.test import retry_until, temp_session
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
@@ -101,12 +101,15 @@ def test_focus_pane_index(session):
     assert w.name != "man"
 
     pane_path = "/usr"
+    p = None
 
-    while retry():
+    def f():
+        nonlocal p
         p = w.attached_pane
         p.server._update_panes()
-        if p.current_path == pane_path:
-            break
+        return p.current_path == pane_path
+
+    assert retry_until(f)
 
     assert p.current_path == pane_path
 
@@ -120,11 +123,13 @@ def test_focus_pane_index(session):
     p = None
     pane_path = "/"
 
-    while retry():
+    def f():
+        nonlocal p
         p = window3.attached_pane
         p.server._update_panes()
-        if p.current_path == pane_path:
-            break
+        return p.current_path == pane_path
+
+    assert retry_until(f)
 
     assert p.current_path == pane_path
 
@@ -159,7 +164,6 @@ def test_suppress_history(session):
         (isMissingWindow, "isMissing", assertIsMissing),
     ]:
         assert w.name == window_name
-        correct = False
         w.select_window()
         p = w.attached_pane
         p.select_pane()
@@ -169,7 +173,7 @@ def test_suppress_history(session):
         p.cmd("send-keys", "Enter")
 
         buffer_name = "test"
-        while retry():
+        def f():
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
 
@@ -183,10 +187,8 @@ def test_suppress_history(session):
             sent_cmd = captured_pane.stdout[0].strip()
             history_cmd = captured_pane.stdout[-2].strip()
 
-            if assertCase(sent_cmd, history_cmd):
-                correct = True
-                break
-        assert correct, f"Unknown sent command: [{sent_cmd}] in {assertCase}"
+            return assertCase(sent_cmd, history_cmd)
+        assert retry_until(f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
 def test_session_options(session):
@@ -281,19 +283,18 @@ def test_window_options_after(session):
     builder.build(session=session)
 
     def assert_last_line(p, s):
-        correct = False
-
-        while retry():
+        def f():
             pane_out = p.cmd("capture-pane", "-p", "-J").stdout
             while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
                 pane_out.pop()
-            if len(pane_out) > 1 and pane_out[-2].strip() == s:
-                correct = True
-                break
+            return len(pane_out) > 1 and pane_out[-2].strip() == s
 
         # Print output for easier debugging if assertion fails
-        if not correct:
+        if retry_until(f, raises=False):
+            return True
+        else:
             print("\n".join(pane_out))
+            return False
 
         return correct
 
@@ -329,10 +330,10 @@ def test_window_shell(session):
         if "window_shell" in wconf:
             assert wconf["window_shell"] == "top"
 
-        while retry():
+        def f():
             session.server._update_windows()
-            if w["window_name"] != "top":
-                break
+            return w["window_name"] != "top"
+        retry_until(f)
 
         assert w.name != "top"
 
@@ -448,17 +449,13 @@ def test_start_directory(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            while retry():
+            def f():
                 p.server._update_panes()
                 pane_path = p.current_path
-                if pane_path is None:
-                    pass
-                elif path in pane_path or pane_path == path:
-                    result = path == pane_path or path in pane_path
-                    break
+                return path in pane_path or pane_path == path
 
             # handle case with OS X adding /private/ to /tmp/ paths
-            assert result
+            assert retry_until(f)
 
 
 def test_start_directory_relative(session, tmp_path: pathlib.Path):
@@ -502,17 +499,13 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
-            while retry():
+            def f():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
                 pane_path = p.current_path
-                if pane_path is None:
-                    pass
-                elif path in pane_path or pane_path == path:
-                    result = path == pane_path or path in pane_path
-                    break
+                return path in pane_path or pane_path == path
 
-            assert result
+            assert retry_until(f)
 
 
 def test_pane_order(session):
@@ -564,10 +557,10 @@ def test_pane_order(session):
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            while retry():
+            def f():
                 p.server._update_panes()
-                if p.current_path == pane_path:
-                    break
+                return p.current_path == pane_path
+            retry_until(f)
 
             assert p.current_path, pane_path
 
