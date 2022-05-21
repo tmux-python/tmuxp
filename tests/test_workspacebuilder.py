@@ -173,6 +173,8 @@ def test_suppress_history(session):
         p.cmd("send-keys", "Enter")
 
         buffer_name = "test"
+        sent_cmd = None
+
         def f():
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
@@ -186,8 +188,10 @@ def test_suppress_history(session):
             # Parse the sent and last-in-history commands
             sent_cmd = captured_pane.stdout[0].strip()
             history_cmd = captured_pane.stdout[-2].strip()
+            p.server._update_panes()
 
             return assertCase(sent_cmd, history_cmd)
+
         assert retry_until(f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
@@ -282,6 +286,8 @@ def test_window_options_after(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
+    pane_out = []
+
     def assert_last_line(p, s):
         def f():
             pane_out = p.cmd("capture-pane", "-p", "-J").stdout
@@ -292,11 +298,8 @@ def test_window_options_after(session):
         # Print output for easier debugging if assertion fails
         if retry_until(f, raises=False):
             return True
-        else:
-            print("\n".join(pane_out))
-            return False
-
-        return correct
+        print("\n".join(pane_out))
+        return False
 
     for i, pane in enumerate(session.attached_window.panes):
         assert assert_last_line(
@@ -333,6 +336,7 @@ def test_window_shell(session):
         def f():
             session.server._update_windows()
             return w["window_name"] != "top"
+
         retry_until(f)
 
         assert w.name != "top"
@@ -449,6 +453,7 @@ def test_start_directory(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
+
             def f():
                 p.server._update_panes()
                 pane_path = p.current_path
@@ -499,6 +504,7 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
+
             def f():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
@@ -560,6 +566,7 @@ def test_pane_order(session):
             def f():
                 p.server._update_panes()
                 return p.current_path == pane_path
+
             retry_until(f)
 
             assert p.current_path, pane_path
