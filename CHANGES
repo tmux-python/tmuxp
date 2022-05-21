@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Bug fix
+
+- {issue}`774` Fix {issue}`620` tests not finishing
+
 ## tmuxp 1.11.1 (2022-05-02)
 
 ### Bug fix
