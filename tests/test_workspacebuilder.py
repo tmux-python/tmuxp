@@ -173,6 +173,8 @@ def test_suppress_history(session):
         p.cmd("send-keys", "Enter")
 
         buffer_name = "test"
+        sent_cmd = None
+
         def f():
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
@@ -290,13 +292,7 @@ def test_window_options_after(session):
             return len(pane_out) > 1 and pane_out[-2].strip() == s
 
         # Print output for easier debugging if assertion fails
-        if retry_until(f, raises=False):
-            return True
-        else:
-            print("\n".join(pane_out))
-            return False
-
-        return correct
+        return retry_until(f, raises=False)
 
     for i, pane in enumerate(session.attached_window.panes):
         assert assert_last_line(
