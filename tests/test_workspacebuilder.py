@@ -190,6 +190,7 @@ def test_suppress_history(session):
             history_cmd = captured_pane.stdout[-2].strip()
 
             return assertCase(sent_cmd, history_cmd)
+
         assert retry_until(f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
@@ -329,6 +330,7 @@ def test_window_shell(session):
         def f():
             session.server._update_windows()
             return w["window_name"] != "top"
+
         retry_until(f)
 
         assert w.name != "top"
@@ -447,6 +449,7 @@ def test_start_directory(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
+
             def f():
                 p.server._update_panes()
                 pane_path = p.current_path
@@ -497,6 +500,7 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
+
             def f():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
@@ -558,6 +562,7 @@ def test_pane_order(session):
             def f():
                 p.server._update_panes()
                 return p.current_path == pane_path
+
             retry_until(f)
 
             assert p.current_path, pane_path
@@ -1014,17 +1019,20 @@ def test_load_workspace_enter(
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
 
-    time.sleep(1)
-
     session = builder.session
     pane = session.attached_pane
 
-    captured_pane = "\n".join(pane.capture_pane())
+    def fn():
+        captured_pane = "\n".join(pane.capture_pane())
 
-    if should_see:
-        assert output in captured_pane
-    else:
-        assert output not in captured_pane
+        if should_see:
+            return output in captured_pane
+        else:
+            return output not in captured_pane
+
+    assert retry_until(
+        fn, 1
+    ), f'Should{" " if should_see else "not "} output in captured pane'
 
 
 @pytest.mark.parametrize(
