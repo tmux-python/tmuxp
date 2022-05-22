@@ -396,7 +396,9 @@ def test_automatic_rename_option(session):
         session.server._update_windows()
         return w.name == portable_command
 
-    assert retry_until(check_window_name_match, 2, interval=0.25)
+    assert retry_until(
+        check_window_name_match, 2, interval=0.25
+    ), f"Window name {w.name} should be {portable_command}"
 
     w.select_pane("-D")
 
