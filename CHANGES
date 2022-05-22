@@ -25,7 +25,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Tests
 
-- {issue}`777` Fix {issue}`778` to move the old, broken `retry()` to the new `retry_until()`
+- {issue}`777` Fix {issue}`778` to move the old, broken `retry()` to the new
+  `retry_until()`, credit: @categulario.
 
 ## tmuxp 1.11.1 (2022-05-02)
 
