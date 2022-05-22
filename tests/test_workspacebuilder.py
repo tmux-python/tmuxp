@@ -1046,12 +1046,12 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 5))___"
-      sleep_before: 2
+      sleep_before: .15
     - cmd: echo "___$((1 + 3))___"
-      sleep_before: 1
+      sleep_before: .35
     """
             ),
-            1.5,
+            0.5,
             "___4___",
         ],
         [
@@ -1062,12 +1062,12 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 5))___"
-      sleep_before: 2
-    - cmd: echo "___$((1 + 3))___"
       sleep_before: 1
+    - cmd: echo "___$((1 + 3))___"
+      sleep_before: .25
     """
             ),
-            3,
+            1.25,
             "___4___",
         ],
         [
@@ -1078,10 +1078,10 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 3))___"
-    sleep_before: 2
+    sleep_before: .5
     """
             ),
-            2,
+            0.5,
             "___4___",
         ],
         [
@@ -1092,10 +1092,10 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 3))___"
-    sleep_before: 2
+    sleep_before: 1
     """
             ),
-            2,
+            1,
             "___4___",
         ],
         [
@@ -1104,21 +1104,21 @@ windows:
 session_name: Should not execute
 shell_command_before:
   - cmd: echo "sleeping before"
-    sleep_before: 2
+    sleep_before: .5
 windows:
 - panes:
   - echo "___$((1 + 3))___"
     """
             ),
-            2,
+            0.5,
             "___4___",
         ],
     ],
     ids=[
-        "command_level_sleep_3_shortform",
-        "command_level_pane_sleep_3_longform",
-        "pane_sleep_2_shortform",
-        "pane_sleep_2_longform",
+        "command_level_sleep_shortform",
+        "command_level_pane_sleep_longform",
+        "pane_sleep_shortform",
+        "pane_sleep_longform",
         "shell_before_before_command_level",
     ],
 )
