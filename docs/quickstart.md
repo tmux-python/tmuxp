@@ -126,7 +126,7 @@ export TMUXP_CONFIGDIR=$HOME/.yourconfigdir/tmuxp
 
 ```
 
-You can also [Import][import] configs [teamocil][teamocil] and [tmuxinator][tmuxinator].
+You can also [Import][import] configs [teamocil] and [tmuxinator].
 
 ## Pythonics
 
