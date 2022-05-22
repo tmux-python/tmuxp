@@ -10,6 +10,7 @@ from libtmux.server import Server
 from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
 
 logger = logging.getLogger(__name__)
+USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -21,6 +22,18 @@ def home_path(tmp_path_factory: pytest.TempPathFactory):
 def user_path(home_path: pathlib.Path):
     p = home_path / getpass.getuser()
     p.mkdir()
+    return p
+
+
+@pytest.mark.skipif(USING_ZSH, reason="Using ZSH")
+@pytest.fixture(autouse=USING_ZSH, scope="session")
+def zshrc(user_path: pathlib.Path):
+    """This quiets ZSH default message.
+
+    Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.
+    """
+    p = user_path / ".zshrc"
+    p.touch()
     return p
 
 

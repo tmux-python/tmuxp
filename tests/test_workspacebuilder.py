@@ -190,6 +190,7 @@ def test_suppress_history(session):
             history_cmd = captured_pane.stdout[-2].strip()
 
             return assertCase(sent_cmd, history_cmd)
+
         assert retry_until(f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
@@ -329,6 +330,7 @@ def test_window_shell(session):
         def f():
             session.server._update_windows()
             return w["window_name"] != "top"
+
         retry_until(f)
 
         assert w.name != "top"
@@ -447,6 +449,7 @@ def test_start_directory(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
+
             def f():
                 p.server._update_panes()
                 pane_path = p.current_path
@@ -497,6 +500,7 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
 
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
+
             def f():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
@@ -558,6 +562,7 @@ def test_pane_order(session):
             def f():
                 p.server._update_panes()
                 return p.current_path == pane_path
+
             retry_until(f)
 
             assert p.current_path, pane_path
@@ -1014,17 +1019,20 @@ def test_load_workspace_enter(
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
 
-    time.sleep(1)
-
     session = builder.session
     pane = session.attached_pane
 
-    captured_pane = "\n".join(pane.capture_pane())
+    def fn():
+        captured_pane = "\n".join(pane.capture_pane())
 
-    if should_see:
-        assert output in captured_pane
-    else:
-        assert output not in captured_pane
+        if should_see:
+            return output in captured_pane
+        else:
+            return output not in captured_pane
+
+    assert retry_until(
+        fn, 1
+    ), f'Should{" " if should_see else "not "} output in captured pane'
 
 
 @pytest.mark.parametrize(
@@ -1038,12 +1046,12 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 5))___"
-      sleep_before: 2
+      sleep_before: .15
     - cmd: echo "___$((1 + 3))___"
-      sleep_before: 1
+      sleep_before: .35
     """
             ),
-            1.5,
+            0.5,
             "___4___",
         ],
         [
@@ -1054,12 +1062,12 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 5))___"
-      sleep_before: 2
-    - cmd: echo "___$((1 + 3))___"
       sleep_before: 1
+    - cmd: echo "___$((1 + 3))___"
+      sleep_before: .25
     """
             ),
-            3,
+            1.25,
             "___4___",
         ],
         [
@@ -1070,10 +1078,10 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 3))___"
-    sleep_before: 2
+    sleep_before: .5
     """
             ),
-            2,
+            0.5,
             "___4___",
         ],
         [
@@ -1084,10 +1092,10 @@ windows:
 - panes:
   - shell_command:
     - cmd: echo "___$((1 + 3))___"
-    sleep_before: 2
+    sleep_before: 1
     """
             ),
-            2,
+            1,
             "___4___",
         ],
         [
@@ -1096,21 +1104,21 @@ windows:
 session_name: Should not execute
 shell_command_before:
   - cmd: echo "sleeping before"
-    sleep_before: 2
+    sleep_before: .5
 windows:
 - panes:
   - echo "___$((1 + 3))___"
     """
             ),
-            2,
+            0.5,
             "___4___",
         ],
     ],
     ids=[
-        "command_level_sleep_3_shortform",
-        "command_level_pane_sleep_3_longform",
-        "pane_sleep_2_shortform",
-        "pane_sleep_2_longform",
+        "command_level_sleep_shortform",
+        "command_level_pane_sleep_longform",
+        "pane_sleep_shortform",
+        "pane_sleep_longform",
         "shell_before_before_command_level",
     ],
 )
