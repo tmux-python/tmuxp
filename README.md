@@ -271,4 +271,5 @@ See donation options at <https://git-pull.com/support.html>.
 - Test Coverage: <https://codecov.io/gh/tmux-python/tmuxp>
 - pypi: <https://pypi.python.org/pypi/tmuxp>
 - Open Hub: <https://www.openhub.net/p/tmuxp-python>
+- Repology: <https://repology.org/project/tmuxp/versions>
 - License: [MIT](http://opensource.org/licenses/MIT).
