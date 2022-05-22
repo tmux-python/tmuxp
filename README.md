@@ -261,7 +261,7 @@ See donation options at <https://git-pull.com/support.html>.
 
 # Project details
 
-- tmux support: 1.8, 1.9a, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
+- tmux support: 1.8+
 - python support: >= 3.7, pypy, pypy3
 - Source: <https://github.com/tmux-python/tmuxp>
 - Docs: <https://tmuxp.git-pull.com>
