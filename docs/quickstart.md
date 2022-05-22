@@ -4,7 +4,7 @@
 
 ## Installation
 
-Assure you have at least tmux **>= 1.8** and python **>= 2.6**.
+Assure you have at least tmux **>= 1.8** and python **>= 3.7**.
 
 ```console
 $ pip install --user tmuxp
