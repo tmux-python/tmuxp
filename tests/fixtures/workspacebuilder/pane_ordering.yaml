@@ -7,5 +7,5 @@ windows:
   panes:
   - cd /usr/bin
   - cd /usr
-  - cd /usr/sbin
+  - cd /etc
   - cd {HOME}
