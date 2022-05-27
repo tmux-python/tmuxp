@@ -27,6 +27,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - {issue}`777` Fix {issue}`778` to move the old, broken `retry()` to the new
   `retry_until()`, credit: @categulario.
+- {issue}`783` Fix {issue}`620` Symlink edge for for pane order tests, credit: @categulario.
 - {issue}`781` Testing with ZSH will mock `~/.zshrc` startup file for cleaner
   pane outputs.
 
