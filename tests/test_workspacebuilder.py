@@ -525,7 +525,7 @@ def test_pane_order(session):
     pane_paths = [
         "/usr/bin",
         "/usr",
-        "/usr/sbin",
+        "/etc",
         os.path.realpath(os.path.expanduser("~")),
     ]
 
@@ -539,10 +539,10 @@ def test_pane_order(session):
 
     window_count = len(session._windows)  # current window count
     assert len(s._windows) == window_count
+
     for w, wconf in builder.iter_create_windows(s):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
-            p = p
             assert len(s._windows) == window_count
 
         assert isinstance(w, Window)
@@ -563,9 +563,7 @@ def test_pane_order(session):
                 p.server._update_panes()
                 return p.current_path == pane_path
 
-            retry_until(f)
-
-            assert p.current_path, pane_path
+            assert retry_until(f)
 
 
 def test_window_index(session):
