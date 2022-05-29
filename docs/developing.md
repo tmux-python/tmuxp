@@ -8,7 +8,7 @@
 ```
 
 Our tests are inside `tests/`. Tests are implemented using
-[pytest][pytest].
+[pytest].
 
 `make test` will create a tmux server on a separate `socket_name`
 using `$ tmux -L test_case`.
@@ -24,71 +24,34 @@ using `$ tmux -L test_case`.
 To begin developing, check out the code from github:
 
 ```console
-
 $ git clone git@github.com:tmux-python/tmuxp.git
+```
+
+```console
 $ cd tmuxp
-
 ```
 
-### Advanced: Manual virtual
+### Bootstrap
 
-Now create a virtualenv, if you don't know how to, you can create a
-virtualenv with:
-
-```console
-
-$ virtualenv .venv
-
-```
-
-Then activate it to your current tty / terminal session with:
-
-```console
-
-$ source .venv/bin/activate
-
-```
-
-Good! Now let's run this:
-
-```console
-
-$ pip install -e .
-
-```
-
-This has `pip`, a python package manager install the python package
-in the current directory. `-e` means `--editable`, which means you can
-adjust the code and the installed software will reflect the changes.
-
-```console
-
-$ tmuxp
-
-```
-
-### Simple: Using poetry
-
-The easiest way to configure a dev environment is through [poetry][poetry]. This
+The easiest way to configure a dev environment is through [poetry]. This
 automatically will manage virtualenv and python dependencies for tmuxp.
-For information on installing poetry visit the [poetry's documentation][poetry's documentation].
+For information on installing poetry visit the [poetry's documentation].
 
 To begin developing, check out the code from github:
 
 ```console
-
 $ git clone git@github.com:tmux-python/tmuxp.git
-$ cd tmuxp
+```
 
+```console
+$ cd tmuxp
 ```
 
 You can create a virtualenv, and install all of the locked
 packages as listed in poetry.lock:
 
 ```console
-
 $ poetry install
-
 ```
 
 If you ever need to update packages during your development session, the
@@ -96,24 +59,52 @@ following command can be used to update all packages as per poetry settings or
 individual package (second command):
 
 ```console
-
 $ poetry update
-$ poetry update requests
+```
 
+```console
+$ poetry update requests
 ```
 
 Then activate it to your current tty / terminal session with:
 
 ```console
-
 $ poetry shell
-
 ```
 
 That is it! You are now ready to code!
 
 [poetry]: https://python-poetry.org/
 [poetry's documentation]: https://python-poetry.org/docs/
+
+### Advanced: Manual virtualenv
+
+Now create a virtualenv, if you don't know how to, you can create a
+virtualenv with:
+
+```console
+$ virtualenv .venv
+```
+
+Then activate it to your current tty / terminal session with:
+
+```console
+$ source .venv/bin/activate
+```
+
+Good! Now let's run this:
+
+```console
+$ pip install -e .
+```
+
+This has `pip`, a python package manager install the python package
+in the current directory. `-e` means `--editable`, which means you can
+adjust the code and the installed software will reflect the changes.
+
+```console
+$ tmuxp
+```
 
 ## Test Runner
 
@@ -204,11 +195,11 @@ $ make test
 You probably didn't see anything but tests scroll by.
 
 If you found a problem or are trying to write a test, you can file an
-[issue on github][issue on github].
+[issue on github].
 
 (test-specific-tests)=
 
-### Test runner options
+### Manual invocation
 
 Test only a file:
 
@@ -232,7 +223,7 @@ $ py.test tests/test_{window,pane}.py tests/test_config.py::test_export_json
 
 (test-builder-visually)=
 
-## Visual testing
+### Visual testing
 
 You can watch tmux testsuite build sessions visually by keeping a client
 open in a separate terminal.
@@ -252,7 +243,7 @@ Create two terminals:
 Terminal 1 should have flickered and built the session before your eyes.
 tmuxp hides this building from normal users.
 
-## Run tests on save
+### Run tests on save (old method)
 
 You can re-run tests automatically on file edit.
 
@@ -272,7 +263,7 @@ $ make watch_test
 ```
 
 You can also re-run a specific test file or any other [py.test usage
-argument][py.test usage argument]:
+argument]:
 
 ```console
 $ make watch_test test=tests/test_config.py
@@ -282,7 +273,21 @@ $ make watch_test test=tests/test_config.py
 $ make watch_test test='-x tests/test_config.py tests/test_util.py'
 ```
 
-## Rebuild sphinx docs on save
+### Testing options
+
+`RETRY_TIMEOUT_SECONDS` can be toggled if certain workspace builder
+tests are being stubborn.
+
+e.g. `RETRY_TIMEOUT_SECONDS=10 py.test`
+
+```{literalinclude} ../.github/workflows/tests.yml
+:language: yaml
+
+```
+
+## Documentation
+
+### Rebuild on save
 
 Rebuild the documentation when an `.rst` file is edited:
 
@@ -312,9 +317,7 @@ $ make SPHINXBUILD='poetry run sphinx-build' watch
 After you {ref}`install-dev-env`, when inside the tmuxp checkout:
 
 ```console
-
 $ tmuxp load .
-
 ```
 
 this will load the `.tmuxp.yaml` in the root of the project.
@@ -333,26 +336,16 @@ this will load the `.tmuxp.yaml` in the root of the project.
 
 (gh-actions)=
 
-## Github Actions
+## Continuous integration
 
-tmuxp uses [github actions][github actions] for continuous integration / automatic unit
+### Github Actions
+
+tmuxp uses [github actions] for continuous integration / automatic unit
 testing.
 
-To view the tmux and python versions tested see the [.github/workflows/tests.yml][.github/workflows/tests.yml].
+To view the tmux and python versions tested see the [.github/workflows/tests.yml].
 Builds are done on `master` and pull requests and can be viewed on
-the [gh build site][gh build site].
-
-## Testing options
-
-`RETRY_TIMEOUT_SECONDS` can be toggled if certain workspace builder
-tests are being stubborn.
-
-e.g. `RETRY_TIMEOUT_SECONDS=10 py.test`
-
-```{literalinclude} ../.github/workflows/tests.yml
-:language: yaml
-
-```
+the [gh build site].
 
 [py.test usage argument]: https://pytest.org/latest/usage.html
 [entr]: http://entrproject.org/
