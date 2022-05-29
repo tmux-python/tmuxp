@@ -25,7 +25,7 @@ def test_raise_BeforeLoadScriptError_if_retcode():
         run_before_script(script_file)
 
 
-def test_return_stdout_if_ok(capsys):
+def test_return_stdout_if_ok(capsys: pytest.CaptureFixture[str]):
     script_file = FIXTURE_PATH / "script_complete.sh"
 
     run_before_script(script_file)
