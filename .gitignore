@@ -62,8 +62,11 @@ docs/_build/
 # PyBuilder
 target/
 
-#Ipython Notebook
+# Ipython Notebook
 .ipynb_checkpoints
+
+# mypy
+.mypy_cache/
 
 # editors
 .idea

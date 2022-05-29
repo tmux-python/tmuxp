@@ -50,5 +50,11 @@ flake8:
 watch_flake8:
 	if command -v entr > /dev/null; then ${PY_FILES} | entr -c $(MAKE) flake8; else $(MAKE) flake8 entr_warn; fi
 
+mypy:
+	poetry run mypy `${PY_FILES}`
+
+watch_mypy:
+	if command -v entr > /dev/null; then ${PY_FILES} | entr -c $(MAKE) mypy; else $(MAKE) mypy entr_warn; fi
+
 format_markdown:
 	npx prettier --parser=markdown -w *.md docs/*.md docs/**/*.md CHANGES
