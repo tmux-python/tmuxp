@@ -692,7 +692,7 @@ type_comments = ["typed-ast (>=1.4.0)"]
 
 [[package]]
 name = "sphinx-click"
-version = "4.0.3"
+version = "4.1.0"
 description = "Sphinx extension that automatically documents click applications"
 category = "dev"
 optional = false
@@ -1333,8 +1333,8 @@ sphinx-autodoc-typehints = [
     {file = "sphinx_autodoc_typehints-1.17.1.tar.gz", hash = "sha256:844d7237d3f6280b0416f5375d9556cfd84df1945356fcc34b82e8aaacab40f3"},
 ]
 sphinx-click = [
-    {file = "sphinx-click-4.0.3.tar.gz", hash = "sha256:a1aacf00cfe11550a2211014617c426a94af8638f1ce735b5d9998cccf1a1edb"},
-    {file = "sphinx_click-4.0.3-py3-none-any.whl", hash = "sha256:4c4b43386ff6304e47ae0467da9c980786eb3c1317cd6f488524c18931627c04"},
+    {file = "sphinx-click-4.1.0.tar.gz", hash = "sha256:fedebd39991243ec5cfa1c9e483db7ea2621b3df2012315c89c6f1f3722f192b"},
+    {file = "sphinx_click-4.1.0-py3-none-any.whl", hash = "sha256:60d6507bf623e20e9cbab732d19fc4890cc36a394c82ba8e2320f9f9fdc4571e"},
 ]
 sphinx-copybutton = [
     {file = "sphinx-copybutton-0.5.0.tar.gz", hash = "sha256:a0c059daadd03c27ba750da534a92a63e7a36a7736dcf684f26ee346199787f6"},
