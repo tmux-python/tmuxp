@@ -103,27 +103,6 @@ jobs:
         AWS_REGION: 'us-west-1'   # optional: defaults to us-east-1
         SOURCE_DIR: 'docs/_build/html'      # optional: defaults to entire repository 
 
-    - name: Generate list of changed files for CloudFront to invalidate
-      if: env.PUBLISH == 'true'
-      run: |
-        FILES=$(find docs/_build/html -exec realpath --relative-to docs/_build/html {} \; | awk '{print "/"$0}' | grep "html\|searchindex.js\|custom.css\|.svg");
-
-        for file in $FILES; do
-          echo $file
-          # add bare directory to list of updated paths when we see index.html
-          [[ "$file" == *"/index.html" ]] && echo $file | sed -e 's/\/index.html$/\//'
-        done | sort | uniq | tr '\n' ' ' > .updated_files
-
-    - name: Invalidate on CloudFront
-      uses: chetan/invalidate-cloudfront-action@v2.3
-      if: env.PUBLISH == 'true'
-      env:
-        DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION }}
-        AWS_REGION: 'us-east-1'
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        PATHS_FROM: .updated_files
-
     - name: Purge cache on Cloudflare
       uses: jakejarvis/cloudflare-purge-action@v0.3.0
       env:
