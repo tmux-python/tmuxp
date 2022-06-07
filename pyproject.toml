@@ -66,6 +66,7 @@ sphinxext-opengraph = "*"
 sphinx-copybutton = "*"
 sphinxext-rediraffe = "*"
 myst_parser = "*"
+docutils = "~0.18.0"
 
 ### Testing ###
 pytest = "*"
@@ -88,6 +89,7 @@ mypy = "*"
 
 [tool.poetry.extras]
 docs = [
+  "docutils",
   "sphinx",
   "sphinx-issues",
   "sphinx-click",
