@@ -14,6 +14,7 @@ from typing import List
 
 import click
 import kaptan
+from click.shell_completion import CompletionItem
 
 from libtmux.common import has_gte_version
 from libtmux.server import Server
@@ -441,7 +442,9 @@ def load_workspace(
     return _setup_plugins(builder)
 
 
-def config_file_completion(ctx, params, incomplete):
+def config_file_completion(
+    ctx: click.Context, param: click.Parameter, incomplete: str
+) -> List[CompletionItem]:
     config_dir = pathlib.Path(get_config_dir())
     choices: List[pathlib.Path] = []
 
