@@ -111,7 +111,12 @@ class ConfigPath(click.Path):
         )
         self.config_dir = config_dir
 
-    def convert(self, value, param, ctx):
+    def convert(
+        self,
+        value: t.Any,
+        param: t.Optional[click.Parameter],
+        ctx: t.Optional[click.Context],
+    ) -> t.Any:
         config_dir = self.config_dir
         if callable(config_dir):
             config_dir = config_dir()
