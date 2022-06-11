@@ -1,5 +1,6 @@
 import logging
 import os
+import typing as t
 
 import click
 from click.exceptions import FileError
@@ -84,8 +85,30 @@ def _validate_choices(options):
 
 
 class ConfigPath(click.Path):
-    def __init__(self, config_dir=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        config_dir=None,
+        exists: bool = False,
+        file_okay: bool = True,
+        dir_okay: bool = True,
+        writable: bool = False,
+        readable: bool = True,
+        resolve_path: bool = False,
+        allow_dash: bool = False,
+        path_type: t.Optional[t.Type] = None,
+        executable: bool = False,
+    ):
+        super().__init__(
+            exists=exists,
+            file_okay=file_okay,
+            dir_okay=dir_okay,
+            writable=writable,
+            readable=readable,
+            resolve_path=resolve_path,
+            allow_dash=allow_dash,
+            path_type=path_type,
+            executable=executable,
+        )
         self.config_dir = config_dir
 
     def convert(self, value, param, ctx):
