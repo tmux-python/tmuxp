@@ -44,12 +44,7 @@ def setup_logger(logger=None, level="INFO"):
         logger = logging.getLogger()
 
     if not logger.handlers:  # setup logger handlers
-        # channel = logging.StreamHandler()
-        # channel.setFormatter(log.DebugLogFormatter())
-        # channel.setFormatter(log.LogFormatter())
-
         logger.setLevel(level)
-        # logger.addHandler(channel)
 
 
 def set_style(
