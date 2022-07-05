@@ -57,7 +57,7 @@ def command_shell(
 ):
     """Launch python shell for tmux server, session, window and pane.
 
-    Priority given to loaded session/wndow/pane objects:
+    Priority given to loaded session/window/pane objects:
 
     - session_name and window_name arguments
     - current shell: envvar ``TMUX_PANE`` for determining window and session
