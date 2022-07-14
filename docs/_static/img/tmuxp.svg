@@ -1,87 +1,200 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
-   viewBox="0 0 84 84"
+   width="132.29166mm"
+   height="132.29166mm"
+   viewBox="0 0 132.29166 132.29165"
    version="1.1"
-   id="svg1659"
-   sodipodi:docname="tmuxp - filled.svg"
-   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="tmuxp v5.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/">
+   xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
-     id="namedview1661"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#000000"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
      inkscape:pagecheckerboard="true"
+     inkscape:document-units="mm"
      showgrid="false"
-     inkscape:snap-smooth-nodes="true"
+     inkscape:showpageshadow="false"
+     showborder="true"
+     borderlayer="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="0.94867187"
+     inkscape:cx="550.76999"
+     inkscape:cy="322.02915"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2"
+     inkscape:snap-global="true"
+     inkscape:snap-page="true"
      inkscape:snap-bbox="true"
-     inkscape:zoom="7.3488598"
-     inkscape:cx="45.789416"
-     inkscape:cy="36.604318"
-     inkscape:window-width="2100"
-     inkscape:window-height="1201"
-     inkscape:window-x="151"
-     inkscape:window-y="147"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="Layer_1-2" />
+     inkscape:bbox-paths="true" />
   <defs
-     id="defs1645">
+     id="defs2">
     <style
-       id="style1643">.cls-1{fill:#8db1d1;}.cls-2{fill:#3975a6;}.cls-3{fill:#ffcd24;}.cls-4{fill:#221f1f;}</style>
-  </defs>
-  <title
-     id="title1647">tmuxp</title>
-  <g
-     id="Layer_2"
-     data-name="Layer 2">
-    <g
-       id="Layer_1-2"
-       data-name="Layer 1">
-      <rect
-         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:0.970494"
-         id="rect11365"
-         width="53.110855"
-         height="79.334"
-         x="30.889145"
-         y="0.1341086"
-         ry="4.5358915" />
+       id="style12147">.cls-1{fill:#8db1d1;}.cls-2{fill:#3771a2;}.cls-3{fill:#ffcd23;}.cls-4{fill:#231f20;}.cls-5{fill:#fff;fill-rule:evenodd;opacity:0.23;}</style>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath886">
       <path
-         class="cls-1"
-         d="M79.33,0H44.66V34.81H84V4.67A4.67,4.67,0,0,0,79.33,0Z"
-         id="path6126"
-         style="fill-rule:evenodd" />
+         d="M 0,500 H 500 V 0 H 0 Z"
+         id="path884" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath886-5">
+      <path
+         d="M 0,500 H 500 V 0 H 0 Z"
+         id="path884-0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath25507">
+      <path
+         id="path25509"
+         style="display:inline;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.448759;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000"
+         d="m 839.00309,9.0927754 a 6.601046,6.601046 0 0 0 -6.60137,6.6008826 v 101.715832 3.81619 a 6.601046,6.601046 0 0 0 0.12059,1.22028 6.601046,6.601046 0 0 0 0.10482,0.39145 6.601046,6.601046 0 0 0 0.23842,0.78661 6.601046,6.601046 0 0 0 0.20175,0.43273 6.601046,6.601046 0 0 0 0.3548,0.66325 6.601046,6.601046 0 0 0 0.28663,0.41 6.601046,6.601046 0 0 0 0.4652,0.56677 6.601046,6.601046 0 0 0 0.35805,0.35806 6.601046,6.601046 0 0 0 0.56679,0.46519 6.601046,6.601046 0 0 0 0.40999,0.28664 6.601046,6.601046 0 0 0 0.66325,0.35481 6.601046,6.601046 0 0 0 0.43272,0.20176 6.601046,6.601046 0 0 0 0.78661,0.23839 6.601046,6.601046 0 0 0 0.39147,0.10482 6.601046,6.601046 0 0 0 1.22028,0.12013 h 26.56679 22.43937 56.52587 3.32456 c 3.64564,0 6.60086,-2.95523 6.60086,-6.60089 V 119.32872 86.440723 62.096026 43.386105 19.493154 c -2.1e-4,-8.246367 -6.27807,-10.3998264 -9.92405,-10.4003786 0,0 0,0 -0.002,0 v 0 H 921.39012 888.0091 Z" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath25513">
+      <path
+         id="path25515"
+         style="display:inline;fill:#ff00ff;fill-opacity:1;stroke:none;stroke-width:0.612643;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000"
+         d="m 803.40811,-27.036034 a 9.0117135,9.0117135 0 0 0 -9.01214,9.01149 v 138.861924 5.20985 a 9.0117135,9.0117135 0 0 0 0.16462,1.6659 9.0117135,9.0117135 0 0 0 0.1431,0.53441 9.0117135,9.0117135 0 0 0 0.32548,1.07389 9.0117135,9.0117135 0 0 0 0.27544,0.59076 9.0117135,9.0117135 0 0 0 0.48437,0.90545 9.0117135,9.0117135 0 0 0 0.3913,0.55974 9.0117135,9.0117135 0 0 0 0.63509,0.77375 9.0117135,9.0117135 0 0 0 0.48881,0.48882 9.0117135,9.0117135 0 0 0 0.77378,0.63508 9.0117135,9.0117135 0 0 0 0.55972,0.39131 9.0117135,9.0117135 0 0 0 0.90546,0.48439 9.0117135,9.0117135 0 0 0 0.59074,0.27544 9.0117135,9.0117135 0 0 0 1.07388,0.32545 9.0117135,9.0117135 0 0 0 0.53443,0.14311 9.0117135,9.0117135 0 0 0 1.66592,0.16399 h 36.26884 30.63412 77.16882 4.53867 c 4.97701,0 9.01146,-4.03446 9.01146,-9.01149 V 123.4575 78.55898 45.323726 19.78104 -12.837492 c -2.9e-4,-11.257897 -8.57079,-14.197788 -13.54825,-14.198542 0,0 0,0 -0.004,0 v 0 H 915.8812 870.3096 Z" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Libtmux"
+     style="display:inline"
+     transform="translate(-210.28959,-409.98108)">
+    <path
+       id="Bottom-bar-shadow-object-Shape"
+       style="fill:#333333;stroke-width:5.79024"
+       class="cls-4"
+       inkscape:label="Bottom-bar-shadow-object-Shape"
+       d="M 459.0625,457.32617 V 500 h 13.89648 c 14.93428,7.6e-4 27.04068,-12.10674 27.04102,-27.04102 v -15.63281 z"
+       transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)">
+      <title
+         id="title2349">Bottom bar shadow object (Shape)</title>
+    </path>
+    <g
+       id="Blue-Sqaure-group-object-Shape"
+       inkscape:label="Blue-Sqaure-group-object-Shape">
+      <title
+         id="title966">Blue Sqaure Group object (Shape)</title>
+      <path
+         id="Blue-Square-shadow-object-Shape"
+         style="fill:#224665;fill-opacity:1;stroke-width:5.79024"
+         class="cls-2"
+         inkscape:label="Blue-Square-shadow-object-Shape"
+         d="M 227.78906,0 213.98242,3.6992188 V 460.62109 H 241.4082 V 15.564453 Z"
+         transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)">
+        <title
+           id="title1425">Blue Square shadow object (Shape)</title>
+      </path>
       <path
          class="cls-2"
-         d="M0,4.67V79.33A4.67,4.67,0,0,0,4.67,84H39.34V0H4.67A4.67,4.67,0,0,0,0,4.67Z"
-         id="path6132"
-         style="fill-rule:evenodd" />
+         d="m 210.28981,417.13553 v 113.86425 l 60.26885,2.60089 V 409.98109 h -53.11441 c -3.95129,0 -7.15444,3.20315 -7.15444,7.15444 z"
+         id="Blue-Square-object-Shape"
+         sodipodi:nodetypes="cccccc"
+         style="stroke-width:1.532"
+         inkscape:label="Blue-Square-object-Shape">
+        <title
+           id="title1187">Blue Square object (Shape)</title>
+      </path>
+    </g>
+    <g
+       id="Yellow-Sqaure-group-object-Shape"
+       inkscape:label="Yellow-Sqaure-group-object-Shape">
+      <title
+         id="title962">Yellow Sqaure Group object (Shape)</title>
       <path
+         id="Yellow-Square-Shadow-object-Shape"
+         style="fill:#b18900;fill-opacity:1;stroke-width:5.79024"
          class="cls-3"
-         d="M44.66,84H79.33A4.67,4.67,0,0,0,84,79.33V40.13H44.66Z"
-         id="path6129"
-         style="fill-rule:evenodd" />
+         d="m 486.38086,246.03906 -5.24805,4.99805 v 207.2207 l 5.24805,-0.93164 L 500,465.18945 V 261.60352 Z"
+         transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)"
+         inkscape:label="Yellow-Square-Shadow-object-Shape">
+        <title
+           id="title2365">Yellow Square Shadow object (Shape)</title>
+      </path>
       <path
-         class="cls-4"
-         d="M4.67,84H79.33A4.67,4.67,0,0,0,84,79.33v-2.7H0v2.7A4.67,4.67,0,0,0,4.67,84Z"
-         id="path6123"
-         style="fill-rule:evenodd" />
+         id="Yellow-Square-object-Shape"
+         style="stroke-width:1.532"
+         class="cls-3"
+         d="m 278.70874,475.07917 v 64.8875 l 60.26883,-8.98455 v -55.90295 z"
+         inkscape:label="Yellow-Square-object-Shape"
+         sodipodi:nodetypes="ccccc">
+        <title
+           id="title1990">Yellow Square object (Shape)</title>
+      </path>
+    </g>
+    <path
+       id="Bottom-bar-object-Shape"
+       style="stroke-width:5.79024"
+       class="cls-4"
+       inkscape:label="Bottom-bar-object-Shape"
+       d="m 0,457.32617 v 15.63281 C 3.4015748e-4,487.89326 12.106742,500.00072 27.041016,500 H 459.33984 c 14.93428,7.2e-4 27.04068,-12.10674 27.04102,-27.04102 v -15.63281 z"
+       transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)"
+       sodipodi:nodetypes="ccccccc">
+      <title
+         id="title1566">Bottom bar object (Shape)</title>
+    </path>
+    <g
+       id="Light-Blue-Sqaure-group-object-Shape"
+       inkscape:label="Light-Blue-Sqaure-group-object-Shape">
+      <title
+         id="title964">Light Blue Sqaure Group object (Shape)</title>
+      <path
+         id="Light-Blue-Square-Shadow-1-object-Shape"
+         style="fill:#5d90bd;fill-opacity:1;stroke-width:5.79024"
+         class="cls-1"
+         inkscape:label="Light-Blue-Square-Shadow-1-object-Shape"
+         d="m 459.33984,0 -25.33593,2.1074219 h 21.38281 c 14.93397,0 27.04101,12.1070061 27.04101,27.0410161 l 1.51727,183.649512 2.43542,2.38046 -1.84468,1.91057 15.46424,13.65284 L 500,42.603516 C 499.99913,8.8176763 474.27408,-6.8031496e-4 459.33984,0 Z"
+         transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)"
+         sodipodi:nodetypes="ccsscccccc">
+        <title
+           id="title1364">Light Blue Square Shadow 1 object (Shape)</title>
+      </path>
+      <path
+         class="cls-1"
+         d="m 331.82331,409.98109 h -53.11442 v 56.93261 h 60.26885 v -49.77817 c 0,-3.95129 -3.20315,-7.15444 -7.15443,-7.15444 z"
+         id="Light-Blue-Square-object-Shape"
+         style="stroke-width:1.532"
+         sodipodi:nodetypes="scccss"
+         inkscape:label="Light-Blue-Square-object-Shape">
+        <title
+           id="title1067">Light Blue Square object (Shape)</title>
+      </path>
+      <path
+         style="fill:#457baa;fill-opacity:1;stroke:none;stroke-width:0.48638;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers;stop-color:#000000"
+         d="m 278.7089,466.9137 h 60.26885 l 3.6035,4.11782 h -60.26932 z"
+         id="Light-Blue-Square-Shadow-2-object-Shape"
+         inkscape:label="Light-Blue-Square-Shadow-2-object-Shape">
+        <title
+           id="title1385">Light Blue Square Shadow 2 object (Shape)</title>
+      </path>
+    </g>
+    <g
+       id="Gear-object-Group"
+       inkscape:label="Gear-object-Group">
+      <title
+         id="title2298">Gear object (Group)</title>
     </g>
   </g>
-  <metadata
-     id="metadata11052">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:title>tmuxp</dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
 </svg>
