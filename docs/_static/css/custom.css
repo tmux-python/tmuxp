@@ -1,20 +1,3 @@
-h2 {
-  margin-bottom: 1.25rem;
-  margin-top: 1.25rem;
-  scroll-margin-top: 0.5rem;
-}
-
-h3 {
-  margin-bottom: 1.25rem;
-  margin-top: 1.25rem;
-  scroll-margin-top: 0.5rem;
-}
-
-h4 {
-  margin-bottom: 1.25rem;
-  scroll-margin-top: 0.5rem;
-}
-
 .sidebar-tree p.indented-block {
   padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal) 0
     var(--sidebar-item-spacing-horizontal);
