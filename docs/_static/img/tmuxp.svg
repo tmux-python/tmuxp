@@ -2,17 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="132.29166mm"
-   height="132.29166mm"
-   viewBox="0 0 132.29166 132.29165"
+   width="512"
+   height="512"
+   viewBox="0 0 135.46667 135.46666"
    version="1.1"
    id="svg5"
-   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="tmuxp v5.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="tmuxp.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title842">tmuxp</title>
   <sodipodi:namedview
      id="namedview7"
      pagecolor="#505050"
@@ -29,18 +34,19 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:zoom="0.94867187"
-     inkscape:cx="550.76999"
-     inkscape:cy="322.02915"
-     inkscape:window-width="2560"
-     inkscape:window-height="1377"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:cx="263.52631"
+     inkscape:cy="225.05147"
+     inkscape:window-width="1596"
+     inkscape:window-height="1230"
+     inkscape:window-x="1432"
+     inkscape:window-y="180"
+     inkscape:window-maximized="0"
      inkscape:current-layer="layer2"
      inkscape:snap-global="true"
      inkscape:snap-page="true"
      inkscape:snap-bbox="true"
-     inkscape:bbox-paths="true" />
+     inkscape:bbox-paths="true"
+     inkscape:deskcolor="#505050" />
   <defs
      id="defs2">
     <style
@@ -84,17 +90,17 @@
      transform="translate(-210.28959,-409.98108)">
     <path
        id="Bottom-bar-shadow-object-Shape"
-       style="fill:#333333;stroke-width:5.79024"
+       style="fill:#333333;stroke-width:1.56877"
        class="cls-4"
        inkscape:label="Bottom-bar-shadow-object-Shape"
-       d="M 459.0625,457.32617 V 500 h 13.89648 c 14.93428,7.6e-4 27.04068,-12.10674 27.04102,-27.04102 v -15.63281 z"
-       transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)">
+       d="m 334.66493,533.88598 v 11.56176 h 3.76501 c 4.04619,2.1e-4 7.32623,-3.28012 7.32632,-7.32631 v -4.23545 z">
       <title
          id="title2349">Bottom bar shadow object (Shape)</title>
     </path>
     <g
        id="Blue-Sqaure-group-object-Shape"
-       inkscape:label="Blue-Sqaure-group-object-Shape">
+       inkscape:label="Blue-Sqaure-group-object-Shape"
+       transform="matrix(1.024,0,0,1.024,-5.0469422,-9.8395302)">
       <title
          id="title966">Blue Sqaure Group object (Shape)</title>
       <path
@@ -120,7 +126,8 @@
     </g>
     <g
        id="Yellow-Sqaure-group-object-Shape"
-       inkscape:label="Yellow-Sqaure-group-object-Shape">
+       inkscape:label="Yellow-Sqaure-group-object-Shape"
+       transform="matrix(1.024,0,0,1.024,-5.0469422,-9.8395302)">
       <title
          id="title962">Yellow Sqaure Group object (Shape)</title>
       <path
@@ -146,18 +153,18 @@
     </g>
     <path
        id="Bottom-bar-object-Shape"
-       style="stroke-width:5.79024"
+       style="stroke-width:1.56877"
        class="cls-4"
        inkscape:label="Bottom-bar-object-Shape"
-       d="m 0,457.32617 v 15.63281 C 3.4015748e-4,487.89326 12.106742,500.00072 27.041016,500 H 459.33984 c 14.93428,7.2e-4 27.04068,-12.10674 27.04102,-27.04102 v -15.63281 z"
-       transform="matrix(0.26458333,0,0,0.26458333,210.28959,409.98108)"
+       d="m 210.28959,533.88598 v 4.23545 c 9e-5,4.04619 3.28012,7.32651 7.32631,7.32631 h 117.12417 c 4.04619,2e-4 7.32621,-3.28012 7.32631,-7.32631 v -4.23545 z"
        sodipodi:nodetypes="ccccccc">
       <title
          id="title1566">Bottom bar object (Shape)</title>
     </path>
     <g
        id="Light-Blue-Sqaure-group-object-Shape"
-       inkscape:label="Light-Blue-Sqaure-group-object-Shape">
+       inkscape:label="Light-Blue-Sqaure-group-object-Shape"
+       transform="matrix(1.024,0,0,1.024,-5.0469422,-9.8395302)">
       <title
          id="title964">Light Blue Sqaure Group object (Shape)</title>
       <path
@@ -197,4 +204,13 @@
          id="title2298">Gear object (Group)</title>
     </g>
   </g>
+  <metadata
+     id="metadata840">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>tmuxp</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
 </svg>
