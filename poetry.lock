@@ -937,7 +937,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "640624c6c0a912fd8d102ae35a7870f65736e3f2578485ff7123ae843440ddf9"
+content-hash = "9c4e397f0e3574aaaebbf3ec46df4485d381009f83f1698bd8de666b79743a22"
 
 [metadata.files]
 aafigure = []
