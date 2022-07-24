@@ -884,6 +884,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-colorama"
+version = "0.4.15"
+description = "Typing stubs for colorama"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "types-docutils"
 version = "0.19.0"
 description = "Typing stubs for docutils"
@@ -945,7 +953,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "d31fee381728eddff6ad1974b82fc3a41b9202db3eb2b23689067e1b0ff9fe90"
+content-hash = "8247361fb8db31e108152b0c3fda3aed46f8dca5c8dd5a6dda1b87cb9ee5aef2"
 
 [metadata.files]
 aafigure = [
@@ -1309,6 +1317,10 @@ tornado = [
     {file = "tornado-6.2.tar.gz", hash = "sha256:9b630419bde84ec666bfd7ea0a4cb2a8a651c2d5cccdbdd1972a0c859dfc3c13"},
 ]
 typed-ast = []
+types-colorama = [
+    {file = "types-colorama-0.4.15.tar.gz", hash = "sha256:fd128b1e32f3fecec5f09df4366d21498ee86ea31fcf8b4e8f1ade6d0bbf9832"},
+    {file = "types_colorama-0.4.15-py3-none-any.whl", hash = "sha256:9cdc88dcde9e8ebafb2fdfaf5cee260452f93e5c57eb5d8b2a7f65b836d4e5d0"},
+]
 types-docutils = [
     {file = "types-docutils-0.19.0.tar.gz", hash = "sha256:94936b1961aacda61ec6bb0acf1169cd7830b5230b645855c1d4789baf19685e"},
     {file = "types_docutils-0.19.0-py3-none-any.whl", hash = "sha256:198ed1c0ef6c1a79411da9e1745514eda433d37770e24f26b0e13a302904cc97"},
