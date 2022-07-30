@@ -268,8 +268,8 @@ PyYAML = ">=3.13,<6"
 
 [[package]]
 name = "libtmux"
-version = "0.12.0a2"
-description = "scripting library / orm for tmux"
+version = "0.12.0a3"
+description = "Scripting library / ORM / API wrapper for tmux"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
@@ -937,7 +937,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "9c4e397f0e3574aaaebbf3ec46df4485d381009f83f1698bd8de666b79743a22"
+content-hash = "16cbfdac843297ca941584f0ef7444bd12b7ed2a3ded1a32746840232397be90"
 
 [metadata.files]
 aafigure = []
