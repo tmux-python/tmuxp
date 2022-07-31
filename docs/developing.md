@@ -123,7 +123,7 @@ via [pytest-watcher] (works out of the box):
 $ make start
 ```
 
-via [entr(1)] (requires installation):
+via [`entr(1)`] (requires installation):
 
 ```console
 $ make watch_test
@@ -249,7 +249,7 @@ You can re-run tests automatically on file edit.
 
 :::{note}
 
-This requires `entr(1)`.
+This requires [`entr(1)`].
 
 :::
 
@@ -349,6 +349,7 @@ the [gh build site].
 
 [py.test usage argument]: https://pytest.org/latest/usage.html
 [entr]: http://entrproject.org/
+[`entr(1)`]: http://entrproject.org/
 [github actions]: https://github.com/features/actions
 [gh build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests
 [.github/workflows/tests.yml]: https://github.com/tmux-python/tmuxp/blob/master/.github/workflows/tests.yml
