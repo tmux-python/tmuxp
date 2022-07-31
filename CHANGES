@@ -15,16 +15,17 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 // Usage: tmuxp@next load yoursession
 ```
 
-## tmuxp 1.12.x (unreleased)
+## tmuxp 1.13.x (unreleased)
 
 - _Insert changes/features/fixes for next release here_
 
-### Bug fix
+## tmuxp 1.12.x (2022-07-31)
 
-- {issue}`774` Fix {issue}`620` tests not finishing
+_Mostly internal cleanups, no features_
 
 ### Tests
 
+- {issue}`774` Fix {issue}`620` tests not finishing
 - {issue}`777` Fix {issue}`778` to move the old, broken `retry()` to the new
   `retry_until()`, credit: @categulario.
 - {issue}`783` Fix {issue}`620` Symlink edge for for pane order tests, credit: @categulario.
