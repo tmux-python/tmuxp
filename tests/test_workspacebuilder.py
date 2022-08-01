@@ -1154,3 +1154,32 @@ def test_load_workspace_sleep(
         time.sleep(0.1)
     captured_pane = "\n".join(pane.capture_pane())
     assert output in captured_pane
+
+
+def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
+    yaml_config = test_utils.read_config_file(
+        "workspacebuilder/first_pane_start_directory.yaml"
+    )
+
+    sconfig = kaptan.Kaptan(handler="yaml")
+    sconfig = sconfig.import_config(str(yaml_config)).get()
+    sconfig = config.expand(sconfig)
+    sconfig = config.trickle(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    assert session == builder.session
+    dirs = ["/usr", "/etc"]
+
+    assert session.windows
+    window = session.windows[0]
+    for path, p in zip(dirs, window.panes):
+
+        def f():
+            p.server._update_panes()
+            pane_path = p.current_path
+            return path in pane_path or pane_path == path
+
+        # handle case with OS X adding /private/ to /tmp/ paths
+        assert retry_until(f)
