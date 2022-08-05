@@ -19,7 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
-## tmuxp 1.12.x (2022-07-31)
+## tmuxp 1.12.1 (unreleased)
+
+### Bug fix
+
+- {issue}`787` Fix {issue}`724` Fix `start_directory` issue with first pane,
+  credit: nvasilas.
+
+## tmuxp 1.12.0 (2022-07-31)
 
 _Mostly internal cleanups, no features_
 
