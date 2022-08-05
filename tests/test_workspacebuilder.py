@@ -345,8 +345,8 @@ def test_environment_variables(session):
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session)
 
-    assert session.show_environment("FOO") == "BAR"
-    assert session.show_environment("PATH") == "/tmp"
+    assert session.getenv("FOO") == "BAR"
+    assert session.getenv("PATH") == "/tmp"
 
 
 def test_automatic_rename_option(session):
