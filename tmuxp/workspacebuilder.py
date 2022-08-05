@@ -261,6 +261,11 @@ class WorkspaceBuilder:
             else:
                 sd = None
 
+            # If the first pane specifies a start_directory, use that instead.
+            panes = wconf["panes"]
+            if panes and "start_directory" in panes[0]:
+                sd = panes[0]["start_directory"]
+
             if "window_shell" in wconf:
                 ws = wconf["window_shell"]
             else:
