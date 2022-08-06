@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Internal
+
+- libtmux updated from v0.12 to v0.14 {issue}`790`
+
 ## tmuxp 1.12.1 (2022-08-04)
 
 ### Bug fix
