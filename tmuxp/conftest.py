@@ -2,12 +2,21 @@ import getpass
 import logging
 import os
 import pathlib
+import typing as t
 
 import pytest
 
+from _pytest.doctest import DoctestItem
+from _pytest.fixtures import SubRequest
+
 from libtmux import exc
+from libtmux.common import which
 from libtmux.server import Server
 from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
+from tests.fixtures import utils as test_utils
+
+if t.TYPE_CHECKING:
+    from libtmux.session import Session
 
 logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
@@ -62,16 +71,16 @@ def socket_name(request):
 
 
 @pytest.fixture(scope="function")
-def server(request, socket_name):
-    t = Server()
-    t.socket_name = socket_name
+def server(request: SubRequest, monkeypatch: pytest.MonkeyPatch) -> Server:
+    tmux = Server()
+    tmux.socket_name = socket_name
 
-    def fin():
-        t.kill_server()
+    def fin() -> None:
+        tmux.kill_server()
 
     request.addfinalizer(fin)
 
-    return t
+    return tmux
 
 
 @pytest.fixture(scope="function")
@@ -108,8 +117,10 @@ def session(server):
     Make sure that tmuxp can :ref:`test_builder_visually` and switches to
     the newly created session for that testcase.
     """
+    session_id = session.get("session_id")
+    assert session_id is not None
     try:
-        server.switch_client(session.get("session_id"))
+        server.switch_client(target_session=session_id)
     except exc.LibTmuxException:
         # server.attach_session(session.get('session_id'))
         pass
@@ -121,3 +132,17 @@ def session(server):
     assert TEST_SESSION_NAME != "tmuxp"
 
     return session
+
+
+@pytest.fixture(autouse=True)
+def add_doctest_fixtures(
+    request: SubRequest,
+    doctest_namespace: t.Dict[str, t.Any],
+) -> None:
+    if isinstance(request._pyfuncitem, DoctestItem) and which("tmux"):
+        doctest_namespace["server"]: "Server" = request.getfixturevalue("server")
+        session: "Session" = request.getfixturevalue("session")
+        doctest_namespace["session"] = session
+        doctest_namespace["window"] = session.attached_window
+        doctest_namespace["pane"] = session.attached_pane
+        doctest_namespace["test_utils"] = test_utils
