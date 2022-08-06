@@ -100,6 +100,11 @@ def in_cwd():
     -------
     list
         configs in current working directory
+
+    Examples
+    --------
+    >>> sorted(in_cwd())
+    ['.tmuxp.json', '.tmuxp.yaml']
     """
     configs = []
 
