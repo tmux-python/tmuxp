@@ -57,7 +57,7 @@ class WorkspaceBuilder:
 
     >>> builder = WorkspaceBuilder(sconf=session_config, server=server)
 
-    ***New session:**
+    **New session:**
 
     >>> builder.build()
 
@@ -72,7 +72,7 @@ class WorkspaceBuilder:
     >>> sorted([window.name for window in new_session.windows])
     ['editor', 'logging', 'test']
 
-    **Existing session**
+    **Existing session:**
 
     >>> len(session._windows)
     1
