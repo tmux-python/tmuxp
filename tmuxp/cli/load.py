@@ -446,11 +446,9 @@ def config_file_completion(ctx, params, incomplete):
 
     # CWD Paths
     choices += sorted(
-        [
-            pathlib.Path(os.path.relpath(p, pathlib.Path.cwd()))
-            for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
-            if config.in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
-        ]
+        pathlib.Path(os.path.relpath(p, pathlib.Path.cwd()))
+        for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
+        if config.in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
     )
     # CWD look one directory up
     choices += [
@@ -459,9 +457,9 @@ def config_file_completion(ctx, params, incomplete):
     ]
 
     # Project configs
-    choices += sorted([(config_dir / c).stem for c in config.in_dir(str(config_dir))])
+    choices += sorted((config_dir / c).stem for c in config.in_dir(str(config_dir)))
 
-    return sorted([str(c) for c in choices if str(c).startswith(incomplete)])
+    return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
 
 @click.command(name="load", short_help="Load tmuxp workspaces.")

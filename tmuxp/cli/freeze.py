@@ -15,7 +15,7 @@ from .utils import _validate_choices, get_abs_path, get_config_dir
 def session_completion(ctx, params, incomplete):
     t = Server()
     choices = [session.name for session in t.list_sessions()]
-    return sorted([str(c) for c in choices if str(c).startswith(incomplete)])
+    return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
 
 @click.command(name="freeze")
