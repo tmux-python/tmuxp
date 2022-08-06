@@ -268,7 +268,7 @@ PyYAML = ">=3.13,<6"
 
 [[package]]
 name = "libtmux"
-version = "0.14.0a0"
+version = "0.14.0a1"
 description = "Typed scripting library / ORM / API wrapper for tmux"
 category = "main"
 optional = false
@@ -937,7 +937,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c3270579d842d9ed372d93d94cf83c826113bca8fa9a556e9021ce3864b61352"
+content-hash = "24a5014f456d1b9fa83c57a6c00bff52cd8d382edafff296d2b5900be0cf3710"
 
 [metadata.files]
 aafigure = [
@@ -1092,8 +1092,8 @@ kaptan = [
     {file = "kaptan-0.5.12.tar.gz", hash = "sha256:1abd1f56731422fce5af1acc28801677a51e56f5d3c3e8636db761ed143c3dd2"},
 ]
 libtmux = [
-    {file = "libtmux-0.14.0a0-py3-none-any.whl", hash = "sha256:e4d25e0bea73b83e411b3b360ae212ce4f112c3f464d5ec6eb0c19951444a75e"},
-    {file = "libtmux-0.14.0a0.tar.gz", hash = "sha256:cea7012a7819723d261236321ccdf10eb2260be2d8c28a69538f8f7e5306f347"},
+    {file = "libtmux-0.14.0a1-py3-none-any.whl", hash = "sha256:cdd63b2c9bcbc43caa60630a6c26bbf90473dcc037fed32c4879b986498861fe"},
+    {file = "libtmux-0.14.0a1.tar.gz", hash = "sha256:efa37c8edb9fced32a363429240cd9dccde6e0f4cbcadac29d0890faec60764e"},
 ]
 livereload = [
     {file = "livereload-2.6.3.tar.gz", hash = "sha256:776f2f865e59fde56490a56bcc6773b6917366bce0c267c60ee8aaf1a0959869"},
