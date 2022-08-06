@@ -27,6 +27,69 @@ class WorkspaceBuilder:
     Build tmux workspace from a configuration. Creates and names windows, sets
     options, splits windows into panes.
 
+    Examples
+    --------
+
+    >>> import yaml
+
+    >>> session_config = yaml.load('''
+    ...     session_name: sampleconfig
+    ...     start_directory: '~'
+    ...     windows:
+    ...     - window_name: editor
+    ...       layout: main-vertical
+    ...       panes:
+    ...       - shell_command:
+    ...         - cmd: vim
+    ...       - shell_command:
+    ...         - cmd: echo "hey"
+    ...
+    ...     - window_name: logging
+    ...       panes:
+    ...       - shell_command:
+    ...         - cmd: tail | echo 'hi'
+    ...
+    ...     - window_name: test
+    ...       panes:
+    ...       - shell_command:
+    ...         - cmd: htop
+    ... ''', Loader=yaml.Loader)
+
+    >>> builder = WorkspaceBuilder(sconf=session_config, server=server)
+
+    ***New session:**
+
+    >>> builder.build()
+
+    >>> new_session = builder.session
+
+    >>> new_session.name == 'sampleconfig'
+    True
+
+    >>> len(new_session._windows)
+    3
+
+    >>> sorted([window.name for window in new_session.windows])
+    ['editor', 'logging', 'test']
+
+    **Existing session**
+
+    >>> len(session._windows)
+    1
+
+    >>> builder.build(session=session)
+
+    _Caveat:_ Preserves old session name:
+
+    >>> session.name == 'sampleconfig'
+    False
+
+    >>> len(session._windows)
+    3
+
+    >>> sorted([window.name for window in session.windows])
+    ['editor', 'logging', 'test']
+
     The normal phase of loading is:
 
     1. :term:`kaptan` imports json/yaml/ini. ``.get()`` returns python

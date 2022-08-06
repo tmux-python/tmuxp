@@ -106,13 +106,13 @@ def test_scan_config(tmp_path: pathlib.Path):
 def test_config_expand1(config_fixture: "ConfigFixture"):
     """Expand shell commands from string to list."""
     test_config = config.expand(config_fixture.expand1.before_config)
-    assert test_config == config_fixture.expand1.after_config
+    assert test_config == config_fixture.expand1.after_config()
 
 
 def test_config_expand2(config_fixture: "ConfigFixture"):
     """Expand shell commands from string to list."""
-    unexpanded_dict = load_yaml(config_fixture.expand2.unexpanded_yaml)
-    expanded_dict = load_yaml(config_fixture.expand2.expanded_yaml)
+    unexpanded_dict = load_yaml(config_fixture.expand2.unexpanded_yaml())
+    expanded_dict = load_yaml(config_fixture.expand2.expanded_yaml())
     assert config.expand(unexpanded_dict) == expanded_dict
 
 
@@ -233,10 +233,10 @@ def test_shell_command_before(config_fixture: "ConfigFixture"):
     test_config = config_fixture.shell_command_before.config_unexpanded
     test_config = config.expand(test_config)
 
-    assert test_config == config_fixture.shell_command_before.config_expanded
+    assert test_config == config_fixture.shell_command_before.config_expanded()
 
     test_config = config.trickle(test_config)
-    assert test_config == config_fixture.shell_command_before.config_after
+    assert test_config == config_fixture.shell_command_before.config_after()
 
 
 def test_in_session_scope(config_fixture: "ConfigFixture"):
