@@ -66,14 +66,15 @@ def monkeypatch_plugin_test_packages(monkeypatch):
 
 
 @pytest.fixture(scope="function")
-def socket_name(request):
+def socket_name(request) -> str:
     return "tmuxp_test%s" % next(namer)
 
 
 @pytest.fixture(scope="function")
-def server(request: SubRequest, monkeypatch: pytest.MonkeyPatch) -> Server:
-    tmux = Server()
-    tmux.socket_name = socket_name
+def server(
+    request: SubRequest, monkeypatch: pytest.MonkeyPatch, socket_name: str
+) -> Server:
+    tmux = Server(socket_name=socket_name)
 
     def fin() -> None:
         tmux.kill_server()
@@ -140,7 +141,7 @@ def add_doctest_fixtures(
     doctest_namespace: t.Dict[str, t.Any],
 ) -> None:
     if isinstance(request._pyfuncitem, DoctestItem) and which("tmux"):
-        doctest_namespace["server"]: "Server" = request.getfixturevalue("server")
+        doctest_namespace["server"] = request.getfixturevalue("server")
         session: "Session" = request.getfixturevalue("session")
         doctest_namespace["session"] = session
         doctest_namespace["window"] = session.attached_window
