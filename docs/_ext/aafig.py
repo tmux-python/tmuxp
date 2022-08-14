@@ -17,7 +17,8 @@ from os import path
 from docutils import nodes
 from docutils.parsers.rst.directives import flag, images, nonnegative_int
 from sphinx.errors import SphinxError
-from sphinx.util import ensuredir, logging, relative_uri
+from sphinx.util import logging
+from sphinx.util.osutil import ensuredir, relative_uri
 
 try:
     import aafigure
