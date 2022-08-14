@@ -10,6 +10,7 @@
     :author: Leandro Lucarella <llucax@gmail.com>
     :license: BOLA, see LICENSE for details
 """
+import logging
 import posixpath
 from hashlib import sha1 as sha
 from os import path
@@ -17,7 +18,6 @@ from os import path
 from docutils import nodes
 from docutils.parsers.rst.directives import flag, images, nonnegative_int
 from sphinx.errors import SphinxError
-from sphinx.util import logging
 from sphinx.util.osutil import ensuredir, relative_uri
 
 try:
