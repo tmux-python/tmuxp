@@ -57,16 +57,6 @@ def set_style(
     return prefix + message + suffix
 
 
-class LogTemplateFn(t.Protocol):
-    def template(
-        self,
-        record: logging.LogRecord,
-        stylized: t.Optional[bool],
-        **kwargs: t.Any,
-    ) -> str:
-        ...
-
-
 def default_log_template(
     self: t.Type[logging.Formatter],
     record: logging.LogRecord,
@@ -119,7 +109,7 @@ def default_log_template(
     return levelname + asctime + name
 
 
-class LogFormatter(logging.Formatter, LogTemplateFn):
+class LogFormatter(logging.Formatter):
     template = default_log_template
 
     def __init__(self, color=True, *args, **kwargs):
