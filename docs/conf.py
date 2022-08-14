@@ -1,6 +1,7 @@
 # flake8: NOQA E5
 import inspect
 import sys
+import typing as t
 from os.path import dirname, relpath
 from pathlib import Path
 
@@ -14,7 +15,7 @@ sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(cwd / "_ext"))
 
 # package data
-about = {}
+about: t.Dict[str, str] = {}
 with open(project_root / "tmuxp" / "__about__.py") as fp:
     exec(fp.read(), about)
 
@@ -61,8 +62,8 @@ html_extra_path = ["manifest.json"]
 html_static_path = ["_static"]
 html_favicon = "_static/favicon.ico"
 html_theme = "furo"
-html_theme_path = []
-html_theme_options = {
+html_theme_path: t.List[str] = []
+html_theme_options: t.Dict[str, t.Union[str, t.List[t.Dict[str, str]]]] = {
     "light_logo": "img/tmuxp.svg",
     "dark_logo": "img/tmuxp.svg",
     "footer_icons": [
