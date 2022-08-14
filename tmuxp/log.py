@@ -7,6 +7,7 @@ tmuxp.log
 """
 import logging
 import time
+import typing as t
 
 from colorama import Fore, Style
 
@@ -56,7 +57,22 @@ def set_style(
     return prefix + message + suffix
 
 
-def default_log_template(self, record, stylized=False):
+class LogTemplateFn(t.Protocol):
+    def template(
+        self,
+        record: logging.LogRecord,
+        stylized: t.Optional[bool],
+        **kwargs: t.Any,
+    ) -> str:
+        ...
+
+
+def default_log_template(
+    self: t.Type[logging.Formatter],
+    record: logging.LogRecord,
+    stylized: t.Optional[bool] = False,
+    **kwargs: t.Any,
+) -> str:
     """
     Return the prefix for the log message. Template for Formatter.
 
@@ -76,7 +92,7 @@ def default_log_template(self, record, stylized=False):
     levelname = set_style(
         "(%(levelname)s)",
         stylized,
-        style_before=(LEVEL_COLORS.get(record.levelname) + Style.BRIGHT),
+        style_before=(LEVEL_COLORS.get(record.levelname, "") + Style.BRIGHT),
         style_after=Style.RESET_ALL,
         suffix=" ",
     )
@@ -103,7 +119,7 @@ def default_log_template(self, record, stylized=False):
     return levelname + asctime + name
 
 
-class LogFormatter(logging.Formatter):
+class LogFormatter(logging.Formatter, LogTemplateFn):
     template = default_log_template
 
     def __init__(self, color=True, *args, **kwargs):
@@ -125,7 +141,13 @@ class LogFormatter(logging.Formatter):
         return formatted.replace("\n", "\n" + parts[0] + " ")
 
 
-def debug_log_template(self, record):
+def debug_log_template(
+    self: t.Type[logging.Formatter],
+    record: logging.LogRecord,
+    stylized: t.Optional[bool] = False,
+    **kwargs: t.Any,
+) -> str:
+
     """
     Return the prefix for the log message. Template for Formatter.
 
@@ -143,7 +165,7 @@ def debug_log_template(self, record):
 
     reset = Style.RESET_ALL
     levelname = (
-        LEVEL_COLORS.get(record.levelname)
+        LEVEL_COLORS.get(record.levelname, "")
         + Style.BRIGHT
         + "(%(levelname)1.1s)"
         + Style.RESET_ALL
