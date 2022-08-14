@@ -2,6 +2,7 @@
 import json
 import os
 import pathlib
+import typing as t
 from unittest.mock import MagicMock
 
 import pytest
@@ -416,7 +417,7 @@ def test_regression_00132_session_name_with_dots(
 ):
     yaml_config = FIXTURE_PATH / "workspacebuilder" / "regression_00132_dots.yaml"
     cli_args = [str(yaml_config)]
-    inputs = []
+    inputs: t.List[str] = []
     runner = CliRunner()
     result = runner.invoke(
         cli.command_load, cli_args, input="".join(inputs), standalone_mode=False

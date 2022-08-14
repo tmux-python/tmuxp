@@ -84,7 +84,7 @@ def command_shell(
         exec(command)
     else:
         if shell == "pdb" or (os.getenv("PYTHONBREAKPOINT") and PY3 and PYMINOR >= 7):
-            from ._compat import breakpoint as tmuxp_breakpoint
+            from tmuxp._compat import breakpoint as tmuxp_breakpoint
 
             tmuxp_breakpoint()
             return

@@ -10,10 +10,10 @@ import shlex
 import subprocess
 import sys
 
+from libtmux._compat import console_to_str
 from libtmux.exc import LibTmuxException
 
 from . import exc
-from ._compat import console_to_str
 
 logger = logging.getLogger(__name__)
 

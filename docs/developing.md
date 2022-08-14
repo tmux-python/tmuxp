@@ -334,6 +334,106 @@ this will load the `.tmuxp.yaml` in the root of the project.
 
 ```
 
+## Formatting
+
+The project uses [black] and [isort] (one after the other). Configurations are in `pyproject.toml`
+and `setup.cfg`:
+
+- `make black isort`: Run `black` first, then `isort` to handle import nuances
+
+## Linting
+
+[flake8] and [mypy] run via CI in our GitHub Actions. See the configuration in `pyproject.toml` and
+`setup.cfg`.
+
+### flake8
+
+[flake8] provides fast, reliable, barebones styling and linting.
+
+````{tab} Command
+
+poetry:
+
+```console
+$ poetry run flake8
+```
+
+If you setup manually:
+
+```console
+$ flake8
+```
+
+````
+
+````{tab} make
+
+```console
+$ make flake8
+```
+
+````
+
+````{tab} Watch
+
+```console
+$ make watch_flake8
+```
+
+requires [`entr(1)`].
+
+````
+
+````{tab} Configuration
+
+See `[flake8]` in setup.cfg.
+
+```{literalinclude} ../setup.cfg
+:language: ini
+:start-at: "[flake8]"
+:end-before: "[isort]"
+
+```
+
+````
+
+### mypy
+
+[mypy] is used for static type checking.
+
+````{tab} Command
+
+poetry:
+
+```console
+$ poetry run mypy .
+```
+
+If you setup manually:
+
+```console
+$ mypy .
+```
+
+````
+
+````{tab} make
+
+```console
+$ make mypy
+```
+
+````
+
+````{tab} Watch
+
+```console
+$ make watch_mypy
+```
+
+requires [`entr(1)`].
+````
+
 (gh-actions)=
 
 ## Continuous integration
@@ -350,6 +450,10 @@ the [gh build site].
 [py.test usage argument]: https://pytest.org/latest/usage.html
 [entr]: http://entrproject.org/
 [`entr(1)`]: http://entrproject.org/
+[black]: https://github.com/psf/black
+[isort]: https://pypi.org/project/isort/
+[flake8]: https://flake8.pycqa.org/
+[mypy]: http://mypy-lang.org/
 [github actions]: https://github.com/features/actions
 [gh build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests
 [.github/workflows/tests.yml]: https://github.com/tmux-python/tmuxp/blob/master/.github/workflows/tests.yml

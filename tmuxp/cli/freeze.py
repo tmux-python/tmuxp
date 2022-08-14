@@ -5,10 +5,10 @@ import click
 import kaptan
 
 from libtmux.server import Server
+from tmuxp.exc import TmuxpException
 
 from .. import config, util
 from ..workspacebuilder import freeze
-from . import exc
 from .utils import _validate_choices, get_abs_path, get_config_dir
 
 
@@ -65,8 +65,8 @@ def command_freeze(
             session = util.get_session(t)
 
         if not session:
-            raise exc.TmuxpException("Session not found.")
-    except exc.TmuxpException as e:
+            raise TmuxpException("Session not found.")
+    except TmuxpException as e:
         print(e)
         return
 

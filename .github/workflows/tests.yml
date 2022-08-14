@@ -90,9 +90,13 @@ jobs:
     - name: Install python dependencies
       run: |
         poetry install -E "test coverage lint"
+
     - name: Lint with flake8
-      run: |
-        poetry run flake8
+      run: poetry run flake8
+
+    - name: Lint with mypy
+      run: poetry run mypy .
+
     - name: Test with pytest
       continue-on-error: ${{ matrix.tmux-version == 'master' }}
       run: |

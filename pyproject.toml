@@ -86,6 +86,8 @@ isort = "*"
 ### Lint ###
 flake8 = "*"
 mypy = "*"
+types-colorama = "^0.4.15"
+types-docutils = "^0.19.0"
 
 [tool.poetry.extras]
 docs = [
@@ -107,8 +109,20 @@ docs = [
 test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
-lint = ["flake8", "mypy"]
+lint = ["flake8", "mypy", "types-colorama", "types-docutils"]
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.mypy.overrides]]
+module = [
+  "kaptan",
+  "aafigure",
+  "libtmux.*",
+  "IPython.*",
+  "ptpython.*",
+  "prompt_toolkit.*",
+  "bpython"
+]
+ignore_missing_imports = true
