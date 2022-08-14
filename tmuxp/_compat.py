@@ -18,11 +18,3 @@ else:
 console_encoding = sys.__stdout__.encoding
 
 implements_to_string = _identity
-
-
-def console_to_str(s):
-    """From pypa/pip project, pip.backwardwardcompat. License MIT."""
-    try:
-        return s.decode(console_encoding)
-    except UnicodeDecodeError:
-        return s.decode("utf_8")
