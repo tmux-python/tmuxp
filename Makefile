@@ -58,3 +58,9 @@ watch_mypy:
 
 format_markdown:
 	npx prettier --parser=markdown -w *.md docs/*.md docs/**/*.md CHANGES
+
+monkeytype_create:
+	poetry run monkeytype run `poetry run which py.test`
+
+monkeytype_apply:
+	poetry run monkeytype list-modules | xargs -n1 -I{} sh -c 'poetry run monkeytype apply {}'
