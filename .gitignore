@@ -76,3 +76,6 @@ target/
 
 # docs
 doc/_build/
+
+# MonkeyType
+monkeytype.sqlite3
