@@ -12,7 +12,7 @@ if PY3 and PYMINOR >= 7:
 else:
     import pdb
 
-    breakpoint = pdb.set_trace
+    breakpoint = pdb.set_trace  # type: ignore
 
 
 console_encoding = sys.__stdout__.encoding
