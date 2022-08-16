@@ -34,57 +34,25 @@ jobs:
       if: steps.changes.outputs.docs == 'true' || steps.changes.outputs.root_docs == 'true' || steps.changes.outputs.python_files == 'true'
       run: echo "PUBLISH=$(echo true)" >> $GITHUB_ENV
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Get full Python version
-      id: full-python-version
-      if: env.PUBLISH == 'true'
-      shell: bash
-      run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
-
     - name: Install poetry
       if: env.PUBLISH == 'true'
-      run: |
-        curl -O -sSL https://install.python-poetry.org/install-poetry.py
-        python install-poetry.py -y --version 1.1.14
-        echo "PATH=${HOME}/.poetry/bin:${PATH}" >> $GITHUB_ENV
-        rm install-poetry.py
+      run: pipx install "poetry==1.1.14"
 
-    - name: Add ~/.local/bin to PATH
-      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Get poetry cache paths from config
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
       if: env.PUBLISH == 'true'
-      run: |
-        echo "poetry_cache_dir=$(poetry config --list | sed -n 's/.*cache-dir = //p' | sed -e 's/^\"//' -e 's/\"$//')" >> $GITHUB_ENV
-        echo "poetry_virtualenvs_path=$(poetry config --list | sed -n 's/.*virtualenvs.path = .* # //p' | sed -e 's/^\"//' -e 's/\"$//')" >> $GITHUB_ENV
-
-    - name: Configure poetry
-      if: env.PUBLISH == 'true'
-      shell: bash
-      run: poetry config virtualenvs.in-project true
-
-    - name: Set up cache
-      uses: actions/cache@v3
-      id: cache
       with:
-        path: |
-          .venv
-          {{ env.poetry_cache_dir }}
-          {{ env.poetry_virtualenvs_path }}
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Ensure cache is healthy
-      if: steps.cache.outputs.cache-hit == 'true' && env.PUBLISH == 'true'
-      shell: bash
-      run: poetry run pip --version >/dev/null 2>&1 || rm -rf .venv
+        python-version: ${{ matrix.python-version }}
+        cache: 'poetry'
 
     - name: Install dependencies [w/ docs]
       if: env.PUBLISH == 'true'
       run: poetry install --extras "docs lint"
+
+    - name: Print python versions
+      run: |
+        python -V
+        poetry run python -V
 
     - name: Build documentation
       if: env.PUBLISH == 'true'
