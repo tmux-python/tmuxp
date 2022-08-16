@@ -72,6 +72,7 @@ jobs:
         SOURCE_DIR: 'docs/_build/html'      # optional: defaults to entire repository 
 
     - name: Purge cache on Cloudflare
+      if: env.PUBLISH == 'true'
       uses: jakejarvis/cloudflare-purge-action@v0.3.0
       env:
         CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
