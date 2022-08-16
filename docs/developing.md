@@ -289,7 +289,7 @@ e.g. `RETRY_TIMEOUT_SECONDS=10 py.test`
 
 ### Rebuild on save
 
-Rebuild the documentation when an `.rst` file is edited:
+Rebuild the documentation when an `.md` file is edited:
 
 ```console
 $ cd doc
