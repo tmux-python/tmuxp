@@ -50,6 +50,7 @@ jobs:
       run: poetry install --extras "docs lint"
 
     - name: Print python versions
+      if: env.PUBLISH == 'true'
       run: |
         python -V
         poetry run python -V
