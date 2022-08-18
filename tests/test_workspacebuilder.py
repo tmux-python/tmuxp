@@ -10,7 +10,7 @@ import kaptan
 
 import libtmux
 from libtmux import Window
-from libtmux.common import has_gte_version
+from libtmux.common import has_gte_version, has_lt_version
 from libtmux.test import retry_until, temp_session
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
@@ -1185,6 +1185,9 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
         assert retry_until(f)
 
 
+@pytest.mark.skipif(
+    has_lt_version("2.9"), reason="needs option introduced in tmux >= 2.9"
+)
 def test_layout_main_horizontal(session):
     yaml_config = test_utils.read_config_file("workspacebuilder/three_pane.yaml")
 
