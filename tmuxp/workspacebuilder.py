@@ -218,7 +218,7 @@ class WorkspaceBuilder:
             assert self.sconf["session_name"] == session.name
             assert len(self.sconf["session_name"]) > 0
 
-        if has_gte_version("2.6"):
+        if has_gte_version("2.9"):
             # Use tmux default session size, overwrite Server::new_session
             session.set_option("default-size", "80x24")
 
