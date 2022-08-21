@@ -19,6 +19,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.13.1 (unreleased)
+
+### Bug fixes
+
+- Fix layout related issues from {issue}`667`, {issue}`704`, {issue}`737`, via
+  {issue}`793`. Thank you @nvasilas.
+
 ## tmuxp 1.13.0 (2022-08-14)
 
 ### Internal
