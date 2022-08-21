@@ -10,7 +10,7 @@ import kaptan
 
 import libtmux
 from libtmux import Window
-from libtmux.common import has_gte_version
+from libtmux.common import has_gte_version, has_lt_version
 from libtmux.test import retry_until, temp_session
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
@@ -1183,3 +1183,37 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
 
         # handle case with OS X adding /private/ to /tmp/ paths
         assert retry_until(f)
+
+
+@pytest.mark.skipif(
+    has_lt_version("2.9"), reason="needs option introduced in tmux >= 2.9"
+)
+def test_layout_main_horizontal(session):
+    yaml_config = test_utils.read_config_file("workspacebuilder/three_pane.yaml")
+
+    sconfig = kaptan.Kaptan(handler="yaml")
+    sconfig = sconfig.import_config(yaml_config).get()
+
+    builder = WorkspaceBuilder(sconf=sconfig)
+    builder.build(session=session)
+
+    assert session.windows
+    window = session.windows[0]
+
+    assert len(window.panes) == 3
+    main_horizontal_pane, *panes = window.panes
+
+    def height(p):
+        return int(p._info["pane_height"])
+
+    def width(p):
+        return int(p._info["pane_width"])
+
+    assert height(main_horizontal_pane) > height(panes[0])
+    assert width(main_horizontal_pane) > width(panes[0])
+
+    def is_almost_equal(x, y):
+        return abs(x - y) <= 1
+
+    assert is_almost_equal(height(panes[0]), height(panes[1]))
+    assert is_almost_equal(width(panes[0]), width(panes[1]))
