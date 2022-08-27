@@ -697,6 +697,14 @@ testing = ["covdefaults (>=2.2)", "coverage (>=6.4.2)", "diff-cover (>=6.5.1)", 
 type_comments = ["typed-ast (>=1.5.4)"]
 
 [[package]]
+name = "sphinx-autoissues"
+version = "0.0.1"
+description = "Sphinx integration with different issuetrackers"
+category = "dev"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[[package]]
 name = "sphinx-basic-ng"
 version = "0.0.1a12"
 description = "A modern skeleton for Sphinx themes."
@@ -956,7 +964,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "8247361fb8db31e108152b0c3fda3aed46f8dca5c8dd5a6dda1b87cb9ee5aef2"
+content-hash = "73a77419d533d019f9d29b3ae96d66b8772dcddbc251c251bfb923d5a3286146"
 
 [metadata.files]
 aafigure = [
@@ -1395,6 +1403,10 @@ sphinx-autobuild = [
 sphinx-autodoc-typehints = [
     {file = "sphinx_autodoc_typehints-1.19.2-py3-none-any.whl", hash = "sha256:3d761de928d5a86901331133d6d4a2552afa2e798ebcfc0886791792aeb4dd9a"},
     {file = "sphinx_autodoc_typehints-1.19.2.tar.gz", hash = "sha256:872fb2d7b3d794826c28e36edf6739e93549491447dcabeb07c58855e9f914de"},
+]
+sphinx-autoissues = [
+    {file = "sphinx-autoissues-0.0.1.tar.gz", hash = "sha256:a308fd914d700ff2aa2b4584c29975a030ede7171898130ec816eca7ec2c8ce8"},
+    {file = "sphinx_autoissues-0.0.1-py3-none-any.whl", hash = "sha256:07503b774c3a64b97d2614fa409410316fbfeb87ba4553dbe3a7d2131b7453a0"},
 ]
 sphinx-basic-ng = [
     {file = "sphinx_basic_ng-0.0.1a12-py3-none-any.whl", hash = "sha256:e8b6efd2c5ece014156de76065eda01ddfca0fee465aa020b1e3c12f84570bbe"},
