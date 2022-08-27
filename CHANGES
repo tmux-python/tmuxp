@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## Documentation
+
+- Move to sphinx-autoissues, #803
+
 ## tmuxp 1.13.1 (2022-08-21)
 
 ### Bug fixes
