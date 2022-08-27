@@ -27,7 +27,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "aafig",
-    "sphinx_issues",
+    "sphinx_autoissues",
     "sphinx_click.ext",  # sphinx-click
     "sphinx_inline_tabs",
     "sphinx_copybutton",
@@ -37,8 +37,6 @@ extensions = [
 ]
 
 myst_enable_extensions = ["colon_fence", "substitution", "replacements"]
-
-issues_github_path = about["__github__"].replace("https://github.com/", "")
 
 templates_path = ["_templates"]
 
@@ -89,6 +87,10 @@ html_sidebars = {
         "sidebar/scroll-end.html",
     ]
 }
+
+# sphinx-autoissues
+issuetracker = "github"
+issuetracker_project = about["__github__"].replace("https://github.com/", "")
 
 # sphinxext.opengraph
 ogp_site_url = about["__docs__"]
