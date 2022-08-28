@@ -8,13 +8,14 @@ import importlib
 import logging
 import os
 import pathlib
+import shutil
 import sys
 from typing import List
 
 import click
 import kaptan
 
-from libtmux.common import has_gte_version, which
+from libtmux.common import has_gte_version
 from libtmux.server import Server
 
 from .. import config, exc, log, util
@@ -357,7 +358,7 @@ def load_workspace(
         colors=colors,
     )
 
-    which("tmux")  # raise exception if tmux not found
+    shutil.which("tmux")  # raise exception if tmux not found
 
     try:  # load WorkspaceBuilder object for tmuxp config / tmux server
         builder = WorkspaceBuilder(
