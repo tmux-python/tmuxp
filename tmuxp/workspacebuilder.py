@@ -7,12 +7,12 @@ tmuxp.workspacebuilder
 import logging
 import time
 
+from libtmux.common import has_gte_version
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
 from libtmux.window import Window
-from libtmux.common import has_gte_version
 
 from . import exc
 from .util import get_current_pane, run_before_script
