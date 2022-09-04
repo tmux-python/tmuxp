@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Development
+
+- Add [flake8-bugbear](https://github.com/PyCQA/flake8-bugbear) (#807)
+
 ## tmuxp 1.13.1 (2022-08-21)
 
 ### Bug fixes

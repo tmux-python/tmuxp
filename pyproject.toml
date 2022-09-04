@@ -85,6 +85,7 @@ isort = "*"
 
 ### Lint ###
 flake8 = "*"
+flake8-bugbear = "^22.8.23"
 mypy = "*"
 types-colorama = "^0.4.15"
 types-docutils = "^0.19.0"
@@ -109,7 +110,7 @@ docs = [
 test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 format = ["black", "isort"]
-lint = ["flake8", "mypy", "types-colorama", "types-docutils"]
+lint = ["flake8", "flake8-bugbear", "mypy", "types-colorama", "types-docutils"]
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
@@ -123,6 +124,6 @@ module = [
   "IPython.*",
   "ptpython.*",
   "prompt_toolkit.*",
-  "bpython"
+  "bpython",
 ]
 ignore_missing_imports = true
