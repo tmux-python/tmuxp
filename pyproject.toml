@@ -124,6 +124,6 @@ module = [
   "IPython.*",
   "ptpython.*",
   "prompt_toolkit.*",
-  "bpython"
+  "bpython",
 ]
 ignore_missing_imports = true
