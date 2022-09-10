@@ -219,7 +219,7 @@ class WorkspaceBuilder:
 
         if has_gte_version("2.9"):
             # Use tmux default session size, overwrite Server::new_session
-            session.set_option("default-size", "80x24")
+            session.set_option("default-size", "800x600")
 
         self.session = session
         self.server = session.server
