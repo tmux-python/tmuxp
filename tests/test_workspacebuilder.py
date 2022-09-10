@@ -1232,10 +1232,16 @@ class DefaultSizeNamespaceFixture(t.NamedTuple):
 
 DEFAULT_SIZE_FIXTURES = [
     DefaultSizeNamespaceFixture(
+        test_id="default-behavior",
+        TMUXP_DEFAULT_SIZE=None,
+        raises=False,
+        confoverrides={},
+    ),
+    DefaultSizeNamespaceFixture(
         test_id="v1.13.1 default-size-breaks",
         TMUXP_DEFAULT_SIZE=None,
         raises=True,
-        confoverrides={},
+        confoverrides={"options": {"default-size": "80x24"}},
     ),
     DefaultSizeNamespaceFixture(
         test_id="v1.13.1-option-workaround",
