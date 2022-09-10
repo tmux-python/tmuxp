@@ -3,21 +3,25 @@ import os
 import pathlib
 import textwrap
 import time
+import typing as t
 
 import pytest
 
 import kaptan
 
 import libtmux
-from libtmux import Window
 from libtmux.common import has_gte_version, has_lt_version
 from libtmux.test import retry_until, temp_session
+from libtmux.window import Window
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import EXAMPLE_PATH, FIXTURE_PATH
 from .fixtures import utils as test_utils
+
+if t.TYPE_CHECKING:
+    from libtmux.server import Server
 
 
 def test_split_windows(session):
@@ -1217,3 +1221,78 @@ def test_layout_main_horizontal(session):
 
     assert is_almost_equal(height(panes[0]), height(panes[1]))
     assert is_almost_equal(width(panes[0]), width(panes[1]))
+
+
+class DefaultSizeNamespaceFixture(t.NamedTuple):
+    test_id: str
+    TMUXP_DEFAULT_SIZE: t.Optional[str]
+    raises: bool
+    confoverrides: t.Dict[str, t.Any]
+
+
+DEFAULT_SIZE_FIXTURES = [
+    DefaultSizeNamespaceFixture(
+        test_id="v1.13.1 default-size-breaks",
+        TMUXP_DEFAULT_SIZE=None,
+        raises=True,
+        confoverrides={},
+    ),
+    DefaultSizeNamespaceFixture(
+        test_id="v1.13.1-option-workaround",
+        TMUXP_DEFAULT_SIZE=None,
+        raises=False,
+        confoverrides={"options": {"default-size": "800x600"}},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    DefaultSizeNamespaceFixture._fields,
+    DEFAULT_SIZE_FIXTURES,
+    ids=[f.test_id for f in DEFAULT_SIZE_FIXTURES],
+)
+@pytest.mark.skipif(has_lt_version("2.9"), reason="default-size only applies there")
+def test_issue_800_default_size_many_windows(
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    TMUXP_DEFAULT_SIZE: t.Optional[str],
+    raises: bool,
+    confoverrides: t.Dict[str, t.Any],
+) -> None:
+    """Recreate default-size issue.
+
+    v1.13.1 added a default-size, but this can break building workspaces with
+    a lot of panes.
+
+    See also: https://github.com/tmux-python/tmuxp/issues/800
+    """
+    yaml_config = test_utils.read_config_file(
+        "regressions/issue_800_default_size_many_windows.yaml"
+    )
+    sconfig = kaptan.Kaptan(handler="yaml")
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+    sconfig = config.trickle(sconfig)
+
+    if isinstance(confoverrides, dict):
+        for k, v in confoverrides.items():
+            sconfig[k] = v
+
+    if TMUXP_DEFAULT_SIZE is not None:
+        monkeypatch.setenv("TMUXP_DEFAULT_SIZE", TMUXP_DEFAULT_SIZE)
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+
+    if raises:
+        with pytest.raises(Exception):
+            builder.build()
+
+        builder.session.kill_session()
+
+        with pytest.raises(libtmux.exc.LibTmuxException, match="no space for new pane"):
+            builder.build()
+        return
+
+    builder.build()
+    assert len(server.list_sessions()) == 1
