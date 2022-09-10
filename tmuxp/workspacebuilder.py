@@ -7,7 +7,6 @@ tmuxp.workspacebuilder
 import logging
 import time
 
-from libtmux.common import has_gte_version
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
@@ -221,10 +220,6 @@ class WorkspaceBuilder:
             assert self.sconf["session_name"] == session.name
             assert len(self.sconf["session_name"]) > 0
 
-        if has_gte_version("2.9"):
-            # Use tmux default session size, overwrite Server::new_session
-            session.set_option("default-size", DEFAULT_SIZE)
-
         self.session = session
         self.server = session.server
 
@@ -272,6 +267,9 @@ class WorkspaceBuilder:
                 assert isinstance(p, Pane)
                 p = p
 
+                if "layout" in wconf:
+                    w.select_layout(wconf["layout"])
+
                 if "focus" in pconf and pconf["focus"]:
                     focus_pane = p
 
@@ -285,8 +283,6 @@ class WorkspaceBuilder:
 
             if focus_pane:
                 focus_pane.select_pane()
-
-            w.select_layout(wconf.get("layout", "even-vertical"))
 
         if focus:
             focus.select_window()
@@ -428,6 +424,8 @@ class WorkspaceBuilder:
                 )
 
             assert isinstance(p, Pane)
+            if "layout" in wconf:
+                w.select_layout(wconf["layout"])
 
             if "suppress_history" in pconf:
                 suppress = pconf["suppress_history"]
