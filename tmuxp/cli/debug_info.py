@@ -1,12 +1,13 @@
 import os
 import pathlib
 import platform
+import shutil
 import sys
 
 import click
 
 from libtmux import __version__ as libtmux_version
-from libtmux.common import get_version, tmux_cmd, which
+from libtmux.common import get_version, tmux_cmd
 
 from ..__about__ import __version__
 from .utils import tmuxp_echo
@@ -62,7 +63,7 @@ def command_debug_info():
         "tmux version: %s" % get_version(),
         "libtmux version: %s" % libtmux_version,
         "tmuxp version: %s" % __version__,
-        "tmux path: %s" % which("tmux"),
+        "tmux path: %s" % shutil.which("tmux"),
         "tmuxp path: %s" % tmuxp_path,
         "shell: %s" % os.environ["SHELL"],
         output_break(),

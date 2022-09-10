@@ -1,18 +1,14 @@
-import getpass
 import logging
 import os
 import pathlib
+import shutil
 import typing as t
 
 import pytest
 
 from _pytest.doctest import DoctestItem
-from _pytest.fixtures import SubRequest
 
-from libtmux import exc
-from libtmux.common import which
-from libtmux.server import Server
-from libtmux.test import TEST_SESSION_PREFIX, get_test_session_name, namer
+from libtmux.test import namer
 from tests.fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
@@ -20,18 +16,6 @@ if t.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
-
-
-@pytest.fixture(autouse=True, scope="session")
-def home_path(tmp_path_factory: pytest.TempPathFactory):
-    return tmp_path_factory.mktemp("home")
-
-
-@pytest.fixture(autouse=True, scope="session")
-def user_path(home_path: pathlib.Path):
-    p = home_path / getpass.getuser()
-    p.mkdir()
-    return p
 
 
 @pytest.mark.skipif(USING_ZSH, reason="Using ZSH")
@@ -47,8 +31,8 @@ def zshrc(user_path: pathlib.Path):
 
 
 @pytest.fixture(autouse=True)
-def home_path_default(user_path: pathlib.Path):
-    os.environ["HOME"] = str(user_path)
+def home_path_default(monkeypatch: pytest.MonkeyPatch, user_path: pathlib.Path) -> None:
+    monkeypatch.setenv("HOME", str(user_path))
 
 
 @pytest.fixture(scope="function")
@@ -70,77 +54,12 @@ def socket_name(request) -> str:
     return "tmuxp_test%s" % next(namer)
 
 
-@pytest.fixture(scope="function")
-def server(
-    request: SubRequest, monkeypatch: pytest.MonkeyPatch, socket_name: str
-) -> Server:
-    tmux = Server(socket_name=socket_name)
-
-    def fin() -> None:
-        tmux.kill_server()
-
-    request.addfinalizer(fin)
-
-    return tmux
-
-
-@pytest.fixture(scope="function")
-def session(server):
-    session_name = "tmuxp"
-
-    if not server.has_session(session_name):
-        server.cmd(
-            "-f",
-            "/dev/null",  # use a blank config to reduce side effects
-            "new-session",
-            "-d",  # detached
-            "-s",
-            session_name,
-            "/bin/sh",  # use /bin/sh as a shell to reduce side effects
-            # normally, it'd be -c, but new-session is special
-        )
-
-    # find current sessions prefixed with tmuxp
-    old_test_sessions = [
-        s.get("session_name")
-        for s in server._sessions
-        if s.get("session_name").startswith(TEST_SESSION_PREFIX)
-    ]
-
-    TEST_SESSION_NAME = get_test_session_name(server=server)
-
-    try:
-        session = server.new_session(session_name=TEST_SESSION_NAME)
-    except exc.LibTmuxException as e:
-        raise e
-
-    """
-    Make sure that tmuxp can :ref:`test_builder_visually` and switches to
-    the newly created session for that testcase.
-    """
-    session_id = session.get("session_id")
-    assert session_id is not None
-    try:
-        server.switch_client(target_session=session_id)
-    except exc.LibTmuxException:
-        # server.attach_session(session.get('session_id'))
-        pass
-
-    for old_test_session in old_test_sessions:
-        logger.debug("Old test test session %s found. Killing it." % old_test_session)
-        server.kill_session(old_test_session)
-    assert TEST_SESSION_NAME == session.get("session_name")
-    assert TEST_SESSION_NAME != "tmuxp"
-
-    return session
-
-
 @pytest.fixture(autouse=True)
 def add_doctest_fixtures(
-    request: SubRequest,
+    request: pytest.FixtureRequest,
     doctest_namespace: t.Dict[str, t.Any],
 ) -> None:
-    if isinstance(request._pyfuncitem, DoctestItem) and which("tmux"):
+    if isinstance(request._pyfuncitem, DoctestItem) and shutil.which("tmux"):
         doctest_namespace["server"] = request.getfixturevalue("server")
         session: "Session" = request.getfixturevalue("session")
         doctest_namespace["session"] = session
