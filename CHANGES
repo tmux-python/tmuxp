@@ -24,7 +24,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - Add [flake8-bugbear](https://github.com/PyCQA/flake8-bugbear) (#807)
 - Add [flake8-comprehensions](https://github.com/adamchainz/flake8-comprehensions) (#808)
 
-## tmuxp 1.13.x (unreleased)
+## tmuxp 1.13.3 (2022-09-10)
 
 - Revert v1.13.1's #793 change for now, the behavior behind launching workspace
   layouts need to be understood clearly. Future releases will decisively solve

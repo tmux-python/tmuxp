@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tmuxp"
-version = "1.13.2"
+version = "1.13.3"
 description = "tmux session manager"
 license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]
