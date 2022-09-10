@@ -24,6 +24,34 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - Add [flake8-bugbear](https://github.com/PyCQA/flake8-bugbear) (#807)
 - Add [flake8-comprehensions](https://github.com/adamchainz/flake8-comprehensions) (#808)
 
+## tmuxp 1.13.x (2022-09-10)
+
+### Bug fixes
+
+- Layout size has been bumped for those experiencing layout spacing issues
+  (#809, fixes #800)
+
+  If you encounter issues with pane spacing, consider passing an `option` like
+  so:
+
+  ```yaml
+  session_name: main-pane-height
+  start_directory: "~"
+  options:
+    default-size: 999x999
+  windows:
+    - window_name: my window name
+      layout: main-horizontal
+      options:
+        main-pane-height: 30
+      panes:
+        - shell_command: top
+        - shell_command: top
+        - shell_command: top
+        - shell_command: echo "hey"
+        - shell_command: echo "moo"
+  ```
+
 ## tmuxp 1.13.1 (2022-08-21)
 
 ### Bug fixes
