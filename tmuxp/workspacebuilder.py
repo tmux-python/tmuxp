@@ -19,6 +19,10 @@ from .util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_WIDTH = "800"
+DEFAULT_HEIGHT = "600"
+DEFAULT_SIZE = f"{DEFAULT_WIDTH}x{DEFAULT_HEIGHT}"
+
 
 class WorkspaceBuilder:
 
@@ -219,7 +223,7 @@ class WorkspaceBuilder:
 
         if has_gte_version("2.9"):
             # Use tmux default session size, overwrite Server::new_session
-            session.set_option("default-size", "800x600")
+            session.set_option("default-size", DEFAULT_SIZE)
 
         self.session = session
         self.server = session.server
