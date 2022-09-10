@@ -1,4 +1,3 @@
-import getpass
 import logging
 import os
 import pathlib
@@ -22,18 +21,6 @@ logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
-@pytest.fixture(autouse=True, scope="session")
-def home_path(tmp_path_factory: pytest.TempPathFactory):
-    return tmp_path_factory.mktemp("home")
-
-
-@pytest.fixture(autouse=True, scope="session")
-def user_path(home_path: pathlib.Path):
-    p = home_path / getpass.getuser()
-    p.mkdir()
-    return p
-
-
 @pytest.mark.skipif(USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
 def zshrc(user_path: pathlib.Path):
@@ -47,8 +34,8 @@ def zshrc(user_path: pathlib.Path):
 
 
 @pytest.fixture(autouse=True)
-def home_path_default(user_path: pathlib.Path):
-    os.environ["HOME"] = str(user_path)
+def home_path_default(monkeypatch: pytest.MonkeyPatch, user_path: pathlib.Path) -> None:
+    monkeypatch.setenv("HOME", str(user_path))
 
 
 @pytest.fixture(scope="function")
