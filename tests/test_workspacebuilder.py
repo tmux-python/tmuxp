@@ -1213,7 +1213,15 @@ def test_layout_main_horizontal(session):
     def width(p):
         return int(p._info["pane_width"])
 
-    assert height(main_horizontal_pane) > height(panes[0])
+    main_horizontal_pane_height = height(main_horizontal_pane)
+    pane_heights = [height(pane) for pane in panes]
+    # TODO: When libtmux has new pane formatters added, use that to detect top / bottom
+    assert all(
+        main_horizontal_pane_height != pane_height for pane_height in pane_heights
+    ), "The top row should not be the same size as the bottom row (even though it can)"
+    assert all(
+        pane_heights[0] == pane_height for pane_height in pane_heights
+    ), "The bottom row should be uniform height"
     assert width(main_horizontal_pane) > width(panes[0])
 
     def is_almost_equal(x, y):
