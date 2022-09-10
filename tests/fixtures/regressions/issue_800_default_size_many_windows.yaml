@@ -1,0 +1,12 @@
+session_name: many-windows-issue
+windows:
+- window_name: moo
+  layout: main-horizontal
+  panes:
+  - echo hello
+  - echo hello
+  - echo hello
+  - echo hello
+  - echo hello
+  - echo hello
+  - echo hello
