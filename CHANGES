@@ -19,11 +19,6 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
-### Development
-
-- Add [flake8-bugbear](https://github.com/PyCQA/flake8-bugbear) (#807)
-- Add [flake8-comprehensions](https://github.com/adamchainz/flake8-comprehensions) (#808)
-
 ## tmuxp 1.13.3 (2022-09-10)
 
 - Revert v1.13.1's #793 change for now, the behavior behind launching workspace
@@ -57,6 +52,11 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
         - shell_command: echo "hey"
         - shell_command: echo "moo"
   ```
+
+### Development
+
+- Add [flake8-bugbear](https://github.com/PyCQA/flake8-bugbear) (#807)
+- Add [flake8-comprehensions](https://github.com/adamchainz/flake8-comprehensions) (#808)
 
 ## tmuxp 1.13.1 (2022-08-21)
 
