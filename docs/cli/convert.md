@@ -1,4 +1,4 @@
-(convert-config)=
+(cli-convert)=
 
 # tmuxp convert
 
