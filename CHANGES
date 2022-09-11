@@ -19,6 +19,17 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+### Documentation
+
+- Render changelog in [`linkify_issues`] (#812)
+- Fix Table of contents rendering with sphinx autodoc with [`sphinx_toctree_autodoc_fix`] (#812)
+- Test doctests in our docs via [`pytest_doctest_docutils`] (built on [`doctest_docutils`]) (#812)
+
+[`linkify_issues`]: https://gp-libs.git-pull.com/linkify_issues/
+[`sphinx_toctree_autodoc_fix`]: https://gp-libs.git-pull.com/sphinx_toctree_autodoc_fix/
+[`pytest_doctest_docutils`]: https://gp-libs.git-pull.com/doctest/pytest.html
+[`doctest_docutils`]: https://gp-libs.git-pull.com/doctest
+
 ## tmuxp 1.13.3 (2022-09-10)
 
 - Revert v1.13.1's #793 change for now, the behavior behind launching workspace
