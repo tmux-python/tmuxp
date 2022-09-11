@@ -57,6 +57,7 @@ sphinx = "*"
 aafigure = ">=0.6"
 pillow = "*"
 furo = "*"
+gp-libs = "0.0.1a10"
 sphinx-autobuild = "*"
 sphinx-autodoc-typehints = "*"
 sphinx-click = "*"
@@ -64,7 +65,6 @@ sphinx-inline-tabs = "*"
 sphinxext-opengraph = "*"
 sphinx-copybutton = "*"
 sphinxext-rediraffe = "*"
-sphinx-autoissues = "*"
 myst_parser = "*"
 docutils = "~0.18.0"
 
@@ -102,9 +102,9 @@ docs = [
   "sphinxext-opengraph",
   "sphinx-inline-tabs",
   "sphinxext-rediraffe",
-  "sphinx-autoissues",
   "myst_parser",
   "furo",
+  "gp-libs",
   "aafigure",
   "pillow",
 ]
