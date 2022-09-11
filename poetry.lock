@@ -207,7 +207,7 @@ sphinx-basic-ng = "*"
 
 [[package]]
 name = "gp-libs"
-version = "0.0.1a9"
+version = "0.0.1a10"
 description = "Internal utilities for projects following git-pull python package spec"
 category = "dev"
 optional = false
@@ -970,7 +970,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "3483f70c53f6f0f49e4cfaffd752fe91e524a7072d5200283b802b9fecc220ae"
+content-hash = "85f2393ab1f8a399bd2f81c9d54bb7abc22257e9ee1914920cb22f600030ff7a"
 
 [metadata.files]
 aafigure = [
@@ -1112,8 +1112,8 @@ furo = [
     {file = "furo-2022.6.21.tar.gz", hash = "sha256:9aa983b7488a4601d13113884bfb7254502c8729942e073a0acb87a5512af223"},
 ]
 gp-libs = [
-    {file = "gp-libs-0.0.1a9.tar.gz", hash = "sha256:835608ba29220c4d77e7e3f5a9ae27368ac1eb4b43f0cd1e6cdec9c27e9a9e3a"},
-    {file = "gp_libs-0.0.1a9-py3-none-any.whl", hash = "sha256:2c055bd65f0880325a800775a2ee4c23dacc9eb8a56408fdb665a66da7d38ed3"},
+    {file = "gp-libs-0.0.1a10.tar.gz", hash = "sha256:54fbe07f42628b114f0b1472bb03ce75be2928090ec26d8d6f675f3bd9f58c2e"},
+    {file = "gp_libs-0.0.1a10-py3-none-any.whl", hash = "sha256:701b190ffd468ca4d776b196707344748dd550aea03db9aaa1ffdecdd0c32506"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
