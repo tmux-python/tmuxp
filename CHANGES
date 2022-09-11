@@ -15,9 +15,25 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 // Usage: tmuxp@next load yoursession
 ```
 
-## tmuxp 1.14.x (unreleased)
+## tmuxp 1.15.x (unreleased)
 
 - _Insert changes/features/fixes for next release here_
+
+## tmuxp 1.14.0 (2022-09-11)
+
+**Maintenance release, no features or fixes**
+
+There will be several of these releases as infrastructure and APIs are upgraded
+to facilitate fixes for layout issues and general contributions.
+
+### Development
+
+- libtmux bumped to v0.15.1
+
+  This includes a major retooling underneath, including `src/` layout and
+  testing of `doctest` in documentation.
+
+[v0.15.1]: https://github.com/tmux-python/libtmux/blob/v0.15.1/CHANGES#libtmux-0151-2022-09-11
 
 ### Documentation
 
