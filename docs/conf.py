@@ -37,7 +37,12 @@ extensions = [
     "linkify_issues",
 ]
 
-myst_enable_extensions = ["colon_fence", "substitution", "replacements"]
+myst_enable_extensions = [
+    "colon_fence",
+    "substitution",
+    "replacements",
+    "strikethrough",
+]
 
 templates_path = ["_templates"]
 
