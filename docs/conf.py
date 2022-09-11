@@ -27,13 +27,14 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "aafig",
-    "sphinx_autoissues",
     "sphinx_click.ext",  # sphinx-click
     "sphinx_inline_tabs",
     "sphinx_copybutton",
     "sphinxext.opengraph",
     "sphinxext.rediraffe",
     "myst_parser",
+    "sphinx_toctree_autodoc_fix",
+    "linkify_issues",
 ]
 
 myst_enable_extensions = ["colon_fence", "substitution", "replacements"]
@@ -88,9 +89,8 @@ html_sidebars = {
     ]
 }
 
-# sphinx-autoissues
-issuetracker = "github"
-issuetracker_project = about["__github__"].replace("https://github.com/", "")
+# linkify_issues
+issue_url_tpl = "https://github.com/tmux-python/tmuxp/issues/{issue_id}"
 
 # sphinxext.opengraph
 ogp_site_url = about["__docs__"]
