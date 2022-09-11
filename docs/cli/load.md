@@ -8,7 +8,7 @@ You can load your tmuxp file and attach the vim session via a few
 shorthands:
 
 1. The directory with a `.tmuxp.{yaml,yml,json}` file in it
-2. The name of the project file in your {}`$HOME/.tmuxp` folder
+2. The name of the project file in your `$HOME/.tmuxp` folder
 3. The direct path of the tmuxp file you want to load
 
 Path to folder with `.tmuxp.yaml`, `.tmuxp.yml`, `.tmuxp.json`:
