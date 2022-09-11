@@ -24,7 +24,7 @@ keywords = ["tmux", "session manager", "terminal", "ncurses"]
 homepage = "http://github.com/tmux-python/tmuxp/"
 readme = "README.md"
 packages = [
-  { include = "tmuxp" },
+  { include = "*", from = "src" },
 ]
 include = [
   { path = "CHANGES", format = "sdist" },
