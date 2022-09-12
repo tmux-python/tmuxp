@@ -308,7 +308,13 @@ selected upon loading.
 
 tmuxp allows `suppress_history: false` to override the default command /
 suppression when building the workspace.
-This will add the `shell_command` to the bash history in the pane.
+This will add the `shell_command` to the shell history in the pane.
+The suppression of the `shell_command` commands from the shell's history
+occurs by prefixing the commands with a space when `suppress_history: true`.
+Accordingly, this functionality depends on the shell being appropriately
+configured: bash requires the shell variable `HISTCONTROL` to be set and
+include either of the values `ignorespace` or `ignoreboth` (to also ignore
+sequential duplicate commands), and zsh requires `setopt HIST_IGNORE_SPACE`.
 
 ````{tab} YAML
 
