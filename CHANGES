@@ -19,6 +19,17 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.15.1 (unreleased)
+
+**Maintenance release, no features or fixes**
+
+### Infrastructure
+
+- CI speedups (#819)
+
+  - Split out release to separate job so the PyPI Upload docker image isn't pulled on normal runs
+  - Clean up CodeQL
+
 ## tmuxp 1.15.0 (2022-09-11)
 
 **Maintenance release, no features or fixes**
