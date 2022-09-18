@@ -30,6 +30,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   - Split out release to separate job so the PyPI Upload docker image isn't pulled on normal runs
   - Clean up CodeQL
 
+- Bump poetry 1.1.x -> 1.2.x
+
 ## tmuxp 1.15.0 (2022-09-11)
 
 **Maintenance release, no features or fixes**
