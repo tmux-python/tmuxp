@@ -31,6 +31,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   - Clean up CodeQL
 
 - Bump poetry 1.1.x -> 1.2.x
+- Bump libtmux 0.15.1 -> 0.15.3 (#821, pytest plugin improvements, root-level
+  conftest.py)
 
 ## tmuxp 1.15.0 (2022-09-11)
 
