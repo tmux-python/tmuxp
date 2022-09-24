@@ -1,3 +1,8 @@
+"""Conftest.py (root-level)
+
+We keep this in root pytest fixtures in pytest's doctest plugin to be available, as well
+as avoiding conftest.py from being included in the wheel.
+"""
 import logging
 import os
 import pathlib
