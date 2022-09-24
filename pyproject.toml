@@ -32,6 +32,7 @@ include = [
   { path = "tests", format = "sdist" },
   { path = "examples", format = "sdist" },
   { path = "docs", format = "sdist" },
+  { path = "conftest.py", format = "sdist" },
 ]
 
 [tool.poetry.urls]
