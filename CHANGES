@@ -35,6 +35,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   - 0.15.6 (#823, pytest fixes, packaging improvements)
   - 0.15.3 (#821, pytest plugin improvements, root-level
     conftest.py)
+- Move `.coveragerc` -> `pyproject.toml` (#824)
 
 ### Packaging
 
