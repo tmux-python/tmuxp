@@ -34,6 +34,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - Bump libtmux 0.15.1 -> 0.15.3 (#821, pytest plugin improvements, root-level
   conftest.py)
 
+### Packaging
+
+- Remove `MANIFEST.in`
+
+  This is handled by poetry's `include` in pyproject.toml.
+
+- Remove `.tmuxp-before-script.sh` from `.tmuxp.yaml`
+
 ## tmuxp 1.15.0 (2022-09-11)
 
 **Maintenance release, no features or fixes**
