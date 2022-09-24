@@ -119,9 +119,27 @@ lint = [
   "types-docutils",
 ]
 
-[build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.coverage.run]
+branch = true
+source = [
+  "tmuxp",
+]
+omit = [
+  "tests/*",
+  "*/_vendor/*",
+  "*/_*",
+  "pkg/*",
+  "*/log.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "def parse_args",
+]
 
 [[tool.mypy.overrides]]
 module = [
@@ -134,3 +152,7 @@ module = [
   "bpython",
 ]
 ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
