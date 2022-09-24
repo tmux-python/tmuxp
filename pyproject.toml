@@ -141,10 +141,6 @@ exclude_lines = [
   "def parse_args",
 ]
 
-[build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [[tool.mypy.overrides]]
 module = [
   "kaptan",
@@ -156,3 +152,7 @@ module = [
   "bpython",
 ]
 ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
