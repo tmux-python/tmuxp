@@ -47,7 +47,7 @@ tmuxp = 'tmuxp:cli.cli'
 python = "^3.7"
 click = "~8"
 kaptan = ">=0.5.10"
-libtmux = "~0.15.3"
+libtmux = "~0.15.6"
 colorama = ">=0.3.9"
 
 [tool.poetry.dev-dependencies]
