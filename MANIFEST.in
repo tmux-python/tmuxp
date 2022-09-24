@@ -1,4 +1,0 @@
-include README.md LICENSE CHANGES pyproject.toml .tmuxp.yaml
-recursive-include docs *.md
-recursive-include tests *.py *.yaml *.json *.sh
-recursive-include examples  *.yaml *.json
