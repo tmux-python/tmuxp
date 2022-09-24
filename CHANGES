@@ -32,6 +32,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - Bump poetry 1.1.x -> 1.2.x
 - Bump libtmux 0.15.1 -> 0.15.6
+  - 0.15.7 (move `.coveragerc` -> `pyproject.toml`)
   - 0.15.6 (#823, pytest fixes, packaging improvements)
   - 0.15.3 (#821, pytest plugin improvements, root-level
     conftest.py)
