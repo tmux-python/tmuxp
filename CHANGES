@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.15.2 (unreleased)
+
+**Maintenance release, no features or fixes**
+
+### Packaging
+
+- Move conftest.py to root, to avoid packaging in wheel (#826 vs #825)
+
 ## tmuxp 1.15.1 (2022-09-23)
 
 **Maintenance release, no features or fixes**
