@@ -1,7 +1,6 @@
 {
   "session_name": "tmuxp",
   "start_directory": "./",
-  "before_script": "./.tmuxp-before-script.sh",
   "shell_command_before": [
     "[ -f .venv/bin/activate ] && source .venv/bin/activate && reset"
   ],
