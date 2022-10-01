@@ -3,13 +3,13 @@ import json
 import os
 import pathlib
 import typing as t
-from unittest.mock import MagicMock
 
 import pytest
 
 import click
 import kaptan
 from click.testing import CliRunner
+from pytest_mock import MockerFixture
 
 import libtmux
 from libtmux.common import has_lt_version
@@ -37,6 +37,9 @@ from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import FIXTURE_PATH
 from .fixtures import utils as test_utils
+
+if t.TYPE_CHECKING:
+    from libtmux.server import Server
 
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path):
@@ -1216,14 +1219,14 @@ def test_reattach_plugins(monkeypatch_plugin_test_packages, server):
     assert proc.stdout[0] == "'plugin_test_r'"
 
 
-def test_load_attached(server, monkeypatch):
+def test_load_attached(
+    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+) -> None:
     # Load a session and attach from outside tmux
     monkeypatch.delenv("TMUX", raising=False)
 
-    attach_session_mock = MagicMock()
+    attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
-
-    monkeypatch.setattr("libtmux.session.Session.attach_session", attach_session_mock)
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
@@ -1233,17 +1236,17 @@ def test_load_attached(server, monkeypatch):
 
     _load_attached(builder, False)
 
-    assert builder.session.attach_session.call_count == 1
+    assert attach_session_mock.call_count == 1
 
 
-def test_load_attached_detached(server, monkeypatch):
+def test_load_attached_detached(
+    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+) -> None:
     # Load a session but don't attach
     monkeypatch.delenv("TMUX", raising=False)
 
-    attach_session_mock = MagicMock()
+    attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
-
-    monkeypatch.setattr("libtmux.session.Session.attach_session", attach_session_mock)
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
@@ -1253,17 +1256,17 @@ def test_load_attached_detached(server, monkeypatch):
 
     _load_attached(builder, True)
 
-    assert builder.session.attach_session.call_count == 0
+    assert attach_session_mock.call_count == 0
 
 
-def test_load_attached_within_tmux(server, monkeypatch):
+def test_load_attached_within_tmux(
+    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+) -> None:
     # Load a session and attach from within tmux
     monkeypatch.setenv("TMUX", "/tmp/tmux-1234/default,123,0")
 
-    switch_client_mock = MagicMock()
+    switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
-
-    monkeypatch.setattr("libtmux.session.Session.switch_client", switch_client_mock)
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
@@ -1273,17 +1276,17 @@ def test_load_attached_within_tmux(server, monkeypatch):
 
     _load_attached(builder, False)
 
-    assert builder.session.switch_client.call_count == 1
+    assert switch_client_mock.call_count == 1
 
 
-def test_load_attached_within_tmux_detached(server, monkeypatch):
+def test_load_attached_within_tmux_detached(
+    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+) -> None:
     # Load a session and attach from within tmux
     monkeypatch.setenv("TMUX", "/tmp/tmux-1234/default,123,0")
 
-    switch_client_mock = MagicMock()
+    switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
-
-    monkeypatch.setattr("libtmux.session.Session.switch_client", switch_client_mock)
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
     sconfig = kaptan.Kaptan(handler="yaml")
@@ -1293,7 +1296,7 @@ def test_load_attached_within_tmux_detached(server, monkeypatch):
 
     _load_attached(builder, True)
 
-    assert builder.session.switch_client.call_count == 1
+    assert switch_client_mock.call_count == 1
 
 
 def test_load_append_windows_to_current_session(server, monkeypatch):
