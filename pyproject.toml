@@ -57,7 +57,7 @@ sphinx = "*"
 aafigure = ">=0.6"
 pillow = "*"
 furo = "*"
-gp-libs = "0.0.1a10"
+gp-libs = "0.0.1a12"
 sphinx-autobuild = "*"
 sphinx-autodoc-typehints = "*"
 sphinx-click = "*"
@@ -66,14 +66,14 @@ sphinxext-opengraph = "*"
 sphinx-copybutton = "*"
 sphinxext-rediraffe = "*"
 myst_parser = "*"
-docutils = "~0.18.0"
+docutils = "*"
 
 ### Testing ###
 pytest = "*"
 pytest-rerunfailures = "*"
 pytest-mock = "*"
 pytest-cov = "*"
-pytest-watcher = "^0.2.3"
+pytest-watcher = "*"
 
 ### Coverage ###
 codecov = "*"
@@ -85,11 +85,11 @@ isort = "*"
 
 ### Lint ###
 flake8 = "*"
-flake8-bugbear = "^22.8.23"
+flake8-bugbear = "*"
 flake8-comprehensions = "*"
 mypy = "*"
-types-colorama = "^0.4.15"
-types-docutils = "^0.19.0"
+types-colorama = "*"
+types-docutils = "*"
 
 [tool.poetry.extras]
 docs = [
