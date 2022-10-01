@@ -2,9 +2,9 @@ import os
 import sys
 
 import click
-import kaptan
 
 from libtmux.server import Server
+from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
 
 from .. import config, util
@@ -71,9 +71,8 @@ def command_freeze(
         return
 
     sconf = freeze(session)
-    configparser = kaptan.Kaptan()
     newconfig = config.inline(sconf)
-    configparser.import_config(newconfig)
+    configparser = ConfigReader(newconfig)
 
     if not quiet:
         print(
@@ -126,11 +125,11 @@ def command_freeze(
             )
 
     if config_format == "yaml":
-        newconfig = configparser.export(
-            "yaml", indent=2, default_flow_style=False, safe=True
+        newconfig = configparser.dump(
+            format="yaml", indent=2, default_flow_style=False, safe=True
         )
     elif config_format == "json":
-        newconfig = configparser.export("json", indent=2)
+        newconfig = configparser.dump(format="json", indent=2)
 
     if yes or click.confirm("Save to %s?" % dest):
         destdir = os.path.dirname(dest)

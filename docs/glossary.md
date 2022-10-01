@@ -13,8 +13,8 @@ tmux(1)
     The tmux binary. Used internally to distinguish tmuxp is only a
     layer on top of tmux.
 
-kaptan
-    configuration management library, see [kaptan on github](https://github.com/emre/kaptan).
+ConfigReader
+    configuration management class.
 
 Server
     Tmux runs in the background of your system as a process.

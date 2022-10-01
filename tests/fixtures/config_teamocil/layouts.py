@@ -1,5 +1,6 @@
 from .. import utils as test_utils
 
+teamocil_yaml_file = test_utils.get_config_file("config_teamocil/layouts.yaml")
 teamocil_yaml = test_utils.read_config_file("config_teamocil/layouts.yaml")
 
 teamocil_dict = {

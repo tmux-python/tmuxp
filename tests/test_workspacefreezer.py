@@ -1,33 +1,35 @@
-"""Test for tmuxp workspacefreezer."""
+"""Tests for freezing tmux sessions with tmuxp."""
 import time
 
-import kaptan
-
 from tmuxp import config
+from tmuxp.config_reader import ConfigReader
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 from .fixtures import utils as test_utils
 
 
 def test_freeze_config(session):
-    yaml_config = test_utils.read_config_file("workspacefreezer/sampleconfig.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    session_config = ConfigReader._from_file(
+        test_utils.get_config_file("workspacefreezer/sampleconfig.yaml")
+    )
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=session_config)
     builder.build(session=session)
     assert session == builder.session
 
     time.sleep(0.50)
 
     session = session
-    sconf = freeze(session)
+    new_config = freeze(session)
 
-    config.validate_schema(sconf)
+    config.validate_schema(new_config)
 
-    sconf = config.inline(sconf)
+    # These should dump without an error
+    ConfigReader._dump(format="json", content=new_config)
+    ConfigReader._dump(format="yaml", content=new_config)
 
-    kaptanconf = kaptan.Kaptan()
-    kaptanconf = kaptanconf.import_config(sconf)
-    kaptanconf.export("json", indent=2)
-    kaptanconf.export("yaml", indent=2, default_flow_style=False, safe=True)
+    # Inline configs should also dump without an error
+    compact_config = config.inline(new_config)
+
+    ConfigReader._dump(format="json", content=compact_config)
+    ConfigReader._dump(format="yaml", content=compact_config)

@@ -97,7 +97,6 @@ from JSON and YAML.
   `$ tmuxp -f<config-file>` for config file.
 
 [attempt at 1.7 test]: https://travis-ci.org/tmux-python/tmuxp/jobs/12348263
-[kaptan]: https://github.com/emre/kaptan
 [mit-licensed]: http://opensource.org/licenses/MIT
 [tmuxinator]: https://github.com/aziz/tmuxinator
 [teamocil]: https://github.com/remiprev/teamocil
