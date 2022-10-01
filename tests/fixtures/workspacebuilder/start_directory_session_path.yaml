@@ -1,0 +1,6 @@
+---
+session_name: sample_start_dir_session_path
+start_directory: '/usr'
+windows:
+  - panes:
+      -

@@ -514,6 +514,28 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
             assert retry_until(f)
 
 
+@pytest.mark.skipif(
+    has_lt_version("3.2a"), reason="needs format introduced in tmux >= 3.2a"
+)
+def test_start_directory_sets_session_path(server):
+    yaml_config = test_utils.read_config_file(
+        "workspacebuilder/start_directory_session_path.yaml"
+    )
+    sconfig = kaptan.Kaptan(handler="yaml")
+    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = config.expand(sconfig)
+    sconfig = config.trickle(sconfig)
+
+    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder.build()
+
+    session = builder.session
+    expected = "{0}|/usr".format(session.id)
+
+    cmd = server.cmd("list-sessions", "-F", "#{session_id}|#{session_path}")
+    assert expected in cmd.stdout
+
+
 def test_pane_order(session):
     """Pane ordering based on position in config and ``pane_index``.
 
