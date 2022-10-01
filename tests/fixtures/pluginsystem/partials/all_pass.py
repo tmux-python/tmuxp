@@ -2,7 +2,7 @@ from .test_plugin_helpers import MyTestTmuxpPlugin
 
 
 class AllVersionPassPlugin(MyTestTmuxpPlugin):
-    def __init__(self):
+    def __init__(self) -> None:
         config = {
             "plugin_name": "tmuxp-plugin-my-tmuxp-plugin",
             "tmux_min_version": "1.8",

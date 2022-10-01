@@ -107,7 +107,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
     session.cmd(*cmd)
 
 
-def load_plugins(sconf: t.Any) -> t.List[t.Any]:
+def load_plugins(sconf: t.Dict[str, t.Any]) -> t.List[t.Any]:
     """
     Load and return plugins in workspace
     """

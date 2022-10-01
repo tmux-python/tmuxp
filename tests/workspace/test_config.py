@@ -1,8 +1,7 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
 import os
 import pathlib
-import typing
-from typing import Union
+import typing as t
 
 import pytest
 
@@ -12,17 +11,17 @@ from tmuxp.workspace import loader, validation
 
 from ..constants import EXAMPLE_PATH
 
-if typing.TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from ..fixtures.structures import WorkspaceTestData
 
 
-def load_yaml(path: Union[str, pathlib.Path]) -> str:
+def load_yaml(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path
     )
 
 
-def load_workspace(path: Union[str, pathlib.Path]) -> str:
+def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path
     )
@@ -170,7 +169,7 @@ def test_shell_command_before(config_fixture: "WorkspaceTestData"):
     assert test_workspace == config_fixture.shell_command_before.config_after()
 
 
-def test_in_session_scope(config_fixture: "WorkspaceTestData"):
+def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
     sconfig = ConfigReader._load(
         format="yaml", content=config_fixture.shell_command_before_session.before
     )
@@ -183,7 +182,7 @@ def test_in_session_scope(config_fixture: "WorkspaceTestData"):
     )
 
 
-def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData"):
+def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData") -> None:
     test_workspace = loader.trickle(config_fixture.trickle.before)
     assert test_workspace == config_fixture.trickle.expected
 
@@ -206,7 +205,7 @@ def test_trickle_window_with_no_pane_workspace():
     }
 
 
-def test_expands_blank_panes(config_fixture: "WorkspaceTestData"):
+def test_expands_blank_panes(config_fixture: "WorkspaceTestData") -> None:
     """Expand blank config into full form.
 
     Handle ``NoneType`` and 'blank'::
@@ -256,7 +255,7 @@ def test_no_session_name():
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
-        assert excinfo.matches(r'requires "session_name"')
+        assert excinfo.match(r'requires "session_name"')
 
 
 def test_no_windows():
@@ -290,10 +289,10 @@ def test_no_window_name():
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
-        assert excinfo.matches('missing "window_name"')
+        assert excinfo.match('missing "window_name"')
 
 
-def test_replaces_env_variables(monkeypatch):
+def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
     env_key = "TESTHEY92"
     env_val = "HEYO1"
     yaml_workspace = """
@@ -352,4 +351,4 @@ def test_plugins():
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
-        assert excinfo.matches("only supports list type")
+        assert excinfo.match("only supports list type")

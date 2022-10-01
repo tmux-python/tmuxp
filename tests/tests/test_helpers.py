@@ -1,10 +1,11 @@
 """Tests for .'s helper and utility functions."""
 import pytest
 
+from libtmux.server import Server
 from libtmux.test import get_test_session_name, temp_session
 
 
-def test_kills_session(server):
+def test_kills_session(server: Server) -> None:
     server = server
     session_name = get_test_session_name(server=server)
 
@@ -16,7 +17,7 @@ def test_kills_session(server):
 
 
 @pytest.mark.flaky(reruns=5)
-def test_if_session_killed_before(server):
+def test_if_session_killed_before(server: Server) -> None:
     """Handles situation where session already closed within context"""
 
     server = server

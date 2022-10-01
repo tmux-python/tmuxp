@@ -6,20 +6,30 @@ tmuxp.util
 """
 import logging
 import os
+import pathlib
 import shlex
 import subprocess
 import sys
+import typing as t
 
 from libtmux._compat import console_to_str
 
 from . import exc
+
+if t.TYPE_CHECKING:
+    from libtmux.pane import Pane
+    from libtmux.server import Server
+    from libtmux.session import Session
+    from libtmux.window import Window
 
 logger = logging.getLogger(__name__)
 
 PY2 = sys.version_info[0] == 2
 
 
-def run_before_script(script_file, cwd=None):
+def run_before_script(
+    script_file: t.Union[str, pathlib.Path], cwd: t.Optional[pathlib.Path] = None
+) -> int:
     """Function to wrap try/except for subprocess.check_call()."""
     try:
         proc = subprocess.Popen(
@@ -50,7 +60,7 @@ def run_before_script(script_file, cwd=None):
             raise e
 
 
-def oh_my_zsh_auto_title():
+def oh_my_zsh_auto_title() -> None:
     """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 
     see: https://github.com/robbyrussell/oh-my-zsh/pull/257
@@ -74,7 +84,7 @@ def oh_my_zsh_auto_title():
                 )
 
 
-def get_current_pane(server):
+def get_current_pane(server: "Server") -> t.Optional[t.Dict[str, str]]:
     """Return Pane if one found in env"""
     if os.getenv("TMUX_PANE") is not None:
         try:
@@ -83,7 +93,11 @@ def get_current_pane(server):
             pass
 
 
-def get_session(server, session_name=None, current_pane=None):
+def get_session(
+    server: "Server",
+    session_name: t.Optional[str] = None,
+    current_pane: t.Optional[t.Dict[str, str]] = None,
+) -> "Session":
     try:
         if session_name:
             session = server.sessions.get(session_name=session_name)
@@ -107,7 +121,11 @@ def get_session(server, session_name=None, current_pane=None):
     return session
 
 
-def get_window(session, window_name=None, current_pane=None):
+def get_window(
+    session: "Session",
+    window_name: t.Optional[str] = None,
+    current_pane: t.Optional[t.Dict[str, str]] = None,
+) -> "Window":
     try:
         if window_name:
             window = session.windows.get(window_name=window_name)
@@ -129,7 +147,9 @@ def get_window(session, window_name=None, current_pane=None):
     return window
 
 
-def get_pane(window, current_pane=None):
+def get_pane(
+    window: "Window", current_pane: t.Optional[t.Dict[str, str]] = None
+) -> "Pane":
     try:
         if current_pane is not None:
             pane = window.panes.get(pane_id=current_pane.pane_id)  # NOQA: F841

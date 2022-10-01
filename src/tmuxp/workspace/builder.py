@@ -6,7 +6,9 @@ tmuxp.workspace.builder
 """
 import logging
 import time
+import typing as t
 
+from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_lt_version
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
@@ -134,7 +136,12 @@ class WorkspaceBuilder:
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    def __init__(self, sconf, plugins=[], server=None):
+    def __init__(
+        self,
+        sconf: t.Dict[str, t.Any],
+        plugins: t.List[t.Any] = [],
+        server: t.Optional[Server] = None,
+    ) -> None:
         """
         Initialize workspace loading.
 
@@ -169,7 +176,7 @@ class WorkspaceBuilder:
 
         self.plugins = plugins
 
-    def session_exists(self, session_name=None):
+    def session_exists(self, session_name: t.Optional[str] = None) -> bool:
         exists = self.server.has_session(session_name)
         if not exists:
             return exists
@@ -180,7 +187,7 @@ class WorkspaceBuilder:
             return False
         return True
 
-    def build(self, session=None, append=False):
+    def build(self, session: t.Optional[Session] = None, append: bool = False) -> None:
         """
         Build tmux workspace in session.
 
@@ -207,15 +214,15 @@ class WorkspaceBuilder:
 
             if self.server.has_session(self.sconf["session_name"]):
                 try:
-                    self.session = self.server.sessions.filter(
+                    self.session = self.server.sessions.get(
                         session_name=self.sconf["session_name"]
-                    )[0]
+                    )
 
                     raise TmuxSessionExists(
                         "Session name %s is already running."
                         % self.sconf["session_name"]
                     )
-                except IndexError:
+                except ObjectDoesNotExist:
                     pass
             else:
                 new_session_kwargs = {}
@@ -231,8 +238,8 @@ class WorkspaceBuilder:
             assert self.sconf["session_name"] == session.name
             assert len(self.sconf["session_name"]) > 0
 
-        self.session = session
-        self.server = session.server
+        self.session: "Session" = session
+        self.server: "Server" = session.server
 
         self.server.sessions
         assert self.server.has_session(session.name)
@@ -298,7 +305,9 @@ class WorkspaceBuilder:
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, session, append=False):
+    def iter_create_windows(
+        self, session: Session, append: bool = False
+    ) -> t.Iterator[t.Any]:
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -395,7 +404,9 @@ class WorkspaceBuilder:
 
             yield w, wconf
 
-    def iter_create_panes(self, w, wconf):
+    def iter_create_panes(
+        self, w: Window, wconf: t.Dict[str, t.Any]
+    ) -> t.Iterator[t.Any]:
         """
         Return :class:`libtmux.Pane` iterating through window config dict.
 
@@ -494,7 +505,7 @@ class WorkspaceBuilder:
 
             yield p, pconf
 
-    def config_after_window(self, w, wconf):
+    def config_after_window(self, w: Window, wconf: t.Dict[str, t.Any]) -> None:
         """Actions to apply to window after window and pane finished.
 
         When building a tmux session, sometimes its easier to postpone things
@@ -512,7 +523,7 @@ class WorkspaceBuilder:
             for key, val in wconf["options_after"].items():
                 w.set_window_option(key, val)
 
-    def find_current_attached_session(self):
+    def find_current_attached_session(self) -> Session:
         current_active_pane = get_current_pane(self.server)
 
         if not current_active_pane:
@@ -527,5 +538,5 @@ class WorkspaceBuilder:
             None,
         )
 
-    def first_window_pass(self, i, session, append):
+    def first_window_pass(self, i: int, session: Session, append: bool) -> bool:
         return len(session.windows) == 1 and i == 1 and not append

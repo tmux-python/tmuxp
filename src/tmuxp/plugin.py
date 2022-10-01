@@ -1,3 +1,5 @@
+import typing as t
+
 import libtmux
 from libtmux._compat import LegacyVersion as Version
 from libtmux.common import get_version
@@ -27,17 +29,17 @@ TMUXP_MAX_VERSION = None
 class TmuxpPlugin:
     def __init__(
         self,
-        plugin_name="tmuxp-plugin",
-        tmux_min_version=TMUX_MIN_VERSION,
-        tmux_max_version=TMUX_MAX_VERSION,
-        tmux_version_incompatible=None,
-        libtmux_min_version=LIBTMUX_MIN_VERSION,
-        libtmux_max_version=LIBTMUX_MAX_VERSION,
-        libtmux_version_incompatible=None,
-        tmuxp_min_version=TMUXP_MIN_VERSION,
-        tmuxp_max_version=TMUXP_MAX_VERSION,
-        tmuxp_version_incompatible=None,
-    ):
+        plugin_name: str = "tmuxp-plugin",
+        tmux_min_version: str = TMUX_MIN_VERSION,
+        tmux_max_version: t.Optional[str] = TMUX_MAX_VERSION,
+        tmux_version_incompatible: t.Optional[t.List[str]] = None,
+        libtmux_min_version: str = LIBTMUX_MIN_VERSION,
+        libtmux_max_version: t.Optional[str] = LIBTMUX_MAX_VERSION,
+        libtmux_version_incompatible: t.Optional[t.List[str]] = None,
+        tmuxp_min_version: str = TMUXP_MIN_VERSION,
+        tmuxp_max_version: t.Optional[str] = TMUXP_MAX_VERSION,
+        tmuxp_version_incompatible: t.Optional[t.List[str]] = None,
+    ) -> None:
         """
         Initialize plugin.
 
@@ -114,7 +116,7 @@ class TmuxpPlugin:
 
         self._version_check()
 
-    def _version_check(self):
+    def _version_check(self) -> None:
         """
         Check all dependency versions for compatibility.
         """
@@ -130,7 +132,13 @@ class TmuxpPlugin:
                     )
                 )
 
-    def _pass_version_check(self, version, vmin, vmax, incompatible):
+    def _pass_version_check(
+        self,
+        version: t.Union[str, Version],
+        vmin: str,
+        vmax: t.Optional[str],
+        incompatible: t.List[t.Union[t.Any, str]],
+    ) -> bool:
         """
         Provide affirmative if version compatibility is correct.
         """

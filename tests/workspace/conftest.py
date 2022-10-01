@@ -6,7 +6,7 @@ from ..fixtures.structures import WorkspaceTestData
 
 
 @pytest.fixture
-def config_fixture():
+def config_fixture() -> WorkspaceTestData:
     """Deferred import of tmuxp.tests.fixtures.*
 
     pytest setup (conftest.py) patches os.environ["HOME"], delay execution of

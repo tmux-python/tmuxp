@@ -29,7 +29,9 @@ LOG_LEVELS = {
 }
 
 
-def setup_logger(logger=None, level="INFO"):
+def setup_logger(
+    logger: t.Optional[logging.Logger] = None, level: str = "INFO"
+) -> None:
     """
     Setup logging for CLI use.
 
@@ -49,8 +51,13 @@ def setup_logger(logger=None, level="INFO"):
 
 
 def set_style(
-    message, stylized, style_before=None, style_after=None, prefix="", suffix=""
-):
+    message: str,
+    stylized: bool,
+    style_before: t.Optional[str] = None,
+    style_after: t.Optional[str] = None,
+    prefix: str = "",
+    suffix: str = "",
+) -> str:
     if stylized:
         return prefix + style_before + message + style_after + suffix
 
@@ -112,10 +119,10 @@ def default_log_template(
 class LogFormatter(logging.Formatter):
     template = default_log_template
 
-    def __init__(self, color=True, *args, **kwargs):
+    def __init__(self, color: bool = True, *args, **kwargs) -> None:
         logging.Formatter.__init__(self, *args, **kwargs)
 
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         try:
             record.message = record.getMessage()
         except Exception as e:

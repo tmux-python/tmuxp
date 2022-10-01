@@ -1,5 +1,6 @@
 import logging
 import os
+import pathlib
 import typing as t
 
 from colorama import Fore
@@ -31,8 +32,10 @@ def is_workspace_file(filename, extensions=[".yml", ".yaml", ".json"]):
 
 
 def in_dir(
-    workspace_dir=os.path.expanduser("~/.tmuxp"), extensions=[".yml", ".yaml", ".json"]
-):
+    workspace_dir: pathlib.Path = os.path.expanduser("~/.tmuxp"),
+    extensions: t.List[str] = [".yml", ".yaml", ".json"],
+) -> t.List[str]:
+
     """
     Return a list of workspace_files in ``workspace_dir``.
 
@@ -56,7 +59,7 @@ def in_dir(
     return workspace_files
 
 
-def in_cwd():
+def in_cwd() -> t.List[str]:
     """
     Return list of workspace_files in current working directory.
 
