@@ -7,7 +7,6 @@ import typing as t
 import pytest
 
 import click
-import kaptan
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
@@ -33,6 +32,7 @@ from tmuxp.cli.utils import (
     is_pure_name,
     scan_config,
 )
+from tmuxp.config_reader import ConfigReader
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import FIXTURE_PATH
@@ -973,7 +973,7 @@ def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
     assert yaml_config_path.exists()
 
     yaml_config = yaml_config_path.open().read()
-    frozen_config = kaptan.Kaptan(handler="yaml").import_config(yaml_config).get()
+    frozen_config = ConfigReader._load(format="yaml", content=yaml_config)
 
     assert frozen_config["session_name"] == "myfrozensession"
 
@@ -1116,8 +1116,7 @@ def test_load_plugins(monkeypatch_plugin_test_packages):
 
     plugins_config = test_utils.read_config_file("workspacebuilder/plugin_bwb.yaml")
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(plugins_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=plugins_config)
     sconfig = config.expand(sconfig)
 
     plugins = load_plugins(sconfig)
@@ -1199,8 +1198,7 @@ def test_plugin_system_before_script(
 def test_reattach_plugins(monkeypatch_plugin_test_packages, server):
     config_plugins = test_utils.read_config_file("workspacebuilder/plugin_r.yaml")
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = ConfigReader._load(format="yaml", content=config_plugins)
     sconfig = config.expand(sconfig)
 
     # open it detached
@@ -1229,8 +1227,7 @@ def test_load_attached(
     attach_session_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
 
@@ -1249,8 +1246,7 @@ def test_load_attached_detached(
     attach_session_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
 
@@ -1269,8 +1265,7 @@ def test_load_attached_within_tmux(
     switch_client_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
 
@@ -1289,8 +1284,7 @@ def test_load_attached_within_tmux_detached(
     switch_client_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
 
@@ -1301,8 +1295,7 @@ def test_load_attached_within_tmux_detached(
 
 def test_load_append_windows_to_current_session(server, monkeypatch):
     yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()

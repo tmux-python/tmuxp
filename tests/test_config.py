@@ -7,9 +7,8 @@ from typing import Union
 
 import pytest
 
-import kaptan
-
 from tmuxp import config, exc
+from tmuxp.config_reader import ConfigReader
 
 from .constants import EXAMPLE_PATH
 
@@ -37,44 +36,37 @@ def config_fixture():
 
 
 def load_yaml(path: Union[str, pathlib.Path]) -> str:
-    return (
-        kaptan.Kaptan(handler="yaml")
-        .import_config(str(path) if isinstance(path, pathlib.Path) else path)
-        .get()
+    return ConfigReader._from_file(
+        pathlib.Path(path) if isinstance(path, str) else path
     )
 
 
 def load_config(path: Union[str, pathlib.Path]) -> str:
-    return (
-        kaptan.Kaptan()
-        .import_config(str(path) if isinstance(path, pathlib.Path) else path)
-        .get()
+    return ConfigReader._from_file(
+        pathlib.Path(path) if isinstance(path, str) else path
     )
 
 
 def test_export_json(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
     json_config_file = tmp_path / "config.json"
 
-    configparser = kaptan.Kaptan()
-    configparser.import_config(config_fixture.sampleconfig.sampleconfigdict)
+    configparser = ConfigReader(config_fixture.sampleconfig.sampleconfigdict)
 
-    json_config_data = configparser.export("json", indent=2)
+    json_config_data = configparser.dump("json", indent=2)
 
     json_config_file.write_text(json_config_data, encoding="utf-8")
 
-    new_config = kaptan.Kaptan()
-    new_config_data = new_config.import_config(str(json_config_file)).get()
+    new_config_data = ConfigReader._from_file(path=json_config_file)
     assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
     yaml_config_file = tmp_path / "config.yaml"
 
-    configparser = kaptan.Kaptan()
     sampleconfig = config.inline(config_fixture.sampleconfig.sampleconfigdict)
-    configparser.import_config(sampleconfig)
+    configparser = ConfigReader(sampleconfig)
 
-    yaml_config_data = configparser.export("yaml", indent=2, default_flow_style=False)
+    yaml_config_data = configparser.dump("yaml", indent=2, default_flow_style=False)
 
     yaml_config_file.write_text(yaml_config_data, encoding="utf-8")
 
@@ -119,8 +111,12 @@ def test_config_expand1(config_fixture: "ConfigTestData"):
 
 def test_config_expand2(config_fixture: "ConfigTestData"):
     """Expand shell commands from string to list."""
-    unexpanded_dict = load_yaml(config_fixture.expand2.unexpanded_yaml())
-    expanded_dict = load_yaml(config_fixture.expand2.expanded_yaml())
+    unexpanded_dict = ConfigReader._load(
+        format="yaml", content=config_fixture.expand2.unexpanded_yaml()
+    )
+    expanded_dict = ConfigReader._load(
+        format="yaml", content=config_fixture.expand2.expanded_yaml()
+    )
     assert config.expand(unexpanded_dict) == expanded_dict
 
 
@@ -248,13 +244,15 @@ def test_shell_command_before(config_fixture: "ConfigTestData"):
 
 
 def test_in_session_scope(config_fixture: "ConfigTestData"):
-    sconfig = load_yaml(config_fixture.shell_command_before_session.before)
+    sconfig = ConfigReader._load(
+        format="yaml", content=config_fixture.shell_command_before_session.before
+    )
 
     config.validate_schema(sconfig)
 
     assert config.expand(sconfig) == sconfig
-    assert config.expand(config.trickle(sconfig)) == load_yaml(
-        config_fixture.shell_command_before_session.expected
+    assert config.expand(config.trickle(sconfig)) == ConfigReader._load(
+        format="yaml", content=config_fixture.shell_command_before_session.expected
     )
 
 
@@ -273,7 +271,7 @@ def test_trickle_window_with_no_pane_config():
         - ls -l
     - window_name: test_no_panes
     """
-    sconfig = load_yaml(test_yaml)
+    sconfig = ConfigReader._load(format="yaml", content=test_yaml)
     config.validate_schema(sconfig)
 
     assert config.expand(config.trickle(sconfig))["windows"][1]["panes"][0] == {
@@ -327,8 +325,7 @@ def test_no_session_name():
       - htop
     """
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
@@ -340,8 +337,7 @@ def test_no_windows():
     session_name: test session
     """
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
@@ -363,8 +359,7 @@ def test_no_window_name():
       - htop
     """
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
@@ -398,7 +393,7 @@ def test_replaces_env_variables(monkeypatch):
         TEST_VAR="${%s}" % env_key
     )
 
-    sconfig = load_yaml(yaml_config)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = config.expand(sconfig)
@@ -426,8 +421,7 @@ def test_plugins():
       start_directory: /var/log
     """
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)

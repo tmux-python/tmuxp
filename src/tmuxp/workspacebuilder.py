@@ -96,20 +96,21 @@ class WorkspaceBuilder:
 
     The normal phase of loading is:
 
-    1. :term:`kaptan` imports json/yaml/ini. ``.get()`` returns python
-       :class:`dict`::
+    1. Load JSON / YAML file via via :class:`pathlib.Path`::
 
-           import kaptan
-           sconf = kaptan.Kaptan(handler='yaml')
-           sconf = sconfig.import_config(self.yaml_config).get()
+           from tmuxp import config_reader
+           sconf = config_reader.ConfigReader._load(raw_yaml)
 
-       or from config file with extension::
+       The reader automatically detects the file type from :attr:`pathlib.suffix`.
 
-           import kaptan
-           sconf = kaptan.Kaptan()
-           sconf = sconfig.import_config('path/to/config.yaml').get()
+       We can also parse raw file::
 
-       kaptan automatically detects the handler from filenames.
+           import pathlib
+           from tmuxp import config_reader
+
+           sconf = config_reader.ConfigReader._from_file(
+               pathlib.Path('path/to/config.yaml')
+           )
 
     2. :meth:`config.expand` sconf inline shorthand::
 

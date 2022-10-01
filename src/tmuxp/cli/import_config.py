@@ -1,8 +1,10 @@
 import os
+import pathlib
 import sys
 
 import click
-import kaptan
+
+from tmuxp.config_reader import ConfigReader
 
 from .. import config
 from .utils import ConfigPath, _validate_choices, get_abs_path, tmuxp_echo
@@ -58,25 +60,22 @@ def command_import():
 
 
 def import_config(configfile, importfunc):
-    configparser = kaptan.Kaptan(handler="yaml")
-
-    configparser.import_config(configfile)
-    newconfig = importfunc(configparser.get())
-    configparser.import_config(newconfig)
+    existing_config = ConfigReader._from_file(pathlib.Path(configfile))
+    new_config = ConfigReader(importfunc(existing_config))
 
     config_format = click.prompt(
         "Convert to", value_proc=_validate_choices(["yaml", "json"]), default="yaml"
     )
 
     if config_format == "yaml":
-        newconfig = configparser.export("yaml", indent=2, default_flow_style=False)
+        new_config = new_config.dump("yaml", indent=2, default_flow_style=False)
     elif config_format == "json":
-        newconfig = configparser.export("json", indent=2)
+        new_config = new_config.dump("json", indent=2)
     else:
         sys.exit("Unknown config format.")
 
     tmuxp_echo(
-        newconfig + "---------------------------------------------------------------"
+        new_config + "---------------------------------------------------------------"
         "\n"
         "Configuration import does its best to convert files.\n"
     )
@@ -94,7 +93,7 @@ def import_config(configfile, importfunc):
                 dest = dest_path
 
         buf = open(dest, "w")
-        buf.write(newconfig)
+        buf.write(new_config)
         buf.close()
 
         tmuxp_echo("Saved to %s." % dest)
@@ -138,12 +137,11 @@ def command_convert(confirmed, config):
             f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
         )
 
-    configparser = kaptan.Kaptan()
-    configparser.import_config(config)
+    configparser = ConfigReader.from_file(config)
     newfile = config.replace(ext, ".%s" % to_filetype)
 
     export_kwargs = {"default_flow_style": False} if to_filetype == "yaml" else {}
-    newconfig = configparser.export(to_filetype, indent=2, **export_kwargs)
+    new_config = configparser.dump(format=to_filetype, indent=2, **export_kwargs)
 
     if not confirmed:
         if click.confirm(f"convert to <{config}> to {to_filetype}?"):
@@ -152,7 +150,7 @@ def command_convert(confirmed, config):
 
     if confirmed:
         buf = open(newfile, "w")
-        buf.write(newconfig)
+        buf.write(new_config)
         buf.close()
         print("New config saved to <%s>." % newfile)
 

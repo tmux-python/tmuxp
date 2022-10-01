@@ -1,9 +1,7 @@
 """Test for tmuxp teamocil configuration."""
 import pytest
 
-import kaptan
-
-from tmuxp import config
+from tmuxp import config, config_reader
 
 from .fixtures import config_teamocil as fixtures
 
@@ -34,9 +32,9 @@ from .fixtures import config_teamocil as fixtures
     ],
 )
 def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
-    configparser = kaptan.Kaptan(handler="yaml")
-    test_config = configparser.import_config(teamocil_yaml)
-    yaml_to_dict = test_config.get()
+    yaml_to_dict = config_reader.ConfigReader._load(
+        format="yaml", content=teamocil_yaml
+    )
     assert yaml_to_dict == teamocil_dict
 
     assert config.import_teamocil(teamocil_dict) == tmuxp_dict
@@ -50,12 +48,11 @@ def multisession_config():
 
     Also prevents re-running assertion the loads the yaml, since ordering of
     deep list items like panes will be inconsistent."""
-    teamocil_yaml = fixtures.layouts.teamocil_yaml
-    configparser = kaptan.Kaptan(handler="yaml")
-    test_config = configparser.import_config(teamocil_yaml)
+    teamocil_yaml_file = fixtures.layouts.teamocil_yaml_file
+    test_config = config_reader.ConfigReader._from_file(teamocil_yaml_file)
     teamocil_dict = fixtures.layouts.teamocil_dict
 
-    assert test_config.get() == teamocil_dict
+    assert test_config == teamocil_dict
     return teamocil_dict
 
 

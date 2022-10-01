@@ -1,9 +1,8 @@
 """Test for tmuxp tmuxinator configuration."""
 import pytest
 
-import kaptan
-
 from tmuxp import config
+from tmuxp.config_reader import ConfigReader
 
 from .fixtures import config_tmuxinator as fixtures
 
@@ -29,9 +28,7 @@ from .fixtures import config_tmuxinator as fixtures
     ],
 )
 def test_config_to_dict(tmuxinator_yaml, tmuxinator_dict, tmuxp_dict):
-    configparser = kaptan.Kaptan(handler="yaml")
-    test_config = configparser.import_config(tmuxinator_yaml)
-    yaml_to_dict = test_config.get()
+    yaml_to_dict = ConfigReader._load(format="yaml", content=tmuxinator_yaml)
     assert yaml_to_dict == tmuxinator_dict
 
     assert config.import_tmuxinator(tmuxinator_dict) == tmuxp_dict

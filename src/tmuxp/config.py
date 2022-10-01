@@ -225,7 +225,7 @@ def expand(session_config, cwd=None, parent=None):
 
         'shell_command': 'htop'
 
-    Kaptan will load JSON/YAML files into python dicts for you.
+    ConfigReader will load JSON/YAML files into python dicts for you.
 
     Parameters
     ----------

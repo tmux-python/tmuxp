@@ -1,7 +1,9 @@
 import os
+import pathlib
 
 import click
-import kaptan
+
+from tmuxp.config_reader import ConfigReader
 
 from .utils import ConfigPath
 
@@ -25,20 +27,18 @@ def command_convert(confirmed, config):
             f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
         )
 
-    configparser = kaptan.Kaptan()
-    configparser.import_config(config)
-    newfile = config.replace(ext, ".%s" % to_filetype)
+    configparser = ConfigReader.from_file(pathlib.Path(config))
+    newfile = config.replace(ext, f".{to_filetype}")
 
-    export_kwargs = {"default_flow_style": False} if to_filetype == "yaml" else {}
-    newconfig = configparser.export(to_filetype, indent=2, **export_kwargs)
+    new_config = configparser.dump(format=to_filetype)
 
     if not confirmed:
         if click.confirm(f"convert to <{config}> to {to_filetype}?"):
-            if click.confirm("Save config to %s?" % newfile):
+            if click.confirm(f"Save config to {newfile}?"):
                 confirmed = True
 
     if confirmed:
         buf = open(newfile, "w")
-        buf.write(newconfig)
+        buf.write(new_config)
         buf.close()
-        print("New config saved to <%s>." % newfile)
+        print(f"New config saved to <{newfile}>.")

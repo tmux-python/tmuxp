@@ -47,7 +47,6 @@ tmuxp = 'tmuxp:cli.cli'
 [tool.poetry.dependencies]
 python = "^3.7"
 click = "~8"
-kaptan = ">=0.5.10"
 libtmux = "~0.15.7"
 colorama = ">=0.3.9"
 
@@ -90,6 +89,7 @@ flake8-comprehensions = "*"
 mypy = "*"
 types-colorama = "*"
 types-docutils = "*"
+types-PyYAML = "*"
 
 [tool.poetry.extras]
 docs = [
@@ -118,6 +118,7 @@ lint = [
   "mypy",
   "types-colorama",
   "types-docutils",
+  "types-PyYAML",
 ]
 
 [tool.coverage.run]
@@ -142,9 +143,13 @@ exclude_lines = [
   "def parse_args",
 ]
 
+[tool.mypy]
+files = [
+  "src/tmuxp/config_reader.py",
+]
+
 [[tool.mypy.overrides]]
 module = [
-  "kaptan",
   "aafigure",
   "libtmux.*",
   "IPython.*",

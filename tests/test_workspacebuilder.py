@@ -7,14 +7,13 @@ import typing as t
 
 import pytest
 
-import kaptan
-
 import libtmux
 from libtmux.common import has_gte_version, has_lt_version
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
 from tmuxp import config, exc
 from tmuxp.cli.load import load_plugins
+from tmuxp.config_reader import ConfigReader
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import EXAMPLE_PATH, FIXTURE_PATH
@@ -25,55 +24,51 @@ if t.TYPE_CHECKING:
 
 
 def test_split_windows(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/two_pane.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig)
 
     window_count = len(session._windows)  # current window count
-    assert len(s._windows) == window_count
-    for w, wconf in builder.iter_create_windows(s):
+    assert len(session._windows) == window_count
+    for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(s._windows) == window_count
+            assert len(session._windows) == window_count
         assert isinstance(w, Window)
 
-        assert len(s._windows) == window_count
+        assert len(session._windows) == window_count
         window_count += 1
 
 
 def test_split_windows_three_pane(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/three_pane.yaml")
-
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/three_pane.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig)
 
-    window_count = len(s._windows)  # current window count
-    assert len(s._windows) == window_count
-    for w, wconf in builder.iter_create_windows(s):
+    window_count = len(session._windows)  # current window count
+    assert len(session._windows) == window_count
+    for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(s._windows) == window_count
+            assert len(session._windows) == window_count
         assert isinstance(w, Window)
 
-        assert len(s._windows) == window_count
+        assert len(session._windows) == window_count
         window_count += 1
         w.set_window_option("main-pane-height", 50)
         w.select_layout(wconf["layout"])
 
 
 def test_focus_pane_index(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/focus_and_pane.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/focus_and_pane.yaml")
+    )
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -145,9 +140,9 @@ and CI. See https://github.com/tmux-python/tmuxp/issues/310.
     """.strip()
 )
 def test_suppress_history(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/suppress_history.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/suppress_history.yaml")
+    )
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -199,31 +194,29 @@ def test_suppress_history(session):
 
 
 def test_session_options(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/session_options.yaml")
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/session_options.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert "/bin/sh" in s.show_option("default-shell")
-    assert "/bin/sh" in s.show_option("default-command")
+    assert "/bin/sh" in session.show_option("default-shell")
+    assert "/bin/sh" in session.show_option("default-command")
 
 
 def test_global_options(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/global_options.yaml")
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/global_options.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert "top" in s.show_option("status-position", _global=True)
-    assert 493 == s.show_option("repeat-time", _global=True)
+    assert "top" in session.show_option("status-position", _global=True)
+    assert 493 == session.show_option("repeat-time", _global=True)
 
 
 def test_global_session_env_options(session, monkeypatch):
@@ -234,25 +227,25 @@ def test_global_session_env_options(session, monkeypatch):
     main_pane_height = 8
     monkeypatch.setenv("MAIN_PANE_HEIGHT", str(main_pane_height))
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/env_var_options.yaml")
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/env_var_options.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
 
-    assert visual_silence in s.show_option("visual-silence", _global=True)
-    assert repeat_time == s.show_option("repeat-time")
-    assert main_pane_height == s.attached_window.show_window_option("main-pane-height")
+    assert visual_silence in session.show_option("visual-silence", _global=True)
+    assert repeat_time == session.show_option("repeat-time")
+    assert main_pane_height == session.attached_window.show_window_option(
+        "main-pane-height"
+    )
 
 
 def test_window_options(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/window_options.yaml")
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/window_options.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     if has_gte_version("2.3"):
@@ -261,29 +254,27 @@ def test_window_options(session):
     builder = WorkspaceBuilder(sconf=sconfig)
 
     window_count = len(session._windows)  # current window count
-    assert len(s._windows) == window_count
-    for w, wconf in builder.iter_create_windows(s):
+    assert len(session._windows) == window_count
+    for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(s._windows) == window_count
+            assert len(session._windows) == window_count
         assert isinstance(w, Window)
         assert w.show_window_option("main-pane-height") == 5
         if has_gte_version("2.3"):
             assert w.show_window_option("pane-border-format") == " #P "
 
-        assert len(s._windows) == window_count
+        assert len(session._windows) == window_count
         window_count += 1
         w.select_layout(wconf["layout"])
 
 
 @pytest.mark.flaky(reruns=5)
 def test_window_options_after(session):
-    yaml_config = test_utils.read_config_file(
-        "workspacebuilder/window_options_after.yaml"
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/window_options_after.yaml")
     )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
@@ -319,15 +310,14 @@ def test_window_options_after(session):
 
 
 def test_window_shell(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/window_shell.yaml")
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/window_shell.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
 
-    for w, wconf in builder.iter_create_windows(s):
+    for w, wconf in builder.iter_create_windows(session):
         if "window_shell" in wconf:
             assert wconf["window_shell"] == "top"
 
@@ -341,9 +331,9 @@ def test_window_shell(session):
 
 
 def test_environment_variables(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/environment_vars.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/environment_vars.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
@@ -355,12 +345,9 @@ def test_environment_variables(session):
 
 def test_automatic_rename_option(session):
     """With option automatic-rename: on."""
-    yaml_config = test_utils.read_config_file(
-        "workspacebuilder/window_automatic_rename.yaml"
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/window_automatic_rename.yaml")
     )
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
 
     # This should be a command guaranteed to be terminal name across systems
     portable_command = sconfig["windows"][0]["panes"][0]["shell_command"][0]["cmd"]
@@ -371,23 +358,23 @@ def test_automatic_rename_option(session):
     builder = WorkspaceBuilder(sconf=sconfig)
 
     window_count = len(session._windows)  # current window count
-    assert len(s._windows) == window_count
-    for w, wconf in builder.iter_create_windows(s):
+    assert len(session._windows) == window_count
+    for w, wconf in builder.iter_create_windows(session):
 
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(s._windows), window_count
+            assert len(session._windows), window_count
         assert isinstance(w, Window)
         assert w.show_window_option("automatic-rename") == "on"
 
-        assert len(s._windows) == window_count
+        assert len(session._windows) == window_count
 
         window_count += 1
         w.select_layout(wconf["layout"])
 
-    assert s.name != "tmuxp"
-    w = s.windows[0]
+    assert session.name != "tmuxp"
+    w = session.windows[0]
 
     def check_window_name_mismatch() -> bool:
         session.server._update_windows()
@@ -414,7 +401,8 @@ def test_automatic_rename_option(session):
 def test_blank_pane_count(session):
     """:todo: Verify blank panes of various types build into workspaces."""
     yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
-    test_config = kaptan.Kaptan().import_config(str(yaml_config_file)).get()
+    test_config = ConfigReader._from_file(yaml_config_file)
+
     test_config = config.expand(test_config)
     builder = WorkspaceBuilder(sconf=test_config)
     builder.build(session=session)
@@ -435,13 +423,13 @@ def test_blank_pane_count(session):
 
 
 def test_start_directory(session, tmp_path: pathlib.Path):
-    yaml_config = test_utils.read_config_file("workspacebuilder/start_directory.yaml")
     test_dir = tmp_path / "foo bar"
     test_dir.mkdir()
+
+    yaml_config = test_utils.read_config_file("workspacebuilder/start_directory.yaml")
     test_config = yaml_config.format(TEST_DIR=test_dir)
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(test_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=test_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -483,10 +471,9 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     test_dir.mkdir()
     config_dir = tmp_path / "testRelConfigDir"
     config_dir.mkdir()
-    test_config = yaml_config.format(TEST_DIR=test_dir)
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(test_config).get()
+    test_config = yaml_config.format(TEST_DIR=test_dir)
+    sconfig = ConfigReader._load(format="yaml", content=test_config)
     # the second argument of os.getcwd() mimics the behavior
     # the CLI loader will do, but it passes in the config file's location.
     sconfig = config.expand(sconfig, config_dir)
@@ -518,11 +505,9 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     has_lt_version("3.2a"), reason="needs format introduced in tmux >= 3.2a"
 )
 def test_start_directory_sets_session_path(server):
-    yaml_config = test_utils.read_config_file(
-        "workspacebuilder/start_directory_session_path.yaml"
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/start_directory_session_path.yaml")
     )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -540,9 +525,7 @@ def test_pane_order(session):
     """Pane ordering based on position in config and ``pane_index``.
 
     Regression test for https://github.com/tmux-python/tmuxp/issues/15.
-
     """
-
     yaml_config = test_utils.read_config_file(
         "workspacebuilder/pane_ordering.yaml"
     ).format(HOME=os.path.realpath(os.path.expanduser("~")))
@@ -555,25 +538,23 @@ def test_pane_order(session):
         os.path.realpath(os.path.expanduser("~")),
     ]
 
-    s = session
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
 
     window_count = len(session._windows)  # current window count
-    assert len(s._windows) == window_count
+    assert len(session._windows) == window_count
 
-    for w, wconf in builder.iter_create_windows(s):
+    for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
-            assert len(s._windows) == window_count
+            assert len(session._windows) == window_count
 
         assert isinstance(w, Window)
 
-        assert len(s._windows) == window_count
+        assert len(session._windows) == window_count
         window_count += 1
 
     for w in session.windows:
@@ -593,13 +574,13 @@ def test_pane_order(session):
 
 
 def test_window_index(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/window_index.yaml")
     proc = session.cmd("show-option", "-gv", "base-index")
     base_index = int(proc.stdout[0])
     name_index_map = {"zero": 0 + base_index, "one": 1 + base_index, "five": 5}
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        test_utils.get_config_file("workspacebuilder/window_index.yaml")
+    )
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -614,12 +595,11 @@ def test_before_load_throw_error_if_retcode_error(server):
     config_script_fails = test_utils.read_config_file(
         "workspacebuilder/config_script_fails.yaml"
     )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    yaml = config_script_fails.format(
+    yaml_config = config_script_fails.format(
         script_failed=FIXTURE_PATH / "script_failed.sh",
     )
 
-    sconfig = sconfig.import_config(yaml).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -639,22 +619,21 @@ def test_before_load_throw_error_if_file_not_exists(server):
     config_script_not_exists = test_utils.read_config_file(
         "workspacebuilder/config_script_not_exists.yaml"
     )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    yaml = config_script_not_exists.format(
+    yaml_config = config_script_not_exists.format(
         script_not_exists=FIXTURE_PATH / "script_not_exists.sh",
     )
-    sconfig = sconfig.import_config(yaml).get()
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig)
 
-    with temp_session(server) as sess:
-        session_name = sess.name
-        temp_session_exists = server.has_session(sess.name)
+    with temp_session(server) as session:
+        session_name = session.name
+        temp_session_exists = server.has_session(session.name)
         assert temp_session_exists
         with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)) as excinfo:
-            builder.build(session=sess)
+            builder.build(session=session)
             excinfo.match(r"No such file or directory")
         result = server.has_session(session_name)
         assert not result, "Kills session if before_script doesn't exist"
@@ -666,12 +645,9 @@ def test_before_load_true_if_test_passes(server):
     )
     script_complete_sh = FIXTURE_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
-    sconfig = kaptan.Kaptan(handler="yaml")
-    yaml = config_script_completes.format(
-        script_complete=script_complete_sh,
-    )
 
-    sconfig = sconfig.import_config(yaml).get()
+    yaml_config = config_script_completes.format(script_complete=script_complete_sh)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -687,10 +663,10 @@ def test_before_load_true_if_test_passes_with_args(server):
     )
     script_complete_sh = FIXTURE_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
-    sconfig = kaptan.Kaptan(handler="yaml")
-    yaml = config_script_completes.format(script_complete=script_complete_sh)
 
-    sconfig = sconfig.import_config(yaml).get()
+    yaml_config = config_script_completes.format(script_complete=script_complete_sh)
+
+    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -703,10 +679,9 @@ def test_before_load_true_if_test_passes_with_args(server):
 def test_plugin_system_before_workspace_builder(
     monkeypatch_plugin_test_packages, session
 ):
-    config_plugins = test_utils.read_config_file("workspacebuilder/plugin_bwb.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/plugin_bwb.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
@@ -719,10 +694,9 @@ def test_plugin_system_before_workspace_builder(
 
 
 def test_plugin_system_on_window_create(monkeypatch_plugin_test_packages, session):
-    config_plugins = test_utils.read_config_file("workspacebuilder/plugin_owc.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/plugin_owc.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
@@ -735,10 +709,9 @@ def test_plugin_system_on_window_create(monkeypatch_plugin_test_packages, sessio
 
 
 def test_plugin_system_after_window_finished(monkeypatch_plugin_test_packages, session):
-    config_plugins = test_utils.read_config_file("workspacebuilder/plugin_awf.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/plugin_awf.yaml")
+    )
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
@@ -751,12 +724,11 @@ def test_plugin_system_after_window_finished(monkeypatch_plugin_test_packages, s
 
 
 def test_plugin_system_on_window_create_multiple_windows(session):
-    config_plugins = test_utils.read_config_file(
-        "workspacebuilder/plugin_owc_multiple_windows.yaml"
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file(
+            "workspacebuilder/plugin_owc_multiple_windows.yaml"
+        )
     )
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
@@ -772,12 +744,11 @@ def test_plugin_system_on_window_create_multiple_windows(session):
 def test_plugin_system_after_window_finished_multiple_windows(
     monkeypatch_plugin_test_packages, session
 ):
-    config_plugins = test_utils.read_config_file(
-        "workspacebuilder/plugin_awf_multiple_windows.yaml"
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file(
+            "workspacebuilder/plugin_awf_multiple_windows.yaml"
+        )
     )
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
@@ -791,12 +762,9 @@ def test_plugin_system_after_window_finished_multiple_windows(
 
 
 def test_plugin_system_multiple_plugins(monkeypatch_plugin_test_packages, session):
-    config_plugins = test_utils.read_config_file(
-        "workspacebuilder/plugin_multiple_plugins.yaml"
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/plugin_multiple_plugins.yaml")
     )
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(config_plugins).get()
     sconfig = config.expand(sconfig)
 
     builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
@@ -816,9 +784,9 @@ def test_plugin_system_multiple_plugins(monkeypatch_plugin_test_packages, sessio
 
 
 def test_load_configs_same_session(server):
-    yaml_config = test_utils.read_config_file("workspacebuilder/three_windows.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/three_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
@@ -826,20 +794,18 @@ def test_load_configs_same_session(server):
     assert len(server.sessions) == 1
     assert len(server.sessions[0]._windows) == 3
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_windows.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/two_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
     assert len(server.sessions) == 2
     assert len(server.sessions[1]._windows) == 2
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_windows.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/two_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build(server.sessions[1], True)
@@ -849,9 +815,9 @@ def test_load_configs_same_session(server):
 
 
 def test_load_configs_separate_sessions(server):
-    yaml_config = test_utils.read_config_file("workspacebuilder/three_windows.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/three_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
@@ -859,10 +825,9 @@ def test_load_configs_separate_sessions(server):
     assert len(server.sessions) == 1
     assert len(server.sessions[0]._windows) == 3
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_windows.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/two_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
@@ -873,17 +838,16 @@ def test_load_configs_separate_sessions(server):
 
 
 def test_find_current_active_pane(server, monkeypatch):
-    yaml_config = test_utils.read_config_file("workspacebuilder/three_windows.yaml")
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/three_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_windows.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    sconfig = ConfigReader._from_file(
+        path=test_utils.get_config_file("workspacebuilder/two_windows.yaml")
+    )
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
@@ -1032,12 +996,8 @@ def test_load_workspace_enter(
     should_see,
 ):
     yaml_config = tmp_path / "simple.yaml"
-    yaml_config.write_text(
-        yaml,
-        encoding="utf-8",
-    )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(str(yaml_config)).get()
+    yaml_config.write_text(yaml, encoding="utf-8")
+    sconfig = ConfigReader._from_file(yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1156,12 +1116,8 @@ def test_load_workspace_sleep(
     output,
 ):
     yaml_config = tmp_path / "simple.yaml"
-    yaml_config.write_text(
-        yaml,
-        encoding="utf-8",
-    )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(str(yaml_config)).get()
+    yaml_config.write_text(yaml, encoding="utf-8")
+    sconfig = ConfigReader._from_file(yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1183,12 +1139,11 @@ def test_load_workspace_sleep(
 
 
 def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
-    yaml_config = test_utils.read_config_file(
+    yaml_config = test_utils.get_config_file(
         "workspacebuilder/first_pane_start_directory.yaml"
     )
 
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(str(yaml_config)).get()
+    sconfig = ConfigReader._from_file(yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 
@@ -1215,10 +1170,8 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
     has_lt_version("2.9"), reason="needs option introduced in tmux >= 2.9"
 )
 def test_layout_main_horizontal(session):
-    yaml_config = test_utils.read_config_file("workspacebuilder/three_pane.yaml")
-
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+    yaml_config = test_utils.get_config_file("workspacebuilder/three_pane.yaml")
+    sconfig = ConfigReader._from_file(path=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig)
     builder.build(session=session)
@@ -1303,11 +1256,11 @@ def test_issue_800_default_size_many_windows(
 
     See also: https://github.com/tmux-python/tmuxp/issues/800
     """
-    yaml_config = test_utils.read_config_file(
+    yaml_config = test_utils.get_config_file(
         "regressions/issue_800_default_size_many_windows.yaml"
     )
-    sconfig = kaptan.Kaptan(handler="yaml")
-    sconfig = sconfig.import_config(yaml_config).get()
+
+    sconfig = ConfigReader._from_file(yaml_config)
     sconfig = config.expand(sconfig)
     sconfig = config.trickle(sconfig)
 

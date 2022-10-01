@@ -19,6 +19,18 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+**Maintenance release, no features or fixes**
+
+### Internal
+
+- Add `ConfigReader`: Our clean, typed parser for raw strings and files (#828)
+
+  This is our shiny, new, 200-line, doctested and typed parser that replaces `kaptan`.
+
+### Packaging
+
+- Drop kaptan dependency (#828)
+
 ## tmuxp 1.15.3 (2022-10-01)
 
 ### Bug fixes

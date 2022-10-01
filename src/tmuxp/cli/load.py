@@ -13,10 +13,10 @@ import sys
 from typing import List
 
 import click
-import kaptan
 
 from libtmux.common import has_gte_version
 from libtmux.server import Server
+from tmuxp import config_reader
 
 from .. import config, exc, log, util
 from ..workspacebuilder import WorkspaceBuilder
@@ -266,7 +266,7 @@ def load_workspace(
     Notes
     -----
 
-    tmuxp will check and load a configuration file. The file will use kaptan
+    tmuxp will check and load a configuration file. The file will use ConfigReader
     to load a JSON/YAML into a :py:obj:`dict`. Then :func:`config.expand` and
     :func:`config.trickle` will be used to expand any shorthands, template
     variables, or file paths relative to where the config/script is executed
@@ -333,18 +333,18 @@ def load_workspace(
        Accessed April 8th, 2018.
     """
     # get the canonical path, eliminating any symlinks
-    config_file = os.path.realpath(config_file)
+    if isinstance(config_file, str):
+        config_file = pathlib.Path(config_file)
 
     tmuxp_echo(
         click.style("[Loading] ", fg="green")
-        + click.style(config_file, fg="blue", bold=True)
+        + click.style(str(config_file), fg="blue", bold=True)
     )
 
-    # kaptan allows us to open a yaml or json file as a dict
-    sconfig = kaptan.Kaptan()
-    sconfig = sconfig.import_config(config_file).get()
+    # ConfigReader allows us to open a yaml or json file as a dict
+    raw_config = config_reader.ConfigReader._from_file(config_file)
     # shapes configurations relative to config / profile file location
-    sconfig = config.expand(sconfig, os.path.dirname(config_file))
+    sconfig = config.expand(raw_config, cwd=os.path.dirname(config_file))
     # Overwrite session name
     if new_session_name:
         sconfig["session_name"] = new_session_name

@@ -115,6 +115,12 @@ If you need an internal API stabilized please [file an issue](https://github.com
 .. automethod:: tmuxp.config.import_tmuxinator
 ```
 
+## Configuration reader
+
+```{eval-rst}
+.. automodule:: tmuxp.config_reader
+```
+
 ## Workspace Builder
 
 ```{eval-rst}
