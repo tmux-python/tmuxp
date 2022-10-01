@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.15.3 (unreleased)
+
+### Bug fixes
+
+- WorkspaceBuilder: Fix bug in `start_directory` (#829, credit: @heindsight)
+
 ## tmuxp 1.15.2 (2022-09-24)
 
 **Maintenance release, no features or fixes**
