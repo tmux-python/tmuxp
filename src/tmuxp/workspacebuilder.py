@@ -214,7 +214,8 @@ class WorkspaceBuilder:
                         "start_directory"
                     ]
                 session = self.server.new_session(
-                    session_name=self.sconf["session_name"]
+                    session_name=self.sconf["session_name"],
+                    **new_session_kwargs,
                 )
 
             assert self.sconf["session_name"] == session.name
