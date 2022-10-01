@@ -144,6 +144,11 @@ exclude_lines = [
   "def parse_args",
 ]
 
+[tool.mypy]
+files = [
+  "src/tmuxp/config_reader.py",
+]
+
 [[tool.mypy.overrides]]
 module = [
   "kaptan",
