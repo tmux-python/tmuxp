@@ -90,6 +90,7 @@ flake8-comprehensions = "*"
 mypy = "*"
 types-colorama = "*"
 types-docutils = "*"
+types-PyYAML = "*"
 
 [tool.poetry.extras]
 docs = [
@@ -118,6 +119,7 @@ lint = [
   "mypy",
   "types-colorama",
   "types-docutils",
+  "types-PyYAML",
 ]
 
 [tool.coverage.run]

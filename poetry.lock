@@ -932,6 +932,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-PyYAML"
+version = "6.0.12"
+description = "Typing stubs for PyYAML"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.3.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -985,7 +993,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "9c6487873c1caebe7d4b6f0e5fa0aaaa077fc00bc6df547b8a67ae66b83b475c"
+content-hash = "413b9020a61449f8cc62f889cb484915c52398bf3df3d8a2913e4df0a6ff191d"
 
 [metadata.files]
 aafigure = [
@@ -1536,6 +1544,10 @@ types-colorama = [
 types-docutils = [
     {file = "types-docutils-0.19.1.tar.gz", hash = "sha256:7df133b87105af410fc6a992030a70ee9f5a2c2636c5afe7e0de285eb9fdb015"},
     {file = "types_docutils-0.19.1-py3-none-any.whl", hash = "sha256:6b110b17ba4bfbde765b69acca6a6da373094d99a5a3bce1d5a8c9d29b293d89"},
+]
+types-PyYAML = [
+    {file = "types-PyYAML-6.0.12.tar.gz", hash = "sha256:f6f350418125872f3f0409d96a62a5a5ceb45231af5cc07ee0034ec48a3c82fa"},
+    {file = "types_PyYAML-6.0.12-py3-none-any.whl", hash = "sha256:29228db9f82df4f1b7febee06bbfb601677882e98a3da98132e31c6874163e15"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.3.0-py3-none-any.whl", hash = "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02"},
