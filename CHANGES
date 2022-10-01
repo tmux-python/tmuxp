@@ -19,7 +19,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
-## tmuxp 1.15.3 (unreleased)
+## tmuxp 1.15.3 (2022-10-01)
 
 ### Bug fixes
 
