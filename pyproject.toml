@@ -66,6 +66,7 @@ sphinx-copybutton = "*"
 sphinxext-rediraffe = "*"
 myst_parser = "*"
 docutils = "*"
+importlib-metadata = "<5"  # https://github.com/PyCQA/flake8/issues/1701
 
 ### Testing ###
 pytest = "*"
