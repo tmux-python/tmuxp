@@ -154,7 +154,6 @@ files = [
 [[tool.mypy.overrides]]
 module = [
   "aafigure",
-  "libtmux.*",
   "IPython.*",
   "ptpython.*",
   "prompt_toolkit.*",
