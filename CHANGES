@@ -19,6 +19,16 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Insert changes/features/fixes for next release here_
 
+## tmuxp 1.16.1 (unreleased)
+
+### Bug fix
+
+- Update libtmux 0.15.7 -> 0.15.8
+
+  Includes an improvement for blank window names, e.g. `window_name: ''`
+
+  See also: https://github.com/tmux-python/libtmux/pull/444
+
 ## tmuxp 1.16.0 (2022-10-01)
 
 **Maintenance release, no features or fixes**
