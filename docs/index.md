@@ -31,10 +31,11 @@ plugins/index
 :caption: Project
 :hidden:
 
+developing
+api
+history
+migration
 about_tmux
 glossary
-api
-developing
-history
 GitHub <https://github.com/tmux-python/tmuxp>
 ```

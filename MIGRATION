@@ -1,0 +1,28 @@
+# Migration notes
+
+Migration and deprecation notes for tmuxp are here, see {ref}`changelog` as
+well.
+
+```{admonition} Welcome on board! 👋
+1. 📌 For safety, **always** pin the package
+2. 📖 Check the migration notes _(You are here)_
+3. 📣 If you feel something got deprecated and it interrupted you - past, present, or future - voice your opinion on the [tracker].
+
+   We want to make tmuxp fun, reliable, and useful for users.
+
+   API changes can be painful.
+
+   If we can do something to draw the sting, we'll do it. We're taking a balanced approach. That's why these notes are here!
+
+   (Please pin the package. 🙏)
+
+   [tracker]: https://github.com/tmux-python/tmuxp/discussions
+```
+
+## Next release
+
+_Add migration notes here_
+
+<!---
+# vim: set filetype=markdown:
+-->
