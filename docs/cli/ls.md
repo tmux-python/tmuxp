@@ -1,10 +1,15 @@
+(cli-ls)=
+
 (ls-config)=
 
 # tmuxp ls
 
+List sesssions.
+
 ```{eval-rst}
-.. click:: tmuxp.cli.ls:command_ls
-    :prog: tmuxp ls
-    :commands: ls
-    :nested: full
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: ls
 ```

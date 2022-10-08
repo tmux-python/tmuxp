@@ -2,7 +2,19 @@
 
 (tmuxp-load)=
 
+(tmuxp-load-reference)=
+
 # tmuxp load
+
+```{eval-rst}
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: load
+```
+
+## Usage
 
 You can load your tmuxp file and attach the vim session via a few
 shorthands:
@@ -135,15 +147,4 @@ $ tmuxp load [filename] --log-file [log_filename]
 
 ```console
 $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
-```
-
-## Reference
-
-(tmuxp-load-reference)=
-
-```{eval-rst}
-.. click:: tmuxp.cli.load:command_load
-    :prog: tmuxp load
-    :commands: load
-    :nested: full
 ```

@@ -1,10 +1,13 @@
 (edit-config)=
 
+(cli-edit)=
+
 # tmuxp edit
 
 ```{eval-rst}
-.. click:: tmuxp.cli.edit:command_edit
-    :prog: tmuxp edit
-    :commands: edit
-    :nested: full
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: edit
 ```

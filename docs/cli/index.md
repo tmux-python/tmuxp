@@ -21,7 +21,6 @@ edit
 import
 convert
 freeze
-
 ```
 
 ```{toctree}
@@ -29,12 +28,28 @@ freeze
 :maxdepth: 1
 
 debug-info
-
 ```
 
 ```{toctree}
-:caption: More
+:caption: Completion
 :maxdepth: 1
 
 completion
+```
+
+(cli-main)=
+
+(tmuxp-main)=
+
+## Command: `tmuxp`
+
+```{eval-rst}
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :nosubcommands:
+
+    subparser_name : @replace
+        See :ref:`cli-ls`
 ```

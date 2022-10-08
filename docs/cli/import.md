@@ -7,9 +7,11 @@
 ## From teamocil
 
 ```{eval-rst}
-.. click:: tmuxp.cli.import_config:command_import_teamocil
-    :prog: tmuxp import teamocil
-    :nested: full
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: import teamocil
 ```
 
 ````{tab} YAML
@@ -33,9 +35,11 @@ $ tmuxp import teamocil /path/to/file.json
 ## From tmuxinator
 
 ```{eval-rst}
-.. click:: tmuxp.cli.import_config:command_import_tmuxinator
-    :prog: tmuxp import tmuxinator
-    :nested: short
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: import tmuxinator
 ```
 
 ````{tab} YAML
