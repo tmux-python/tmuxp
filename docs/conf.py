@@ -28,7 +28,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "aafig",
-    "sphinx_click.ext",  # sphinx-click
+    "sphinxarg.ext",  # sphinx-argparse
     "sphinx_inline_tabs",
     "sphinx_copybutton",
     "sphinxext.opengraph",
