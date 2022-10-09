@@ -96,7 +96,7 @@ types-docutils = "*"
 types-PyYAML = "*"
 
 ### Quirks ###
-importlib-metadata = "<5"  # https://github.com/PyCQA/flake8/issues/1701
+importlib-metadata = "<5" # https://github.com/PyCQA/flake8/issues/1701
 
 [tool.poetry.extras]
 docs = [
@@ -152,7 +152,8 @@ exclude_lines = [
 
 [tool.mypy]
 files = [
-  "src/tmuxp/config_reader.py",
+  "src/",
+  "tests/",
 ]
 
 [[tool.mypy.overrides]]
