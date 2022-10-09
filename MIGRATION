@@ -21,7 +21,20 @@ well.
 
 ## Next release
 
-_Add migration notes here_
+_Notes on the upcoming release will be added here_
+
+<!-- Maintainers, insert changes / features for the next release here -->
+
+## 1.17.x (unreleased)
+
+**Completions have changed** (#830)
+
+Completions now use a different tool: [shtab]. See the [completions page] for more information.
+
+If you were using earlier versions of tmuxp (earlier than 1.17.0), you may need to uninstall the old completions, first.
+
+[completions page]: https://tmuxp.git-pull.com/cli/completion.html
+[shtab]: https://docs.iterative.ai/shtab/
 
 <!---
 # vim: set filetype=markdown:
