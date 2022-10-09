@@ -25,7 +25,7 @@ def create_debug_info_subparser(
 
 def command_debug_info(
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     """
     Print debug info to submit with Issues.
     """

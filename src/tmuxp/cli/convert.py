@@ -31,7 +31,7 @@ def command_convert(
     config_file: t.Union[str, pathlib.Path],
     answer_yes: bool,
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     """Convert a tmuxp config between JSON and YAML."""
     config_file = scan_config(config_file, config_dir=get_config_dir())
 

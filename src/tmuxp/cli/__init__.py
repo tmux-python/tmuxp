@@ -7,7 +7,9 @@ tmuxp.cli
 import argparse
 import logging
 import os
+import pathlib
 import sys
+import typing as t
 
 from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import has_minimum_version
@@ -19,18 +21,27 @@ from ..log import setup_logger
 from .convert import command_convert, create_convert_subparser
 from .debug_info import command_debug_info, create_debug_info_subparser
 from .edit import command_edit, create_edit_subparser
-from .freeze import command_freeze, create_freeze_subparser
+from .freeze import CLIFreezeNamespace, command_freeze, create_freeze_subparser
 from .import_config import (
     command_import_teamocil,
     command_import_tmuxinator,
     create_import_subparser,
 )
-from .load import command_load, create_load_subparser
+from .load import CLILoadNamespace, command_load, create_load_subparser
 from .ls import command_ls, create_ls_subparser
-from .shell import command_shell, create_shell_subparser
+from .shell import CLIShellNamespace, command_shell, create_shell_subparser
 from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
+
+if t.TYPE_CHECKING:
+    from typing_extensions import Literal, TypeAlias
+
+    CLIVerbosity: TypeAlias = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    CLISubparserName: TypeAlias = Literal[
+        "ls", "load", "convert", "edit", "import", "shell", "debug-info"
+    ]
+    CLIImportSubparserName: TypeAlias = Literal["teamocil", "tmuxinator"]
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -83,7 +94,17 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def cli(args=None):
+class CLINamespace(argparse.Namespace):
+    log_level: "CLIVerbosity"
+    subparser_name: "CLISubparserName"
+    import_subparser_name: t.Optional["CLIImportSubparserName"]
+    version: bool
+
+
+ns = CLINamespace()
+
+
+def cli(_args: t.Optional[t.List[str]] = None) -> None:
     """Manage tmux sessions.
 
     Pass the "--help" argument to any command to see detailed help.
@@ -96,11 +117,11 @@ def cli(args=None):
         tmuxp_echo("tmux not found. tmuxp requires you install tmux first.")
         sys.exit()
     except exc.TmuxpException as e:
-        tmuxp_echo(e, err=True)
+        tmuxp_echo(str(e))
         sys.exit()
 
     parser = create_parser()
-    args = parser.parse_args(args)
+    args = parser.parse_args(_args, namespace=ns)
 
     setup_logger(logger=logger, level=args.log_level.upper())
 
@@ -109,28 +130,12 @@ def cli(args=None):
         return
     elif args.subparser_name == "load":
         command_load(
-            config_file=args.config_file,
-            socket_name=args.socket_name,
-            socket_path=args.socket_path,
-            tmux_config_file=args.tmux_config_file,
-            new_session_name=args.new_session_name,
-            answer_yes=args.answer_yes,
-            detached=args.detached,
-            append=args.append,
-            colors=args.colors,
-            log_file=args.log_file,
+            args=CLILoadNamespace(**vars(args)),
             parser=parser,
         )
     elif args.subparser_name == "shell":
         command_shell(
-            session_name=args.session_name,
-            window_name=args.window_name,
-            socket_name=args.socket_name,
-            socket_path=args.socket_path,
-            command=args.command,
-            shell=args.shell,
-            use_pythonrc=args.use_pythonrc,
-            use_vi_mode=args.use_vi_mode,
+            args=CLIShellNamespace(**vars(args)),
             parser=parser,
         )
     elif args.subparser_name == "import":
@@ -164,21 +169,14 @@ def cli(args=None):
         )
     elif args.subparser_name == "freeze":
         command_freeze(
-            session_name=args.session_name,
-            socket_name=args.socket_name,
-            socket_path=args.socket_path,
-            config_format=args.config_format,
-            save_to=args.save_to,
-            answer_yes=args.answer_yes,
-            quiet=args.quiet,
-            force=args.force,
+            args=CLIFreezeNamespace(**vars(args)),
             parser=parser,
         )
     elif args.subparser_name == "ls":
         command_ls(parser=parser)
 
 
-def startup(config_dir):
+def startup(config_dir: pathlib.Path) -> None:
     """
     Initialize CLI.
 

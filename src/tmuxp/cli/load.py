@@ -15,9 +15,9 @@ import typing as t
 
 from libtmux.common import has_gte_version
 from libtmux.server import Server
-from tmuxp import config_reader
+from libtmux.session import Session
 
-from .. import config, exc, log, util
+from .. import config, config_reader, exc, log, util
 from ..workspacebuilder import WorkspaceBuilder
 from .utils import (
     get_config_dir,
@@ -28,8 +28,25 @@ from .utils import (
     tmuxp_echo,
 )
 
+if t.TYPE_CHECKING:
+    from typing_extensions import Literal, TypeAlias
 
-def set_layout_hook(session, hook_name):
+    CLIColorsLiteral: TypeAlias = Literal[56, 88]
+
+
+class CLILoadNamespace(argparse.Namespace):
+    config_file: str
+    socket_name: t.Optional[str]
+    socket_path: t.Optional[str]
+    tmux_config_file: t.Optional[str]
+    new_session_name: t.Optional[str]
+    answer_yes: t.Optional[bool]
+    append: t.Optional[bool]
+    colors: t.Optional["CLIColorsLiteral"]
+    log_file: t.Optional[str]
+
+
+def set_layout_hook(session: Session, hook_name: str) -> None:
     """Set layout hooks to normalize layout.
 
     References:
@@ -81,16 +98,16 @@ def set_layout_hook(session, hook_name):
     hook_cmd.append(f"selectw -t {attached_window.id}")
 
     # join the hook's commands with semicolons
-    hook_cmd = "{}".format("; ".join(hook_cmd))
+    _hook_cmd = "{}".format("; ".join(hook_cmd))
 
     # append the hook command
-    cmd.append(hook_cmd)
+    cmd.append(_hook_cmd)
 
     # create the hook
     session.cmd(*cmd)
 
 
-def load_plugins(sconf):
+def load_plugins(sconf: t.Any) -> t.List[t.Any]:
     """
     Load and return plugins in config
     """
@@ -125,7 +142,7 @@ def load_plugins(sconf):
     return plugins
 
 
-def _reattach(builder):
+def _reattach(builder: WorkspaceBuilder):
     """
     Reattach session (depending on env being inside tmux already or not)
 
@@ -154,7 +171,7 @@ def _reattach(builder):
         builder.session.attach_session()
 
 
-def _load_attached(builder, detached):
+def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     """
     Load config in new session
 
@@ -187,7 +204,7 @@ def _load_attached(builder, detached):
             builder.session.attach_session()
 
 
-def _load_detached(builder):
+def _load_detached(builder: WorkspaceBuilder) -> None:
     """
     Load config in new session but don't attach
 
@@ -204,7 +221,7 @@ def _load_detached(builder):
     print("Session created in detached state.")
 
 
-def _load_append_windows_to_current_session(builder):
+def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     """
     Load config as new windows in current session
 
@@ -219,7 +236,7 @@ def _load_append_windows_to_current_session(builder):
         set_layout_hook(builder.session, "client-session-changed")
 
 
-def _setup_plugins(builder):
+def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     """
     Runs after before_script
 
@@ -234,16 +251,16 @@ def _setup_plugins(builder):
 
 
 def load_workspace(
-    config_file,
-    socket_name=None,
-    socket_path=None,
-    tmux_config_file=None,
-    new_session_name=None,
-    colors=None,
-    detached=False,
-    answer_yes=False,
-    append=False,
-):
+    config_file: t.Union[pathlib.Path, str],
+    socket_name: t.Optional[str] = None,
+    socket_path: None = None,
+    tmux_config_file: None = None,
+    new_session_name: t.Optional[str] = None,
+    colors: t.Optional[int] = None,
+    detached: bool = False,
+    answer_yes: bool = False,
+    append: bool = False,
+) -> t.Optional[Session]:
     """
     Load a tmux "workspace" session via tmuxp file.
 
@@ -371,8 +388,8 @@ def load_workspace(
             sconf=sconfig, plugins=load_plugins(sconfig), server=t
         )
     except exc.EmptyConfigException:
-        tmuxp_echo("%s is empty or parsed no config data" % config_file, err=True)
-        return
+        tmuxp_echo("%s is empty or parsed no config data" % config_file)
+        return None
 
     session_name = sconfig["session_name"]
 
@@ -386,7 +403,7 @@ def load_workspace(
             )
         ):
             _reattach(builder)
-        return
+        return None
 
     try:
         if detached:
@@ -427,8 +444,8 @@ def load_workspace(
     except exc.TmuxpException as e:
         import traceback
 
-        tmuxp_echo(traceback.format_exc(), err=True)
-        tmuxp_echo(e, err=True)
+        tmuxp_echo(traceback.format_exc())
+        tmuxp_echo(str(e))
 
         choice = prompt_choices(
             "Error loading workspace. (k)ill, (a)ttach, (d)etach?",
@@ -552,18 +569,9 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
 
 
 def command_load(
-    config_file: t.Union[str, pathlib.Path],
-    socket_name: t.Optional[str] = None,
-    socket_path: t.Optional[str] = None,
-    tmux_config_file: t.Optional[str] = None,
-    new_session_name: t.Optional[str] = None,
-    answer_yes: t.Optional[bool] = None,
-    detached: t.Optional[bool] = None,
-    append: t.Optional[str] = None,
-    colors: t.Optional[str] = None,
-    log_file: t.Optional[str] = None,
+    args: CLILoadNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     """Load a tmux workspace from each CONFIG.
 
     CONFIG is a specifier for a configuration file.
@@ -588,34 +596,31 @@ def command_load(
     """
     util.oh_my_zsh_auto_title()
 
-    if isinstance(config_file, str):
-        config_file = pathlib.Path(config_file)
-
-    if log_file:
-        logfile_handler = logging.FileHandler(log_file)
+    if args.log_file:
+        logfile_handler = logging.FileHandler(args.log_file)
         logfile_handler.setFormatter(log.LogFormatter())
         from . import logger
 
         logger.addHandler(logfile_handler)
 
     tmux_options = {
-        "socket_name": socket_name,
-        "socket_path": socket_path,
-        "tmux_config_file": tmux_config_file,
-        "new_session_name": new_session_name,
-        "answer_yes": answer_yes,
-        "colors": colors,
-        "detached": detached,
-        "append": append,
+        "socket_name": args.socket_name,
+        "socket_path": args.socket_path,
+        "tmux_config_file": args.tmux_config_file,
+        "new_session_name": args.new_session_name,
+        "answer_yes": args.answer_yes,
+        "colors": args.colors,
+        "detached": args.detached,
+        "append": args.append,
     }
 
-    if config_file is None:
+    if args.config_file is None:
         tmuxp_echo("Enter at least one config")
         if parser is not None:
             parser.print_help()
         sys.exit()
 
-    config_file = scan_config(config_file, config_dir=get_config_dir())
+    config_file = scan_config(args.config_file, config_dir=get_config_dir())
 
     if isinstance(config_file, str):
         load_workspace(config_file, **tmux_options)

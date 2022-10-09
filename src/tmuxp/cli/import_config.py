@@ -17,7 +17,7 @@ from .utils import (
 )
 
 
-def get_tmuxinator_dir():
+def get_tmuxinator_dir() -> str:
     """
     Return tmuxinator configuration directory.
 
@@ -38,7 +38,7 @@ def get_tmuxinator_dir():
     return os.path.expanduser("~/.tmuxinator/")
 
 
-def get_teamocil_dir():
+def get_teamocil_dir() -> str:
     """
     Return teamocil configuration directory.
 
@@ -54,7 +54,7 @@ def get_teamocil_dir():
     return os.path.expanduser("~/.teamocil/")
 
 
-def _resolve_path_no_overwrite(config):
+def _resolve_path_no_overwrite(config: str) -> str:
     path = get_abs_path(config)
     if os.path.exists(path):
         raise ValueError("%s exists. Pick a new filename." % path)
@@ -115,10 +115,10 @@ def create_import_subparser(
 
 
 def import_config(
-    config_file,
-    importfunc,
+    config_file: str,
+    importfunc: t.Callable,
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     existing_config = ConfigReader._from_file(pathlib.Path(config_file))
     cfg_reader = ConfigReader(importfunc(existing_config))
 
@@ -168,7 +168,7 @@ def import_config(
 def command_import_tmuxinator(
     config_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     """Convert a tmuxinator config from config_file to tmuxp format and import
     it into tmuxp."""
     config_file = scan_config(config_file, config_dir=get_tmuxinator_dir())
@@ -196,7 +196,7 @@ def create_convert_subparser(
 def command_import_teamocil(
     config_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     """Convert a teamocil config from config_file to tmuxp format and import
     it into tmuxp."""
     config_file = scan_config(config_file, config_dir=get_teamocil_dir())

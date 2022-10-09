@@ -14,7 +14,7 @@ def create_ls_subparser(
 
 def command_ls(
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     tmuxp_dir = get_config_dir()
     if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
         for f in sorted(os.listdir(tmuxp_dir)):

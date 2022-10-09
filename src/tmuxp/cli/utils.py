@@ -1,5 +1,6 @@
 import logging
 import os
+import pathlib
 import re
 import typing as t
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def tmuxp_echo(
     message: t.Optional[str] = None,
-    log_level="INFO",
+    log_level: str = "INFO",
     style_log: bool = False,
 ) -> None:
     """
@@ -30,7 +31,7 @@ def tmuxp_echo(
     print(message)
 
 
-def get_config_dir():
+def get_config_dir() -> str:
     """
     Return tmuxp configuration directory.
 
@@ -62,7 +63,7 @@ def get_config_dir():
     return path
 
 
-def _validate_choices(options):
+def _validate_choices(options: t.List[str]) -> t.Callable:
     """
     Callback wrapper for validating click.prompt input.
 
@@ -90,17 +91,18 @@ def _validate_choices(options):
 
 
 class ConfigPath:
-    def __init__(self, config_dir=None, *args, **kwargs):
+    def __init__(
+        self, config_dir: t.Optional[t.Union[t.Callable, str]] = None, *args, **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.config_dir = config_dir
 
-    def convert(self, value, param, ctx):
-        config_dir = self.config_dir
-        if callable(config_dir):
-            config_dir = config_dir()
+    def convert(
+        self, value: str, param: t.Any, ctx: t.Any
+    ) -> t.Optional[t.Union[str, pathlib.Path]]:
+        config_dir = self.config_dir() if callable(self.config_dir) else self.config_dir
 
-        value = scan_config(value, config_dir=config_dir)
-        return super().convert(value, param, ctx)
+        return scan_config(value, config_dir=config_dir)
 
 
 def scan_config_argument(ctx, param, value, config_dir=None):
@@ -112,7 +114,7 @@ def scan_config_argument(ctx, param, value, config_dir=None):
 
     if not config:
         tmuxp_echo("Enter at least one CONFIG")
-        tmuxp_echo(ctx.get_help(), color=ctx.color)
+        tmuxp_echo(ctx.get_help())
         ctx.exit()
 
     if isinstance(value, str):
@@ -124,7 +126,7 @@ def scan_config_argument(ctx, param, value, config_dir=None):
     return value
 
 
-def get_abs_path(config):
+def get_abs_path(config: str) -> str:
     path = os.path
     join, isabs = path.join, path.isabs
     dirname, normpath = path.dirname, path.normpath
@@ -137,7 +139,10 @@ def get_abs_path(config):
     return config
 
 
-def scan_config(config, config_dir=None):
+def scan_config(
+    config: t.Union[pathlib.Path, str],
+    config_dir: t.Optional[t.Union[pathlib.Path, str]] = None,
+) -> str:
     """
     Return the real config path or raise an exception.
 
@@ -234,7 +239,7 @@ def scan_config(config, config_dir=None):
     return config
 
 
-def is_pure_name(path):
+def is_pure_name(path: str) -> bool:
     """
     Return True if path is a name and not a file path.
 
@@ -332,12 +337,15 @@ def prompt_yes_no(name: str, default: bool = True) -> bool:
     return prompt_bool(name, default=default)
 
 
+_C = t.TypeVar("_C")
+
+
 def prompt_choices(
     name: str,
-    choices: t.List[str],
-    default: t.Optional[str] = None,
+    choices: t.Union[t.List[_C], t.Tuple[str, _C]],
+    default: t.Optional[_C] = None,
     no_choice: t.Sequence[str] = ("none",),
-):
+) -> t.Optional[_C]:
     """Return user input from command line from set of provided choices.
     :param name: prompt text
     :param choices: list or tuple of available choices. Choices may be
@@ -353,14 +361,14 @@ def prompt_choices(
     for choice in choices:
         if isinstance(choice, str):
             options.append(choice)
-        else:
+        elif isinstance(choice, tuple):
             options.append("%s [%s]" % (choice, choice[0]))
             choice = choice[0]
         _choices.append(choice)
 
     while True:
-        rv = prompt(name + " - (%s)" % ", ".join(options), default)
-        if not rv:
+        rv = prompt(name + " - (%s)" % ", ".join(options), default=default)
+        if not rv or rv == default:
             return default
         rv = rv.lower()
         if rv in no_choice:

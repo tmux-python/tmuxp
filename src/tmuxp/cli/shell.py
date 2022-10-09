@@ -7,6 +7,27 @@ from libtmux.server import Server
 from .. import util
 from .._compat import PY3, PYMINOR
 
+if t.TYPE_CHECKING:
+    from typing_extensions import Literal, TypeAlias
+
+    CLIColorsLiteral: TypeAlias = Literal[56, 88]
+    CLIShellLiteral: TypeAlias = Literal[
+        "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython"
+    ]
+
+
+class CLIShellNamespace(argparse.Namespace):
+    session_name: str
+    socket_name: t.Optional[str]
+    socket_path: t.Optional[str]
+    colors: t.Optional["CLIColorsLiteral"]
+    log_file: t.Optional[str]
+    window_name: t.Optional[str]
+    command: t.Optional[str]
+    shell: t.Optional["CLIShellLiteral"]
+    use_pythonrc: bool
+    use_vi_mode: bool
+
 
 def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     parser.add_argument("session_name", metavar="session-name", nargs="?")
@@ -107,16 +128,9 @@ def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.Argument
 
 
 def command_shell(
-    session_name,
-    window_name,
-    socket_name,
-    socket_path,
-    command: t.Optional[str] = None,
-    shell: t.Optional[str] = None,
-    use_pythonrc: bool = False,
-    use_vi_mode: bool = False,
+    args: CLIShellNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     """Launch python shell for tmux server, session, window and pane.
 
     Priority given to loaded session/window/pane objects:
@@ -126,26 +140,28 @@ def command_shell(
     - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.attached_window`,
       :attr:`libtmux.Window.attached_pane`
     """
-    server = Server(socket_name=socket_name, socket_path=socket_path)
+    server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
     util.raise_if_tmux_not_running(server=server)
 
     current_pane = util.get_current_pane(server=server)
 
     session = util.get_session(
-        server=server, session_name=session_name, current_pane=current_pane
+        server=server, session_name=args.session_name, current_pane=current_pane
     )
 
     window = util.get_window(
-        session=session, window_name=window_name, current_pane=current_pane
+        session=session, window_name=args.window_name, current_pane=current_pane
     )
 
     pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
 
-    if command is not None:
-        exec(command)
+    if args.command is not None:
+        exec(args.command)
     else:
-        if shell == "pdb" or (os.getenv("PYTHONBREAKPOINT") and PY3 and PYMINOR >= 7):
+        if args.shell == "pdb" or (
+            os.getenv("PYTHONBREAKPOINT") and PY3 and PYMINOR >= 7
+        ):
             from tmuxp._compat import breakpoint as tmuxp_breakpoint
 
             tmuxp_breakpoint()
@@ -154,9 +170,9 @@ def command_shell(
             from ..shell import launch
 
             launch(
-                shell=shell,
-                use_pythonrc=use_pythonrc,  # shell: code
-                use_vi_mode=use_vi_mode,  # shell: ptpython, ptipython
+                shell=args.shell,
+                use_pythonrc=args.use_pythonrc,  # shell: code
+                use_vi_mode=args.use_vi_mode,  # shell: ptpython, ptipython
                 # tmux environment / libtmux variables
                 server=server,
                 session=session,

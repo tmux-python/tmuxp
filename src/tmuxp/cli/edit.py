@@ -12,8 +12,9 @@ def create_edit_subparser(
 ) -> argparse.ArgumentParser:
     parser.add_argument(
         dest="config_file",
+        metavar="config-file",
         type=str,
-        help="checks current tmuxp and current directory for yaml files.",
+        help="checks current tmuxp and current directory for config files.",
     )
     return parser
 
