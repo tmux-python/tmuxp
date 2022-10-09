@@ -100,7 +100,7 @@ unicode_backport = ["unicodedata2"]
 name = "click"
 version = "8.1.3"
 description = "Composable command line interface toolkit"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -250,7 +250,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "importlib-metadata"
 version = "4.13.0"
 description = "Read metadata from Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -736,6 +736,20 @@ lint = ["docutils-stubs", "flake8 (>=3.5.0)", "flake8-bugbear", "flake8-comprehe
 test = ["cython", "html5lib", "pytest (>=4.6)", "typed_ast"]
 
 [[package]]
+name = "sphinx-argparse"
+version = "0.3.2"
+description = "A sphinx extension that automatically documents argparse commands and options"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+sphinx = ">=1.2.0"
+
+[package.extras]
+markdown = ["CommonMark (>=0.5.6)"]
+
+[[package]]
 name = "sphinx-autobuild"
 version = "2021.3.14"
 description = "Rebuild Sphinx documentation on changes, with live-reload in the browser."
@@ -780,19 +794,6 @@ sphinx = ">=4.0"
 
 [package.extras]
 docs = ["furo", "ipython", "myst-parser", "sphinx-copybutton", "sphinx-inline-tabs"]
-
-[[package]]
-name = "sphinx-click"
-version = "4.3.0"
-description = "Sphinx extension that automatically documents click applications"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-click = ">=7.0"
-docutils = "*"
-sphinx = ">=2.0"
 
 [[package]]
 name = "sphinx-copybutton"
@@ -969,7 +970,7 @@ python-versions = "*"
 name = "typing-extensions"
 version = "4.4.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1001,7 +1002,7 @@ watchmedo = ["PyYAML (>=3.10)"]
 name = "zipp"
 version = "3.9.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1019,7 +1020,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "02bbfa0e2fd180baa58c1474307f15ecdc4304156e52dce31bbce4c7120c4140"
+content-hash = "44f3d12d61307a3b9811ff20816c0860900e29399af5d0dd5823d28dd65b5ded"
 
 [metadata.files]
 aafigure = [
@@ -1471,6 +1472,10 @@ Sphinx = [
     {file = "Sphinx-5.2.3.tar.gz", hash = "sha256:5b10cb1022dac8c035f75767799c39217a05fc0fe2d6fe5597560d38e44f0363"},
     {file = "sphinx-5.2.3-py3-none-any.whl", hash = "sha256:7abf6fabd7b58d0727b7317d5e2650ef68765bbe0ccb63c8795fa8683477eaa2"},
 ]
+sphinx-argparse = [
+    {file = "sphinx-argparse-0.3.2.tar.gz", hash = "sha256:e54ad6c8f895ac6bb9d0dd9fa07e47e137a2a42ae18a714515262e86b4cc4bab"},
+    {file = "sphinx_argparse-0.3.2-py3-none-any.whl", hash = "sha256:499afb62d19966651e1e5d601ac912ca2bdfb43f5dad491305d84bef4414f4f4"},
+]
 sphinx-autobuild = [
     {file = "sphinx-autobuild-2021.3.14.tar.gz", hash = "sha256:de1ca3b66e271d2b5b5140c35034c89e47f263f2cd5db302c9217065f7443f05"},
     {file = "sphinx_autobuild-2021.3.14-py3-none-any.whl", hash = "sha256:8fe8cbfdb75db04475232f05187c776f46f6e9e04cacf1e49ce81bdac649ccac"},
@@ -1482,10 +1487,6 @@ sphinx-autodoc-typehints = [
 sphinx-basic-ng = [
     {file = "sphinx_basic_ng-1.0.0b1-py3-none-any.whl", hash = "sha256:ade597a3029c7865b24ad0eda88318766bcc2f9f4cef60df7e28126fde94db2a"},
     {file = "sphinx_basic_ng-1.0.0b1.tar.gz", hash = "sha256:89374bd3ccd9452a301786781e28c8718e99960f2d4f411845ea75fc7bb5a9b0"},
-]
-sphinx-click = [
-    {file = "sphinx-click-4.3.0.tar.gz", hash = "sha256:bd4db5d3c1bec345f07af07b8e28a76cfc5006d997984e38ae246bbf8b9a3b38"},
-    {file = "sphinx_click-4.3.0-py3-none-any.whl", hash = "sha256:23e85a3cb0b728a421ea773699f6acadefae171d1a764a51dd8ec5981503ccbe"},
 ]
 sphinx-copybutton = [
     {file = "sphinx-copybutton-0.5.0.tar.gz", hash = "sha256:a0c059daadd03c27ba750da534a92a63e7a36a7736dcf684f26ee346199787f6"},

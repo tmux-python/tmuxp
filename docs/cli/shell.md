@@ -1,12 +1,15 @@
 (cli-shell)=
 
+(tmuxp-shell)=
+
 # tmuxp shell
 
 ```{eval-rst}
-.. click:: tmuxp.cli.shell:command_shell
-    :prog: tmuxp shell
-    :commands: shell
-    :nested: none
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: shell
 ```
 
 ## Directly enter commands
@@ -14,8 +17,6 @@
 ```console
 $ tmuxp shell -c 'python code'
 ```
-
-## Example
 
 ```{image} ../_static/tmuxp-shell.gif
 :width: 100%

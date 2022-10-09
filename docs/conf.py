@@ -28,7 +28,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "aafig",
-    "sphinx_click.ext",  # sphinx-click
+    "sphinxarg.ext",  # sphinx-argparse
     "sphinx_inline_tabs",
     "sphinx_copybutton",
     "sphinxext.opengraph",
@@ -164,7 +164,6 @@ texinfo_documents = [
 intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
     "libtmux": ("https://libtmux.git-pull.com/", None),
-    "click": ("http://click.pocoo.org/5", None),
 }
 
 # aafig format, try to get working with pdf

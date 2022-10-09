@@ -46,7 +46,6 @@ tmuxp = 'tmuxp:cli.cli'
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "~8"
 libtmux = "~0.15.8"
 colorama = ">=0.3.9"
 PyYAML = "^6.0"
@@ -60,7 +59,7 @@ furo = "*"
 gp-libs = "0.0.1a16"
 sphinx-autobuild = "*"
 sphinx-autodoc-typehints = "*"
-sphinx-click = "*"
+sphinx-argparse = "*"
 sphinx-inline-tabs = "*"
 sphinxext-opengraph = "*"
 sphinx-copybutton = "*"
@@ -102,7 +101,7 @@ importlib-metadata = "<5" # https://github.com/PyCQA/flake8/issues/1701
 docs = [
   "docutils",
   "sphinx",
-  "sphinx-click",
+  "sphinx-argparse",
   "sphinx-autodoc-typehints",
   "sphinx-autobuild",
   "sphinx-copybutton",

@@ -7,6 +7,16 @@
 Use to collect all relevant information for submitting an issue to
 the project.
 
+```{eval-rst}
+.. argparse::
+    :module: tmuxp.cli
+    :func: create_parser
+    :prog: tmuxp
+    :path: debug-info
+```
+
+## Usage
+
 ```console
 
 $ tmuxp debug-info
@@ -16,13 +26,4 @@ environment:
     arch: x86_64
 ...
 
-```
-
-## Reference
-
-```{eval-rst}
-.. click:: tmuxp.cli.debug_info:command_debug_info
-    :prog: tmuxp debug-info
-    :commands: debug-info
-    :nested: full
 ```

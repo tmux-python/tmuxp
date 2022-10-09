@@ -1,16 +1,20 @@
+import argparse
 import os
-
-import click
+import typing as t
 
 from .constants import VALID_CONFIG_DIR_FILE_EXTENSIONS
 from .utils import get_config_dir
 
 
-@click.command(
-    name="ls",
-    short_help="List configured sessions in :meth:`tmuxp.cli.utils.get_config_dir`.",
-)
-def command_ls():
+def create_ls_subparser(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    return parser
+
+
+def command_ls(
+    parser: t.Optional[argparse.ArgumentParser] = None,
+) -> None:
     tmuxp_dir = get_config_dir()
     if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
         for f in sorted(os.listdir(tmuxp_dir)):

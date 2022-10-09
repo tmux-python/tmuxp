@@ -1,43 +1,64 @@
+import argparse
 import os
 import pathlib
-
-import click
+import typing as t
 
 from tmuxp.config_reader import ConfigReader
 
-from .utils import ConfigPath
+from .utils import get_config_dir, prompt_yes_no, scan_config
 
 
-@click.command(name="convert")
-@click.option(
-    "--yes", "-y", "confirmed", help='Auto confirms with "yes".', is_flag=True
-)
-@click.argument("config", type=ConfigPath(exists=True), nargs=1)
-def command_convert(confirmed, config):
+def create_convert_subparser(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    parser.add_argument(
+        dest="config_file",
+        type=str,
+        metavar="config-file",
+        help="checks tmuxp and current directory for config files.",
+    )
+    parser.add_argument(
+        "--yes",
+        "-y",
+        dest="answer_yes",
+        action="store_true",
+        help="always answer yes",
+    )
+    return parser
+
+
+def command_convert(
+    config_file: t.Union[str, pathlib.Path],
+    answer_yes: bool,
+    parser: t.Optional[argparse.ArgumentParser] = None,
+) -> None:
     """Convert a tmuxp config between JSON and YAML."""
+    config_file = scan_config(config_file, config_dir=get_config_dir())
 
-    _, ext = os.path.splitext(config)
+    if isinstance(config_file, str):
+        config_file = pathlib.Path(config_file)
+
+    _, ext = os.path.splitext(config_file)
     ext = ext.lower()
     if ext == ".json":
         to_filetype = "yaml"
     elif ext in [".yaml", ".yml"]:
         to_filetype = "json"
     else:
-        raise click.BadParameter(
-            f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
-        )
+        raise Exception(f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])")
 
-    configparser = ConfigReader.from_file(pathlib.Path(config))
-    newfile = config.replace(ext, f".{to_filetype}")
+    configparser = ConfigReader.from_file(config_file)
+    newfile = config_file.parent / (str(config_file.stem) + f".{to_filetype}")
 
-    new_config = configparser.dump(format=to_filetype)
+    export_kwargs = {"default_flow_style": False} if to_filetype == "yaml" else {}
+    new_config = configparser.dump(format=to_filetype, indent=2, **export_kwargs)
 
-    if not confirmed:
-        if click.confirm(f"convert to <{config}> to {to_filetype}?"):
-            if click.confirm(f"Save config to {newfile}?"):
-                confirmed = True
+    if not answer_yes:
+        if prompt_yes_no(f"Convert to <{config_file}> to {to_filetype}?"):
+            if prompt_yes_no("Save config to %s?" % newfile):
+                answer_yes = True
 
-    if confirmed:
+    if answer_yes:
         buf = open(newfile, "w")
         buf.write(new_config)
         buf.close()

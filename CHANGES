@@ -17,7 +17,26 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ## tmuxp 1.17.x (unreleased)
 
-- _Insert changes/features/fixes for next release here_
+- Notes on upcoming releases will be added here
+
+<!-- Maintainers, insert changes / features for the next release here -->
+
+### Breaking changes
+
+- **Completions have changed** (#830)
+
+  Completions now use a different tool: [shtab]. See the [completions page] for more information.
+
+  If you were using earlier versions of tmuxp (earlier than 1.17.0), you may need to uninstall the old completions, first.
+
+  [completions page]: https://tmuxp.git-pull.com/cli/completion.html
+  [shtab]: https://docs.iterative.ai/shtab/
+
+- Deprecate `click` in favor of {mod}`argparse` (#830)
+
+### Packages
+
+- Remove `click` dependency
 
 ## tmuxp 1.16.2 (2022-10-08)
 

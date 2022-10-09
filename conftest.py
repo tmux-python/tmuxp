@@ -25,7 +25,7 @@ USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 @pytest.mark.skipif(USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
-def zshrc(user_path: pathlib.Path):
+def zshrc(user_path: pathlib.Path) -> pathlib.Path:
     """This quiets ZSH default message.
 
     Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.
@@ -41,7 +41,7 @@ def home_path_default(monkeypatch: pytest.MonkeyPatch, user_path: pathlib.Path) 
 
 
 @pytest.fixture(scope="function")
-def monkeypatch_plugin_test_packages(monkeypatch):
+def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
     paths = [
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/",
@@ -55,7 +55,7 @@ def monkeypatch_plugin_test_packages(monkeypatch):
 
 
 @pytest.fixture(scope="function")
-def socket_name(request) -> str:
+def socket_name(request: pytest.FixtureRequest) -> str:
     return "tmuxp_test%s" % next(namer)
 
 
