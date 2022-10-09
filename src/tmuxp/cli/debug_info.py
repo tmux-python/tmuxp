@@ -1,12 +1,14 @@
+import argparse
 import os
 import pathlib
 import platform
 import shutil
 import sys
+import typing as t
 
-import click
+from colorama import Fore
 
-from libtmux import __version__ as libtmux_version
+from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import get_version, tmux_cmd
 
 from ..__about__ import __version__
@@ -15,8 +17,15 @@ from .utils import tmuxp_echo
 tmuxp_path = pathlib.Path(__file__).parent.parent
 
 
-@click.command(name="debug-info", short_help="Print out all diagnostic info")
-def command_debug_info():
+def create_debug_info_subparser(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    return parser
+
+
+def command_debug_info(
+    parser: t.Optional[argparse.ArgumentParser] = None,
+):
     """
     Print debug info to submit with Issues.
     """
@@ -40,7 +49,9 @@ def command_debug_info():
         return "\n".join(
             [
                 "\n".join(prepend_tab(std_resp.stdout)),
-                click.style("\n".join(prepend_tab(std_resp.stderr)), fg="red"),
+                Fore.RED,
+                "\n".join(prepend_tab(std_resp.stderr)),
+                Fore.RESET,
             ]
         )
 

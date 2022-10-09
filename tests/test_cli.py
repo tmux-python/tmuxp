@@ -1,4 +1,6 @@
 """Test for tmuxp command line interface."""
+import argparse
+import io
 import json
 import os
 import pathlib
@@ -6,15 +8,12 @@ import typing as t
 
 import pytest
 
-import click
-from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from tmuxp import cli, config, exc
-from tmuxp.cli.debug_info import command_debug_info
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
@@ -23,14 +22,13 @@ from tmuxp.cli.load import (
     load_plugins,
     load_workspace,
 )
-from tmuxp.cli.ls import command_ls
 from tmuxp.cli.utils import (
-    ConfigPath,
     _validate_choices,
     get_abs_path,
     get_config_dir,
     is_pure_name,
     scan_config,
+    tmuxp_echo,
 )
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspacebuilder import WorkspaceBuilder
@@ -39,6 +37,8 @@ from .constants import FIXTURE_PATH
 from .fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
+    import _pytest.capture
+
     from libtmux.server import Server
 
 
@@ -272,14 +272,17 @@ def test_resolve_dot(
 
 
 def test_scan_config_arg(
-    homedir, configdir, projectdir, monkeypatch: pytest.MonkeyPatch
+    homedir,
+    configdir,
+    projectdir,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
 ):
-    runner = CliRunner()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", type=str)
 
-    @click.command()
-    @click.argument("config", type=ConfigPath(exists=True), nargs=-1)
-    def config_cmd(config):
-        click.echo(config)
+    def config_cmd(config_file: str) -> None:
+        tmuxp_echo(scan_config(config_file, config_dir=configdir))
 
     monkeypatch.setenv("HOME", str(homedir))
     tmuxp_config_path = projectdir / ".tmuxp.yaml"
@@ -290,25 +293,31 @@ def test_scan_config_arg(
 
     project_config = projectdir / ".tmuxp.yaml"
 
-    def check_cmd(config_arg):
-        return runner.invoke(config_cmd, [config_arg]).output
+    def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
+        args = parser.parse_args([config_arg])
+        config_cmd(config_file=args.config_file)
+        return capsys.readouterr()
 
     monkeypatch.chdir(projectdir)
     expect = str(project_config)
-    assert expect in check_cmd(".")
-    assert expect in check_cmd("./")
-    assert expect in check_cmd("")
-    assert expect in check_cmd("../project")
-    assert expect in check_cmd("../project/")
-    assert expect in check_cmd(".tmuxp.yaml")
-    assert str(user_config) in check_cmd("../../.tmuxp/%s.yaml" % user_config_name)
-    assert user_config.stem in check_cmd("myconfig")
-    assert str(user_config) in check_cmd("~/.tmuxp/myconfig.yaml")
+    assert expect in check_cmd(".").out
+    assert expect in check_cmd("./").out
+    assert expect in check_cmd("").out
+    assert expect in check_cmd("../project").out
+    assert expect in check_cmd("../project/").out
+    assert expect in check_cmd(".tmuxp.yaml").out
+    assert str(user_config) in check_cmd("../../.tmuxp/%s.yaml" % user_config_name).out
+    assert user_config.stem in check_cmd("myconfig").out
+    assert str(user_config) in check_cmd("~/.tmuxp/myconfig.yaml").out
 
-    assert "file not found" in check_cmd(".tmuxp.json")
-    assert "file not found" in check_cmd(".tmuxp.ini")
-    assert "No tmuxp files found" in check_cmd("../")
-    assert "config not found in config dir" in check_cmd("moo")
+    with pytest.raises(FileNotFoundError, match="file not found"):
+        assert "file not found" in check_cmd(".tmuxp.json").err
+    with pytest.raises(FileNotFoundError, match="file not found"):
+        assert "file not found" in check_cmd(".tmuxp.ini").err
+    with pytest.raises(FileNotFoundError, match="No tmuxp files found"):
+        assert "No tmuxp files found" in check_cmd("../").err
+    with pytest.raises(FileNotFoundError, match="config not found in config dir"):
+        assert "config not found in config dir" in check_cmd("moo").err
 
 
 def test_load_workspace(server, monkeypatch):
@@ -416,62 +425,88 @@ windows:
 
 
 def test_regression_00132_session_name_with_dots(
-    tmp_path: pathlib.Path, server, session
+    tmp_path: pathlib.Path,
+    server,
+    session,
+    capsys: pytest.CaptureFixture,
 ):
     yaml_config = FIXTURE_PATH / "workspacebuilder" / "regression_00132_dots.yaml"
     cli_args = [str(yaml_config)]
-    inputs: t.List[str] = []
-    runner = CliRunner()
-    result = runner.invoke(
-        cli.command_load, cli_args, input="".join(inputs), standalone_mode=False
-    )
-    assert result.exception
-    assert isinstance(result.exception, libtmux.exc.BadSessionName)
+    with pytest.raises(libtmux.exc.BadSessionName):
+        cli.cli(["load", *cli_args])
 
 
-@pytest.mark.parametrize("cli_args", [(["load", "."]), (["load", ".tmuxp.yaml"])])
-def test_load_zsh_autotitle_warning(cli_args, tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "cli_args", [["load", ".", "-d"], ["load", ".tmuxp.yaml", "-d"]]
+)
+def test_load_zsh_autotitle_warning(
+    cli_args: t.List[str],
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+    server: "Server",
+) -> None:
     # create dummy tmuxp yaml so we don't get yelled at
     yaml_config = tmp_path / ".tmuxp.yaml"
-    yaml_config.touch()
+    yaml_config.write_text(
+        """
+    session_name: test
+    windows:
+    - window_name: test
+      panes:
+      -
+    """,
+        encoding="utf-8",
+    )
     oh_my_zsh_path = tmp_path / ".oh-my-zsh"
     oh_my_zsh_path.mkdir()
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
 
     monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
     monkeypatch.setenv("SHELL", "zsh")
-    result = runner.invoke(cli.cli, cli_args)
-    assert "Please set" in result.output
+
+    # Use tmux server (socket name) used in the test
+    assert server.socket_name is not None
+    cli_args = cli_args + ["-L", server.socket_name]
+
+    cli.cli(cli_args)
+    result = capsys.readouterr()
+    assert "Please set" in result.out
 
     monkeypatch.setenv("DISABLE_AUTO_TITLE", "false")
-    result = runner.invoke(cli.cli, cli_args)
-    assert "Please set" in result.output
+    cli.cli(cli_args)
+    result = capsys.readouterr()
+    assert "Please set" in result.out
 
     monkeypatch.setenv("DISABLE_AUTO_TITLE", "true")
-    result = runner.invoke(cli.cli, cli_args)
-    assert "Please set" not in result.output
+    cli.cli(cli_args)
+    result = capsys.readouterr()
+    assert "Please set" not in result.out
 
     monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
     monkeypatch.setenv("SHELL", "sh")
-    result = runner.invoke(cli.cli, cli_args)
-    assert "Please set" not in result.output
+    cli.cli(cli_args)
+    result = capsys.readouterr()
+    assert "Please set" not in result.out
 
 
 @pytest.mark.parametrize(
     "cli_args",
     [
-        (["load", ".", "--log-file", "log.txt"]),
+        (["load", ".", "--log-file", "log.txt", "-d"]),
     ],
 )
-def test_load_log_file(cli_args, tmp_path, monkeypatch):
+def test_load_log_file(
+    cli_args, tmp_path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+):
     # create dummy tmuxp yaml that breaks to prevent actually loading tmux
     tmuxp_config_path = tmp_path / ".tmuxp.yaml"
     tmuxp_config_path.write_text(
         """
 session_name: hello
+  -
         """,
         encoding="utf-8",
     )
@@ -480,15 +515,15 @@ session_name: hello
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
 
-    # If autoconfirm (-y) no need to prompt y
-    input_args = "y\ny\n" if "-y" not in cli_args else ""
-
-    result = runner.invoke(cli.cli, cli_args, input=input_args)
+    try:
+        cli.cli(cli_args)
+    except Exception:
+        pass
+    result = capsys.readouterr()
     log_file_path = tmp_path / "log.txt"
     assert "Loading" in log_file_path.open().read()
-    assert result is not None
+    assert result.out is not None
 
 
 @pytest.mark.parametrize("cli_cmd", ["shell", ("shell", "--pdb")])
@@ -566,10 +601,11 @@ def test_shell(
     inputs,
     expected_output,
     env,
-    tmp_path,
-    monkeypatch,
     server,
     session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
 ):
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
@@ -592,12 +628,10 @@ def test_shell(
         monkeypatch.setenv(k, v.format(**template_ctx))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
 
-    result = runner.invoke(
-        cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
-    )
-    assert expected_output.format(**template_ctx) in result.output
+    cli.cli(cli_args)
+    result = capsys.readouterr()
+    assert expected_output.format(**template_ctx) in result.out
 
 
 @pytest.mark.parametrize(
@@ -655,11 +689,12 @@ def test_shell_target_missing(
     template_ctx,
     exception,
     message,
-    tmp_path,
-    monkeypatch,
     socket_name,
     server,
     session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
 ):
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
@@ -681,18 +716,14 @@ def test_shell_target_missing(
         monkeypatch.setenv(k, v.format(**template_ctx))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
 
     if exception is not None:
         with pytest.raises(exception, match=message.format(**template_ctx)):
-            result = runner.invoke(
-                cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
-            )
+            cli.cli(cli_args)
     else:
-        result = runner.invoke(
-            cli.cli, cli_args, input="".join(inputs), catch_exceptions=False
-        )
-        assert message.format(**template_ctx) in result.output
+        cli.cli(cli_args)
+        result = capsys.readouterr()
+        assert message.format(**template_ctx) in result.out
 
 
 @pytest.mark.parametrize(
@@ -728,16 +759,17 @@ def test_shell_target_missing(
         ),
     ],
 )
-def test_shell_plus(
+def test_shell_interactive(
     cli_cmd,
     cli_args,
     inputs,
     env,
     message,
-    tmp_path,
-    monkeypatch,
     server,
     session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
 ):
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
@@ -760,12 +792,13 @@ def test_shell_plus(
         monkeypatch.setenv(k, v.format(**template_ctx))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
-
-    result = runner.invoke(
-        cli.cli, cli_args, input="".join(inputs), catch_exceptions=True
-    )
-    assert message.format(**template_ctx) in result.output
+    monkeypatch.setattr("sys.stdin", io.StringIO("exit()\r"))
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+    result = capsys.readouterr()
+    assert message.format(**template_ctx) in result.err
 
 
 @pytest.mark.parametrize(
@@ -778,7 +811,11 @@ def test_shell_plus(
         (["convert", ".tmuxp.yml", "-y"]),
     ],
 )
-def test_convert(cli_args, tmp_path, monkeypatch):
+def test_convert(
+    cli_args,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
     # create dummy tmuxp yaml so we don't get yelled at
     filename = cli_args[1]
     if filename == ".":
@@ -792,12 +829,15 @@ def test_convert(cli_args, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
 
     # If autoconfirm (-y) no need to prompt y
     input_args = "y\ny\n" if "-y" not in cli_args else ""
 
-    runner.invoke(cli.cli, cli_args, input=input_args)
+    monkeypatch.setattr("sys.stdin", io.StringIO(input_args))
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
     tmuxp_json = tmp_path / ".tmuxp.json"
     assert tmuxp_json.exists()
     assert tmuxp_json.open().read() == json.dumps({"session_name": "hello"}, indent=2)
@@ -811,7 +851,11 @@ def test_convert(cli_args, tmp_path, monkeypatch):
         (["convert", ".tmuxp.json", "-y"]),
     ],
 )
-def test_convert_json(cli_args, tmp_path, monkeypatch):
+def test_convert_json(
+    cli_args,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
     # create dummy tmuxp yaml so we don't get yelled at
     json_config = tmp_path / ".tmuxp.json"
     json_config.write_text('{"session_name": "hello"}', encoding="utf-8")
@@ -820,24 +864,32 @@ def test_convert_json(cli_args, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
 
     # If autoconfirm (-y) no need to prompt y
     input_args = "y\ny\n" if "-y" not in cli_args else ""
 
-    runner.invoke(cli.cli, cli_args, input=input_args)
+    monkeypatch.setattr("sys.stdin", io.StringIO(input_args))
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+
     tmuxp_yaml = tmp_path / ".tmuxp.yaml"
     assert tmuxp_yaml.exists()
     assert tmuxp_yaml.open().read() == "session_name: hello\n"
 
 
 @pytest.mark.parametrize("cli_args", [(["import"])])
-def test_import(cli_args, monkeypatch):
-    runner = CliRunner()
-
-    result = runner.invoke(cli.cli, cli_args)
-    assert "tmuxinator" in result.output
-    assert "teamocil" in result.output
+def test_import(
+    cli_args,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+):
+    cli.cli(cli_args)
+    result = capsys.readouterr()
+    assert "tmuxinator" in result.out
+    assert "teamocil" in result.out
 
 
 @pytest.mark.parametrize(
@@ -847,11 +899,19 @@ def test_import(cli_args, monkeypatch):
         (["-h"]),
     ],
 )
-def test_help(cli_args, monkeypatch):
-    runner = CliRunner()
+def test_help(
+    cli_args,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+):
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+    result = capsys.readouterr()
 
-    result = runner.invoke(cli.cli, cli_args)
-    assert "Usage: cli [OPTIONS] COMMAND [ARGS]..." in result.output
+    assert "usage: tmuxp [-h] [--version] [--log-level LOG_LEVEL]" in result.out
 
 
 @pytest.mark.parametrize(
@@ -871,7 +931,9 @@ def test_help(cli_args, monkeypatch):
         ),
     ],
 )
-def test_import_teamocil(cli_args, inputs, tmp_path, monkeypatch):
+def test_import_teamocil(
+    cli_args, inputs, tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+):
     teamocil_config = test_utils.read_config_file("config_teamocil/test4.yaml")
 
     teamocil_path = tmp_path / ".teamocil"
@@ -886,8 +948,12 @@ def test_import_teamocil(cli_args, inputs, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
-    runner.invoke(cli.cli, cli_args, input="".join(inputs))
+    monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
+
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
 
     new_config_yaml = tmp_path / "la.yaml"
     assert new_config_yaml.exists()
@@ -925,9 +991,13 @@ def test_import_tmuxinator(cli_args, inputs, tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
-    out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-    print(out.output)
+
+    monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+
     new_config_yaml = tmp_path / "la.yaml"
     assert new_config_yaml.exists()
 
@@ -947,7 +1017,9 @@ def test_import_tmuxinator(cli_args, inputs, tmp_path, monkeypatch):
         (["freeze"], ["y\n", "./exists.yaml\n", "./la.yaml\n", "y\n"]),  # Exists
     ],
 )
-def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
+def test_freeze(
+    server, cli_args, inputs, tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("HOME", str(tmp_path))
     exists_yaml = tmp_path / "exists.yaml"
     exists_yaml.touch()
@@ -963,11 +1035,14 @@ def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
     # Use tmux server (socket name) used in the test
     cli_args = cli_args + ["-L", server.socket_name]
-    out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-    print(out.output)
+
+    monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
 
     yaml_config_path = tmp_path / "la.yaml"
     assert yaml_config_path.exists()
@@ -983,11 +1058,11 @@ def test_freeze(server, cli_args, inputs, tmp_path, monkeypatch):
     [
         (  # Overwrite
             ["freeze", "mysession", "--force"],
-            ["\n", "y\n", "./exists.yaml\n", "y\n"],
+            ["\n", "\n", "y\n", "./exists.yaml\n", "y\n"],
         ),
         (  # Imply current session if not entered
             ["freeze", "--force"],
-            ["\n", "y\n", "./exists.yaml\n", "y\n"],
+            ["\n", "\n", "y\n", "./exists.yaml\n", "y\n"],
         ),
     ],
 )
@@ -999,11 +1074,14 @@ def test_freeze_overwrite(server, cli_args, inputs, tmp_path, monkeypatch):
     server.new_session(session_name="mysession")
 
     monkeypatch.chdir(tmp_path)
-    runner = CliRunner()
     # Use tmux server (socket name) used in the test
     cli_args = cli_args + ["-L", server.socket_name]
-    out = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-    print(out.output)
+
+    monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
 
     yaml_config_path = tmp_path / "exists.yaml"
     assert yaml_config_path.exists()
@@ -1040,12 +1118,14 @@ def test_validate_choices():
     assert validate("choice1")
     assert validate("choice2")
 
-    with pytest.raises(click.BadParameter):
+    with pytest.raises(ValueError):
         assert validate("choice3")
 
 
 def test_pass_config_dir_ClickPath(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
 ):
 
     configdir = tmp_path / "myconfigdir"
@@ -1056,31 +1136,33 @@ def test_pass_config_dir_ClickPath(
 
     expect = str(user_config)
 
-    runner = CliRunner()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", type=str)
 
-    @click.command()
-    @click.argument(
-        "config",
-        type=ConfigPath(exists=True, config_dir=(str(configdir))),
-        nargs=-1,
-    )
-    def config_cmd(config):
-        click.echo(config)
+    def config_cmd(config_file: str) -> None:
+        tmuxp_echo(scan_config(config_file, config_dir=configdir))
 
-    def check_cmd(config_arg):
-        return runner.invoke(config_cmd, [config_arg]).output
+    def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
+        args = parser.parse_args([config_arg])
+        config_cmd(config_file=args.config_file)
+        return capsys.readouterr()
 
     monkeypatch.chdir(configdir)
 
-    assert expect in check_cmd("myconfig")
-    assert expect in check_cmd("myconfig.yaml")
-    assert expect in check_cmd("./myconfig.yaml")
-    assert str(user_config) in check_cmd(str(configdir / "myconfig.yaml"))
+    assert expect in check_cmd("myconfig").out
+    assert expect in check_cmd("myconfig.yaml").out
+    assert expect in check_cmd("./myconfig.yaml").out
+    assert str(user_config) in check_cmd(str(configdir / "myconfig.yaml")).out
 
-    assert "file not found" in check_cmd(".tmuxp.json")
+    with pytest.raises(FileNotFoundError):
+        assert "FileNotFoundError" in check_cmd(".tmuxp.json").out
 
 
-def test_ls_cli(monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path):
+def test_ls_cli(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+    capsys: pytest.CaptureFixture,
+) -> None:
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
 
@@ -1106,8 +1188,12 @@ def test_ls_cli(monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path):
         else:
             location.touch()
 
-    runner = CliRunner()
-    cli_output = runner.invoke(command_ls).output
+    try:
+        cli.cli(["ls"])
+    except SystemExit:
+        pass
+    cli_output = capsys.readouterr().out
+
     assert cli_output == "\n".join(stems) + "\n"
 
 
@@ -1141,12 +1227,15 @@ def test_load_plugins(monkeypatch_plugin_test_packages):
     ],
 )
 def test_load_plugins_version_fail_skip(
-    monkeypatch_plugin_test_packages, cli_args, inputs
-):
-    runner = CliRunner()
+    monkeypatch_plugin_test_packages, cli_args, inputs, capsys: pytest.CaptureFixture
+) -> None:
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+    result = capsys.readouterr()
 
-    results = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-    assert "[Loading]" in results.output
+    assert "[Loading]" in result.out
 
 
 @pytest.mark.parametrize(
@@ -1159,22 +1248,36 @@ def test_load_plugins_version_fail_skip(
     ],
 )
 def test_load_plugins_version_fail_no_skip(
-    monkeypatch_plugin_test_packages, cli_args, inputs
-):
-    runner = CliRunner()
+    monkeypatch_plugin_test_packages,
+    cli_args,
+    inputs,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture,
+) -> None:
+    monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
 
-    results = runner.invoke(cli.cli, cli_args, input="".join(inputs))
-    assert "[Not Skipping]" in results.output
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+    result = capsys.readouterr()
+
+    assert "[Not Skipping]" in result.out
 
 
 @pytest.mark.parametrize(
     "cli_args", [(["load", "tests/fixtures/workspacebuilder/plugin_missing_fail.yaml"])]
 )
-def test_load_plugins_plugin_missing(monkeypatch_plugin_test_packages, cli_args):
-    runner = CliRunner()
+def test_load_plugins_plugin_missing(
+    monkeypatch_plugin_test_packages, cli_args, capsys: pytest.CaptureFixture
+) -> None:
+    try:
+        cli.cli(cli_args)
+    except SystemExit:
+        pass
+    result = capsys.readouterr()
 
-    results = runner.invoke(cli.cli, cli_args)
-    assert "[Plugin Error]" in results.output
+    assert "[Plugin Error]" in result.out
 
 
 def test_plugin_system_before_script(
@@ -1313,11 +1416,13 @@ def test_load_append_windows_to_current_session(server, monkeypatch):
     assert len(server._list_windows()) == 6
 
 
-def test_debug_info_cli(monkeypatch, tmp_path: pathlib.Path):
+def test_debug_info_cli(
+    monkeypatch, tmp_path: pathlib.Path, capsys: pytest.CaptureFixture
+) -> None:
     monkeypatch.setenv("SHELL", "/bin/bash")
 
-    runner = CliRunner()
-    cli_output = runner.invoke(command_debug_info).output
+    cli.cli(["debug-info"])
+    cli_output = capsys.readouterr().out
     assert "environment" in cli_output
     assert "python version" in cli_output
     assert "system PATH" in cli_output

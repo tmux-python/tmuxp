@@ -1,15 +1,28 @@
+import argparse
 import os
+import pathlib
 import subprocess
+import typing as t
 
-import click
-
-from .utils import ConfigPath, scan_config
+from .utils import scan_config
 
 
-@click.command(name="edit", short_help="Run $EDITOR on config.")
-@click.argument("config", type=ConfigPath(exists=True), nargs=1)
-def command_edit(config):
-    config = scan_config(config)
+def create_edit_subparser(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    parser.add_argument(
+        dest="config_file",
+        type=str,
+        help="checks current tmuxp and current directory for yaml files.",
+    )
+    return parser
+
+
+def command_edit(
+    config_file: t.Union[str, pathlib.Path],
+    parser: t.Optional[argparse.ArgumentParser] = None,
+):
+    config_file = scan_config(config_file)
 
     sys_editor = os.environ.get("EDITOR", "vim")
-    subprocess.call([sys_editor, config])
+    subprocess.call([sys_editor, config_file])

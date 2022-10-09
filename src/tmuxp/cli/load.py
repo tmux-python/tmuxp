@@ -1,18 +1,17 @@
 """Command line tool for managing tmux workspaces and tmuxp configurations.
 
-tmuxp.cli
-~~~~~~~~~
+tmuxp.cli.load
+~~~~~~~~~~~~~~
 
 """
+import argparse
 import importlib
 import logging
 import os
 import pathlib
 import shutil
 import sys
-from typing import List
-
-import click
+import typing as t
 
 from libtmux.common import has_gte_version
 from libtmux.server import Server
@@ -20,7 +19,14 @@ from tmuxp import config_reader
 
 from .. import config, exc, log, util
 from ..workspacebuilder import WorkspaceBuilder
-from .utils import ConfigPath, _validate_choices, get_config_dir, tmuxp_echo
+from .utils import (
+    get_config_dir,
+    prompt_choices,
+    prompt_yes_no,
+    scan_config,
+    style,
+    tmuxp_echo,
+)
 
 
 def set_layout_hook(session, hook_name):
@@ -98,21 +104,21 @@ def load_plugins(sconf):
                 plugin = getattr(importlib.import_module(module_name), plugin_name)
                 plugins.append(plugin())
             except exc.TmuxpPluginException as error:
-                if not click.confirm(
+                if not prompt_yes_no(
                     "%sSkip loading %s?"
-                    % (click.style(str(error), fg="yellow"), plugin_name),
+                    % (style(str(error), fg="yellow"), plugin_name),
                     default=True,
                 ):
-                    click.echo(
-                        click.style("[Not Skipping] ", fg="yellow")
+                    tmuxp_echo(
+                        style("[Not Skipping] ", fg="yellow")
                         + "Plugin versions constraint not met. Exiting..."
                     )
                     sys.exit(1)
             except Exception as error:
-                click.echo(
-                    click.style("[Plugin Error] ", fg="red")
+                tmuxp_echo(
+                    style("[Plugin Error] ", fg="red")
                     + f"Couldn't load {plugin}\n"
-                    + click.style(f"{error}", fg="yellow")
+                    + style(f"{error}", fg="yellow")
                 )
                 sys.exit(1)
 
@@ -337,12 +343,12 @@ def load_workspace(
         config_file = pathlib.Path(config_file)
 
     tmuxp_echo(
-        click.style("[Loading] ", fg="green")
-        + click.style(str(config_file), fg="blue", bold=True)
+        style("[Loading] ", fg="green") + style(str(config_file), fg="blue", bold=True)
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    raw_config = config_reader.ConfigReader._from_file(config_file)
+    raw_config = config_reader.ConfigReader._from_file(config_file) or {}
+
     # shapes configurations relative to config / profile file location
     sconfig = config.expand(raw_config, cwd=os.path.dirname(config_file))
     # Overwrite session name
@@ -374,9 +380,8 @@ def load_workspace(
     if builder.session_exists(session_name) and not append:
         if not detached and (
             answer_yes
-            or click.confirm(
-                "%s is already running. Attach?"
-                % click.style(session_name, fg="green"),
+            or prompt_yes_no(
+                "%s is already running. Attach?" % style(session_name, fg="green"),
                 default=True,
             )
         ):
@@ -407,7 +412,8 @@ def load_workspace(
                 "Or (a)ppend windows in the current active session?\n[y/n/a]"
             )
             options = ["y", "n", "a"]
-            choice = click.prompt(msg, value_proc=_validate_choices(options))
+            choice = prompt_choices(msg, choices=options)
+            # value_proc=_validate_choices(options))
 
             if choice == "y":
                 _load_attached(builder, detached)
@@ -424,9 +430,10 @@ def load_workspace(
         tmuxp_echo(traceback.format_exc(), err=True)
         tmuxp_echo(e, err=True)
 
-        choice = click.prompt(
+        choice = prompt_choices(
             "Error loading workspace. (k)ill, (a)ttach, (d)etach?",
-            value_proc=_validate_choices(["k", "a", "d"]),
+            choices=["k", "a", "d"],
+            # value_proc=_validate_choices(["k", "a", "d"]),
             default="k",
         )
 
@@ -443,7 +450,7 @@ def load_workspace(
 
 def config_file_completion(ctx, params, incomplete):
     config_dir = pathlib.Path(get_config_dir())
-    choices: List[pathlib.Path] = []
+    choices: t.List[pathlib.Path] = []
 
     # CWD Paths
     choices += sorted(
@@ -463,54 +470,99 @@ def config_file_completion(ctx, params, incomplete):
     return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
 
-@click.command(name="load", short_help="Load tmuxp workspaces.")
-@click.pass_context
-@click.argument(
-    "config",
-    type=ConfigPath(exists=True),
-    nargs=-1,
-    shell_complete=config_file_completion,
-)
-@click.option("-S", "socket_path", help="pass-through for tmux -S")
-@click.option("-L", "socket_name", help="pass-through for tmux -L")
-@click.option("-f", "tmux_config_file", help="pass-through for tmux -f")
-@click.option("-s", "new_session_name", help="start new session with new session name")
-@click.option("--yes", "-y", "answer_yes", help="yes", is_flag=True)
-@click.option(
-    "-d", "detached", help="Load the session without attaching it", is_flag=True
-)
-@click.option(
-    "-a",
-    "append",
-    help="Load configuration, appending windows to the current session",
-    is_flag=True,
-)
-@click.option(
-    "colors",
-    "-2",
-    flag_value=256,
-    default=True,
-    help="Force tmux to assume the terminal supports 256 colours.",
-)
-@click.option(
-    "colors",
-    "-8",
-    flag_value=88,
-    help="Like -2, but indicates that the terminal supports 88 colours.",
-)
-@click.option("--log-file", help="File to log errors/output to")
+def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    parser.add_argument(
+        "config_file",
+        metavar="config-file",
+        help="filepath to session or filename of session if in tmuxp config directory",
+    )
+    parser.add_argument(
+        "-L",
+        dest="socket_name",
+        metavar="socket_name",
+        action="store",
+        help="passthru to tmux(1) -L",
+    )
+    parser.add_argument(
+        "-S",
+        dest="socket_path",
+        metavar="socket_path",
+        action="store",
+        help="passthru to tmux(1) -S",
+    )
+
+    parser.add_argument(
+        "-f",
+        dest="tmux_config_file",
+        metavar="tmux_config_file",
+        help="passthru to tmux(1) -f",
+    )
+    parser.add_argument(
+        "-s",
+        dest="new_session_name",
+        metavar="new_session_name",
+        help="start new session with new session name",
+    )
+    parser.add_argument(
+        "--yes",
+        "-y",
+        dest="answer_yes",
+        action="store_true",
+        help="always answer yes",
+    )
+    parser.add_argument(
+        "-d",
+        dest="detached",
+        action="store_true",
+        help="load the session without attaching it",
+    )
+    parser.add_argument(
+        "-a",
+        "--append",
+        dest="append",
+        action="store_true",
+        help="load configuration, appending windows to the current session",
+    )
+    colorsgroup = parser.add_mutually_exclusive_group()
+
+    colorsgroup.add_argument(
+        "-2",
+        dest="colors",
+        action="store_const",
+        const=256,
+        help="force tmux to assume the terminal supports 256 colours.",
+    )
+
+    colorsgroup.add_argument(
+        "-8",
+        dest="colors",
+        action="store_const",
+        const=88,
+        help="like -2, but indicates that the terminal supports 88 colours.",
+    )
+
+    parser.set_defaults(colors=None)
+    parser.add_argument(
+        "--log-file",
+        metavar="file_path",
+        action="store",
+        help="file to log errors/output to",
+    )
+    return parser
+
+
 def command_load(
-    ctx,
-    config,
-    socket_name,
-    socket_path,
-    tmux_config_file,
-    new_session_name,
-    answer_yes,
-    detached,
-    append,
-    colors,
-    log_file,
+    config_file: t.Union[str, pathlib.Path],
+    socket_name: t.Optional[str] = None,
+    socket_path: t.Optional[str] = None,
+    tmux_config_file: t.Optional[str] = None,
+    new_session_name: t.Optional[str] = None,
+    answer_yes: t.Optional[bool] = None,
+    detached: t.Optional[bool] = None,
+    append: t.Optional[str] = None,
+    colors: t.Optional[str] = None,
+    log_file: t.Optional[str] = None,
+    parser: t.Optional[argparse.ArgumentParser] = None,
 ):
     """Load a tmux workspace from each CONFIG.
 
@@ -536,6 +588,9 @@ def command_load(
     """
     util.oh_my_zsh_auto_title()
 
+    if isinstance(config_file, str):
+        config_file = pathlib.Path(config_file)
+
     if log_file:
         logfile_handler = logging.FileHandler(log_file)
         logfile_handler.setFormatter(log.LogFormatter())
@@ -554,16 +609,18 @@ def command_load(
         "append": append,
     }
 
-    if not config:
-        tmuxp_echo("Enter at least one CONFIG")
-        tmuxp_echo(ctx.get_help(), color=ctx.color)
-        ctx.exit()
+    if config_file is None:
+        tmuxp_echo("Enter at least one config")
+        if parser is not None:
+            parser.print_help()
+        sys.exit()
 
-    if isinstance(config, str):
-        load_workspace(config, **tmux_options)
+    config_file = scan_config(config_file, config_dir=get_config_dir())
 
-    elif isinstance(config, tuple):
-        config = list(config)
+    if isinstance(config_file, str):
+        load_workspace(config_file, **tmux_options)
+    elif isinstance(config_file, tuple):
+        config = list(config_file)
         # Load each configuration but the last to the background
         for cfg in config[:-1]:
             opt = tmux_options.copy()
@@ -571,4 +628,8 @@ def command_load(
             load_workspace(cfg, **opt)
 
         # todo: obey the -d in the cli args only if user specifies
-        load_workspace(config[-1], **tmux_options)
+        load_workspace(config_file[-1], **tmux_options)
+    else:
+        raise NotImplementedError(
+            f"config {type(config_file)} with {config_file} not valid"
+        )

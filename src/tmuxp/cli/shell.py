@@ -1,59 +1,121 @@
+import argparse
 import os
+import typing as t
 
-import click
-
-from libtmux import Server
+from libtmux.server import Server
 
 from .. import util
 from .._compat import PY3, PYMINOR
 
 
-@click.command(name="shell")
-@click.argument("session_name", nargs=1, required=False)
-@click.argument("window_name", nargs=1, required=False)
-@click.option("-S", "socket_path", help="pass-through for tmux -S")
-@click.option("-L", "socket_name", help="pass-through for tmux -L")
-@click.option(
-    "-c",
-    "command",
-    help="Instead of opening shell, execute python code in libtmux and exit",
-)
-@click.option(
-    "--best",
-    "shell",
-    flag_value="best",
-    help="Use best shell available in site packages",
-    default=True,
-)
-@click.option("--pdb", "shell", flag_value="pdb", help="Use plain pdb")
-@click.option("--code", "shell", flag_value="code", help="Use stdlib's code.interact()")
-@click.option(
-    "--ptipython", "shell", flag_value="ptipython", help="Use ptpython + ipython"
-)
-@click.option("--ptpython", "shell", flag_value="ptpython", help="Use ptpython")
-@click.option("--ipython", "shell", flag_value="ipython", help="Use ipython")
-@click.option("--bpython", "shell", flag_value="bpython", help="Use bpython")
-@click.option(
-    "--use-pythonrc/--no-startup",
-    "use_pythonrc",
-    help="Load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code",
-    default=False,
-)
-@click.option(
-    "--use-vi-mode/--no-vi-mode",
-    "use_vi_mode",
-    help="Use vi-mode in ptpython/ptipython",
-    default=False,
-)
+def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    parser.add_argument("session_name", metavar="session-name", nargs="?")
+    parser.add_argument("window_name", metavar="window-name", nargs="?")
+    parser.add_argument(
+        "-S", dest="socket_path", metavar="socket-path", help="pass-through for tmux -S"
+    )
+    parser.add_argument(
+        "-L", dest="socket_name", metavar="socket-name", help="pass-through for tmux -L"
+    )
+    parser.add_argument(
+        "-c",
+        dest="command",
+        help="instead of opening shell, execute python code in libtmux and exit",
+    )
+
+    shells = parser.add_mutually_exclusive_group()
+    shells.add_argument(
+        "--best",
+        dest="shell",
+        const="best",
+        action="store_const",
+        help="use best shell available in site packages",
+        default="best",
+    )
+    shells.add_argument(
+        "--pdb",
+        dest="shell",
+        const="pdb",
+        action="store_const",
+        help="use plain pdb",
+    )
+    shells.add_argument(
+        "--code",
+        dest="shell",
+        const="code",
+        action="store_const",
+        help="use stdlib's code.interact()",
+    )
+    shells.add_argument(
+        "--ptipython",
+        dest="shell",
+        const="ptipython",
+        action="store_const",
+        help="use ptpython + ipython",
+    )
+    shells.add_argument(
+        "--ptpython",
+        dest="shell",
+        const="ptpython",
+        action="store_const",
+        help="use ptpython",
+    )
+    shells.add_argument(
+        "--ipython",
+        dest="shell",
+        const="ipython",
+        action="store_const",
+        help="use ipython",
+    )
+    shells.add_argument(
+        "--bpython",
+        dest="shell",
+        const="bpython",
+        action="store_const",
+        help="use bpython",
+    )
+
+    parser.add_argument(
+        "--use-pythonrc",
+        dest="use_pythonrc",
+        action="store_true",
+        help="load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code",
+        default=False,
+    )
+    parser.add_argument(
+        "--no-startup",
+        dest="use_pythonrc",
+        action="store_false",
+        help="load PYTHONSTARTUP env var and ~/.pythonrc.py script in --code",
+        default=False,
+    )
+    parser.add_argument(
+        "--use-vi-mode",
+        dest="use_vi_mode",
+        action="store_true",
+        help="use vi-mode in ptpython/ptipython",
+        default=False,
+    )
+    parser.add_argument(
+        "--no-vi-mode",
+        dest="use_vi_mode",
+        action="store_false",
+        help="use vi-mode in ptpython/ptipython",
+        default=False,
+    )
+    return parser
+
+
 def command_shell(
     session_name,
     window_name,
     socket_name,
     socket_path,
-    command,
-    shell,
-    use_pythonrc,
-    use_vi_mode,
+    command: t.Optional[str] = None,
+    shell: t.Optional[str] = None,
+    use_pythonrc: bool = False,
+    use_vi_mode: bool = False,
+    parser: t.Optional[argparse.ArgumentParser] = None,
 ):
     """Launch python shell for tmux server, session, window and pane.
 
