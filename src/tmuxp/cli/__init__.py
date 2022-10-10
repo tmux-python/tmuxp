@@ -55,8 +55,10 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--log-level",
         action="store",
-        default="INFO",
-        help="log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
+        metavar="log-level",
+        default="info",
+        choices=["debug", "info", "warning", "error", "critical"],
+        help='log level (debug, info, warning, error, critical) (default "info")',
     )
     subparsers = parser.add_subparsers(dest="subparser_name")
     load_parser = subparsers.add_parser("load", help="load tmuxp workspaces")

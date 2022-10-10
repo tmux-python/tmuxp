@@ -931,7 +931,7 @@ def test_help(
         pass
     result = capsys.readouterr()
 
-    assert "usage: tmuxp [-h] [--version] [--log-level LOG_LEVEL]" in result.out
+    assert "usage: tmuxp [-h] [--version] [--log-level log-level]" in result.out
 
 
 @pytest.mark.parametrize(
