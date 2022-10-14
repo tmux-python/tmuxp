@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it as below.
+  NOTE: Change "x.y" by the version you use. If you are unsure about which version
+  you are using run: `pip show tmuxp`."
+authors:
+- family-names: "Narlock"
+  given-names: "Tony"
+  orcid: "https://orcid.org/0000-0002-2568-415X"
+title: "tmuxp"
+type: software
+version: x.y
+url: "https://tmuxp.git-pull.com"
