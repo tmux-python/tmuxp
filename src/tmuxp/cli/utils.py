@@ -90,27 +90,6 @@ def _validate_choices(options: t.List[str]) -> t.Callable:
     return func
 
 
-def scan_config_argument(ctx, param, value, config_dir=None):
-    """Validate / translate config name/path values for click config arg.
-
-    Wrapper on top of :func:`cli.scan_config`."""
-    if callable(config_dir):
-        config_dir = config_dir()
-
-    if not config:
-        tmuxp_echo("Enter at least one CONFIG")
-        tmuxp_echo(ctx.get_help())
-        ctx.exit()
-
-    if isinstance(value, str):
-        value = scan_config(value, config_dir=config_dir)
-
-    elif isinstance(value, tuple):
-        value = tuple(scan_config(v, config_dir=config_dir) for v in value)
-
-    return value
-
-
 def get_abs_path(config: str) -> str:
     path = os.path
     join, isabs = path.join, path.isabs
