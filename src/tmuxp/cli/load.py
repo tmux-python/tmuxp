@@ -488,7 +488,7 @@ def config_file_completion(ctx, params, incomplete):
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    parser.add_argument(
+    config_file = parser.add_argument(
         "config_file",
         metavar="config-file",
         help="filepath to session or filename of session if in tmuxp config directory",
@@ -508,12 +508,21 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help="passthru to tmux(1) -S",
     )
 
-    parser.add_argument(
+    tmux_config_file = parser.add_argument(
         "-f",
         dest="tmux_config_file",
         metavar="tmux_config_file",
         help="passthru to tmux(1) -f",
     )
+
+    try:
+        import shtab
+
+        config_file.complete = shtab.FILE  # type: ignore
+        tmux_config_file.complete = shtab.FILE  # type: ignore
+    except ImportError:
+        pass
+
     parser.add_argument(
         "-s",
         dest="new_session_name",
