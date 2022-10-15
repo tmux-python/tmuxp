@@ -105,10 +105,15 @@ def create_import_subparser(
     )
 
     try:
-        import shtab
+        import argcomplete
+        import argcomplete.completers
 
-        teamocil_config_file.complete = shtab.FILE  # type: ignore
-        tmuxinator_config_file.complete = shtab.FILE  # type: ignore
+        teamocil_config_file.completer = (  # type: ignore
+            argcomplete.completers.FilesCompleter()
+        )
+        tmuxinator_config_file.completer = (  # type:ignore
+            argcomplete.completers.FilesCompleter()
+        )
     except ImportError:
         pass
 
