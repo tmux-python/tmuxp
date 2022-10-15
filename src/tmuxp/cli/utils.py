@@ -6,7 +6,7 @@ import typing as t
 
 from colorama import Fore
 
-from .. import config, log
+from .. import log
 from .constants import VALID_CONFIG_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
@@ -61,33 +61,6 @@ def get_config_dir() -> str:
             return path
     # Return last path as default if none of the previous ones matched
     return path
-
-
-def _validate_choices(options: t.List[str]) -> t.Callable:
-    """
-    Callback wrapper for validating click.prompt input.
-
-    Parameters
-    ----------
-    options : list
-        List of allowed choices
-
-    Returns
-    -------
-    :func:`callable`
-        callback function for value_proc in :func:`click.prompt`.
-
-    Raises
-    ------
-    :class:`click.BadParameter`
-    """
-
-    def func(value):
-        if value not in options:
-            raise ValueError("Possible choices are: {}.".format(", ".join(options)))
-        return value
-
-    return func
 
 
 def get_abs_path(config: str) -> str:

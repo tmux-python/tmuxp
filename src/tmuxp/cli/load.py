@@ -430,7 +430,6 @@ def load_workspace(
             )
             options = ["y", "n", "a"]
             choice = prompt_choices(msg, choices=options)
-            # value_proc=_validate_choices(options))
 
             if choice == "y":
                 _load_attached(builder, detached)
@@ -450,7 +449,6 @@ def load_workspace(
         choice = prompt_choices(
             "Error loading workspace. (k)ill, (a)ttach, (d)etach?",
             choices=["k", "a", "d"],
-            # value_proc=_validate_choices(["k", "a", "d"]),
             default="k",
         )
 

@@ -24,7 +24,6 @@ from tmuxp.cli.load import (
     load_workspace,
 )
 from tmuxp.cli.utils import (
-    _validate_choices,
     get_abs_path,
     get_config_dir,
     is_pure_name,
@@ -1150,16 +1149,6 @@ def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HOME", "/moo")
     assert get_teamocil_dir() == "/moo/.teamocil/"
     assert get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
-
-
-def test_validate_choices() -> None:
-    validate = _validate_choices(["choice1", "choice2"])
-
-    assert validate("choice1")
-    assert validate("choice2")
-
-    with pytest.raises(ValueError):
-        assert validate("choice3")
 
 
 def test_pass_config_dir_ClickPath(
