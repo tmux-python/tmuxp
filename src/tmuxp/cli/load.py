@@ -430,7 +430,6 @@ def load_workspace(
             )
             options = ["y", "n", "a"]
             choice = prompt_choices(msg, choices=options)
-            # value_proc=_validate_choices(options))
 
             if choice == "y":
                 _load_attached(builder, detached)
@@ -450,7 +449,6 @@ def load_workspace(
         choice = prompt_choices(
             "Error loading workspace. (k)ill, (a)ttach, (d)etach?",
             choices=["k", "a", "d"],
-            # value_proc=_validate_choices(["k", "a", "d"]),
             default="k",
         )
 
@@ -488,7 +486,7 @@ def config_file_completion(ctx, params, incomplete):
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    parser.add_argument(
+    config_file = parser.add_argument(
         "config_file",
         metavar="config-file",
         help="filepath to session or filename of session if in tmuxp config directory",
@@ -508,12 +506,13 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help="passthru to tmux(1) -S",
     )
 
-    parser.add_argument(
+    tmux_config_file = parser.add_argument(
         "-f",
         dest="tmux_config_file",
         metavar="tmux_config_file",
         help="passthru to tmux(1) -f",
     )
+
     parser.add_argument(
         "-s",
         dest="new_session_name",
@@ -557,14 +556,24 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         const=88,
         help="like -2, but indicates that the terminal supports 88 colours.",
     )
-
     parser.set_defaults(colors=None)
-    parser.add_argument(
+
+    log_file = parser.add_argument(
         "--log-file",
         metavar="file_path",
         action="store",
         help="file to log errors/output to",
     )
+
+    try:
+        import shtab
+
+        config_file.complete = shtab.FILE  # type: ignore
+        tmux_config_file.complete = shtab.FILE  # type: ignore
+        log_file.complete = shtab.FILE  # type: ignore
+    except ImportError:
+        pass
+
     return parser
 
 

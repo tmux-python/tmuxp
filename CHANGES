@@ -21,6 +21,16 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.17.1 (2022-10-15)
+
+### Minor completion improvements
+
+- Improved shtab completions for files with `tmuxp load [tab]` (#834)
+
+### Internal
+
+- Remove unused completion code leftover from click (#834)
+
 ## tmuxp 1.17.0 (2022-10-09)
 
 ### Breaking changes

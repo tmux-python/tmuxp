@@ -6,7 +6,7 @@ import typing as t
 
 from colorama import Fore
 
-from .. import config, log
+from .. import log
 from .constants import VALID_CONFIG_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
@@ -61,82 +61,6 @@ def get_config_dir() -> str:
             return path
     # Return last path as default if none of the previous ones matched
     return path
-
-
-def _validate_choices(options: t.List[str]) -> t.Callable:
-    """
-    Callback wrapper for validating click.prompt input.
-
-    Parameters
-    ----------
-    options : list
-        List of allowed choices
-
-    Returns
-    -------
-    :func:`callable`
-        callback function for value_proc in :func:`click.prompt`.
-
-    Raises
-    ------
-    :class:`click.BadParameter`
-    """
-
-    def func(value):
-        if value not in options:
-            raise ValueError("Possible choices are: {}.".format(", ".join(options)))
-        return value
-
-    return func
-
-
-class ConfigPath:
-    def __init__(
-        self, config_dir: t.Optional[t.Union[t.Callable, str]] = None, *args, **kwargs
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self.config_dir = config_dir
-
-    def convert(
-        self, value: str, param: t.Any, ctx: t.Any
-    ) -> t.Optional[t.Union[str, pathlib.Path]]:
-        config_dir = self.config_dir() if callable(self.config_dir) else self.config_dir
-
-        return scan_config(value, config_dir=config_dir)
-
-
-def scan_config_argument(ctx, param, value, config_dir=None):
-    """Validate / translate config name/path values for click config arg.
-
-    Wrapper on top of :func:`cli.scan_config`."""
-    if callable(config_dir):
-        config_dir = config_dir()
-
-    if not config:
-        tmuxp_echo("Enter at least one CONFIG")
-        tmuxp_echo(ctx.get_help())
-        ctx.exit()
-
-    if isinstance(value, str):
-        value = scan_config(value, config_dir=config_dir)
-
-    elif isinstance(value, tuple):
-        value = tuple(scan_config(v, config_dir=config_dir) for v in value)
-
-    return value
-
-
-def get_abs_path(config: str) -> str:
-    path = os.path
-    join, isabs = path.join, path.isabs
-    dirname, normpath = path.dirname, path.normpath
-    cwd = os.getcwd()
-
-    config = os.path.expanduser(config)
-    if not isabs(config) or len(dirname(config)) > 1:
-        config = normpath(join(cwd, config))
-
-    return config
 
 
 def scan_config(

@@ -7,14 +7,7 @@ import typing as t
 from tmuxp.config_reader import ConfigReader
 
 from .. import config
-from .utils import (
-    get_abs_path,
-    prompt,
-    prompt_choices,
-    prompt_yes_no,
-    scan_config,
-    tmuxp_echo,
-)
+from .utils import prompt, prompt_choices, prompt_yes_no, scan_config, tmuxp_echo
 
 
 def get_tmuxinator_dir() -> str:
@@ -55,10 +48,10 @@ def get_teamocil_dir() -> str:
 
 
 def _resolve_path_no_overwrite(config: str) -> str:
-    path = get_abs_path(config)
-    if os.path.exists(path):
+    path = pathlib.Path(config).resolve()
+    if path.exists():
         raise ValueError("%s exists. Pick a new filename." % path)
-    return path
+    return str(path)
 
 
 def command_import(
@@ -81,7 +74,7 @@ def create_import_subparser(
     )
 
     import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(required=True)
-    import_teamocilgroup.add_argument(
+    teamocil_config_file = import_teamocilgroup.add_argument(
         dest="config_file",
         type=str,
         nargs="?",
@@ -99,7 +92,7 @@ def create_import_subparser(
     import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
         required=True
     )
-    import_tmuxinatorgroup.add_argument(
+    tmuxinator_config_file = import_tmuxinatorgroup.add_argument(
         dest="config_file",
         type=str,
         nargs="?",
@@ -110,6 +103,14 @@ def create_import_subparser(
     import_tmuxinator.set_defaults(
         callback=command_import_tmuxinator, import_subparser_name="tmuxinator"
     )
+
+    try:
+        import shtab
+
+        teamocil_config_file.complete = shtab.FILE  # type: ignore
+        tmuxinator_config_file.complete = shtab.FILE  # type: ignore
+    except ImportError:
+        pass
 
     return parser
 
@@ -173,24 +174,6 @@ def command_import_tmuxinator(
     it into tmuxp."""
     config_file = scan_config(config_file, config_dir=get_tmuxinator_dir())
     import_config(config_file, config.import_tmuxinator)
-
-
-def create_convert_subparser(
-    parser: argparse.ArgumentParser,
-) -> argparse.ArgumentParser:
-    parser.add_argument(
-        dest="config_file",
-        type=str,
-        help="checks current ~/.teamocil and current directory for yaml files",
-    )
-    parser.add_argument(
-        "--yes",
-        "-y",
-        dest="answer_yes",
-        action="store_true",
-        help="always answer yes",
-    )
-    return parser
 
 
 def command_import_teamocil(

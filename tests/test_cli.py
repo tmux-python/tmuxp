@@ -23,14 +23,7 @@ from tmuxp.cli.load import (
     load_plugins,
     load_workspace,
 )
-from tmuxp.cli.utils import (
-    _validate_choices,
-    get_abs_path,
-    get_config_dir,
-    is_pure_name,
-    scan_config,
-    tmuxp_echo,
-)
+from tmuxp.cli.utils import get_config_dir, is_pure_name, scan_config, tmuxp_echo
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
@@ -1127,13 +1120,15 @@ def test_freeze_overwrite(
     assert yaml_config_path.exists()
 
 
-def test_get_abs_path(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_behavior(
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     expect = str(tmp_path)
     monkeypatch.chdir(tmp_path)
-    get_abs_path("../") == os.path.dirname(expect)
-    get_abs_path(".") == expect
-    get_abs_path("./") == expect
-    get_abs_path(expect) == expect
+    pathlib.Path("../").resolve() == os.path.dirname(expect)
+    pathlib.Path(".").resolve() == expect
+    pathlib.Path("./").resolve() == expect
+    pathlib.Path(expect).resolve() == expect
 
 
 def test_get_tmuxinator_dir(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1150,16 +1145,6 @@ def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HOME", "/moo")
     assert get_teamocil_dir() == "/moo/.teamocil/"
     assert get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
-
-
-def test_validate_choices() -> None:
-    validate = _validate_choices(["choice1", "choice2"])
-
-    assert validate("choice1")
-    assert validate("choice2")
-
-    with pytest.raises(ValueError):
-        assert validate("choice3")
 
 
 def test_pass_config_dir_ClickPath(

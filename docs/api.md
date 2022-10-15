@@ -50,10 +50,6 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.utils._validate_choices
-```
-
-```{eval-rst}
 .. automethod:: tmuxp.cli.import_config.get_teamocil_dir
 ```
 
