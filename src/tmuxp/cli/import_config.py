@@ -7,14 +7,7 @@ import typing as t
 from tmuxp.config_reader import ConfigReader
 
 from .. import config
-from .utils import (
-    get_abs_path,
-    prompt,
-    prompt_choices,
-    prompt_yes_no,
-    scan_config,
-    tmuxp_echo,
-)
+from .utils import prompt, prompt_choices, prompt_yes_no, scan_config, tmuxp_echo
 
 
 def get_tmuxinator_dir() -> str:
@@ -55,10 +48,10 @@ def get_teamocil_dir() -> str:
 
 
 def _resolve_path_no_overwrite(config: str) -> str:
-    path = get_abs_path(config)
-    if os.path.exists(path):
+    path = pathlib.Path(config).resolve()
+    if path.exists():
         raise ValueError("%s exists. Pick a new filename." % path)
-    return path
+    return str(path)
 
 
 def command_import(

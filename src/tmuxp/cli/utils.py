@@ -63,19 +63,6 @@ def get_config_dir() -> str:
     return path
 
 
-def get_abs_path(config: str) -> str:
-    path = os.path
-    join, isabs = path.join, path.isabs
-    dirname, normpath = path.dirname, path.normpath
-    cwd = os.getcwd()
-
-    config = os.path.expanduser(config)
-    if not isabs(config) or len(dirname(config)) > 1:
-        config = normpath(join(cwd, config))
-
-    return config
-
-
 def scan_config(
     config: t.Union[pathlib.Path, str],
     config_dir: t.Optional[t.Union[pathlib.Path, str]] = None,
