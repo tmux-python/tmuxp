@@ -944,7 +944,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-colorama"
-version = "0.4.15"
+version = "0.4.15.1"
 description = "Typing stubs for colorama"
 category = "dev"
 optional = false
@@ -952,7 +952,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-docutils"
-version = "0.19.1"
+version = "0.19.1.1"
 description = "Typing stubs for docutils"
 category = "dev"
 optional = false
@@ -1572,12 +1572,12 @@ typed-ast = [
     {file = "typed_ast-1.5.4.tar.gz", hash = "sha256:39e21ceb7388e4bb37f4c679d72707ed46c2fbf2a5609b8b8ebc4b067d977df2"},
 ]
 types-colorama = [
-    {file = "types-colorama-0.4.15.tar.gz", hash = "sha256:fd128b1e32f3fecec5f09df4366d21498ee86ea31fcf8b4e8f1ade6d0bbf9832"},
-    {file = "types_colorama-0.4.15-py3-none-any.whl", hash = "sha256:9cdc88dcde9e8ebafb2fdfaf5cee260452f93e5c57eb5d8b2a7f65b836d4e5d0"},
+    {file = "types-colorama-0.4.15.1.tar.gz", hash = "sha256:bc43687a0bf3f42115a56400bd53c618592cc611e66ff57d5cc95024cb44fb1a"},
+    {file = "types_colorama-0.4.15.1-py3-none-any.whl", hash = "sha256:f35f0fc7b4e16d25cbd801b1f6e9d2123674d2561227624d0d7c5f97fac9a901"},
 ]
 types-docutils = [
-    {file = "types-docutils-0.19.1.tar.gz", hash = "sha256:7df133b87105af410fc6a992030a70ee9f5a2c2636c5afe7e0de285eb9fdb015"},
-    {file = "types_docutils-0.19.1-py3-none-any.whl", hash = "sha256:6b110b17ba4bfbde765b69acca6a6da373094d99a5a3bce1d5a8c9d29b293d89"},
+    {file = "types-docutils-0.19.1.1.tar.gz", hash = "sha256:be0a51ba1c7dd215d9d2df66d6845e63c1009b4bbf4c5beb87a0d9745cdba962"},
+    {file = "types_docutils-0.19.1.1-py3-none-any.whl", hash = "sha256:a024cada35f0c13cc45eb0b68a102719018a634013690b7fef723bcbfadbd1f1"},
 ]
 types-PyYAML = [
     {file = "types-PyYAML-6.0.12.tar.gz", hash = "sha256:f6f350418125872f3f0409d96a62a5a5ceb45231af5cc07ee0034ec48a3c82fa"},
