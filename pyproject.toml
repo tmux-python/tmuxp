@@ -157,6 +157,7 @@ files = [
 
 [[tool.mypy.overrides]]
 module = [
+  "shtab",
   "aafigure",
   "IPython.*",
   "ptpython.*",
