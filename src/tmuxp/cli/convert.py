@@ -18,9 +18,9 @@ def create_convert_subparser(
         help="checks tmuxp and current directory for config files.",
     )
     try:
-        import shtab
+        from tmuxp.cli.completions import ConfigFileCompleter
 
-        config_file.complete = shtab.FILE  # type: ignore
+        config_file.completer = ConfigFileCompleter()  # type:ignore
     except ImportError:
         pass
 
