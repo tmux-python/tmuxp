@@ -1,4 +1,5 @@
 import os
+import typing as t
 
 from libtmux.server import Server
 from tmuxp import config
@@ -8,6 +9,7 @@ config_dir = get_config_dir()
 
 try:
     import argcomplete
+    import argcomplete.completers
 except ImportError:
 
     class ArgComplete:
@@ -24,22 +26,40 @@ except ImportError:
 
 
 class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
-
     """argcomplete completer for tmuxp files."""
 
-    def __call__(self, prefix, **kwargs):
+    def __init__(
+        self,
+        allowednames: t.Sequence[str] = (
+            "yml",
+            "yaml",
+            "json",
+        ),
+        directories: bool = False,
+        **kwargs: object
+    ):
+        if isinstance(allowednames, (str, bytes)):
+            allowednames = [allowednames]
 
-        completion = argcomplete.completers.FilesCompleter.__call__(
+        self.allowednames = [x.lstrip("*").lstrip(".") for x in allowednames]
+        self.directories = directories
+        # super().__init__(
+        #     self, allowednames=allowednames, directories=directories, **kwargs
+        # )
+
+    def __call__(self, prefix: str, **kwargs):
+        completion: t.List[str] = argcomplete.completers.FilesCompleter.__call__(
             self, prefix, **kwargs
         )
 
-        completion += [os.path.join(config_dir, c) for c in config.in_dir(config_dir)]
+        completion.extend(
+            [os.path.join(config_dir, c) for c in config.in_dir(config_dir)]
+        )
 
         return completion
 
 
 class TmuxinatorCompleter(argcomplete.completers.FilesCompleter):
-
     """argcomplete completer for Tmuxinator files."""
 
     def __call__(self, prefix, **kwargs):

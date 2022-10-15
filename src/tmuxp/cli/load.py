@@ -566,11 +566,16 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
     )
 
     try:
-        import shtab
+        import argcomplete
+        import argcomplete.completers
 
-        config_file.complete = shtab.FILE  # type: ignore
-        tmux_config_file.complete = shtab.FILE  # type: ignore
-        log_file.complete = shtab.FILE  # type: ignore
+        from tmuxp.cli.completions import ConfigFileCompleter
+
+        config_file.completer = ConfigFileCompleter()  # type: ignore
+        tmux_config_file.completer = (  # type: ignore
+            argcomplete.completers.FilesCompleter
+        )
+        log_file.completer = argcomplete.completers.FilesCompleter  # type: ignore
     except ImportError:
         pass
 

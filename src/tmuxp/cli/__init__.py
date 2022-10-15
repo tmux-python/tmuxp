@@ -93,6 +93,13 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_freeze_subparser(freeze_parser)
 
+    try:
+        import argcomplete
+
+        argcomplete.autocomplete(parser)
+    except ImportError:
+        pass
+
     return parser
 
 
@@ -123,6 +130,13 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
         sys.exit()
 
     parser = create_parser()
+
+    try:
+        import argcomplete
+
+        argcomplete.autocomplete(parser)
+    except ImportError:
+        pass
     args = parser.parse_args(_args, namespace=ns)
 
     setup_logger(logger=logger, level=args.log_level.upper())
