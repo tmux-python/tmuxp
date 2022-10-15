@@ -1,4 +1,5 @@
 import os
+import pathlib
 import typing as t
 
 from libtmux.server import Server
@@ -38,22 +39,22 @@ class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
         directories: bool = False,
         **kwargs: object
     ):
-        if isinstance(allowednames, (str, bytes)):
-            allowednames = [allowednames]
-
-        self.allowednames = [x.lstrip("*").lstrip(".") for x in allowednames]
-        self.directories = directories
-        # super().__init__(
-        #     self, allowednames=allowednames, directories=directories, **kwargs
-        # )
+        # assert not isinstance(allowednames, (str, bytes))
+        #
+        # self.allowednames = [x.lstrip("*").lstrip(".") for x in allowednames]
+        # self.directories = directories
+        # # Does not work, unknown why
+        super().__init__(allowednames=allowednames, directories=directories, **kwargs)
 
     def __call__(self, prefix: str, **kwargs):
-        completion: t.List[str] = argcomplete.completers.FilesCompleter.__call__(
-            self, prefix, **kwargs
-        )
+        completion: t.List[str] = super().__call__(prefix, **kwargs)
 
         completion.extend(
-            [os.path.join(config_dir, c) for c in config.in_dir(config_dir)]
+            [
+                # os.path.join(config_dir, c).replace(str(pathlib.Path.home()), "~")
+                pathlib.Path(c).stem
+                for c in config.in_dir(config_dir)
+            ]
         )
 
         return completion
