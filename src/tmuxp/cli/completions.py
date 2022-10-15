@@ -31,31 +31,15 @@ class ConfigFileCompleter(argcomplete.completers.FilesCompleter):
 
     def __init__(
         self,
-        allowednames: t.Sequence[str] = (
-            "yml",
-            "yaml",
-            "json",
-        ),
+        allowednames: t.Sequence[str] = ("yml", "yaml", "json"),
         directories: bool = False,
         **kwargs: object
     ):
-        # assert not isinstance(allowednames, (str, bytes))
-        #
-        # self.allowednames = [x.lstrip("*").lstrip(".") for x in allowednames]
-        # self.directories = directories
-        # # Does not work, unknown why
         super().__init__(allowednames=allowednames, directories=directories, **kwargs)
 
     def __call__(self, prefix: str, **kwargs):
         completion: t.List[str] = super().__call__(prefix, **kwargs)
-
-        completion.extend(
-            [
-                # os.path.join(config_dir, c).replace(str(pathlib.Path.home()), "~")
-                pathlib.Path(c).stem
-                for c in config.in_dir(config_dir)
-            ]
-        )
+        completion.extend([pathlib.Path(c).stem for c in config.in_dir(config_dir)])
 
         return completion
 
