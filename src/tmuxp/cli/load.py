@@ -515,14 +515,6 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help="passthru to tmux(1) -f",
     )
 
-    try:
-        import shtab
-
-        config_file.complete = shtab.FILE  # type: ignore
-        tmux_config_file.complete = shtab.FILE  # type: ignore
-    except ImportError:
-        pass
-
     parser.add_argument(
         "-s",
         dest="new_session_name",
@@ -566,14 +558,24 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         const=88,
         help="like -2, but indicates that the terminal supports 88 colours.",
     )
-
     parser.set_defaults(colors=None)
-    parser.add_argument(
+
+    log_file = parser.add_argument(
         "--log-file",
         metavar="file_path",
         action="store",
         help="file to log errors/output to",
     )
+
+    try:
+        import shtab
+
+        config_file.complete = shtab.FILE  # type: ignore
+        tmux_config_file.complete = shtab.FILE  # type: ignore
+        log_file.complete = shtab.FILE  # type: ignore
+    except ImportError:
+        pass
+
     return parser
 
 

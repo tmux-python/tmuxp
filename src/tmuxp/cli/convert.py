@@ -11,12 +11,19 @@ from .utils import get_config_dir, prompt_yes_no, scan_config
 def create_convert_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    parser.add_argument(
+    config_file = parser.add_argument(
         dest="config_file",
         type=str,
         metavar="config-file",
         help="checks tmuxp and current directory for config files.",
     )
+    try:
+        import shtab
+
+        config_file.complete = shtab.FILE  # type: ignore
+    except ImportError:
+        pass
+
     parser.add_argument(
         "--yes",
         "-y",

@@ -81,7 +81,7 @@ def create_import_subparser(
     )
 
     import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(required=True)
-    import_teamocilgroup.add_argument(
+    teamocil_config_file = import_teamocilgroup.add_argument(
         dest="config_file",
         type=str,
         nargs="?",
@@ -99,7 +99,7 @@ def create_import_subparser(
     import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
         required=True
     )
-    import_tmuxinatorgroup.add_argument(
+    tmuxinator_config_file = import_tmuxinatorgroup.add_argument(
         dest="config_file",
         type=str,
         nargs="?",
@@ -110,6 +110,14 @@ def create_import_subparser(
     import_tmuxinator.set_defaults(
         callback=command_import_tmuxinator, import_subparser_name="tmuxinator"
     )
+
+    try:
+        import shtab
+
+        teamocil_config_file.complete = shtab.FILE  # type: ignore
+        tmuxinator_config_file.complete = shtab.FILE  # type: ignore
+    except ImportError:
+        pass
 
     return parser
 
