@@ -573,9 +573,9 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
 
         config_file.completer = ConfigFileCompleter()  # type: ignore
         tmux_config_file.completer = (  # type: ignore
-            argcomplete.completers.FilesCompleter
+            argcomplete.completers.FilesCompleter()
         )
-        log_file.completer = argcomplete.completers.FilesCompleter  # type: ignore
+        log_file.completer = argcomplete.completers.FilesCompleter()  # type: ignore
     except ImportError:
         pass
 
