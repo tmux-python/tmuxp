@@ -90,21 +90,6 @@ def _validate_choices(options: t.List[str]) -> t.Callable:
     return func
 
 
-class ConfigPath:
-    def __init__(
-        self, config_dir: t.Optional[t.Union[t.Callable, str]] = None, *args, **kwargs
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self.config_dir = config_dir
-
-    def convert(
-        self, value: str, param: t.Any, ctx: t.Any
-    ) -> t.Optional[t.Union[str, pathlib.Path]]:
-        config_dir = self.config_dir() if callable(self.config_dir) else self.config_dir
-
-        return scan_config(value, config_dir=config_dir)
-
-
 def scan_config_argument(ctx, param, value, config_dir=None):
     """Validate / translate config name/path values for click config arg.
 
