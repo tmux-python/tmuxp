@@ -183,24 +183,6 @@ def command_import_tmuxinator(
     import_config(config_file, config.import_tmuxinator)
 
 
-def create_convert_subparser(
-    parser: argparse.ArgumentParser,
-) -> argparse.ArgumentParser:
-    parser.add_argument(
-        dest="config_file",
-        type=str,
-        help="checks current ~/.teamocil and current directory for yaml files",
-    )
-    parser.add_argument(
-        "--yes",
-        "-y",
-        dest="answer_yes",
-        action="store_true",
-        help="always answer yes",
-    )
-    return parser
-
-
 def command_import_teamocil(
     config_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
