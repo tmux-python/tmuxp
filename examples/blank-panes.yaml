@@ -4,24 +4,24 @@ windows:
   # All these are equivalent
   - window_name: Blank pane test
     panes:
-    -
-    - pane
-    - blank
+      -
+      - pane
+      - blank
   - window_name: More blank panes
     panes:
-    - null
-    - shell_command: 
-    - shell_command:
-      - 
+      - null
+      - shell_command:
+      - shell_command:
+          -
   # an empty string will be treated as a carriage return
   - window_name: Empty string (return)
     panes:
-    - ''
-    - shell_command: ''
-    - shell_command:
-      - ''
+      - ""
+      - shell_command: ""
+      - shell_command:
+          - ""
   # a pane can have other options but still be blank
   - window_name: Blank with options
     panes:
-    - focus: true
-    - start_directory: /tmp
+      - focus: true
+      - start_directory: /tmp

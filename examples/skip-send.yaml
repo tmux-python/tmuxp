@@ -1,9 +1,9 @@
 session_name: Skip command execution (command-level)
 windows:
-- panes:
-  - shell_command:
-    # You can see this
-    - echo "___$((11 + 1))___"
-    # This is skipped
-    - cmd: echo "___$((1 + 3))___"
-      enter: false
+  - panes:
+      - shell_command:
+          # You can see this
+          - echo "___$((11 + 1))___"
+          # This is skipped
+          - cmd: echo "___$((1 + 3))___"
+            enter: false

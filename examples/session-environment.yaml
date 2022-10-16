@@ -6,4 +6,4 @@ environment:
 windows:
   - window_name: Django project
     panes:
-    - ./manage.py runserver 0.0.0.0:${SERVER_PORT}
+      - ./manage.py runserver 0.0.0.0:${SERVER_PORT}

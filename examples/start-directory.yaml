@@ -4,37 +4,37 @@ windows:
   - window_name: should be /var/
     panes:
       - shell_command:
-        - echo "\033c
-        - it trickles down from session-level"
+          - echo "\033c
+          - it trickles down from session-level"
       - echo hello
   - window_name: should be /var/log
     start_directory: log
     panes:
       - shell_command:
-        - echo '\033c
-        - window start_directory concatenates to session start_directory
-        - if it is not absolute'
+          - echo '\033c
+          - window start_directory concatenates to session start_directory
+          - if it is not absolute'
       - echo hello
   - window_name: should be ~
-    start_directory: '~'
+    start_directory: "~"
     panes:
-    - shell_command:
-      - 'echo \\033c ~ has precedence. note: remember to quote ~ in YAML'
-    - echo hello
+      - shell_command:
+          - 'echo \\033c ~ has precedence. note: remember to quote ~ in YAML'
+      - echo hello
   - window_name: should be /bin
     start_directory: /bin
     panes:
-    - echo '\033c absolute paths also have precedence.'
-    - echo hello
+      - echo '\033c absolute paths also have precedence.'
+      - echo hello
   - window_name: should be config's dir
     start_directory: ./
     panes:
       - shell_command:
-        - echo '\033c
-        - ./ is relative to config file location
-        - ../ will be parent of config file
-        - ./test will be \"test\" dir inside dir of config file'
+          - echo '\033c
+          - ./ is relative to config file location
+          - ../ will be parent of config file
+          - ./test will be \"test\" dir inside dir of config file'
       - shell_command:
-        - echo '\033c
-        - This way you can load up workspaces from projects and maintain
-        - relative paths.'
+          - echo '\033c
+          - This way you can load up workspaces from projects and maintain
+          - relative paths.'

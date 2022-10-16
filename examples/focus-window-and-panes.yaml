@@ -3,18 +3,18 @@ windows:
   - window_name: attached window
     focus: true
     panes:
-    - shell_command:
-      - echo hello
-      - echo 'this pane should be selected on load'
-      focus: true
-    - shell_command:
-      - cd /var/log
-      - echo hello
+      - shell_command:
+          - echo hello
+          - echo 'this pane should be selected on load'
+        focus: true
+      - shell_command:
+          - cd /var/log
+          - echo hello
   - window_name: second window
     shell_command_before: cd /var/log
     panes:
-    - pane
-    - shell_command:
-      - echo 'this pane should be focused, when window switched to first time'
-      focus: true
-    - pane
+      - pane
+      - shell_command:
+          - echo 'this pane should be focused, when window switched to first time'
+        focus: true
+      - pane
