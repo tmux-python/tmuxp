@@ -623,7 +623,7 @@ setuptools = ">=40.0"
 
 [[package]]
 name = "pytest-watcher"
-version = "0.2.3"
+version = "0.2.4"
 description = "Continiously runs pytest on changes in *.py files"
 category = "dev"
 optional = false
@@ -1406,8 +1406,8 @@ pytest-rerunfailures = [
     {file = "pytest_rerunfailures-10.2-py3-none-any.whl", hash = "sha256:d31d8e828dfd39363ad99cd390187bf506c7a433a89f15c3126c7d16ab723fe2"},
 ]
 pytest-watcher = [
-    {file = "pytest-watcher-0.2.3.tar.gz", hash = "sha256:1937dd97e72caafd371d8cea7b3d70c88ff4fe35e6cdecb29c41bbdcbf1dcc2b"},
-    {file = "pytest_watcher-0.2.3-py3-none-any.whl", hash = "sha256:af935963399509a5b0e855740ba7227852f1a7fccfbb1cbb79fa19a445af02d2"},
+    {file = "pytest-watcher-0.2.4.tar.gz", hash = "sha256:f393ec46da9099083445203924d77f507b81e5222b09c949583488057bd13091"},
+    {file = "pytest_watcher-0.2.4-py3-none-any.whl", hash = "sha256:fc600a34d7ed126f2b5a884b90cafeda7a443757a082ec17273a96cb10a68025"},
 ]
 pytz = [
     {file = "pytz-2022.5-py2.py3-none-any.whl", hash = "sha256:335ab46900b1465e714b4fda4963d87363264eb662aab5e65da039c25f1f5b22"},
