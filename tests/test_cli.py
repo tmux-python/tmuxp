@@ -433,6 +433,136 @@ windows:
     assert pane.current_path == str(realtemp)
 
 
+if t.TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    ExpectedOutput: TypeAlias = t.Optional[t.Union[str, t.List[str]]]
+
+
+class CLILoadFixture(t.NamedTuple):
+    test_id: str
+    cli_args: t.List[str]
+    config_paths: t.List[str]
+    expected_exit_code: int
+    expected_in_out: "ExpectedOutput" = None
+    expected_not_in_out: "ExpectedOutput" = None
+    expected_in_err: "ExpectedOutput" = None
+    expected_not_in_err: "ExpectedOutput" = None
+
+
+TEST_LOAD_FIXTURES = [
+    CLILoadFixture(
+        test_id="dir-relative-dot-samedir",
+        cli_args=["load", "."],
+        config_paths=["{tmp_path}/.tmuxp.yaml"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
+    CLILoadFixture(
+        test_id="dir-relative-dot-slash-samedir",
+        cli_args=["load", "./"],
+        config_paths=["{tmp_path}/.tmuxp.yaml"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
+    CLILoadFixture(
+        test_id="dir-relative-file-samedir",
+        cli_args=["load", "./.tmuxp.yaml"],
+        config_paths=["{tmp_path}/.tmuxp.yaml"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
+    CLILoadFixture(
+        test_id="filename-relative-file-samedir",
+        cli_args=["load", "./my_config.yaml"],
+        config_paths=["{tmp_path}/my_config.yaml"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
+    CLILoadFixture(
+        test_id="configdir-session-name",
+        cli_args=["load", "my_config"],
+        config_paths=["{TMUXP_CONFIGDIR}/my_config.yaml"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
+    CLILoadFixture(
+        test_id="configdir-absolute",
+        cli_args=["load", "~/.config/tmuxp/my_config.yaml"],
+        config_paths=["{TMUXP_CONFIGDIR}/my_config.yaml"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(CLILoadFixture._fields),
+    TEST_LOAD_FIXTURES,
+    ids=[test.test_id for test in TEST_LOAD_FIXTURES],
+)
+@pytest.mark.usefixtures("tmuxp_configdir_default")
+def test_load(
+    tmp_path: pathlib.Path,
+    tmuxp_configdir: pathlib.Path,
+    server: "Server",
+    session: Session,
+    capsys: pytest.CaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    cli_args: t.List[str],
+    config_paths: t.List[str],
+    expected_exit_code: int,
+    expected_in_out: "ExpectedOutput",
+    expected_not_in_out: "ExpectedOutput",
+    expected_in_err: "ExpectedOutput",
+    expected_not_in_err: "ExpectedOutput",
+) -> None:
+    assert server.socket_name is not None
+
+    monkeypatch.chdir(tmp_path)
+    for config_path in config_paths:
+        tmuxp_config = pathlib.Path(
+            config_path.format(tmp_path=tmp_path, TMUXP_CONFIGDIR=tmuxp_configdir)
+        )
+        tmuxp_config.write_text(
+            """
+        session_name: test
+        windows:
+        - window_name: test
+          panes:
+          -
+        """,
+            encoding="utf-8",
+        )
+
+    try:
+        cli.cli([*cli_args, "-d", "-L", server.socket_name])
+    except SystemExit:
+        pass
+
+    result = capsys.readouterr()
+    output = "".join(list(result.out))
+
+    if expected_in_out is not None:
+        if isinstance(expected_in_out, str):
+            expected_in_out = [expected_in_out]
+        for needle in expected_in_out:
+            assert needle in output
+
+    if expected_not_in_out is not None:
+        if isinstance(expected_not_in_out, str):
+            expected_not_in_out = [expected_not_in_out]
+        for needle in expected_not_in_out:
+            assert needle not in output
+
+
 def test_regression_00132_session_name_with_dots(
     tmp_path: pathlib.Path,
     server: "Server",
