@@ -47,7 +47,7 @@ def validate_schema(session_config):
 
 def is_workspace_file(filename, extensions=[".yml", ".yaml", ".json"]):
     """
-    Return True if file has a valid config file type.
+    Return True if file has a valid workspace file type.
 
     Parameters
     ----------

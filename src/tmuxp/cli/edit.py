@@ -14,7 +14,7 @@ def create_edit_subparser(
         dest="workspace_file",
         metavar="workspace-file",
         type=str,
-        help="checks current tmuxp and current directory for config files.",
+        help="checks current tmuxp and current directory for workspace files.",
     )
     return parser
 

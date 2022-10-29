@@ -699,7 +699,7 @@ Edit this page.
 - <https://github.com/tony/sphinxcontrib-github/blob/master/.tmuxp.yaml>
 
 You can use `start_directory: ./` to make the directories relative to
-the config file / project root.
+the workspace file / project root.
 
 ## Bonus: pipenv auto-bootstrapping
 

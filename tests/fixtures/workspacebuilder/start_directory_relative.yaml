@@ -28,7 +28,7 @@ windows:
     - echo "hey"
   - shell_command:
     - echo "moo"
-- window_name: inherit start_directory which is rel to config file
+- window_name: inherit start_directory which is rel to workspace file
   panes:
   - shell_command:
     - echo hello
@@ -36,7 +36,7 @@ windows:
     - echo "hey"
   - shell_command:
     - echo "moo3"
-- window_name: cwd relative to config file
+- window_name: cwd relative to workspace file
   start_directory: ./
   panes:
   - shell_command:

@@ -15,7 +15,7 @@ def create_convert_subparser(
         dest="workspace_file",
         type=str,
         metavar="config-file",
-        help="checks tmuxp and current directory for config files.",
+        help="checks tmuxp and current directory for workspace files.",
     )
     try:
         import shtab

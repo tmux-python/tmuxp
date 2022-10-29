@@ -78,7 +78,10 @@ def create_freeze_subparser(
         help="don't prompt for confirmation",
     )
     parser.add_argument(
-        "--force", dest="force", action="store_true", help="overwrite the config file"
+        "--force",
+        dest="force",
+        action="store_true",
+        help="overwrite the workspace file",
     )
 
     return parser
@@ -88,7 +91,7 @@ def command_freeze(
     args: CLIFreezeNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Snapshot a session into a config.
+    """Snapshot a tmux session into a tmuxp workspace.
 
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the
     current session."""
@@ -119,7 +122,7 @@ def command_freeze(
     if not (
         args.answer_yes
         or prompt_yes_no(
-            "The new config *WILL* require adjusting afterwards. Save config?"
+            "The new workspace will require adjusting afterwards. Save workspace file?"
         )
     ):
         if not args.quiet:

@@ -85,7 +85,7 @@ def scan_config(
     Parameters
     ----------
     config : str
-        config file, valid examples:
+        workspace file, valid examples:
 
         - a file name, myconfig.yaml
         - relative path, ../config.yaml or ../project

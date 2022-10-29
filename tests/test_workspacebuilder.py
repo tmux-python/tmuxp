@@ -477,7 +477,7 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     test_config = yaml_config.format(TEST_DIR=test_dir)
     sconfig = ConfigReader._load(format="yaml", content=test_config)
     # the second argument of os.getcwd() mimics the behavior
-    # the CLI loader will do, but it passes in the config file's location.
+    # the CLI loader will do, but it passes in the workspace file's location.
     sconfig = config.expand(sconfig, config_dir)
 
     sconfig = config.trickle(sconfig)
