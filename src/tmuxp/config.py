@@ -13,13 +13,13 @@ from . import exc
 logger = logging.getLogger(__name__)
 
 
-def validate_schema(session_config):
+def validate_schema(workspace_dict):
     """
     Return True if config schema is correct.
 
     Parameters
     ----------
-    session_config : dict
+    workspace_dict : dict
         session configuration
 
     Returns
@@ -28,18 +28,18 @@ def validate_schema(session_config):
     """
 
     # verify session_name
-    if "session_name" not in session_config:
+    if "session_name" not in workspace_dict:
         raise exc.ConfigError('config requires "session_name"')
 
-    if "windows" not in session_config:
+    if "windows" not in workspace_dict:
         raise exc.ConfigError('config requires list of "windows"')
 
-    for window in session_config["windows"]:
+    for window in workspace_dict["windows"]:
         if "window_name" not in window:
             raise exc.ConfigError('config window is missing "window_name"')
 
-    if "plugins" in session_config:
-        if not isinstance(session_config["plugins"], list):
+    if "plugins" in workspace_dict:
+        if not isinstance(workspace_dict["plugins"], list):
             raise exc.ConfigError('"plugins" only supports list type')
 
     return True
@@ -134,13 +134,13 @@ def expandshell(_path):
     return os.path.expandvars(os.path.expanduser(_path))
 
 
-def inline(session_config):
+def inline(workspace_dict):
     """
     Return config in inline form, opposite of :meth:`config.expand`.
 
     Parameters
     ----------
-    session_config : dict
+    workspace_dict : dict
 
     Returns
     -------
@@ -149,32 +149,32 @@ def inline(session_config):
     """
 
     if (
-        "shell_command" in session_config
-        and isinstance(session_config["shell_command"], list)
-        and len(session_config["shell_command"]) == 1
+        "shell_command" in workspace_dict
+        and isinstance(workspace_dict["shell_command"], list)
+        and len(workspace_dict["shell_command"]) == 1
     ):
-        session_config["shell_command"] = session_config["shell_command"][0]
+        workspace_dict["shell_command"] = workspace_dict["shell_command"][0]
 
-        if len(session_config.keys()) == int(1):
-            session_config = session_config["shell_command"]
+        if len(workspace_dict.keys()) == int(1):
+            workspace_dict = workspace_dict["shell_command"]
     if (
-        "shell_command_before" in session_config
-        and isinstance(session_config["shell_command_before"], list)
-        and len(session_config["shell_command_before"]) == 1
+        "shell_command_before" in workspace_dict
+        and isinstance(workspace_dict["shell_command_before"], list)
+        and len(workspace_dict["shell_command_before"]) == 1
     ):
-        session_config["shell_command_before"] = session_config["shell_command_before"][
+        workspace_dict["shell_command_before"] = workspace_dict["shell_command_before"][
             0
         ]
 
     # recurse into window and pane config items
-    if "windows" in session_config:
-        session_config["windows"] = [
-            inline(window) for window in session_config["windows"]
+    if "windows" in workspace_dict:
+        workspace_dict["windows"] = [
+            inline(window) for window in workspace_dict["windows"]
         ]
-    if "panes" in session_config:
-        session_config["panes"] = [inline(pane) for pane in session_config["panes"]]
+    if "panes" in workspace_dict:
+        workspace_dict["panes"] = [inline(pane) for pane in workspace_dict["panes"]]
 
-    return session_config
+    return workspace_dict
 
 
 def expand_cmd(p: Dict) -> Dict:
@@ -210,7 +210,7 @@ def expand_cmd(p: Dict) -> Dict:
     return p
 
 
-def expand(session_config, cwd=None, parent=None):
+def expand(workspace_dict, cwd=None, parent=None):
     """Return config with shorthand and inline properties expanded.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
@@ -229,7 +229,7 @@ def expand(session_config, cwd=None, parent=None):
 
     Parameters
     ----------
-    session_config : dict
+    workspace_dict : dict
         the configuration for the session
     cwd : str
         directory to expand relative paths against. should be the dir of the
@@ -248,41 +248,41 @@ def expand(session_config, cwd=None, parent=None):
     if not cwd:
         cwd = os.getcwd()
 
-    if "session_name" in session_config:
-        session_config["session_name"] = expandshell(session_config["session_name"])
-    if "window_name" in session_config:
-        session_config["window_name"] = expandshell(session_config["window_name"])
-    if "environment" in session_config:
-        for key in session_config["environment"]:
-            val = session_config["environment"][key]
+    if "session_name" in workspace_dict:
+        workspace_dict["session_name"] = expandshell(workspace_dict["session_name"])
+    if "window_name" in workspace_dict:
+        workspace_dict["window_name"] = expandshell(workspace_dict["window_name"])
+    if "environment" in workspace_dict:
+        for key in workspace_dict["environment"]:
+            val = workspace_dict["environment"][key]
             val = expandshell(val)
             if any(val.startswith(a) for a in [".", "./"]):
                 val = os.path.normpath(os.path.join(cwd, val))
-            session_config["environment"][key] = val
-    if "global_options" in session_config:
-        for key in session_config["global_options"]:
-            val = session_config["global_options"][key]
+            workspace_dict["environment"][key] = val
+    if "global_options" in workspace_dict:
+        for key in workspace_dict["global_options"]:
+            val = workspace_dict["global_options"][key]
             if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in [".", "./"]):
                     val = os.path.normpath(os.path.join(cwd, val))
-            session_config["global_options"][key] = val
-    if "options" in session_config:
-        for key in session_config["options"]:
-            val = session_config["options"][key]
+            workspace_dict["global_options"][key] = val
+    if "options" in workspace_dict:
+        for key in workspace_dict["options"]:
+            val = workspace_dict["options"][key]
             if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in [".", "./"]):
                     val = os.path.normpath(os.path.join(cwd, val))
-            session_config["options"][key] = val
+            workspace_dict["options"][key] = val
 
     # Any config section, session, window, pane that can contain the
     # 'shell_command' value
-    if "start_directory" in session_config:
-        session_config["start_directory"] = expandshell(
-            session_config["start_directory"]
+    if "start_directory" in workspace_dict:
+        workspace_dict["start_directory"] = expandshell(
+            workspace_dict["start_directory"]
         )
-        start_path = session_config["start_directory"]
+        start_path = workspace_dict["start_directory"]
         if any(start_path.startswith(a) for a in [".", "./"]):
             # if window has a session, or pane has a window with a
             # start_directory of . or ./, make sure the start_directory can be
@@ -293,44 +293,44 @@ def expand(session_config, cwd=None, parent=None):
             if parent:
                 cwd = parent["start_directory"]
             start_path = os.path.normpath(os.path.join(cwd, start_path))
-            session_config["start_directory"] = start_path
+            workspace_dict["start_directory"] = start_path
 
-    if "before_script" in session_config:
-        session_config["before_script"] = expandshell(session_config["before_script"])
-        if any(session_config["before_script"].startswith(a) for a in [".", "./"]):
-            session_config["before_script"] = os.path.normpath(
-                os.path.join(cwd, session_config["before_script"])
+    if "before_script" in workspace_dict:
+        workspace_dict["before_script"] = expandshell(workspace_dict["before_script"])
+        if any(workspace_dict["before_script"].startswith(a) for a in [".", "./"]):
+            workspace_dict["before_script"] = os.path.normpath(
+                os.path.join(cwd, workspace_dict["before_script"])
             )
 
-    if "shell_command" in session_config and isinstance(
-        session_config["shell_command"], str
+    if "shell_command" in workspace_dict and isinstance(
+        workspace_dict["shell_command"], str
     ):
-        session_config["shell_command"] = [session_config["shell_command"]]
+        workspace_dict["shell_command"] = [workspace_dict["shell_command"]]
 
-    if "shell_command_before" in session_config:
-        shell_command_before = session_config["shell_command_before"]
+    if "shell_command_before" in workspace_dict:
+        shell_command_before = workspace_dict["shell_command_before"]
 
-        session_config["shell_command_before"] = expand_cmd(shell_command_before)
+        workspace_dict["shell_command_before"] = expand_cmd(shell_command_before)
 
     # recurse into window and pane config items
-    if "windows" in session_config:
-        session_config["windows"] = [
-            expand(window, parent=session_config)
-            for window in session_config["windows"]
+    if "windows" in workspace_dict:
+        workspace_dict["windows"] = [
+            expand(window, parent=workspace_dict)
+            for window in workspace_dict["windows"]
         ]
-    elif "panes" in session_config:
-        pane_configs = session_config["panes"]
+    elif "panes" in workspace_dict:
+        pane_configs = workspace_dict["panes"]
         for pane_idx, pane_config in enumerate(pane_configs):
             pane_configs[pane_idx] = {}
             pane_configs[pane_idx].update(expand_cmd(pane_config))
-        session_config["panes"] = [
-            expand(pane, parent=session_config) for pane in pane_configs
+        workspace_dict["panes"] = [
+            expand(pane, parent=workspace_dict) for pane in pane_configs
         ]
 
-    return session_config
+    return workspace_dict
 
 
-def trickle(session_config):
+def trickle(workspace_dict):
     """Return a dict with "trickled down" / inherited config values.
 
     This will only work if config has been expanded to full form with
@@ -342,7 +342,7 @@ def trickle(session_config):
 
     Parameters
     ----------
-    session_config : dict
+    workspace_dict : dict
         the session configuration.
 
     Returns
@@ -353,17 +353,17 @@ def trickle(session_config):
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 
-    if "start_directory" in session_config:
-        session_start_directory = session_config["start_directory"]
+    if "start_directory" in workspace_dict:
+        session_start_directory = workspace_dict["start_directory"]
     else:
         session_start_directory = None
 
-    if "suppress_history" in session_config:
-        suppress_history = session_config["suppress_history"]
+    if "suppress_history" in workspace_dict:
+        suppress_history = workspace_dict["suppress_history"]
     else:
         suppress_history = None
 
-    for window_config in session_config["windows"]:
+    for window_config in workspace_dict["windows"]:
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
@@ -392,9 +392,9 @@ def trickle(session_config):
             commands_before = []
 
             # Prepend shell_command_before to commands
-            if "shell_command_before" in session_config:
+            if "shell_command_before" in workspace_dict:
                 commands_before.extend(
-                    session_config["shell_command_before"]["shell_command"]
+                    workspace_dict["shell_command_before"]["shell_command"]
                 )
             if "shell_command_before" in window_config:
                 commands_before.extend(
@@ -411,17 +411,17 @@ def trickle(session_config):
             window_config["panes"][pane_idx]["shell_command"] = commands_before
             # pane_config['shell_command'] = commands_before
 
-    return session_config
+    return workspace_dict
 
 
-def import_tmuxinator(session_config):
+def import_tmuxinator(workspace_dict):
     """Return tmuxp config from a `tmuxinator`_ yaml config.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
 
     Parameters
     ----------
-    session_config : dict
+    workspace_dict : dict
         python dict for session configuration.
 
     Returns
@@ -431,58 +431,58 @@ def import_tmuxinator(session_config):
 
     tmuxp_config = {}
 
-    if "project_name" in session_config:
-        tmuxp_config["session_name"] = session_config.pop("project_name")
-    elif "name" in session_config:
-        tmuxp_config["session_name"] = session_config.pop("name")
+    if "project_name" in workspace_dict:
+        tmuxp_config["session_name"] = workspace_dict.pop("project_name")
+    elif "name" in workspace_dict:
+        tmuxp_config["session_name"] = workspace_dict.pop("name")
     else:
         tmuxp_config["session_name"] = None
 
-    if "project_root" in session_config:
-        tmuxp_config["start_directory"] = session_config.pop("project_root")
-    elif "root" in session_config:
-        tmuxp_config["start_directory"] = session_config.pop("root")
+    if "project_root" in workspace_dict:
+        tmuxp_config["start_directory"] = workspace_dict.pop("project_root")
+    elif "root" in workspace_dict:
+        tmuxp_config["start_directory"] = workspace_dict.pop("root")
 
-    if "cli_args" in session_config:
-        tmuxp_config["config"] = session_config["cli_args"]
-
-        if "-f" in tmuxp_config["config"]:
-            tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
-    elif "tmux_options" in session_config:
-        tmuxp_config["config"] = session_config["tmux_options"]
+    if "cli_args" in workspace_dict:
+        tmuxp_config["config"] = workspace_dict["cli_args"]
 
         if "-f" in tmuxp_config["config"]:
             tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
+    elif "tmux_options" in workspace_dict:
+        tmuxp_config["config"] = workspace_dict["tmux_options"]
 
-    if "socket_name" in session_config:
-        tmuxp_config["socket_name"] = session_config["socket_name"]
+        if "-f" in tmuxp_config["config"]:
+            tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
+
+    if "socket_name" in workspace_dict:
+        tmuxp_config["socket_name"] = workspace_dict["socket_name"]
 
     tmuxp_config["windows"] = []
 
-    if "tabs" in session_config:
-        session_config["windows"] = session_config.pop("tabs")
+    if "tabs" in workspace_dict:
+        workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    if "pre" in session_config and "pre_window" in session_config:
-        tmuxp_config["shell_command"] = session_config["pre"]
+    if "pre" in workspace_dict and "pre_window" in workspace_dict:
+        tmuxp_config["shell_command"] = workspace_dict["pre"]
 
-        if isinstance(session_config["pre"], str):
-            tmuxp_config["shell_command_before"] = [session_config["pre_window"]]
+        if isinstance(workspace_dict["pre"], str):
+            tmuxp_config["shell_command_before"] = [workspace_dict["pre_window"]]
         else:
-            tmuxp_config["shell_command_before"] = session_config["pre_window"]
-    elif "pre" in session_config:
-        if isinstance(session_config["pre"], str):
-            tmuxp_config["shell_command_before"] = [session_config["pre"]]
+            tmuxp_config["shell_command_before"] = workspace_dict["pre_window"]
+    elif "pre" in workspace_dict:
+        if isinstance(workspace_dict["pre"], str):
+            tmuxp_config["shell_command_before"] = [workspace_dict["pre"]]
         else:
-            tmuxp_config["shell_command_before"] = session_config["pre"]
+            tmuxp_config["shell_command_before"] = workspace_dict["pre"]
 
-    if "rbenv" in session_config:
+    if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_config:
             tmuxp_config["shell_command_before"] = []
         tmuxp_config["shell_command_before"].append(
-            "rbenv shell %s" % session_config["rbenv"]
+            "rbenv shell %s" % workspace_dict["rbenv"]
         )
 
-    for window_config in session_config["windows"]:
+    for window_config in workspace_dict["windows"]:
         for k, v in window_config.items():
             window_config = {"window_name": k}
 
@@ -508,14 +508,14 @@ def import_tmuxinator(session_config):
     return tmuxp_config
 
 
-def import_teamocil(session_config):
+def import_teamocil(workspace_dict):
     """Return tmuxp config from a `teamocil`_ yaml config.
 
     .. _teamocil: https://github.com/remiprev/teamocil
 
     Parameters
     ----------
-    session_config : dict
+    workspace_dict : dict
         python dict for session configuration
 
     Notes
@@ -532,21 +532,20 @@ def import_teamocil(session_config):
 
     tmuxp_config = {}
 
-    if "session" in session_config:
-        session_config = session_config["session"]
+    if "session" in workspace_dict:
+        workspace_dict = workspace_dict["session"]
 
-    if "name" in session_config:
-        tmuxp_config["session_name"] = session_config["name"]
+    if "name" in workspace_dict:
+        tmuxp_config["session_name"] = workspace_dict["name"]
     else:
         tmuxp_config["session_name"] = None
 
-    if "root" in session_config:
-        tmuxp_config["start_directory"] = session_config.pop("root")
+    if "root" in workspace_dict:
+        tmuxp_config["start_directory"] = workspace_dict.pop("root")
 
     tmuxp_config["windows"] = []
 
-    for w in session_config["windows"]:
-
+    for w in workspace_dict["windows"]:
         windowdict = {"window_name": w["name"]}
 
         if "clear" in w:
