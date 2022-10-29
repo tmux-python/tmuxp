@@ -15,6 +15,7 @@ from _pytest.doctest import DoctestItem
 
 from libtmux.test import namer
 from tests.fixtures import utils as test_utils
+from tmuxp.cli.utils import get_config_dir
 
 if t.TYPE_CHECKING:
     from libtmux.session import Session
@@ -38,6 +39,24 @@ def zshrc(user_path: pathlib.Path) -> pathlib.Path:
 @pytest.fixture(autouse=True)
 def home_path_default(monkeypatch: pytest.MonkeyPatch, user_path: pathlib.Path) -> None:
     monkeypatch.setenv("HOME", str(user_path))
+
+
+@pytest.fixture
+def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
+    xdg_config_dir = user_path / ".config"
+    xdg_config_dir.mkdir(exist_ok=True)
+
+    tmuxp_configdir = xdg_config_dir / "tmuxp"
+    tmuxp_configdir.mkdir(exist_ok=True)
+    return tmuxp_configdir
+
+
+@pytest.fixture
+def tmuxp_configdir_default(
+    monkeypatch: pytest.MonkeyPatch, tmuxp_configdir: pathlib.Path
+) -> None:
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmuxp_configdir))
+    assert get_config_dir() == str(tmuxp_configdir)
 
 
 @pytest.fixture(scope="function")

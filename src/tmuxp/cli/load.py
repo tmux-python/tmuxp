@@ -16,6 +16,7 @@ import typing as t
 from libtmux.common import has_gte_version
 from libtmux.server import Server
 from libtmux.session import Session
+from tmuxp.types import StrPath
 
 from .. import config, config_reader, exc, log, util
 from ..workspacebuilder import WorkspaceBuilder
@@ -29,13 +30,17 @@ from .utils import (
 )
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, TypeAlias
+    from typing_extensions import Literal, NotRequired, TypeAlias, TypedDict
 
     CLIColorsLiteral: TypeAlias = Literal[56, 88]
 
+    class OptionOverrides(TypedDict):
+        detached: NotRequired[bool]
+        new_session_name: NotRequired[t.Optional[str]]
+
 
 class CLILoadNamespace(argparse.Namespace):
-    config_file: str
+    config_files: t.List[str]
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
     tmux_config_file: t.Optional[str]
@@ -251,7 +256,7 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 
 
 def load_workspace(
-    config_file: t.Union[pathlib.Path, str],
+    config_file: StrPath,
     socket_name: t.Optional[str] = None,
     socket_path: None = None,
     tmux_config_file: None = None,
@@ -266,8 +271,8 @@ def load_workspace(
 
     Parameters
     ----------
-    config_file : str
-        absolute path to config file
+    config_file : list of str
+        paths or session names to workspace files
     socket_name : str, optional
         ``tmux -L <socket-name>``
     socket_path: str, optional
@@ -356,7 +361,7 @@ def load_workspace(
        Accessed April 8th, 2018.
     """
     # get the canonical path, eliminating any symlinks
-    if isinstance(config_file, str):
+    if isinstance(config_file, (str, os.PathLike)):
         config_file = pathlib.Path(config_file)
 
     tmuxp_echo(
@@ -486,8 +491,9 @@ def config_file_completion(ctx, params, incomplete):
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    config_file = parser.add_argument(
-        "config_file",
+    config_files = parser.add_argument(
+        "config_files",
+        nargs="+",
         metavar="config-file",
         help="filepath to session or filename of session if in tmuxp config directory",
     )
@@ -568,7 +574,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
     try:
         import shtab
 
-        config_file.complete = shtab.FILE  # type: ignore
+        config_files.complete = shtab.FILE  # type: ignore
         tmux_config_file.complete = shtab.FILE  # type: ignore
         log_file.complete = shtab.FILE  # type: ignore
     except ImportError:
@@ -623,27 +629,30 @@ def command_load(
         "append": args.append,
     }
 
-    if args.config_file is None:
+    if args.config_files is None or len(args.config_files) == 0:
         tmuxp_echo("Enter at least one config")
         if parser is not None:
             parser.print_help()
         sys.exit()
+        return
 
-    config_file = scan_config(args.config_file, config_dir=get_config_dir())
+    last_idx = len(args.config_files) - 1
+    original_detached_option = tmux_options.pop("detached")
+    original_new_session_name = tmux_options.pop("new_session_name")
 
-    if isinstance(config_file, str):
-        load_workspace(config_file, **tmux_options)
-    elif isinstance(config_file, tuple):
-        config = list(config_file)
-        # Load each configuration but the last to the background
-        for cfg in config[:-1]:
-            opt = tmux_options.copy()
-            opt.update({"detached": True, "new_session_name": None})
-            load_workspace(cfg, **opt)
+    for idx, config_file in enumerate(args.config_files):
+        config_file = scan_config(config_file, config_dir=get_config_dir())
 
-        # todo: obey the -d in the cli args only if user specifies
-        load_workspace(config_file[-1], **tmux_options)
-    else:
-        raise NotImplementedError(
-            f"config {type(config_file)} with {config_file} not valid"
+        detached = original_detached_option
+        new_session_name = original_new_session_name
+
+        if last_idx > 0 and idx < last_idx:
+            detached = True
+            new_session_name = None
+
+        load_workspace(
+            config_file,
+            detached=detached,
+            new_session_name=new_session_name,
+            **tmux_options,
         )
