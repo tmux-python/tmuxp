@@ -14,7 +14,7 @@ def create_convert_subparser(
     workspace_file = parser.add_argument(
         dest="workspace_file",
         type=str,
-        metavar="config-file",
+        metavar="workspace-file",
         help="checks tmuxp and current directory for workspace files.",
     )
     try:

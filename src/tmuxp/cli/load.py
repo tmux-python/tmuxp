@@ -495,7 +495,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
     workspace_files = parser.add_argument(
         "workspace_files",
         nargs="+",
-        metavar="config-file",
+        metavar="workspace-file",
         help="filepath to session or filename of session if in tmuxp config directory",
     )
     parser.add_argument(

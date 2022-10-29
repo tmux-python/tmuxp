@@ -78,7 +78,7 @@ def create_import_subparser(
         dest="workspace_file",
         type=str,
         nargs="?",
-        metavar="config-file",
+        metavar="workspace-file",
         help="checks current ~/.teamocil and current directory for yaml files",
     )
     import_teamocil.set_defaults(
@@ -96,7 +96,7 @@ def create_import_subparser(
         dest="workspace_file",
         type=str,
         nargs="?",
-        metavar="config-file",
+        metavar="workspace-file",
         help="checks current ~/.tmuxinator and current directory for yaml files",
     )
 
