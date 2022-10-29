@@ -443,6 +443,7 @@ class CLILoadFixture(t.NamedTuple):
     test_id: str
     cli_args: t.List[t.Union[str, t.List[str]]]
     config_paths: t.List[str]
+    session_names: t.List[str]
     expected_exit_code: int
     expected_in_out: "ExpectedOutput" = None
     expected_not_in_out: "ExpectedOutput" = None
@@ -455,6 +456,7 @@ TEST_LOAD_FIXTURES = [
         test_id="dir-relative-dot-samedir",
         cli_args=["load", "."],
         config_paths=["{tmp_path}/.tmuxp.yaml"],
+        session_names=["my_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -463,6 +465,7 @@ TEST_LOAD_FIXTURES = [
         test_id="dir-relative-dot-slash-samedir",
         cli_args=["load", "./"],
         config_paths=["{tmp_path}/.tmuxp.yaml"],
+        session_names=["my_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -471,6 +474,7 @@ TEST_LOAD_FIXTURES = [
         test_id="dir-relative-file-samedir",
         cli_args=["load", "./.tmuxp.yaml"],
         config_paths=["{tmp_path}/.tmuxp.yaml"],
+        session_names=["my_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -479,6 +483,7 @@ TEST_LOAD_FIXTURES = [
         test_id="filename-relative-file-samedir",
         cli_args=["load", "./my_config.yaml"],
         config_paths=["{tmp_path}/my_config.yaml"],
+        session_names=["my_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -487,6 +492,7 @@ TEST_LOAD_FIXTURES = [
         test_id="configdir-session-name",
         cli_args=["load", "my_config"],
         config_paths=["{TMUXP_CONFIGDIR}/my_config.yaml"],
+        session_names=["my_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -495,6 +501,7 @@ TEST_LOAD_FIXTURES = [
         test_id="configdir-absolute",
         cli_args=["load", "~/.config/tmuxp/my_config.yaml"],
         config_paths=["{TMUXP_CONFIGDIR}/my_config.yaml"],
+        session_names=["my_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -509,6 +516,7 @@ TEST_LOAD_FIXTURES = [
             "{TMUXP_CONFIGDIR}/my_config.yaml",
             "{TMUXP_CONFIGDIR}/second_config.yaml",
         ],
+        session_names=["my_config", "second_config"],
         expected_exit_code=0,
         expected_in_out=None,
         expected_not_in_out=None,
@@ -532,6 +540,7 @@ def test_load(
     test_id: str,
     cli_args: t.List[str],
     config_paths: t.List[str],
+    session_names: t.List[str],
     expected_exit_code: int,
     expected_in_out: "ExpectedOutput",
     expected_not_in_out: "ExpectedOutput",
@@ -541,7 +550,7 @@ def test_load(
     assert server.socket_name is not None
 
     monkeypatch.chdir(tmp_path)
-    for config_path in config_paths:
+    for session_name, config_path in zip(session_names, config_paths):
         tmuxp_config = pathlib.Path(
             config_path.format(tmp_path=tmp_path, TMUXP_CONFIGDIR=tmuxp_configdir)
         )
@@ -553,7 +562,7 @@ def test_load(
           panes:
           -
         """.format(
-                session_name=pathlib.Path(config_path).name.replace(".", "")
+                session_name=session_name
             ),
             encoding="utf-8",
         )
@@ -577,6 +586,9 @@ def test_load(
             expected_not_in_out = [expected_not_in_out]
         for needle in expected_not_in_out:
             assert needle not in output
+
+    for session_name in session_names:
+        assert server.has_session(session_name)
 
 
 def test_regression_00132_session_name_with_dots(
