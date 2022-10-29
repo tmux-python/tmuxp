@@ -318,12 +318,12 @@ def expand(workspace_dict, cwd=None, parent=None):
             for window in workspace_dict["windows"]
         ]
     elif "panes" in workspace_dict:
-        pane_configs = workspace_dict["panes"]
-        for pane_idx, pane_config in enumerate(pane_configs):
-            pane_configs[pane_idx] = {}
-            pane_configs[pane_idx].update(expand_cmd(pane_config))
+        pane_dicts = workspace_dict["panes"]
+        for pane_idx, pane_dict in enumerate(pane_dicts):
+            pane_dicts[pane_idx] = {}
+            pane_dicts[pane_idx].update(expand_cmd(pane_dict))
         workspace_dict["panes"] = [
-            expand(pane, parent=workspace_dict) for pane in pane_configs
+            expand(pane, parent=workspace_dict) for pane in pane_dicts
         ]
 
     return workspace_dict
@@ -387,7 +387,7 @@ def trickle(workspace_dict):
         if "panes" not in window_dict:
             window_dict["panes"] = [{"shell_command": []}]
 
-        for pane_idx, pane_config in enumerate(window_dict["panes"]):
+        for pane_idx, pane_dict in enumerate(window_dict["panes"]):
             commands_before = []
 
             # Prepend shell_command_before to commands
@@ -399,16 +399,16 @@ def trickle(workspace_dict):
                 commands_before.extend(
                     window_dict["shell_command_before"]["shell_command"]
                 )
-            if "shell_command_before" in pane_config:
+            if "shell_command_before" in pane_dict:
                 commands_before.extend(
-                    pane_config["shell_command_before"]["shell_command"]
+                    pane_dict["shell_command_before"]["shell_command"]
                 )
 
-            if "shell_command" in pane_config:
-                commands_before.extend(pane_config["shell_command"])
+            if "shell_command" in pane_dict:
+                commands_before.extend(pane_dict["shell_command"])
 
             window_dict["panes"][pane_idx]["shell_command"] = commands_before
-            # pane_config['shell_command'] = commands_before
+            # pane_dict['shell_command'] = commands_before
 
     return workspace_dict
 
