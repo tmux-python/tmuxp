@@ -1,6 +1,6 @@
 import os
 
-before_config = {
+before_workspace = {
     "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
@@ -30,7 +30,7 @@ before_config = {
 }
 
 
-def after_config():
+def after_workspace():
     return {
         "session_name": "sample workspace",
         "start_directory": os.path.expanduser("~"),

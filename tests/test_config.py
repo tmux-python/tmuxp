@@ -23,13 +23,13 @@ def config_fixture():
     pytest setup (conftest.py) patches os.environ["HOME"], delay execution of
     os.path.expanduser until here.
     """
-    from .fixtures import config as test_config_data
+    from .fixtures import config as test_workspace_data
     from .fixtures.structures import ConfigTestData
 
     return ConfigTestData(
         **{
             k: v
-            for k, v in test_config_data.__dict__.items()
+            for k, v in test_workspace_data.__dict__.items()
             if isinstance(v, types.ModuleType)
         }
     )
@@ -41,7 +41,7 @@ def load_yaml(path: Union[str, pathlib.Path]) -> str:
     )
 
 
-def load_config(path: Union[str, pathlib.Path]) -> str:
+def load_workspace(path: Union[str, pathlib.Path]) -> str:
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path
     )
@@ -52,12 +52,12 @@ def test_export_json(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
 
     configparser = ConfigReader(config_fixture.sample_workspace.sample_workspace_dict)
 
-    json_config_data = configparser.dump("json", indent=2)
+    json_workspace_data = configparser.dump("json", indent=2)
 
-    json_workspace_file.write_text(json_config_data, encoding="utf-8")
+    json_workspace_file.write_text(json_workspace_data, encoding="utf-8")
 
-    new_config_data = ConfigReader._from_file(path=json_workspace_file)
-    assert config_fixture.sample_workspace.sample_workspace_dict == new_config_data
+    new_workspace_data = ConfigReader._from_file(path=json_workspace_file)
+    assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
 def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
@@ -68,15 +68,15 @@ def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
     )
     configparser = ConfigReader(sample_workspace)
 
-    yaml_config_data = configparser.dump("yaml", indent=2, default_flow_style=False)
+    yaml_workspace_data = configparser.dump("yaml", indent=2, default_flow_style=False)
 
-    yaml_workspace_file.write_text(yaml_config_data, encoding="utf-8")
+    yaml_workspace_file.write_text(yaml_workspace_data, encoding="utf-8")
 
-    new_config_data = load_config(str(yaml_workspace_file))
-    assert config_fixture.sample_workspace.sample_workspace_dict == new_config_data
+    new_workspace_data = load_workspace(str(yaml_workspace_file))
+    assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
-def test_scan_config(tmp_path: pathlib.Path):
+def test_scan_workspace(tmp_path: pathlib.Path):
     configs = []
 
     garbage_file = tmp_path / "config.psd"
@@ -105,13 +105,13 @@ def test_scan_config(tmp_path: pathlib.Path):
     assert len(configs) == files
 
 
-def test_config_expand1(config_fixture: "ConfigTestData"):
+def test_workspace_expand1(config_fixture: "ConfigTestData"):
     """Expand shell commands from string to list."""
-    test_config = config.expand(config_fixture.expand1.before_config)
-    assert test_config == config_fixture.expand1.after_config()
+    test_workspace = config.expand(config_fixture.expand1.before_workspace)
+    assert test_workspace == config_fixture.expand1.after_workspace()
 
 
-def test_config_expand2(config_fixture: "ConfigTestData"):
+def test_workspace_expand2(config_fixture: "ConfigTestData"):
     """Expand shell commands from string to list."""
     unexpanded_dict = ConfigReader._load(
         format="yaml", content=config_fixture.expand2.unexpanded_yaml()
@@ -124,7 +124,7 @@ def test_config_expand2(config_fixture: "ConfigTestData"):
 
 """Tests for :meth:`config.inline()`."""
 
-ibefore_config = {  # inline config
+ibefore_workspace = {  # inline config
     "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
@@ -142,7 +142,7 @@ ibefore_config = {  # inline config
     ],
 }
 
-iafter_config = {
+iafter_workspace = {
     "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
@@ -158,16 +158,16 @@ iafter_config = {
 }
 
 
-def test_inline_config():
+def test_inline_workspace():
     """:meth:`config.inline()` shell commands list to string."""
 
-    test_config = config.inline(ibefore_config)
-    assert test_config == iafter_config
+    test_workspace = config.inline(ibefore_workspace)
+    assert test_workspace == iafter_workspace
 
 
 """Test config inheritance for the nested 'start_command'."""
 
-inheritance_config_before = {
+inheritance_workspace_before = {
     "session_name": "sample workspace",
     "start_directory": "/",
     "windows": [
@@ -186,7 +186,7 @@ inheritance_config_before = {
     ],
 }
 
-inheritance_config_after = {
+inheritance_workspace_after = {
     "session_name": "sample workspace",
     "start_directory": "/",
     "windows": [
@@ -206,16 +206,16 @@ inheritance_config_after = {
 }
 
 
-def test_inheritance_config():
-    config = inheritance_config_before
+def test_inheritance_workspace():
+    workspace = inheritance_workspace_before
 
     # TODO: Look at verifying window_start_directory
-    # if 'start_directory' in config:
-    #     session_start_directory = config['start_directory']
+    # if 'start_directory' in workspace:
+    #     session_start_directory = workspace['start_directory']
     # else:
     #     session_start_directory = None
 
-    # for windowconfitem in config['windows']:
+    # for windowconfitem in workspace['windows']:
     #     window_start_directory = None
     #
     #     if 'start_directory' in windowconfitem:
@@ -231,18 +231,18 @@ def test_inheritance_config():
     #         elif session_start_directory:
     #             paneconfitem['start_directory'] = session_start_directory
 
-    assert config == inheritance_config_after
+    assert workspace == inheritance_workspace_after
 
 
 def test_shell_command_before(config_fixture: "ConfigTestData"):
     """Config inheritance for the nested 'start_command'."""
-    test_config = config_fixture.shell_command_before.config_unexpanded
-    test_config = config.expand(test_config)
+    test_workspace = config_fixture.shell_command_before.config_unexpanded
+    test_workspace = config.expand(test_workspace)
 
-    assert test_config == config_fixture.shell_command_before.config_expanded()
+    assert test_workspace == config_fixture.shell_command_before.config_expanded()
 
-    test_config = config.trickle(test_config)
-    assert test_config == config_fixture.shell_command_before.config_after()
+    test_workspace = config.trickle(test_workspace)
+    assert test_workspace == config_fixture.shell_command_before.config_after()
 
 
 def test_in_session_scope(config_fixture: "ConfigTestData"):
@@ -259,11 +259,11 @@ def test_in_session_scope(config_fixture: "ConfigTestData"):
 
 
 def test_trickle_relative_start_directory(config_fixture: "ConfigTestData"):
-    test_config = config.trickle(config_fixture.trickle.before)
-    assert test_config == config_fixture.trickle.expected
+    test_workspace = config.trickle(config_fixture.trickle.before)
+    assert test_workspace == config_fixture.trickle.expected
 
 
-def test_trickle_window_with_no_pane_config():
+def test_trickle_window_with_no_pane_workspace():
     test_yaml = """
     session_name: test_session
     windows:
@@ -309,12 +309,12 @@ def test_expands_blank_panes(config_fixture: "ConfigTestData"):
 
     """
     yaml_workspace_file = EXAMPLE_PATH / "blank-panes.yaml"
-    test_config = load_config(yaml_workspace_file)
-    assert config.expand(test_config) == config_fixture.expand_blank.expected
+    test_workspace = load_workspace(yaml_workspace_file)
+    assert config.expand(test_workspace) == config_fixture.expand_blank.expected
 
 
 def test_no_session_name():
-    yaml_config = """
+    yaml_workspace = """
     - window_name: editor
       panes:
       shell_command:
@@ -327,7 +327,7 @@ def test_no_session_name():
       - htop
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
@@ -335,11 +335,11 @@ def test_no_session_name():
 
 
 def test_no_windows():
-    yaml_config = """
+    yaml_workspace = """
     session_name: test session
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
@@ -347,7 +347,7 @@ def test_no_windows():
 
 
 def test_no_window_name():
-    yaml_config = """
+    yaml_workspace = """
     session_name: test session
     windows:
     - window_name: editor
@@ -361,7 +361,7 @@ def test_no_window_name():
       - htop
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)
@@ -371,7 +371,7 @@ def test_no_window_name():
 def test_replaces_env_variables(monkeypatch):
     env_key = "TESTHEY92"
     env_val = "HEYO1"
-    yaml_config = """
+    yaml_workspace = """
     start_directory: {TEST_VAR}/test
     shell_command_before: {TEST_VAR}/test2
     before_script: {TEST_VAR}/test3
@@ -395,7 +395,7 @@ def test_replaces_env_variables(monkeypatch):
         TEST_VAR="${%s}" % env_key
     )
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = config.expand(sconfig)
@@ -412,7 +412,7 @@ def test_replaces_env_variables(monkeypatch):
 
 
 def test_plugins():
-    yaml_config = """
+    yaml_workspace = """
     session_name: test session
     plugins: tmuxp-plugin-one.plugin.TestPluginOne
     windows:
@@ -423,7 +423,7 @@ def test_plugins():
       start_directory: /var/log
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.ConfigError) as excinfo:
         config.validate_schema(sconfig)

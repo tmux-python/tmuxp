@@ -428,56 +428,60 @@ def import_tmuxinator(workspace_dict):
     dict
     """
 
-    tmuxp_config = {}
+    tmuxp_workspace = {}
 
     if "project_name" in workspace_dict:
-        tmuxp_config["session_name"] = workspace_dict.pop("project_name")
+        tmuxp_workspace["session_name"] = workspace_dict.pop("project_name")
     elif "name" in workspace_dict:
-        tmuxp_config["session_name"] = workspace_dict.pop("name")
+        tmuxp_workspace["session_name"] = workspace_dict.pop("name")
     else:
-        tmuxp_config["session_name"] = None
+        tmuxp_workspace["session_name"] = None
 
     if "project_root" in workspace_dict:
-        tmuxp_config["start_directory"] = workspace_dict.pop("project_root")
+        tmuxp_workspace["start_directory"] = workspace_dict.pop("project_root")
     elif "root" in workspace_dict:
-        tmuxp_config["start_directory"] = workspace_dict.pop("root")
+        tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
 
     if "cli_args" in workspace_dict:
-        tmuxp_config["config"] = workspace_dict["cli_args"]
+        tmuxp_workspace["config"] = workspace_dict["cli_args"]
 
-        if "-f" in tmuxp_config["config"]:
-            tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
+        if "-f" in tmuxp_workspace["config"]:
+            tmuxp_workspace["config"] = (
+                tmuxp_workspace["config"].replace("-f", "").strip()
+            )
     elif "tmux_options" in workspace_dict:
-        tmuxp_config["config"] = workspace_dict["tmux_options"]
+        tmuxp_workspace["config"] = workspace_dict["tmux_options"]
 
-        if "-f" in tmuxp_config["config"]:
-            tmuxp_config["config"] = tmuxp_config["config"].replace("-f", "").strip()
+        if "-f" in tmuxp_workspace["config"]:
+            tmuxp_workspace["config"] = (
+                tmuxp_workspace["config"].replace("-f", "").strip()
+            )
 
     if "socket_name" in workspace_dict:
-        tmuxp_config["socket_name"] = workspace_dict["socket_name"]
+        tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
 
-    tmuxp_config["windows"] = []
+    tmuxp_workspace["windows"] = []
 
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
     if "pre" in workspace_dict and "pre_window" in workspace_dict:
-        tmuxp_config["shell_command"] = workspace_dict["pre"]
+        tmuxp_workspace["shell_command"] = workspace_dict["pre"]
 
         if isinstance(workspace_dict["pre"], str):
-            tmuxp_config["shell_command_before"] = [workspace_dict["pre_window"]]
+            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre_window"]]
         else:
-            tmuxp_config["shell_command_before"] = workspace_dict["pre_window"]
+            tmuxp_workspace["shell_command_before"] = workspace_dict["pre_window"]
     elif "pre" in workspace_dict:
         if isinstance(workspace_dict["pre"], str):
-            tmuxp_config["shell_command_before"] = [workspace_dict["pre"]]
+            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre"]]
         else:
-            tmuxp_config["shell_command_before"] = workspace_dict["pre"]
+            tmuxp_workspace["shell_command_before"] = workspace_dict["pre"]
 
     if "rbenv" in workspace_dict:
-        if "shell_command_before" not in tmuxp_config:
-            tmuxp_config["shell_command_before"] = []
-        tmuxp_config["shell_command_before"].append(
+        if "shell_command_before" not in tmuxp_workspace:
+            tmuxp_workspace["shell_command_before"] = []
+        tmuxp_workspace["shell_command_before"].append(
             "rbenv shell %s" % workspace_dict["rbenv"]
         )
 
@@ -487,11 +491,11 @@ def import_tmuxinator(workspace_dict):
 
             if isinstance(v, str) or v is None:
                 window_dict["panes"] = [v]
-                tmuxp_config["windows"].append(window_dict)
+                tmuxp_workspace["windows"].append(window_dict)
                 continue
             elif isinstance(v, list):
                 window_dict["panes"] = v
-                tmuxp_config["windows"].append(window_dict)
+                tmuxp_workspace["windows"].append(window_dict)
                 continue
 
             if "pre" in v:
@@ -503,8 +507,8 @@ def import_tmuxinator(workspace_dict):
 
             if "layout" in v:
                 window_dict["layout"] = v["layout"]
-            tmuxp_config["windows"].append(window_dict)
-    return tmuxp_config
+            tmuxp_workspace["windows"].append(window_dict)
+    return tmuxp_workspace
 
 
 def import_teamocil(workspace_dict):
@@ -529,20 +533,20 @@ def import_teamocil(workspace_dict):
     - cmd_separator
     """
 
-    tmuxp_config = {}
+    tmuxp_workspace = {}
 
     if "session" in workspace_dict:
         workspace_dict = workspace_dict["session"]
 
     if "name" in workspace_dict:
-        tmuxp_config["session_name"] = workspace_dict["name"]
+        tmuxp_workspace["session_name"] = workspace_dict["name"]
     else:
-        tmuxp_config["session_name"] = None
+        tmuxp_workspace["session_name"] = None
 
     if "root" in workspace_dict:
-        tmuxp_config["start_directory"] = workspace_dict.pop("root")
+        tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
 
-    tmuxp_config["windows"] = []
+    tmuxp_workspace["windows"] = []
 
     for w in workspace_dict["windows"]:
         window_dict = {"window_name": w["name"]}
@@ -575,6 +579,6 @@ def import_teamocil(workspace_dict):
 
         if "layout" in w:
             window_dict["layout"] = w["layout"]
-        tmuxp_config["windows"].append(window_dict)
+        tmuxp_workspace["windows"].append(window_dict)
 
-    return tmuxp_config
+    return tmuxp_workspace
