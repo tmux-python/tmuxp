@@ -637,15 +637,14 @@ def command_load(
         return
 
     last_idx = len(args.config_files) - 1
-    original_options = tmux_options.copy()
+    original_detached_option = tmux_options.pop("detached")
+    original_new_session_name = tmux_options.pop("new_session_name")
 
     for idx, config_file in enumerate(args.config_files):
         config_file = scan_config(config_file, config_dir=get_config_dir())
 
-        detached = tmux_options.pop("detached", original_options.get("detached", False))
-        new_session_name = tmux_options.pop(
-            "new_session_name", original_options.get("new_session_name")
-        )
+        detached = original_detached_option
+        new_session_name = original_new_session_name
 
         if last_idx > 0 and idx < last_idx:
             detached = True
