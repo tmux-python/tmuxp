@@ -441,7 +441,7 @@ if t.TYPE_CHECKING:
 
 class CLILoadFixture(t.NamedTuple):
     test_id: str
-    cli_args: t.List[str]
+    cli_args: t.List[t.Union[str, t.List[str]]]
     config_paths: t.List[str]
     expected_exit_code: int
     expected_in_out: "ExpectedOutput" = None
@@ -499,6 +499,20 @@ TEST_LOAD_FIXTURES = [
         expected_in_out=None,
         expected_not_in_out=None,
     ),
+    #
+    # Multiple configs
+    #
+    CLILoadFixture(
+        test_id="configdir-session-name-double",
+        cli_args=["load", "my_config", "second_config"],
+        config_paths=[
+            "{TMUXP_CONFIGDIR}/my_config.yaml",
+            "{TMUXP_CONFIGDIR}/second_config.yaml",
+        ],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
 ]
 
 
@@ -533,17 +547,19 @@ def test_load(
         )
         tmuxp_config.write_text(
             """
-        session_name: test
+        session_name: {session_name}
         windows:
         - window_name: test
           panes:
           -
-        """,
+        """.format(
+                session_name=pathlib.Path(config_path).name.replace(".", "")
+            ),
             encoding="utf-8",
         )
 
     try:
-        cli.cli([*cli_args, "-d", "-L", server.socket_name])
+        cli.cli([*cli_args, "-d", "-L", server.socket_name, "-y"])
     except SystemExit:
         pass
 
