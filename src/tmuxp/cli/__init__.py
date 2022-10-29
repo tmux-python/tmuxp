@@ -147,17 +147,17 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
             return
         elif import_subparser_name == "teamocil":
             command_import_teamocil(
-                config_file=args.config_file,
+                workspace_file=args.workspace_file,
                 parser=parser,
             )
         elif import_subparser_name == "tmuxinator":
             command_import_tmuxinator(
-                config_file=args.config_file,
+                workspace_file=args.workspace_file,
                 parser=parser,
             )
     elif args.subparser_name == "convert":
         command_convert(
-            config_file=args.config_file,
+            workspace_file=args.workspace_file,
             answer_yes=args.answer_yes,
             parser=parser,
         )
@@ -166,7 +166,7 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
 
     elif args.subparser_name == "edit":
         command_edit(
-            config_file=args.config_file,
+            workspace_file=args.workspace_file,
             parser=parser,
         )
     elif args.subparser_name == "freeze":

@@ -11,8 +11,8 @@ def create_edit_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
     parser.add_argument(
-        dest="config_file",
-        metavar="config-file",
+        dest="workspace_file",
+        metavar="workspace-file",
         type=str,
         help="checks current tmuxp and current directory for config files.",
     )
@@ -20,10 +20,10 @@ def create_edit_subparser(
 
 
 def command_edit(
-    config_file: t.Union[str, pathlib.Path],
+    workspace_file: t.Union[str, pathlib.Path],
     parser: t.Optional[argparse.ArgumentParser] = None,
 ):
-    config_file = scan_config(config_file)
+    workspace_file = scan_config(workspace_file)
 
     sys_editor = os.environ.get("EDITOR", "vim")
-    subprocess.call([sys_editor, config_file])
+    subprocess.call([sys_editor, workspace_file])

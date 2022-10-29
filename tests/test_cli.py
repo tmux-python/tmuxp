@@ -1108,7 +1108,7 @@ def test_import_teamocil(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    teamocil_config = test_utils.read_config_file("config_teamocil/test4.yaml")
+    teamocil_config = test_utils.read_workspace_file("config_teamocil/test4.yaml")
 
     teamocil_path = tmp_path / ".teamocil"
     teamocil_path.mkdir()
@@ -1156,7 +1156,7 @@ def test_import_tmuxinator(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    tmuxinator_config = test_utils.read_config_file("config_tmuxinator/test3.yaml")
+    tmuxinator_config = test_utils.read_workspace_file("config_tmuxinator/test3.yaml")
 
     tmuxinator_path = tmp_path / ".tmuxinator"
     tmuxinator_path.mkdir()
@@ -1383,7 +1383,7 @@ def test_ls_cli(
 def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
-    plugins_config = test_utils.read_config_file("workspacebuilder/plugin_bwb.yaml")
+    plugins_config = test_utils.read_workspace_file("workspacebuilder/plugin_bwb.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=plugins_config)
     sconfig = config.expand(sconfig)
@@ -1488,7 +1488,7 @@ def test_plugin_system_before_script(
 def test_reattach_plugins(
     monkeypatch_plugin_test_packages: None, server: "Server"
 ) -> None:
-    config_plugins = test_utils.read_config_file("workspacebuilder/plugin_r.yaml")
+    config_plugins = test_utils.read_workspace_file("workspacebuilder/plugin_r.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=config_plugins)
     sconfig = config.expand(sconfig)
@@ -1518,7 +1518,7 @@ def test_load_attached(
     attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1537,7 +1537,7 @@ def test_load_attached_detached(
     attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1556,7 +1556,7 @@ def test_load_attached_within_tmux(
     switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1575,7 +1575,7 @@ def test_load_attached_within_tmux_detached(
     switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1588,7 +1588,7 @@ def test_load_attached_within_tmux_detached(
 def test_load_append_windows_to_current_session(
     server: "Server", monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)

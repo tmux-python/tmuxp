@@ -40,7 +40,7 @@ if t.TYPE_CHECKING:
 
 
 class CLILoadNamespace(argparse.Namespace):
-    config_files: t.List[str]
+    workspace_files: t.List[str]
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
     tmux_config_file: t.Optional[str]
@@ -256,7 +256,7 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 
 
 def load_workspace(
-    config_file: StrPath,
+    workspace_file: StrPath,
     socket_name: t.Optional[str] = None,
     socket_path: None = None,
     tmux_config_file: None = None,
@@ -271,7 +271,7 @@ def load_workspace(
 
     Parameters
     ----------
-    config_file : list of str
+    workspace_file : list of str
         paths or session names to workspace files
     socket_name : str, optional
         ``tmux -L <socket-name>``
@@ -361,18 +361,19 @@ def load_workspace(
        Accessed April 8th, 2018.
     """
     # get the canonical path, eliminating any symlinks
-    if isinstance(config_file, (str, os.PathLike)):
-        config_file = pathlib.Path(config_file)
+    if isinstance(workspace_file, (str, os.PathLike)):
+        workspace_file = pathlib.Path(workspace_file)
 
     tmuxp_echo(
-        style("[Loading] ", fg="green") + style(str(config_file), fg="blue", bold=True)
+        style("[Loading] ", fg="green")
+        + style(str(workspace_file), fg="blue", bold=True)
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    raw_config = config_reader.ConfigReader._from_file(config_file) or {}
+    raw_config = config_reader.ConfigReader._from_file(workspace_file) or {}
 
     # shapes configurations relative to config / profile file location
-    sconfig = config.expand(raw_config, cwd=os.path.dirname(config_file))
+    sconfig = config.expand(raw_config, cwd=os.path.dirname(workspace_file))
     # Overwrite session name
     if new_session_name:
         sconfig["session_name"] = new_session_name
@@ -382,7 +383,7 @@ def load_workspace(
     t = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
-        config_file=tmux_config_file,
+        workspace_file=tmux_config_file,
         colors=colors,
     )
 
@@ -393,7 +394,7 @@ def load_workspace(
             sconf=sconfig, plugins=load_plugins(sconfig), server=t
         )
     except exc.EmptyConfigException:
-        tmuxp_echo("%s is empty or parsed no config data" % config_file)
+        tmuxp_echo("%s is empty or parsed no config data" % workspace_file)
         return None
 
     session_name = sconfig["session_name"]
@@ -468,7 +469,7 @@ def load_workspace(
     return _setup_plugins(builder)
 
 
-def config_file_completion(ctx, params, incomplete):
+def workspace_file_completion(ctx, params, incomplete):
     config_dir = pathlib.Path(get_config_dir())
     choices: t.List[pathlib.Path] = []
 
@@ -491,8 +492,8 @@ def config_file_completion(ctx, params, incomplete):
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    config_files = parser.add_argument(
-        "config_files",
+    workspace_files = parser.add_argument(
+        "workspace_files",
         nargs="+",
         metavar="config-file",
         help="filepath to session or filename of session if in tmuxp config directory",
@@ -574,7 +575,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
     try:
         import shtab
 
-        config_files.complete = shtab.FILE  # type: ignore
+        workspace_files.complete = shtab.FILE  # type: ignore
         tmux_config_file.complete = shtab.FILE  # type: ignore
         log_file.complete = shtab.FILE  # type: ignore
     except ImportError:
@@ -629,19 +630,19 @@ def command_load(
         "append": args.append,
     }
 
-    if args.config_files is None or len(args.config_files) == 0:
+    if args.workspace_files is None or len(args.workspace_files) == 0:
         tmuxp_echo("Enter at least one config")
         if parser is not None:
             parser.print_help()
         sys.exit()
         return
 
-    last_idx = len(args.config_files) - 1
+    last_idx = len(args.workspace_files) - 1
     original_detached_option = tmux_options.pop("detached")
     original_new_session_name = tmux_options.pop("new_session_name")
 
-    for idx, config_file in enumerate(args.config_files):
-        config_file = scan_config(config_file, config_dir=get_config_dir())
+    for idx, workspace_file in enumerate(args.workspace_files):
+        workspace_file = scan_config(workspace_file, config_dir=get_config_dir())
 
         detached = original_detached_option
         new_session_name = original_new_session_name
@@ -651,7 +652,7 @@ def command_load(
             new_session_name = None
 
         load_workspace(
-            config_file,
+            workspace_file,
             detached=detached,
             new_session_name=new_session_name,
             **tmux_options,

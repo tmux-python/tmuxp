@@ -105,7 +105,7 @@ Breaking down the basic configuration into sections:
 You can create a configuration and load it from anywhere in your file system.
 
 ```console
-$ tmuxp load [config_file]
+$ tmuxp load [workspace-file]
 ```
 
 ````{tab} Relative

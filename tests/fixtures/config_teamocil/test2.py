@@ -1,6 +1,6 @@
 from .. import utils as test_utils
 
-teamocil_yaml = test_utils.read_config_file("config_teamocil/test2.yaml")
+teamocil_yaml = test_utils.read_workspace_file("config_teamocil/test2.yaml")
 teamocil_dict = {
     "windows": [
         {

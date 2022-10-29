@@ -45,7 +45,7 @@ def validate_schema(session_config):
     return True
 
 
-def is_config_file(filename, extensions=[".yml", ".yaml", ".json"]):
+def is_workspace_file(filename, extensions=[".yml", ".yaml", ".json"]):
     """
     Return True if file has a valid config file type.
 
@@ -84,7 +84,7 @@ def in_dir(
     configs = []
 
     for filename in os.listdir(config_dir):
-        if is_config_file(filename, extensions) and not filename.startswith("."):
+        if is_workspace_file(filename, extensions) and not filename.startswith("."):
             configs.append(filename)
 
     return configs
@@ -109,7 +109,7 @@ def in_cwd():
     configs = []
 
     for filename in os.listdir(os.getcwd()):
-        if filename.startswith(".tmuxp") and is_config_file(filename):
+        if filename.startswith(".tmuxp") and is_workspace_file(filename):
             configs.append(filename)
 
     return configs

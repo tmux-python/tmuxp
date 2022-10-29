@@ -70,7 +70,7 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ### Finding
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.is_config_file
+.. automethod:: tmuxp.config.is_workspace_file
 ```
 
 ```{eval-rst}

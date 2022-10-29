@@ -3,12 +3,12 @@ import pathlib
 from ..constants import FIXTURE_PATH
 
 
-def get_config_file(_file):  # return fixture data, relative to __file__
+def get_workspace_file(_file):  # return fixture data, relative to __file__
     return FIXTURE_PATH / _file
 
 
-def read_config_file(_file):  # return fixture data, relative to __file__
-    return open(get_config_file(_file)).read()
+def read_workspace_file(_file):  # return fixture data, relative to __file__
+    return open(get_workspace_file(_file)).read()
 
 
 def write_config(

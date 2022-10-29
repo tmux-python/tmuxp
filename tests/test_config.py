@@ -48,29 +48,29 @@ def load_config(path: Union[str, pathlib.Path]) -> str:
 
 
 def test_export_json(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
-    json_config_file = tmp_path / "config.json"
+    json_workspace_file = tmp_path / "config.json"
 
     configparser = ConfigReader(config_fixture.sampleconfig.sampleconfigdict)
 
     json_config_data = configparser.dump("json", indent=2)
 
-    json_config_file.write_text(json_config_data, encoding="utf-8")
+    json_workspace_file.write_text(json_config_data, encoding="utf-8")
 
-    new_config_data = ConfigReader._from_file(path=json_config_file)
+    new_config_data = ConfigReader._from_file(path=json_workspace_file)
     assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
 
 
 def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
-    yaml_config_file = tmp_path / "config.yaml"
+    yaml_workspace_file = tmp_path / "config.yaml"
 
     sampleconfig = config.inline(config_fixture.sampleconfig.sampleconfigdict)
     configparser = ConfigReader(sampleconfig)
 
     yaml_config_data = configparser.dump("yaml", indent=2, default_flow_style=False)
 
-    yaml_config_file.write_text(yaml_config_data, encoding="utf-8")
+    yaml_workspace_file.write_text(yaml_config_data, encoding="utf-8")
 
-    new_config_data = load_config(str(yaml_config_file))
+    new_config_data = load_config(str(yaml_workspace_file))
     assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
 
 
@@ -306,8 +306,8 @@ def test_expands_blank_panes(config_fixture: "ConfigTestData"):
             'shell_command': ['']
 
     """
-    yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
-    test_config = load_config(yaml_config_file)
+    yaml_workspace_file = EXAMPLE_PATH / "blank-panes.yaml"
+    test_config = load_config(yaml_workspace_file)
     assert config.expand(test_config) == config_fixture.expand_blank.expected
 
 
