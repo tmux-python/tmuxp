@@ -22,7 +22,7 @@ class CLIFreezeNamespace(argparse.Namespace):
     session_name: str
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
-    config_format: t.Optional["CLIOutputFormatLiteral"]
+    workspace_format: t.Optional["CLIOutputFormatLiteral"]
     save_to: t.Optional[str]
     answer_yes: t.Optional[bool]
     quiet: t.Optional[bool]
@@ -52,7 +52,7 @@ def create_freeze_subparser(
     )
     parser.add_argument(
         "-f",
-        "--config-format",
+        "--workspace-format",
         choices=["yaml", "json"],
         help="format to save in",
     )
@@ -138,7 +138,9 @@ def command_freeze(
         save_to = os.path.abspath(
             os.path.join(
                 get_config_dir(),
-                "{}.{}".format(sconf.get("session_name"), args.config_format or "yaml"),
+                "{}.{}".format(
+                    sconf.get("session_name"), args.workspace_format or "yaml"
+                ),
             )
         )
         dest_prompt = prompt(
@@ -151,16 +153,18 @@ def command_freeze(
 
         dest = dest_prompt
     dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-    config_format = args.config_format
+    workspace_format = args.workspace_format
 
-    valid_config_formats: t.List["CLIOutputFormatLiteral"] = ["json", "yaml"]
+    valid_workspace_formats: t.List["CLIOutputFormatLiteral"] = ["json", "yaml"]
 
     def is_valid_ext(stem: t.Optional[str]) -> "TypeGuard[CLIOutputFormatLiteral]":
-        return stem in valid_config_formats
+        return stem in valid_workspace_formats
 
-    if not is_valid_ext(config_format):
+    if not is_valid_ext(workspace_format):
 
-        def extract_config_format(val: str) -> t.Optional["CLIOutputFormatLiteral"]:
+        def extract_workspace_format(
+            val: str,
+        ) -> t.Optional["CLIOutputFormatLiteral"]:
             suffix = pathlib.Path(val).suffix
             if isinstance(suffix, str):
                 suffix = suffix.lower().lstrip(".")
@@ -168,20 +172,20 @@ def command_freeze(
                     return suffix
             return None
 
-        config_format = extract_config_format(dest)
-        if not is_valid_ext(config_format):
-            config_format = prompt_choices(
+        workspace_format = extract_workspace_format(dest)
+        if not is_valid_ext(workspace_format):
+            workspace_format = prompt_choices(
                 "Couldn't ascertain one of [%s] from file name. Convert to"
-                % ", ".join(valid_config_formats),
-                choices=valid_config_formats,
+                % ", ".join(valid_workspace_formats),
+                choices=valid_workspace_formats,
                 default="yaml",
             )
 
-    if config_format == "yaml":
+    if workspace_format == "yaml":
         newconfig = configparser.dump(
             format="yaml", indent=2, default_flow_style=False, safe=True
         )
-    elif config_format == "json":
+    elif workspace_format == "json":
         newconfig = configparser.dump(format="json", indent=2)
 
     if args.answer_yes or prompt_yes_no("Save to %s?" % dest):

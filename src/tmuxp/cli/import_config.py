@@ -47,8 +47,8 @@ def get_teamocil_dir() -> str:
     return os.path.expanduser("~/.teamocil/")
 
 
-def _resolve_path_no_overwrite(config: str) -> str:
-    path = pathlib.Path(config).resolve()
+def _resolve_path_no_overwrite(workspace_file: str) -> str:
+    path = pathlib.Path(workspace_file).resolve()
     if path.exists():
         raise ValueError("%s exists. Pick a new filename." % path)
     return str(path)
@@ -120,16 +120,16 @@ def import_config(
     importfunc: t.Callable,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    existing_config = ConfigReader._from_file(pathlib.Path(workspace_file))
-    cfg_reader = ConfigReader(importfunc(existing_config))
+    existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
+    cfg_reader = ConfigReader(importfunc(existing_workspace_file))
 
-    config_format = prompt_choices(
+    workspace_file_format = prompt_choices(
         "Convert to", choices=["yaml", "json"], default="yaml"
     )
 
-    if config_format == "yaml":
+    if workspace_file_format == "yaml":
         new_config = cfg_reader.dump("yaml", indent=2, default_flow_style=False)
-    elif config_format == "json":
+    elif workspace_file_format == "json":
         new_config = cfg_reader.dump("json", indent=2)
     else:
         sys.exit("Unknown config format.")
