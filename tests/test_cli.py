@@ -286,6 +286,18 @@ TEST_LOAD_FIXTURES = [
         expected_in_out=None,
         expected_not_in_out=None,
     ),
+    CLILoadFixture(
+        test_id="configdir-session-name-double-append",
+        cli_args=["load", "my_config", "second_config", "--append"],
+        config_paths=[
+            "{TMUXP_CONFIGDIR}/my_config.yaml",
+            "{TMUXP_CONFIGDIR}/second_config.yaml",
+        ],
+        session_names=["my_config", "second_config"],
+        expected_exit_code=0,
+        expected_in_out=None,
+        expected_not_in_out=None,
+    ),
 ]
 
 
@@ -354,6 +366,10 @@ def test_load(
 
     for session_name in session_names:
         assert server.has_session(session_name)
+
+    if "--append" in cli_args:
+        for session_name in session_names[-1:]:
+            assert not server.has_session(session_name)
 
 
 def test_regression_00132_session_name_with_dots(
