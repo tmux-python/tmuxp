@@ -1,4 +1,4 @@
-session_name: sampleconfig
+session_name: sample workspace
 start_directory: {HOME}
 windows:
 - window_name: focused window

@@ -1,5 +1,5 @@
 before = {  # shell_command_before is string in some areas
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "/var",
     "windows": [
         {
@@ -23,7 +23,7 @@ before = {  # shell_command_before is string in some areas
 }
 
 expected = {  # shell_command_before is string in some areas
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "/var",
     "windows": [
         {

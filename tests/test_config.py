@@ -50,28 +50,30 @@ def load_config(path: Union[str, pathlib.Path]) -> str:
 def test_export_json(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
     json_workspace_file = tmp_path / "config.json"
 
-    configparser = ConfigReader(config_fixture.sampleconfig.sampleconfigdict)
+    configparser = ConfigReader(config_fixture.sample_workspace.sample_workspace_dict)
 
     json_config_data = configparser.dump("json", indent=2)
 
     json_workspace_file.write_text(json_config_data, encoding="utf-8")
 
     new_config_data = ConfigReader._from_file(path=json_workspace_file)
-    assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
+    assert config_fixture.sample_workspace.sample_workspace_dict == new_config_data
 
 
 def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
     yaml_workspace_file = tmp_path / "config.yaml"
 
-    sampleconfig = config.inline(config_fixture.sampleconfig.sampleconfigdict)
-    configparser = ConfigReader(sampleconfig)
+    sample_workspace = config.inline(
+        config_fixture.sample_workspace.sample_workspace_dict
+    )
+    configparser = ConfigReader(sample_workspace)
 
     yaml_config_data = configparser.dump("yaml", indent=2, default_flow_style=False)
 
     yaml_workspace_file.write_text(yaml_config_data, encoding="utf-8")
 
     new_config_data = load_config(str(yaml_workspace_file))
-    assert config_fixture.sampleconfig.sampleconfigdict == new_config_data
+    assert config_fixture.sample_workspace.sample_workspace_dict == new_config_data
 
 
 def test_scan_config(tmp_path: pathlib.Path):
@@ -123,7 +125,7 @@ def test_config_expand2(config_fixture: "ConfigTestData"):
 """Tests for :meth:`config.inline()`."""
 
 ibefore_config = {  # inline config
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
         {
@@ -141,7 +143,7 @@ ibefore_config = {  # inline config
 }
 
 iafter_config = {
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
         {
@@ -166,7 +168,7 @@ def test_inline_config():
 """Test config inheritance for the nested 'start_command'."""
 
 inheritance_config_before = {
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "/",
     "windows": [
         {
@@ -185,7 +187,7 @@ inheritance_config_before = {
 }
 
 inheritance_config_after = {
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "/",
     "windows": [
         {

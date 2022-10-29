@@ -333,7 +333,7 @@ def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> No
     )
 
     assert isinstance(session, Session)
-    assert session.name == "sampleconfig"
+    assert session.name == "sample workspace"
 
 
 def test_load_workspace_named_session(
@@ -372,7 +372,7 @@ def test_load_workspace_name_match_regression_252(
     )
 
     assert isinstance(session, Session)
-    assert session.name == "sampleconfig"
+    assert session.name == "sample workspace"
 
     projfile = tmp_path / "simple.yaml"
 

@@ -1,11 +1,11 @@
-session_name: sampleconfig
-start_directory: '~'
+session_name: sample workspace
+start_directory: "~"
 windows:
 - layout: main-vertical
   panes:
   - shell_command:
     - cmd: vim
-    start_directory: '~'
+    start_directory: "~"
   - shell_command:
     - cmd: echo "hey"
     - cmd: cd ../

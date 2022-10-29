@@ -37,7 +37,7 @@ class WorkspaceBuilder:
     >>> import yaml
 
     >>> session_config = yaml.load('''
-    ...     session_name: sampleconfig
+    ...     session_name: sample workspace
     ...     start_directory: '~'
     ...     windows:
     ...     - window_name: editor
@@ -67,7 +67,7 @@ class WorkspaceBuilder:
 
     >>> new_session = builder.session
 
-    >>> new_session.name == 'sampleconfig'
+    >>> new_session.name == 'sample workspace'
     True
 
     >>> len(new_session._windows)
@@ -85,7 +85,7 @@ class WorkspaceBuilder:
 
     _Caveat:_ Preserves old session name:
 
-    >>> session.name == 'sampleconfig'
+    >>> session.name == 'sample workspace'
     False
 
     >>> len(session._windows)

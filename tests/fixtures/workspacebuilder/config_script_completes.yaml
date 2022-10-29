@@ -1,4 +1,4 @@
-session_name: sampleconfig
+session_name: sample workspace
 before_script: {script_complete}
 windows:
 - panes:

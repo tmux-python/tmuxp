@@ -1,5 +1,5 @@
-sampleconfigdict = {
-    "session_name": "sampleconfig",
+sample_workspace_dict = {
+    "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
         {

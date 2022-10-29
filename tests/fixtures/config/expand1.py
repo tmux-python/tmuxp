@@ -1,7 +1,7 @@
 import os
 
 before_config = {
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "~",
     "windows": [
         {
@@ -32,7 +32,7 @@ before_config = {
 
 def after_config():
     return {
-        "session_name": "sampleconfig",
+        "session_name": "sample workspace",
         "start_directory": os.path.expanduser("~"),
         "windows": [
             {

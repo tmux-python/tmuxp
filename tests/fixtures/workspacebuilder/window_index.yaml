@@ -1,4 +1,4 @@
-session_name: sampleconfig
+session_name: sample workspace
 windows:
 - window_name: zero
   panes:

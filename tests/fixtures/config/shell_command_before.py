@@ -1,7 +1,7 @@
 import os
 
 config_unexpanded = {  # shell_command_before is string in some areas
-    "session_name": "sampleconfig",
+    "session_name": "sample workspace",
     "start_directory": "/",
     "windows": [
         {
@@ -39,7 +39,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
 
 def config_expanded():
     return {  # shell_command_before is string in some areas
-        "session_name": "sampleconfig",
+        "session_name": "sample workspace",
         "start_directory": "/",
         "windows": [
             {
@@ -91,7 +91,7 @@ def config_expanded():
 
 def config_after():
     return {  # shell_command_before is string in some areas
-        "session_name": "sampleconfig",
+        "session_name": "sample workspace",
         "start_directory": "/",
         "windows": [
             {
