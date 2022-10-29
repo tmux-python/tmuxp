@@ -26,7 +26,6 @@ def validate_schema(workspace_dict):
     -------
     bool
     """
-
     # verify session_name
     if "session_name" not in workspace_dict:
         raise exc.ConfigError('config requires "session_name"')
@@ -546,21 +545,21 @@ def import_teamocil(workspace_dict):
     tmuxp_config["windows"] = []
 
     for w in workspace_dict["windows"]:
-        windowdict = {"window_name": w["name"]}
+        window_dict = {"window_name": w["name"]}
 
         if "clear" in w:
-            windowdict["clear"] = w["clear"]
+            window_dict["clear"] = w["clear"]
 
         if "filters" in w:
             if "before" in w["filters"]:
                 for b in w["filters"]["before"]:
-                    windowdict["shell_command_before"] = w["filters"]["before"]
+                    window_dict["shell_command_before"] = w["filters"]["before"]
             if "after" in w["filters"]:
                 for b in w["filters"]["after"]:
-                    windowdict["shell_command_after"] = w["filters"]["after"]
+                    window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:
-            windowdict["start_directory"] = w.pop("root")
+            window_dict["start_directory"] = w.pop("root")
 
         if "splits" in w:
             w["panes"] = w.pop("splits")
@@ -572,10 +571,10 @@ def import_teamocil(workspace_dict):
                 if "width" in p:
                     # todo support for height/width
                     p.pop("width")
-            windowdict["panes"] = w["panes"]
+            window_dict["panes"] = w["panes"]
 
         if "layout" in w:
-            windowdict["layout"] = w["layout"]
-        tmuxp_config["windows"].append(windowdict)
+            window_dict["layout"] = w["layout"]
+        tmuxp_config["windows"].append(window_dict)
 
     return tmuxp_config
