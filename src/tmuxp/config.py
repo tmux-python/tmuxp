@@ -362,32 +362,32 @@ def trickle(workspace_dict):
     else:
         suppress_history = None
 
-    for window_config in workspace_dict["windows"]:
+    for window_dict in workspace_dict["windows"]:
 
         # Prepend start_directory to relative window commands
         if session_start_directory:
-            if "start_directory" not in window_config:
-                window_config["start_directory"] = session_start_directory
+            if "start_directory" not in window_dict:
+                window_dict["start_directory"] = session_start_directory
             else:
                 if not any(
-                    window_config["start_directory"].startswith(a) for a in ["~", "/"]
+                    window_dict["start_directory"].startswith(a) for a in ["~", "/"]
                 ):
                     window_start_path = os.path.join(
-                        session_start_directory, window_config["start_directory"]
+                        session_start_directory, window_dict["start_directory"]
                     )
-                    window_config["start_directory"] = window_start_path
+                    window_dict["start_directory"] = window_start_path
 
         # We only need to trickle to the window, workspace builder checks wconf
         if suppress_history is not None:
-            if "suppress_history" not in window_config:
-                window_config["suppress_history"] = suppress_history
+            if "suppress_history" not in window_dict:
+                window_dict["suppress_history"] = suppress_history
 
         # If panes were NOT specified for a window, assume that a single pane
         # with no shell commands is desired
-        if "panes" not in window_config:
-            window_config["panes"] = [{"shell_command": []}]
+        if "panes" not in window_dict:
+            window_dict["panes"] = [{"shell_command": []}]
 
-        for pane_idx, pane_config in enumerate(window_config["panes"]):
+        for pane_idx, pane_config in enumerate(window_dict["panes"]):
             commands_before = []
 
             # Prepend shell_command_before to commands
@@ -395,9 +395,9 @@ def trickle(workspace_dict):
                 commands_before.extend(
                     workspace_dict["shell_command_before"]["shell_command"]
                 )
-            if "shell_command_before" in window_config:
+            if "shell_command_before" in window_dict:
                 commands_before.extend(
-                    window_config["shell_command_before"]["shell_command"]
+                    window_dict["shell_command_before"]["shell_command"]
                 )
             if "shell_command_before" in pane_config:
                 commands_before.extend(
@@ -407,7 +407,7 @@ def trickle(workspace_dict):
             if "shell_command" in pane_config:
                 commands_before.extend(pane_config["shell_command"])
 
-            window_config["panes"][pane_idx]["shell_command"] = commands_before
+            window_dict["panes"][pane_idx]["shell_command"] = commands_before
             # pane_config['shell_command'] = commands_before
 
     return workspace_dict
@@ -481,29 +481,29 @@ def import_tmuxinator(workspace_dict):
             "rbenv shell %s" % workspace_dict["rbenv"]
         )
 
-    for window_config in workspace_dict["windows"]:
-        for k, v in window_config.items():
-            window_config = {"window_name": k}
+    for window_dict in workspace_dict["windows"]:
+        for k, v in window_dict.items():
+            window_dict = {"window_name": k}
 
             if isinstance(v, str) or v is None:
-                window_config["panes"] = [v]
-                tmuxp_config["windows"].append(window_config)
+                window_dict["panes"] = [v]
+                tmuxp_config["windows"].append(window_dict)
                 continue
             elif isinstance(v, list):
-                window_config["panes"] = v
-                tmuxp_config["windows"].append(window_config)
+                window_dict["panes"] = v
+                tmuxp_config["windows"].append(window_dict)
                 continue
 
             if "pre" in v:
-                window_config["shell_command_before"] = v["pre"]
+                window_dict["shell_command_before"] = v["pre"]
             if "panes" in v:
-                window_config["panes"] = v["panes"]
+                window_dict["panes"] = v["panes"]
             if "root" in v:
-                window_config["start_directory"] = v["root"]
+                window_dict["start_directory"] = v["root"]
 
             if "layout" in v:
-                window_config["layout"] = v["layout"]
-            tmuxp_config["windows"].append(window_config)
+                window_dict["layout"] = v["layout"]
+            tmuxp_config["windows"].append(window_dict)
     return tmuxp_config
 
 
