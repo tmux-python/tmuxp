@@ -3,7 +3,7 @@ import pytest
 
 from tmuxp import config, config_reader
 
-from .fixtures import config_teamocil as fixtures
+from .fixtures import import_teamocil as fixtures
 
 
 @pytest.mark.parametrize(

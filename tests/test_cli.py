@@ -1108,7 +1108,7 @@ def test_import_teamocil(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    teamocil_config = test_utils.read_workspace_file("config_teamocil/test4.yaml")
+    teamocil_config = test_utils.read_workspace_file("import_teamocil/test4.yaml")
 
     teamocil_path = tmp_path / ".teamocil"
     teamocil_path.mkdir()
@@ -1156,7 +1156,7 @@ def test_import_tmuxinator(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    tmuxinator_config = test_utils.read_workspace_file("config_tmuxinator/test3.yaml")
+    tmuxinator_config = test_utils.read_workspace_file("import_tmuxinator/test3.yaml")
 
     tmuxinator_path = tmp_path / ".tmuxinator"
     tmuxinator_path.mkdir()

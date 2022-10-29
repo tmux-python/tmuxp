@@ -4,7 +4,7 @@ import pytest
 from tmuxp import config
 from tmuxp.config_reader import ConfigReader
 
-from .fixtures import config_tmuxinator as fixtures
+from .fixtures import import_tmuxinator as fixtures
 
 
 @pytest.mark.parametrize(

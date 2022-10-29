@@ -1,6 +1,6 @@
 from .. import utils as test_utils
 
-tmuxinator_yaml = test_utils.read_workspace_file("config_tmuxinator/test2.yaml")
+tmuxinator_yaml = test_utils.read_workspace_file("import_tmuxinator/test2.yaml")
 
 tmuxinator_dict = {
     "project_name": "sample",

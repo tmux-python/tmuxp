@@ -23,7 +23,7 @@ def config_fixture():
     pytest setup (conftest.py) patches os.environ["HOME"], delay execution of
     os.path.expanduser until here.
     """
-    from .fixtures import config as test_workspace_data
+    from .fixtures import workspace as test_workspace_data
     from .fixtures.structures import ConfigTestData
 
     return ConfigTestData(

@@ -1,7 +1,7 @@
 from .. import utils as test_utils
 
-teamocil_yaml_file = test_utils.get_workspace_file("config_teamocil/layouts.yaml")
-teamocil_yaml = test_utils.read_workspace_file("config_teamocil/layouts.yaml")
+teamocil_yaml_file = test_utils.get_workspace_file("import_teamocil/layouts.yaml")
+teamocil_yaml = test_utils.read_workspace_file("import_teamocil/layouts.yaml")
 
 teamocil_dict = {
     "two-windows": {
