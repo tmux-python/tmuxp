@@ -24,11 +24,11 @@ if t.TYPE_CHECKING:
 
 
 def test_split_windows(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/two_pane.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     window_count = len(session._windows)  # current window count
     assert len(session._windows) == window_count
@@ -44,11 +44,11 @@ def test_split_windows(session):
 
 
 def test_split_windows_three_pane(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/three_pane.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     window_count = len(session._windows)  # current window count
     assert len(session._windows) == window_count
@@ -66,13 +66,13 @@ def test_split_windows_three_pane(session):
 
 
 def test_focus_pane_index(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/focus_and_pane.yaml")
     )
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     builder.build(session=session)
 
@@ -140,13 +140,13 @@ and CI. See https://github.com/tmux-python/tmuxp/issues/310.
     """.strip()
 )
 def test_suppress_history(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/suppress_history.yaml")
     )
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     inHistoryWindow = session.find_where({"window_name": "inHistory"})
@@ -194,12 +194,12 @@ def test_suppress_history(session):
 
 
 def test_session_options(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/session_options.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert "/bin/sh" in session.show_option("default-shell")
@@ -207,12 +207,12 @@ def test_session_options(session):
 
 
 def test_global_options(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/global_options.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert "top" in session.show_option("status-position", _global=True)
@@ -227,12 +227,12 @@ def test_global_session_env_options(session, monkeypatch):
     main_pane_height = 8
     monkeypatch.setenv("MAIN_PANE_HEIGHT", str(main_pane_height))
 
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/env_var_options.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert visual_silence in session.show_option("visual-silence", _global=True)
@@ -243,15 +243,15 @@ def test_global_session_env_options(session, monkeypatch):
 
 
 def test_window_options(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/window_options.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
     if has_gte_version("2.3"):
-        sconfig["windows"][0]["options"]["pane-border-format"] = " #P "
+        workspace["windows"][0]["options"]["pane-border-format"] = " #P "
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     window_count = len(session._windows)  # current window count
     assert len(session._windows) == window_count
@@ -272,12 +272,12 @@ def test_window_options(session):
 
 @pytest.mark.flaky(reruns=5)
 def test_window_options_after(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/window_options_after.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     def assert_last_line(p, s):
@@ -310,12 +310,12 @@ def test_window_options_after(session):
 
 
 def test_window_shell(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/window_shell.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     for w, wconf in builder.iter_create_windows(session):
         if "window_shell" in wconf:
@@ -331,12 +331,12 @@ def test_window_shell(session):
 
 
 def test_environment_variables(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/environment_vars.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session)
 
     assert session.getenv("FOO") == "BAR"
@@ -345,17 +345,17 @@ def test_environment_variables(session):
 
 def test_automatic_rename_option(session):
     """With option automatic-rename: on."""
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/window_automatic_rename.yaml")
     )
 
     # This should be a command guaranteed to be terminal name across systems
-    portable_command = sconfig["windows"][0]["panes"][0]["shell_command"][0]["cmd"]
+    portable_command = workspace["windows"][0]["panes"][0]["shell_command"][0]["cmd"]
     # If a command is like "man ls", get the command base name, "ls"
     if " " in portable_command:
         portable_command = portable_command.split(" ")[0]
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     window_count = len(session._windows)  # current window count
     assert len(session._windows) == window_count
@@ -400,8 +400,8 @@ def test_automatic_rename_option(session):
 
 def test_blank_pane_count(session):
     """:todo: Verify blank panes of various types build into workspaces."""
-    yaml_config_file = EXAMPLE_PATH / "blank-panes.yaml"
-    test_config = ConfigReader._from_file(yaml_config_file)
+    yaml_workspace_file = EXAMPLE_PATH / "blank-panes.yaml"
+    test_config = ConfigReader._from_file(yaml_workspace_file)
 
     test_config = config.expand(test_config)
     builder = WorkspaceBuilder(sconf=test_config)
@@ -426,16 +426,16 @@ def test_start_directory(session, tmp_path: pathlib.Path):
     test_dir = tmp_path / "foo bar"
     test_dir.mkdir()
 
-    yaml_config = test_utils.read_workspace_file(
+    yaml_workspace = test_utils.read_workspace_file(
         "workspacebuilder/start_directory.yaml"
     )
-    test_config = yaml_config.format(TEST_DIR=test_dir)
+    test_config = yaml_workspace.format(TEST_DIR=test_dir)
 
-    sconfig = ConfigReader._load(format="yaml", content=test_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._load(format="yaml", content=test_config)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert session == builder.session
@@ -465,7 +465,7 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     $ tmuxp load .
 
     """
-    yaml_config = test_utils.read_workspace_file(
+    yaml_workspace = test_utils.read_workspace_file(
         "workspacebuilder/start_directory_relative.yaml"
     )
 
@@ -474,17 +474,17 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     config_dir = tmp_path / "testRelConfigDir"
     config_dir.mkdir()
 
-    test_config = yaml_config.format(TEST_DIR=test_dir)
-    sconfig = ConfigReader._load(format="yaml", content=test_config)
+    test_config = yaml_workspace.format(TEST_DIR=test_dir)
+    workspace = ConfigReader._load(format="yaml", content=test_config)
     # the second argument of os.getcwd() mimics the behavior
     # the CLI loader will do, but it passes in the workspace file's location.
-    sconfig = config.expand(sconfig, config_dir)
+    workspace = config.expand(workspace, config_dir)
 
-    sconfig = config.trickle(sconfig)
+    workspace = config.trickle(workspace)
 
     assert os.path.exists(config_dir)
     assert os.path.exists(test_dir)
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert session == builder.session
@@ -507,15 +507,15 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     has_lt_version("3.2a"), reason="needs format introduced in tmux >= 3.2a"
 )
 def test_start_directory_sets_session_path(server):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file(
             "workspacebuilder/start_directory_session_path.yaml"
         )
     )
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
     session = builder.session
@@ -530,7 +530,7 @@ def test_pane_order(session):
 
     Regression test for https://github.com/tmux-python/tmuxp/issues/15.
     """
-    yaml_config = test_utils.read_workspace_file(
+    yaml_workspace = test_utils.read_workspace_file(
         "workspacebuilder/pane_ordering.yaml"
     ).format(HOME=os.path.realpath(os.path.expanduser("~")))
 
@@ -542,11 +542,11 @@ def test_pane_order(session):
         os.path.realpath(os.path.expanduser("~")),
     ]
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     window_count = len(session._windows)  # current window count
     assert len(session._windows) == window_count
@@ -582,13 +582,13 @@ def test_window_index(session):
     base_index = int(proc.stdout[0])
     name_index_map = {"zero": 0 + base_index, "one": 1 + base_index, "five": 5}
 
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspacebuilder/window_index.yaml")
     )
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     for window, _ in builder.iter_create_windows(session):
         expected_index = name_index_map[window["window_name"]]
@@ -599,15 +599,15 @@ def test_before_load_throw_error_if_retcode_error(server):
     config_script_fails = test_utils.read_workspace_file(
         "workspacebuilder/config_script_fails.yaml"
     )
-    yaml_config = config_script_fails.format(
+    yaml_workspace = config_script_fails.format(
         script_failed=FIXTURE_PATH / "script_failed.sh",
     )
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     with temp_session(server) as sess:
         session_name = sess.name
@@ -623,14 +623,14 @@ def test_before_load_throw_error_if_file_not_exists(server):
     config_script_not_exists = test_utils.read_workspace_file(
         "workspacebuilder/config_script_not_exists.yaml"
     )
-    yaml_config = config_script_not_exists.format(
+    yaml_workspace = config_script_not_exists.format(
         script_not_exists=FIXTURE_PATH / "script_not_exists.sh",
     )
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     with temp_session(server) as session:
         session_name = session.name
@@ -650,12 +650,12 @@ def test_before_load_true_if_test_passes(server):
     script_complete_sh = FIXTURE_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
 
-    yaml_config = config_script_completes.format(script_complete=script_complete_sh)
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    yaml_workspace = config_script_completes.format(script_complete=script_complete_sh)
+    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     with temp_session(server) as session:
         builder.build(session=session)
@@ -668,13 +668,13 @@ def test_before_load_true_if_test_passes_with_args(server):
     script_complete_sh = FIXTURE_PATH / "script_complete.sh"
     assert script_complete_sh.exists()
 
-    yaml_config = config_script_completes.format(script_complete=script_complete_sh)
+    yaml_workspace = config_script_completes.format(script_complete=script_complete_sh)
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
 
     with temp_session(server) as session:
         builder.build(session=session)
@@ -683,12 +683,12 @@ def test_before_load_true_if_test_passes_with_args(server):
 def test_plugin_system_before_workspace_builder(
     monkeypatch_plugin_test_packages, session
 ):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/plugin_bwb.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    builder = WorkspaceBuilder(sconf=workspace, plugins=load_plugins(workspace))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -698,12 +698,12 @@ def test_plugin_system_before_workspace_builder(
 
 
 def test_plugin_system_on_window_create(monkeypatch_plugin_test_packages, session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/plugin_owc.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    builder = WorkspaceBuilder(sconf=workspace, plugins=load_plugins(workspace))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -713,12 +713,12 @@ def test_plugin_system_on_window_create(monkeypatch_plugin_test_packages, sessio
 
 
 def test_plugin_system_after_window_finished(monkeypatch_plugin_test_packages, session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/plugin_awf.yaml")
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    builder = WorkspaceBuilder(sconf=workspace, plugins=load_plugins(workspace))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -728,14 +728,14 @@ def test_plugin_system_after_window_finished(monkeypatch_plugin_test_packages, s
 
 
 def test_plugin_system_on_window_create_multiple_windows(session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file(
             "workspacebuilder/plugin_owc_multiple_windows.yaml"
         )
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    builder = WorkspaceBuilder(sconf=workspace, plugins=load_plugins(workspace))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -748,14 +748,14 @@ def test_plugin_system_on_window_create_multiple_windows(session):
 def test_plugin_system_after_window_finished_multiple_windows(
     monkeypatch_plugin_test_packages, session
 ):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file(
             "workspacebuilder/plugin_awf_multiple_windows.yaml"
         )
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    builder = WorkspaceBuilder(sconf=workspace, plugins=load_plugins(workspace))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -766,14 +766,14 @@ def test_plugin_system_after_window_finished_multiple_windows(
 
 
 def test_plugin_system_multiple_plugins(monkeypatch_plugin_test_packages, session):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file(
             "workspacebuilder/plugin_multiple_plugins.yaml"
         )
     )
-    sconfig = config.expand(sconfig)
+    workspace = config.expand(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig, plugins=load_plugins(sconfig))
+    builder = WorkspaceBuilder(sconf=workspace, plugins=load_plugins(workspace))
     assert len(builder.plugins) > 0
 
     builder.build(session=session)
@@ -790,30 +790,30 @@ def test_plugin_system_multiple_plugins(monkeypatch_plugin_test_packages, sessio
 
 
 def test_load_configs_same_session(server):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/three_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
     assert len(server.sessions) == 1
     assert len(server.sessions[0]._windows) == 3
 
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/two_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
     assert len(server.sessions) == 2
     assert len(server.sessions[1]._windows) == 2
 
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/two_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build(server.sessions[1], True)
 
     assert len(server.sessions) == 2
@@ -821,21 +821,21 @@ def test_load_configs_same_session(server):
 
 
 def test_load_configs_separate_sessions(server):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/three_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
     assert len(server.sessions) == 1
     assert len(server.sessions[0]._windows) == 3
 
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/two_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
     assert len(server.sessions) == 2
@@ -844,18 +844,18 @@ def test_load_configs_separate_sessions(server):
 
 
 def test_find_current_active_pane(server, monkeypatch):
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/three_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
-    sconfig = ConfigReader._from_file(
+    workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspacebuilder/two_windows.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
     assert len(server.list_sessions()) == 2
@@ -867,7 +867,7 @@ def test_find_current_active_pane(server, monkeypatch):
     ]
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
 
     assert builder.find_current_attached_session() == second_session
 
@@ -1001,12 +1001,12 @@ def test_load_workspace_enter(
     output,
     should_see,
 ):
-    yaml_config = tmp_path / "simple.yaml"
-    yaml_config.write_text(yaml, encoding="utf-8")
-    sconfig = ConfigReader._from_file(yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    yaml_workspace = tmp_path / "simple.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
     session = builder.session
@@ -1121,12 +1121,12 @@ def test_load_workspace_sleep(
     sleep: int,
     output,
 ):
-    yaml_config = tmp_path / "simple.yaml"
-    yaml_config.write_text(yaml, encoding="utf-8")
-    sconfig = ConfigReader._from_file(yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    yaml_workspace = tmp_path / "simple.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
 
     t = time.process_time()
 
@@ -1145,15 +1145,15 @@ def test_load_workspace_sleep(
 
 
 def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
-    yaml_config = test_utils.get_workspace_file(
+    yaml_workspace = test_utils.get_workspace_file(
         "workspacebuilder/first_pane_start_directory.yaml"
     )
 
-    sconfig = ConfigReader._from_file(yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert session == builder.session
@@ -1176,10 +1176,10 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
     has_lt_version("2.9"), reason="needs option introduced in tmux >= 2.9"
 )
 def test_layout_main_horizontal(session):
-    yaml_config = test_utils.get_workspace_file("workspacebuilder/three_pane.yaml")
-    sconfig = ConfigReader._from_file(path=yaml_config)
+    yaml_workspace = test_utils.get_workspace_file("workspacebuilder/three_pane.yaml")
+    workspace = ConfigReader._from_file(path=yaml_workspace)
 
-    builder = WorkspaceBuilder(sconf=sconfig)
+    builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
     assert session.windows
@@ -1262,22 +1262,22 @@ def test_issue_800_default_size_many_windows(
 
     See also: https://github.com/tmux-python/tmuxp/issues/800
     """
-    yaml_config = test_utils.get_workspace_file(
+    yaml_workspace = test_utils.get_workspace_file(
         "regressions/issue_800_default_size_many_windows.yaml"
     )
 
-    sconfig = ConfigReader._from_file(yaml_config)
-    sconfig = config.expand(sconfig)
-    sconfig = config.trickle(sconfig)
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = config.expand(workspace)
+    workspace = config.trickle(workspace)
 
     if isinstance(confoverrides, dict):
         for k, v in confoverrides.items():
-            sconfig[k] = v
+            workspace[k] = v
 
     if TMUXP_DEFAULT_SIZE is not None:
         monkeypatch.setenv("TMUXP_DEFAULT_SIZE", TMUXP_DEFAULT_SIZE)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
 
     if raises:
         with pytest.raises(Exception):
