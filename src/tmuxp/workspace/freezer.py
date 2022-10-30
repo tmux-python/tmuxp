@@ -1,6 +1,5 @@
 def inline(workspace_dict):
-    """
-    Return config in inline form, opposite of :meth:`config.expand`.
+    """Return workspace with inlined shorthands. Opposite of :meth:`loader.expand`.
 
     Parameters
     ----------
@@ -9,7 +8,7 @@ def inline(workspace_dict):
     Returns
     -------
     dict
-        configuration with optional inlined configs.
+        workspace with shorthands inlined.
     """
 
     if (
@@ -30,7 +29,7 @@ def inline(workspace_dict):
             0
         ]
 
-    # recurse into window and pane config items
+    # recurse into window and pane workspace items
     if "windows" in workspace_dict:
         workspace_dict["windows"] = [
             inline(window) for window in workspace_dict["windows"]
@@ -42,8 +41,7 @@ def inline(workspace_dict):
 
 
 def freeze(session):
-    """
-    Freeze live tmux session and Return session config :py:obj:`dict`.
+    """Freeze live tmux session into a tmuxp workspacee.
 
     Parameters
     ----------
@@ -53,7 +51,7 @@ def freeze(session):
     Returns
     -------
     dict
-        tmuxp compatible workspace config
+        tmuxp compatible workspace
     """
     sconf = {"session_name": session["session_name"], "windows": []}
 
