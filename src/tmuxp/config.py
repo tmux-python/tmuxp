@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 def validate_schema(workspace_dict):
     """
-    Return True if config schema is correct.
+    Return True if workspace schema is correct.
 
     Parameters
     ----------
     workspace_dict : dict
-        session configuration
+        tmuxp workspace data
 
     Returns
     -------
