@@ -5,7 +5,7 @@ from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import config
 from tmuxp.workspace.builder import WorkspaceBuilder, freeze
 
-from .fixtures import utils as test_utils
+from ..fixtures import utils as test_utils
 
 
 def test_freeze_config(session):
