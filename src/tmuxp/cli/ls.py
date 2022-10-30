@@ -3,8 +3,7 @@ import os
 import typing as t
 
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
-
-from .utils import get_workspace_dir
+from tmuxp.workspace.finders import get_workspace_dir
 
 
 def create_ls_subparser(

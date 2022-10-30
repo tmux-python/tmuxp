@@ -7,10 +7,11 @@ import typing as t
 from libtmux.server import Server
 from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
+from tmuxp.workspace.finders import get_workspace_dir
 
 from .. import util
 from ..workspace import freezer
-from .utils import get_workspace_dir, prompt, prompt_choices, prompt_yes_no
+from .utils import prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:
     from typing_extensions import Literal, TypeAlias, TypeGuard

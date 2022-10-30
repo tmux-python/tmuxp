@@ -4,8 +4,9 @@ import pathlib
 import typing as t
 
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
-from .utils import find_workspace_file, get_workspace_dir, prompt_yes_no
+from .utils import prompt_yes_no
 
 
 def create_convert_subparser(

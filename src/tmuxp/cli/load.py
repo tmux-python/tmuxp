@@ -21,14 +21,8 @@ from tmuxp.types import StrPath
 from .. import config_reader, exc, log, util
 from ..workspace import config
 from ..workspace.builder import WorkspaceBuilder
-from .utils import (
-    find_workspace_file,
-    get_workspace_dir,
-    prompt_choices,
-    prompt_yes_no,
-    style,
-    tmuxp_echo,
-)
+from ..workspace.finders import find_workspace_file, get_workspace_dir, in_dir
+from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
     from typing_extensions import Literal, NotRequired, TypeAlias, TypedDict
@@ -478,7 +472,7 @@ def workspace_file_completion(ctx, params, incomplete):
     choices += sorted(
         pathlib.Path(os.path.relpath(p, pathlib.Path.cwd()))
         for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
-        if config.in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
+        if in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
     )
     # CWD look one directory up
     choices += [
@@ -487,7 +481,7 @@ def workspace_file_completion(ctx, params, incomplete):
     ]
 
     # Project configs
-    choices += sorted((config_dir / c).stem for c in config.in_dir(str(config_dir)))
+    choices += sorted((config_dir / c).stem for c in in_dir(str(config_dir)))
 
     return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 

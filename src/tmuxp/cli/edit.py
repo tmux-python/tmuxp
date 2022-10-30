@@ -4,7 +4,7 @@ import pathlib
 import subprocess
 import typing as t
 
-from .utils import find_workspace_file
+from tmuxp.workspace.finders import find_workspace_file
 
 
 def create_edit_subparser(

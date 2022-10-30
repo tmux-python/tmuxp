@@ -15,7 +15,7 @@ from _pytest.doctest import DoctestItem
 
 from libtmux.test import namer
 from tests.fixtures import utils as test_utils
-from tmuxp.cli.utils import get_workspace_dir
+from tmuxp.workspace.finders import get_workspace_dir
 
 if t.TYPE_CHECKING:
     from libtmux.session import Session

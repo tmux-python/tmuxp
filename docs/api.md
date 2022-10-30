@@ -46,10 +46,6 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## CLI
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.utils.get_workspace_dir
-```
-
-```{eval-rst}
 .. automethod:: tmuxp.cli.import_config.get_teamocil_dir
 ```
 
@@ -70,15 +66,19 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ### Finding
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.is_workspace_file
+.. automethod:: tmuxp.workspace.finders.is_workspace_file
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.in_dir
+.. automethod:: tmuxp.workspace.finders.in_dir
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.in_cwd
+.. automethod:: tmuxp.workspace.finders.in_cwd
+```
+
+```{eval-rst}
+.. automethod:: tmuxp.workspace.finders.get_workspace_dir
 ```
 
 ### Validation

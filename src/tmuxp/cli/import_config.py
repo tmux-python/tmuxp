@@ -5,15 +5,10 @@ import sys
 import typing as t
 
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace.finders import find_workspace_file
 
 from ..workspace import importers
-from .utils import (
-    find_workspace_file,
-    prompt,
-    prompt_choices,
-    prompt_yes_no,
-    tmuxp_echo,
-)
+from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 
 
 def get_tmuxinator_dir() -> str:
