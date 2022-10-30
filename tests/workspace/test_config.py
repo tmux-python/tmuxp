@@ -11,10 +11,10 @@ from tmuxp import exc
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import config
 
-from .constants import EXAMPLE_PATH
+from ..constants import EXAMPLE_PATH
 
 if typing.TYPE_CHECKING:
-    from .fixtures.structures import ConfigTestData
+    from ..fixtures.structures import ConfigTestData
 
 
 @pytest.fixture
@@ -24,8 +24,8 @@ def config_fixture():
     pytest setup (conftest.py) patches os.environ["HOME"], delay execution of
     os.path.expanduser until here.
     """
-    from .fixtures import workspace as test_workspace_data
-    from .fixtures.structures import ConfigTestData
+    from ..fixtures import workspace as test_workspace_data
+    from ..fixtures.structures import ConfigTestData
 
     return ConfigTestData(
         **{
