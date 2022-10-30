@@ -1,7 +1,7 @@
-"""Create a tmux workspace from a configuration :py:obj:`dict`.
+"""Create a tmux workspace from a workspace configuration :py:obj:`dict`.
 
-tmuxp.workspacebuilder
-~~~~~~~~~~~~~~~~~~~~~~
+tmuxp.workspace.builder
+~~~~~~~~~~~~~~~~~~~~~~~
 
 """
 import logging
@@ -13,8 +13,8 @@ from libtmux.server import Server
 from libtmux.session import Session
 from libtmux.window import Window
 
-from . import exc
-from .util import get_current_pane, run_before_script
+from .. import exc
+from ..util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 

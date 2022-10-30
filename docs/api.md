@@ -120,12 +120,12 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## Workspace Builder
 
 ```{eval-rst}
-.. autoclass:: tmuxp.workspacebuilder.WorkspaceBuilder
+.. autoclass:: tmuxp.workspace.builder.WorkspaceBuilder
    :members:
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspacebuilder.freeze
+.. automethod:: tmuxp.workspace.builder.freeze
 ```
 
 ## Exceptions

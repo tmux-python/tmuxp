@@ -15,7 +15,7 @@ from tmuxp import exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import config
-from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp.workspace.builder import WorkspaceBuilder
 
 from .constants import EXAMPLE_PATH, FIXTURE_PATH
 from .fixtures import utils as test_utils
