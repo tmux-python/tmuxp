@@ -3,7 +3,7 @@ import typing as t
 
 
 @dataclasses.dataclass
-class ConfigTestData:
+class WorkspaceTestData:
     expand1: t.Any
     expand2: t.Any
     expand_blank: t.Any

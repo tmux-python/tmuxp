@@ -14,7 +14,7 @@ from tmuxp.workspace import config
 from ..constants import EXAMPLE_PATH
 
 if typing.TYPE_CHECKING:
-    from ..fixtures.structures import ConfigTestData
+    from ..fixtures.structures import WorkspaceTestData
 
 
 @pytest.fixture
@@ -25,9 +25,9 @@ def config_fixture():
     os.path.expanduser until here.
     """
     from ..fixtures import workspace as test_workspace_data
-    from ..fixtures.structures import ConfigTestData
+    from ..fixtures.structures import WorkspaceTestData
 
-    return ConfigTestData(
+    return WorkspaceTestData(
         **{
             k: v
             for k, v in test_workspace_data.__dict__.items()
@@ -48,7 +48,7 @@ def load_workspace(path: Union[str, pathlib.Path]) -> str:
     )
 
 
-def test_export_json(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
+def test_export_json(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"):
     json_workspace_file = tmp_path / "config.json"
 
     configparser = ConfigReader(config_fixture.sample_workspace.sample_workspace_dict)
@@ -61,7 +61,7 @@ def test_export_json(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
-def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "ConfigTestData"):
+def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"):
     yaml_workspace_file = tmp_path / "config.yaml"
 
     sample_workspace = config.inline(
@@ -106,13 +106,13 @@ def test_scan_workspace(tmp_path: pathlib.Path):
     assert len(configs) == files
 
 
-def test_workspace_expand1(config_fixture: "ConfigTestData"):
+def test_workspace_expand1(config_fixture: "WorkspaceTestData"):
     """Expand shell commands from string to list."""
     test_workspace = config.expand(config_fixture.expand1.before_workspace)
     assert test_workspace == config_fixture.expand1.after_workspace()
 
 
-def test_workspace_expand2(config_fixture: "ConfigTestData"):
+def test_workspace_expand2(config_fixture: "WorkspaceTestData"):
     """Expand shell commands from string to list."""
     unexpanded_dict = ConfigReader._load(
         format="yaml", content=config_fixture.expand2.unexpanded_yaml()
@@ -235,7 +235,7 @@ def test_inheritance_workspace():
     assert workspace == inheritance_workspace_after
 
 
-def test_shell_command_before(config_fixture: "ConfigTestData"):
+def test_shell_command_before(config_fixture: "WorkspaceTestData"):
     """Config inheritance for the nested 'start_command'."""
     test_workspace = config_fixture.shell_command_before.config_unexpanded
     test_workspace = config.expand(test_workspace)
@@ -246,7 +246,7 @@ def test_shell_command_before(config_fixture: "ConfigTestData"):
     assert test_workspace == config_fixture.shell_command_before.config_after()
 
 
-def test_in_session_scope(config_fixture: "ConfigTestData"):
+def test_in_session_scope(config_fixture: "WorkspaceTestData"):
     sconfig = ConfigReader._load(
         format="yaml", content=config_fixture.shell_command_before_session.before
     )
@@ -259,7 +259,7 @@ def test_in_session_scope(config_fixture: "ConfigTestData"):
     )
 
 
-def test_trickle_relative_start_directory(config_fixture: "ConfigTestData"):
+def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData"):
     test_workspace = config.trickle(config_fixture.trickle.before)
     assert test_workspace == config_fixture.trickle.expected
 
@@ -282,7 +282,7 @@ def test_trickle_window_with_no_pane_workspace():
     }
 
 
-def test_expands_blank_panes(config_fixture: "ConfigTestData"):
+def test_expands_blank_panes(config_fixture: "WorkspaceTestData"):
     """Expand blank config into full form.
 
     Handle ``NoneType`` and 'blank'::
