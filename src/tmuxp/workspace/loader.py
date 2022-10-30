@@ -187,7 +187,7 @@ def trickle(workspace_dict):
     """Return a dict with "trickled down" / inherited workspace values.
 
     This will only work if workspace has been expanded to full form with
-    :meth:`config.expand`.
+    :meth:`loader.expand`.
 
     tmuxp allows certain commands to be default at the session, window
     level. shell_command_before trickles down and prepends the
