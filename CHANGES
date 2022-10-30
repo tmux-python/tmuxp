@@ -21,11 +21,19 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.17.3 (2022-10-30)
+
+**Maintenance release, no features or fixes**
+
 ### Development
 
 - Add python 3.11 to test grid, pyenv / asdf files (#842)
 
-## tmuxp 1.17.2 (unreleased)
+### Packaging
+
+- Add python 3.11 to classifiers
+
+## tmuxp 1.17.2 (2022-10-29)
 
 ### Bug fix
 
