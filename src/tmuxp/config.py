@@ -28,14 +28,14 @@ def validate_schema(workspace_dict):
     """
     # verify session_name
     if "session_name" not in workspace_dict:
-        raise exc.WorkspaceError('config requires "session_name"')
+        raise exc.WorkspaceError('workspace requires "session_name"')
 
     if "windows" not in workspace_dict:
-        raise exc.WorkspaceError('config requires list of "windows"')
+        raise exc.WorkspaceError('workspace requires list of "windows"')
 
     for window in workspace_dict["windows"]:
         if "window_name" not in window:
-            raise exc.WorkspaceError('config window is missing "window_name"')
+            raise exc.WorkspaceError('workspace window is missing "window_name"')
 
     if "plugins" in workspace_dict:
         if not isinstance(workspace_dict["plugins"], list):
@@ -210,17 +210,17 @@ def expand_cmd(p: Dict) -> Dict:
 
 
 def expand(workspace_dict, cwd=None, parent=None):
-    """Return config with shorthand and inline properties expanded.
+    """Return workspace with shorthand and inline properties expanded.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
-    and also allow for neat, short-hand configurations.
+    and also allow for neat, short-hand "sugarified" syntax.
 
-    As a simple example, internally, tmuxp expects that config options
+    As a simple example, internally, tmuxp expects that workspace options
     like ``shell_command`` are a list (array)::
 
         'shell_command': ['htop']
 
-    tmuxp configs allow for it to be simply a string::
+    tmuxp workspace allow for it to be simply a string::
 
         'shell_command': 'htop'
 
@@ -229,10 +229,10 @@ def expand(workspace_dict, cwd=None, parent=None):
     Parameters
     ----------
     workspace_dict : dict
-        the configuration for the session
+        the tmuxp workspace for the session
     cwd : str
         directory to expand relative paths against. should be the dir of the
-        config directory.
+        workspace directory.
     parent : str
         (used on recursive entries) start_directory of parent window or session
         object.
@@ -242,7 +242,7 @@ def expand(workspace_dict, cwd=None, parent=None):
     dict
     """
 
-    # Note: cli.py will expand configs relative to project's config directory
+    # Note: cli.py will expand workspaces relative to project's workspace directory
     # for the first cwd argument.
     if not cwd:
         cwd = os.getcwd()
@@ -275,7 +275,7 @@ def expand(workspace_dict, cwd=None, parent=None):
                     val = os.path.normpath(os.path.join(cwd, val))
             workspace_dict["options"][key] = val
 
-    # Any config section, session, window, pane that can contain the
+    # Any workspace section, session, window, pane that can contain the
     # 'shell_command' value
     if "start_directory" in workspace_dict:
         workspace_dict["start_directory"] = expandshell(
@@ -287,7 +287,7 @@ def expand(workspace_dict, cwd=None, parent=None):
             # start_directory of . or ./, make sure the start_directory can be
             # relative to the parent.
             #
-            # This is for the case where you may be loading a config from
+            # This is for the case where you may be loading a workspace from
             # outside your shell current directory.
             if parent:
                 cwd = parent["start_directory"]
@@ -311,7 +311,7 @@ def expand(workspace_dict, cwd=None, parent=None):
 
         workspace_dict["shell_command_before"] = expand_cmd(shell_command_before)
 
-    # recurse into window and pane config items
+    # recurse into window and pane workspace items
     if "windows" in workspace_dict:
         workspace_dict["windows"] = [
             expand(window, parent=workspace_dict)
@@ -330,9 +330,9 @@ def expand(workspace_dict, cwd=None, parent=None):
 
 
 def trickle(workspace_dict):
-    """Return a dict with "trickled down" / inherited config values.
+    """Return a dict with "trickled down" / inherited workspace values.
 
-    This will only work if config has been expanded to full form with
+    This will only work if workspace has been expanded to full form with
     :meth:`config.expand`.
 
     tmuxp allows certain commands to be default at the session, window
@@ -342,7 +342,7 @@ def trickle(workspace_dict):
     Parameters
     ----------
     workspace_dict : dict
-        the session configuration.
+        the tmuxp workspace.
 
     Returns
     -------
@@ -414,14 +414,14 @@ def trickle(workspace_dict):
 
 
 def import_tmuxinator(workspace_dict):
-    """Return tmuxp config from a `tmuxinator`_ yaml config.
+    """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
 
     Parameters
     ----------
     workspace_dict : dict
-        python dict for session configuration.
+        python dict for tmuxp workspace.
 
     Returns
     -------
@@ -512,14 +512,14 @@ def import_tmuxinator(workspace_dict):
 
 
 def import_teamocil(workspace_dict):
-    """Return tmuxp config from a `teamocil`_ yaml config.
+    """Return tmuxp workspace from a `teamocil`_ yaml workspace.
 
     .. _teamocil: https://github.com/remiprev/teamocil
 
     Parameters
     ----------
     workspace_dict : dict
-        python dict for session configuration
+        python dict for tmuxp workspace
 
     Notes
     -----
