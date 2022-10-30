@@ -1,10 +1,11 @@
 import logging
 import os
-import pathlib
 import re
 import typing as t
 
 from colorama import Fore
+
+from tmuxp.types import StrPath
 
 from .. import log
 from .constants import VALID_CONFIG_DIR_FILE_EXTENSIONS
@@ -64,8 +65,8 @@ def get_config_dir() -> str:
 
 
 def scan_config(
-    config: t.Union[pathlib.Path, str],
-    config_dir: t.Optional[t.Union[pathlib.Path, str]] = None,
+    workspace_file: StrPath,
+    workspace_dir: t.Optional[StrPath] = None,
 ) -> str:
     """
     Return the real config path or raise an exception.
@@ -84,15 +85,15 @@ def scan_config(
 
     Parameters
     ----------
-    config : str
+    workspace_file : str
         workspace file, valid examples:
 
         - a file name, myconfig.yaml
         - relative path, ../config.yaml or ../project
         - a period, .
     """
-    if not config_dir:
-        config_dir = get_config_dir()
+    if not workspace_dir:
+        workspace_dir = get_config_dir()
     path = os.path
     exists, join, isabs = path.exists, path.join, path.isabs
     dirname, normpath, splitext = path.dirname, path.normpath, path.splitext
@@ -100,40 +101,40 @@ def scan_config(
     is_name = False
     file_error = None
 
-    config = os.path.expanduser(config)
+    workspace_file = os.path.expanduser(workspace_file)
     # if purename, resolve to confg dir
-    if is_pure_name(config):
+    if is_pure_name(workspace_file):
         is_name = True
     elif (
-        not isabs(config)
-        or len(dirname(config)) > 1
-        or config == "."
-        or config == ""
-        or config == "./"
+        not isabs(workspace_file)
+        or len(dirname(workspace_file)) > 1
+        or workspace_file == "."
+        or workspace_file == ""
+        or workspace_file == "./"
     ):  # if relative, fill in full path
-        config = normpath(join(cwd, config))
+        workspace_file = normpath(join(cwd, workspace_file))
 
     # no extension, scan
-    if path.isdir(config) or not splitext(config)[1]:
+    if path.isdir(workspace_file) or not splitext(workspace_file)[1]:
         if is_name:
             candidates = [
                 x
                 for x in [
-                    f"{join(config_dir, config)}{ext}"
+                    f"{join(workspace_dir, workspace_file)}{ext}"
                     for ext in VALID_CONFIG_DIR_FILE_EXTENSIONS
                 ]
                 if exists(x)
             ]
             if not len(candidates):
                 file_error = (
-                    "config not found in config dir (yaml/yml/json) %s "
-                    "for name" % (config_dir)
+                    "workspace-file not found in workspace dir (yaml/yml/json) %s "
+                    "for name" % (workspace_dir)
                 )
         else:
             candidates = [
                 x
                 for x in [
-                    join(config, ext)
+                    join(workspace_file, ext)
                     for ext in [".tmuxp.yaml", ".tmuxp.yml", ".tmuxp.json"]
                 ]
                 if exists(x)
@@ -142,7 +143,8 @@ def scan_config(
             if len(candidates) > 1:
                 tmuxp_echo(
                     Fore.RED
-                    + "Multiple .tmuxp.{yml,yaml,json} configs in %s" % dirname(config)
+                    + "Multiple .tmuxp.{yml,yaml,json} workspace_files in %s"
+                    % dirname(workspace_file)
                     + Fore.RESET
                 )
                 tmuxp_echo(
@@ -153,14 +155,14 @@ def scan_config(
             elif not len(candidates):
                 file_error = "No tmuxp files found in directory"
         if len(candidates):
-            config = candidates[0]
-    elif not exists(config):
+            workspace_file = candidates[0]
+    elif not exists(workspace_file):
         file_error = "file not found"
 
     if file_error:
-        raise FileNotFoundError(file_error, config)
+        raise FileNotFoundError(file_error, workspace_file)
 
-    return config
+    return workspace_file
 
 
 def is_pure_name(path: str) -> bool:

@@ -642,7 +642,7 @@ def command_load(
     original_new_session_name = tmux_options.pop("new_session_name")
 
     for idx, workspace_file in enumerate(args.workspace_files):
-        workspace_file = scan_config(workspace_file, config_dir=get_config_dir())
+        workspace_file = scan_config(workspace_file, workspace_dir=get_config_dir())
 
         detached = original_detached_option
         new_session_name = original_new_session_name

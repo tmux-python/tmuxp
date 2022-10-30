@@ -282,7 +282,7 @@ def test_scan_config_arg(
     parser.add_argument("config_file", type=str)
 
     def config_cmd(config_file: str) -> None:
-        tmuxp_echo(scan_config(config_file, config_dir=configdir))
+        tmuxp_echo(scan_config(config_file, workspace_dir=configdir))
 
     monkeypatch.setenv("HOME", str(homedir))
     tmuxp_config_path = projectdir / ".tmuxp.yaml"
@@ -316,8 +316,10 @@ def test_scan_config_arg(
         assert "file not found" in check_cmd(".tmuxp.ini").err
     with pytest.raises(FileNotFoundError, match="No tmuxp files found"):
         assert "No tmuxp files found" in check_cmd("../").err
-    with pytest.raises(FileNotFoundError, match="config not found in config dir"):
-        assert "config not found in config dir" in check_cmd("moo").err
+    with pytest.raises(
+        FileNotFoundError, match="workspace-file not found in workspace dir"
+    ):
+        assert "workspace-file not found in workspace dir" in check_cmd("moo").err
 
 
 def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> None:
@@ -1323,7 +1325,7 @@ def test_pass_config_dir_ClickPath(
     parser.add_argument("config_file", type=str)
 
     def config_cmd(config_file: str) -> None:
-        tmuxp_echo(scan_config(config_file, config_dir=configdir))
+        tmuxp_echo(scan_config(config_file, workspace_dir=configdir))
 
     def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
         args = parser.parse_args([config_arg])

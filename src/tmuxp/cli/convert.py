@@ -40,7 +40,7 @@ def command_convert(
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
     """Convert a tmuxp config between JSON and YAML."""
-    workspace_file = scan_config(workspace_file, config_dir=get_config_dir())
+    workspace_file = scan_config(workspace_file, workspace_dir=get_config_dir())
 
     if isinstance(workspace_file, str):
         workspace_file = pathlib.Path(workspace_file)
