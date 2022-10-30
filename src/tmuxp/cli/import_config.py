@@ -7,7 +7,13 @@ import typing as t
 from tmuxp.config_reader import ConfigReader
 
 from .. import config
-from .utils import prompt, prompt_choices, prompt_yes_no, scan_config, tmuxp_echo
+from .utils import (
+    find_workspace_file,
+    prompt,
+    prompt_choices,
+    prompt_yes_no,
+    tmuxp_echo,
+)
 
 
 def get_tmuxinator_dir() -> str:
@@ -172,7 +178,9 @@ def command_import_tmuxinator(
 ) -> None:
     """Convert a tmuxinator config from workspace_file to tmuxp format and import
     it into tmuxp."""
-    workspace_file = scan_config(workspace_file, workspace_dir=get_tmuxinator_dir())
+    workspace_file = find_workspace_file(
+        workspace_file, workspace_dir=get_tmuxinator_dir()
+    )
     import_config(workspace_file, config.import_tmuxinator)
 
 
@@ -182,6 +190,8 @@ def command_import_teamocil(
 ) -> None:
     """Convert a teamocil config from workspace_file to tmuxp format and import
     it into tmuxp."""
-    workspace_file = scan_config(workspace_file, workspace_dir=get_teamocil_dir())
+    workspace_file = find_workspace_file(
+        workspace_file, workspace_dir=get_teamocil_dir()
+    )
 
     import_config(workspace_file, config.import_teamocil)

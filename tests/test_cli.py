@@ -23,7 +23,12 @@ from tmuxp.cli.load import (
     load_plugins,
     load_workspace,
 )
-from tmuxp.cli.utils import get_config_dir, is_pure_name, scan_config, tmuxp_echo
+from tmuxp.cli.utils import (
+    find_workspace_file,
+    get_config_dir,
+    is_pure_name,
+    tmuxp_echo,
+)
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
@@ -185,93 +190,101 @@ def test_resolve_dot(
     monkeypatch.chdir(projectdir)
 
     expect = str(project_config)
-    assert scan_config(".") == expect
-    assert scan_config("./") == expect
-    assert scan_config("") == expect
-    assert scan_config("../project") == expect
-    assert scan_config("../project/") == expect
-    assert scan_config(".tmuxp.yaml") == expect
-    assert scan_config("../../.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    assert find_workspace_file(".") == expect
+    assert find_workspace_file("./") == expect
+    assert find_workspace_file("") == expect
+    assert find_workspace_file("../project") == expect
+    assert find_workspace_file("../project/") == expect
+    assert find_workspace_file(".tmuxp.yaml") == expect
+    assert find_workspace_file("../../.tmuxp/%s.yaml" % user_config_name) == str(
+        user_config
+    )
+    assert find_workspace_file("myconfig") == str(user_config)
+    assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
     with pytest.raises(Exception):
-        scan_config(".tmuxp.json")
+        find_workspace_file(".tmuxp.json")
     with pytest.raises(Exception):
-        scan_config(".tmuxp.ini")
+        find_workspace_file(".tmuxp.ini")
     with pytest.raises(Exception):
-        scan_config("../")
+        find_workspace_file("../")
     with pytest.raises(Exception):
-        scan_config("mooooooo")
+        find_workspace_file("mooooooo")
 
     monkeypatch.chdir(homedir)
 
     expect = str(project_config)
-    assert scan_config("work/project") == expect
-    assert scan_config("work/project/") == expect
-    assert scan_config("./work/project") == expect
-    assert scan_config("./work/project/") == expect
-    assert scan_config(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("./.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    assert find_workspace_file("work/project") == expect
+    assert find_workspace_file("work/project/") == expect
+    assert find_workspace_file("./work/project") == expect
+    assert find_workspace_file("./work/project/") == expect
+    assert find_workspace_file(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
+    assert find_workspace_file("./.tmuxp/%s.yaml" % user_config_name) == str(
+        user_config
+    )
+    assert find_workspace_file("myconfig") == str(user_config)
+    assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
     with pytest.raises(Exception):
-        scan_config("")
+        find_workspace_file("")
     with pytest.raises(Exception):
-        scan_config(".")
+        find_workspace_file(".")
     with pytest.raises(Exception):
-        scan_config(".tmuxp.yaml")
+        find_workspace_file(".tmuxp.yaml")
     with pytest.raises(Exception):
-        scan_config("../")
+        find_workspace_file("../")
     with pytest.raises(Exception):
-        scan_config("mooooooo")
+        find_workspace_file("mooooooo")
 
     monkeypatch.chdir(configdir)
 
     expect = str(project_config)
-    assert scan_config("../work/project") == expect
-    assert scan_config("../../home/work/project") == expect
-    assert scan_config("../work/project/") == expect
-    assert scan_config("%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("./%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    assert find_workspace_file("../work/project") == expect
+    assert find_workspace_file("../../home/work/project") == expect
+    assert find_workspace_file("../work/project/") == expect
+    assert find_workspace_file("%s.yaml" % user_config_name) == str(user_config)
+    assert find_workspace_file("./%s.yaml" % user_config_name) == str(user_config)
+    assert find_workspace_file("myconfig") == str(user_config)
+    assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
     with pytest.raises(Exception):
-        scan_config("")
+        find_workspace_file("")
     with pytest.raises(Exception):
-        scan_config(".")
+        find_workspace_file(".")
     with pytest.raises(Exception):
-        scan_config(".tmuxp.yaml")
+        find_workspace_file(".tmuxp.yaml")
     with pytest.raises(Exception):
-        scan_config("../")
+        find_workspace_file("../")
     with pytest.raises(Exception):
-        scan_config("mooooooo")
+        find_workspace_file("mooooooo")
 
     monkeypatch.chdir(tmp_path)
 
     expect = str(project_config)
-    assert scan_config("home/work/project") == expect
-    assert scan_config("./home/work/project/") == expect
-    assert scan_config("home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("./home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
+    assert find_workspace_file("home/work/project") == expect
+    assert find_workspace_file("./home/work/project/") == expect
+    assert find_workspace_file("home/.tmuxp/%s.yaml" % user_config_name) == str(
+        user_config
+    )
+    assert find_workspace_file("./home/.tmuxp/%s.yaml" % user_config_name) == str(
+        user_config
+    )
+    assert find_workspace_file("myconfig") == str(user_config)
+    assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
     with pytest.raises(Exception):
-        scan_config("")
+        find_workspace_file("")
     with pytest.raises(Exception):
-        scan_config(".")
+        find_workspace_file(".")
     with pytest.raises(Exception):
-        scan_config(".tmuxp.yaml")
+        find_workspace_file(".tmuxp.yaml")
     with pytest.raises(Exception):
-        scan_config("../")
+        find_workspace_file("../")
     with pytest.raises(Exception):
-        scan_config("mooooooo")
+        find_workspace_file("mooooooo")
 
 
-def test_scan_config_arg(
+def test_find_workspace_file_arg(
     homedir: pathlib.Path,
     configdir: pathlib.Path,
     projectdir: pathlib.Path,
@@ -282,7 +295,7 @@ def test_scan_config_arg(
     parser.add_argument("workspace_file", type=str)
 
     def config_cmd(workspace_file: str) -> None:
-        tmuxp_echo(scan_config(workspace_file, workspace_dir=configdir))
+        tmuxp_echo(find_workspace_file(workspace_file, workspace_dir=configdir))
 
     monkeypatch.setenv("HOME", str(homedir))
     tmuxp_config_path = projectdir / ".tmuxp.yaml"
@@ -1325,7 +1338,7 @@ def test_pass_config_dir_ClickPath(
     parser.add_argument("workspace_file", type=str)
 
     def config_cmd(workspace_file: str) -> None:
-        tmuxp_echo(scan_config(workspace_file, workspace_dir=configdir))
+        tmuxp_echo(find_workspace_file(workspace_file, workspace_dir=configdir))
 
     def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
         args = parser.parse_args([config_arg])

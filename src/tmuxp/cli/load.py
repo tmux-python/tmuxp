@@ -21,10 +21,10 @@ from tmuxp.types import StrPath
 from .. import config, config_reader, exc, log, util
 from ..workspacebuilder import WorkspaceBuilder
 from .utils import (
+    find_workspace_file,
     get_config_dir,
     prompt_choices,
     prompt_yes_no,
-    scan_config,
     style,
     tmuxp_echo,
 )
@@ -642,7 +642,9 @@ def command_load(
     original_new_session_name = tmux_options.pop("new_session_name")
 
     for idx, workspace_file in enumerate(args.workspace_files):
-        workspace_file = scan_config(workspace_file, workspace_dir=get_config_dir())
+        workspace_file = find_workspace_file(
+            workspace_file, workspace_dir=get_config_dir()
+        )
 
         detached = original_detached_option
         new_session_name = original_new_session_name

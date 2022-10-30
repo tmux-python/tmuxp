@@ -64,7 +64,7 @@ def get_config_dir() -> str:
     return path
 
 
-def scan_config(
+def find_workspace_file(
     workspace_file: StrPath,
     workspace_dir: t.Optional[StrPath] = None,
 ) -> str:
