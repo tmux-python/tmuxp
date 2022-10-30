@@ -341,7 +341,7 @@ def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> No
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -359,7 +359,7 @@ def test_load_workspace_named_session(
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -380,7 +380,7 @@ def test_load_workspace_name_match_regression_252(
     tmp_path: pathlib.Path, server: "Server", monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -613,7 +613,7 @@ def test_regression_00132_session_name_with_dots(
     session: Session,
     capsys: pytest.CaptureFixture,
 ) -> None:
-    yaml_config = FIXTURE_PATH / "workspacebuilder" / "regression_00132_dots.yaml"
+    yaml_config = FIXTURE_PATH / "workspace/builder" / "regression_00132_dots.yaml"
     cli_args = [str(yaml_config)]
     with pytest.raises(libtmux.exc.BadSessionName):
         cli.cli(["load", *cli_args])
@@ -1399,7 +1399,7 @@ def test_ls_cli(
 def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
-    plugins_config = test_utils.read_workspace_file("workspacebuilder/plugin_bwb.yaml")
+    plugins_config = test_utils.read_workspace_file("workspace/builder/plugin_bwb.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=plugins_config)
     sconfig = config.expand(sconfig)
@@ -1420,7 +1420,7 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     "cli_args,inputs",
     [
         (
-            ["load", "tests/fixtures/workspacebuilder/plugin_versions_fail.yaml"],
+            ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
             ["y\n"],
         )
     ],
@@ -1441,7 +1441,7 @@ def test_load_plugins_version_fail_skip(
     "cli_args,inputs",
     [
         (
-            ["load", "tests/fixtures/workspacebuilder/plugin_versions_fail.yaml"],
+            ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
             ["n\n"],
         )
     ],
@@ -1465,7 +1465,8 @@ def test_load_plugins_version_fail_no_skip(
 
 
 @pytest.mark.parametrize(
-    "cli_args", [(["load", "tests/fixtures/workspacebuilder/plugin_missing_fail.yaml"])]
+    "cli_args",
+    [(["load", "tests/fixtures/workspace/builder/plugin_missing_fail.yaml"])],
 )
 def test_load_plugins_plugin_missing(
     monkeypatch_plugin_test_packages: None,
@@ -1490,7 +1491,7 @@ def test_plugin_system_before_script(
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "plugin_bs.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "plugin_bs.yaml"
 
     # open it detached
     session = load_workspace(
@@ -1504,7 +1505,7 @@ def test_plugin_system_before_script(
 def test_reattach_plugins(
     monkeypatch_plugin_test_packages: None, server: "Server"
 ) -> None:
-    config_plugins = test_utils.read_workspace_file("workspacebuilder/plugin_r.yaml")
+    config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=config_plugins)
     sconfig = config.expand(sconfig)
@@ -1534,7 +1535,7 @@ def test_load_attached(
     attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1553,7 +1554,7 @@ def test_load_attached_detached(
     attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1572,7 +1573,7 @@ def test_load_attached_within_tmux(
     switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1591,7 +1592,7 @@ def test_load_attached_within_tmux_detached(
     switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1604,7 +1605,7 @@ def test_load_attached_within_tmux_detached(
 def test_load_append_windows_to_current_session(
     server: "Server", monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    yaml_config = test_utils.read_workspace_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)

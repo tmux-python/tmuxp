@@ -10,7 +10,7 @@ from ..fixtures import utils as test_utils
 
 def test_freeze_config(session):
     session_config = ConfigReader._from_file(
-        test_utils.get_workspace_file("workspacefreezer/sample_workspace.yaml")
+        test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml")
     )
 
     builder = WorkspaceBuilder(sconf=session_config)
