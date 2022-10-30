@@ -31,14 +31,14 @@ def is_workspace_file(filename, extensions=[".yml", ".yaml", ".json"]):
 
 
 def in_dir(
-    config_dir=os.path.expanduser("~/.tmuxp"), extensions=[".yml", ".yaml", ".json"]
+    workspace_dir=os.path.expanduser("~/.tmuxp"), extensions=[".yml", ".yaml", ".json"]
 ):
     """
-    Return a list of configs in ``config_dir``.
+    Return a list of workspace_files in ``workspace_dir``.
 
     Parameters
     ----------
-    config_dir : str
+    workspace_dir : str
         directory to search
     extensions : list
         filetypes to check (e.g. ``['.yaml', '.json']``).
@@ -47,38 +47,38 @@ def in_dir(
     -------
     list
     """
-    configs = []
+    workspace_files = []
 
-    for filename in os.listdir(config_dir):
+    for filename in os.listdir(workspace_dir):
         if is_workspace_file(filename, extensions) and not filename.startswith("."):
-            configs.append(filename)
+            workspace_files.append(filename)
 
-    return configs
+    return workspace_files
 
 
 def in_cwd():
     """
-    Return list of configs in current working directory.
+    Return list of workspace_files in current working directory.
 
     If filename is ``.tmuxp.py``, ``.tmuxp.json``, ``.tmuxp.yaml``.
 
     Returns
     -------
     list
-        configs in current working directory
+        workspace_files in current working directory
 
     Examples
     --------
     >>> sorted(in_cwd())
     ['.tmuxp.json', '.tmuxp.yaml']
     """
-    configs = []
+    workspace_files = []
 
     for filename in os.listdir(os.getcwd()):
         if filename.startswith(".tmuxp") and is_workspace_file(filename):
-            configs.append(filename)
+            workspace_files.append(filename)
 
-    return configs
+    return workspace_files
 
 
 def get_workspace_dir() -> str:
@@ -120,25 +120,25 @@ def find_workspace_file(
     """
     Return the real config path or raise an exception.
 
-    If config is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
+    If workspace file is directory, scan for .tmuxp.{yaml,yml,json} in directory. If
     one or more found, it will warn and pick the first.
 
-    If config is ".", "./" or None, it will scan current directory.
+    If workspace file is ".", "./" or None, it will scan current directory.
 
-    If config is has no path and only a filename, e.g. "myconfig.yaml" it will
-    search config dir.
+    If workspace file is has no path and only a filename, e.g. "my_workspace.yaml" it
+    will search workspace dir.
 
-    If config has no path and only a name with no extension, e.g. "myconfig",
-    it will scan for file name with yaml, yml and json. If multiple exist, it
-    will warn and pick the first.
+    If workspace file has no path and no extension, e.g. "my_workspace", it will scan
+    for file name with yaml, yml and json. If multiple exist, it will warn and pick the
+    first.
 
     Parameters
     ----------
     workspace_file : str
         workspace file, valid examples:
 
-        - a file name, myconfig.yaml
-        - relative path, ../config.yaml or ../project
+        - a file name, my_workspace.yaml
+        - relative path, ../my_workspace.yaml or ../project
         - a period, .
     """
     if not workspace_dir:
@@ -226,7 +226,7 @@ def is_pure_name(path: str) -> bool:
     Returns
     -------
     bool
-        True if path is a name of config in config dir, not file path.
+        True if path is a name of workspace in workspace dir, not file path.
     """
     return (
         not os.path.isabs(path)
