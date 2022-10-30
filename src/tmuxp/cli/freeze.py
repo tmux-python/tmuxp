@@ -110,9 +110,9 @@ def command_freeze(
         print(e)
         return
 
-    sconf = freezer.freeze(session)
-    newconfig = freezer.inline(sconf)
-    configparser = ConfigReader(newconfig)
+    frozen_workspace = freezer.freeze(session)
+    workspace = freezer.inline(frozen_workspace)
+    configparser = ConfigReader(workspace)
 
     if not args.quiet:
         print(
@@ -140,7 +140,8 @@ def command_freeze(
             os.path.join(
                 get_workspace_dir(),
                 "{}.{}".format(
-                    sconf.get("session_name"), args.workspace_format or "yaml"
+                    frozen_workspace.get("session_name"),
+                    args.workspace_format or "yaml",
                 ),
             )
         )
@@ -183,18 +184,18 @@ def command_freeze(
             )
 
     if workspace_format == "yaml":
-        newconfig = configparser.dump(
+        workspace = configparser.dump(
             format="yaml", indent=2, default_flow_style=False, safe=True
         )
     elif workspace_format == "json":
-        newconfig = configparser.dump(format="json", indent=2)
+        workspace = configparser.dump(format="json", indent=2)
 
     if args.answer_yes or prompt_yes_no("Save to %s?" % dest):
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
         buf = open(dest, "w")
-        buf.write(newconfig)
+        buf.write(workspace)
         buf.close()
 
         if not args.quiet:

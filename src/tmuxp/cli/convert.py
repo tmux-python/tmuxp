@@ -72,4 +72,4 @@ def command_convert(
         buf = open(newfile, "w")
         buf.write(new_workspace)
         buf.close()
-        print(f"New config saved to <{newfile}>.")
+        print(f"New workspace file saved to <{newfile}>.")
