@@ -3,7 +3,8 @@ import time
 
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import config
-from tmuxp.workspace.builder import WorkspaceBuilder, freeze
+from tmuxp.workspace.builder import WorkspaceBuilder
+from tmuxp.workspace.freezer import freeze
 
 from ..fixtures import utils as test_utils
 

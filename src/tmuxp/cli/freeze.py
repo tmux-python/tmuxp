@@ -10,7 +10,7 @@ from tmuxp.exc import TmuxpException
 
 from .. import util
 from ..workspace import config
-from ..workspace.builder import freeze
+from ..workspace.freezer import freeze
 from .utils import get_config_dir, prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:

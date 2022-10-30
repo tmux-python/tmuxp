@@ -127,7 +127,7 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## Workspace Freezer
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.builder.freeze
+.. automethod:: tmuxp.workspace.freezer.freeze
 ```
 
 ```{eval-rst}
