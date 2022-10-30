@@ -1,0 +1,12 @@
+session_name: sample workspace
+start_directory: '~'
+windows:
+- window_name: test
+  layout: main-horizontal
+  panes:
+  - shell_command:
+    - cmd: vim
+  - shell_command:
+    - cmd: echo "hey"
+  - shell_command:
+    - cmd: echo "moo"

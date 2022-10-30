@@ -5,9 +5,10 @@ import sys
 import typing as t
 
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace.finders import find_workspace_file
 
-from .. import config
-from .utils import prompt, prompt_choices, prompt_yes_no, scan_config, tmuxp_echo
+from ..workspace import importers
+from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 
 
 def get_tmuxinator_dir() -> str:
@@ -23,7 +24,7 @@ def get_tmuxinator_dir() -> str:
 
     See Also
     --------
-    :meth:`tmuxp.config.import_tmuxinator`
+    :meth:`tmuxp.workspace.importers.tmuxinator.import_tmuxinator`
     """
     if "TMUXINATOR_CONFIG" in os.environ:
         return os.path.expanduser(os.environ["TMUXINATOR_CONFIG"])
@@ -42,20 +43,20 @@ def get_teamocil_dir() -> str:
 
     See Also
     --------
-    :meth:`tmuxp.config.import_teamocil`
+    :meth:`tmuxp.workspace.importers.teamocil.import_teamocil`
     """
     return os.path.expanduser("~/.teamocil/")
 
 
-def _resolve_path_no_overwrite(config: str) -> str:
-    path = pathlib.Path(config).resolve()
+def _resolve_path_no_overwrite(workspace_file: str) -> str:
+    path = pathlib.Path(workspace_file).resolve()
     if path.exists():
         raise ValueError("%s exists. Pick a new filename." % path)
     return str(path)
 
 
 def command_import(
-    config_file: str,
+    workspace_file: str,
     print_list: str,
     parser: argparse.ArgumentParser,
 ):
@@ -74,11 +75,11 @@ def create_import_subparser(
     )
 
     import_teamocilgroup = import_teamocil.add_mutually_exclusive_group(required=True)
-    teamocil_config_file = import_teamocilgroup.add_argument(
-        dest="config_file",
+    teamocil_workspace_file = import_teamocilgroup.add_argument(
+        dest="workspace_file",
         type=str,
         nargs="?",
-        metavar="config-file",
+        metavar="workspace-file",
         help="checks current ~/.teamocil and current directory for yaml files",
     )
     import_teamocil.set_defaults(
@@ -92,11 +93,11 @@ def create_import_subparser(
     import_tmuxinatorgroup = import_tmuxinator.add_mutually_exclusive_group(
         required=True
     )
-    tmuxinator_config_file = import_tmuxinatorgroup.add_argument(
-        dest="config_file",
+    tmuxinator_workspace_file = import_tmuxinatorgroup.add_argument(
+        dest="workspace_file",
         type=str,
         nargs="?",
-        metavar="config-file",
+        metavar="workspace-file",
         help="checks current ~/.tmuxinator and current directory for yaml files",
     )
 
@@ -107,8 +108,8 @@ def create_import_subparser(
     try:
         import shtab
 
-        teamocil_config_file.complete = shtab.FILE  # type: ignore
-        tmuxinator_config_file.complete = shtab.FILE  # type: ignore
+        teamocil_workspace_file.complete = shtab.FILE  # type: ignore
+        tmuxinator_workspace_file.complete = shtab.FILE  # type: ignore
     except ImportError:
         pass
 
@@ -116,20 +117,20 @@ def create_import_subparser(
 
 
 def import_config(
-    config_file: str,
+    workspace_file: str,
     importfunc: t.Callable,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    existing_config = ConfigReader._from_file(pathlib.Path(config_file))
-    cfg_reader = ConfigReader(importfunc(existing_config))
+    existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
+    cfg_reader = ConfigReader(importfunc(existing_workspace_file))
 
-    config_format = prompt_choices(
+    workspace_file_format = prompt_choices(
         "Convert to", choices=["yaml", "json"], default="yaml"
     )
 
-    if config_format == "yaml":
+    if workspace_file_format == "yaml":
         new_config = cfg_reader.dump("yaml", indent=2, default_flow_style=False)
-    elif config_format == "json":
+    elif workspace_file_format == "json":
         new_config = cfg_reader.dump("json", indent=2)
     else:
         sys.exit("Unknown config format.")
@@ -167,21 +168,25 @@ def import_config(
 
 
 def command_import_tmuxinator(
-    config_file: str,
+    workspace_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Convert a tmuxinator config from config_file to tmuxp format and import
+    """Convert a tmuxinator config from workspace_file to tmuxp format and import
     it into tmuxp."""
-    config_file = scan_config(config_file, config_dir=get_tmuxinator_dir())
-    import_config(config_file, config.import_tmuxinator)
+    workspace_file = find_workspace_file(
+        workspace_file, workspace_dir=get_tmuxinator_dir()
+    )
+    import_config(workspace_file, importers.import_tmuxinator)
 
 
 def command_import_teamocil(
-    config_file: str,
+    workspace_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Convert a teamocil config from config_file to tmuxp format and import
+    """Convert a teamocil config from workspace_file to tmuxp format and import
     it into tmuxp."""
-    config_file = scan_config(config_file, config_dir=get_teamocil_dir())
+    workspace_file = find_workspace_file(
+        workspace_file, workspace_dir=get_teamocil_dir()
+    )
 
-    import_config(config_file, config.import_teamocil)
+    import_config(workspace_file, importers.import_teamocil)

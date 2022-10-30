@@ -21,6 +21,34 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Internal refactoring (#840)
+
+#### Rename config to workspace
+
+Reference to "config" are now "workspace"
+
+#### Organize files
+
+- `cli/utils.py` functions moved to `workspace/finders.py`
+- `config.py` split between:
+
+  - `workspace/finders.py`
+  - `workspace/freezer.py`
+  - `workspace/importers.py`
+  - `workspace/validation.py`
+
+- `workspacebuilder.py` split into:
+
+  - `workspace/builder.py`
+  - `workspace/freezer.py`
+
+    `config.inline` moved to freezer
+
+#### Tests
+
+- `tests/fixtures/{workspacebuilder,workspacefreezer}` -> `tests/fixtures/workspace/{builder,freezer}`
+- `tests/test_import_{teamocil,tmuxinator}.py` -> `tests/workspace/test_import_{teamocil,tmuxinator}.py`
+
 ## tmuxp 1.17.3 (2022-10-30)
 
 **Maintenance release, no features or fixes**

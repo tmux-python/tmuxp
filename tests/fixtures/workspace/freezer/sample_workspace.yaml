@@ -1,0 +1,21 @@
+session_name: sample workspace
+start_directory: "~"
+windows:
+- layout: main-vertical
+  panes:
+  - shell_command:
+    - cmd: vim
+    start_directory: "~"
+  - shell_command:
+    - cmd: echo "hey"
+    - cmd: cd ../
+  window_name: editor
+- panes:
+  - shell_command:
+    - cmd: pane
+    start_directory: /usr/bin
+  window_name: logging
+- window_name: test
+  panes:
+  - shell_command:
+    - cmd: top

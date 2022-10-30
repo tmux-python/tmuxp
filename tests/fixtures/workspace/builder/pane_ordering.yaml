@@ -1,0 +1,11 @@
+session_name: sample workspace
+start_directory: {HOME}
+windows:
+- options:
+    automatic-rename: on
+  layout: tiled
+  panes:
+  - cd /usr/bin
+  - cd /usr
+  - cd /etc
+  - cd {HOME}

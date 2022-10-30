@@ -4,7 +4,7 @@
 
 # Configuration
 
-tmuxp loads your terminal workspace into tmux using config files.
+tmuxp loads your terminal workspace into tmux using workspace files.
 
 The configuration file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and wanes.
 
@@ -24,7 +24,7 @@ tmuxp will offers to assist when:
 - _When inside a tmux client_, `tmuxp` will let you create a new session and switch to it, or append the windows to your existing
   session.
 
-## What's in a config file?
+## What's in a workspace file?
 
 1. A session name
 2. A list of _windows_
@@ -98,14 +98,14 @@ Breaking down the basic configuration into sections:
              # command options
    ```
 
-## Where do I store config files?
+## Where do I store workspace files?
 
 ### Direct
 
 You can create a configuration and load it from anywhere in your file system.
 
 ```console
-$ tmuxp load [config_file]
+$ tmuxp load [workspace-file]
 ```
 
 ````{tab} Relative

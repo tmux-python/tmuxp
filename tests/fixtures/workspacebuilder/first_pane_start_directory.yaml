@@ -1,5 +1,0 @@
-session_name: sampleconfig
-windows:
-  - panes:
-    - start_directory: /usr
-    - start_directory: /etc

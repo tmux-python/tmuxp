@@ -46,10 +46,6 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## CLI
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.utils.get_config_dir
-```
-
-```{eval-rst}
 .. automethod:: tmuxp.cli.import_config.get_teamocil_dir
 ```
 
@@ -65,50 +61,54 @@ If you need an internal API stabilized please [file an issue](https://github.com
 .. automethod:: tmuxp.cli.load._reattach
 ```
 
-## Configuration
+## Workspace files
 
 ### Finding
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.is_config_file
+.. automethod:: tmuxp.workspace.finders.is_workspace_file
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.in_dir
+.. automethod:: tmuxp.workspace.finders.in_dir
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.in_cwd
-```
-
-### Import and export
-
-```{eval-rst}
-.. automethod:: tmuxp.config.validate_schema
+.. automethod:: tmuxp.workspace.finders.in_cwd
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.expandshell
+.. automethod:: tmuxp.workspace.finders.get_workspace_dir
+```
+
+### Validation
+
+```{eval-rst}
+.. autofunction:: tmuxp.workspace.validation.validate_schema
+```
+
+### Processing
+
+```{eval-rst}
+.. automethod:: tmuxp.workspace.loader.expandshell
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.expand
+.. automethod:: tmuxp.workspace.loader.expand
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.inline
+.. automethod:: tmuxp.workspace.loader.trickle
+```
+
+## Workspace importers
+
+```{eval-rst}
+.. automethod:: tmuxp.workspace.importers.import_teamocil
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.trickle
-```
-
-```{eval-rst}
-.. automethod:: tmuxp.config.import_teamocil
-```
-
-```{eval-rst}
-.. automethod:: tmuxp.config.import_tmuxinator
+.. automethod:: tmuxp.workspace.importers.import_tmuxinator
 ```
 
 ## Configuration reader
@@ -120,22 +120,28 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## Workspace Builder
 
 ```{eval-rst}
-.. autoclass:: tmuxp.workspacebuilder.WorkspaceBuilder
+.. autoclass:: tmuxp.workspace.builder.WorkspaceBuilder
    :members:
 ```
 
+## Workspace Freezer
+
 ```{eval-rst}
-.. automethod:: tmuxp.workspacebuilder.freeze
+.. automethod:: tmuxp.workspace.freezer.freeze
+```
+
+```{eval-rst}
+.. automethod:: tmuxp.workspace.freezer.inline
 ```
 
 ## Exceptions
 
 ```{eval-rst}
-.. autoexception:: tmuxp.exc.EmptyConfigException
+.. autoexception:: tmuxp.exc.EmptyWorkspaceException
 ```
 
 ```{eval-rst}
-.. autoexception:: tmuxp.exc.ConfigError
+.. autoexception:: tmuxp.exc.WorkspaceError
 ```
 
 ```{eval-rst}

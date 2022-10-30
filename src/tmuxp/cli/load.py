@@ -1,4 +1,4 @@
-"""Command line tool for managing tmux workspaces and tmuxp configurations.
+"""Command line tool for managing tmuxp workspaces.
 
 tmuxp.cli.load
 ~~~~~~~~~~~~~~
@@ -18,16 +18,11 @@ from libtmux.server import Server
 from libtmux.session import Session
 from tmuxp.types import StrPath
 
-from .. import config, config_reader, exc, log, util
-from ..workspacebuilder import WorkspaceBuilder
-from .utils import (
-    get_config_dir,
-    prompt_choices,
-    prompt_yes_no,
-    scan_config,
-    style,
-    tmuxp_echo,
-)
+from .. import config_reader, exc, log, util
+from ..workspace import loader
+from ..workspace.builder import WorkspaceBuilder
+from ..workspace.finders import find_workspace_file, get_workspace_dir, in_dir
+from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
     from typing_extensions import Literal, NotRequired, TypeAlias, TypedDict
@@ -40,7 +35,7 @@ if t.TYPE_CHECKING:
 
 
 class CLILoadNamespace(argparse.Namespace):
-    config_files: t.List[str]
+    workspace_files: t.List[str]
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
     tmux_config_file: t.Optional[str]
@@ -114,7 +109,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
 
 def load_plugins(sconf: t.Any) -> t.List[t.Any]:
     """
-    Load and return plugins in config
+    Load and return plugins in workspace
     """
     plugins = []
     if "plugins" in sconf:
@@ -153,7 +148,7 @@ def _reattach(builder: WorkspaceBuilder):
 
     Parameters
     ----------
-    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    builder: :class:`workspace.builder.WorkspaceBuilder`
 
     Notes
     -----
@@ -178,11 +173,11 @@ def _reattach(builder: WorkspaceBuilder):
 
 def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     """
-    Load config in new session
+    Load workspace in new session
 
     Parameters
     ----------
-    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    builder: :class:`workspace.builder.WorkspaceBuilder`
     detached : bool
     """
     builder.build()
@@ -211,11 +206,11 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
 
 def _load_detached(builder: WorkspaceBuilder) -> None:
     """
-    Load config in new session but don't attach
+    Load workspace in new session but don't attach
 
     Parameters
     ----------
-    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    builder: :class:`workspace.builder.WorkspaceBuilder`
     """
     builder.build()
 
@@ -228,11 +223,11 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     """
-    Load config as new windows in current session
+    Load workspace as new windows in current session
 
     Parameters
     ----------
-    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    builder: :class:`workspace.builder.WorkspaceBuilder`
     """
     current_attached_session = builder.find_current_attached_session()
     builder.build(current_attached_session, append=True)
@@ -247,7 +242,7 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 
     Parameters
     ----------
-    builder: :class:`workspacebuilder.WorkspaceBuilder`
+    builder: :class:`workspace.builder.WorkspaceBuilder`
     """
     for plugin in builder.plugins:
         plugin.before_script(builder.session)
@@ -256,7 +251,7 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 
 
 def load_workspace(
-    config_file: StrPath,
+    workspace_file: StrPath,
     socket_name: t.Optional[str] = None,
     socket_path: None = None,
     tmux_config_file: None = None,
@@ -271,7 +266,7 @@ def load_workspace(
 
     Parameters
     ----------
-    config_file : list of str
+    workspace_file : list of str
         paths or session names to workspace files
     socket_name : str, optional
         ``tmux -L <socket-name>``
@@ -294,33 +289,33 @@ def load_workspace(
     Notes
     -----
 
-    tmuxp will check and load a configuration file. The file will use ConfigReader
-    to load a JSON/YAML into a :py:obj:`dict`. Then :func:`config.expand` and
-    :func:`config.trickle` will be used to expand any shorthands, template
+    tmuxp will check and load a workspace file. The file will use ConfigReader
+    to load a JSON/YAML into a :py:obj:`dict`. Then :func:`loader.expand` and
+    :func:`loader.trickle` will be used to expand any shorthands, template
     variables, or file paths relative to where the config/script is executed
     from.
 
-    :func:`config.expand` accepts the directory of the config file, so the
-    user's configuration can resolve absolute paths relative to where the
-    config file is. In otherwords, if a config file at */var/moo/hi.yaml*
-    has *./* in its configs, we want to be sure any file path with *./* is
+    :func:`loader.expand` accepts the directory of the config file, so the
+    user's workspace can resolve absolute paths relative to where the
+    workspace file is. In otherwords, if a workspace file at */var/moo/hi.yaml*
+    has *./* in its workspaces, we want to be sure any file path with *./* is
     relative to */var/moo*, not the user's PWD.
 
     A :class:`libtmux.Server` object is created. No tmux server is started yet,
     just the object.
 
-    The prepared configuration and the server object is passed into an instance
-    of :class:`~tmuxp.workspacebuilder.WorkspaceBuilder`.
+    The prepared workspace and its server object is passed into an instance
+    of :class:`~tmuxp.workspace.builder.WorkspaceBuilder`.
 
     A sanity check against :meth:`libtmux.common.which` is ran. It will raise
     an exception if tmux isn't found.
 
     If a tmux session under the same name as ``session_name`` in the tmuxp
-    configuration exists, tmuxp offers to attach the session. Currently, tmuxp
+    workspace exists, tmuxp offers to attach the session. Currently, tmuxp
     does not allow appending a workspace / incremental building on top of a
     current session (pull requests are welcome!).
 
-    :meth:`~tmuxp.workspacebuilder.WorkspaceBuilder.build` will build the session in
+    :meth:`~tmuxp.workspace.builder.build` will build the session in
     the background via using tmux's detached state (``-d``).
 
     After the session (workspace) is built, unless the user decided to load
@@ -361,42 +356,47 @@ def load_workspace(
        Accessed April 8th, 2018.
     """
     # get the canonical path, eliminating any symlinks
-    if isinstance(config_file, (str, os.PathLike)):
-        config_file = pathlib.Path(config_file)
+    if isinstance(workspace_file, (str, os.PathLike)):
+        workspace_file = pathlib.Path(workspace_file)
 
     tmuxp_echo(
-        style("[Loading] ", fg="green") + style(str(config_file), fg="blue", bold=True)
+        style("[Loading] ", fg="green")
+        + style(str(workspace_file), fg="blue", bold=True)
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    raw_config = config_reader.ConfigReader._from_file(config_file) or {}
+    raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
-    # shapes configurations relative to config / profile file location
-    sconfig = config.expand(raw_config, cwd=os.path.dirname(config_file))
-    # Overwrite session name
+    # shapes workspaces relative to config / profile file location
+    expanded_workspace = loader.expand(
+        raw_workspace, cwd=os.path.dirname(workspace_file)
+    )
+
+    # Overridden session name
     if new_session_name:
-        sconfig["session_name"] = new_session_name
-    # propagate config inheritance (e.g. session -> window, window -> pane)
-    sconfig = config.trickle(sconfig)
+        expanded_workspace["session_name"] = new_session_name
+
+    # propagate workspace inheritance (e.g. session -> window, window -> pane)
+    expanded_workspace = loader.trickle(expanded_workspace)
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
-        config_file=tmux_config_file,
+        workspace_file=tmux_config_file,
         colors=colors,
     )
 
     shutil.which("tmux")  # raise exception if tmux not found
 
-    try:  # load WorkspaceBuilder object for tmuxp config / tmux server
+    try:  # load WorkspaceBuilder object for tmuxp workspace / tmux server
         builder = WorkspaceBuilder(
-            sconf=sconfig, plugins=load_plugins(sconfig), server=t
+            sconf=expanded_workspace, plugins=load_plugins(expanded_workspace), server=t
         )
-    except exc.EmptyConfigException:
-        tmuxp_echo("%s is empty or parsed no config data" % config_file)
+    except exc.EmptyWorkspaceException:
+        tmuxp_echo("%s is empty or parsed no workspace data" % workspace_file)
         return None
 
-    session_name = sconfig["session_name"]
+    session_name = expanded_workspace["session_name"]
 
     # if the session already exists, prompt the user to attach
     if builder.session_exists(session_name) and not append:
@@ -468,15 +468,15 @@ def load_workspace(
     return _setup_plugins(builder)
 
 
-def config_file_completion(ctx, params, incomplete):
-    config_dir = pathlib.Path(get_config_dir())
+def workspace_file_completion(ctx, params, incomplete):
+    workspace_dir = pathlib.Path(get_workspace_dir())
     choices: t.List[pathlib.Path] = []
 
     # CWD Paths
     choices += sorted(
         pathlib.Path(os.path.relpath(p, pathlib.Path.cwd()))
         for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
-        if config.in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
+        if in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
     )
     # CWD look one directory up
     choices += [
@@ -484,18 +484,18 @@ def config_file_completion(ctx, params, incomplete):
         for p in pathlib.Path.cwd().glob("*/.tmuxp.*")
     ]
 
-    # Project configs
-    choices += sorted((config_dir / c).stem for c in config.in_dir(str(config_dir)))
+    # Project workspace
+    choices += sorted((workspace_dir / c).stem for c in in_dir(str(workspace_dir)))
 
     return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    config_files = parser.add_argument(
-        "config_files",
+    workspace_files = parser.add_argument(
+        "workspace_files",
         nargs="+",
-        metavar="config-file",
-        help="filepath to session or filename of session if in tmuxp config directory",
+        metavar="workspace-file",
+        help="filepath to session or filename of session in tmuxp workspace directory",
     )
     parser.add_argument(
         "-L",
@@ -543,7 +543,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         "--append",
         dest="append",
         action="store_true",
-        help="load configuration, appending windows to the current session",
+        help="load workspace, appending windows to the current session",
     )
     colorsgroup = parser.add_mutually_exclusive_group()
 
@@ -574,7 +574,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
     try:
         import shtab
 
-        config_files.complete = shtab.FILE  # type: ignore
+        workspace_files.complete = shtab.FILE  # type: ignore
         tmux_config_file.complete = shtab.FILE  # type: ignore
         log_file.complete = shtab.FILE  # type: ignore
     except ImportError:
@@ -587,25 +587,25 @@ def command_load(
     args: CLILoadNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Load a tmux workspace from each CONFIG.
+    """Load a tmux workspace from each WORKSPACE_FILE.
 
-    CONFIG is a specifier for a configuration file.
+    WORKSPACE_FILE is a specifier for a workspace file.
 
-    If CONFIG is a path to a directory, tmuxp will search it for
+    If WORKSPACE_FILE is a path to a directory, tmuxp will search it for
     ".tmuxp.{yaml,yml,json}".
 
-    If CONFIG is has no directory component and only a filename, e.g.
-    "myconfig.yaml", tmuxp will search the users's config directory for that
+    If WORKSPACE_FILE is has no directory component and only a filename, e.g.
+    "myworkspace.yaml", tmuxp will search the users's workspace directory for that
     file.
 
-    If CONFIG has no directory component, and only a name with no extension,
-    e.g. "myconfig", tmuxp will search the users's config directory for any
+    If WORKSPACE_FILE has no directory component, and only a name with no extension,
+    e.g. "myworkspace", tmuxp will search the users's workspace directory for any
     file with the extension ".yaml", ".yml", or ".json" that matches that name.
 
-    If multiple configuration files that match a given CONFIG are found, tmuxp
+    If multiple workspace files that match a given WORKSPACE_FILE are found, tmuxp
     will warn and pick the first one found.
 
-    If multiple CONFIGs are provided, workspaces will be created for all of
+    If multiple WORKSPACE_FILEs are provided, workspaces will be created for all of
     them. The last one provided will be attached. The others will be created in
     detached mode.
     """
@@ -629,19 +629,21 @@ def command_load(
         "append": args.append,
     }
 
-    if args.config_files is None or len(args.config_files) == 0:
+    if args.workspace_files is None or len(args.workspace_files) == 0:
         tmuxp_echo("Enter at least one config")
         if parser is not None:
             parser.print_help()
         sys.exit()
         return
 
-    last_idx = len(args.config_files) - 1
+    last_idx = len(args.workspace_files) - 1
     original_detached_option = tmux_options.pop("detached")
     original_new_session_name = tmux_options.pop("new_session_name")
 
-    for idx, config_file in enumerate(args.config_files):
-        config_file = scan_config(config_file, config_dir=get_config_dir())
+    for idx, workspace_file in enumerate(args.workspace_files):
+        workspace_file = find_workspace_file(
+            workspace_file, workspace_dir=get_workspace_dir()
+        )
 
         detached = original_detached_option
         new_session_name = original_new_session_name
@@ -651,7 +653,7 @@ def command_load(
             new_session_name = None
 
         load_workspace(
-            config_file,
+            workspace_file,
             detached=detached,
             new_session_name=new_session_name,
             **tmux_options,

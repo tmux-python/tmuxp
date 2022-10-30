@@ -1,0 +1,32 @@
+session_name: sample workspace
+start_directory: {HOME}
+windows:
+- window_name: focused window
+  layout: main-horizontal
+  focus: true
+  panes:
+  - shell_command:
+    - cmd: cd ~
+  - shell_command:
+    - cmd: cd /usr
+    focus: true
+  - shell_command:
+    - cmd: cd ~
+    - cmd: echo "moo"
+    - cmd: top
+- window_name: window 2
+  panes:
+  - shell_command:
+    - cmd: top
+    focus: true
+  - shell_command:
+    - cmd: echo "hey"
+  - shell_command:
+    - cmd: echo "moo"
+- window_name: window 3
+  panes:
+  - shell_command:
+    - cmd: cd /
+    focus: true
+  - shell_command: []
+  - shell_command: []

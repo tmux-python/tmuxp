@@ -7,10 +7,11 @@ import typing as t
 from libtmux.server import Server
 from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
+from tmuxp.workspace.finders import get_workspace_dir
 
-from .. import config, util
-from ..workspacebuilder import freeze
-from .utils import get_config_dir, prompt, prompt_choices, prompt_yes_no
+from .. import util
+from ..workspace import freezer
+from .utils import prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:
     from typing_extensions import Literal, TypeAlias, TypeGuard
@@ -22,7 +23,7 @@ class CLIFreezeNamespace(argparse.Namespace):
     session_name: str
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
-    config_format: t.Optional["CLIOutputFormatLiteral"]
+    workspace_format: t.Optional["CLIOutputFormatLiteral"]
     save_to: t.Optional[str]
     answer_yes: t.Optional[bool]
     quiet: t.Optional[bool]
@@ -52,7 +53,7 @@ def create_freeze_subparser(
     )
     parser.add_argument(
         "-f",
-        "--config-format",
+        "--workspace-format",
         choices=["yaml", "json"],
         help="format to save in",
     )
@@ -78,7 +79,10 @@ def create_freeze_subparser(
         help="don't prompt for confirmation",
     )
     parser.add_argument(
-        "--force", dest="force", action="store_true", help="overwrite the config file"
+        "--force",
+        dest="force",
+        action="store_true",
+        help="overwrite the workspace file",
     )
 
     return parser
@@ -88,7 +92,7 @@ def command_freeze(
     args: CLIFreezeNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Snapshot a session into a config.
+    """Snapshot a tmux session into a tmuxp workspace.
 
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the
     current session."""
@@ -106,9 +110,9 @@ def command_freeze(
         print(e)
         return
 
-    sconf = freeze(session)
-    newconfig = config.inline(sconf)
-    configparser = ConfigReader(newconfig)
+    frozen_workspace = freezer.freeze(session)
+    workspace = freezer.inline(frozen_workspace)
+    configparser = ConfigReader(workspace)
 
     if not args.quiet:
         print(
@@ -119,7 +123,7 @@ def command_freeze(
     if not (
         args.answer_yes
         or prompt_yes_no(
-            "The new config *WILL* require adjusting afterwards. Save config?"
+            "The new workspace will require adjusting afterwards. Save workspace file?"
         )
     ):
         if not args.quiet:
@@ -134,8 +138,11 @@ def command_freeze(
     while not dest:
         save_to = os.path.abspath(
             os.path.join(
-                get_config_dir(),
-                "{}.{}".format(sconf.get("session_name"), args.config_format or "yaml"),
+                get_workspace_dir(),
+                "{}.{}".format(
+                    frozen_workspace.get("session_name"),
+                    args.workspace_format or "yaml",
+                ),
             )
         )
         dest_prompt = prompt(
@@ -148,16 +155,18 @@ def command_freeze(
 
         dest = dest_prompt
     dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
-    config_format = args.config_format
+    workspace_format = args.workspace_format
 
-    valid_config_formats: t.List["CLIOutputFormatLiteral"] = ["json", "yaml"]
+    valid_workspace_formats: t.List["CLIOutputFormatLiteral"] = ["json", "yaml"]
 
     def is_valid_ext(stem: t.Optional[str]) -> "TypeGuard[CLIOutputFormatLiteral]":
-        return stem in valid_config_formats
+        return stem in valid_workspace_formats
 
-    if not is_valid_ext(config_format):
+    if not is_valid_ext(workspace_format):
 
-        def extract_config_format(val: str) -> t.Optional["CLIOutputFormatLiteral"]:
+        def extract_workspace_format(
+            val: str,
+        ) -> t.Optional["CLIOutputFormatLiteral"]:
             suffix = pathlib.Path(val).suffix
             if isinstance(suffix, str):
                 suffix = suffix.lower().lstrip(".")
@@ -165,28 +174,28 @@ def command_freeze(
                     return suffix
             return None
 
-        config_format = extract_config_format(dest)
-        if not is_valid_ext(config_format):
-            config_format = prompt_choices(
+        workspace_format = extract_workspace_format(dest)
+        if not is_valid_ext(workspace_format):
+            workspace_format = prompt_choices(
                 "Couldn't ascertain one of [%s] from file name. Convert to"
-                % ", ".join(valid_config_formats),
-                choices=valid_config_formats,
+                % ", ".join(valid_workspace_formats),
+                choices=valid_workspace_formats,
                 default="yaml",
             )
 
-    if config_format == "yaml":
-        newconfig = configparser.dump(
+    if workspace_format == "yaml":
+        workspace = configparser.dump(
             format="yaml", indent=2, default_flow_style=False, safe=True
         )
-    elif config_format == "json":
-        newconfig = configparser.dump(format="json", indent=2)
+    elif workspace_format == "json":
+        workspace = configparser.dump(format="json", indent=2)
 
     if args.answer_yes or prompt_yes_no("Save to %s?" % dest):
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
         buf = open(dest, "w")
-        buf.write(newconfig)
+        buf.write(workspace)
         buf.close()
 
         if not args.quiet:

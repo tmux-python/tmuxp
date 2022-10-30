@@ -159,19 +159,19 @@ $ env PYTEST_ADDOPTS="-verbose" make start
 Pick a file:
 
 ```console
-$ env PYTEST_ADDOPTS="tests/test_workspacebuilder.py" poetry run make start
+$ env PYTEST_ADDOPTS="tests/workspace/test_builder.py" poetry run make start
 ```
 
-Drop into `test_automatic_rename_option()` in `tests/test_workspacebuilder.py`:
+Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py`:
 
 ```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/test_workspacebuilder.py" poetry run make start
+$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py" poetry run make start
 ```
 
-Drop into `test_automatic_rename_option()` in `tests/test_workspacebuilder.py` and stop on first error:
+Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py` and stop on first error:
 
 ```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/test_workspacebuilder.py::test_automatic_rename_option" poetry run make start
+$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py::test_automatic_rename_option" poetry run make start
 ```
 
 Drop into `pdb` on first error:
@@ -237,7 +237,7 @@ Create two terminals:
   version of tmuxp above. Then:
 
   ```console
-  $ py.test tests/test_workspacebuilder.py
+  $ py.test tests/workspace/test_builder.py
   ```
 
 Terminal 1 should have flickered and built the session before your eyes.

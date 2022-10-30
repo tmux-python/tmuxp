@@ -15,7 +15,7 @@ from _pytest.doctest import DoctestItem
 
 from libtmux.test import namer
 from tests.fixtures import utils as test_utils
-from tmuxp.cli.utils import get_config_dir
+from tmuxp.workspace.finders import get_workspace_dir
 
 if t.TYPE_CHECKING:
     from libtmux.session import Session
@@ -56,7 +56,7 @@ def tmuxp_configdir_default(
     monkeypatch: pytest.MonkeyPatch, tmuxp_configdir: pathlib.Path
 ) -> None:
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmuxp_configdir))
-    assert get_config_dir() == str(tmuxp_configdir)
+    assert get_workspace_dir() == str(tmuxp_configdir)
 
 
 @pytest.fixture(scope="function")

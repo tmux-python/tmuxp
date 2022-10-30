@@ -84,9 +84,9 @@ $ tmuxp load [filename]
 
 ## Inside sessions
 
-If you try to load a config file from within a tmux session, it will ask you
+If you try to load a workspace file from within a tmux session, it will ask you
 if you want to load and attach to the new session, or just load detached.
-You can also load a config file and append the windows to the current active session.
+You can also load a workspace file and append the windows to the current active session.
 
 ```
 Already inside TMUX, switch to session? yes/no

@@ -68,12 +68,12 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_shell_subparser(shell_parser)
     import_parser = subparsers.add_parser(
-        "import", help="import configurations from teamocil and tmuxinator."
+        "import", help="import workspaces from teamocil and tmuxinator."
     )
     create_import_subparser(import_parser)
 
     convert_parser = subparsers.add_parser(
-        "convert", help="convert configs between yaml and json."
+        "convert", help="convert workspace files between yaml and json."
     )
     create_convert_subparser(convert_parser)
 
@@ -82,14 +82,14 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_debug_info_subparser(debug_info_parser)
 
-    ls_parser = subparsers.add_parser("ls", help="list sessions in config directory")
+    ls_parser = subparsers.add_parser("ls", help="list workspaces in tmuxp directory")
     create_ls_subparser(ls_parser)
 
-    edit_parser = subparsers.add_parser("edit", help="run $EDITOR on config")
+    edit_parser = subparsers.add_parser("edit", help="run $EDITOR on workspace file")
     create_edit_subparser(edit_parser)
 
     freeze_parser = subparsers.add_parser(
-        "freeze", help="freeze a live tmux session to a tmuxp config"
+        "freeze", help="freeze a live tmux session to a tmuxp workspace file"
     )
     create_freeze_subparser(freeze_parser)
 
@@ -147,17 +147,17 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
             return
         elif import_subparser_name == "teamocil":
             command_import_teamocil(
-                config_file=args.config_file,
+                workspace_file=args.workspace_file,
                 parser=parser,
             )
         elif import_subparser_name == "tmuxinator":
             command_import_tmuxinator(
-                config_file=args.config_file,
+                workspace_file=args.workspace_file,
                 parser=parser,
             )
     elif args.subparser_name == "convert":
         command_convert(
-            config_file=args.config_file,
+            workspace_file=args.workspace_file,
             answer_yes=args.answer_yes,
             parser=parser,
         )
@@ -166,7 +166,7 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
 
     elif args.subparser_name == "edit":
         command_edit(
-            config_file=args.config_file,
+            workspace_file=args.workspace_file,
             parser=parser,
         )
     elif args.subparser_name == "freeze":
@@ -184,7 +184,7 @@ def startup(config_dir: pathlib.Path) -> None:
 
     Parameters
     ----------
-    str : get_config_dir(): Config directory to search
+    str : get_workspace_dir(): Config directory to search
     """
 
     if not os.path.exists(config_dir):

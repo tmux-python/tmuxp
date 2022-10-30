@@ -8,7 +8,7 @@ tmuxp
 :license: MIT, see LICENSE for details
 
 """
-from . import cli, config, util
+from . import cli, util
 from .__about__ import (
     __author__,
     __copyright__,

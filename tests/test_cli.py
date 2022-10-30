@@ -14,7 +14,7 @@ import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.session import Session
-from tmuxp import cli, config, exc
+from tmuxp import cli, exc
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
@@ -23,9 +23,11 @@ from tmuxp.cli.load import (
     load_plugins,
     load_workspace,
 )
-from tmuxp.cli.utils import get_config_dir, is_pure_name, scan_config, tmuxp_echo
+from tmuxp.cli.utils import tmuxp_echo
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp.workspace import loader
+from tmuxp.workspace.builder import WorkspaceBuilder
+from tmuxp.workspace.finders import find_workspace_file
 
 from .constants import FIXTURE_PATH
 from .fixtures import utils as test_utils
@@ -41,69 +43,6 @@ def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
 
     cli.startup(tmp_path)
     assert os.path.exists(tmp_path)
-
-
-def test_in_dir_from_config_dir(tmp_path: pathlib.Path) -> None:
-    """config.in_dir() finds configs config dir."""
-
-    cli.startup(tmp_path)
-    yaml_config = tmp_path / "myconfig.yaml"
-    yaml_config.touch()
-    json_config = tmp_path / "myconfig.json"
-    json_config.touch()
-    configs_found = config.in_dir(tmp_path)
-
-    assert len(configs_found) == 2
-
-
-def test_ignore_non_configs_from_current_dir(tmp_path: pathlib.Path) -> None:
-    """cli.in_dir() ignore non-config from config dir."""
-
-    cli.startup(tmp_path)
-
-    junk_config = tmp_path / "myconfig.psd"
-    junk_config.touch()
-    conf = tmp_path / "watmyconfig.json"
-    conf.touch()
-    configs_found = config.in_dir(tmp_path)
-    assert len(configs_found) == 1
-
-
-def test_get_configs_cwd(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """config.in_cwd() find config in shell current working directory."""
-
-    confdir = tmp_path / "tmuxpconf2"
-    confdir.mkdir()
-
-    monkeypatch.chdir(confdir)
-    config1 = open(".tmuxp.json", "w+b")
-    config1.close()
-
-    configs_found = config.in_cwd()
-    assert len(configs_found) == 1
-    assert ".tmuxp.json" in configs_found
-
-
-@pytest.mark.parametrize(
-    "path,expect",
-    [
-        (".", False),
-        ("./", False),
-        ("", False),
-        (".tmuxp.yaml", False),
-        ("../.tmuxp.yaml", False),
-        ("../", False),
-        ("/hello/world", False),
-        ("~/.tmuxp/hey", False),
-        ("~/work/c/tmux/", False),
-        ("~/work/c/tmux/.tmuxp.yaml", False),
-        ("myproject", True),
-    ],
-)
-def test_is_pure_name(path: str, expect: bool) -> None:
-    assert is_pure_name(path) == expect
 
 
 """
@@ -125,207 +64,12 @@ def test_is_pure_name(path: str, expect: bool) -> None:
 """
 
 
-@pytest.fixture
-def homedir(tmp_path: pathlib.Path) -> pathlib.Path:
-    home = tmp_path / "home"
-    home.mkdir()
-    return home
-
-
-@pytest.fixture
-def configdir(homedir: pathlib.Path) -> pathlib.Path:
-    conf = homedir / ".tmuxp"
-    conf.mkdir()
-    return conf
-
-
-@pytest.fixture
-def projectdir(homedir: pathlib.Path) -> pathlib.Path:
-    proj = homedir / "work" / "project"
-    proj.mkdir(parents=True)
-    return proj
-
-
-def test_tmuxp_configdir_env_var(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
-
-    assert get_config_dir() == str(tmp_path)
-
-
-def test_tmuxp_configdir_xdg_config_dir(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
-    tmux_dir = tmp_path / "tmuxp"
-    tmux_dir.mkdir()
-
-    assert get_config_dir() == str(tmux_dir)
-
-
-def test_resolve_dot(
-    tmp_path: pathlib.Path,
-    homedir: pathlib.Path,
-    configdir: pathlib.Path,
-    projectdir: pathlib.Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("HOME", str(homedir))
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir / ".config"))
-
-    tmuxp_conf_path = projectdir / ".tmuxp.yaml"
-    tmuxp_conf_path.touch()
-    user_config_name = "myconfig"
-    user_config = configdir / f"{user_config_name}.yaml"
-    user_config.touch()
-
-    project_config = tmuxp_conf_path
-
-    monkeypatch.chdir(projectdir)
-
-    expect = str(project_config)
-    assert scan_config(".") == expect
-    assert scan_config("./") == expect
-    assert scan_config("") == expect
-    assert scan_config("../project") == expect
-    assert scan_config("../project/") == expect
-    assert scan_config(".tmuxp.yaml") == expect
-    assert scan_config("../../.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
-
-    with pytest.raises(Exception):
-        scan_config(".tmuxp.json")
-    with pytest.raises(Exception):
-        scan_config(".tmuxp.ini")
-    with pytest.raises(Exception):
-        scan_config("../")
-    with pytest.raises(Exception):
-        scan_config("mooooooo")
-
-    monkeypatch.chdir(homedir)
-
-    expect = str(project_config)
-    assert scan_config("work/project") == expect
-    assert scan_config("work/project/") == expect
-    assert scan_config("./work/project") == expect
-    assert scan_config("./work/project/") == expect
-    assert scan_config(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("./.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
-
-    with pytest.raises(Exception):
-        scan_config("")
-    with pytest.raises(Exception):
-        scan_config(".")
-    with pytest.raises(Exception):
-        scan_config(".tmuxp.yaml")
-    with pytest.raises(Exception):
-        scan_config("../")
-    with pytest.raises(Exception):
-        scan_config("mooooooo")
-
-    monkeypatch.chdir(configdir)
-
-    expect = str(project_config)
-    assert scan_config("../work/project") == expect
-    assert scan_config("../../home/work/project") == expect
-    assert scan_config("../work/project/") == expect
-    assert scan_config("%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("./%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
-
-    with pytest.raises(Exception):
-        scan_config("")
-    with pytest.raises(Exception):
-        scan_config(".")
-    with pytest.raises(Exception):
-        scan_config(".tmuxp.yaml")
-    with pytest.raises(Exception):
-        scan_config("../")
-    with pytest.raises(Exception):
-        scan_config("mooooooo")
-
-    monkeypatch.chdir(tmp_path)
-
-    expect = str(project_config)
-    assert scan_config("home/work/project") == expect
-    assert scan_config("./home/work/project/") == expect
-    assert scan_config("home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("./home/.tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert scan_config("myconfig") == str(user_config)
-    assert scan_config("~/.tmuxp/myconfig.yaml") == str(user_config)
-
-    with pytest.raises(Exception):
-        scan_config("")
-    with pytest.raises(Exception):
-        scan_config(".")
-    with pytest.raises(Exception):
-        scan_config(".tmuxp.yaml")
-    with pytest.raises(Exception):
-        scan_config("../")
-    with pytest.raises(Exception):
-        scan_config("mooooooo")
-
-
-def test_scan_config_arg(
-    homedir: pathlib.Path,
-    configdir: pathlib.Path,
-    projectdir: pathlib.Path,
-    monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
-) -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("config_file", type=str)
-
-    def config_cmd(config_file: str) -> None:
-        tmuxp_echo(scan_config(config_file, config_dir=configdir))
-
-    monkeypatch.setenv("HOME", str(homedir))
-    tmuxp_config_path = projectdir / ".tmuxp.yaml"
-    tmuxp_config_path.touch()
-    user_config_name = "myconfig"
-    user_config = configdir / f"{user_config_name}.yaml"
-    user_config.touch()
-
-    project_config = projectdir / ".tmuxp.yaml"
-
-    def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
-        args = parser.parse_args([config_arg])
-        config_cmd(config_file=args.config_file)
-        return capsys.readouterr()
-
-    monkeypatch.chdir(projectdir)
-    expect = str(project_config)
-    assert expect in check_cmd(".").out
-    assert expect in check_cmd("./").out
-    assert expect in check_cmd("").out
-    assert expect in check_cmd("../project").out
-    assert expect in check_cmd("../project/").out
-    assert expect in check_cmd(".tmuxp.yaml").out
-    assert str(user_config) in check_cmd("../../.tmuxp/%s.yaml" % user_config_name).out
-    assert user_config.stem in check_cmd("myconfig").out
-    assert str(user_config) in check_cmd("~/.tmuxp/myconfig.yaml").out
-
-    with pytest.raises(FileNotFoundError, match="file not found"):
-        assert "file not found" in check_cmd(".tmuxp.json").err
-    with pytest.raises(FileNotFoundError, match="file not found"):
-        assert "file not found" in check_cmd(".tmuxp.ini").err
-    with pytest.raises(FileNotFoundError, match="No tmuxp files found"):
-        assert "No tmuxp files found" in check_cmd("../").err
-    with pytest.raises(FileNotFoundError, match="config not found in config dir"):
-        assert "config not found in config dir" in check_cmd("moo").err
-
-
 def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> None:
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -333,7 +77,7 @@ def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> No
     )
 
     assert isinstance(session, Session)
-    assert session.name == "sampleconfig"
+    assert session.name == "sample workspace"
 
 
 def test_load_workspace_named_session(
@@ -343,7 +87,7 @@ def test_load_workspace_named_session(
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -364,7 +108,7 @@ def test_load_workspace_name_match_regression_252(
     tmp_path: pathlib.Path, server: "Server", monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "two_pane.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
     # open it detached
     session = load_workspace(
@@ -372,7 +116,7 @@ def test_load_workspace_name_match_regression_252(
     )
 
     assert isinstance(session, Session)
-    assert session.name == "sampleconfig"
+    assert session.name == "sample workspace"
 
     projfile = tmp_path / "simple.yaml"
 
@@ -597,7 +341,7 @@ def test_regression_00132_session_name_with_dots(
     session: Session,
     capsys: pytest.CaptureFixture,
 ) -> None:
-    yaml_config = FIXTURE_PATH / "workspacebuilder" / "regression_00132_dots.yaml"
+    yaml_config = FIXTURE_PATH / "workspace/builder" / "regression_00132_dots.yaml"
     cli_args = [str(yaml_config)]
     with pytest.raises(libtmux.exc.BadSessionName):
         cli.cli(["load", *cli_args])
@@ -993,8 +737,8 @@ def test_convert(
         filename = ".tmuxp.yaml"
     file_ext = filename.rsplit(".", 1)[-1]
     assert file_ext in ["yaml", "yml"], file_ext
-    config_file_path = tmp_path / filename
-    config_file_path.write_text("\nsession_name: hello\n", encoding="utf-8")
+    workspace_file_path = tmp_path / filename
+    workspace_file_path.write_text("\nsession_name: hello\n", encoding="utf-8")
     oh_my_zsh_path = tmp_path / ".oh-my-zsh"
     oh_my_zsh_path.mkdir()
     monkeypatch.setenv("HOME", str(tmp_path))
@@ -1108,7 +852,7 @@ def test_import_teamocil(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    teamocil_config = test_utils.read_config_file("config_teamocil/test4.yaml")
+    teamocil_config = test_utils.read_workspace_file("import_teamocil/test4.yaml")
 
     teamocil_path = tmp_path / ".teamocil"
     teamocil_path.mkdir()
@@ -1156,7 +900,7 @@ def test_import_tmuxinator(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    tmuxinator_config = test_utils.read_config_file("config_tmuxinator/test3.yaml")
+    tmuxinator_config = test_utils.read_workspace_file("import_tmuxinator/test3.yaml")
 
     tmuxinator_path = tmp_path / ".tmuxinator"
     tmuxinator_path.mkdir()
@@ -1320,14 +1064,14 @@ def test_pass_config_dir_ClickPath(
     expect = str(user_config)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("config_file", type=str)
+    parser.add_argument("workspace_file", type=str)
 
-    def config_cmd(config_file: str) -> None:
-        tmuxp_echo(scan_config(config_file, config_dir=configdir))
+    def config_cmd(workspace_file: str) -> None:
+        tmuxp_echo(find_workspace_file(workspace_file, workspace_dir=configdir))
 
     def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
         args = parser.parse_args([config_arg])
-        config_cmd(config_file=args.config_file)
+        config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()
 
     monkeypatch.chdir(configdir)
@@ -1360,7 +1104,7 @@ def test_ls_cli(
 
     # should ignore:
     # - directories should be ignored
-    # - extensions not covered in VALID_CONFIG_DIR_FILE_EXTENSIONS
+    # - extensions not covered in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
     ignored_filenames = [".git/", ".gitignore/", "session_4.txt"]
     stems = [os.path.splitext(f)[0] for f in filenames if f not in ignored_filenames]
 
@@ -1383,10 +1127,10 @@ def test_ls_cli(
 def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
 
-    plugins_config = test_utils.read_config_file("workspacebuilder/plugin_bwb.yaml")
+    plugins_config = test_utils.read_workspace_file("workspace/builder/plugin_bwb.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=plugins_config)
-    sconfig = config.expand(sconfig)
+    sconfig = loader.expand(sconfig)
 
     plugins = load_plugins(sconfig)
 
@@ -1404,7 +1148,7 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     "cli_args,inputs",
     [
         (
-            ["load", "tests/fixtures/workspacebuilder/plugin_versions_fail.yaml"],
+            ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
             ["y\n"],
         )
     ],
@@ -1425,7 +1169,7 @@ def test_load_plugins_version_fail_skip(
     "cli_args,inputs",
     [
         (
-            ["load", "tests/fixtures/workspacebuilder/plugin_versions_fail.yaml"],
+            ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
             ["n\n"],
         )
     ],
@@ -1449,7 +1193,8 @@ def test_load_plugins_version_fail_no_skip(
 
 
 @pytest.mark.parametrize(
-    "cli_args", [(["load", "tests/fixtures/workspacebuilder/plugin_missing_fail.yaml"])]
+    "cli_args",
+    [(["load", "tests/fixtures/workspace/builder/plugin_missing_fail.yaml"])],
 )
 def test_load_plugins_plugin_missing(
     monkeypatch_plugin_test_packages: None,
@@ -1474,7 +1219,7 @@ def test_plugin_system_before_script(
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
     monkeypatch.delenv("TMUX", raising=False)
-    session_file = FIXTURE_PATH / "workspacebuilder" / "plugin_bs.yaml"
+    session_file = FIXTURE_PATH / "workspace/builder" / "plugin_bs.yaml"
 
     # open it detached
     session = load_workspace(
@@ -1488,10 +1233,10 @@ def test_plugin_system_before_script(
 def test_reattach_plugins(
     monkeypatch_plugin_test_packages: None, server: "Server"
 ) -> None:
-    config_plugins = test_utils.read_config_file("workspacebuilder/plugin_r.yaml")
+    config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=config_plugins)
-    sconfig = config.expand(sconfig)
+    sconfig = loader.expand(sconfig)
 
     # open it detached
     builder = WorkspaceBuilder(
@@ -1518,7 +1263,7 @@ def test_load_attached(
     attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1537,7 +1282,7 @@ def test_load_attached_detached(
     attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
     attach_session_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1556,7 +1301,7 @@ def test_load_attached_within_tmux(
     switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1575,7 +1320,7 @@ def test_load_attached_within_tmux_detached(
     switch_client_mock = mocker.patch("libtmux.session.Session.switch_client")
     switch_client_mock.return_value.stderr = None
 
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
@@ -1588,7 +1333,7 @@ def test_load_attached_within_tmux_detached(
 def test_load_append_windows_to_current_session(
     server: "Server", monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    yaml_config = test_utils.read_config_file("workspacebuilder/two_pane.yaml")
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     sconfig = ConfigReader._load(format="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)

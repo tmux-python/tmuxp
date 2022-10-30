@@ -1,0 +1,52 @@
+session_name: sample workspace
+start_directory: '/usr'
+windows:
+- window_name: supposed to be /usr/bin
+  window_index: 1
+  start_directory: /usr/bin
+  options:
+      main-pane-height: 50
+  panes:
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo"
+- window_name: support to be /dev
+  window_index: 2
+  start_directory: /dev
+  panes:
+  - shell_command:
+    - echo hello
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo"
+- window_name: cwd containing a space
+  window_index: 3
+  start_directory: {TEST_DIR}
+  panes:
+  - shell_command:
+    - echo hello
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo"
+- window_name: testsa3
+  window_index: 4
+  panes:
+  - shell_command:
+    - echo hello
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo3"
+- window_name: cwd relative to start_directory since no rel dir entered
+  window_index: 5
+  start_directory: ./
+  panes:
+  - shell_command:
+    - echo hello
+  - shell_command:
+    - echo "hey"
+  - shell_command:
+    - echo "moo3"

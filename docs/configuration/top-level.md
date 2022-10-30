@@ -12,7 +12,7 @@ Used for:
 
 Notes:
 
-- Session names may differ from config filename.
+- Session names may differ from workspace filename.
 
   e.g. _apple.yaml_:
 

@@ -699,7 +699,7 @@ Edit this page.
 - <https://github.com/tony/sphinxcontrib-github/blob/master/.tmuxp.yaml>
 
 You can use `start_directory: ./` to make the directories relative to
-the config file / project root.
+the workspace file / project root.
 
 ## Bonus: pipenv auto-bootstrapping
 
@@ -761,8 +761,8 @@ windows:
 
 tmuxp sessions can be scripted in python. The first way is to use the
 ORM in the {ref}`API`. The second is to pass a {py:obj}`dict` into
-{class}`~tmuxp.workspacebuilder.WorkspaceBuilder` with a correct schema.
-See: {meth}`tmuxp.config.validate_schema`.
+{class}`~tmuxp.workspace.builder.WorkspaceBuilder` with a correct schema.
+See: {meth}`tmuxp.validation.validate_schema`.
 
 :::
 

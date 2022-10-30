@@ -26,14 +26,15 @@ windows:
     panes:
       - echo '\033c absolute paths also have precedence.'
       - echo hello
-  - window_name: should be config's dir
+  - window_name: should be workspace file's dir
+
     start_directory: ./
     panes:
       - shell_command:
           - echo '\033c
-          - ./ is relative to config file location
-          - ../ will be parent of config file
-          - ./test will be \"test\" dir inside dir of config file'
+          - ./ is relative to workspace file location
+          - ../ will be parent of workspace file
+          - ./test will be \"test\" dir inside dir of workspace file'
       - shell_command:
           - echo '\033c
           - This way you can load up workspaces from projects and maintain

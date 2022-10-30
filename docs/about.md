@@ -94,7 +94,7 @@ from JSON and YAML.
 - `$ tmuxp -2`, `$ tmuxp -8` for forcing term colors a la
   {term}`tmux(1)`.
 - `$ tmuxp -L<socket-name>`, `$ tmuxp -S<socket-path>` for sockets and
-  `$ tmuxp -f<config-file>` for config file.
+  `$ tmuxp -f <workspace-file>` for config file.
 
 [attempt at 1.7 test]: https://travis-ci.org/tmux-python/tmuxp/jobs/12348263
 [mit-licensed]: http://opensource.org/licenses/MIT

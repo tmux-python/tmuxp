@@ -4,26 +4,26 @@ import pathlib
 import subprocess
 import typing as t
 
-from .utils import scan_config
+from tmuxp.workspace.finders import find_workspace_file
 
 
 def create_edit_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
     parser.add_argument(
-        dest="config_file",
-        metavar="config-file",
+        dest="workspace_file",
+        metavar="workspace-file",
         type=str,
-        help="checks current tmuxp and current directory for config files.",
+        help="checks current tmuxp and current directory for workspace files.",
     )
     return parser
 
 
 def command_edit(
-    config_file: t.Union[str, pathlib.Path],
+    workspace_file: t.Union[str, pathlib.Path],
     parser: t.Optional[argparse.ArgumentParser] = None,
 ):
-    config_file = scan_config(config_file)
+    workspace_file = find_workspace_file(workspace_file)
 
     sys_editor = os.environ.get("EDITOR", "vim")
-    subprocess.call([sys_editor, config_file])
+    subprocess.call([sys_editor, workspace_file])

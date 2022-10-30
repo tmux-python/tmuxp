@@ -51,9 +51,9 @@
         {
           "shell_command": [
             "echo '\\033c", 
-            "./ is relative to config file location", 
-            "../ will be parent of config file", 
-            "./test will be \\\"test\\\" dir inside dir of config file'"
+            "./ is relative to workspace file location", 
+            "../ will be parent of workspace file", 
+            "./test will be \\\"test\\\" dir inside dir of workspace file'"
           ]
         }, 
         {
