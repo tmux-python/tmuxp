@@ -58,15 +58,15 @@ def command_convert(
     newfile = workspace_file.parent / (str(workspace_file.stem) + f".{to_filetype}")
 
     export_kwargs = {"default_flow_style": False} if to_filetype == "yaml" else {}
-    new_config = configparser.dump(format=to_filetype, indent=2, **export_kwargs)
+    new_workspace = configparser.dump(format=to_filetype, indent=2, **export_kwargs)
 
     if not answer_yes:
         if prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?"):
-            if prompt_yes_no("Save config to %s?" % newfile):
+            if prompt_yes_no("Save workspace to %s?" % newfile):
                 answer_yes = True
 
     if answer_yes:
         buf = open(newfile, "w")
-        buf.write(new_config)
+        buf.write(new_workspace)
         buf.close()
         print(f"New config saved to <{newfile}>.")
