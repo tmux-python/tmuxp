@@ -8,7 +8,7 @@ import logging
 import os
 from typing import Dict
 
-from . import exc
+from .. import exc
 
 logger = logging.getLogger(__name__)
 

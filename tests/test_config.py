@@ -7,8 +7,9 @@ from typing import Union
 
 import pytest
 
-from tmuxp import config, exc
+from tmuxp import exc
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace import config
 
 from .constants import EXAMPLE_PATH
 

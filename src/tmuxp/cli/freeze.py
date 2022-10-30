@@ -8,7 +8,8 @@ from libtmux.server import Server
 from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
 
-from .. import config, util
+from .. import util
+from ..workspace import config
 from ..workspacebuilder import freeze
 from .utils import get_config_dir, prompt, prompt_choices, prompt_yes_no
 

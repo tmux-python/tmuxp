@@ -1,8 +1,8 @@
 """Test for tmuxp tmuxinator configuration."""
 import pytest
 
-from tmuxp import config
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace import config
 
 from .fixtures import import_tmuxinator as fixtures
 

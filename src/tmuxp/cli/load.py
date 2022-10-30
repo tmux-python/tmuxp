@@ -18,7 +18,8 @@ from libtmux.server import Server
 from libtmux.session import Session
 from tmuxp.types import StrPath
 
-from .. import config, config_reader, exc, log, util
+from .. import config_reader, exc, log, util
+from ..workspace import config
 from ..workspacebuilder import WorkspaceBuilder
 from .utils import (
     find_workspace_file,

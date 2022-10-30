@@ -65,50 +65,50 @@ If you need an internal API stabilized please [file an issue](https://github.com
 .. automethod:: tmuxp.cli.load._reattach
 ```
 
-## Configuration
+## Workspace files
 
 ### Finding
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.is_workspace_file
+.. automethod:: tmuxp.workspace.config.is_workspace_file
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.in_dir
+.. automethod:: tmuxp.workspace.config.in_dir
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.in_cwd
+.. automethod:: tmuxp.workspace.config.in_cwd
 ```
 
 ### Import and export
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.validate_schema
+.. automethod:: tmuxp.workspace.config.validate_schema
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.expandshell
+.. automethod:: tmuxp.workspace.config.expandshell
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.expand
+.. automethod:: tmuxp.workspace.config.expand
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.inline
+.. automethod:: tmuxp.workspace.config.inline
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.trickle
+.. automethod:: tmuxp.workspace.config.trickle
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.import_teamocil
+.. automethod:: tmuxp.workspace.config.import_teamocil
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.config.import_tmuxinator
+.. automethod:: tmuxp.workspace.config.import_tmuxinator
 ```
 
 ## Configuration reader

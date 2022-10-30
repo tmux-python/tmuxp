@@ -11,9 +11,10 @@ import libtmux
 from libtmux.common import has_gte_version, has_lt_version
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
-from tmuxp import config, exc
+from tmuxp import exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace import config
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import EXAMPLE_PATH, FIXTURE_PATH

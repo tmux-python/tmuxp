@@ -1,8 +1,8 @@
 """Tests for freezing tmux sessions with tmuxp."""
 import time
 
-from tmuxp import config
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace import config
 from tmuxp.workspacebuilder import WorkspaceBuilder, freeze
 
 from .fixtures import utils as test_utils

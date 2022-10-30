@@ -1,7 +1,8 @@
 """Test for tmuxp teamocil configuration."""
 import pytest
 
-from tmuxp import config, config_reader
+from tmuxp import config_reader
+from tmuxp.workspace import config
 
 from .fixtures import import_teamocil as fixtures
 

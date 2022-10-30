@@ -14,7 +14,7 @@ import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.session import Session
-from tmuxp import cli, config, exc
+from tmuxp import cli, exc
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
@@ -30,6 +30,7 @@ from tmuxp.cli.utils import (
     tmuxp_echo,
 )
 from tmuxp.config_reader import ConfigReader
+from tmuxp.workspace import config
 from tmuxp.workspacebuilder import WorkspaceBuilder
 
 from .constants import FIXTURE_PATH

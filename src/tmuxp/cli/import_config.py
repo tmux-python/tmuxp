@@ -6,7 +6,7 @@ import typing as t
 
 from tmuxp.config_reader import ConfigReader
 
-from .. import config
+from ..workspace import config
 from .utils import (
     find_workspace_file,
     prompt,
