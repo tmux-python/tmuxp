@@ -4,7 +4,7 @@
 
 ## Short hand / inline style
 
-tmuxp has a short-hand syntax to for those who wish to keep their configs
+tmuxp has a short-hand syntax to for those who wish to keep their workspace
 punctual.
 
 ::::{sidebar} short hand
@@ -636,7 +636,7 @@ this example):
 ```yaml
 session_name: my session
 before_script: ./bootstrap.py
-# ... the rest of your config
+# ... the rest of your workspace
 
 ```
 ````
@@ -659,7 +659,7 @@ and panes omitted in this example)
 ```yaml
 session_name: another example
 before_script: /absolute/path/this.sh # abs path to shell script
-# ... the rest of your config
+# ... the rest of your workspace
 
 ```
 ````
@@ -677,13 +677,13 @@ before_script: /absolute/path/this.sh # abs path to shell script
 
 [exit status]: http://tldp.org/LDP/abs/html/exit-status.html
 
-## Per-project tmux config
+## Per-project tmuxp workspaces
 
 You can load your software project in tmux by placing a `.tmuxp.yaml` or
-`.tmuxp.json` in the project's config and loading it.
+`.tmuxp.json` in the project's workspace and loading it.
 
-tmuxp supports loading configs via absolute filename with `tmuxp load`
-and via `$ tmuxp load .` if config is in directory.
+tmuxp supports loading workspace via absolute filename with `tmuxp load`
+and via `$ tmuxp load .` if workspace is in the directory.
 
 ```console
 
@@ -691,7 +691,7 @@ $ tmuxp load ~/workspaces/myproject.yaml
 
 ```
 
-See examples of `tmuxp` in the wild. Have a project config to show off?
+See examples of `tmuxp` in the wild. Have a project workspace to show off?
 Edit this page.
 
 - <https://github.com/tony/dockerfiles/blob/master/.tmuxp.yaml>

@@ -83,7 +83,7 @@ def in_cwd():
 
 def get_workspace_dir() -> str:
     """
-    Return tmuxp configuration directory.
+    Return tmuxp workspace directory.
 
     ``TMUXP_CONFIGDIR`` environmental variable has precedence if set. We also
     evaluate XDG default directory from XDG_CONFIG_HOME environmental variable

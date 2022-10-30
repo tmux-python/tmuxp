@@ -1,4 +1,4 @@
-"""Create a tmux workspace from a workspace configuration :py:obj:`dict`.
+"""Create a tmux workspace from a workspace :py:obj:`dict`.
 
 tmuxp.workspace.builder
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -189,17 +189,17 @@ class TmuxpPlugin:
 
         This runs after the workspace has been loaded with ``tmuxp load``. It
         augments instead of replaces the ``before_script`` section of the
-        configuration.
+        workspace data.
 
         This hook provides access to the LibTmux.session object for any
         behavior that would be used in the ``before_script`` section of the
-        configuration file that needs access directly to the session object.
+        workspace file that needs access directly to the session object.
         This runs after the workspace has been loaded with ``tmuxp load``.
 
         The hook augments, rather than replaces, the ``before_script`` section
-        of the configuration. While it is possible to do all of the
-        ``before_script`` configuration in this function, if a shell script
-        is currently being used for the configuration, it would be cleaner to
+        of the workspace. While it is possible to do all of the
+        ``before_script`` workspace in this function, if a shell script
+        is currently being used for the workspace, it would be cleaner to
         continue using the script in the ``before_section``.
 
         If changes to the session need to be made prior to

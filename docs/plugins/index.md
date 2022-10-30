@@ -8,9 +8,9 @@ tmuxp without the need to change tmuxp itself.
 ## Using a Plugin
 
 To use a plugin, install it in your local python environment and add it to
-your tmuxp configuration file.
+your tmuxp workspace file.
 
-### Example Configurations
+### Example Workspace files
 
 ````{tab} YAML
 

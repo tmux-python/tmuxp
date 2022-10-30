@@ -73,10 +73,10 @@ via trunk (can break easily):
 
 tmuxp launches workspaces / sessions from JSON and YAML files.
 
-Configuration files can be stored in `$HOME/.tmuxp` or in project
+Workspace files can be stored in `$HOME/.tmuxp` or in project
 directories as `.tmuxp.py`, `.tmuxp.json` or `.tmuxp.yaml`.
 
-Every configuration is required to have:
+Every workspace file is required to have:
 
 1. `session_name`
 2. list of `windows`
@@ -106,7 +106,7 @@ $ tmuxp load example.yaml anothersession.yaml
 ```
 
 tmuxp will offer to `switch-client` for you if you're already in a
-session. You can also load a configuration, and append the windows to
+session. You can also load a workspace and append the windows to
 the current active session.
 
 You can also have a custom tmuxp config directory by setting the

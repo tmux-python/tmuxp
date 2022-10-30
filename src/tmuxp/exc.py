@@ -14,12 +14,12 @@ class TmuxpException(Exception):
 
 class WorkspaceError(TmuxpException):
 
-    """Error parsing tmuxp configuration dict."""
+    """Error parsing tmuxp workspace data."""
 
 
 class EmptyWorkspaceException(WorkspaceError):
 
-    """Configuration is empty."""
+    """Workspace file is empty."""
 
 
 class TmuxpPluginException(TmuxpException):

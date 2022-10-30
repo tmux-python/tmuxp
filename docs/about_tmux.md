@@ -456,7 +456,7 @@ Tmux windows can be split into multiple panes.
 
 ## Configuring tmux
 
-Tmux can be configured via a configuration at `~/.tmux.conf`.
+Tmux can be configured via a `tmux(1)` configuration at `~/.tmux.conf`.
 
 Depending on your tmux version, there is different options available.
 

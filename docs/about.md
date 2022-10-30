@@ -9,18 +9,18 @@
 tmuxp helps you manage tmux workspaces.
 
 Built on a object relational mapper for tmux. tmux users can reload common
-workspaces from YAML, JSON and {py:obj}`dict` configurations like
-[tmuxinator][tmuxinator] and [teamocil][teamocil].
+workspaces from YAML, JSON and {py:obj}`dict` workspace files like
+[tmuxinator] and [teamocil].
 
 tmuxp is used by developers for tmux automation at great companies like
-[Bugsnag][bugsnag], [Pragmatic Coders][pragmatic coders] and many others.
+[Bugsnag], [Pragmatic Coders] and many others.
 
 To jump right in, see {ref}`quickstart` and {ref}`examples`.
 
 Interested in some kung-fu or joining the effort? {ref}`api` and
 {ref}`developing`.
 
-[MIT-licensed][mit-licensed]. Code on [github](http://github.com/tmux-python/tmuxp).
+[MIT-licensed]. Code on [github](http://github.com/tmux-python/tmuxp).
 
 [bugsnag]: https://blog.bugsnag.com/benefits-of-using-tmux/
 [pragmatic coders]: http://pragmaticcoders.com/blog/tmuxp-preconfigured-sessions/
@@ -64,7 +64,7 @@ format [^id4]. See {ref}`cli-freeze`.
 
 **JSON config** JSON config support. See {ref}`Examples`.
 
-**ORM-based API** via [libtmux][libtmux] - Utilitizes tmux >= 1.8's unique ID's for
+**ORM-based API** via [libtmux] - Utilitizes tmux >= 1.8's unique ID's for
 panes, windows and sessions to create an object relational view of the tmux
 {class}`~libtmux.Server`, its {class}`~libtmux.Session`,
 {class}`~libtmux.Window`, and {class}`~libtmux.Pane`.

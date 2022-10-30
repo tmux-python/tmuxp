@@ -14,7 +14,9 @@ tmux(1)
     layer on top of tmux.
 
 ConfigReader
-    configuration management class.
+    configuration management class, for parsing YAML / JSON / etc. files
+    to and from python data (dictionaries, in the future, potentially
+    dataclasses)
 
 Server
     Tmux runs in the background of your system as a process.

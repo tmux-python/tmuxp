@@ -2,11 +2,13 @@
 
 (configuration)=
 
-# Configuration
+(workspace)=
+
+# Workspace files
 
 tmuxp loads your terminal workspace into tmux using workspace files.
 
-The configuration file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and wanes.
+The workspace file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and wanes.
 
 ## Launching your session
 
@@ -19,7 +21,7 @@ $ tmuxp load ./path/to/file
 tmuxp will offers to assist when:
 
 - _Session already exists_: tmuxp will prompt you to re-attach. It does this
-  by checking if the configuration's `session_name` matches a session already
+  by checking if the workspace's `session_name` matches a session already
   running on the same server.
 - _When inside a tmux client_, `tmuxp` will let you create a new session and switch to it, or append the windows to your existing
   session.
@@ -57,7 +59,7 @@ As of 1.11.x.
 
 ````
 
-Breaking down the basic configuration into sections:
+Breaking down the basic workspace into sections:
 
 1. A session name
 
@@ -102,7 +104,7 @@ Breaking down the basic configuration into sections:
 
 ### Direct
 
-You can create a configuration and load it from anywhere in your file system.
+You can create a workspace and load it from anywhere in your file system.
 
 ```console
 $ tmuxp load [workspace-file]
@@ -120,7 +122,7 @@ $ tmuxp load /opt/myapp/favorites.yaml
 ```
 ````
 
-### User-based configurations
+### User-based workspaces
 
 tmuxp uses the [XDG Base Directory] specification.
 
@@ -143,12 +145,12 @@ This path can be overridden by {ref}`TMUXP_CONFIGDIR`
 
 ### Project-specific
 
-You can store a configuration in your project's root directory as `.tmuxp.yaml` or `.tmuxp.json`, then:
+You can store a workspace in your project's root directory as `.tmuxp.yaml` or `.tmuxp.json`, then:
 
 Assume `.tmuxp.yaml` inside `/opt/myapp`
 
 ```console
-$ tmuxp load [config_path]
+$ tmuxp load [workspace-file]
 ```
 
 ````{tab} In project root
