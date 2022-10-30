@@ -1,7 +1,7 @@
-"""Workspace parsing for tmuxp.
+"""Workspace hydration and loading for tmuxp.
 
-tmuxp.config
-~~~~~~~~~~~~
+tmuxp.workspace.loader
+~~~~~~~~~~~~~~~~~~~~~~
 
 """
 import logging
