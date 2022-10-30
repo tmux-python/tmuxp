@@ -23,7 +23,7 @@ from ..workspace import config
 from ..workspace.builder import WorkspaceBuilder
 from .utils import (
     find_workspace_file,
-    get_config_dir,
+    get_workspace_dir,
     prompt_choices,
     prompt_yes_no,
     style,
@@ -471,7 +471,7 @@ def load_workspace(
 
 
 def workspace_file_completion(ctx, params, incomplete):
-    config_dir = pathlib.Path(get_config_dir())
+    config_dir = pathlib.Path(get_workspace_dir())
     choices: t.List[pathlib.Path] = []
 
     # CWD Paths
@@ -644,7 +644,7 @@ def command_load(
 
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
-            workspace_file, workspace_dir=get_config_dir()
+            workspace_file, workspace_dir=get_workspace_dir()
         )
 
         detached = original_detached_option

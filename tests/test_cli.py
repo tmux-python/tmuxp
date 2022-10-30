@@ -25,7 +25,7 @@ from tmuxp.cli.load import (
 )
 from tmuxp.cli.utils import (
     find_workspace_file,
-    get_config_dir,
+    get_workspace_dir,
     is_pure_name,
     tmuxp_echo,
 )
@@ -157,7 +157,7 @@ def test_tmuxp_configdir_env_var(
 ) -> None:
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
 
-    assert get_config_dir() == str(tmp_path)
+    assert get_workspace_dir() == str(tmp_path)
 
 
 def test_tmuxp_configdir_xdg_config_dir(
@@ -167,7 +167,7 @@ def test_tmuxp_configdir_xdg_config_dir(
     tmux_dir = tmp_path / "tmuxp"
     tmux_dir.mkdir()
 
-    assert get_config_dir() == str(tmux_dir)
+    assert get_workspace_dir() == str(tmux_dir)
 
 
 def test_resolve_dot(

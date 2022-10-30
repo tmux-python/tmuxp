@@ -46,7 +46,7 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## CLI
 
 ```{eval-rst}
-.. automethod:: tmuxp.cli.utils.get_config_dir
+.. automethod:: tmuxp.cli.utils.get_workspace_dir
 ```
 
 ```{eval-rst}

@@ -184,7 +184,7 @@ def startup(config_dir: pathlib.Path) -> None:
 
     Parameters
     ----------
-    str : get_config_dir(): Config directory to search
+    str : get_workspace_dir(): Config directory to search
     """
 
     if not os.path.exists(config_dir):

@@ -32,7 +32,7 @@ def tmuxp_echo(
     print(message)
 
 
-def get_config_dir() -> str:
+def get_workspace_dir() -> str:
     """
     Return tmuxp configuration directory.
 
@@ -93,7 +93,7 @@ def find_workspace_file(
         - a period, .
     """
     if not workspace_dir:
-        workspace_dir = get_config_dir()
+        workspace_dir = get_workspace_dir()
     path = os.path
     exists, join, isabs = path.exists, path.join, path.isabs
     dirname, normpath, splitext = path.dirname, path.normpath, path.splitext

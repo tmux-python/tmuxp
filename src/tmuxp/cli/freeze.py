@@ -10,7 +10,7 @@ from tmuxp.exc import TmuxpException
 
 from .. import util
 from ..workspace import freezer
-from .utils import get_config_dir, prompt, prompt_choices, prompt_yes_no
+from .utils import get_workspace_dir, prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:
     from typing_extensions import Literal, TypeAlias, TypeGuard
@@ -137,7 +137,7 @@ def command_freeze(
     while not dest:
         save_to = os.path.abspath(
             os.path.join(
-                get_config_dir(),
+                get_workspace_dir(),
                 "{}.{}".format(
                     sconf.get("session_name"), args.workspace_format or "yaml"
                 ),

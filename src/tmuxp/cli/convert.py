@@ -5,7 +5,7 @@ import typing as t
 
 from tmuxp.config_reader import ConfigReader
 
-from .utils import find_workspace_file, get_config_dir, prompt_yes_no
+from .utils import find_workspace_file, get_workspace_dir, prompt_yes_no
 
 
 def create_convert_subparser(
@@ -40,7 +40,9 @@ def command_convert(
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
     """Convert a tmuxp config between JSON and YAML."""
-    workspace_file = find_workspace_file(workspace_file, workspace_dir=get_config_dir())
+    workspace_file = find_workspace_file(
+        workspace_file, workspace_dir=get_workspace_dir()
+    )
 
     if isinstance(workspace_file, str):
         workspace_file = pathlib.Path(workspace_file)

@@ -3,7 +3,7 @@ import os
 import typing as t
 
 from .constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
-from .utils import get_config_dir
+from .utils import get_workspace_dir
 
 
 def create_ls_subparser(
@@ -15,7 +15,7 @@ def create_ls_subparser(
 def command_ls(
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    tmuxp_dir = get_config_dir()
+    tmuxp_dir = get_workspace_dir()
     if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
         for f in sorted(os.listdir(tmuxp_dir)):
             stem, ext = os.path.splitext(f)
