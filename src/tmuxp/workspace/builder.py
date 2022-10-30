@@ -157,7 +157,7 @@ class WorkspaceBuilder:
         if not sconf:
             raise exc.EmptyConfigException("session configuration is empty.")
 
-        # config.validate_schema(sconf)
+        # validation.validate_schema(sconf)
 
         if isinstance(server, Server):
             self.server = server

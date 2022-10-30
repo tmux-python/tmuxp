@@ -2,7 +2,7 @@
 import pytest
 
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspace import config, importers
+from tmuxp.workspace import importers, validation
 
 from ..fixtures import import_tmuxinator as fixtures
 
@@ -33,4 +33,4 @@ def test_config_to_dict(tmuxinator_yaml, tmuxinator_dict, tmuxp_dict):
 
     assert importers.import_tmuxinator(tmuxinator_dict) == tmuxp_dict
 
-    config.validate_schema(importers.import_tmuxinator(tmuxinator_dict))
+    validation.validate_schema(importers.import_tmuxinator(tmuxinator_dict))

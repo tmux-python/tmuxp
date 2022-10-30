@@ -2,7 +2,7 @@
 import pytest
 
 from tmuxp import config_reader
-from tmuxp.workspace import config, importers
+from tmuxp.workspace import importers, validation
 
 from ..fixtures import import_teamocil as fixtures
 
@@ -40,7 +40,7 @@ def test_config_to_dict(teamocil_yaml, teamocil_dict, tmuxp_dict):
 
     assert importers.import_teamocil(teamocil_dict) == tmuxp_dict
 
-    config.validate_schema(importers.import_teamocil(teamocil_dict))
+    validation.validate_schema(importers.import_teamocil(teamocil_dict))
 
 
 @pytest.fixture(scope="module")
@@ -76,4 +76,6 @@ def test_multisession_config(session_name, expected, multisession_config):
     # teamocil can fit multiple sessions in a config
     assert importers.import_teamocil(multisession_config[session_name]) == expected
 
-    config.validate_schema(importers.import_teamocil(multisession_config[session_name]))
+    validation.validate_schema(
+        importers.import_teamocil(multisession_config[session_name])
+    )

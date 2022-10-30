@@ -4,7 +4,7 @@ import time
 import typing
 
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspace import config, freezer
+from tmuxp.workspace import freezer, validation
 from tmuxp.workspace.builder import WorkspaceBuilder
 
 from ..fixtures import utils as test_utils
@@ -27,7 +27,7 @@ def test_freeze_config(session):
     session = session
     new_config = freezer.freeze(session)
 
-    config.validate_schema(new_config)
+    validation.validate_schema(new_config)
 
     # These should dump without an error
     ConfigReader._dump(format="json", content=new_config)

@@ -84,7 +84,7 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ### Validation
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.validate_schema
+.. autofunction:: tmuxp.workspace.validation.validate_schema
 ```
 
 ### Processing

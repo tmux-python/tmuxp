@@ -8,7 +8,7 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspace import config
+from tmuxp.workspace import config, validation
 
 from ..constants import EXAMPLE_PATH
 
@@ -175,7 +175,7 @@ def test_in_session_scope(config_fixture: "WorkspaceTestData"):
         format="yaml", content=config_fixture.shell_command_before_session.before
     )
 
-    config.validate_schema(sconfig)
+    validation.validate_schema(sconfig)
 
     assert config.expand(sconfig) == sconfig
     assert config.expand(config.trickle(sconfig)) == ConfigReader._load(
@@ -199,7 +199,7 @@ def test_trickle_window_with_no_pane_workspace():
     - window_name: test_no_panes
     """
     sconfig = ConfigReader._load(format="yaml", content=test_yaml)
-    config.validate_schema(sconfig)
+    validation.validate_schema(sconfig)
 
     assert config.expand(config.trickle(sconfig))["windows"][1]["panes"][0] == {
         "shell_command": []
@@ -255,7 +255,7 @@ def test_no_session_name():
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
-        config.validate_schema(sconfig)
+        validation.validate_schema(sconfig)
         assert excinfo.matches(r'requires "session_name"')
 
 
@@ -267,7 +267,7 @@ def test_no_windows():
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
-        config.validate_schema(sconfig)
+        validation.validate_schema(sconfig)
         assert excinfo.match(r'list of "windows"')
 
 
@@ -289,7 +289,7 @@ def test_no_window_name():
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
-        config.validate_schema(sconfig)
+        validation.validate_schema(sconfig)
         assert excinfo.matches('missing "window_name"')
 
 
@@ -351,5 +351,5 @@ def test_plugins():
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
-        config.validate_schema(sconfig)
+        validation.validate_schema(sconfig)
         assert excinfo.matches("only supports list type")
