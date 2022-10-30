@@ -329,7 +329,7 @@ def test_no_session_name():
 
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
-    with pytest.raises(exc.ConfigError) as excinfo:
+    with pytest.raises(exc.WorkspaceError) as excinfo:
         config.validate_schema(sconfig)
         assert excinfo.matches(r'requires "session_name"')
 
@@ -341,7 +341,7 @@ def test_no_windows():
 
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
-    with pytest.raises(exc.ConfigError) as excinfo:
+    with pytest.raises(exc.WorkspaceError) as excinfo:
         config.validate_schema(sconfig)
         assert excinfo.match(r'list of "windows"')
 
@@ -363,7 +363,7 @@ def test_no_window_name():
 
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
-    with pytest.raises(exc.ConfigError) as excinfo:
+    with pytest.raises(exc.WorkspaceError) as excinfo:
         config.validate_schema(sconfig)
         assert excinfo.matches('missing "window_name"')
 
@@ -425,6 +425,6 @@ def test_plugins():
 
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
-    with pytest.raises(exc.ConfigError) as excinfo:
+    with pytest.raises(exc.WorkspaceError) as excinfo:
         config.validate_schema(sconfig)
         assert excinfo.matches("only supports list type")

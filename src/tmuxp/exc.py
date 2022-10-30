@@ -12,12 +12,12 @@ class TmuxpException(Exception):
     """Base Exception for Tmuxp Errors."""
 
 
-class ConfigError(TmuxpException):
+class WorkspaceError(TmuxpException):
 
     """Error parsing tmuxp configuration dict."""
 
 
-class EmptyConfigException(ConfigError):
+class EmptyWorkspaceException(WorkspaceError):
 
     """Configuration is empty."""
 

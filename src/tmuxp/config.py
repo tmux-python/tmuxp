@@ -28,18 +28,18 @@ def validate_schema(workspace_dict):
     """
     # verify session_name
     if "session_name" not in workspace_dict:
-        raise exc.ConfigError('config requires "session_name"')
+        raise exc.WorkspaceError('config requires "session_name"')
 
     if "windows" not in workspace_dict:
-        raise exc.ConfigError('config requires list of "windows"')
+        raise exc.WorkspaceError('config requires list of "windows"')
 
     for window in workspace_dict["windows"]:
         if "window_name" not in window:
-            raise exc.ConfigError('config window is missing "window_name"')
+            raise exc.WorkspaceError('config window is missing "window_name"')
 
     if "plugins" in workspace_dict:
         if not isinstance(workspace_dict["plugins"], list):
-            raise exc.ConfigError('"plugins" only supports list type')
+            raise exc.WorkspaceError('"plugins" only supports list type')
 
     return True
 

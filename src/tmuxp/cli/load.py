@@ -393,7 +393,7 @@ def load_workspace(
         builder = WorkspaceBuilder(
             sconf=sconfig, plugins=load_plugins(sconfig), server=t
         )
-    except exc.EmptyConfigException:
+    except exc.EmptyWorkspaceException:
         tmuxp_echo("%s is empty or parsed no config data" % workspace_file)
         return None
 

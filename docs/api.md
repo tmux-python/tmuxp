@@ -131,11 +131,11 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## Exceptions
 
 ```{eval-rst}
-.. autoexception:: tmuxp.exc.EmptyConfigException
+.. autoexception:: tmuxp.exc.EmptyWorkspaceException
 ```
 
 ```{eval-rst}
-.. autoexception:: tmuxp.exc.ConfigError
+.. autoexception:: tmuxp.exc.WorkspaceError
 ```
 
 ```{eval-rst}
