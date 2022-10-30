@@ -41,7 +41,10 @@ def test_export_json(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
-def test_scan_workspace(tmp_path: pathlib.Path):
+#
+# There's no tests for this
+#
+def test_find_workspace_file(tmp_path: pathlib.Path):
     configs = []
 
     garbage_file = tmp_path / "config.psd"
