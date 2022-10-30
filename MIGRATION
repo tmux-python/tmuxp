@@ -25,6 +25,34 @@ _Notes on the upcoming release will be added here_
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.18.0 (2022-10-30)
+
+**Restructuring** (#840)
+
+"Config files" and "configs" are now referred to as workspace files.
+
+Additionally, there's been a major file structure update:
+
+- `cli/utils.py` functions moved to `workspace/finders.py`
+- `config.py` split between:
+
+  - `workspace/finders.py`
+  - `workspace/freezer.py`
+  - `workspace/importers.py`
+  - `workspace/validation.py`
+
+- `workspacebuilder.py` split into:
+
+  - `workspace/builder.py`
+  - `workspace/freezer.py`
+
+    `config.inline` moved to freezer
+
+Tests:
+
+- `tests/fixtures/{workspacebuilder,workspacefreezer}` -> `tests/fixtures/workspace/{builder,freezer}`
+- `tests/test_import_{teamocil,tmuxinator}.py` -> `tests/workspace/test_import_{teamocil,tmuxinator}.py`
+
 ## tmuxp 1.17.0 (2022-10-09)
 
 **Completions have changed** (#830)
