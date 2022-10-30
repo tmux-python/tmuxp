@@ -1,7 +1,6 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
 import os
 import pathlib
-import types
 import typing
 from typing import Union
 
@@ -15,25 +14,6 @@ from ..constants import EXAMPLE_PATH
 
 if typing.TYPE_CHECKING:
     from ..fixtures.structures import WorkspaceTestData
-
-
-@pytest.fixture
-def config_fixture():
-    """Deferred import of tmuxp.tests.fixtures.*
-
-    pytest setup (conftest.py) patches os.environ["HOME"], delay execution of
-    os.path.expanduser until here.
-    """
-    from ..fixtures import workspace as test_workspace_data
-    from ..fixtures.structures import WorkspaceTestData
-
-    return WorkspaceTestData(
-        **{
-            k: v
-            for k, v in test_workspace_data.__dict__.items()
-            if isinstance(v, types.ModuleType)
-        }
-    )
 
 
 def load_yaml(path: Union[str, pathlib.Path]) -> str:
@@ -58,22 +38,6 @@ def test_export_json(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
     json_workspace_file.write_text(json_workspace_data, encoding="utf-8")
 
     new_workspace_data = ConfigReader._from_file(path=json_workspace_file)
-    assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
-
-
-def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"):
-    yaml_workspace_file = tmp_path / "config.yaml"
-
-    sample_workspace = config.inline(
-        config_fixture.sample_workspace.sample_workspace_dict
-    )
-    configparser = ConfigReader(sample_workspace)
-
-    yaml_workspace_data = configparser.dump("yaml", indent=2, default_flow_style=False)
-
-    yaml_workspace_file.write_text(yaml_workspace_data, encoding="utf-8")
-
-    new_workspace_data = load_workspace(str(yaml_workspace_file))
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
@@ -121,49 +85,6 @@ def test_workspace_expand2(config_fixture: "WorkspaceTestData"):
         format="yaml", content=config_fixture.expand2.expanded_yaml()
     )
     assert config.expand(unexpanded_dict) == expanded_dict
-
-
-"""Tests for :meth:`config.inline()`."""
-
-ibefore_workspace = {  # inline config
-    "session_name": "sample workspace",
-    "start_directory": "~",
-    "windows": [
-        {
-            "shell_command": ["top"],
-            "window_name": "editor",
-            "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
-            "layout": "main-verticle",
-        },
-        {
-            "window_name": "logging",
-            "panes": [{"shell_command": ["tail -F /var/log/syslog"]}],
-        },
-        {"options": {"automatic-rename": True}, "panes": [{"shell_command": ["htop"]}]},
-    ],
-}
-
-iafter_workspace = {
-    "session_name": "sample workspace",
-    "start_directory": "~",
-    "windows": [
-        {
-            "shell_command": "top",
-            "window_name": "editor",
-            "panes": ["vim", 'cowsay "hey"'],
-            "layout": "main-verticle",
-        },
-        {"window_name": "logging", "panes": ["tail -F /var/log/syslog"]},
-        {"options": {"automatic-rename": True}, "panes": ["htop"]},
-    ],
-}
-
-
-def test_inline_workspace():
-    """:meth:`config.inline()` shell commands list to string."""
-
-    test_workspace = config.inline(ibefore_workspace)
-    assert test_workspace == iafter_workspace
 
 
 """Test config inheritance for the nested 'start_command'."""

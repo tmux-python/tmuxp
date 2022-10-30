@@ -131,7 +131,7 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.inline
+.. automethod:: tmuxp.workspace.freezer.inline
 ```
 
 ## Exceptions

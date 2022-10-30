@@ -1,3 +1,46 @@
+def inline(workspace_dict):
+    """
+    Return config in inline form, opposite of :meth:`config.expand`.
+
+    Parameters
+    ----------
+    workspace_dict : dict
+
+    Returns
+    -------
+    dict
+        configuration with optional inlined configs.
+    """
+
+    if (
+        "shell_command" in workspace_dict
+        and isinstance(workspace_dict["shell_command"], list)
+        and len(workspace_dict["shell_command"]) == 1
+    ):
+        workspace_dict["shell_command"] = workspace_dict["shell_command"][0]
+
+        if len(workspace_dict.keys()) == int(1):
+            workspace_dict = workspace_dict["shell_command"]
+    if (
+        "shell_command_before" in workspace_dict
+        and isinstance(workspace_dict["shell_command_before"], list)
+        and len(workspace_dict["shell_command_before"]) == 1
+    ):
+        workspace_dict["shell_command_before"] = workspace_dict["shell_command_before"][
+            0
+        ]
+
+    # recurse into window and pane config items
+    if "windows" in workspace_dict:
+        workspace_dict["windows"] = [
+            inline(window) for window in workspace_dict["windows"]
+        ]
+    if "panes" in workspace_dict:
+        workspace_dict["panes"] = [inline(pane) for pane in workspace_dict["panes"]]
+
+    return workspace_dict
+
+
 def freeze(session):
     """
     Freeze live tmux session and Return session config :py:obj:`dict`.

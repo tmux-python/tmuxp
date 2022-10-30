@@ -9,8 +9,7 @@ from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
 
 from .. import util
-from ..workspace import config
-from ..workspace.freezer import freeze
+from ..workspace import freezer
 from .utils import get_config_dir, prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:
@@ -110,8 +109,8 @@ def command_freeze(
         print(e)
         return
 
-    sconf = freeze(session)
-    newconfig = config.inline(sconf)
+    sconf = freezer.freeze(session)
+    newconfig = freezer.inline(sconf)
     configparser = ConfigReader(newconfig)
 
     if not args.quiet:
