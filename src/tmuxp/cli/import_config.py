@@ -6,7 +6,7 @@ import typing as t
 
 from tmuxp.config_reader import ConfigReader
 
-from ..workspace import config
+from ..workspace import importers
 from .utils import (
     find_workspace_file,
     prompt,
@@ -29,7 +29,7 @@ def get_tmuxinator_dir() -> str:
 
     See Also
     --------
-    :meth:`tmuxp.config.import_tmuxinator`
+    :meth:`tmuxp.workspace.importers.tmuxinator.import_tmuxinator`
     """
     if "TMUXINATOR_CONFIG" in os.environ:
         return os.path.expanduser(os.environ["TMUXINATOR_CONFIG"])
@@ -48,7 +48,7 @@ def get_teamocil_dir() -> str:
 
     See Also
     --------
-    :meth:`tmuxp.config.import_teamocil`
+    :meth:`tmuxp.workspace.importers.teamocil.import_teamocil`
     """
     return os.path.expanduser("~/.teamocil/")
 
@@ -181,7 +181,7 @@ def command_import_tmuxinator(
     workspace_file = find_workspace_file(
         workspace_file, workspace_dir=get_tmuxinator_dir()
     )
-    import_config(workspace_file, config.import_tmuxinator)
+    import_config(workspace_file, importers.import_tmuxinator)
 
 
 def command_import_teamocil(
@@ -194,4 +194,4 @@ def command_import_teamocil(
         workspace_file, workspace_dir=get_teamocil_dir()
     )
 
-    import_config(workspace_file, config.import_teamocil)
+    import_config(workspace_file, importers.import_teamocil)

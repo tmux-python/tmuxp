@@ -81,11 +81,13 @@ If you need an internal API stabilized please [file an issue](https://github.com
 .. automethod:: tmuxp.workspace.config.in_cwd
 ```
 
-### Import and export
+### Validation
 
 ```{eval-rst}
 .. automethod:: tmuxp.workspace.config.validate_schema
 ```
+
+### Processing
 
 ```{eval-rst}
 .. automethod:: tmuxp.workspace.config.expandshell
@@ -96,19 +98,17 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.inline
-```
-
-```{eval-rst}
 .. automethod:: tmuxp.workspace.config.trickle
 ```
 
+## Workspace importers
+
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.import_teamocil
+.. automethod:: tmuxp.workspace.importers.import_teamocil
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.import_tmuxinator
+.. automethod:: tmuxp.workspace.importers.import_tmuxinator
 ```
 
 ## Configuration reader
@@ -124,8 +124,14 @@ If you need an internal API stabilized please [file an issue](https://github.com
    :members:
 ```
 
+## Workspace Freezer
+
 ```{eval-rst}
 .. automethod:: tmuxp.workspace.builder.freeze
+```
+
+```{eval-rst}
+.. automethod:: tmuxp.workspace.config.inline
 ```
 
 ## Exceptions

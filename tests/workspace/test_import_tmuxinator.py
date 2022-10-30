@@ -2,7 +2,7 @@
 import pytest
 
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspace import config
+from tmuxp.workspace import config, importers
 
 from ..fixtures import import_tmuxinator as fixtures
 
@@ -31,6 +31,6 @@ def test_config_to_dict(tmuxinator_yaml, tmuxinator_dict, tmuxp_dict):
     yaml_to_dict = ConfigReader._load(format="yaml", content=tmuxinator_yaml)
     assert yaml_to_dict == tmuxinator_dict
 
-    assert config.import_tmuxinator(tmuxinator_dict) == tmuxp_dict
+    assert importers.import_tmuxinator(tmuxinator_dict) == tmuxp_dict
 
-    config.validate_schema(config.import_tmuxinator(tmuxinator_dict))
+    config.validate_schema(importers.import_tmuxinator(tmuxinator_dict))
