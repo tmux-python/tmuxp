@@ -279,10 +279,10 @@ def test_scan_config_arg(
     capsys: pytest.CaptureFixture,
 ) -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("config_file", type=str)
+    parser.add_argument("workspace_file", type=str)
 
-    def config_cmd(config_file: str) -> None:
-        tmuxp_echo(scan_config(config_file, workspace_dir=configdir))
+    def config_cmd(workspace_file: str) -> None:
+        tmuxp_echo(scan_config(workspace_file, workspace_dir=configdir))
 
     monkeypatch.setenv("HOME", str(homedir))
     tmuxp_config_path = projectdir / ".tmuxp.yaml"
@@ -295,7 +295,7 @@ def test_scan_config_arg(
 
     def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
         args = parser.parse_args([config_arg])
-        config_cmd(config_file=args.config_file)
+        config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()
 
     monkeypatch.chdir(projectdir)
@@ -995,8 +995,8 @@ def test_convert(
         filename = ".tmuxp.yaml"
     file_ext = filename.rsplit(".", 1)[-1]
     assert file_ext in ["yaml", "yml"], file_ext
-    config_file_path = tmp_path / filename
-    config_file_path.write_text("\nsession_name: hello\n", encoding="utf-8")
+    workspace_file_path = tmp_path / filename
+    workspace_file_path.write_text("\nsession_name: hello\n", encoding="utf-8")
     oh_my_zsh_path = tmp_path / ".oh-my-zsh"
     oh_my_zsh_path.mkdir()
     monkeypatch.setenv("HOME", str(tmp_path))
@@ -1322,14 +1322,14 @@ def test_pass_config_dir_ClickPath(
     expect = str(user_config)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("config_file", type=str)
+    parser.add_argument("workspace_file", type=str)
 
-    def config_cmd(config_file: str) -> None:
-        tmuxp_echo(scan_config(config_file, workspace_dir=configdir))
+    def config_cmd(workspace_file: str) -> None:
+        tmuxp_echo(scan_config(workspace_file, workspace_dir=configdir))
 
     def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
         args = parser.parse_args([config_arg])
-        config_cmd(config_file=args.config_file)
+        config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()
 
     monkeypatch.chdir(configdir)
