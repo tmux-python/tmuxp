@@ -1,4 +1,4 @@
-"""Command line tool for managing tmux workspaces and tmuxp configurations.
+"""Command line tool for managing tmuxp workspaces.
 
 tmuxp.cli.load
 ~~~~~~~~~~~~~~
@@ -109,7 +109,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
 
 def load_plugins(sconf: t.Any) -> t.List[t.Any]:
     """
-    Load and return plugins in config
+    Load and return plugins in workspace
     """
     plugins = []
     if "plugins" in sconf:
@@ -173,7 +173,7 @@ def _reattach(builder: WorkspaceBuilder):
 
 def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     """
-    Load config in new session
+    Load workspace in new session
 
     Parameters
     ----------
@@ -206,7 +206,7 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
 
 def _load_detached(builder: WorkspaceBuilder) -> None:
     """
-    Load config in new session but don't attach
+    Load workspace in new session but don't attach
 
     Parameters
     ----------
@@ -223,7 +223,7 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     """
-    Load config as new windows in current session
+    Load workspace as new windows in current session
 
     Parameters
     ----------
@@ -289,29 +289,29 @@ def load_workspace(
     Notes
     -----
 
-    tmuxp will check and load a configuration file. The file will use ConfigReader
+    tmuxp will check and load a workspace file. The file will use ConfigReader
     to load a JSON/YAML into a :py:obj:`dict`. Then :func:`config.expand` and
     :func:`config.trickle` will be used to expand any shorthands, template
     variables, or file paths relative to where the config/script is executed
     from.
 
     :func:`config.expand` accepts the directory of the config file, so the
-    user's configuration can resolve absolute paths relative to where the
-    config file is. In otherwords, if a config file at */var/moo/hi.yaml*
-    has *./* in its configs, we want to be sure any file path with *./* is
+    user's workspace can resolve absolute paths relative to where the
+    workspace file is. In otherwords, if a workspace file at */var/moo/hi.yaml*
+    has *./* in its workspaces, we want to be sure any file path with *./* is
     relative to */var/moo*, not the user's PWD.
 
     A :class:`libtmux.Server` object is created. No tmux server is started yet,
     just the object.
 
-    The prepared configuration and the server object is passed into an instance
+    The prepared workspace and its server object is passed into an instance
     of :class:`~tmuxp.workspace.builder.WorkspaceBuilder`.
 
     A sanity check against :meth:`libtmux.common.which` is ran. It will raise
     an exception if tmux isn't found.
 
     If a tmux session under the same name as ``session_name`` in the tmuxp
-    configuration exists, tmuxp offers to attach the session. Currently, tmuxp
+    workspace exists, tmuxp offers to attach the session. Currently, tmuxp
     does not allow appending a workspace / incremental building on top of a
     current session (pull requests are welcome!).
 
@@ -365,15 +365,19 @@ def load_workspace(
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    raw_config = config_reader.ConfigReader._from_file(workspace_file) or {}
+    raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
-    # shapes configurations relative to config / profile file location
-    sconfig = config.expand(raw_config, cwd=os.path.dirname(workspace_file))
-    # Overwrite session name
+    # shapes workspaces relative to config / profile file location
+    expanded_workspace = config.expand(
+        raw_workspace, cwd=os.path.dirname(workspace_file)
+    )
+
+    # Overridden session name
     if new_session_name:
-        sconfig["session_name"] = new_session_name
-    # propagate config inheritance (e.g. session -> window, window -> pane)
-    sconfig = config.trickle(sconfig)
+        expanded_workspace["session_name"] = new_session_name
+
+    # propagate workspace inheritance (e.g. session -> window, window -> pane)
+    expanded_workspace = config.trickle(expanded_workspace)
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
@@ -384,15 +388,15 @@ def load_workspace(
 
     shutil.which("tmux")  # raise exception if tmux not found
 
-    try:  # load WorkspaceBuilder object for tmuxp config / tmux server
+    try:  # load WorkspaceBuilder object for tmuxp workspace / tmux server
         builder = WorkspaceBuilder(
-            sconf=sconfig, plugins=load_plugins(sconfig), server=t
+            sconf=expanded_workspace, plugins=load_plugins(expanded_workspace), server=t
         )
     except exc.EmptyWorkspaceException:
-        tmuxp_echo("%s is empty or parsed no config data" % workspace_file)
+        tmuxp_echo("%s is empty or parsed no workspace data" % workspace_file)
         return None
 
-    session_name = sconfig["session_name"]
+    session_name = expanded_workspace["session_name"]
 
     # if the session already exists, prompt the user to attach
     if builder.session_exists(session_name) and not append:
@@ -465,7 +469,7 @@ def load_workspace(
 
 
 def workspace_file_completion(ctx, params, incomplete):
-    config_dir = pathlib.Path(get_workspace_dir())
+    workspace_dir = pathlib.Path(get_workspace_dir())
     choices: t.List[pathlib.Path] = []
 
     # CWD Paths
@@ -480,8 +484,8 @@ def workspace_file_completion(ctx, params, incomplete):
         for p in pathlib.Path.cwd().glob("*/.tmuxp.*")
     ]
 
-    # Project configs
-    choices += sorted((config_dir / c).stem for c in in_dir(str(config_dir)))
+    # Project workspace
+    choices += sorted((workspace_dir / c).stem for c in in_dir(str(workspace_dir)))
 
     return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
@@ -491,7 +495,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         "workspace_files",
         nargs="+",
         metavar="workspace-file",
-        help="filepath to session or filename of session if in tmuxp config directory",
+        help="filepath to session or filename of session in tmuxp workspace directory",
     )
     parser.add_argument(
         "-L",
@@ -539,7 +543,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         "--append",
         dest="append",
         action="store_true",
-        help="load configuration, appending windows to the current session",
+        help="load workspace, appending windows to the current session",
     )
     colorsgroup = parser.add_mutually_exclusive_group()
 
@@ -583,25 +587,25 @@ def command_load(
     args: CLILoadNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Load a tmux workspace from each CONFIG.
+    """Load a tmux workspace from each WORKSPACE_FILE.
 
-    CONFIG is a specifier for a configuration file.
+    WORKSPACE_FILE is a specifier for a workspace file.
 
-    If CONFIG is a path to a directory, tmuxp will search it for
+    If WORKSPACE_FILE is a path to a directory, tmuxp will search it for
     ".tmuxp.{yaml,yml,json}".
 
-    If CONFIG is has no directory component and only a filename, e.g.
-    "myconfig.yaml", tmuxp will search the users's config directory for that
+    If WORKSPACE_FILE is has no directory component and only a filename, e.g.
+    "myworkspace.yaml", tmuxp will search the users's workspace directory for that
     file.
 
-    If CONFIG has no directory component, and only a name with no extension,
-    e.g. "myconfig", tmuxp will search the users's config directory for any
+    If WORKSPACE_FILE has no directory component, and only a name with no extension,
+    e.g. "myworkspace", tmuxp will search the users's workspace directory for any
     file with the extension ".yaml", ".yml", or ".json" that matches that name.
 
-    If multiple configuration files that match a given CONFIG are found, tmuxp
+    If multiple workspace files that match a given WORKSPACE_FILE are found, tmuxp
     will warn and pick the first one found.
 
-    If multiple CONFIGs are provided, workspaces will be created for all of
+    If multiple WORKSPACE_FILEs are provided, workspaces will be created for all of
     them. The last one provided will be attached. The others will be created in
     detached mode.
     """
