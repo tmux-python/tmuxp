@@ -6,9 +6,9 @@ import typing as t
 from colorama import Fore
 
 from tmuxp.types import StrPath
+from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 from .. import log
-from .constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
 

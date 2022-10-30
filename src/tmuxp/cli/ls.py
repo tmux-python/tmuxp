@@ -2,7 +2,8 @@ import argparse
 import os
 import typing as t
 
-from .constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+
 from .utils import get_workspace_dir
 
 
