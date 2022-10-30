@@ -1,1 +1,1 @@
-VALID_CONFIG_DIR_FILE_EXTENSIONS = [".yaml", ".yml", ".json"]
+VALID_WORKSPACE_DIR_FILE_EXTENSIONS = [".yaml", ".yml", ".json"]

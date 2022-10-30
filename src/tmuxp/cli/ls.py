@@ -2,7 +2,7 @@ import argparse
 import os
 import typing as t
 
-from .constants import VALID_CONFIG_DIR_FILE_EXTENSIONS
+from .constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 from .utils import get_config_dir
 
 
@@ -19,6 +19,6 @@ def command_ls(
     if os.path.exists(tmuxp_dir) and os.path.isdir(tmuxp_dir):
         for f in sorted(os.listdir(tmuxp_dir)):
             stem, ext = os.path.splitext(f)
-            if os.path.isdir(f) or ext not in VALID_CONFIG_DIR_FILE_EXTENSIONS:
+            if os.path.isdir(f) or ext not in VALID_WORKSPACE_DIR_FILE_EXTENSIONS:
                 continue
             print(stem)

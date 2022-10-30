@@ -8,7 +8,7 @@ from colorama import Fore
 from tmuxp.types import StrPath
 
 from .. import log
-from .constants import VALID_CONFIG_DIR_FILE_EXTENSIONS
+from .constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ def scan_config(
                 x
                 for x in [
                     f"{join(workspace_dir, workspace_file)}{ext}"
-                    for ext in VALID_CONFIG_DIR_FILE_EXTENSIONS
+                    for ext in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
                 ]
                 if exists(x)
             ]
