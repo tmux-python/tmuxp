@@ -90,15 +90,15 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ### Processing
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.expandshell
+.. automethod:: tmuxp.workspace.loader.expandshell
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.expand
+.. automethod:: tmuxp.workspace.loader.expand
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.workspace.config.trickle
+.. automethod:: tmuxp.workspace.loader.trickle
 ```
 
 ## Workspace importers

@@ -25,7 +25,7 @@ from tmuxp.cli.load import (
 )
 from tmuxp.cli.utils import tmuxp_echo
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspace import config
+from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file
 
@@ -1130,7 +1130,7 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     plugins_config = test_utils.read_workspace_file("workspace/builder/plugin_bwb.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=plugins_config)
-    sconfig = config.expand(sconfig)
+    sconfig = loader.expand(sconfig)
 
     plugins = load_plugins(sconfig)
 
@@ -1236,7 +1236,7 @@ def test_reattach_plugins(
     config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
     sconfig = ConfigReader._load(format="yaml", content=config_plugins)
-    sconfig = config.expand(sconfig)
+    sconfig = loader.expand(sconfig)
 
     # open it detached
     builder = WorkspaceBuilder(

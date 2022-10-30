@@ -19,7 +19,7 @@ from libtmux.session import Session
 from tmuxp.types import StrPath
 
 from .. import config_reader, exc, log, util
-from ..workspace import config
+from ..workspace import loader
 from ..workspace.builder import WorkspaceBuilder
 from ..workspace.finders import find_workspace_file, get_workspace_dir, in_dir
 from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
@@ -290,12 +290,12 @@ def load_workspace(
     -----
 
     tmuxp will check and load a workspace file. The file will use ConfigReader
-    to load a JSON/YAML into a :py:obj:`dict`. Then :func:`config.expand` and
-    :func:`config.trickle` will be used to expand any shorthands, template
+    to load a JSON/YAML into a :py:obj:`dict`. Then :func:`loader.expand` and
+    :func:`loader.trickle` will be used to expand any shorthands, template
     variables, or file paths relative to where the config/script is executed
     from.
 
-    :func:`config.expand` accepts the directory of the config file, so the
+    :func:`loader.expand` accepts the directory of the config file, so the
     user's workspace can resolve absolute paths relative to where the
     workspace file is. In otherwords, if a workspace file at */var/moo/hi.yaml*
     has *./* in its workspaces, we want to be sure any file path with *./* is
@@ -368,7 +368,7 @@ def load_workspace(
     raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
     # shapes workspaces relative to config / profile file location
-    expanded_workspace = config.expand(
+    expanded_workspace = loader.expand(
         raw_workspace, cwd=os.path.dirname(workspace_file)
     )
 
@@ -377,7 +377,7 @@ def load_workspace(
         expanded_workspace["session_name"] = new_session_name
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
-    expanded_workspace = config.trickle(expanded_workspace)
+    expanded_workspace = loader.trickle(expanded_workspace)
 
     t = Server(  # create tmux server object
         socket_name=socket_name,

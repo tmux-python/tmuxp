@@ -8,7 +8,7 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.config_reader import ConfigReader
-from tmuxp.workspace import config, validation
+from tmuxp.workspace import loader, validation
 
 from ..constants import EXAMPLE_PATH
 
@@ -75,7 +75,7 @@ def test_find_workspace_file(tmp_path: pathlib.Path):
 
 def test_workspace_expand1(config_fixture: "WorkspaceTestData"):
     """Expand shell commands from string to list."""
-    test_workspace = config.expand(config_fixture.expand1.before_workspace)
+    test_workspace = loader.expand(config_fixture.expand1.before_workspace)
     assert test_workspace == config_fixture.expand1.after_workspace()
 
 
@@ -87,7 +87,7 @@ def test_workspace_expand2(config_fixture: "WorkspaceTestData"):
     expanded_dict = ConfigReader._load(
         format="yaml", content=config_fixture.expand2.expanded_yaml()
     )
-    assert config.expand(unexpanded_dict) == expanded_dict
+    assert loader.expand(unexpanded_dict) == expanded_dict
 
 
 """Test config inheritance for the nested 'start_command'."""
@@ -162,11 +162,11 @@ def test_inheritance_workspace():
 def test_shell_command_before(config_fixture: "WorkspaceTestData"):
     """Config inheritance for the nested 'start_command'."""
     test_workspace = config_fixture.shell_command_before.config_unexpanded
-    test_workspace = config.expand(test_workspace)
+    test_workspace = loader.expand(test_workspace)
 
     assert test_workspace == config_fixture.shell_command_before.config_expanded()
 
-    test_workspace = config.trickle(test_workspace)
+    test_workspace = loader.trickle(test_workspace)
     assert test_workspace == config_fixture.shell_command_before.config_after()
 
 
@@ -177,14 +177,14 @@ def test_in_session_scope(config_fixture: "WorkspaceTestData"):
 
     validation.validate_schema(sconfig)
 
-    assert config.expand(sconfig) == sconfig
-    assert config.expand(config.trickle(sconfig)) == ConfigReader._load(
+    assert loader.expand(sconfig) == sconfig
+    assert loader.expand(loader.trickle(sconfig)) == ConfigReader._load(
         format="yaml", content=config_fixture.shell_command_before_session.expected
     )
 
 
 def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData"):
-    test_workspace = config.trickle(config_fixture.trickle.before)
+    test_workspace = loader.trickle(config_fixture.trickle.before)
     assert test_workspace == config_fixture.trickle.expected
 
 
@@ -201,7 +201,7 @@ def test_trickle_window_with_no_pane_workspace():
     sconfig = ConfigReader._load(format="yaml", content=test_yaml)
     validation.validate_schema(sconfig)
 
-    assert config.expand(config.trickle(sconfig))["windows"][1]["panes"][0] == {
+    assert loader.expand(loader.trickle(sconfig))["windows"][1]["panes"][0] == {
         "shell_command": []
     }
 
@@ -235,7 +235,7 @@ def test_expands_blank_panes(config_fixture: "WorkspaceTestData"):
     """
     yaml_workspace_file = EXAMPLE_PATH / "blank-panes.yaml"
     test_workspace = load_workspace(yaml_workspace_file)
-    assert config.expand(test_workspace) == config_fixture.expand_blank.expected
+    assert loader.expand(test_workspace) == config_fixture.expand_blank.expected
 
 
 def test_no_session_name():
@@ -323,7 +323,7 @@ def test_replaces_env_variables(monkeypatch):
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
     monkeypatch.setenv(str(env_key), str(env_val))
-    sconfig = config.expand(sconfig)
+    sconfig = loader.expand(sconfig)
     assert "%s/test" % env_val == sconfig["start_directory"]
     assert (
         "%s/test2" % env_val
