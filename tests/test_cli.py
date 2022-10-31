@@ -92,13 +92,13 @@ def test_load_workspace_passes_tmux_config(
     session = load_workspace(
         session_file,
         socket_name=server.socket_name,
-        tmux_config_file=FIXTURE_PATH / "tmux" / "tmux.conf",
+        tmux_config_file=str(FIXTURE_PATH / "tmux" / "tmux.conf"),
         detached=True,
     )
 
     assert isinstance(session, Session)
     assert isinstance(session.server, Server)
-    assert session.server.config_file == FIXTURE_PATH / "tmux" / "tmux.conf"
+    assert session.server.config_file == str(FIXTURE_PATH / "tmux" / "tmux.conf")
 
 
 def test_load_workspace_named_session(
