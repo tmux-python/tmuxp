@@ -13,6 +13,7 @@ from pytest_mock import MockerFixture
 import libtmux
 from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
+from libtmux.server import Server
 from libtmux.session import Session
 from tmuxp import cli, exc
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
@@ -34,8 +35,6 @@ from .fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
     import _pytest.capture
-
-    from libtmux.server import Server
 
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
@@ -78,6 +77,28 @@ def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> No
 
     assert isinstance(session, Session)
     assert session.name == "sample workspace"
+
+
+def test_load_workspace_passes_tmux_config(
+    server: "Server", monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # this is an implementation test. Since this testsuite may be ran within
+    # a tmux session by the developer himself, delete the TMUX variable
+    # temporarily.
+    monkeypatch.delenv("TMUX", raising=False)
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
+
+    # open it detached
+    session = load_workspace(
+        session_file,
+        socket_name=server.socket_name,
+        tmux_config_file=FIXTURE_PATH / "tmux" / "tmux.conf",
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+    assert isinstance(session.server, Server)
+    assert session.server.config_file == FIXTURE_PATH / "tmux" / "tmux.conf"
 
 
 def test_load_workspace_named_session(

@@ -254,7 +254,7 @@ def load_workspace(
     workspace_file: StrPath,
     socket_name: t.Optional[str] = None,
     socket_path: None = None,
-    tmux_config_file: None = None,
+    tmux_config_file: t.Optional[str] = None,
     new_session_name: t.Optional[str] = None,
     colors: t.Optional[int] = None,
     detached: bool = False,
@@ -382,7 +382,7 @@ def load_workspace(
     t = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
-        workspace_file=tmux_config_file,
+        config_file=tmux_config_file,
         colors=colors,
     )
 
