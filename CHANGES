@@ -21,6 +21,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Bug fix
+
+- cli: `tmuxp load`: Fix pass-through of config files (#843)
+
 ## tmuxp 1.18.0 (2022-10-30)
 
 We now refer to configs as workspaces. Other than just, just maintenance.
