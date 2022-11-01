@@ -7,6 +7,7 @@ tmuxp.workspace.builder
 import logging
 import time
 
+from libtmux.common import has_gte_version
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
@@ -346,12 +347,22 @@ class WorkspaceBuilder:
             except (KeyError, IndexError):
                 pass
 
+            if has_gte_version("3.0"):
+                environment = panes[0].get("environment", wconf.get("environment"))
+            else:
+                logging.warning(
+                    "Cannot set environment for new window. "
+                    "You need tmux 3.0 or newer for this."
+                )
+                environment = {}
+
             w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
                 window_index=wconf.get("window_index", ""),
                 window_shell=ws,
+                environment=environment,
             )
 
             if is_first_window_pass:  # if first window, use window 1
@@ -418,11 +429,21 @@ class WorkspaceBuilder:
                     else:
                         return None
 
+                if has_gte_version("3.0"):
+                    environment = pconf.get("environment", wconf.get("environment"))
+                else:
+                    logging.warning(
+                        "Cannot set environment for new pane. "
+                        "You need tmux 3.0 or newer for this."
+                    )
+                    environment = {}
+
                 p = w.split_window(
                     attach=True,
                     start_directory=get_pane_start_directory(),
                     shell=get_pane_shell(),
                     target=p.id,
+                    environment=environment,
                 )
 
             assert isinstance(p, Pane)
