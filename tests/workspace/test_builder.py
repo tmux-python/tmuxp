@@ -9,6 +9,7 @@ import pytest
 
 import libtmux
 from libtmux.common import has_gte_version, has_lt_version
+from libtmux.session import Session
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
 from tmuxp import exc
@@ -331,6 +332,10 @@ def test_window_shell(session):
         assert w.name != "top"
 
 
+@pytest.mark.skipif(
+    has_lt_version("3.0"),
+    reason="needs -e flag for new-window and split-window introduced in tmux 3.0",
+)
 def test_environment_variables(session):
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/environment_vars.yaml")
@@ -339,9 +344,82 @@ def test_environment_variables(session):
 
     builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session)
+    # Give slow shells some time to settle as otherwise tests might fail.
+    time.sleep(0.3)
 
-    assert session.getenv("FOO") == "BAR"
+    assert session.getenv("FOO") == "SESSION"
     assert session.getenv("PATH") == "/tmp"
+
+    no_overrides_win = session.windows[0]
+    pane = no_overrides_win.panes[0]
+    pane.send_keys("echo $FOO")
+    assert pane.capture_pane()[1] == "SESSION"
+
+    window_overrides_win = session.windows[1]
+    pane = window_overrides_win.panes[0]
+    pane.send_keys("echo $FOO")
+    assert pane.capture_pane()[1] == "WINDOW"
+
+    pane_overrides_win = session.windows[2]
+    pane = pane_overrides_win.panes[0]
+    pane.send_keys("echo $FOO")
+    assert pane.capture_pane()[1] == "PANE"
+
+    both_overrides_win = session.windows[3]
+    pane = both_overrides_win.panes[0]
+    pane.send_keys("echo $FOO")
+    assert pane.capture_pane()[1] == "WINDOW"
+    pane = both_overrides_win.panes[1]
+    pane.send_keys("echo $FOO")
+    assert pane.capture_pane()[1] == "PANE"
+
+
+@pytest.mark.skipif(
+    has_gte_version("3.0"),
+    reason="warnings are not needed for tmux >= 3.0",
+)
+def test_environment_variables_logs(session: Session, caplog: pytest.LogCaptureFixture):
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/environment_vars.yaml")
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(sconf=workspace)
+    builder.build(session)
+
+    # environment on sessions should work as this is done using set-environment
+    # on the session itself
+    assert session.getenv("FOO") == "SESSION"
+    assert session.getenv("PATH") == "/tmp"
+
+    assert (
+        sum(
+            1
+            for record in caplog.records
+            if "Cannot set environment for new windows." in record.msg
+        )
+        # From window_overrides and both_overrides, but not
+        # both_overrides_in_first_pane.
+        == 2
+    ), "Warning on creating windows missing"
+    assert (
+        sum(
+            1
+            for record in caplog.records
+            if "Cannot set environment for new panes." in record.msg
+        )
+        # From pane_overrides and both_overrides, but not both_overrides_in_first_pane.
+        == 2
+    ), "Warning on creating panes missing"
+    assert (
+        sum(
+            1
+            for record in caplog.records
+            if 'Cannot set environment for new panes and windows.' in record.msg
+        )
+        # From both_overrides_in_first_pane.
+        == 1
+    )
 
 
 def test_automatic_rename_option(session):

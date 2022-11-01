@@ -7,6 +7,7 @@ tmuxp.workspace.builder
 import logging
 import time
 
+from libtmux.common import has_lt_version
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
@@ -346,12 +347,31 @@ class WorkspaceBuilder:
             except (KeyError, IndexError):
                 pass
 
+            environment = panes[0].get("environment", wconf.get("environment"))
+            if environment and has_lt_version("3.0"):
+                # Falling back to use the environment of the first pane for the window
+                # creation is nice but yields misleading error messages.
+                pane_env = panes[0].get("environment")
+                win_env = wconf.get("environment")
+                if pane_env and win_env:
+                    target = "panes and windows"
+                elif pane_env:
+                    target = "panes"
+                else:
+                    target = "windows"
+                logging.warning(
+                    f"Cannot set environment for new {target}. "
+                    "You need tmux 3.0 or newer for this."
+                )
+                environment = None
+
             w = session.new_window(
                 window_name=window_name,
                 start_directory=sd,
                 attach=False,  # do not move to the new window
                 window_index=wconf.get("window_index", ""),
                 window_shell=ws,
+                environment=environment,
             )
 
             if is_first_window_pass:  # if first window, use window 1
@@ -418,11 +438,24 @@ class WorkspaceBuilder:
                     else:
                         return None
 
+                environment = pconf.get("environment", wconf.get("environment"))
+                if environment and has_lt_version("3.0"):
+                    # Just issue a warning when the environment comes from the pane
+                    # configuration as a warning for the window was already issued when
+                    # the window was created.
+                    if pconf.get("environment"):
+                        logging.warning(
+                            "Cannot set environment for new panes. "
+                            "You need tmux 3.0 or newer for this."
+                        )
+                    environment = None
+
                 p = w.split_window(
                     attach=True,
                     start_directory=get_pane_start_directory(),
                     shell=get_pane_shell(),
                     target=p.id,
+                    environment=environment,
                 )
 
             assert isinstance(p, Pane)

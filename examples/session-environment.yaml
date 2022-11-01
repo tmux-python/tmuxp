@@ -7,3 +7,13 @@ windows:
   - window_name: Django project
     panes:
       - ./manage.py runserver 0.0.0.0:${SERVER_PORT}
+  - window_name: Another Django project
+    environment:
+      DJANGO_SETTINGS_MODULE: my_app.settings.local
+      SERVER_PORT: "8010"
+    panes:
+      - ./manage.py runserver 0.0.0.0:${SERVER_PORT}
+      - environment:
+          DJANGO_SETTINGS_MODULE: my_app.settings.local-testing
+          SERVER_PORT: "8011"
+        shell_command: ./manage.py runserver 0.0.0.0:${SERVER_PORT}
