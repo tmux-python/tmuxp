@@ -47,7 +47,7 @@ tmuxp = 'tmuxp:cli.cli'
 
 [tool.poetry.dependencies]
 python = "^3.7"
-libtmux = "~0.15.9"
+libtmux = "~0.15.10"
 colorama = ">=0.3.9"
 PyYAML = "^6.0"
 
