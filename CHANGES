@@ -21,6 +21,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.18.2 (2022-11-06)
+
+**Maintenance release, no features or fixes**
+
+### Development
+
+- Bump libtmux from 0.15.9 -> 0.15.10 (only test tweaks)
+- Poetry no longer forces `in-project: true`
+
 ## tmuxp 1.18.1 (2022-10-31)
 
 ### Bug fix
