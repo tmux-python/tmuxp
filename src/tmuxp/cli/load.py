@@ -21,7 +21,7 @@ from tmuxp.types import StrPath
 from .. import config_reader, exc, log, util
 from ..workspace import loader
 from ..workspace.builder import WorkspaceBuilder
-from ..workspace.finders import find_workspace_file, get_workspace_dir, in_dir
+from ..workspace.finders import find_workspace_file, get_workspace_dir
 from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
@@ -466,28 +466,6 @@ def load_workspace(
             sys.exit()
 
     return _setup_plugins(builder)
-
-
-def workspace_file_completion(ctx, params, incomplete):
-    workspace_dir = pathlib.Path(get_workspace_dir())
-    choices: t.List[pathlib.Path] = []
-
-    # CWD Paths
-    choices += sorted(
-        pathlib.Path(os.path.relpath(p, pathlib.Path.cwd()))
-        for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
-        if in_dir(str(p)) or len(list(p.glob(".tmuxp.*")))
-    )
-    # CWD look one directory up
-    choices += [
-        pathlib.Path(f"./{os.path.relpath(p, pathlib.Path.cwd())}")
-        for p in pathlib.Path.cwd().glob("*/.tmuxp.*")
-    ]
-
-    # Project workspace
-    choices += sorted((workspace_dir / c).stem for c in in_dir(str(workspace_dir)))
-
-    return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
