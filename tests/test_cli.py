@@ -1146,7 +1146,9 @@ def test_ls_cli(
 
 
 def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
-    from tmuxp_test_plugin_bwb.plugin import PluginBeforeWorkspaceBuilder
+    from tmuxp_test_plugin_bwb.plugin import (  # type: ignore
+        PluginBeforeWorkspaceBuilder,
+    )
 
     plugins_config = test_utils.read_workspace_file("workspace/builder/plugin_bwb.yaml")
 
