@@ -75,7 +75,7 @@ jobs:
         tmux -V
         poetry run py.test --cov=./ --cov-report=xml
 
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
