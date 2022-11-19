@@ -336,7 +336,7 @@ def test_window_shell(session):
     has_lt_version("3.0"),
     reason="needs -e flag for new-window and split-window introduced in tmux 3.0",
 )
-def test_environment_variables(session):
+def test_environment_variables(session: Session):
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/environment_vars.yaml")
     )
@@ -350,6 +350,7 @@ def test_environment_variables(session):
 
     no_overrides_win = session.windows[0]
     pane = no_overrides_win.panes[0]
+    time.sleep(0.3)  # To let shells with slow startup catch up
     pane.send_keys("echo $FOO")
     assert pane.capture_pane()[1] == "SESSION"
 
