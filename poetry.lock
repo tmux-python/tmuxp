@@ -615,15 +615,16 @@ dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
 name = "pytest-rerunfailures"
-version = "10.2"
+version = "10.3"
 description = "pytest plugin to re-run tests to eliminate flaky failures"
 category = "dev"
 optional = false
-python-versions = ">= 3.6"
+python-versions = ">=3.6"
 
 [package.dependencies]
+importlib-metadata = {version = ">=1", markers = "python_version < \"3.8\""}
+packaging = ">=17.1"
 pytest = ">=5.3"
-setuptools = ">=40.0"
 
 [[package]]
 name = "pytest-watcher"
@@ -669,19 +670,6 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
-
-[[package]]
-name = "setuptools"
-version = "65.6.0"
-description = "Easily download, build, install, upgrade, and uninstall Python packages"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-notfound-page (==0.8.3)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8 (<5)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-timeout", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
-testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "six"
@@ -902,7 +890,7 @@ test = ["pytest"]
 
 [[package]]
 name = "sphinxext-opengraph"
-version = "0.7.2"
+version = "0.7.3"
 description = "Sphinx Extension to enable OGP support"
 category = "dev"
 optional = false
@@ -948,7 +936,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-colorama"
-version = "0.4.15.3"
+version = "0.4.15.4"
 description = "Typing stubs for colorama"
 category = "dev"
 optional = false
@@ -1415,8 +1403,8 @@ pytest-mock = [
     {file = "pytest_mock-3.10.0-py3-none-any.whl", hash = "sha256:f4c973eeae0282963eb293eb173ce91b091a79c1334455acfac9ddee8a1c784b"},
 ]
 pytest-rerunfailures = [
-    {file = "pytest-rerunfailures-10.2.tar.gz", hash = "sha256:9e1e1bad51e07642c5bbab809fc1d4ec8eebcb7de86f90f1a26e6ef9de446697"},
-    {file = "pytest_rerunfailures-10.2-py3-none-any.whl", hash = "sha256:d31d8e828dfd39363ad99cd390187bf506c7a433a89f15c3126c7d16ab723fe2"},
+    {file = "pytest-rerunfailures-10.3.tar.gz", hash = "sha256:d8244d799f89a6edb5e57301ddaeb3b6f10d6691638d51e80b371311592e28c6"},
+    {file = "pytest_rerunfailures-10.3-py3-none-any.whl", hash = "sha256:6be6f96510bf94b54198bf15bc5568fe2cdff88e83875912e22d29810acf65ff"},
 ]
 pytest-watcher = [
     {file = "pytest-watcher-0.2.5.tar.gz", hash = "sha256:0a220d18b778fbae4d876f8d7d2eb86e63d7d8257cd6b05f42c13aa6625c0b6f"},
@@ -1471,10 +1459,6 @@ pyyaml = [
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
-]
-setuptools = [
-    {file = "setuptools-65.6.0-py3-none-any.whl", hash = "sha256:6211d2f5eddad8757bd0484923ca7c0a6302ebc4ab32ea5e94357176e0ca0840"},
-    {file = "setuptools-65.6.0.tar.gz", hash = "sha256:d1eebf881c6114e51df1664bc2c9133d022f78d12d5f4f665b9191f084e2862d"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
@@ -1541,8 +1525,8 @@ sphinxcontrib-serializinghtml = [
     {file = "sphinxcontrib_serializinghtml-1.1.5-py2.py3-none-any.whl", hash = "sha256:352a9a00ae864471d3a7ead8d7d79f5fc0b57e8b3f95e9867eb9eb28999b92fd"},
 ]
 sphinxext-opengraph = [
-    {file = "sphinxext-opengraph-0.7.2.tar.gz", hash = "sha256:85230ee14d50c97d9db457d4dc4c9f9ea08bc78e7dd6850d615e05705e5c2977"},
-    {file = "sphinxext_opengraph-0.7.2-py3-none-any.whl", hash = "sha256:7a33e13a1e1d6afa66744c24d1f5aabdde77ba70018403f9137a2d8dbe958c24"},
+    {file = "sphinxext-opengraph-0.7.3.tar.gz", hash = "sha256:837e5612709b4df7f1715f0832bf7d46cc0a61ebd7bb5aeab28edd6377beaf23"},
+    {file = "sphinxext_opengraph-0.7.3-py3-none-any.whl", hash = "sha256:edbfb21f1d31f572fc87a6ccc347cac502a3b8bb04c312bc2fa4888542f8505d"},
 ]
 sphinxext-rediraffe = [
     {file = "sphinxext-rediraffe-0.2.7.tar.gz", hash = "sha256:651dcbfae5ffda9ffd534dfb8025f36120e5efb6ea1a33f5420023862b9f725d"},
@@ -1592,8 +1576,8 @@ typed-ast = [
     {file = "typed_ast-1.5.4.tar.gz", hash = "sha256:39e21ceb7388e4bb37f4c679d72707ed46c2fbf2a5609b8b8ebc4b067d977df2"},
 ]
 types-colorama = [
-    {file = "types-colorama-0.4.15.3.tar.gz", hash = "sha256:9362f49167505f711bbc9a6352dae6650495b3053383868f7f76bfeb8d923002"},
-    {file = "types_colorama-0.4.15.3-py3-none-any.whl", hash = "sha256:682d22adb0e124873b3c646f0b6aa791085c2db20d294afa6f3ae883ccba803b"},
+    {file = "types-colorama-0.4.15.4.tar.gz", hash = "sha256:60f7d6257913135218564cf1b9d2e9678c0ce72c051d9ffaa1a74c76904e5808"},
+    {file = "types_colorama-0.4.15.4-py3-none-any.whl", hash = "sha256:43e071db963fcd02e552e7513a236b9ef536188552cf6b576511f2474601a253"},
 ]
 types-docutils = [
     {file = "types-docutils-0.19.1.1.tar.gz", hash = "sha256:be0a51ba1c7dd215d9d2df66d6845e63c1009b4bbf4c5beb87a0d9745cdba962"},
