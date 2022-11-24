@@ -626,9 +626,21 @@ def command_load(
         detached = original_detached_option
         new_session_name = original_new_session_name
 
-        if last_idx > 0 and idx < last_idx:
-            detached = True
-            new_session_name = None
+        if last_idx > 0:
+            if idx < last_idx:
+                detached = True
+                new_session_name = None
+            if tmux_options["append"]:
+                original_session_name = None
+                if idx == 0:
+                    original_session_name = (
+                        new_session_name
+                        or config_reader.ConfigReader._from_file(
+                            pathlib.Path(config_file)
+                        )
+                    )
+                elif idx > 0 and original_session_name is not None:
+                    new_session_name = original_session_name
 
         load_workspace(
             workspace_file,
