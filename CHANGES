@@ -19,9 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### What's new
 
-- #845: allow to configure window and pane specific environment variables
+- Environment variables for windows / panes (#845)
+
+  _Requires tmux 3.0_
+
+  Allow to configure window and pane specific environment variables
 
   Having a setup like:
+
   ```yaml
   session_name: env-demo
   environment:
@@ -35,10 +40,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
         - environment:
             DATABASE_URL: "sqlite3:///dev-2.db"
   ```
+
   will result in a window with two panes. In the first pane `$DATABASE_URL` is
   `sqlite3:///dev-1.db`, while in the second pane it is `sqlite3://dev-2.db`.
   Any freshly created window gets `sqlite3:///default.db` as this is what was
   defined for the session.
+
+  Credit: @zappolowski
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
