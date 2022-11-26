@@ -1,9 +1,32 @@
 session_name: test env vars
-start_directory: '~'
+start_directory: "~"
 environment:
-  FOO: BAR
+  FOO: SESSION
   PATH: /tmp
 windows:
-- window_name: editor
+- window_name: no_overrides
   panes:
   - pane
+- window_name: window_overrides
+  environment:
+    FOO: WINDOW
+  panes:
+  - pane
+- window_name: pane_overrides
+  panes:
+  - environment:
+      FOO: PANE
+- window_name: both_overrides
+  environment:
+    FOO: WINDOW
+  panes:
+  - pane
+  - environment:
+      FOO: PANE
+# This test case it just needed for warnings issued in old versions of tmux.
+- window_name: both_overrides_on_first_pane
+  environment:
+    FOO: WINDOW
+  panes:
+  - environment:
+      FOO: PANE

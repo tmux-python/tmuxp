@@ -262,7 +262,9 @@ please make a ticket on the [issue tracker][issue tracker].
 
 ## Environment variables
 
-tmuxp will set session environment variables.
+tmuxp will set session, window and pane environment variables. Note that
+setting environment variables for windows and panes requires tmuxp 1.19 or
+newer.
 
 ````{tab} YAML
 

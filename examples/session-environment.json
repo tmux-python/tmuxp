@@ -2,15 +2,32 @@
   "environment": {
     "EDITOR": "/usr/bin/vim",
     "DJANGO_SETTINGS_MODULE": "my_app.settings.local",
-    "SERVER_PORT": "8009",
-  },  
+    "SERVER_PORT": "8009"
+  },
   "windows": [
     {
       "panes": [
-	"./manage.py runserver 0.0.0.0:${SERVER_PORT}"
-      ], 
+        "./manage.py runserver 0.0.0.0:${SERVER_PORT}"
+      ],
       "window_name": "Django project"
-    }, 
-  ], 
+    },
+    {
+      "environment": {
+        "DJANGO_SETTINGS_MODULE": "my_app.settings.local",
+        "SERVER_PORT": "8010"
+      },
+      "panes": [
+        "./manage.py runserver 0.0.0.0:${SERVER_PORT}",
+        {
+          "environment": {
+            "DJANGO_SETTINGS_MODULE": "my_app.settings.local-testing",
+            "SERVER_PORT": "8011"
+          },
+          "shell_command": "./manage.py runserver 0.0.0.0:${SERVER_PORT}"
+        }
+      ],
+      "window_name": "Another Django project"
+    }
+  ],
   "session_name": "Environment variables test"
 }
