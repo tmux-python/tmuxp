@@ -8,7 +8,7 @@ entr_warn:
 	@echo "     ! File watching functionality non-operational !      "
 	@echo "                                                          "
 	@echo "Install entr(1) to automatically run tasks on file change."
-	@echo "See http://entrproject.org/                               "
+	@echo "See https://eradman.com/entrproject/                      "
 	@echo "----------------------------------------------------------"
 
 isort:
