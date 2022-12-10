@@ -70,6 +70,7 @@ jobs:
     - name: Test with pytest
       continue-on-error: ${{ matrix.tmux-version == 'master' }}
       run: |
+        sudo apt install libevent-2.1-7
         export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
         ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
         tmux -V
