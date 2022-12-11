@@ -1,6 +1,5 @@
-from distutils.version import LooseVersion
-
 import libtmux
+from libtmux._compat import LegacyVersion as Version
 from libtmux.common import get_version
 
 from .__about__ import __version__
@@ -84,7 +83,7 @@ class TmuxpPlugin:
         # Dependency versions
         self.tmux_version = get_version()
         self.libtmux_version = libtmux.__version__
-        self.tmuxp_version = LooseVersion(__version__)
+        self.tmuxp_version = Version(__version__)
 
         self.version_constraints = {
             "tmux": {
@@ -135,9 +134,9 @@ class TmuxpPlugin:
         """
         Provide affirmative if version compatibility is correct.
         """
-        if vmin and version < LooseVersion(vmin):
+        if vmin and version < Version(vmin):
             return False
-        if vmax and version > LooseVersion(vmax):
+        if vmax and version > Version(vmax):
             return False
         if version in incompatible:
             return False

@@ -17,6 +17,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ## tmuxp 1.19.x (unreleased)
 
+<!-- Maintainers, insert changes / features for the next release here -->
+
 ### What's new
 
 - Environment variables for windows / panes (#845)
@@ -48,7 +50,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   Credit: @zappolowski
 
-<!-- Maintainers, insert changes / features for the next release here -->
+### Internal
+
+- Update libtmux 0.15.9 -> 0.16.0
+
+  - Support for environmental variables
+  - Remove reliance on `distutils.version.LooseVersion` for
+    `libtmux._compat.LegacyVersion`
+- Fix distutil warnings by using libtmux 0.16.0's `LegacyVersion` (#727)
 
 ## tmuxp 1.18.2 (2022-11-06)
 
