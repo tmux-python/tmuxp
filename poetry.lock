@@ -614,11 +614,11 @@ pytest = ">=5.3"
 
 [[package]]
 name = "pytest-watcher"
-version = "0.2.5"
+version = "0.2.6"
 description = "Continiously runs pytest on changes in *.py files"
 category = "dev"
 optional = false
-python-versions = ">=3.6.2,<4.0.0"
+python-versions = ">=3.7.0,<4.0.0"
 
 [package.dependencies]
 watchdog = ">=2.0.0"
@@ -1380,8 +1380,8 @@ pytest-rerunfailures = [
     {file = "pytest_rerunfailures-10.3-py3-none-any.whl", hash = "sha256:6be6f96510bf94b54198bf15bc5568fe2cdff88e83875912e22d29810acf65ff"},
 ]
 pytest-watcher = [
-    {file = "pytest-watcher-0.2.5.tar.gz", hash = "sha256:0a220d18b778fbae4d876f8d7d2eb86e63d7d8257cd6b05f42c13aa6625c0b6f"},
-    {file = "pytest_watcher-0.2.5-py3-none-any.whl", hash = "sha256:7a15b3c7c6babefdee51da2d62851f109e2d2d65c64f72da04f97f0a9569ab74"},
+    {file = "pytest-watcher-0.2.6.tar.gz", hash = "sha256:351dfb3477366030ff275bfbfc9f29bee35cd07f16a3355b38bf92766886bae4"},
+    {file = "pytest_watcher-0.2.6-py3-none-any.whl", hash = "sha256:0a507159d051c9461790363e0f9b2827c1d82ad2ae8966319598695e485b1dd5"},
 ]
 pytz = [
     {file = "pytz-2022.6-py2.py3-none-any.whl", hash = "sha256:222439474e9c98fced559f1709d89e6c9cbf8d79c794ff3eb9f8800064291427"},
