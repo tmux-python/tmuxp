@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.19.1 (2022-12-12)
+
+### Fixes
+
+- Update libtmux 0.16.0 -> 0.16.1
+
+  This removes the underlying dependency on `packaging`
+
 ## tmuxp 1.19.0 (2022-12-10)
 
 ### What's new
