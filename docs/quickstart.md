@@ -145,10 +145,10 @@ AL - [Abstraction Layer][abstraction layer]
 | {ref}`tmuxp python api <libtmux:api>` | {term}`tmux(1)` equivalent |
 | ------------------------------------- | -------------------------- |
 | {meth}`libtmux.Server.new_session`    | `$ tmux new-session`       |
-| {meth}`libtmux.Server.list_sessions`  | `$ tmux list-sessions`     |
-| {meth}`libtmux.Session.list_windows`  | `$ tmux list-windows`      |
+| {meth}`libtmux.Server.sessions`       | `$ tmux list-sessions`     |
+| {meth}`libtmux.Session.windows`       | `$ tmux list-windows`      |
 | {meth}`libtmux.Session.new_window`    | `$ tmux new-window`        |
-| {meth}`libtmux.Window.list_panes`     | `$ tmux list-panes`        |
+| {meth}`libtmux.Window.panes`          | `$ tmux list-panes`        |
 | {meth}`libtmux.Window.split_window`   | `$ tmux split-window`      |
 | {meth}`libtmux.Pane.send_keys`        | `$ tmux send-keys`         |
 

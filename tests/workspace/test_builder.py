@@ -32,16 +32,16 @@ def test_split_windows(session):
 
     builder = WorkspaceBuilder(sconf=workspace)
 
-    window_count = len(session._windows)  # current window count
-    assert len(session._windows) == window_count
+    window_count = len(session.windows)  # current window count
+    assert len(session.windows) == window_count
     for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(session._windows) == window_count
+            assert len(session.windows) == window_count
         assert isinstance(w, Window)
 
-        assert len(session._windows) == window_count
+        assert len(session.windows) == window_count
         window_count += 1
 
 
@@ -52,16 +52,16 @@ def test_split_windows_three_pane(session):
 
     builder = WorkspaceBuilder(sconf=workspace)
 
-    window_count = len(session._windows)  # current window count
-    assert len(session._windows) == window_count
+    window_count = len(session.windows)  # current window count
+    assert len(session.windows) == window_count
     for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(session._windows) == window_count
+            assert len(session.windows) == window_count
         assert isinstance(w, Window)
 
-        assert len(session._windows) == window_count
+        assert len(session.windows) == window_count
         window_count += 1
         w.set_window_option("main-pane-height", 50)
         w.select_layout(wconf["layout"])
@@ -108,17 +108,16 @@ def test_focus_pane_index(session):
         nonlocal p
         p = w.attached_pane
         p.server._update_panes()
-        return p.current_path == pane_path
+        return p.pane_current_path == pane_path
 
     assert retry_until(f)
 
-    assert p.current_path == pane_path
+    assert p.pane_current_path == pane_path
 
     proc = session.cmd("show-option", "-gv", "base-index")
     base_index = int(proc.stdout[0])
-    session.server._update_windows()
 
-    window3 = session.find_where({"window_index": str(base_index + 2)})
+    window3 = session.windows.get(window_index=str(base_index + 2))
     assert isinstance(window3, Window)
 
     p = None
@@ -128,11 +127,11 @@ def test_focus_pane_index(session):
         nonlocal p
         p = window3.attached_pane
         p.server._update_panes()
-        return p.current_path == pane_path
+        return p.pane_current_path == pane_path
 
     assert retry_until(f)
 
-    assert p.current_path == pane_path
+    assert p.pane_current_path == pane_path
 
 
 @pytest.mark.skip(
@@ -151,8 +150,8 @@ def test_suppress_history(session):
     builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
-    inHistoryWindow = session.find_where({"window_name": "inHistory"})
-    isMissingWindow = session.find_where({"window_name": "isMissing"})
+    inHistoryWindow = session.windows.get(window_name="inHistory")
+    isMissingWindow = session.windows.get(window_name="isMissing")
 
     def assertHistory(cmd, hist):
         return "inHistory" in cmd and cmd.endswith(hist)
@@ -255,19 +254,19 @@ def test_window_options(session):
 
     builder = WorkspaceBuilder(sconf=workspace)
 
-    window_count = len(session._windows)  # current window count
-    assert len(session._windows) == window_count
+    window_count = len(session.windows)  # current window count
+    assert len(session.windows) == window_count
     for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             p = p
-            assert len(session._windows) == window_count
+            assert len(session.windows) == window_count
         assert isinstance(w, Window)
         assert w.show_window_option("main-pane-height") == 5
         if has_gte_version("2.3"):
             assert w.show_window_option("pane-border-format") == " #P "
 
-        assert len(session._windows) == window_count
+        assert len(session.windows) == window_count
         window_count += 1
         w.select_layout(wconf["layout"])
 
@@ -324,8 +323,7 @@ def test_window_shell(session):
             assert wconf["window_shell"] == "top"
 
         def f():
-            session.server._update_windows()
-            return w["window_name"] != "top"
+            return w.window_name != "top"
 
         retry_until(f)
 
@@ -445,17 +443,16 @@ def test_automatic_rename_option(
     assert w.name != "renamed_window"
 
     def check_window_name_mismatch() -> bool:
-        w.server._update_windows()
         return w.name != portable_command
 
     assert retry_until(check_window_name_mismatch, 5, interval=0.25)
 
     def check_window_name_match() -> bool:
-        w.server._update_windows()
         assert w.show_window_option("automatic-rename") == "on"
-
-        print(f"w.name: {w.name} and portable_command: {portable_command}")
-        return w.name == "zsh" or w.name == portable_command
+        return (
+            w.name == pathlib.Path(os.getenv("SHELL", "bash")).name
+            or w.name == portable_command
+        )
 
     assert retry_until(
         check_window_name_match, 4, interval=0.05
@@ -477,17 +474,17 @@ def test_blank_pane_count(session):
 
     assert session == builder.session
 
-    window1 = session.find_where({"window_name": "Blank pane test"})
-    assert len(window1._panes) == 3
+    window1 = session.windows.get(window_name="Blank pane test")
+    assert len(window1.panes) == 3
 
-    window2 = session.find_where({"window_name": "More blank panes"})
-    assert len(window2._panes) == 3
+    window2 = session.windows.get(window_name="More blank panes")
+    assert len(window2.panes) == 3
 
-    window3 = session.find_where({"window_name": "Empty string (return)"})
-    assert len(window3._panes) == 3
+    window3 = session.windows.get(window_name="Empty string (return)")
+    assert len(window3.panes) == 3
 
-    window4 = session.find_where({"window_name": "Blank with options"})
-    assert len(window4._panes) == 2
+    window4 = session.windows.get(window_name="Blank with options")
+    assert len(window4.panes) == 2
 
 
 def test_start_directory(session, tmp_path: pathlib.Path):
@@ -514,7 +511,7 @@ def test_start_directory(session, tmp_path: pathlib.Path):
 
             def f():
                 p.server._update_panes()
-                pane_path = p.current_path
+                pane_path = p.pane_current_path
                 return path in pane_path or pane_path == path
 
             # handle case with OS X adding /private/ to /tmp/ paths
@@ -565,7 +562,7 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
             def f():
                 p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
-                pane_path = p.current_path
+                pane_path = p.pane_current_path
                 return path in pane_path or pane_path == path
 
             assert retry_until(f)
@@ -616,22 +613,22 @@ def test_pane_order(session):
 
     builder = WorkspaceBuilder(sconf=workspace)
 
-    window_count = len(session._windows)  # current window count
-    assert len(session._windows) == window_count
+    window_count = len(session.windows)  # current window count
+    assert len(session.windows) == window_count
 
     for w, wconf in builder.iter_create_windows(session):
         for p in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
-            assert len(session._windows) == window_count
+            assert len(session.windows) == window_count
 
         assert isinstance(w, Window)
 
-        assert len(session._windows) == window_count
+        assert len(session.windows) == window_count
         window_count += 1
 
     for w in session.windows:
         pane_base_index = w.show_window_option("pane-base-index", g=True)
-        for p_index, p in enumerate(w.list_panes(), start=pane_base_index):
+        for p_index, p in enumerate(w.panes, start=pane_base_index):
             assert int(p_index) == int(p.index)
 
             # pane-base-index start at base-index, pane_paths always start
@@ -640,7 +637,7 @@ def test_pane_order(session):
 
             def f():
                 p.server._update_panes()
-                return p.current_path == pane_path
+                return p.pane_current_path == pane_path
 
             assert retry_until(f)
 
@@ -659,8 +656,8 @@ def test_window_index(session):
     builder = WorkspaceBuilder(sconf=workspace)
 
     for window, _ in builder.iter_create_windows(session):
-        expected_index = name_index_map[window["window_name"]]
-        assert int(window["window_index"]) == expected_index
+        expected_index = name_index_map[window.window_name]
+        assert int(window.window_index) == expected_index
 
 
 def test_before_load_throw_error_if_retcode_error(server):
@@ -866,7 +863,7 @@ def test_load_configs_same_session(server):
     builder.build()
 
     assert len(server.sessions) == 1
-    assert len(server.sessions[0]._windows) == 3
+    assert len(server.sessions[0].windows) == 3
 
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/two_windows.yaml")
@@ -875,7 +872,7 @@ def test_load_configs_same_session(server):
     builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
     assert len(server.sessions) == 2
-    assert len(server.sessions[1]._windows) == 2
+    assert len(server.sessions[1].windows) == 2
 
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/two_windows.yaml")
@@ -885,7 +882,7 @@ def test_load_configs_same_session(server):
     builder.build(server.sessions[1], True)
 
     assert len(server.sessions) == 2
-    assert len(server.sessions[1]._windows) == 4
+    assert len(server.sessions[1].windows) == 4
 
 
 def test_load_configs_separate_sessions(server):
@@ -897,7 +894,7 @@ def test_load_configs_separate_sessions(server):
     builder.build()
 
     assert len(server.sessions) == 1
-    assert len(server.sessions[0]._windows) == 3
+    assert len(server.sessions[0].windows) == 3
 
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/two_windows.yaml")
@@ -907,8 +904,8 @@ def test_load_configs_separate_sessions(server):
     builder.build()
 
     assert len(server.sessions) == 2
-    assert len(server.sessions[0]._windows) == 3
-    assert len(server.sessions[1]._windows) == 2
+    assert len(server.sessions[0].windows) == 3
+    assert len(server.sessions[1].windows) == 2
 
 
 def test_find_current_active_pane(server, monkeypatch):
@@ -926,13 +923,11 @@ def test_find_current_active_pane(server, monkeypatch):
     builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
 
-    assert len(server.list_sessions()) == 2
+    assert len(server.sessions) == 2
 
     # Assign an active pane to the session
-    second_session = server.list_sessions()[1]
-    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
-        "pane_id"
-    ]
+    second_session = server.sessions[1]
+    first_pane_on_second_session_id = second_session.windows[0].panes[0].pane_id
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     builder = WorkspaceBuilder(sconf=workspace, server=server)
@@ -1233,7 +1228,7 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
 
         def f():
             p.server._update_panes()
-            pane_path = p.current_path
+            pane_path = p.pane_current_path
             return path in pane_path or pane_path == path
 
         # handle case with OS X adding /private/ to /tmp/ paths
@@ -1257,10 +1252,10 @@ def test_layout_main_horizontal(session):
     main_horizontal_pane, *panes = window.panes
 
     def height(p):
-        return int(p._info["pane_height"])
+        return int(p.pane_height)
 
     def width(p):
-        return int(p._info["pane_width"])
+        return int(p.pane_width)
 
     main_horizontal_pane_height = height(main_horizontal_pane)
     pane_heights = [height(pane) for pane in panes]
@@ -1358,4 +1353,4 @@ def test_issue_800_default_size_many_windows(
         return
 
     builder.build()
-    assert len(server.list_sessions()) == 1
+    assert len(server.sessions) == 1

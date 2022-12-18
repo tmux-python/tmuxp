@@ -4,6 +4,7 @@ import io
 import json
 import os
 import pathlib
+import subprocess
 import typing as t
 
 import pytest
@@ -12,7 +13,6 @@ from pytest_mock import MockerFixture
 
 import libtmux
 from libtmux.common import has_lt_version
-from libtmux.exc import LibTmuxException
 from libtmux.server import Server
 from libtmux.session import Session
 from tmuxp import cli, exc
@@ -195,7 +195,7 @@ windows:
     assert session.name == "samplesimple"
 
     assert pane is not None
-    assert pane.current_path == str(realtemp)
+    assert pane.pane_current_path == str(realtemp)
 
 
 if t.TYPE_CHECKING:
@@ -584,7 +584,7 @@ def test_shell(
             [],
             {},
             {},
-            LibTmuxException,
+            subprocess.CalledProcessError,
             r".*DoesNotExist.*",
         ),
         (
@@ -622,7 +622,9 @@ def test_shell_target_missing(
     inputs: t.List[t.Any],
     env: t.Dict[t.Any, t.Any],
     template_ctx: t.Dict[str, str],
-    exception: t.Union[t.Type[exc.TmuxpException], t.Type[LibTmuxException]],
+    exception: t.Union[
+        t.Type[exc.TmuxpException], t.Type[subprocess.CalledProcessError]
+    ],
     message: str,
     socket_name: str,
     server: "Server",
@@ -976,10 +978,9 @@ def test_freeze(
     server.new_session(session_name="myfrozensession")
 
     # Assign an active pane to the session
-    second_session = server.list_sessions()[1]
-    first_pane_on_second_session_id = second_session.list_windows()[0].list_panes()[0][
-        "pane_id"
-    ]
+    second_session = server.sessions[1]
+    first_pane_on_second_session_id = second_session.windows[0].panes[0].pane_id
+    assert first_pane_on_second_session_id
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     monkeypatch.chdir(tmp_path)
@@ -1362,17 +1363,18 @@ def test_load_append_windows_to_current_session(
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     builder.build()
 
-    assert len(server.list_sessions()) == 1
-    assert len(server._list_windows()) == 3
+    assert len(server.sessions) == 1
+    assert len(server.windows) == 3
 
     # Assign an active pane to the session
-    monkeypatch.setenv("TMUX_PANE", server._list_panes()[0]["pane_id"])
+    assert server.panes[0].pane_id
+    monkeypatch.setenv("TMUX_PANE", server.panes[0].pane_id)
 
     builder = WorkspaceBuilder(sconf=sconfig, server=server)
     _load_append_windows_to_current_session(builder)
 
-    assert len(server.list_sessions()) == 1
-    assert len(server._list_windows()) == 6
+    assert len(server.sessions) == 1
+    assert len(server.windows) == 6
 
 
 def test_debug_info_cli(
