@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Developmental
+
+- Tests: Stabilization fix for automatic rename test (#853)
+
 ## tmuxp 1.19.1 (2022-12-12)
 
 ### Fixes
