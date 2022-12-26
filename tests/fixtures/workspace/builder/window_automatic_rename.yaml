@@ -1,13 +1,15 @@
 session_name: test window options
 start_directory: '~'
 windows:
-- layout: main-horizontal
+- window_name: renamed_window
+  layout: main-horizontal
   options:
     automatic-rename: on
   panes:
   - shell_command:
     - cmd: man ls
     start_directory: '~'
+    focus: true
   - shell_command:
     - cmd: echo "hey"
   - shell_command:
