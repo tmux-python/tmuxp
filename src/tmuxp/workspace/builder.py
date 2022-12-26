@@ -156,7 +156,7 @@ class WorkspaceBuilder:
         """
 
         if not sconf:
-            raise exc.EmptyConfigException("session configuration is empty.")
+            raise exc.EmptyWorkspaceException("session configuration is empty.")
 
         # validation.validate_schema(sconf)
 
