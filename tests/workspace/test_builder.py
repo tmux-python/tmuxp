@@ -415,15 +415,17 @@ def test_environment_variables_logs(session: Session, caplog: pytest.LogCaptureF
         sum(
             1
             for record in caplog.records
-            if 'Cannot set environment for new panes and windows.' in record.msg
+            if "Cannot set environment for new panes and windows." in record.msg
         )
         # From both_overrides_in_first_pane.
         == 1
     )
 
 
-def test_automatic_rename_option(session):
-    """With option automatic-rename: on."""
+def test_automatic_rename_option(
+    server: "Server", monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("DISABLE_AUTO_TITLE", "true")
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/window_automatic_rename.yaml")
     )
@@ -434,42 +436,29 @@ def test_automatic_rename_option(session):
     if " " in portable_command:
         portable_command = portable_command.split(" ")[0]
 
-    builder = WorkspaceBuilder(sconf=workspace)
+    builder = WorkspaceBuilder(sconf=workspace, server=server)
+    builder.build()
+    session: Session = builder.session
+    w: Window = session.windows[0]
+    assert len(session.windows) == 1
 
-    window_count = len(session._windows)  # current window count
-    assert len(session._windows) == window_count
-    for w, wconf in builder.iter_create_windows(session):
-
-        for p in builder.iter_create_panes(w, wconf):
-            w.select_layout("tiled")  # fix glitch with pane size
-            p = p
-            assert len(session._windows), window_count
-        assert isinstance(w, Window)
-        assert w.show_window_option("automatic-rename") == "on"
-
-        assert len(session._windows) == window_count
-
-        window_count += 1
-        w.select_layout(wconf["layout"])
-
-    assert session.name != "tmuxp"
-    w = session.windows[0]
+    assert w.name != "renamed_window"
 
     def check_window_name_mismatch() -> bool:
-        session.server._update_windows()
+        w.server._update_windows()
         return w.name != portable_command
 
-    assert retry_until(check_window_name_mismatch, 2, interval=0.25)
-
-    pane_base_index = w.show_window_option("pane-base-index", g=True)
-    w.select_pane(pane_base_index)
+    assert retry_until(check_window_name_mismatch, 5, interval=0.25)
 
     def check_window_name_match() -> bool:
-        session.server._update_windows()
-        return w.name == portable_command
+        w.server._update_windows()
+        assert w.show_window_option("automatic-rename") == "on"
+
+        print(f"w.name: {w.name} and portable_command: {portable_command}")
+        return w.name == "zsh" or w.name == portable_command
 
     assert retry_until(
-        check_window_name_match, 2, interval=0.25
+        check_window_name_match, 4, interval=0.05
     ), f"Window name {w.name} should be {portable_command}"
 
     w.select_pane("-D")
