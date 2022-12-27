@@ -15,15 +15,19 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 // Usage: tmuxp@next load yoursession
 ```
 
-## tmuxp 1.22.x (unreleased)
+## tmuxp 1.23.x (unreleased)
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
-- `tmuxp shell` now detects current `server` via `TMUX` (#854)
+## tmuxp 1.22.0 (2022-12-27)
+
+### Improvement
+
+- `tmuxp shell`: now detects current `server` via `TMUX` (#854)
 
 ## tmuxp 1.21.0 (2022-12-27)
 
-*Maintenance only, no bug fixes or features*
+_Maintenance only, no bug fixes or features_
 
 - libtmux 0.17.2 -> 0.18.0
 
@@ -35,7 +39,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ## tmuxp 1.20.2 (2022-12-27)
 
-*Internal update only*
+_Internal update only_
 
 - libtmux 0.17.1 -> 0.17.2
 
@@ -43,7 +47,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ## tmuxp 1.20.1 (2022-12-27)
 
-*Internal update only*
+_Internal update only_
 
 - libtmux 0.17.0 -> ~0.17.1
 
@@ -114,6 +118,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   - Support for environmental variables
   - Remove reliance on `distutils.version.LooseVersion` for
     `libtmux._compat.LegacyVersion`
+
 - Fix distutil warnings by using libtmux 0.16.0's `LegacyVersion` (#727)
 
 ## tmuxp 1.18.2 (2022-11-06)
