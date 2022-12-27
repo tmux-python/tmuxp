@@ -19,6 +19,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+- `tmuxp shell` now detects current `server` via `TMUX` (#854)
+
 ## tmuxp 1.21.0 (2022-12-27)
 
 *Maintenance only, no bug fixes or features*
