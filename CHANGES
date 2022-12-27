@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+*Maintenance only, no bug fixes or features*
+
+- libtmux 0.17.2 -> 0.18.0
+
+  Server: Improved `__repr__`
+
 ## tmuxp 1.20.3 (2022-12-27)
 
 - Fix warnings for `_update_panes()` in builder
