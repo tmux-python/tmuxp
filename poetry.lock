@@ -478,14 +478,14 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "libtmux"
-version = "0.17.1"
+version = "0.17.2"
 description = "Typed scripting library / ORM / API wrapper for tmux"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "libtmux-0.17.1-py3-none-any.whl", hash = "sha256:fd2d3527fb66ff670acb47671c90eb412ee048d69eba07b24cd33092b2498aab"},
-    {file = "libtmux-0.17.1.tar.gz", hash = "sha256:0282d1fca4eb237f749d4933c24db107078fa1d306a7e3bdd3973c594fda1054"},
+    {file = "libtmux-0.17.2-py3-none-any.whl", hash = "sha256:079ec8b765d81e2ea9fa0ac9179e5901a8ee83a13f780b114dd282f98d9924ea"},
+    {file = "libtmux-0.17.2.tar.gz", hash = "sha256:87981250590495ee3424845a44b4835e058dfecd97cd093e48dd6d12b792237f"},
 ]
 
 [[package]]
@@ -496,6 +496,7 @@ category = "dev"
 optional = false
 python-versions = "*"
 files = [
+    {file = "livereload-2.6.3-py2.py3-none-any.whl", hash = "sha256:ad4ac6f53b2d62bb6ce1a5e6e96f1f00976a32348afedcb4b6d68df2a1d346e4"},
     {file = "livereload-2.6.3.tar.gz", hash = "sha256:776f2f865e59fde56490a56bcc6773b6917366bce0c267c60ee8aaf1a0959869"},
 ]
 
@@ -1611,4 +1612,4 @@ test = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "1ab5740e3a09b84c8da7f783ffb8b1d81ab2ac8597765cf6725261b7749ffde1"
+content-hash = "083591b531197dc93383a9d347cd5183da001c2ff480deeceeb747f436a99a2e"
