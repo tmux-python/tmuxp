@@ -313,7 +313,7 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "libtmux"
-version = "0.17.0"
+version = "0.17.1"
 description = "Typed scripting library / ORM / API wrapper for tmux"
 category = "main"
 optional = false
@@ -999,7 +999,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "395169a8301b30571e924b7e6240f2be5fd7324be4981fa8f663e19d5a9df222"
+content-hash = "1ab5740e3a09b84c8da7f783ffb8b1d81ab2ac8597765cf6725261b7749ffde1"
 
 [metadata.files]
 aafigure = [
@@ -1164,8 +1164,8 @@ jinja2 = [
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 libtmux = [
-    {file = "libtmux-0.17.0-py3-none-any.whl", hash = "sha256:a0e8d8c390be7605c791b8a9a207aab89373a7721372df9bf0f41cab275f70ed"},
-    {file = "libtmux-0.17.0.tar.gz", hash = "sha256:da270c286198ce85d30ce6a6ac7b72e54de646b6097faf006b3a2ebd68eaee38"},
+    {file = "libtmux-0.17.1-py3-none-any.whl", hash = "sha256:fd2d3527fb66ff670acb47671c90eb412ee048d69eba07b24cd33092b2498aab"},
+    {file = "libtmux-0.17.1.tar.gz", hash = "sha256:0282d1fca4eb237f749d4933c24db107078fa1d306a7e3bdd3973c594fda1054"},
 ]
 livereload = [
     {file = "livereload-2.6.3-py2.py3-none-any.whl", hash = "sha256:ad4ac6f53b2d62bb6ce1a5e6e96f1f00976a32348afedcb4b6d68df2a1d346e4"},
