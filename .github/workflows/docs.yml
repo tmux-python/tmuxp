@@ -26,7 +26,7 @@ jobs:
             - 'docs/**'
             - 'examples/**'
           python_files:
-            - 'tmuxp/**'
+            - 'src/tmuxp/**'
             - pyproject.toml
             - poetry.lock
 
