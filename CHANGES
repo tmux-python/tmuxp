@@ -19,9 +19,19 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+*Internal update only*
+
+- libtmux 0.17.1 -> 0.17.2
+
+  More deprecation warnings
+
 ## tmuxp 1.20.1 (2022-12-27)
 
+*Internal update only*
+
 - libtmux 0.17.0 -> ~0.17.1
+
+  Deprecation warning updates, doc fixes
 
 ### Development
 
