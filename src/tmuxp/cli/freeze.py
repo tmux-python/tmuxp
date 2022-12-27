@@ -32,7 +32,7 @@ class CLIFreezeNamespace(argparse.Namespace):
 
 def session_completion(ctx, params, incomplete):
     server = Server()
-    choices = [session.name for session in server.list_sessions()]
+    choices = [session.name for session in server.sessions]
     return sorted(str(c) for c in choices if str(c).startswith(incomplete))
 
 
@@ -100,7 +100,7 @@ def command_freeze(
 
     try:
         if args.session_name:
-            session = server.find_where({"session_name": args.session_name})
+            session = server.sessions.get(session_name=args.session_name, default=None)
         else:
             session = util.get_session(server)
 

@@ -19,6 +19,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking change
+
+- libtmux 0.16 -> 0.17 (#850)
+
+  This includes the API overhaul from
+  [libtmux#426](https://github.com/tmux-python/libtmux/pull/426).
+
 ### Developmental
 
 - Tests: Stabilization fix for automatic rename test (#853)

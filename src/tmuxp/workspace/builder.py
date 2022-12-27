@@ -71,7 +71,7 @@ class WorkspaceBuilder:
     >>> new_session.name == 'sample workspace'
     True
 
-    >>> len(new_session._windows)
+    >>> len(new_session.windows)
     3
 
     >>> sorted([window.name for window in new_session.windows])
@@ -79,7 +79,7 @@ class WorkspaceBuilder:
 
     **Existing session:**
 
-    >>> len(session._windows)
+    >>> len(session.windows)
     1
 
     >>> builder.build(session=session)
@@ -89,7 +89,7 @@ class WorkspaceBuilder:
     >>> session.name == 'sample workspace'
     False
 
-    >>> len(session._windows)
+    >>> len(session.windows)
     3
 
     >>> sorted([window.name for window in session.windows])
@@ -174,7 +174,10 @@ class WorkspaceBuilder:
         if not exists:
             return exists
 
-        self.session = self.server.find_where({"session_name": session_name})
+        try:
+            self.session = self.server.sessions.filter(session_name=session_name)[0]
+        except IndexError:
+            return False
         return True
 
     def build(self, session=None, append=False):
@@ -203,12 +206,17 @@ class WorkspaceBuilder:
                 )
 
             if self.server.has_session(self.sconf["session_name"]):
-                self.session = self.server.find_where(
-                    {"session_name": self.sconf["session_name"]}
-                )
-                raise TmuxSessionExists(
-                    "Session name %s is already running." % self.sconf["session_name"]
-                )
+                try:
+                    self.session = self.server.sessions.filter(
+                        session_name=self.sconf["session_name"]
+                    )[0]
+
+                    raise TmuxSessionExists(
+                        "Session name %s is already running."
+                        % self.sconf["session_name"]
+                    )
+                except IndexError:
+                    pass
             else:
                 new_session_kwargs = {}
                 if "start_directory" in self.sconf:
@@ -226,7 +234,7 @@ class WorkspaceBuilder:
         self.session = session
         self.server = session.server
 
-        self.server._list_sessions()
+        self.server.sessions
         assert self.server.has_session(session.name)
         assert session.id
 
@@ -378,15 +386,12 @@ class WorkspaceBuilder:
                 session.attached_window.kill_window()
 
             assert isinstance(w, Window)
-            session.server._update_windows()
             if "options" in wconf and isinstance(wconf["options"], dict):
                 for key, val in wconf["options"].items():
                     w.set_window_option(key, val)
 
             if "focus" in wconf and wconf["focus"]:
                 w.select_window()
-
-            session.server._update_windows()
 
             yield w, wconf
 
@@ -421,7 +426,6 @@ class WorkspaceBuilder:
             else:
 
                 def get_pane_start_directory():
-
                     if "start_directory" in pconf:
                         return pconf["start_directory"]
                     elif "start_directory" in wconf:
@@ -430,7 +434,6 @@ class WorkspaceBuilder:
                         return None
 
                 def get_pane_shell():
-
                     if "shell" in pconf:
                         return pconf["shell"]
                     elif "window_shell" in wconf:
@@ -486,7 +489,8 @@ class WorkspaceBuilder:
                     time.sleep(sleep_after)
 
             if "focus" in pconf and pconf["focus"]:
-                w.select_pane(p["pane_id"])
+                assert p.pane_id is not None
+                w.select_pane(p.pane_id)
 
             w.server._update_panes()
 
@@ -519,8 +523,8 @@ class WorkspaceBuilder:
         return next(
             (
                 s
-                for s in self.server.list_sessions()
-                if s["session_id"] == current_active_pane["session_id"]
+                for s in self.server.sessions
+                if s.session_id == current_active_pane.session_id
             ),
             None,
         )

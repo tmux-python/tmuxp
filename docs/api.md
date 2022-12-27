@@ -24,10 +24,6 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ```
 
 ```{eval-rst}
-.. automethod:: tmuxp.util.raise_if_tmux_not_running
-```
-
-```{eval-rst}
 .. automethod:: tmuxp.util.get_current_pane
 ```
 
