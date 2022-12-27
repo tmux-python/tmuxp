@@ -1,5 +1,6 @@
 import argparse
 import os
+import pathlib
 import typing as t
 
 from libtmux.server import Server
@@ -140,6 +141,17 @@ def command_shell(
     - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.attached_window`,
       :attr:`libtmux.Window.attached_pane`
     """
+    # If inside a server, detect socket_path
+    env_tmux = os.getenv("TMUX")
+    if env_tmux is not None and isinstance(env_tmux, str):
+        env_socket_path = pathlib.Path(env_tmux.split(",")[0])
+        if (
+            env_socket_path.exists()
+            and args.socket_path is None
+            and args.socket_name is None
+        ):
+            args.socket_path = str(env_socket_path)
+
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
     server.raise_if_dead()
