@@ -492,8 +492,6 @@ class WorkspaceBuilder:
                 assert p.pane_id is not None
                 w.select_pane(p.pane_id)
 
-            w.server._update_panes()
-
             yield p, pconf
 
     def config_after_window(self, w, wconf):

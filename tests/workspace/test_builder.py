@@ -107,7 +107,6 @@ def test_focus_pane_index(session):
     def f():
         nonlocal p
         p = w.attached_pane
-        p.server._update_panes()
         return p.pane_current_path == pane_path
 
     assert retry_until(f)
@@ -126,7 +125,6 @@ def test_focus_pane_index(session):
     def f():
         nonlocal p
         p = window3.attached_pane
-        p.server._update_panes()
         return p.pane_current_path == pane_path
 
     assert retry_until(f)
@@ -510,7 +508,6 @@ def test_start_directory(session, tmp_path: pathlib.Path):
         for p in window.panes:
 
             def f():
-                p.server._update_panes()
                 pane_path = p.pane_current_path
                 return path in pane_path or pane_path == path
 
@@ -560,7 +557,6 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
         for p in window.panes:
 
             def f():
-                p.server._update_panes()
                 # Handle case where directories resolve to /private/ in OSX
                 pane_path = p.pane_current_path
                 return path in pane_path or pane_path == path
@@ -636,7 +632,6 @@ def test_pane_order(session):
             pane_path = pane_paths[p_index - pane_base_index]
 
             def f():
-                p.server._update_panes()
                 return p.pane_current_path == pane_path
 
             assert retry_until(f)
@@ -1227,7 +1222,6 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
     for path, p in zip(dirs, window.panes):
 
         def f():
-            p.server._update_panes()
             pane_path = p.pane_current_path
             return path in pane_path or pane_path == path
 
