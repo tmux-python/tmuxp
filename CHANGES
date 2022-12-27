@@ -19,9 +19,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
-## tmuxp 1.20.1 (Unreleased)
+## tmuxp 1.20.1 (2022-12-27)
 
 - libtmux 0.17.0 -> ~0.17.1
+
+### Development
+
+- Poetry 1.2.2 -> 1.3.1
 
 ## tmuxp 1.20.0 (2022-12-26)
 
@@ -32,7 +36,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   This includes the API overhaul from
   [libtmux#426](https://github.com/tmux-python/libtmux/pull/426).
 
-### Developmental
+### Development
 
 - Tests: Stabilization fix for automatic rename test (#853)
 
