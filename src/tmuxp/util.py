@@ -90,7 +90,7 @@ def get_current_pane(server: "Server") -> t.Optional["Pane"]:
             return [p for p in server.panes if p.pane_id == os.getenv("TMUX_PANE")][0]
         except IndexError:
             pass
-    return
+    return None
 
 
 def get_session(
@@ -148,6 +148,7 @@ def get_window(
 
 
 def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane":
+    pane = None
     try:
         if current_pane is not None:
             pane = window.panes.get(pane_id=current_pane.pane_id)  # NOQA: F841
@@ -155,7 +156,6 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
             pane = window.attached_pane  # NOQA: F841
     except exc.TmuxpException as e:
         print(e)
-        return None
 
     if pane is None:
         if current_pane:
