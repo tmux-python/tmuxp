@@ -26,6 +26,19 @@ TMUXP_MIN_VERSION = "1.6.0"
 TMUXP_MAX_VERSION = None
 
 
+class VersionConstraints(t.TypedDict):
+    version: t.Union[Version, str]
+    vmin: str
+    vmax: t.Optional[str]
+    incompatible: t.List[t.Union[t.Any, str]]
+
+
+class TmuxpPluginVersionConstraints(t.TypedDict):
+    tmux: VersionConstraints
+    tmuxp: VersionConstraints
+    libtmux: VersionConstraints
+
+
 class TmuxpPlugin:
     def __init__(
         self,
@@ -84,35 +97,35 @@ class TmuxpPlugin:
 
         # Dependency versions
         self.tmux_version = get_version()
-        self.libtmux_version = libtmux.__version__
+        self.libtmux_version = libtmux.__about__.__version__
         self.tmuxp_version = Version(__version__)
 
-        self.version_constraints = {
-            "tmux": {
-                "version": self.tmux_version,
-                "vmin": tmux_min_version,
-                "vmax": tmux_max_version,
-                "incompatible": tmux_version_incompatible
+        self.version_constraints = TmuxpPluginVersionConstraints(
+            tmux=VersionConstraints(
+                version=self.tmux_version,
+                vmin=tmux_min_version,
+                vmax=tmux_max_version,
+                incompatible=tmux_version_incompatible
                 if tmux_version_incompatible
                 else [],
-            },
-            "libtmux": {
-                "version": self.libtmux_version,
-                "vmin": libtmux_min_version,
-                "vmax": libtmux_max_version,
-                "incompatible": libtmux_version_incompatible
+            ),
+            libtmux=VersionConstraints(
+                version=self.libtmux_version,
+                vmin=libtmux_min_version,
+                vmax=libtmux_max_version,
+                incompatible=libtmux_version_incompatible
                 if libtmux_version_incompatible
                 else [],
-            },
-            "tmuxp": {
-                "version": self.tmuxp_version,
-                "vmin": tmuxp_min_version,
-                "vmax": tmuxp_max_version,
-                "incompatible": tmuxp_version_incompatible
+            ),
+            tmuxp=VersionConstraints(
+                version=self.tmuxp_version,
+                vmin=tmuxp_min_version,
+                vmax=tmuxp_max_version,
+                incompatible=tmuxp_version_incompatible
                 if tmuxp_version_incompatible
                 else [],
-            },
-        }
+            ),
+        )
 
         self._version_check()
 
@@ -121,6 +134,7 @@ class TmuxpPlugin:
         Check all dependency versions for compatibility.
         """
         for dep, constraints in self.version_constraints.items():
+            assert isinstance(constraints, dict)
             try:
                 assert self._pass_version_check(**constraints)
             except AssertionError:
