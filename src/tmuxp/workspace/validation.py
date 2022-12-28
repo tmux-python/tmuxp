@@ -1,7 +1,9 @@
+import typing as t
+
 from .. import exc
 
 
-def validate_schema(workspace_dict):
+def validate_schema(workspace_dict: t.Any) -> bool:
     """
     Return True if workspace schema is correct.
 

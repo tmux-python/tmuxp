@@ -6,11 +6,19 @@ tmuxp.shell
 """
 import logging
 import os
+import typing as t
 
 logger = logging.getLogger(__name__)
 
+if t.TYPE_CHECKING:
+    from typing_extensions import Literal, TypeAlias
 
-def has_ipython():
+    CLIShellLiteral: TypeAlias = Literal[
+        "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython"
+    ]
+
+
+def has_ipython() -> bool:
     try:
         from IPython import start_ipython  # NOQA F841
     except ImportError:
@@ -22,7 +30,7 @@ def has_ipython():
     return True
 
 
-def has_ptpython():
+def has_ptpython() -> bool:
     try:
         from ptpython.repl import embed, run_config  # NOQA F841
     except ImportError:
@@ -34,7 +42,7 @@ def has_ptpython():
     return True
 
 
-def has_ptipython():
+def has_ptipython() -> bool:
     try:
         from ptpython.ipython import embed  # NOQA F841
         from ptpython.repl import run_config  # NOQA F841
@@ -48,7 +56,7 @@ def has_ptipython():
     return True
 
 
-def has_bpython():
+def has_bpython() -> bool:
     try:
         from bpython import embed  # NOQA F841
     except ImportError:
@@ -56,7 +64,7 @@ def has_bpython():
     return True
 
 
-def detect_best_shell():
+def detect_best_shell() -> "CLIShellLiteral":
     if has_ptipython():
         return "ptipython"
     elif has_ptpython():
@@ -220,7 +228,12 @@ def get_code(use_pythonrc, imported_objects):
     return launch_code
 
 
-def launch(shell="best", use_pythonrc=False, use_vi_mode=False, **kwargs):
+def launch(
+    shell: t.Optional["CLIShellLiteral"] = "best",
+    use_pythonrc: bool = False,
+    use_vi_mode: bool = False,
+    **kwargs
+) -> None:
     # Also allowing passing shell='code' to force using code.interact
     imported_objects = get_launch_args(**kwargs)
 

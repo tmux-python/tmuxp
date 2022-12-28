@@ -22,11 +22,11 @@ class ConfigReader:
     '{\n  "session_name": "my session"\n}'
     """
 
-    def __init__(self, content: "RawConfigData"):
+    def __init__(self, content: "RawConfigData") -> None:
         self.content = content
 
     @staticmethod
-    def _load(format: "FormatLiteral", content: str):
+    def _load(format: "FormatLiteral", content: str) -> t.Dict[str, t.Any]:
         """Load raw config data and directly return it.
 
         >>> ConfigReader._load("json", '{ "session_name": "my session" }')
@@ -46,7 +46,7 @@ class ConfigReader:
             raise NotImplementedError(f"{format} not supported in configuration")
 
     @classmethod
-    def load(cls, format: "FormatLiteral", content: str):
+    def load(cls, format: "FormatLiteral", content: str) -> "ConfigReader":
         """Load raw config data into a ConfigReader instance (to dump later).
 
         >>> cfg = ConfigReader.load("json", '{ "session_name": "my session" }')
@@ -69,7 +69,7 @@ class ConfigReader:
         )
 
     @classmethod
-    def _from_file(cls, path: pathlib.Path):
+    def _from_file(cls, path: pathlib.Path) -> t.Dict[str, t.Any]:
         r"""Load data from file path directly to dictionary.
 
         **YAML file**
@@ -114,7 +114,7 @@ class ConfigReader:
         )
 
     @classmethod
-    def from_file(cls, path: pathlib.Path):
+    def from_file(cls, path: pathlib.Path) -> "ConfigReader":
         r"""Load data from file path
 
         **YAML file**

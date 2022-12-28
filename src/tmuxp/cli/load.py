@@ -107,7 +107,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
     session.cmd(*cmd)
 
 
-def load_plugins(sconf: t.Any) -> t.List[t.Any]:
+def load_plugins(sconf: t.Dict[str, t.Any]) -> t.List[t.Any]:
     """
     Load and return plugins in workspace
     """
@@ -158,6 +158,7 @@ def _reattach(builder: WorkspaceBuilder):
 
     If not, ``tmux attach-session`` loads the client to the target session.
     """
+    assert builder.session is not None
     for plugin in builder.plugins:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
@@ -181,6 +182,7 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     detached : bool
     """
     builder.build()
+    assert builder.session is not None
 
     if "TMUX" in os.environ:  # tmuxp ran from inside tmux
         # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
@@ -214,6 +216,8 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
     """
     builder.build()
 
+    assert builder.session is not None
+
     if has_gte_version("2.6"):  # prepare for both cases
         set_layout_hook(builder.session, "client-attached")
         set_layout_hook(builder.session, "client-session-changed")
@@ -231,6 +235,7 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     """
     current_attached_session = builder.find_current_attached_session()
     builder.build(current_attached_session, append=True)
+    assert builder.session is not None
     if has_gte_version("2.6"):  # prepare for both cases
         set_layout_hook(builder.session, "client-attached")
         set_layout_hook(builder.session, "client-session-changed")
@@ -244,6 +249,7 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
     """
+    assert builder.session is not None
     for plugin in builder.plugins:
         plugin.before_script(builder.session)
 
@@ -458,8 +464,9 @@ def load_workspace(
         )
 
         if choice == "k":
-            builder.session.kill_session()
-            tmuxp_echo("Session killed.")
+            if builder.session is not None:
+                builder.session.kill_session()
+                tmuxp_echo("Session killed.")
         elif choice == "a":
             _reattach(builder)
         else:

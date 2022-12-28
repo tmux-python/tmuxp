@@ -1273,6 +1273,7 @@ def test_reattach_plugins(
     except libtmux.exc.LibTmuxException:
         pass
 
+    assert builder.session is not None
     proc = builder.session.cmd("display-message", "-p", "'#S'")
 
     assert proc.stdout[0] == "'plugin_test_r'"

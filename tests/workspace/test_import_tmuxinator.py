@@ -1,4 +1,6 @@
 """Test for tmuxp tmuxinator configuration."""
+import typing as t
+
 import pytest
 
 from tmuxp.config_reader import ConfigReader
@@ -27,7 +29,11 @@ from ..fixtures import import_tmuxinator as fixtures
         ),  # Test importing <spec/fixtures/sample.yml>
     ],
 )
-def test_config_to_dict(tmuxinator_yaml, tmuxinator_dict, tmuxp_dict):
+def test_config_to_dict(
+    tmuxinator_yaml: str,
+    tmuxinator_dict: t.Dict[str, t.Any],
+    tmuxp_dict: t.Dict[str, t.Any],
+) -> None:
     yaml_to_dict = ConfigReader._load(format="yaml", content=tmuxinator_yaml)
     assert yaml_to_dict == tmuxinator_dict
 

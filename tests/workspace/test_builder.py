@@ -9,6 +9,7 @@ import pytest
 
 import libtmux
 from libtmux.common import has_gte_version, has_lt_version
+from libtmux.pane import Pane
 from libtmux.session import Session
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
@@ -80,9 +81,11 @@ def test_focus_pane_index(session):
 
     assert session.attached_window.name == "focused window"
 
-    pane_base_index = int(
-        session.attached_window.show_window_option("pane-base-index", g=True)
+    _pane_base_index = session.attached_window.show_window_option(
+        "pane-base-index", g=True
     )
+    assert isinstance(_pane_base_index, int)
+    pane_base_index = int(_pane_base_index)
 
     if not pane_base_index:
         pane_base_index = 0
@@ -104,13 +107,15 @@ def test_focus_pane_index(session):
     pane_path = "/usr"
     p = None
 
-    def f():
+    def f_check() -> bool:
         nonlocal p
         p = w.attached_pane
+        assert p is not None
         return p.pane_current_path == pane_path
 
-    assert retry_until(f)
+    assert retry_until(f_check)
 
+    assert p is not None
     assert p.pane_current_path == pane_path
 
     proc = session.cmd("show-option", "-gv", "base-index")
@@ -122,13 +127,17 @@ def test_focus_pane_index(session):
     p = None
     pane_path = "/"
 
-    def f():
+    def f_check_again():
         nonlocal p
         p = window3.attached_pane
+        assert p is not None
         return p.pane_current_path == pane_path
 
-    assert retry_until(f)
+    assert retry_until(f_check_again)
 
+    assert p is not None
+    assert p.pane_current_path is not None
+    assert isinstance(p.pane_current_path, str)
     assert p.pane_current_path == pane_path
 
 
@@ -201,8 +210,13 @@ def test_session_options(session):
     builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
-    assert "/bin/sh" in session.show_option("default-shell")
-    assert "/bin/sh" in session.show_option("default-command")
+    _default_shell = session.show_option("default-shell")
+    assert isinstance(_default_shell, str)
+    assert "/bin/sh" in _default_shell
+
+    _default_command = session.show_option("default-command")
+    assert isinstance(_default_command, str)
+    assert "/bin/sh" in _default_command
 
 
 def test_global_options(session):
@@ -214,7 +228,9 @@ def test_global_options(session):
     builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
-    assert "top" in session.show_option("status-position", _global=True)
+    _status_position = session.show_option("status-position", _global=True)
+    assert isinstance(_status_position, str)
+    assert "top" in _status_position
     assert 493 == session.show_option("repeat-time", _global=True)
 
 
@@ -234,7 +250,9 @@ def test_global_session_env_options(session, monkeypatch):
     builder = WorkspaceBuilder(sconf=workspace)
     builder.build(session=session)
 
-    assert visual_silence in session.show_option("visual-silence", _global=True)
+    _visual_silence = session.show_option("visual-silence", _global=True)
+    assert isinstance(_visual_silence, str)
+    assert visual_silence in _visual_silence
     assert repeat_time == session.show_option("repeat-time")
     assert main_pane_height == session.attached_window.show_window_option(
         "main-pane-height"
@@ -434,6 +452,7 @@ def test_automatic_rename_option(
 
     builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
+    assert builder.session is not None
     session: Session = builder.session
     w: Window = session.windows[0]
     assert len(session.windows) == 1
@@ -473,15 +492,19 @@ def test_blank_pane_count(session):
     assert session == builder.session
 
     window1 = session.windows.get(window_name="Blank pane test")
+    assert window1 is not None
     assert len(window1.panes) == 3
 
     window2 = session.windows.get(window_name="More blank panes")
+    assert window2 is not None
     assert len(window2.panes) == 3
 
     window3 = session.windows.get(window_name="Empty string (return)")
+    assert window3 is not None
     assert len(window3.panes) == 3
 
     window4 = session.windows.get(window_name="Blank with options")
+    assert window4 is not None
     assert len(window4.panes) == 2
 
 
@@ -519,12 +542,12 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     """Same as above test, but with relative start directory, mimicking
     loading it from a location of project file. Like::
 
-    $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
+        $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
 
     instead of::
 
-    $ cd ~/workspace/myproject/.tmuxp.yaml
-    $ tmuxp load .
+        $ cd ~/workspace/myproject/.tmuxp.yaml
+        $ tmuxp load .
 
     """
     yaml_workspace = test_utils.read_workspace_file(
@@ -1068,7 +1091,9 @@ def test_load_workspace_enter(
     builder.build()
 
     session = builder.session
+    assert isinstance(session, Session)
     pane = session.attached_pane
+    assert isinstance(pane, Pane)
 
     def fn():
         captured_pane = "\n".join(pane.capture_pane())
@@ -1186,18 +1211,27 @@ def test_load_workspace_sleep(
     workspace = loader.trickle(workspace)
     builder = WorkspaceBuilder(sconf=workspace, server=server)
 
-    t = time.process_time()
+    start_time = time.process_time()
 
     builder.build()
     time.sleep(0.5)
     session = builder.session
+    assert isinstance(builder.session, Session)
+    assert session is not None
     pane = session.attached_pane
+    assert isinstance(pane, Pane)
 
-    while (time.process_time() - t) * 1000 < sleep:
+    assert pane is not None
+
+    assert not isinstance(pane.capture_pane, str)
+    assert callable(pane.capture_pane)
+
+    while (time.process_time() - start_time) * 1000 < sleep:
         captured_pane = "\n".join(pane.capture_pane())
 
         assert output not in captured_pane
         time.sleep(0.1)
+
     captured_pane = "\n".join(pane.capture_pane())
     assert output in captured_pane
 
@@ -1340,6 +1374,10 @@ def test_issue_800_default_size_many_windows(
         with pytest.raises(Exception):
             builder.build()
 
+        assert builder is not None
+        assert builder.session is not None
+        assert isinstance(builder.session, Session)
+        assert callable(builder.session.kill_session)
         builder.session.kill_session()
 
         with pytest.raises(libtmux.exc.LibTmuxException, match="no space for new pane"):

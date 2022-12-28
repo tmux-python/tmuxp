@@ -4,6 +4,8 @@ tmuxp.exc
 ~~~~~~~~~
 
 """
+import typing as t
+
 from ._compat import implements_to_string
 
 
@@ -28,7 +30,7 @@ class TmuxpPluginException(TmuxpException):
 
 
 class BeforeLoadScriptNotExists(OSError):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.strerror = "before_script file '%s' doesn't exist." % self.strerror
@@ -41,7 +43,9 @@ class BeforeLoadScriptError(Exception):
     :meth:`tmuxp.util.run_before_script`.
     """
 
-    def __init__(self, returncode, cmd, output=None):
+    def __init__(
+        self, returncode: int, cmd: str, output: t.Optional[str] = None
+    ) -> None:
         self.returncode = returncode
         self.cmd = cmd
         self.output = output

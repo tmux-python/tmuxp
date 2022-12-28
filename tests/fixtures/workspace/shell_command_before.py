@@ -1,4 +1,5 @@
 import os
+from typing import Any, Dict
 
 config_unexpanded = {  # shell_command_before is string in some areas
     "session_name": "sample workspace",
@@ -37,7 +38,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
 }
 
 
-def config_expanded():
+def config_expanded() -> Dict[str, Any]:
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
         "start_directory": "/",
@@ -89,7 +90,7 @@ def config_expanded():
     }
 
 
-def config_after():
+def config_after() -> Dict[str, Any]:
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
         "start_directory": "/",

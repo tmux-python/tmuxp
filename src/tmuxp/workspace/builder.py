@@ -6,7 +6,9 @@ tmuxp.workspace.builder
 """
 import logging
 import time
+import typing as t
 
+from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_lt_version
 from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
@@ -134,7 +136,15 @@ class WorkspaceBuilder:
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    def __init__(self, sconf, plugins=[], server=None):
+    server: t.Optional["Server"]
+    session: t.Optional["Session"]
+
+    def __init__(
+        self,
+        sconf: t.Dict[str, t.Any],
+        plugins: t.List[t.Any] = [],
+        server: t.Optional[Server] = None,
+    ) -> None:
         """
         Initialize workspace loading.
 
@@ -162,25 +172,26 @@ class WorkspaceBuilder:
 
         if isinstance(server, Server):
             self.server = server
-        else:
-            self.server = None
 
         self.sconf = sconf
 
         self.plugins = plugins
 
-    def session_exists(self, session_name=None):
+    def session_exists(self, session_name: str) -> bool:
+        assert session_name is not None
+        assert isinstance(session_name, str)
+        assert self.server is not None
         exists = self.server.has_session(session_name)
         if not exists:
             return exists
 
         try:
-            self.session = self.server.sessions.filter(session_name=session_name)[0]
-        except IndexError:
+            self.server.sessions.get(session_name=session_name)
+        except ObjectDoesNotExist:
             return False
         return True
 
-    def build(self, session=None, append=False):
+    def build(self, session: t.Optional[Session] = None, append: bool = False) -> None:
         """
         Build tmux workspace in session.
 
@@ -207,15 +218,15 @@ class WorkspaceBuilder:
 
             if self.server.has_session(self.sconf["session_name"]):
                 try:
-                    self.session = self.server.sessions.filter(
+                    self.session = self.server.sessions.get(
                         session_name=self.sconf["session_name"]
-                    )[0]
+                    )
 
                     raise TmuxSessionExists(
                         "Session name %s is already running."
                         % self.sconf["session_name"]
                     )
-                except IndexError:
+                except ObjectDoesNotExist:
                     pass
             else:
                 new_session_kwargs = {}
@@ -227,13 +238,19 @@ class WorkspaceBuilder:
                     session_name=self.sconf["session_name"],
                     **new_session_kwargs,
                 )
+            assert session is not None
 
             assert self.sconf["session_name"] == session.name
             assert len(self.sconf["session_name"]) > 0
 
-        self.session = session
-        self.server = session.server
+        assert session is not None
+        assert session.name is not None
 
+        self.session: "Session" = session
+
+        assert session.server is not None
+
+        self.server: "Server" = session.server
         self.server.sessions
         assert self.server.has_session(session.name)
         assert session.id
@@ -298,7 +315,9 @@ class WorkspaceBuilder:
         if focus:
             focus.select_window()
 
-    def iter_create_windows(self, session, append=False):
+    def iter_create_windows(
+        self, session: Session, append: bool = False
+    ) -> t.Iterator[t.Any]:
         """
         Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -331,7 +350,7 @@ class WorkspaceBuilder:
             w1 = None
             if is_first_window_pass:  # if first window, use window 1
                 w1 = session.attached_window
-                w1.move_window(99)
+                w1.move_window("99")
 
             if "start_directory" in wconf:
                 sd = wconf["start_directory"]
@@ -395,7 +414,9 @@ class WorkspaceBuilder:
 
             yield w, wconf
 
-    def iter_create_panes(self, w, wconf):
+    def iter_create_panes(
+        self, w: Window, wconf: t.Dict[str, t.Any]
+    ) -> t.Iterator[t.Any]:
         """
         Return :class:`libtmux.Pane` iterating through window config dict.
 
@@ -416,7 +437,9 @@ class WorkspaceBuilder:
         """
         assert isinstance(w, Window)
 
-        pane_base_index = int(w.show_window_option("pane-base-index", g=True))
+        pane_base_index_str = w.show_window_option("pane-base-index", g=True)
+        assert pane_base_index_str is not None
+        pane_base_index = int(pane_base_index_str)
 
         p = None
 
@@ -452,6 +475,8 @@ class WorkspaceBuilder:
                             "You need tmux 3.0 or newer for this."
                         )
                     environment = None
+
+                assert p is not None
 
                 p = w.split_window(
                     attach=True,
@@ -494,7 +519,7 @@ class WorkspaceBuilder:
 
             yield p, pconf
 
-    def config_after_window(self, w, wconf):
+    def config_after_window(self, w: Window, wconf: t.Dict[str, t.Any]) -> None:
         """Actions to apply to window after window and pane finished.
 
         When building a tmux session, sometimes its easier to postpone things
@@ -512,10 +537,12 @@ class WorkspaceBuilder:
             for key, val in wconf["options_after"].items():
                 w.set_window_option(key, val)
 
-    def find_current_attached_session(self):
+    def find_current_attached_session(self) -> Session:
+        assert self.server is not None
+
         current_active_pane = get_current_pane(self.server)
 
-        if not current_active_pane:
+        if current_active_pane is None:
             raise exc.TmuxpException("No session active.")
 
         return next(
@@ -524,8 +551,7 @@ class WorkspaceBuilder:
                 for s in self.server.sessions
                 if s.session_id == current_active_pane.session_id
             ),
-            None,
         )
 
-    def first_window_pass(self, i, session, append):
+    def first_window_pass(self, i: int, session: Session, append: bool) -> bool:
         return len(session.windows) == 1 and i == 1 and not append
