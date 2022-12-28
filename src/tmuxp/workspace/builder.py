@@ -535,7 +535,6 @@ class WorkspaceBuilder:
                 for s in self.server.sessions
                 if s.session_id == current_active_pane.session_id
             ),
-            None,
         )
 
     def first_window_pass(self, i: int, session: Session, append: bool) -> bool:
