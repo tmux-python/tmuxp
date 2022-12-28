@@ -26,17 +26,19 @@ TMUXP_MIN_VERSION = "1.6.0"
 TMUXP_MAX_VERSION = None
 
 
-class VersionConstraints(t.TypedDict):
-    version: t.Union[Version, str]
-    vmin: str
-    vmax: t.Optional[str]
-    incompatible: t.List[t.Union[t.Any, str]]
+if t.TYPE_CHECKING:
+    from typing_extensions import TypedDict
 
+    class VersionConstraints(TypedDict):
+        version: t.Union[Version, str]
+        vmin: str
+        vmax: t.Optional[str]
+        incompatible: t.List[t.Union[t.Any, str]]
 
-class TmuxpPluginVersionConstraints(t.TypedDict):
-    tmux: VersionConstraints
-    tmuxp: VersionConstraints
-    libtmux: VersionConstraints
+    class TmuxpPluginVersionConstraints(TypedDict):
+        tmux: VersionConstraints
+        tmuxp: VersionConstraints
+        libtmux: VersionConstraints
 
 
 class TmuxpPlugin:
@@ -100,32 +102,32 @@ class TmuxpPlugin:
         self.libtmux_version = libtmux.__about__.__version__
         self.tmuxp_version = Version(__version__)
 
-        self.version_constraints = TmuxpPluginVersionConstraints(
-            tmux=VersionConstraints(
-                version=self.tmux_version,
-                vmin=tmux_min_version,
-                vmax=tmux_max_version,
-                incompatible=tmux_version_incompatible
+        self.version_constraints: "TmuxpPluginVersionConstraints" = {
+            "tmux": {
+                "version": self.tmux_version,
+                "vmin": tmux_min_version,
+                "vmax": tmux_max_version,
+                "incompatible": tmux_version_incompatible
                 if tmux_version_incompatible
                 else [],
-            ),
-            libtmux=VersionConstraints(
-                version=self.libtmux_version,
-                vmin=libtmux_min_version,
-                vmax=libtmux_max_version,
-                incompatible=libtmux_version_incompatible
+            },
+            "libtmux": {
+                "version": self.libtmux_version,
+                "vmin": libtmux_min_version,
+                "vmax": libtmux_max_version,
+                "incompatible": libtmux_version_incompatible
                 if libtmux_version_incompatible
                 else [],
-            ),
-            tmuxp=VersionConstraints(
-                version=self.tmuxp_version,
-                vmin=tmuxp_min_version,
-                vmax=tmuxp_max_version,
-                incompatible=tmuxp_version_incompatible
+            },
+            "tmuxp": {
+                "version": self.tmuxp_version,
+                "vmin": tmuxp_min_version,
+                "vmax": tmuxp_max_version,
+                "incompatible": tmuxp_version_incompatible
                 if tmuxp_version_incompatible
                 else [],
-            ),
-        )
+            },
+        }
 
         self._version_check()
 
