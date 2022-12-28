@@ -136,6 +136,9 @@ class WorkspaceBuilder:
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
+    server: t.Optional["Server"]
+    session: t.Optional["Session"]
+
     def __init__(
         self,
         sconf: t.Dict[str, t.Any],
@@ -169,21 +172,22 @@ class WorkspaceBuilder:
 
         if isinstance(server, Server):
             self.server = server
-        else:
-            self.server = None
 
         self.sconf = sconf
 
         self.plugins = plugins
 
-    def session_exists(self, session_name: t.Optional[str] = None) -> bool:
+    def session_exists(self, session_name: str) -> bool:
+        assert session_name is not None
+        assert isinstance(session_name, str)
+        assert self.server is not None
         exists = self.server.has_session(session_name)
         if not exists:
             return exists
 
         try:
-            self.session = self.server.sessions.filter(session_name=session_name)[0]
-        except IndexError:
+            self.server.sessions.get(session_name=session_name)
+        except ObjectDoesNotExist:
             return False
         return True
 
@@ -234,13 +238,19 @@ class WorkspaceBuilder:
                     session_name=self.sconf["session_name"],
                     **new_session_kwargs,
                 )
+            assert session is not None
 
             assert self.sconf["session_name"] == session.name
             assert len(self.sconf["session_name"]) > 0
 
-        self.session: "Session" = session
-        self.server: "Server" = session.server
+        assert session is not None
+        assert session.name is not None
 
+        self.session: "Session" = session
+
+        assert session.server is not None
+
+        self.server: "Server" = session.server
         self.server.sessions
         assert self.server.has_session(session.name)
         assert session.id
@@ -340,7 +350,7 @@ class WorkspaceBuilder:
             w1 = None
             if is_first_window_pass:  # if first window, use window 1
                 w1 = session.attached_window
-                w1.move_window(99)
+                w1.move_window("99")
 
             if "start_directory" in wconf:
                 sd = wconf["start_directory"]
@@ -427,7 +437,9 @@ class WorkspaceBuilder:
         """
         assert isinstance(w, Window)
 
-        pane_base_index = int(w.show_window_option("pane-base-index", g=True))
+        pane_base_index_str = w.show_window_option("pane-base-index", g=True)
+        assert pane_base_index_str is not None
+        pane_base_index = int(pane_base_index_str)
 
         p = None
 
@@ -463,6 +475,8 @@ class WorkspaceBuilder:
                             "You need tmux 3.0 or newer for this."
                         )
                     environment = None
+
+                assert p is not None
 
                 p = w.split_window(
                     attach=True,
@@ -524,9 +538,11 @@ class WorkspaceBuilder:
                 w.set_window_option(key, val)
 
     def find_current_attached_session(self) -> Session:
+        assert self.server is not None
+
         current_active_pane = get_current_pane(self.server)
 
-        if not current_active_pane:
+        if current_active_pane is None:
             raise exc.TmuxpException("No session active.")
 
         return next(
