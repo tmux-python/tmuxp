@@ -38,18 +38,19 @@ def run_before_script(
             stdout=subprocess.PIPE,
             cwd=cwd,
         )
-        for line in iter(proc.stdout.readline, b""):
-            sys.stdout.write(console_to_str(line))
+        if proc.stdout is not None:
+            for line in iter(proc.stdout.readline, b""):
+                sys.stdout.write(console_to_str(line))
         proc.wait()
 
-        if proc.returncode:
+        if proc.returncode and proc.stderr is not None:
             stderr = proc.stderr.read()
             proc.stderr.close()
-            stderr = console_to_str(stderr).split("\n")
-            stderr = "\n".join(list(filter(None, stderr)))  # filter empty
+            stderr_strlist = console_to_str(stderr).split("\n")
+            stderr_str = "\n".join(list(filter(None, stderr_strlist)))  # filter empty
 
             raise exc.BeforeLoadScriptError(
-                proc.returncode, os.path.abspath(script_file), stderr
+                proc.returncode, os.path.abspath(script_file), stderr_str
             )
 
         return proc.returncode
@@ -89,6 +90,7 @@ def get_current_pane(server: "Server") -> t.Optional["Pane"]:
             return [p for p in server.panes if p.pane_id == os.getenv("TMUX_PANE")][0]
         except IndexError:
             pass
+    return
 
 
 def get_session(
@@ -153,7 +155,7 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
             pane = window.attached_pane  # NOQA: F841
     except exc.TmuxpException as e:
         print(e)
-        return
+        return None
 
     if pane is None:
         if current_pane:
