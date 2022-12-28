@@ -452,6 +452,7 @@ def test_automatic_rename_option(
 
     builder = WorkspaceBuilder(sconf=workspace, server=server)
     builder.build()
+    assert builder.session is not None
     session: Session = builder.session
     w: Window = session.windows[0]
     assert len(session.windows) == 1
