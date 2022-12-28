@@ -8,6 +8,11 @@ from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
 from .utils import prompt_yes_no
 
+if t.TYPE_CHECKING:
+    from typing_extensions import Literal
+
+    AllowedFileTypes = Literal["json", "yaml"]
+
 
 def create_convert_subparser(
     parser: argparse.ArgumentParser,
@@ -50,7 +55,7 @@ def command_convert(
 
     _, ext = os.path.splitext(workspace_file)
     ext = ext.lower()
-    to_filetype: t.Literal["json", "yaml"]
+    to_filetype: "AllowedFileTypes"
     if ext == ".json":
         to_filetype = "yaml"
     elif ext in [".yaml", ".yml"]:
