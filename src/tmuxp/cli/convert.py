@@ -50,6 +50,7 @@ def command_convert(
 
     _, ext = os.path.splitext(workspace_file)
     ext = ext.lower()
+    to_filetype: t.Literal["json", "yaml"]
     if ext == ".json":
         to_filetype = "yaml"
     elif ext in [".yaml", ".yml"]:
@@ -60,8 +61,11 @@ def command_convert(
     configparser = ConfigReader.from_file(workspace_file)
     newfile = workspace_file.parent / (str(workspace_file.stem) + f".{to_filetype}")
 
-    export_kwargs = {"default_flow_style": False} if to_filetype == "yaml" else {}
-    new_workspace = configparser.dump(format=to_filetype, indent=2, **export_kwargs)
+    new_workspace = configparser.dump(
+        format=to_filetype,
+        indent=2,
+        **{"default_flow_style": False} if to_filetype == "yaml" else {},
+    )
 
     if not answer_yes:
         if prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?"):
