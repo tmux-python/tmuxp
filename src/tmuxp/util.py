@@ -63,11 +63,9 @@ def run_before_script(
 def oh_my_zsh_auto_title() -> None:
     """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 
-    see: https://github.com/robbyrussell/oh-my-zsh/pull/257
-
+    See: https://github.com/robbyrussell/oh-my-zsh/pull/257
     """
-
-    if "SHELL" in os.environ and "zsh" in os.environ.get("SHELL"):
+    if "SHELL" in os.environ and "zsh" in os.environ.get("SHELL", ""):
         if os.path.exists(os.path.expanduser("~/.oh-my-zsh")):
             # oh-my-zsh exists
             if (
@@ -96,7 +94,7 @@ def get_current_pane(server: "Server") -> t.Optional["Pane"]:
 def get_session(
     server: "Server",
     session_name: t.Optional[str] = None,
-    current_pane: t.Optional[t.Dict[str, str]] = None,
+    current_pane: t.Optional["Pane"] = None,
 ) -> "Session":
     try:
         if session_name:
@@ -124,7 +122,7 @@ def get_session(
 def get_window(
     session: "Session",
     window_name: t.Optional[str] = None,
-    current_pane: t.Optional[t.Dict[str, str]] = None,
+    current_pane: t.Optional["Pane"] = None,
 ) -> "Window":
     try:
         if window_name:
@@ -147,9 +145,7 @@ def get_window(
     return window
 
 
-def get_pane(
-    window: "Window", current_pane: t.Optional[t.Dict[str, str]] = None
-) -> "Pane":
+def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane":
     try:
         if current_pane is not None:
             pane = window.panes.get(pane_id=current_pane.pane_id)  # NOQA: F841
