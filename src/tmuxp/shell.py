@@ -6,8 +6,16 @@ tmuxp.shell
 """
 import logging
 import os
+import typing as t
 
 logger = logging.getLogger(__name__)
+
+if t.TYPE_CHECKING:
+    from typing_extensions import Literal, TypeAlias
+
+    CLIShellLiteral: TypeAlias = Literal[
+        "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython"
+    ]
 
 
 def has_ipython() -> bool:
@@ -56,7 +64,7 @@ def has_bpython() -> bool:
     return True
 
 
-def detect_best_shell() -> str:
+def detect_best_shell() -> "CLIShellLiteral":
     if has_ptipython():
         return "ptipython"
     elif has_ptpython():
@@ -221,7 +229,10 @@ def get_code(use_pythonrc, imported_objects):
 
 
 def launch(
-    shell: str = "best", use_pythonrc: bool = False, use_vi_mode: bool = False, **kwargs
+    shell: t.Optional["CLIShellLiteral"] = "best",
+    use_pythonrc: bool = False,
+    use_vi_mode: bool = False,
+    **kwargs
 ) -> None:
     # Also allowing passing shell='code' to force using code.interact
     imported_objects = get_launch_args(**kwargs)
