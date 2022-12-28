@@ -53,8 +53,8 @@ def setup_logger(
 def set_style(
     message: str,
     stylized: bool,
-    style_before: t.Optional[str] = None,
-    style_after: t.Optional[str] = None,
+    style_before: str = "",
+    style_after: str = "",
     prefix: str = "",
     suffix: str = "",
 ) -> str:
@@ -64,60 +64,56 @@ def set_style(
     return prefix + message + suffix
 
 
-def default_log_template(
-    self: t.Type[logging.Formatter],
-    record: logging.LogRecord,
-    stylized: t.Optional[bool] = False,
-    **kwargs: t.Any,
-) -> str:
-    """
-    Return the prefix for the log message. Template for Formatter.
-
-    Parameters
-    ----------
-    :py:class:`logging.LogRecord` :
-        object. this is passed in from inside the
-        :py:meth:`logging.Formatter.format` record.
-
-    Returns
-    -------
-    str
-        template for logger message
-    """
-
-    reset = Style.RESET_ALL
-    levelname = set_style(
-        "(%(levelname)s)",
-        stylized,
-        style_before=(LEVEL_COLORS.get(record.levelname, "") + Style.BRIGHT),
-        style_after=Style.RESET_ALL,
-        suffix=" ",
-    )
-    asctime = set_style(
-        "%(asctime)s",
-        stylized,
-        style_before=(Fore.BLACK + Style.DIM + Style.BRIGHT),
-        style_after=(Fore.RESET + Style.RESET_ALL),
-        prefix="[",
-        suffix="]",
-    )
-    name = set_style(
-        "%(name)s",
-        stylized,
-        style_before=(Fore.WHITE + Style.DIM + Style.BRIGHT),
-        style_after=(Fore.RESET + Style.RESET_ALL),
-        prefix=" ",
-        suffix=" ",
-    )
-
-    if stylized:
-        return reset + levelname + asctime + name + reset
-
-    return levelname + asctime + name
-
-
 class LogFormatter(logging.Formatter):
-    template = default_log_template
+    def template(
+        self: logging.Formatter,
+        record: logging.LogRecord,
+        stylized: bool = False,
+        **kwargs: t.Any,
+    ) -> str:
+        """
+        Return the prefix for the log message. Template for Formatter.
+
+        Parameters
+        ----------
+        :py:class:`logging.LogRecord` :
+            object. this is passed in from inside the
+            :py:meth:`logging.Formatter.format` record.
+
+        Returns
+        -------
+        str
+            template for logger message
+        """
+        reset = Style.RESET_ALL
+        levelname = set_style(
+            "(%(levelname)s)",
+            stylized,
+            style_before=(LEVEL_COLORS.get(record.levelname, "") + Style.BRIGHT),
+            style_after=Style.RESET_ALL,
+            suffix=" ",
+        )
+        asctime = set_style(
+            "%(asctime)s",
+            stylized,
+            style_before=(Fore.BLACK + Style.DIM + Style.BRIGHT),
+            style_after=(Fore.RESET + Style.RESET_ALL),
+            prefix="[",
+            suffix="]",
+        )
+        name = set_style(
+            "%(name)s",
+            stylized,
+            style_before=(Fore.WHITE + Style.DIM + Style.BRIGHT),
+            style_after=(Fore.RESET + Style.RESET_ALL),
+            prefix=" ",
+            suffix=" ",
+        )
+
+        if stylized:
+            return reset + levelname + asctime + name + reset
+
+        return levelname + asctime + name
 
     def __init__(self, color: bool = True, *args, **kwargs) -> None:
         logging.Formatter.__init__(self, *args, **kwargs)
@@ -129,7 +125,8 @@ class LogFormatter(logging.Formatter):
             record.message = f"Bad message ({e!r}): {record.__dict__!r}"
 
         date_format = "%H:%m:%S"
-        record.asctime = time.strftime(date_format, self.converter(record.created))
+        formatting = self.converter(record.created)  # type:ignore
+        record.asctime = time.strftime(date_format, formatting)
 
         prefix = self.template(record) % record.__dict__
 
