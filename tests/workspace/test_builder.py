@@ -542,12 +542,12 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     """Same as above test, but with relative start directory, mimicking
     loading it from a location of project file. Like::
 
-    $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
+        $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
 
     instead of::
 
-    $ cd ~/workspace/myproject/.tmuxp.yaml
-    $ tmuxp load .
+        $ cd ~/workspace/myproject/.tmuxp.yaml
+        $ tmuxp load .
 
     """
     yaml_workspace = test_utils.read_workspace_file(
