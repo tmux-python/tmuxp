@@ -84,7 +84,7 @@ def oh_my_zsh_auto_title() -> None:
                 )
 
 
-def get_current_pane(server: "Server") -> t.Optional[t.Dict[str, str]]:
+def get_current_pane(server: "Server") -> t.Optional["Pane"]:
     """Return Pane if one found in env"""
     if os.getenv("TMUX_PANE") is not None:
         try:
