@@ -33,7 +33,7 @@ _Yanked release: `tmuxp load` issues, see #856_
 
 _Maintenance only, no bug fixes or features_
 
-- Type annotations: Add strict mypy typings (#796)
+- Type annotations: More mypy typings (#796)
 
 ## tmuxp 1.22.1 (2022-12-27)
 
