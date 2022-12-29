@@ -10,7 +10,6 @@ import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_lt_version
-from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -164,7 +163,7 @@ class WorkspaceBuilder:
         """
 
         if not sconf:
-            raise exc.EmptyWorkspaceException("session configuration is empty.")
+            raise exc.EmptyWorkspaceException("Session configuration is empty.")
 
         # validation.validate_schema(sconf)
 
@@ -231,22 +230,6 @@ class WorkspaceBuilder:
                     "WorkspaceBuilder.build requires server to be passed "
                     + "on initialization, or pass in session object to here."
                 )
-
-            if self.server.has_session(self.sconf["session_name"]):
-                try:
-                    session = self.server.sessions.get(
-                        session_name=self.sconf["session_name"]
-                    )
-                    assert session is not None
-                    assert isinstance(session, Session)
-                    self._session = session
-
-                    raise TmuxSessionExists(
-                        "Session name %s is already running."
-                        % self.sconf["session_name"]
-                    )
-                except ObjectDoesNotExist:
-                    pass
             else:
                 new_session_kwargs = {}
                 if "start_directory" in self.sconf:
