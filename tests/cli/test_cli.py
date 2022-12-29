@@ -30,8 +30,8 @@ from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file
 
-from .constants import FIXTURE_PATH
-from .fixtures import utils as test_utils
+from ..constants import FIXTURE_PATH
+from ..fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
     import _pytest.capture
