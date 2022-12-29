@@ -387,7 +387,7 @@ class WorkspaceBuilder:
                     target = "panes"
                 else:
                     target = "windows"
-                logging.warning(
+                logger.warning(
                     f"Cannot set environment for new {target}. "
                     "You need tmux 3.0 or newer for this."
                 )
@@ -470,7 +470,7 @@ class WorkspaceBuilder:
                     # configuration as a warning for the window was already issued when
                     # the window was created.
                     if pconf.get("environment"):
-                        logging.warning(
+                        logger.warning(
                             "Cannot set environment for new panes. "
                             "You need tmux 3.0 or newer for this."
                         )
