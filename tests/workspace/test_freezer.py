@@ -18,7 +18,7 @@ def test_freeze_config(session):
         test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml")
     )
 
-    builder = WorkspaceBuilder(sconf=session_config)
+    builder = WorkspaceBuilder(sconf=session_config, server=session.server)
     builder.build(session=session)
     assert session == builder.session
 

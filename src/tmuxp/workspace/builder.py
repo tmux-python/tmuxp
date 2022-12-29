@@ -130,20 +130,20 @@ class WorkspaceBuilder:
        their panes, returning full :class:`libtmux.Window` and
        :class:`libtmux.Pane` objects each step of the way::
 
-           workspace = WorkspaceBuilder(sconf=sconf)
+           workspace = WorkspaceBuilder(sconf=sconf, server=server)
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    server: t.Optional["Server"]
+    server: "Server"
     session: t.Optional["Session"]
 
     def __init__(
         self,
         sconf: t.Dict[str, t.Any],
+        server: Server,
         plugins: t.List[t.Any] = [],
-        server: t.Optional[Server] = None,
     ) -> None:
         """
         Initialize workspace loading.
@@ -170,8 +170,8 @@ class WorkspaceBuilder:
 
         # validation.validate_schema(sconf)
 
-        if isinstance(server, Server):
-            self.server = server
+        assert isinstance(server, Server)
+        self.server = server
 
         self.sconf = sconf
 
