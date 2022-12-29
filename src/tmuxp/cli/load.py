@@ -107,13 +107,13 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
     session.cmd(*cmd)
 
 
-def load_plugins(sconf: t.Dict[str, t.Any]) -> t.List[t.Any]:
+def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
     """
     Load and return plugins in workspace
     """
     plugins = []
-    if "plugins" in sconf:
-        for plugin in sconf["plugins"]:
+    if "plugins" in session_config:
+        for plugin in session_config["plugins"]:
             try:
                 module_name = plugin.split(".")
                 module_name = ".".join(module_name[:-1])
@@ -396,7 +396,9 @@ def load_workspace(
 
     try:  # load WorkspaceBuilder object for tmuxp workspace / tmux server
         builder = WorkspaceBuilder(
-            sconf=expanded_workspace, plugins=load_plugins(expanded_workspace), server=t
+            session_config=expanded_workspace,
+            plugins=load_plugins(expanded_workspace),
+            server=t,
         )
     except exc.EmptyWorkspaceException:
         tmuxp_echo("%s is empty or parsed no workspace data" % workspace_file)

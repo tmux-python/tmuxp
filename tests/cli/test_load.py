@@ -430,10 +430,10 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
 
     plugins_config = test_utils.read_workspace_file("workspace/builder/plugin_bwb.yaml")
 
-    sconfig = ConfigReader._load(format="yaml", content=plugins_config)
-    sconfig = loader.expand(sconfig)
+    session_config = ConfigReader._load(format="yaml", content=plugins_config)
+    session_config = loader.expand(session_config)
 
-    plugins = load_plugins(sconfig)
+    plugins = load_plugins(session_config)
 
     assert len(plugins) == 1
 
@@ -541,9 +541,9 @@ def test_load_attached(
     attach_session_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(format="yaml", content=yaml_config)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
 
     _load_attached(builder, False)
 
@@ -560,9 +560,9 @@ def test_load_attached_detached(
     attach_session_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(format="yaml", content=yaml_config)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
 
     _load_attached(builder, True)
 
@@ -579,9 +579,9 @@ def test_load_attached_within_tmux(
     switch_client_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(format="yaml", content=yaml_config)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
 
     _load_attached(builder, False)
 
@@ -598,9 +598,9 @@ def test_load_attached_within_tmux_detached(
     switch_client_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(format="yaml", content=yaml_config)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
 
     _load_attached(builder, True)
 
@@ -611,9 +611,9 @@ def test_load_append_windows_to_current_session(
     server: "Server", monkeypatch: pytest.MonkeyPatch
 ) -> None:
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    sconfig = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(format="yaml", content=yaml_config)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
     builder.build()
 
     assert len(server.sessions) == 1
@@ -623,7 +623,7 @@ def test_load_append_windows_to_current_session(
     assert server.panes[0].pane_id
     monkeypatch.setenv("TMUX_PANE", server.panes[0].pane_id)
 
-    builder = WorkspaceBuilder(sconf=sconfig, server=server)
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
     _load_append_windows_to_current_session(builder)
 
     assert len(server.sessions) == 1

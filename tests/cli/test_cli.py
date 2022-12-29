@@ -119,12 +119,14 @@ def test_reattach_plugins(
 ) -> None:
     config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
-    sconfig = ConfigReader._load(format="yaml", content=config_plugins)
-    sconfig = loader.expand(sconfig)
+    session_configig = ConfigReader._load(format="yaml", content=config_plugins)
+    session_configig = loader.expand(session_configig)
 
     # open it detached
     builder = WorkspaceBuilder(
-        sconf=sconfig, plugins=load_plugins(sconfig), server=server
+        session_config=session_configig,
+        plugins=load_plugins(session_configig),
+        server=server,
     )
     builder.build()
 
