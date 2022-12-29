@@ -276,6 +276,7 @@ class WorkspaceBuilder:
             except Exception as e:
                 self.session.kill_session()
                 raise e
+
         if "options" in self.session_config:
             for option, value in self.session_config["options"].items():
                 self.session.set_option(option, value)
@@ -407,11 +408,11 @@ class WorkspaceBuilder:
                 window_shell=window_shell,
                 environment=environment,
             )
+            assert isinstance(window, Window)
 
             if is_first_window_pass:  # if first window, use window 1
                 session.attached_window.kill_window()
 
-            assert isinstance(window, Window)
             if "options" in window_config and isinstance(
                 window_config["options"], dict
             ):
