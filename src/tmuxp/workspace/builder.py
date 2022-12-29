@@ -135,7 +135,8 @@ class WorkspaceBuilder:
     """
 
     server: "Server"
-    session: t.Optional["Session"]
+    _session: t.Optional["Session"]
+    session_name: str
 
     def __init__(
         self,
@@ -171,8 +172,28 @@ class WorkspaceBuilder:
         self.server = server
 
         self.sconf = sconf
-
         self.plugins = plugins
+
+        if self.server is not None and self.session_exists(
+            session_name=self.sconf["session_name"]
+        ):
+            try:
+                session = self.server.sessions.get(
+                    session_name=self.sconf["session_name"]
+                )
+                assert session is not None
+                self._session = session
+            except ObjectDoesNotExist:
+                pass
+
+    @property
+    def session(self):
+        if self._session is None:
+            raise ObjectDoesNotExist(
+                "No session object exists for WorkspaceBuilder. "
+                "Tip: Add session_name in constructor or run WorkspaceBuilder.build()"
+            )
+        return self._session
 
     def session_exists(self, session_name: str) -> bool:
         assert session_name is not None
@@ -213,9 +234,12 @@ class WorkspaceBuilder:
 
             if self.server.has_session(self.sconf["session_name"]):
                 try:
-                    self.session = self.server.sessions.get(
+                    session = self.server.sessions.get(
                         session_name=self.sconf["session_name"]
                     )
+                    assert session is not None
+                    assert isinstance(session, Session)
+                    self._session = session
 
                     raise TmuxSessionExists(
                         "Session name %s is already running."
@@ -241,7 +265,7 @@ class WorkspaceBuilder:
         assert session is not None
         assert session.name is not None
 
-        self.session: "Session" = session
+        self._session = session
 
         assert session.server is not None
 
