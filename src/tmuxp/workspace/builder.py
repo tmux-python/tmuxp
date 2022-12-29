@@ -27,12 +27,10 @@ DEFAULT_SIZE = f"{DEFAULT_WIDTH}x{DEFAULT_HEIGHT}"
 
 
 class WorkspaceBuilder:
+    """Load workspace from workspace :py:obj:`dict` object.
 
-    """
-    Load workspace from session :py:obj:`dict`.
-
-    Build tmux workspace from a configuration. Creates and names windows, sets
-    options, splits windows into panes.
+    Build tmux workspace from a configuration. Creates and names windows, sets options,
+    splits windows into panes.
 
     Examples
     --------
@@ -145,8 +143,7 @@ class WorkspaceBuilder:
         server: Server,
         plugins: t.List[t.Any] = [],
     ) -> None:
-        """
-        Initialize workspace loading.
+        """Initialize workspace loading.
 
         Parameters
         ----------
@@ -192,14 +189,12 @@ class WorkspaceBuilder:
         return True
 
     def build(self, session: t.Optional[Session] = None, append: bool = False) -> None:
-        """
-        Build tmux workspace in session.
+        """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
 
-        Without ``session``, it will use :class:`libmtux.Server` at
-        ``self.server`` passed in on initialization to create a new Session
-        object.
+        Without ``session``, it will use :class:`libmtux.Server` at ``self.server``
+        passed in on initialization to create a new Session object.
 
         Parameters
         ----------
@@ -318,8 +313,7 @@ class WorkspaceBuilder:
     def iter_create_windows(
         self, session: Session, append: bool = False
     ) -> t.Iterator[t.Any]:
-        """
-        Return :class:`libtmux.Window` iterating through session config dict.
+        """Return :class:`libtmux.Window` iterating through session config dict.
 
         Generator yielding :class:`libtmux.Window` by iterating through
         ``sconf['windows']``.
@@ -417,8 +411,7 @@ class WorkspaceBuilder:
     def iter_create_panes(
         self, w: Window, wconf: t.Dict[str, t.Any]
     ) -> t.Iterator[t.Any]:
-        """
-        Return :class:`libtmux.Pane` iterating through window config dict.
+        """Return :class:`libtmux.Pane` iterating through window config dict.
 
         Run ``shell_command`` with ``$ tmux send-keys``.
 
