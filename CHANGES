@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Internal improvements
+
+- CLI Tests: Refactor `tests/cli` (#858)
+
+  - Fix resolution of direcotries
+
 ## tmuxp 1.23.0 (_yanked_, 2022-12-28)
 
 _Yanked release: `tmuxp load` issues, see #856_
