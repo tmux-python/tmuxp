@@ -54,13 +54,12 @@ def test_help(
 def test_resolve_behavior(
     tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    expect = str(tmp_path)
+    expect = tmp_path
     monkeypatch.chdir(tmp_path)
-    # TODO Add asserts, this breaks
-    pathlib.Path("../").resolve() == os.path.dirname(expect)
-    pathlib.Path(".").resolve() == expect
-    pathlib.Path("./").resolve() == expect
-    pathlib.Path(expect).resolve() == expect
+    assert pathlib.Path("../").resolve() == pathlib.Path(os.path.dirname(expect))
+    assert pathlib.Path(".").resolve() == expect
+    assert pathlib.Path("./").resolve() == expect
+    assert pathlib.Path(expect).resolve() == expect
 
 
 def test_get_tmuxinator_dir(monkeypatch: pytest.MonkeyPatch) -> None:
