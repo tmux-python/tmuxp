@@ -1,3 +1,8 @@
+from libtmux.pane import Pane
+from libtmux.session import Session
+import typing as t
+
+
 def inline(workspace_dict):
     """Return workspace with inlined shorthands. Opposite of :meth:`loader.expand`.
 
@@ -40,7 +45,7 @@ def inline(workspace_dict):
     return workspace_dict
 
 
-def freeze(session):
+def freeze(session: Session) -> t.Dict[str, t.Any]:
     """Freeze live tmux session into a tmuxp workspacee.
 
     Parameters
@@ -53,53 +58,61 @@ def freeze(session):
     dict
         tmuxp compatible workspace
     """
-    sconf = {"session_name": session.session_name, "windows": []}
+    session_config: t.Dict[str, t.Any] = {
+        "session_name": session.session_name,
+        "windows": [],
+    }
 
-    for w in session.windows:
-        wconf = {
-            "options": w.show_window_options(),
-            "window_name": w.name,
-            "layout": w.window_layout,
+    for window in session.windows:
+        window_config: t.Dict[str, t.Any] = {
+            "options": window.show_window_options(),
+            "window_name": window.name,
+            "layout": window.window_layout,
             "panes": [],
         }
-        if getattr(w, "window_active", "0") == "1":
-            wconf["focus"] = "true"
+
+        if getattr(window, "window_active", "0") == "1":
+            window_config["focus"] = "true"
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
-        def pane_has_same_path(p):
-            return w.panes[0].pane_current_path == p.pane_current_path
+        def pane_has_same_path(pane: Pane) -> bool:
+            return window.panes[0].pane_current_path == pane.pane_current_path
 
-        if all(pane_has_same_path(p) for p in w.panes):
-            wconf["start_directory"] = w.panes[0].pane_current_path
+        if all(pane_has_same_path(pane=pane) for pane in window.panes):
+            window_config["start_directory"] = window.panes[0].pane_current_path
 
-        for p in w.panes:
-            pconf = {"shell_command": []}
+        for pane in window.panes:
+            pane_config: t.Union[str, t.Dict[str, t.Any]] = {"shell_command": []}
+            assert isinstance(pane_config, dict)
 
-            if "start_directory" not in wconf:
-                pconf["shell_command"].append("cd " + p.pane_current_path)
+            if "start_directory" not in window_config and pane.pane_current_path:
+                pane_config["shell_command"].append("cd " + pane.pane_current_path)
 
-            if getattr(p, "pane_active", "0") == "1":
-                pconf["focus"] = "true"
+            if getattr(pane, "pane_active", "0") == "1":
+                pane_config["focus"] = "true"
 
-            current_cmd = p.pane_current_command
+            current_cmd = pane.pane_current_command
 
-            def filter_interpretters_and_shells():
-                return current_cmd.startswith("-") or any(
-                    current_cmd.endswith(cmd) for cmd in ["python", "ruby", "node"]
+            def filter_interpretters_and_shells() -> bool:
+                return current_cmd is not None and (
+                    current_cmd.startswith("-")
+                    or any(
+                        current_cmd.endswith(cmd) for cmd in ["python", "ruby", "node"]
+                    )
                 )
 
             if filter_interpretters_and_shells():
                 current_cmd = None
 
             if current_cmd:
-                pconf["shell_command"].append(current_cmd)
+                pane_config["shell_command"].append(current_cmd)
             else:
-                if not len(pconf["shell_command"]):
-                    pconf = "pane"
+                if not len(pane_config["shell_command"]):
+                    pane_config = "pane"
 
-            wconf["panes"].append(pconf)
+            window_config["panes"].append(pane_config)
 
-        sconf["windows"].append(wconf)
+        session_config["windows"].append(window_config)
 
-    return sconf
+    return session_config

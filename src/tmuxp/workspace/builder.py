@@ -10,7 +10,6 @@ import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_lt_version
-from libtmux.exc import TmuxSessionExists
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -27,12 +26,10 @@ DEFAULT_SIZE = f"{DEFAULT_WIDTH}x{DEFAULT_HEIGHT}"
 
 
 class WorkspaceBuilder:
+    """Load workspace from workspace :py:obj:`dict` object.
 
-    """
-    Load workspace from session :py:obj:`dict`.
-
-    Build tmux workspace from a configuration. Creates and names windows, sets
-    options, splits windows into panes.
+    Build tmux workspace from a configuration. Creates and names windows, sets options,
+    splits windows into panes.
 
     Examples
     --------
@@ -62,7 +59,7 @@ class WorkspaceBuilder:
     ...         - cmd: htop
     ... ''', Loader=yaml.Loader)
 
-    >>> builder = WorkspaceBuilder(sconf=session_config, server=server)
+    >>> builder = WorkspaceBuilder(session_config=session_config, server=server)
 
     **New session:**
 
@@ -102,7 +99,7 @@ class WorkspaceBuilder:
     1. Load JSON / YAML file via via :class:`pathlib.Path`::
 
            from tmuxp import config_reader
-           sconf = config_reader.ConfigReader._load(raw_yaml)
+           session_config = config_reader.ConfigReader._load(raw_yaml)
 
        The reader automatically detects the file type from :attr:`pathlib.suffix`.
 
@@ -111,46 +108,46 @@ class WorkspaceBuilder:
            import pathlib
            from tmuxp import config_reader
 
-           sconf = config_reader.ConfigReader._from_file(
+           session_config = config_reader.ConfigReader._from_file(
                pathlib.Path('path/to/config.yaml')
            )
 
-    2. :meth:`config.expand` sconf inline shorthand::
+    2. :meth:`config.expand` session_config inline shorthand::
 
            from tmuxp import config
-           sconf = config.expand(sconf)
+           session_config = config.expand(session_config)
 
     3. :meth:`config.trickle` passes down default values from session
        -> window -> pane if applicable::
 
-           sconf = config.trickle(sconf)
+           session_config = config.trickle(session_config)
 
     4. (You are here) We will create a :class:`libtmux.Session` (a real
        ``tmux(1)`` session) and iterate through the list of windows, and
        their panes, returning full :class:`libtmux.Window` and
        :class:`libtmux.Pane` objects each step of the way::
 
-           workspace = WorkspaceBuilder(sconf=sconf)
+           workspace = WorkspaceBuilder(session_config=session_config, server=server)
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    server: t.Optional["Server"]
-    session: t.Optional["Session"]
+    server: "Server"
+    _session: t.Optional["Session"]
+    session_name: str
 
     def __init__(
         self,
-        sconf: t.Dict[str, t.Any],
+        session_config: t.Dict[str, t.Any],
+        server: Server,
         plugins: t.List[t.Any] = [],
-        server: t.Optional[Server] = None,
     ) -> None:
-        """
-        Initialize workspace loading.
+        """Initialize workspace loading.
 
         Parameters
         ----------
-        sconf : dict
+        session_config : dict
             session config, includes a :py:obj:`list` of ``windows``.
 
         plugins : list
@@ -165,17 +162,37 @@ class WorkspaceBuilder:
         ``self.session``.
         """
 
-        if not sconf:
-            raise exc.EmptyWorkspaceException("session configuration is empty.")
+        if not session_config:
+            raise exc.EmptyWorkspaceException("Session configuration is empty.")
 
-        # validation.validate_schema(sconf)
+        # validation.validate_schema(session_config)
 
-        if isinstance(server, Server):
-            self.server = server
+        assert isinstance(server, Server)
+        self.server = server
 
-        self.sconf = sconf
-
+        self.session_config = session_config
         self.plugins = plugins
+
+        if self.server is not None and self.session_exists(
+            session_name=self.session_config["session_name"]
+        ):
+            try:
+                session = self.server.sessions.get(
+                    session_name=self.session_config["session_name"]
+                )
+                assert session is not None
+                self._session = session
+            except ObjectDoesNotExist:
+                pass
+
+    @property
+    def session(self):
+        if self._session is None:
+            raise ObjectDoesNotExist(
+                "No session object exists for WorkspaceBuilder. "
+                "Tip: Add session_name in constructor or run WorkspaceBuilder.build()"
+            )
+        return self._session
 
     def session_exists(self, session_name: str) -> bool:
         assert session_name is not None
@@ -192,14 +209,12 @@ class WorkspaceBuilder:
         return True
 
     def build(self, session: t.Optional[Session] = None, append: bool = False) -> None:
-        """
-        Build tmux workspace in session.
+        """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
 
-        Without ``session``, it will use :class:`libmtux.Server` at
-        ``self.server`` passed in on initialization to create a new Session
-        object.
+        Without ``session``, it will use :class:`libmtux.Server` at ``self.server``
+        passed in on initialization to create a new Session object.
 
         Parameters
         ----------
@@ -215,38 +230,25 @@ class WorkspaceBuilder:
                     "WorkspaceBuilder.build requires server to be passed "
                     + "on initialization, or pass in session object to here."
                 )
-
-            if self.server.has_session(self.sconf["session_name"]):
-                try:
-                    self.session = self.server.sessions.get(
-                        session_name=self.sconf["session_name"]
-                    )
-
-                    raise TmuxSessionExists(
-                        "Session name %s is already running."
-                        % self.sconf["session_name"]
-                    )
-                except ObjectDoesNotExist:
-                    pass
             else:
                 new_session_kwargs = {}
-                if "start_directory" in self.sconf:
-                    new_session_kwargs["start_directory"] = self.sconf[
+                if "start_directory" in self.session_config:
+                    new_session_kwargs["start_directory"] = self.session_config[
                         "start_directory"
                     ]
                 session = self.server.new_session(
-                    session_name=self.sconf["session_name"],
+                    session_name=self.session_config["session_name"],
                     **new_session_kwargs,
                 )
             assert session is not None
 
-            assert self.sconf["session_name"] == session.name
-            assert len(self.sconf["session_name"]) > 0
+            assert self.session_config["session_name"] == session.name
+            assert len(self.session_config["session_name"]) > 0
 
         assert session is not None
         assert session.name is not None
 
-        self.session: "Session" = session
+        self._session = session
 
         assert session.server is not None
 
@@ -262,52 +264,55 @@ class WorkspaceBuilder:
 
         focus = None
 
-        if "before_script" in self.sconf:
+        if "before_script" in self.session_config:
             try:
                 cwd = None
 
                 # we want to run the before_script file cwd'd from the
                 # session start directory, if it exists.
-                if "start_directory" in self.sconf:
-                    cwd = self.sconf["start_directory"]
-                run_before_script(self.sconf["before_script"], cwd=cwd)
+                if "start_directory" in self.session_config:
+                    cwd = self.session_config["start_directory"]
+                run_before_script(self.session_config["before_script"], cwd=cwd)
             except Exception as e:
                 self.session.kill_session()
                 raise e
-        if "options" in self.sconf:
-            for option, value in self.sconf["options"].items():
+
+        if "options" in self.session_config:
+            for option, value in self.session_config["options"].items():
                 self.session.set_option(option, value)
-        if "global_options" in self.sconf:
-            for option, value in self.sconf["global_options"].items():
+
+        if "global_options" in self.session_config:
+            for option, value in self.session_config["global_options"].items():
                 self.session.set_option(option, value, _global=True)
-        if "environment" in self.sconf:
-            for option, value in self.sconf["environment"].items():
+
+        if "environment" in self.session_config:
+            for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        for w, wconf in self.iter_create_windows(session, append):
-            assert isinstance(w, Window)
+        for window, window_config in self.iter_create_windows(session, append):
+            assert isinstance(window, Window)
 
             for plugin in self.plugins:
-                plugin.on_window_create(w)
+                plugin.on_window_create(window)
 
             focus_pane = None
-            for p, pconf in self.iter_create_panes(w, wconf):
-                assert isinstance(p, Pane)
-                p = p
+            for pane, pane_config in self.iter_create_panes(window, window_config):
+                assert isinstance(pane, Pane)
+                pane = pane
 
-                if "layout" in wconf:
-                    w.select_layout(wconf["layout"])
+                if "layout" in window_config:
+                    window.select_layout(window_config["layout"])
 
-                if "focus" in pconf and pconf["focus"]:
-                    focus_pane = p
+                if "focus" in pane_config and pane_config["focus"]:
+                    focus_pane = pane
 
-            if "focus" in wconf and wconf["focus"]:
-                focus = w
+            if "focus" in window_config and window_config["focus"]:
+                focus = window
 
-            self.config_after_window(w, wconf)
+            self.config_after_window(window, window_config)
 
             for plugin in self.plugins:
-                plugin.after_window_finished(w)
+                plugin.after_window_finished(window)
 
             if focus_pane:
                 focus_pane.select_pane()
@@ -318,11 +323,10 @@ class WorkspaceBuilder:
     def iter_create_windows(
         self, session: Session, append: bool = False
     ) -> t.Iterator[t.Any]:
-        """
-        Return :class:`libtmux.Window` iterating through session config dict.
+        """Return :class:`libtmux.Window` iterating through session config dict.
 
         Generator yielding :class:`libtmux.Window` by iterating through
-        ``sconf['windows']``.
+        ``session_config['windows']``.
 
         Applies ``window_options`` to window.
 
@@ -335,172 +339,182 @@ class WorkspaceBuilder:
 
         Returns
         -------
-        tuple of (:class:`libtmux.Window`, ``wconf``)
+        tuple of (:class:`libtmux.Window`, ``window_config``)
             Newly created window, and the section from the tmuxp configuration
             that was used to create the window.
         """
-        for i, wconf in enumerate(self.sconf["windows"], start=1):
-            if "window_name" not in wconf:
+        for window_iterator, window_config in enumerate(
+            self.session_config["windows"], start=1
+        ):
+            if "window_name" not in window_config:
                 window_name = None
             else:
-                window_name = wconf["window_name"]
+                window_name = window_config["window_name"]
 
-            is_first_window_pass = self.first_window_pass(i, session, append)
+            is_first_window_pass = self.first_window_pass(
+                window_iterator, session, append
+            )
 
             w1 = None
             if is_first_window_pass:  # if first window, use window 1
                 w1 = session.attached_window
                 w1.move_window("99")
 
-            if "start_directory" in wconf:
-                sd = wconf["start_directory"]
+            if "start_directory" in window_config:
+                start_directory = window_config["start_directory"]
             else:
-                sd = None
+                start_directory = None
 
             # If the first pane specifies a start_directory, use that instead.
-            panes = wconf["panes"]
+            panes = window_config["panes"]
             if panes and "start_directory" in panes[0]:
-                sd = panes[0]["start_directory"]
+                start_directory = panes[0]["start_directory"]
 
-            if "window_shell" in wconf:
-                ws = wconf["window_shell"]
+            if "window_shell" in window_config:
+                window_shell = window_config["window_shell"]
             else:
-                ws = None
+                window_shell = None
 
             # If the first pane specifies a shell, use that instead.
             try:
-                if wconf["panes"][0]["shell"] != "":
-                    ws = wconf["panes"][0]["shell"]
+                if window_config["panes"][0]["shell"] != "":
+                    window_shell = window_config["panes"][0]["shell"]
             except (KeyError, IndexError):
                 pass
 
-            environment = panes[0].get("environment", wconf.get("environment"))
+            environment = panes[0].get("environment", window_config.get("environment"))
             if environment and has_lt_version("3.0"):
                 # Falling back to use the environment of the first pane for the window
                 # creation is nice but yields misleading error messages.
                 pane_env = panes[0].get("environment")
-                win_env = wconf.get("environment")
+                win_env = window_config.get("environment")
                 if pane_env and win_env:
                     target = "panes and windows"
                 elif pane_env:
                     target = "panes"
                 else:
                     target = "windows"
-                logging.warning(
+                logger.warning(
                     f"Cannot set environment for new {target}. "
                     "You need tmux 3.0 or newer for this."
                 )
                 environment = None
 
-            w = session.new_window(
+            window = session.new_window(
                 window_name=window_name,
-                start_directory=sd,
+                start_directory=start_directory,
                 attach=False,  # do not move to the new window
-                window_index=wconf.get("window_index", ""),
-                window_shell=ws,
+                window_index=window_config.get("window_index", ""),
+                window_shell=window_shell,
                 environment=environment,
             )
+            assert isinstance(window, Window)
 
             if is_first_window_pass:  # if first window, use window 1
                 session.attached_window.kill_window()
 
-            assert isinstance(w, Window)
-            if "options" in wconf and isinstance(wconf["options"], dict):
-                for key, val in wconf["options"].items():
-                    w.set_window_option(key, val)
+            if "options" in window_config and isinstance(
+                window_config["options"], dict
+            ):
+                for key, val in window_config["options"].items():
+                    window.set_window_option(key, val)
 
-            if "focus" in wconf and wconf["focus"]:
-                w.select_window()
+            if "focus" in window_config and window_config["focus"]:
+                window.select_window()
 
-            yield w, wconf
+            yield window, window_config
 
     def iter_create_panes(
-        self, w: Window, wconf: t.Dict[str, t.Any]
+        self, window: Window, window_config: t.Dict[str, t.Any]
     ) -> t.Iterator[t.Any]:
-        """
-        Return :class:`libtmux.Pane` iterating through window config dict.
+        """Return :class:`libtmux.Pane` iterating through window config dict.
 
         Run ``shell_command`` with ``$ tmux send-keys``.
 
         Parameters
         ----------
-        w : :class:`libtmux.Window`
+        window : :class:`libtmux.Window`
             window to create panes for
-        wconf : dict
+        window_config : dict
             config section for window
 
         Returns
         -------
-        tuple of (:class:`libtmux.Pane`, ``pconf``)
+        tuple of (:class:`libtmux.Pane`, ``pane_config``)
             Newly created pane, and the section from the tmuxp configuration
             that was used to create the pane.
         """
-        assert isinstance(w, Window)
+        assert isinstance(window, Window)
 
-        pane_base_index_str = w.show_window_option("pane-base-index", g=True)
+        pane_base_index_str = window.show_window_option("pane-base-index", g=True)
         assert pane_base_index_str is not None
         pane_base_index = int(pane_base_index_str)
 
-        p = None
+        pane = None
 
-        for pindex, pconf in enumerate(wconf["panes"], start=pane_base_index):
-            if pindex == int(pane_base_index):
-                p = w.attached_pane
+        for pane_index, pane_config in enumerate(
+            window_config["panes"], start=pane_base_index
+        ):
+            if pane_index == int(pane_base_index):
+                pane = window.attached_pane
             else:
 
                 def get_pane_start_directory():
-                    if "start_directory" in pconf:
-                        return pconf["start_directory"]
-                    elif "start_directory" in wconf:
-                        return wconf["start_directory"]
+                    if "start_directory" in pane_config:
+                        return pane_config["start_directory"]
+                    elif "start_directory" in window_config:
+                        return window_config["start_directory"]
                     else:
                         return None
 
                 def get_pane_shell():
-                    if "shell" in pconf:
-                        return pconf["shell"]
-                    elif "window_shell" in wconf:
-                        return wconf["window_shell"]
+                    if "shell" in pane_config:
+                        return pane_config["shell"]
+                    elif "window_shell" in window_config:
+                        return window_config["window_shell"]
                     else:
                         return None
 
-                environment = pconf.get("environment", wconf.get("environment"))
+                environment = pane_config.get(
+                    "environment", window_config.get("environment")
+                )
                 if environment and has_lt_version("3.0"):
                     # Just issue a warning when the environment comes from the pane
                     # configuration as a warning for the window was already issued when
                     # the window was created.
-                    if pconf.get("environment"):
-                        logging.warning(
+                    if pane_config.get("environment"):
+                        logger.warning(
                             "Cannot set environment for new panes. "
                             "You need tmux 3.0 or newer for this."
                         )
                     environment = None
 
-                assert p is not None
+                assert pane is not None
 
-                p = w.split_window(
+                pane = window.split_window(
                     attach=True,
                     start_directory=get_pane_start_directory(),
                     shell=get_pane_shell(),
-                    target=p.id,
+                    target=pane.id,
                     environment=environment,
                 )
 
-            assert isinstance(p, Pane)
-            if "layout" in wconf:
-                w.select_layout(wconf["layout"])
+            assert isinstance(pane, Pane)
 
-            if "suppress_history" in pconf:
-                suppress = pconf["suppress_history"]
-            elif "suppress_history" in wconf:
-                suppress = wconf["suppress_history"]
+            if "layout" in window_config:
+                window.select_layout(window_config["layout"])
+
+            if "suppress_history" in pane_config:
+                suppress = pane_config["suppress_history"]
+            elif "suppress_history" in window_config:
+                suppress = window_config["suppress_history"]
             else:
                 suppress = True
 
-            enter = pconf.get("enter", True)
-            sleep_before = pconf.get("sleep_before", None)
-            sleep_after = pconf.get("sleep_after", None)
-            for cmd in pconf["shell_command"]:
+            enter = pane_config.get("enter", True)
+            sleep_before = pane_config.get("sleep_before", None)
+            sleep_after = pane_config.get("sleep_after", None)
+            for cmd in pane_config["shell_command"]:
                 enter = cmd.get("enter", enter)
                 sleep_before = cmd.get("sleep_before", sleep_before)
                 sleep_after = cmd.get("sleep_after", sleep_after)
@@ -508,18 +522,20 @@ class WorkspaceBuilder:
                 if sleep_before is not None:
                     time.sleep(sleep_before)
 
-                p.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
+                pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
 
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
-            if "focus" in pconf and pconf["focus"]:
-                assert p.pane_id is not None
-                w.select_pane(p.pane_id)
+            if "focus" in pane_config and pane_config["focus"]:
+                assert pane.pane_id is not None
+                window.select_pane(pane.pane_id)
 
-            yield p, pconf
+            yield pane, pane_config
 
-    def config_after_window(self, w: Window, wconf: t.Dict[str, t.Any]) -> None:
+    def config_after_window(
+        self, window: Window, window_config: t.Dict[str, t.Any]
+    ) -> None:
         """Actions to apply to window after window and pane finished.
 
         When building a tmux session, sometimes its easier to postpone things
@@ -528,14 +544,16 @@ class WorkspaceBuilder:
 
         Parameters
         ----------
-        w : :class:`libtmux.Window`
+        window : :class:`libtmux.Window`
             window to create panes for
-        wconf : dict
+        window_config : dict
             config section for window
         """
-        if "options_after" in wconf and isinstance(wconf["options_after"], dict):
-            for key, val in wconf["options_after"].items():
-                w.set_window_option(key, val)
+        if "options_after" in window_config and isinstance(
+            window_config["options_after"], dict
+        ):
+            for key, val in window_config["options_after"].items():
+                window.set_window_option(key, val)
 
     def find_current_attached_session(self) -> Session:
         assert self.server is not None
