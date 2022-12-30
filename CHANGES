@@ -21,6 +21,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Internal improvements
 
+- libtmux: 0.18.1 -> 0.18.2
+
+  Fix for starting new sessions at default socket / temporary directory
+  ([libtmux#464](https://github.com/tmux-python/libtmux/pull/464))
 - CLI Tests: Refactor `tests/cli` (#858)
 
   - Fix resolution of direcotries
