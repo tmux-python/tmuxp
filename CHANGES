@@ -15,9 +15,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 // Usage: tmuxp@next load yoursession
 ```
 
-## tmuxp 1.24.x (unreleased)
+## tmuxp 1.25.x (unreleased)
 
 <!-- Maintainers, insert changes / features for the next release here -->
+
+## tmuxp 1.24.0 (2022-12-30)
+
+_Maintenance only, no bug fixes or features_
 
 ### Internal improvements
 
@@ -25,6 +29,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   Fix for starting new sessions at default socket / temporary directory
   ([libtmux#464](https://github.com/tmux-python/libtmux/pull/464))
+
 - CLI Tests: Refactor `tests/cli` (#858)
 
   - Fix resolution of direcotries
