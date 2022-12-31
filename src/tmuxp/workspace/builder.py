@@ -188,7 +188,7 @@ class WorkspaceBuilder:
                 pass
 
     @property
-    def session(self):
+    def session(self) -> Session:
         if self._session is None:
             raise exc.SessionMissingWorkspaceException()
         return self._session

@@ -7,7 +7,7 @@ if t.TYPE_CHECKING:
     from libtmux.window import Window
 
 
-def inline(workspace_dict):
+def inline(workspace_dict: t.Dict[str, t.Any]) -> t.Any:
     """Return workspace with inlined shorthands. Opposite of :meth:`loader.expand`.
 
     Parameters

@@ -7,7 +7,7 @@ tmuxp.workspace.loader
 import logging
 import os
 import pathlib
-from typing import Dict
+import typing as t
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ def expandshell(value: str) -> str:
     return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
 
 
-def expand_cmd(p: Dict) -> Dict:
+def expand_cmd(p: t.Dict) -> t.Dict:
     if isinstance(p, str):
         p = {"shell_command": [p]}
     elif isinstance(p, list):
@@ -66,7 +66,11 @@ def expand_cmd(p: Dict) -> Dict:
     return p
 
 
-def expand(workspace_dict, cwd=None, parent=None):
+def expand(
+    workspace_dict: t.Dict[str, t.Any],
+    cwd: t.Optional[t.Union[pathlib.Path, str]] = None,
+    parent: t.Optional[t.Any] = None,
+) -> t.Dict[str, t.Any]:
     """Return workspace with shorthand and inline properties expanded.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
@@ -185,7 +189,7 @@ def expand(workspace_dict, cwd=None, parent=None):
     return workspace_dict
 
 
-def trickle(workspace_dict):
+def trickle(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     """Return a dict with "trickled down" / inherited workspace values.
 
     This will only work if workspace has been expanded to full form with

@@ -40,7 +40,7 @@ def test_help(
     cli_args: t.List[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     # In scrunched terminals, prevent width causing differantiation in result.out.
     monkeypatch.setenv("COLUMNS", "100")
@@ -86,7 +86,7 @@ def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_pass_config_dir_ClickPath(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     configdir = tmp_path / "myconfigdir"
     configdir.mkdir()

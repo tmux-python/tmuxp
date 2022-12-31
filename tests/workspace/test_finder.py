@@ -240,7 +240,7 @@ def test_find_workspace_file_arg(
     configdir: pathlib.Path,
     projectdir: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("workspace_file", type=str)

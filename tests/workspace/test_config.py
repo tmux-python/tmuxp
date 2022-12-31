@@ -26,7 +26,9 @@ def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
     )
 
 
-def test_export_json(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"):
+def test_export_json(
+    tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
+) -> None:
     json_workspace_file = tmp_path / "config.json"
 
     configparser = ConfigReader(config_fixture.sample_workspace.sample_workspace_dict)
@@ -42,7 +44,7 @@ def test_export_json(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
 #
 # There's no tests for this
 #
-def test_find_workspace_file(tmp_path: pathlib.Path):
+def test_find_workspace_file(tmp_path: pathlib.Path) -> None:
     configs = [str(tmp_path / x) for x in tmp_path.rglob("*.[json][ini][yaml]")]
 
     garbage_file = tmp_path / "config.psd"
@@ -72,13 +74,13 @@ def test_find_workspace_file(tmp_path: pathlib.Path):
     assert len(configs) == files
 
 
-def test_workspace_expand1(config_fixture: "WorkspaceTestData"):
+def test_workspace_expand1(config_fixture: "WorkspaceTestData") -> None:
     """Expand shell commands from string to list."""
     test_workspace = loader.expand(config_fixture.expand1.before_workspace)
     assert test_workspace == config_fixture.expand1.after_workspace()
 
 
-def test_workspace_expand2(config_fixture: "WorkspaceTestData"):
+def test_workspace_expand2(config_fixture: "WorkspaceTestData") -> None:
     """Expand shell commands from string to list."""
     unexpanded_dict = ConfigReader._load(
         format="yaml", content=config_fixture.expand2.unexpanded_yaml()
@@ -130,7 +132,7 @@ inheritance_workspace_after = {
 }
 
 
-def test_inheritance_workspace():
+def test_inheritance_workspace() -> None:
     workspace = inheritance_workspace_before
 
     # TODO: Look at verifying window_start_directory
@@ -158,7 +160,7 @@ def test_inheritance_workspace():
     assert workspace == inheritance_workspace_after
 
 
-def test_shell_command_before(config_fixture: "WorkspaceTestData"):
+def test_shell_command_before(config_fixture: "WorkspaceTestData") -> None:
     """Config inheritance for the nested 'start_command'."""
     test_workspace = config_fixture.shell_command_before.config_unexpanded
     test_workspace = loader.expand(test_workspace)
@@ -187,7 +189,7 @@ def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData") -
     assert test_workspace == config_fixture.trickle.expected
 
 
-def test_trickle_window_with_no_pane_workspace():
+def test_trickle_window_with_no_pane_workspace() -> None:
     test_yaml = """
     session_name: test_session
     windows:
@@ -237,7 +239,7 @@ def test_expands_blank_panes(config_fixture: "WorkspaceTestData") -> None:
     assert loader.expand(test_workspace) == config_fixture.expand_blank.expected
 
 
-def test_no_session_name():
+def test_no_session_name() -> None:
     yaml_workspace = """
     - window_name: editor
       panes:
@@ -258,7 +260,7 @@ def test_no_session_name():
         assert excinfo.match(r'requires "session_name"')
 
 
-def test_no_windows():
+def test_no_windows() -> None:
     yaml_workspace = """
     session_name: test session
     """
@@ -270,7 +272,7 @@ def test_no_windows():
         assert excinfo.match(r'list of "windows"')
 
 
-def test_no_window_name():
+def test_no_window_name() -> None:
     yaml_workspace = """
     session_name: test session
     windows:
@@ -335,7 +337,7 @@ def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "logging @ %s" % env_val == sconfig["windows"][1]["window_name"]
 
 
-def test_plugins():
+def test_plugins() -> None:
     yaml_workspace = """
     session_name: test session
     plugins: tmuxp-plugin-one.plugin.TestPluginOne
