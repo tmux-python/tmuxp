@@ -138,6 +138,7 @@ exclude_lines = [
 ]
 
 [tool.mypy]
+strict = true
 files = [
   "src/",
   "tests/",
