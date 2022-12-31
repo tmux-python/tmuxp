@@ -32,7 +32,7 @@ _Maintenance only, no bug fixes or features_
 
 - CLI Tests: Refactor `tests/cli` (#858)
 
-  - Fix resolution of direcotries
+  - Fix resolution of directories
 
 - WorkspaceBuilder: Require `Server` in constructor (#857)
 
