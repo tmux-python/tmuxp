@@ -19,6 +19,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.24.1 (2023-01-07)
+
 ### Internal improvements
 
 - libtmux: 0.18.2 -> 0.18.3 (#861)
