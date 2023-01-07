@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## Internal improvements
+
+- libtmux 0.18.3 -> 0.19.1 (#862)
+
+  0.19.1 has a fix for `Window.set_window_option()`
+
 ## tmuxp 1.24.1 (2023-01-07)
 
 ### Internal improvements
