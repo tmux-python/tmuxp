@@ -450,9 +450,9 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     ],
 )
 def test_load_plugins_version_fail_skip(
-    monkeypatch_plugin_test_packages,
-    cli_args,
-    inputs,
+    monkeypatch_plugin_test_packages: None,
+    cli_args: t.List[str],
+    inputs: t.List[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     with contextlib.suppress(SystemExit):
