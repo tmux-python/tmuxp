@@ -21,6 +21,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Internal improvements
 
+- libtmux: 0.18.2 -> 0.18.3 (#861)
+
+  via [libtmux#466](https://github.com/tmux-python/libtmux/pull/466)
+
 - tests(test_pane_order): Improve reliability of `pane_current_path` test.
 
 ## tmuxp 1.24.0 (2022-12-30)
