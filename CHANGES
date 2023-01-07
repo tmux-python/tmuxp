@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Internal improvements
+
+- tests(test_pane_order): Improve reliability of `pane_current_path` test.
+
 ## tmuxp 1.24.0 (2022-12-30)
 
 _Maintenance only, no bug fixes or features_

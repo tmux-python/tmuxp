@@ -655,6 +655,7 @@ def test_pane_order(session):
             pane_path = pane_paths[p_index - pane_base_index]
 
             def f():
+                p.refresh()
                 return p.pane_current_path == pane_path
 
             assert retry_until(f)
