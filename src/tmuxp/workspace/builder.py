@@ -9,7 +9,7 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.common import has_lt_version
+from libtmux.common import has_gte_version, has_lt_version
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -236,6 +236,9 @@ class WorkspaceBuilder:
                     new_session_kwargs["start_directory"] = self.session_config[
                         "start_directory"
                     ]
+                if has_gte_version("2.6"):
+                    new_session_kwargs["x"] = 800
+                    new_session_kwargs["y"] = 600
                 session = self.server.new_session(
                     session_name=self.session_config["session_name"],
                     **new_session_kwargs,
