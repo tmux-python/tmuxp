@@ -561,14 +561,14 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "libtmux"
-version = "0.20.0a0"
+version = "0.20.0a1"
 description = "Typed scripting library / ORM / API wrapper for tmux"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "libtmux-0.20.0a0-py3-none-any.whl", hash = "sha256:89dfb065f7138aca112567d233562902e621b2c369e7aaff61834f227a87632c"},
-    {file = "libtmux-0.20.0a0.tar.gz", hash = "sha256:0320c68deb33839d4dc11b1d1f8e9152d553e6b1467b5d16b22a29a851f19efa"},
+    {file = "libtmux-0.20.0a1-py3-none-any.whl", hash = "sha256:92af11bc02bf9d2ef7f56dc72a57f570b44d51819f35df5a43320d4776a97247"},
+    {file = "libtmux-0.20.0a1.tar.gz", hash = "sha256:bb9953e28d6384348d7488030531c8fab7506ee93795bdcc934d59bffe306ef1"},
 ]
 
 [[package]]
@@ -1707,4 +1707,4 @@ test = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "3ef9a9217032a60ae6f7354556d1baa8707078848bc4b968263509c4d177c9e9"
+content-hash = "d3d7c9aa3e0d67d8cee2dc4e2e65fa145108f689fb702079fe1d68a67beffe7b"
