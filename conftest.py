@@ -74,6 +74,12 @@ def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(scope="function")
+def session_params(session_params: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+    session_params.update({"x": 800, "y": 600})
+    return session_params
+
+
+@pytest.fixture(scope="function")
 def socket_name(request: pytest.FixtureRequest) -> str:
     return "tmuxp_test%s" % next(namer)
 
