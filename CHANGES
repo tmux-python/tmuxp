@@ -19,6 +19,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+_Maintenance only, no bug fixes or features_
+
+### Internal improvements
+
+- libtmux 0.20.0 -> 0.21.0 (#865)
+
+  This updates the separator uses from libtmux to be a rarer character. See
+  [libtmux#475](https://github.com/tmux-python/libtmux/pull/475).
+
 ## tmuxp 1.26.0 (2023-01-15)
 
 _Maintenance only, no bug fixes or features_
