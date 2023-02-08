@@ -194,7 +194,7 @@ $ tmuxp freeze session-name
 ```
 
 See more about [freezing
-tmux](http://tmuxp.git-pull.com/commands/#freeze-sessions) sessions.
+tmux](https://tmuxp.git-pull.com/cli/freeze.html) sessions.
 
 # Convert a session file
 
