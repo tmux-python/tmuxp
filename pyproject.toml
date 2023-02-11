@@ -62,7 +62,7 @@ sphinx-autobuild = "*"
 sphinx-autodoc-typehints = "*"
 sphinx-argparse = "*"
 sphinx-inline-tabs = "*"
-sphinxext-opengraph = "*"
+sphinxext-opengraph = "<0.8"  # https://github.com/wpilibsuite/sphinxext-opengraph/issues/100
 sphinx-copybutton = "*"
 sphinxext-rediraffe = "*"
 myst_parser = ">=0.18.1"
