@@ -8,7 +8,7 @@
 
 tmuxp loads your terminal workspace into tmux using workspace files.
 
-The workspace file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and wanes.
+The workspace file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and panes.
 
 ## Launching your session
 
