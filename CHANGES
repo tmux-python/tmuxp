@@ -26,7 +26,7 @@ _Maintenance only, no bug fixes or features_
 ### Development
 
 - Update mypy to 1.2.0
-- libtmux 0.21.0 -> 0.21.1 (mypy / typing updatse only)
+- libtmux 0.21.0 -> 0.21.1 (mypy / typing updates only)
 
 ## tmuxp 1.27.0 (2022-01-29)
 
