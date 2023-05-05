@@ -1,3 +1,7 @@
+Are you using the latest version of tmuxp? Check `tmuxp -V` against
+https://pypi.org/project/tmuxp/. If it's not the latest, consider updating, e.g.
+`pip install --user tmuxp`.
+
 ### Step 1: Provide a summary of your problem
 
 - For general technical questions, problems or feature requests related to the code **in this repository** file an issue.
