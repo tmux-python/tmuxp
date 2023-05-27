@@ -329,32 +329,22 @@ this will load the `.tmuxp.yaml` in the root of the project.
 
 ## Formatting
 
-The project uses [black] and [isort] (one after the other). Configurations are in `pyproject.toml`
-and `setup.cfg`:
+### ruff
 
-- `make black isort`: Run `black` first, then `isort` to handle import nuances
-
-## Linting
-
-[flake8] and [mypy] run via CI in our GitHub Actions. See the configuration in `pyproject.toml` and
-`setup.cfg`.
-
-### flake8
-
-[flake8] provides fast, reliable, barebones styling and linting.
+The project uses [ruff] to handles formatting, sorting imports and linting.
 
 ````{tab} Command
 
 poetry:
 
 ```console
-$ poetry run flake8
+$ poetry run ruff
 ```
 
 If you setup manually:
 
 ```console
-$ flake8
+$ ruff .
 ```
 
 ````
@@ -362,7 +352,7 @@ $ flake8
 ````{tab} make
 
 ```console
-$ make flake8
+$ make ruff
 ```
 
 ````
@@ -370,22 +360,25 @@ $ make flake8
 ````{tab} Watch
 
 ```console
-$ make watch_flake8
+$ make watch_ruff
 ```
 
 requires [`entr(1)`].
 
 ````
 
-````{tab} Configuration
+````{tab} Fix files
 
-See `[flake8]` in setup.cfg.
+poetry:
 
-```{literalinclude} ../setup.cfg
-:language: ini
-:start-at: "[flake8]"
-:end-before: "[isort]"
+```console
+$ poetry run ruff . --fix
+```
 
+If you setup manually:
+
+```console
+$ ruff . --fix
 ```
 
 ````
@@ -443,9 +436,7 @@ the [gh build site].
 [py.test usage argument]: https://pytest.org/latest/usage.html
 [entr]: http://entrproject.org/
 [`entr(1)`]: http://entrproject.org/
-[black]: https://github.com/psf/black
-[isort]: https://pypi.org/project/isort/
-[flake8]: https://flake8.pycqa.org/
+[ruff]: https://ruff.rs
 [mypy]: http://mypy-lang.org/
 [github actions]: https://github.com/features/actions
 [gh build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests

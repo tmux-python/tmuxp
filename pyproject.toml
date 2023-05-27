@@ -51,7 +51,8 @@ libtmux = "~0.21.1"
 colorama = ">=0.3.9"
 PyYAML = "^6.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+
 ### Docs ###
 sphinx = "*"
 aafigure = ">=0.6"
@@ -79,24 +80,12 @@ pytest-watcher = "*"
 codecov = "*"
 coverage = "*"
 
-### Format ###
-black = "*"
-isort = "*"
-
 ### Lint ###
-flake8 = [
-  { version = "*", python = "^3.7" },
-  { version = ">=5", python = "^3.8" },
-]
-flake8-bugbear = "*"
-flake8-comprehensions = "*"
+ruff = "*"
 mypy = "*"
 types-colorama = "*"
 types-docutils = "*"
 types-PyYAML = "*"
-
-### Quirks ###
-importlib-metadata = "<5" # https://github.com/PyCQA/flake8/issues/1701
 
 [tool.poetry.extras]
 docs = [
@@ -117,11 +106,8 @@ docs = [
 ]
 test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher"]
 coverage = ["codecov", "coverage", "pytest-cov"]
-format = ["black", "isort"]
 lint = [
-  "flake8",
-  "flake8-bugbear",
-  "flake8-comprehsions",
+  "ruff",
   "mypy",
   "types-colorama",
   "types-docutils",
