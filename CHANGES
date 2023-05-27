@@ -29,6 +29,7 @@ _Maintenance only, no bug fixes or features_
   formatting can be done almost instantly.
 
   This change replaces black, isort, flake8 and flake8 plugins.
+- libtmux: 0.21.1 -> 0.22.0 (Moved to ruff as well)
 
 [ruff]: https://ruff.rs
 
