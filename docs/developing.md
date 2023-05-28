@@ -329,6 +329,36 @@ this will load the `.tmuxp.yaml` in the root of the project.
 
 ## Formatting
 
+### black
+
+[black] is used for formatting.
+
+````{tab} Command
+
+poetry:
+
+```console
+$ poetry run black .
+```
+
+If you setup manually:
+
+```console
+$ black .
+```
+
+````
+
+````{tab} make
+
+```console
+$ make black
+```
+
+````
+
+In the future, `ruff` (below) may replace black as formatter.
+
 ### ruff
 
 The project uses [ruff] to handles formatting, sorting imports and linting.
@@ -437,6 +467,7 @@ the [gh build site].
 [entr]: http://entrproject.org/
 [`entr(1)`]: http://entrproject.org/
 [ruff]: https://ruff.rs
+[black]: https://github.com/psf/black
 [mypy]: http://mypy-lang.org/
 [github actions]: https://github.com/features/actions
 [gh build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests

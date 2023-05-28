@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+_Maintenance only, no bug fixes, or new features_
+
+### Development
+
+- Add back `black` for formatting
+
+  This is still necessary to accompany `ruff`, until it replaces black.
+
 ## tmuxp 1.28.0 (2023-05-27)
 
 _Maintenance only, no bug fixes or features_

@@ -81,6 +81,7 @@ codecov = "*"
 coverage = "*"
 
 ### Lint ###
+black = "*"
 ruff = "*"
 mypy = "*"
 types-colorama = "*"
@@ -107,6 +108,7 @@ docs = [
 test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher"]
 coverage = ["codecov", "coverage", "pytest-cov"]
 lint = [
+  "black",
   "ruff",
   "mypy",
   "types-colorama",
