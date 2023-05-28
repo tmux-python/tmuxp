@@ -285,18 +285,18 @@ sphinx-basic-ng = "*"
 
 [[package]]
 name = "gp-libs"
-version = "0.0.1a17"
+version = "0.0.1a19"
 description = "Internal utilities for projects following git-pull python package spec"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "gp-libs-0.0.1a17.tar.gz", hash = "sha256:3eaa0bc8587c8d473fbd191fd03dbf08bbdc007db3ae1402102307ca58e50190"},
-    {file = "gp_libs-0.0.1a17-py3-none-any.whl", hash = "sha256:5bf5957403a10027965377143f49392343637c2e374af0b3504b04d303aa5c8b"},
+    {file = "gp_libs-0.0.1a19-py3-none-any.whl", hash = "sha256:6057a135bf7ee5433550703286a39a391cbad13197d6a9f237dd69ebfcde83fc"},
+    {file = "gp_libs-0.0.1a19.tar.gz", hash = "sha256:f0efa6167d0c75411022982ad79b360b2af2c377c0866c959b8094602f07375c"},
 ]
 
 [package.dependencies]
 docutils = "*"
-myst_parser = "*"
+myst_parser = ">=0.18.1"
 
 [[package]]
 name = "idna"
@@ -1391,4 +1391,4 @@ test = []
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "62039cdd9eabda986f1ad12ac836e95587f11e69ca34de409ee26664752ff1ec"
+content-hash = "0cdd6f25deecd5a6108687256104dff3f48e6f0e17cd71b01bc2aaa75d73ec15"
