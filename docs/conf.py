@@ -253,7 +253,10 @@ def remove_tabs_js(app: "Sphinx", exc: Exception) -> None:
     # Fix for sphinx-inline-tabs#18
     if app.builder.format == "html" and not exc:
         tabs_js = Path(app.builder.outdir) / "_static" / "tabs.js"
-        tabs_js.unlink(missing_ok=True)
+        try:
+            tabs_js.unlink()  # When python 3.7 deprecated, use missing_ok=True
+        except FileNotFoundError:
+            pass
 
 
 def setup(app: "Sphinx") -> None:
