@@ -894,16 +894,17 @@ pytest = ">=5.3"
 
 [[package]]
 name = "pytest-watcher"
-version = "0.3.3"
+version = "0.3.4"
 description = "Automatically rerun your tests on file modifications"
 optional = false
 python-versions = ">=3.7.0,<4.0.0"
 files = [
-    {file = "pytest_watcher-0.3.3-py3-none-any.whl", hash = "sha256:beb583425e0d6b0004746b1cd168a2d1fcb467e06f33a89cba3b5e2d603cdd39"},
-    {file = "pytest_watcher-0.3.3.tar.gz", hash = "sha256:f3df19ada7f5ba1bf02e09e7d3c624ac03554a90bad81941bae33a2eb02ad397"},
+    {file = "pytest_watcher-0.3.4-py3-none-any.whl", hash = "sha256:edd2bd9c8a1fb14d48c9f4947234065eb9b4c1acedc0bf213b1f12501dfcffd3"},
+    {file = "pytest_watcher-0.3.4.tar.gz", hash = "sha256:d39491ba15b589221bb9a78ef4bed3d5d1503aed08209b1a138aeb95b9117a18"},
 ]
 
 [package.dependencies]
+tomli = {version = ">=2.0.1,<3.0.0", markers = "python_version < \"3.11\""}
 watchdog = ">=2.0.0"
 
 [[package]]
