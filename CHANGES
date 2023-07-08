@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+- Tests: Fix `zshrc` pytest fixture (#880)
+
 ## tmuxp 1.28.1 (2023-05-28)
 
 _Maintenance only, no bug fixes, or new features_
