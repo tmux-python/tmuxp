@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
-@pytest.mark.skipif(USING_ZSH, reason="Using ZSH")
+@pytest.mark.skipif(not USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
 def zshrc(user_path: pathlib.Path) -> pathlib.Path:
     """This quiets ZSH default message.
