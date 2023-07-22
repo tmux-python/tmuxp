@@ -1,4 +1,4 @@
-# flake8: NOQA F401
+# flake8: NOQA: F401
 """tmux session manager.
 
 tmuxp
