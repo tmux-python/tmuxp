@@ -132,13 +132,13 @@ copybutton_remove_prompts = True
 rediraffe_redirects = "redirects.txt"
 rediraffe_branch = "master~1"
 
-htmlhelp_basename = "%sdoc" % about["__title__"]
+htmlhelp_basename = f"{about['__title__']}doc"
 
 latex_documents = [
     (
         "index",
-        "{}.tex".format(about["__package_name__"]),
-        "{} Documentation".format(about["__title__"]),
+        f"{about['__package_name__']}.tex",
+        f"{about['__title__']} Documentation",
         about["__author__"],
         "manual",
     )
@@ -148,7 +148,7 @@ man_pages = [
     (
         "index",
         about["__package_name__"],
-        "{} Documentation".format(about["__title__"]),
+        f"{about['__title__']} Documentation",
         about["__author__"],
         1,
     )
@@ -157,8 +157,8 @@ man_pages = [
 texinfo_documents = [
     (
         "index",
-        "{}".format(about["__package_name__"]),
-        "{} Documentation".format(about["__title__"]),
+        about["__package_name__"],
+        f"{about['__title__']} Documentation",
         about["__author__"],
         about["__package_name__"],
         about["__description__"],
