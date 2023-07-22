@@ -359,13 +359,13 @@ sphinx-basic-ng = "*"
 
 [[package]]
 name = "gp-libs"
-version = "0.0.1a20"
+version = "0.0.1a21"
 description = "Internal utilities for projects following git-pull python package spec"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "gp_libs-0.0.1a20-py3-none-any.whl", hash = "sha256:85f8a8ea7515f2188b41c08f51c4557435284408572e38d28d8d4636fe89532b"},
-    {file = "gp_libs-0.0.1a20.tar.gz", hash = "sha256:9425a9fdb8c5343d4d4a856c5a457bd9390a67910ec6736261d6e715f596e897"},
+    {file = "gp_libs-0.0.1a21-py3-none-any.whl", hash = "sha256:22e792ec056138f3838249b3eb1d954c0ba01d7eea4fa8d4e2301ca39fb7bf41"},
+    {file = "gp_libs-0.0.1a21.tar.gz", hash = "sha256:483c6edee3f7fe6a6e35787b770296301b87fabbedd08e53806d5ec6deb733b3"},
 ]
 
 [package.dependencies]
