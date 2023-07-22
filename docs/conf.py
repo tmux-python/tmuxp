@@ -1,9 +1,10 @@
-# flake8: NOQA E5
+# flake8: NOQA: E501
+import contextlib
 import inspect
 import sys
 import typing as t
-from os.path import dirname, relpath
-from pathlib import Path
+from os.path import relpath
+import pathlib
 
 import tmuxp
 
@@ -12,7 +13,7 @@ if t.TYPE_CHECKING:
 
 
 # Get the project root dir, which is the parent dir of this
-cwd = Path(__file__).parent
+cwd = pathlib.Path(__file__).parent
 project_root = cwd.parent
 src_root = project_root / "src"
 
@@ -21,7 +22,7 @@ sys.path.insert(0, str(cwd / "_ext"))
 
 # package data
 about: t.Dict[str, str] = {}
-with open(src_root / "tmuxp" / "__about__.py") as fp:
+with (src_root / "tmuxp" / "__about__.py").open() as fp:
     exec(fp.read(), about)
 
 extensions = [
@@ -228,7 +229,7 @@ def linkcode_resolve(domain, info):  # NOQA: C901
     else:
         linespec = ""
 
-    fn = relpath(fn, start=dirname(tmuxp.__file__))
+    fn = relpath(fn, start=pathlib.Path(tmuxp.__file__).parent)
 
     if "dev" in about["__version__"]:
         return "{}/blob/master/{}/{}/{}{}".format(
@@ -252,11 +253,9 @@ def linkcode_resolve(domain, info):  # NOQA: C901
 def remove_tabs_js(app: "Sphinx", exc: Exception) -> None:
     # Fix for sphinx-inline-tabs#18
     if app.builder.format == "html" and not exc:
-        tabs_js = Path(app.builder.outdir) / "_static" / "tabs.js"
-        try:
+        tabs_js = pathlib.Path(app.builder.outdir) / "_static" / "tabs.js"
+        with contextlib.suppress(FileNotFoundError):
             tabs_js.unlink()  # When python 3.7 deprecated, use missing_ok=True
-        except FileNotFoundError:
-            pass
 
 
 def setup(app: "Sphinx") -> None:
