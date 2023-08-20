@@ -19,7 +19,17 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+_Maintenance only, no bug fixes, or new features_
+
+### Development
+
+- libtmux v0.22.2 -> v0.23.0 (#882)
+
+  Code quality improvements from https://github.com/tmux-python/libtmux/pull/488
+
 ## tmuxp 1.28.2 (2023-08-20)
+
+_Maintenance only, no bug fixes, or new features_
 
 ### Packaging
 
