@@ -48,7 +48,7 @@ def expand_cmd(p: Dict) -> Dict:
         if not cmds or any(a == cmds for a in [None, "blank", "pane"]):
             cmds = []
 
-        if isinstance(cmds, list) and len(cmds) == int(1):
+        if isinstance(cmds, list) and len(cmds) == 1:
             if any(a in cmds for a in [None, "blank", "pane"]):
                 cmds = []
 
@@ -206,15 +206,9 @@ def trickle(workspace_dict):
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 
-    if "start_directory" in workspace_dict:
-        session_start_directory = workspace_dict["start_directory"]
-    else:
-        session_start_directory = None
+    session_start_directory = workspace_dict.get("start_directory", None)
 
-    if "suppress_history" in workspace_dict:
-        suppress_history = workspace_dict["suppress_history"]
-    else:
-        suppress_history = None
+    suppress_history = workspace_dict.get("suppress_history", None)
 
     for window_dict in workspace_dict["windows"]:
         # Prepend start_directory to relative window commands
@@ -231,9 +225,8 @@ def trickle(workspace_dict):
                     window_dict["start_directory"] = window_start_path
 
         # We only need to trickle to the window, workspace builder checks wconf
-        if suppress_history is not None:
-            if "suppress_history" not in window_dict:
-                window_dict["suppress_history"] = suppress_history
+        if suppress_history is not None and "suppress_history" not in window_dict:
+            window_dict["suppress_history"] = suppress_history
 
         # If panes were NOT specified for a window, assume that a single pane
         # with no shell commands is desired

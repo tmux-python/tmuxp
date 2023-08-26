@@ -1,3 +1,4 @@
+import contextlib
 import io
 import json
 import pathlib
@@ -41,10 +42,9 @@ def test_convert(
     input_args = "y\ny\n" if "-y" not in cli_args else ""
 
     monkeypatch.setattr("sys.stdin", io.StringIO(input_args))
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     tmuxp_json = tmp_path / ".tmuxp.json"
     assert tmuxp_json.exists()
     assert tmuxp_json.open().read() == json.dumps({"session_name": "hello"}, indent=2)
@@ -76,10 +76,8 @@ def test_convert_json(
     input_args = "y\ny\n" if "-y" not in cli_args else ""
 
     monkeypatch.setattr("sys.stdin", io.StringIO(input_args))
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
 
     tmuxp_yaml = tmp_path / ".tmuxp.yaml"
     assert tmuxp_yaml.exists()

@@ -5,14 +5,14 @@ import textwrap
 import time
 import typing as t
 
-import pytest
-
 import libtmux
+import pytest
 from libtmux.common import has_gte_version, has_lt_version
 from libtmux.pane import Pane
 from libtmux.session import Session
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
+
 from tmuxp import exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.config_reader import ConfigReader
@@ -87,10 +87,7 @@ def test_focus_pane_index(session):
     assert isinstance(_pane_base_index, int)
     pane_base_index = int(_pane_base_index)
 
-    if not pane_base_index:
-        pane_base_index = 0
-    else:
-        pane_base_index = int(pane_base_index)
+    pane_base_index = 0 if not pane_base_index else int(pane_base_index)
 
     # get the pane index for each pane
     pane_base_indexes = []
@@ -231,7 +228,7 @@ def test_global_options(session):
     _status_position = session.show_option("status-position", _global=True)
     assert isinstance(_status_position, str)
     assert "top" in _status_position
-    assert 493 == session.show_option("repeat-time", _global=True)
+    assert session.show_option("repeat-time", _global=True) == 493
 
 
 def test_global_session_env_options(session, monkeypatch):
@@ -603,7 +600,7 @@ def test_start_directory_sets_session_path(server):
     builder.build()
 
     session = builder.session
-    expected = "{0}|/usr".format(session.id)
+    expected = f"{session.id}|/usr"
 
     cmd = server.cmd("list-sessions", "-F", "#{session_id}|#{session_path}")
     assert expected in cmd.stdout

@@ -141,7 +141,7 @@ class WorkspaceBuilder:
         self,
         session_config: t.Dict[str, t.Any],
         server: Server,
-        plugins: t.List[t.Any] = [],
+        plugins: t.Optional[t.List[t.Any]] = None,
     ) -> None:
         """Initialize workspace loading.
 
@@ -162,6 +162,8 @@ class WorkspaceBuilder:
         ``self.session``.
         """
 
+        if plugins is None:
+            plugins = []
         if not session_config:
             raise exc.EmptyWorkspaceException("Session configuration is empty.")
 
@@ -276,9 +278,9 @@ class WorkspaceBuilder:
                 if "start_directory" in self.session_config:
                     cwd = self.session_config["start_directory"]
                 run_before_script(self.session_config["before_script"], cwd=cwd)
-            except Exception as e:
+            except Exception:
                 self.session.kill_session()
-                raise e
+                raise
 
         if "options" in self.session_config:
             for option, value in self.session_config["options"].items():
@@ -349,10 +351,7 @@ class WorkspaceBuilder:
         for window_iterator, window_config in enumerate(
             self.session_config["windows"], start=1
         ):
-            if "window_name" not in window_config:
-                window_name = None
-            else:
-                window_name = window_config["window_name"]
+            window_name = window_config.get("window_name", None)
 
             is_first_window_pass = self.first_window_pass(
                 window_iterator, session, append
@@ -363,20 +362,14 @@ class WorkspaceBuilder:
                 w1 = session.attached_window
                 w1.move_window("99")
 
-            if "start_directory" in window_config:
-                start_directory = window_config["start_directory"]
-            else:
-                start_directory = None
+            start_directory = window_config.get("start_directory", None)
 
             # If the first pane specifies a start_directory, use that instead.
             panes = window_config["panes"]
             if panes and "start_directory" in panes[0]:
                 start_directory = panes[0]["start_directory"]
 
-            if "window_shell" in window_config:
-                window_shell = window_config["window_shell"]
-            else:
-                window_shell = None
+            window_shell = window_config.get("window_shell", None)
 
             # If the first pane specifies a shell, use that instead.
             try:

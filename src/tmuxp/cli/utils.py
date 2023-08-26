@@ -126,7 +126,7 @@ def prompt_choices(
         if isinstance(choice, str):
             options.append(choice)
         elif isinstance(choice, tuple):
-            options.append("%s [%s]" % (choice, choice[0]))
+            options.append(f"{choice} [{choice[0]}]")
             choice = choice[0]
         _choices.append(choice)
 

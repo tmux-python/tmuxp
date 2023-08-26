@@ -49,7 +49,7 @@ def test_find_workspace_file(tmp_path: pathlib.Path):
     garbage_file = tmp_path / "config.psd"
     garbage_file.write_text("wat", encoding="utf-8")
 
-    for r, d, f in os.walk(str(tmp_path)):
+    for _r, _d, f in os.walk(str(tmp_path)):
         for filela in (x for x in f if x.endswith((".json", ".ini", "yaml"))):
             configs.append(str(tmp_path / filela))
 

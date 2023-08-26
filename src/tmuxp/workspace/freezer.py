@@ -1,6 +1,7 @@
+import typing as t
+
 from libtmux.pane import Pane
 from libtmux.session import Session
-import typing as t
 
 
 def inline(workspace_dict):
@@ -23,7 +24,7 @@ def inline(workspace_dict):
     ):
         workspace_dict["shell_command"] = workspace_dict["shell_command"][0]
 
-        if len(workspace_dict.keys()) == int(1):
+        if len(workspace_dict.keys()) == 1:
             workspace_dict = workspace_dict["shell_command"]
     if (
         "shell_command_before" in workspace_dict

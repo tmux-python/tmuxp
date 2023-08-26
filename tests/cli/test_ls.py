@@ -1,3 +1,4 @@
+import contextlib
 import os
 import pathlib
 
@@ -36,10 +37,9 @@ def test_ls_cli(
         else:
             location.touch()
 
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(["ls"])
-    except SystemExit:
-        pass
+
     cli_output = capsys.readouterr().out
 
     assert cli_output == "\n".join(stems) + "\n"

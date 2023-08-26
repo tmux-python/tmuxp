@@ -1,10 +1,10 @@
 # flake8: NOQA: E501
 import contextlib
 import inspect
+import pathlib
 import sys
 import typing as t
 from os.path import relpath
-import pathlib
 
 import tmuxp
 
@@ -172,12 +172,12 @@ intersphinx_mapping = {
 }
 
 # aafig format, try to get working with pdf
-aafig_format = dict(latex="pdf", html="gif")
+aafig_format = {"latex": "pdf", "html": "gif"}
 
-aafig_default_options = dict(scale=0.75, aspect=0.5, proportional=True)
+aafig_default_options = {"scale": 0.75, "aspect": 0.5, "proportional": True}
 
 
-def linkcode_resolve(domain, info):  # NOQA: C901
+def linkcode_resolve(domain, info):
     """
     Determine the URL corresponding to Python object
 
@@ -224,10 +224,7 @@ def linkcode_resolve(domain, info):  # NOQA: C901
     except Exception:
         lineno = None
 
-    if lineno:
-        linespec = "#L%d-L%d" % (lineno, lineno + len(source) - 1)
-    else:
-        linespec = ""
+    linespec = "#L%d-L%d" % (lineno, lineno + len(source) - 1) if lineno else ""
 
     fn = relpath(fn, start=pathlib.Path(tmuxp.__file__).parent)
 

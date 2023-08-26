@@ -32,7 +32,7 @@ def has_ipython() -> bool:
 
 def has_ptpython() -> bool:
     try:
-        from ptpython.repl import embed, run_config  # NOQA F841
+        from ptpython.repl import embed, run_config  # F841
     except ImportError:
         try:
             from prompt_toolkit.contrib.repl import embed, run_config  # NOQA F841
@@ -44,8 +44,8 @@ def has_ptpython() -> bool:
 
 def has_ptipython() -> bool:
     try:
-        from ptpython.ipython import embed  # NOQA F841
-        from ptpython.repl import run_config  # NOQA F841
+        from ptpython.ipython import embed  # F841
+        from ptpython.repl import run_config  # F841
     except ImportError:
         try:
             from prompt_toolkit.contrib.ipython import embed  # NOQA F841
@@ -80,7 +80,7 @@ def get_bpython(options, extra_args=None):
     if extra_args is None:
         extra_args = {}
 
-    from bpython import embed  # NOQA F841
+    from bpython import embed  # F841
 
     def launch_bpython():
         imported_objects = get_launch_args(**options)

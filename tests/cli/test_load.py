@@ -1,15 +1,15 @@
+import contextlib
 import io
 import pathlib
 import typing as t
 
-import pytest
-
-from pytest_mock import MockerFixture
-
 import libtmux
+import pytest
 from libtmux.common import has_lt_version
 from libtmux.server import Server
 from libtmux.session import Session
+from pytest_mock import MockerFixture
+
 from tmuxp import cli
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
@@ -282,22 +282,18 @@ def test_load(
             config_path.format(tmp_path=tmp_path, TMUXP_CONFIGDIR=tmuxp_configdir)
         )
         tmuxp_config.write_text(
-            """
+            f"""
         session_name: {session_name}
         windows:
         - window_name: test
           panes:
           -
-        """.format(
-                session_name=session_name
-            ),
+        """,
             encoding="utf-8",
         )
 
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli([*cli_args, "-d", "-L", server.socket_name, "-y"])
-    except SystemExit:
-        pass
 
     result = capsys.readouterr()
     output = "".join(list(result.out))
@@ -363,7 +359,7 @@ def test_load_zsh_autotitle_warning(
 
     # Use tmux server (socket name) used in the test
     assert server.socket_name is not None
-    cli_args = cli_args + ["-L", server.socket_name]
+    cli_args = [*cli_args, "-L", server.socket_name]
 
     cli.cli(cli_args)
     result = capsys.readouterr()
@@ -413,10 +409,9 @@ session_name: hello
 
     monkeypatch.chdir(tmp_path)
 
-    try:
+    with contextlib.suppress(Exception):
         cli.cli(cli_args)
-    except Exception:
-        pass
+
     result = capsys.readouterr()
     log_file_path = tmp_path / "log.txt"
     assert "Loading" in log_file_path.open().read()
@@ -457,10 +452,9 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
 def test_load_plugins_version_fail_skip(
     monkeypatch_plugin_test_packages, cli_args, inputs, capsys: pytest.CaptureFixture
 ) -> None:
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     result = capsys.readouterr()
 
     assert "[Loading]" in result.out
@@ -484,10 +478,9 @@ def test_load_plugins_version_fail_no_skip(
 ) -> None:
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
 
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     result = capsys.readouterr()
 
     assert "[Not Skipping]" in result.out
@@ -502,10 +495,9 @@ def test_load_plugins_plugin_missing(
     cli_args: t.List[str],
     capsys: pytest.CaptureFixture,
 ) -> None:
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     result = capsys.readouterr()
 
     assert "[Plugin Error]" in result.out

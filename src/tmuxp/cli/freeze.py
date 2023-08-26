@@ -5,6 +5,7 @@ import sys
 import typing as t
 
 from libtmux.server import Server
+
 from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
 from tmuxp.workspace.finders import get_workspace_dir

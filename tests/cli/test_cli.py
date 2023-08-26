@@ -1,12 +1,13 @@
 import argparse
+import contextlib
 import os
 import pathlib
 import typing as t
 
-import pytest
-
 import libtmux
+import pytest
 from libtmux.server import Server
+
 from tmuxp import cli
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
 from tmuxp.cli.load import _reattach, load_plugins
@@ -42,10 +43,9 @@ def test_help(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture,
 ) -> None:
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     result = capsys.readouterr()
 
     assert "usage: tmuxp [-h] [--version] [--log-level log-level]" in result.out
@@ -57,7 +57,7 @@ def test_resolve_behavior(
     expect = tmp_path
     monkeypatch.chdir(tmp_path)
     assert pathlib.Path("../").resolve() == pathlib.Path(os.path.dirname(expect))
-    assert pathlib.Path(".").resolve() == expect
+    assert pathlib.Path().resolve() == expect
     assert pathlib.Path("./").resolve() == expect
     assert pathlib.Path(expect).resolve() == expect
 
@@ -129,10 +129,8 @@ def test_reattach_plugins(
     )
     builder.build()
 
-    try:
+    with contextlib.suppress(libtmux.exc.LibTmuxException):
         _reattach(builder)
-    except libtmux.exc.LibTmuxException:
-        pass
 
     assert builder.session is not None
     proc = builder.session.cmd("display-message", "-p", "'#S'")

@@ -1,3 +1,4 @@
+import contextlib
 import io
 import pathlib
 import typing as t
@@ -61,10 +62,8 @@ def test_import_teamocil(
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
 
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
 
     new_config_yaml = tmp_path / "la.yaml"
     assert new_config_yaml.exists()
@@ -109,10 +108,8 @@ def test_import_tmuxinator(
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
 
     new_config_yaml = tmp_path / "la.yaml"
     assert new_config_yaml.exists()

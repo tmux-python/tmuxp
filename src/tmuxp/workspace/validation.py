@@ -27,8 +27,7 @@ def validate_schema(workspace_dict: t.Any) -> bool:
         if "window_name" not in window:
             raise exc.WorkspaceError('workspace window is missing "window_name"')
 
-    if "plugins" in workspace_dict:
-        if not isinstance(workspace_dict["plugins"], list):
-            raise exc.WorkspaceError('"plugins" only supports list type')
+    if "plugins" in workspace_dict and not isinstance(workspace_dict["plugins"], list):
+        raise exc.WorkspaceError('"plugins" only supports list type')
 
     return True

@@ -19,11 +19,7 @@ if t.TYPE_CHECKING:
 
 def is_workspace_file(
     filename: str,
-    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"]] = [
-        ".yml",
-        ".yaml",
-        ".json",
-    ],
+    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"]] = None,
 ) -> bool:
     """
     Return True if file has a valid workspace file type.
@@ -39,13 +35,15 @@ def is_workspace_file(
     -------
     bool
     """
+    if extensions is None:
+        extensions = [".yml", ".yaml", ".json"]
     extensions = [extensions] if isinstance(extensions, str) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
 def in_dir(
     workspace_dir: t.Union[pathlib.Path, str] = os.path.expanduser("~/.tmuxp"),
-    extensions: t.List["ValidExtensions"] = [".yml", ".yaml", ".json"],
+    extensions: t.Optional[t.List["ValidExtensions"]] = None,
 ) -> t.List[str]:
     """
     Return a list of workspace_files in ``workspace_dir``.
@@ -61,6 +59,8 @@ def in_dir(
     -------
     list
     """
+    if extensions is None:
+        extensions = [".yml", ".yaml", ".json"]
     workspace_files = []
 
     for filename in os.listdir(workspace_dir):

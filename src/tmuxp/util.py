@@ -58,7 +58,7 @@ def run_before_script(
         if e.errno == 2:
             raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
         else:
-            raise e
+            raise
 
 
 def oh_my_zsh_auto_title() -> None:
@@ -151,9 +151,9 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
     pane = None
     try:
         if current_pane is not None:
-            pane = window.panes.get(pane_id=current_pane.pane_id)  # NOQA: F841
+            pane = window.panes.get(pane_id=current_pane.pane_id)
         else:
-            pane = window.attached_pane  # NOQA: F841
+            pane = window.attached_pane
     except exc.TmuxpException as e:
         print(e)
 

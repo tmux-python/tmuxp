@@ -1,12 +1,13 @@
+import contextlib
 import io
 import pathlib
 import subprocess
 import typing as t
 
 import pytest
-
 from libtmux.server import Server
 from libtmux.session import Session
+
 from tmuxp import cli, exc
 
 
@@ -98,13 +99,13 @@ def test_shell(
 
     assert window.attached_pane is not None
 
-    template_ctx = dict(
-        SOCKET_NAME=server.socket_name,
-        SESSION_NAME=session.name,
-        WINDOW_NAME=window_name,
-        PANE_ID=window.attached_pane.id,
-        SERVER_SOCKET_NAME=server.socket_name,
-    )
+    template_ctx = {
+        "SOCKET_NAME": server.socket_name,
+        "SESSION_NAME": session.name,
+        "WINDOW_NAME": window_name,
+        "PANE_ID": window.attached_pane.id,
+        "SERVER_SOCKET_NAME": server.socket_name,
+    }
 
     cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
@@ -191,11 +192,11 @@ def test_shell_target_missing(
     assert session.name is not None
 
     template_ctx.update(
-        dict(
-            SOCKET_NAME=server.socket_name,
-            SESSION_NAME=session.name,
-            WINDOW_NAME=template_ctx.get("window_name", window_name),
-        )
+        {
+            "SOCKET_NAME": server.socket_name,
+            "SESSION_NAME": session.name,
+            "WINDOW_NAME": template_ctx.get("window_name", window_name),
+        }
     )
     cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
@@ -265,13 +266,13 @@ def test_shell_interactive(
 
     assert window.attached_pane is not None
 
-    template_ctx = dict(
-        SOCKET_NAME=server.socket_name,
-        SESSION_NAME=session.name,
-        WINDOW_NAME=window_name,
-        PANE_ID=window.attached_pane.id,
-        SERVER_SOCKET_NAME=server.socket_name,
-    )
+    template_ctx = {
+        "SOCKET_NAME": server.socket_name,
+        "SESSION_NAME": session.name,
+        "WINDOW_NAME": window_name,
+        "PANE_ID": window.attached_pane.id,
+        "SERVER_SOCKET_NAME": server.socket_name,
+    }
 
     cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
@@ -280,9 +281,8 @@ def test_shell_interactive(
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr("sys.stdin", io.StringIO("exit()\r"))
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     result = capsys.readouterr()
     assert message.format(**template_ctx) in result.err

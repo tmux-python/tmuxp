@@ -166,7 +166,7 @@ def command_shell(
         session=session, window_name=args.window_name, current_pane=current_pane
     )
 
-    pane = util.get_pane(window=window, current_pane=current_pane)  # NOQA: F841
+    pane = util.get_pane(window=window, current_pane=current_pane)
 
     if args.command is not None:
         exec(args.command)

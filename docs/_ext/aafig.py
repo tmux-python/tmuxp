@@ -28,7 +28,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_FORMATS = dict(html="svg", latex="pdf", text=None)
+DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(dst, src):
@@ -58,21 +58,21 @@ class AafigDirective(images.Image):
 
     has_content = True
     required_arguments = 0
-    own_option_spec = dict(
-        line_width=float,
-        background=str,
-        foreground=str,
-        fill=str,
-        aspect=nonnegative_int,
-        textual=flag,
-        proportional=flag,
-    )
+    own_option_spec = {
+        "line_width": float,
+        "background": str,
+        "foreground": str,
+        "fill": str,
+        "aspect": nonnegative_int,
+        "textual": flag,
+        "proportional": flag,
+    }
     option_spec = images.Image.option_spec.copy()
     option_spec.update(own_option_spec)
 
     def run(self):
-        aafig_options = dict()
-        own_options_keys = [self.own_option_spec.keys()] + ["scale"]
+        aafig_options = {}
+        own_options_keys = [self.own_option_spec.keys(), "scale"]
         for (k, v) in self.options.items():
             if k in own_options_keys:
                 # convert flags to booleans
@@ -88,7 +88,7 @@ class AafigDirective(images.Image):
         if isinstance(image_node, nodes.system_message):
             return [image_node]
         text = "\n".join(self.content)
-        image_node.aafig = dict(options=aafig_options, text=text)
+        image_node.aafig = {"options": aafig_options, "text": text}
         return [image_node]
 
 
@@ -206,7 +206,7 @@ def setup(app):
     app.add_directive("aafig", AafigDirective)
     app.connect("doctree-read", render_aafig_images)
     app.add_config_value("aafig_format", DEFAULT_FORMATS, "html")
-    app.add_config_value("aafig_default_options", dict(), "html")
+    app.add_config_value("aafig_default_options", {}, "html")
 
 
 # vim: set expandtab shiftwidth=4 softtabstop=4 :
