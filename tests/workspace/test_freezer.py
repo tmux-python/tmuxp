@@ -50,7 +50,7 @@ ibefore_workspace = {  # inline config
             "shell_command": ["top"],
             "window_name": "editor",
             "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "window_name": "logging",
@@ -68,7 +68,7 @@ iafter_workspace = {
             "shell_command": "top",
             "window_name": "editor",
             "panes": ["vim", 'cowsay "hey"'],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {"window_name": "logging", "panes": ["tail -F /var/log/syslog"]},
         {"options": {"automatic-rename": True}, "panes": ["htop"]},

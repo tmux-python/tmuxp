@@ -41,7 +41,7 @@ python environment. A plugin interface is provided by tmuxp to inherit.
 [poetry][poetry] is the chosen python package manager for tmuxp. It is highly
 suggested to use it when developing plugins; however, `pip` will work
 just as well. Only one of the configuration files is needed for the packaging
-tool that the package developer desides to use.
+tool that the package developer decides to use.
 
 ```console
 

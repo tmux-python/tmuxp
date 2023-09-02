@@ -16,7 +16,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
                     "shell_command": ['cowsay "hey"'],
                 },
             ],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "shell_command_before": "rbenv local 2.0.0-p0",
@@ -58,7 +58,7 @@ def config_expanded() -> Dict[str, Any]:
                         "shell_command": [{"cmd": 'cowsay "hey"'}],
                     },
                 ],
-                "layout": "main-verticle",
+                "layout": "main-vertical",
             },
             {
                 "shell_command_before": {
@@ -119,7 +119,7 @@ def config_after() -> Dict[str, Any]:
                         ],
                     },
                 ],
-                "layout": "main-verticle",
+                "layout": "main-vertical",
             },
             {
                 "shell_command_before": {

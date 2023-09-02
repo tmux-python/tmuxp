@@ -1284,7 +1284,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 - #110 de-vendorize [colorama][colorama]. Thanks [@marbu][@marbu].
 - #109 fix failure of test_pane_order on fedora machines from
   [@marbu][@marbu]
-- #105 append `.txt` extension to manuals (repo ony)
+- #105 append `.txt` extension to manuals (repo only)
   from [@yegortimoshenko][@yegortimoshenko].
 - #107 Fix Server.attached_sessions return type by
   [@thomasballinger][@thomasballinger].
@@ -1445,7 +1445,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 ## tmuxp 0.1-rc8 (2013-12-17)
 
 - `unicode_literals`
-- Move py2/py3 compliancy code to `_compat`.
+- Move py2/py3 compliance code to `_compat`.
 
 ## tmuxp 0.1-rc7 (2013-12-07)
 
@@ -1690,7 +1690,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 - fix bug where `-v` and `--version` wouldn't print version.
 - property handle case where no tmux server exists when
   `attach-session` or `kill-session` is used.
-- test fixtures and inital work for importing
+- test fixtures and initial work for importing
   [tmuxinator][tmuxinator] and [teamocil][teamocil] configs
 
 ## tmuxp 0.1-dev (2013-10-24)
@@ -1742,11 +1742,11 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
     {meth}`Server.__list_sessions()` exists to keep the command layered so
     it can be tested against in a matrix with travis and compatibility
     methods can be made.
-  - {class}`Session` now has @proprety {meth}`Session.windows` returning a
+  - {class}`Session` now has @property {meth}`Session.windows` returning a
     list of {class}`Window` objects via {meth}`Session.list_windows()`.
     @property {meth}`Session._windows` to {meth}`Session._list_windows()`
     to return a list of dicts without making objects.
-  - {class}`Window` now has @proprety {meth}`Window.panes` returning a
+  - {class}`Window` now has @property {meth}`Window.panes` returning a
     list of {class}`Pane` objects via {meth}`Window.list_panes()`.
     @property {meth}`Window._panes` to {meth}`Window._list_panes()`
     to return a list of dicts without making objects.
