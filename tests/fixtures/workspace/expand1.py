@@ -11,7 +11,7 @@ before_workspace = {
                 {"shell_command": ["vim"]},
                 {"shell_command": 'cowsay "hey"'},
             ],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "window_name": "logging",
@@ -42,7 +42,7 @@ def after_workspace():
                     {"shell_command": [{"cmd": "vim"}]},
                     {"shell_command": [{"cmd": 'cowsay "hey"'}]},
                 ],
-                "layout": "main-verticle",
+                "layout": "main-vertical",
             },
             {
                 "window_name": "logging",

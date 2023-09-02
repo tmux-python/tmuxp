@@ -99,7 +99,7 @@ inheritance_workspace_before = {
             "window_name": "editor",
             "start_directory": "~",
             "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "window_name": "logging",
@@ -118,7 +118,7 @@ inheritance_workspace_after = {
             "window_name": "editor",
             "start_directory": "~",
             "panes": [{"shell_command": ["vim"]}, {"shell_command": ['cowsay "hey"']}],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "window_name": "logging",

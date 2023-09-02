@@ -9,7 +9,7 @@ before = {  # shell_command_before is string in some areas
                 {"shell_command": [{"cmd": "vim"}]},
                 {"shell_command": [{"cmd": 'cowsay "hey"'}]},
             ],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "window_name": "logging",
@@ -33,7 +33,7 @@ expected = {  # shell_command_before is string in some areas
                 {"shell_command": [{"cmd": "vim"}]},
                 {"shell_command": [{"cmd": 'cowsay "hey"'}]},
             ],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "start_directory": "~",

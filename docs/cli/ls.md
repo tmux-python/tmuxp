@@ -4,7 +4,7 @@
 
 # tmuxp ls
 
-List sesssions.
+List sessions.
 
 ```{eval-rst}
 .. argparse::

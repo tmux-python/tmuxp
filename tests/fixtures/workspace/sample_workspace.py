@@ -8,7 +8,7 @@ sample_workspace_dict = {
                 {"start_directory": "~", "shell_command": ["vim"]},
                 {"shell_command": ['cowsay "hey"']},
             ],
-            "layout": "main-verticle",
+            "layout": "main-vertical",
         },
         {
             "window_name": "logging",

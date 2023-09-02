@@ -2,7 +2,7 @@
     sphinxcontrib.aafig
     ~~~~~~~~~~~~~~~~~~~
 
-    Allow embeded ASCII art to be rendered as nice looking images
+    Allow embedded ASCII art to be rendered as nice looking images
     using the aafigure reStructuredText extension.
 
     See the README file for details.
@@ -98,7 +98,7 @@ def render_aafig_images(app, doctree):
     if aafigure is None:
         logger.warn(
             "aafigure module not installed, ASCII art images "
-            "will be redered as literal text"
+            "will be rendered as literal text"
         )
     for img in doctree.traverse(nodes.image):
         if not hasattr(img, "aafig"):
@@ -160,7 +160,7 @@ def render_aafigure(app, text, options):
                 "aafig: the builder format %s is not officially "
                 "supported, aafigure images could not work. "
                 "Please report problems and working builder to "
-                "avoid this warning inthe future" % app.builder.format
+                "avoid this warning in the future" % app.builder.format
             )
         relfn = fname
         outfn = path.join(app.builder.outdir, fname)
