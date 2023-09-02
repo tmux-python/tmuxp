@@ -29,6 +29,12 @@ _Maintenance only, no bug fixes, or new features_
 
   Code quality improvements from https://github.com/tmux-python/libtmux/pull/488
 
+### Post-release: v1.29.0post0 (2023-09-02)
+
+- libtmux post-release bumps
+
+  Re-add comments that went missing from `ruff` formatter.
+
 ## tmuxp 1.28.2 (2023-08-20)
 
 _Maintenance only, no bug fixes, or new features_
