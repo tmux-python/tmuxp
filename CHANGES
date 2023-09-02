@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+- libtmux: v0.23.0 -> v0.23.1
+
+  Typo fixes inside libtmux
+
 ### Docs
 
 - Typo fixes (#884), thanks @kianmeng
