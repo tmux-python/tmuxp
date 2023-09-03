@@ -1,4 +1,4 @@
-import os
+import pathlib
 
 before_workspace = {
     "session_name": "sample workspace",
@@ -33,7 +33,7 @@ before_workspace = {
 def after_workspace():
     return {
         "session_name": "sample workspace",
-        "start_directory": os.path.expanduser("~"),
+        "start_directory": str(pathlib.Path().home()),
         "windows": [
             {
                 "window_name": "editor",
@@ -57,21 +57,15 @@ def after_workspace():
                 ],
             },
             {
-                "start_directory": os.path.normpath(
-                    os.path.join(os.path.expanduser("~"), "./")
-                ),
+                "start_directory": str(pathlib.Path().home()),
                 "panes": [{"shell_command": [{"cmd": "pwd"}]}],
             },
             {
-                "start_directory": os.path.normpath(
-                    os.path.join(os.path.expanduser("~"), "./asdf")
-                ),
+                "start_directory": str(pathlib.Path().home() / "asdf"),
                 "panes": [{"shell_command": [{"cmd": "pwd"}]}],
             },
             {
-                "start_directory": os.path.normpath(
-                    os.path.join(os.path.expanduser("~"), "../")
-                ),
+                "start_directory": str(pathlib.Path().home().parent.resolve()),
                 "panes": [{"shell_command": [{"cmd": "pwd"}]}],
             },
             {"panes": [{"shell_command": [{"cmd": "top"}]}]},
