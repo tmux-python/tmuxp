@@ -1,5 +1,4 @@
 import contextlib
-import os
 import pathlib
 
 import pytest
@@ -28,7 +27,7 @@ def test_ls_cli(
     # - directories should be ignored
     # - extensions not covered in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
     ignored_filenames = [".git/", ".gitignore/", "session_4.txt"]
-    stems = [os.path.splitext(f)[0] for f in filenames if f not in ignored_filenames]
+    stems = [pathlib.Path(f).stem for f in filenames if f not in ignored_filenames]
 
     for filename in filenames:
         location = tmp_path / f".tmuxp/{filename}"
