@@ -19,7 +19,7 @@ if t.TYPE_CHECKING:
 
 def is_workspace_file(
     filename: str,
-    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"]] = None,
+    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"], None] = None,
 ) -> bool:
     """
     Return True if file has a valid workspace file type.
