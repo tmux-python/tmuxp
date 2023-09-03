@@ -11,23 +11,22 @@ from typing import Dict
 logger = logging.getLogger(__name__)
 
 
-def expandshell(_path):
-    """
-    Return expanded path based on user's ``$HOME`` and ``env``.
+def expandshell(value: str) -> str:
+    """Returned wih variables expanded based on user's ``$HOME`` and ``env``.
 
-    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`.
+    :py:func:`os.path.expanduser` and :py:fubasednc:`os.path.expandvars`.
 
     Parameters
     ----------
-    path : str
-        path to expand
+    value : str
+        value to expand
 
     Returns
     -------
     str
-        path with shell variables expanded
+        value with shell variables expanded
     """
-    return os.path.expandvars(os.path.expanduser(_path))
+    return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
 
 
 def expand_cmd(p: Dict) -> Dict:
