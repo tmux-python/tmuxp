@@ -10,13 +10,16 @@ def get_workspace_file(
     """Return fixture data, relative to __file__"""
     if isinstance(_file, str):
         _file = pathlib.Path(_file)
+
     return FIXTURE_PATH / _file
 
 
 def read_workspace_file(_file: t.Union[pathlib.Path, str]) -> str:
     """Return fixture data, relative to __file__"""
+    if isinstance(_file, str):
+        _file = pathlib.Path(_file)
 
-    return open(get_workspace_file(_file)).read()
+    return get_workspace_file(_file).open().read()
 
 
 def write_config(
