@@ -29,6 +29,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ## tmuxp 1.29.1 (2023-09-02)
 
+_Maintenance only, no bug fixes, or new features_
+
 ### Development
 
 - libtmux: v0.23.0 -> v0.23.1
@@ -77,7 +79,7 @@ _Maintenance only, no bug fixes, or new features_
 
 ## tmuxp 1.28.0 (2023-05-27)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 ### Internal improvements
 
@@ -87,6 +89,7 @@ _Maintenance only, no bug fixes or features_
   formatting can be done almost instantly.
 
   This change replaces black, isort, flake8 and flake8 plugins.
+
 - libtmux: 0.21.1 -> 0.22.0 (Moved to ruff as well)
 - poetry: 1.4.0 -> 1.5.0
 
@@ -96,7 +99,7 @@ _Maintenance only, no bug fixes or features_
 
 ## tmuxp 1.27.1 (2022-04-07)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 ### Development
 
@@ -105,7 +108,7 @@ _Maintenance only, no bug fixes or features_
 
 ## tmuxp 1.27.0 (2022-01-29)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 ### Internal improvements
 
@@ -116,7 +119,7 @@ _Maintenance only, no bug fixes or features_
 
 ## tmuxp 1.26.0 (2023-01-15)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 ### Internal improvements
 
@@ -145,7 +148,7 @@ _Maintenance only, no bug fixes or features_
 
 ## tmuxp 1.24.0 (2022-12-30)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 ### Internal improvements
 
@@ -166,13 +169,13 @@ _Yanked release: `tmuxp load` issues, see #856_
 
 ### Internal improvements
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 - Type annotations: More mypy typings (#796)
 
 ## tmuxp 1.22.1 (2022-12-27)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 - Update libtmux 0.18.0 -> 0.18.1
 
@@ -186,7 +189,7 @@ _Maintenance only, no bug fixes or features_
 
 ## tmuxp 1.21.0 (2022-12-27)
 
-_Maintenance only, no bug fixes or features_
+_Maintenance only, no bug fixes or new features_
 
 - libtmux 0.17.2 -> 0.18.0
 
