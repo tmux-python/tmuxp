@@ -23,6 +23,9 @@ class EmptyWorkspaceException(WorkspaceError):
 
     """Workspace file is empty."""
 
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__("Session configuration is empty.", *args, **kwargs)
+
 
 class TmuxpPluginException(TmuxpException):
 

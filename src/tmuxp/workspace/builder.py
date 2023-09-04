@@ -165,7 +165,7 @@ class WorkspaceBuilder:
         if plugins is None:
             plugins = []
         if not session_config:
-            raise exc.EmptyWorkspaceException("Session configuration is empty.")
+            raise exc.EmptyWorkspaceException()
 
         # validation.validate_schema(session_config)
 
