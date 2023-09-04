@@ -255,7 +255,7 @@ class WorkspaceBuilder:
         assert session.server is not None
 
         self.server: "Server" = session.server
-        self.server.sessions
+        assert self.server.sessions is not None
         assert self.server.has_session(session.name)
         assert session.id
 
@@ -452,7 +452,9 @@ class WorkspaceBuilder:
                 pane = window.attached_pane
             else:
 
-                def get_pane_start_directory():
+                def get_pane_start_directory(
+                    pane_config: t.Dict[str, str], window_config: t.Dict[str, str]
+                ) -> t.Optional[str]:
                     if "start_directory" in pane_config:
                         return pane_config["start_directory"]
                     elif "start_directory" in window_config:
@@ -460,7 +462,9 @@ class WorkspaceBuilder:
                     else:
                         return None
 
-                def get_pane_shell():
+                def get_pane_shell(
+                    pane_config: t.Dict[str, str], window_config: t.Dict[str, str]
+                ) -> t.Optional[str]:
                     if "shell" in pane_config:
                         return pane_config["shell"]
                     elif "window_shell" in window_config:
@@ -486,8 +490,14 @@ class WorkspaceBuilder:
 
                 pane = window.split_window(
                     attach=True,
-                    start_directory=get_pane_start_directory(),
-                    shell=get_pane_shell(),
+                    start_directory=get_pane_start_directory(
+                        pane_config=pane_config,
+                        window_config=window_config,
+                    ),
+                    shell=get_pane_shell(
+                        pane_config=pane_config,
+                        window_config=window_config,
+                    ),
                     target=pane.id,
                     environment=environment,
                 )
