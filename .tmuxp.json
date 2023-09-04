@@ -17,6 +17,7 @@
           "focus": true
         },
         "pane",
+        "make watch_mypy",
         "make watch_test"
       ]
     },
