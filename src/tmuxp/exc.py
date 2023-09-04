@@ -21,6 +21,36 @@ class WorkspaceError(TmuxpException):
     """Error parsing tmuxp workspace data."""
 
 
+class SessionNotFound(TmuxpException):
+    def __init__(
+        self, session_target: t.Optional[str] = None, *args: object, **kwargs: object
+    ) -> None:
+        msg = "Session not found"
+        if session_target is not None:
+            msg += f": {session_target}"
+        return super().__init__(msg, *args, **kwargs)
+
+
+class WindowNotFound(TmuxpException):
+    def __init__(
+        self, window_target: t.Optional[str] = None, *args: object, **kwargs: object
+    ) -> None:
+        msg = "Window not found"
+        if window_target is not None:
+            msg += f": {window_target}"
+        return super().__init__(msg, *args, **kwargs)
+
+
+class PaneNotFound(TmuxpException):
+    def __init__(
+        self, pane_target: t.Optional[str] = None, *args: object, **kwargs: object
+    ) -> None:
+        msg = "Pane not found"
+        if pane_target is not None:
+            msg += f": {pane_target}"
+        return super().__init__(msg, *args, **kwargs)
+
+
 class EmptyWorkspaceException(WorkspaceError):
 
     """Workspace file is empty."""
