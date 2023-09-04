@@ -115,12 +115,25 @@ def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
                 module_name = plugin.split(".")
                 module_name = ".".join(module_name[:-1])
                 plugin_name = plugin.split(".")[-1]
+            except Exception as error:
+                tmuxp_echo(
+                    style("[Plugin Error] ", fg="red")
+                    + f"Couldn't load {plugin}\n"
+                    + style(f"{error}", fg="yellow")
+                )
+                sys.exit(1)
+
+            try:
                 plugin = getattr(importlib.import_module(module_name), plugin_name)
                 plugins.append(plugin())
             except exc.TmuxpPluginException as error:
                 if not prompt_yes_no(
                     "{}Skip loading {}?".format(
-                        style(str(error), fg="yellow"), plugin_name
+                        style(
+                            str(error),
+                            fg="yellow",
+                        ),
+                        plugin_name,
                     ),
                     default=True,
                 ):
