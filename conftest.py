@@ -69,7 +69,7 @@ def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/",
     ]
     for path in paths:
-        monkeypatch.syspath_prepend(os.path.abspath(os.path.relpath(path)))
+        monkeypatch.syspath_prepend(str(pathlib.Path(path).resolve()))
 
 
 @pytest.fixture(scope="function")
