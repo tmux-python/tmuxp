@@ -47,7 +47,6 @@ def in_dir(
     workspace_dir: t.Union[pathlib.Path, str] = os.path.expanduser("~/.tmuxp"),
     extensions: t.List["ValidExtensions"] = [".yml", ".yaml", ".json"],
 ) -> t.List[str]:
-
     """
     Return a list of workspace_files in ``workspace_dir``.
 

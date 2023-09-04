@@ -83,7 +83,6 @@ def test_pass_config_dir_ClickPath(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture,
 ) -> None:
-
     configdir = tmp_path / "myconfigdir"
     configdir.mkdir()
     user_config_name = "myconfig"

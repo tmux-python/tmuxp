@@ -24,7 +24,6 @@ def test_if_session_killed_before(server: Server) -> None:
     session_name = get_test_session_name(server=server)
 
     with temp_session(server=server, session_name=session_name):
-
         # an error or an exception within a temp_session kills the session
         server.kill_session(session_name)
 

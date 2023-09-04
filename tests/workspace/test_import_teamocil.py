@@ -39,7 +39,6 @@ def test_config_to_dict(
     teamocil_dict: t.Dict[str, t.Any],
     tmuxp_dict: t.Dict[str, t.Any],
 ) -> None:
-
     yaml_to_dict = config_reader.ConfigReader._load(
         format="yaml", content=teamocil_yaml
     )
@@ -51,10 +50,12 @@ def test_config_to_dict(
 
 
 @pytest.fixture(scope="module")
-def multisession_config() -> t.Dict[
-    str,
-    t.Dict[str, t.Any],
-]:
+def multisession_config() -> (
+    t.Dict[
+        str,
+        t.Dict[str, t.Any],
+    ]
+):
     """Return loaded multisession teamocil config as a dictionary.
 
     Also prevents re-running assertion the loads the yaml, since ordering of

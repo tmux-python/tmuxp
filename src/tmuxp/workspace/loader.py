@@ -217,7 +217,6 @@ def trickle(workspace_dict):
         suppress_history = None
 
     for window_dict in workspace_dict["windows"]:
-
         # Prepend start_directory to relative window commands
         if session_start_directory:
             if "start_directory" not in window_dict:

@@ -141,7 +141,6 @@ def debug_log_template(
     stylized: t.Optional[bool] = False,
     **kwargs: t.Any,
 ) -> str:
-
     """
     Return the prefix for the log message. Template for Formatter.
 
