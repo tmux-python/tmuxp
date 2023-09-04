@@ -39,6 +39,11 @@ class SessionMissingWorkspaceException(WorkspaceError, ObjectDoesNotExist):
         )
 
 
+class ActiveSessionMissingWorkspaceException(WorkspaceError):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__("No session active.", *args, **kwargs)
+
+
 class TmuxpPluginException(TmuxpException):
 
     """Base Exception for Tmuxp Errors."""
