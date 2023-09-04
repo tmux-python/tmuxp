@@ -4,6 +4,12 @@ import typing as t
 
 from .. import log
 
+if t.TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    CLIColour: TypeAlias = t.Union[int, t.Tuple[int, int, int], str]
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -184,14 +190,14 @@ def _interpret_color(
 
 
 class UnknownStyleColor(Exception):
-    def __init__(self, color: str, *args: object, **kwargs: object) -> None:
+    def __init__(self, color: "CLIColour", *args: object, **kwargs: object) -> None:
         return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
 
 
 def style(
     text: t.Any,
-    fg: t.Optional[t.Union[int, t.Tuple[int, int, int], str]] = None,
-    bg: t.Optional[t.Union[int, t.Tuple[int, int, int], str]] = None,
+    fg: t.Optional["CLIColour"] = None,
+    bg: t.Optional["CLIColour"] = None,
     bold: t.Optional[bool] = None,
     dim: t.Optional[bool] = None,
     underline: t.Optional[bool] = None,
