@@ -12,6 +12,7 @@
 """
 import logging
 import posixpath
+import typing as t
 from hashlib import sha1 as sha
 from os import path
 
@@ -32,7 +33,7 @@ DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(dst, src):
-    for (k, v) in src.items():
+    for k, v in src.items():
         if k not in dst:
             dst[k] = v
     return dst
@@ -58,7 +59,7 @@ class AafigDirective(images.Image):
 
     has_content = True
     required_arguments = 0
-    own_option_spec = {
+    own_option_spec: t.ClassVar = {
         "line_width": float,
         "background": str,
         "foreground": str,
@@ -73,7 +74,7 @@ class AafigDirective(images.Image):
     def run(self):
         aafig_options = {}
         own_options_keys = [self.own_option_spec.keys(), "scale"]
-        for (k, v) in self.options.items():
+        for k, v in self.options.items():
             if k in own_options_keys:
                 # convert flags to booleans
                 if v is None:
@@ -138,13 +139,18 @@ def render_aafig_images(app, doctree):
                 img["height"] = height
 
 
+class AafigureNotInstalled(AafigError):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__("aafigure module not installed", *args, **kwargs)
+
+
 def render_aafigure(app, text, options):
     """
     Render an ASCII art figure into the requested format output file.
     """
 
     if aafigure is None:
-        raise AafigError("aafigure module not installed")
+        raise AafigureNotInstalled()
 
     fname = get_basename(text, options)
     fname = "{}.{}".format(get_basename(text, options), options["format"])
@@ -173,10 +179,10 @@ def render_aafigure(app, text, options):
                 f = None
                 try:
                     try:
-                        f = open(metadata_fname)
-                        extra = f.read()
-                    except Exception:
-                        raise AafigError()
+                        with open(metadata_fname) as f:
+                            extra = f.read()
+                    except Exception as e:
+                        raise AafigError() from e
                 finally:
                     if f is not None:
                         f.close()
@@ -190,14 +196,13 @@ def render_aafigure(app, text, options):
         (visitor, output) = aafigure.render(text, outfn, options)
         output.close()
     except aafigure.UnsupportedFormatError as e:
-        raise AafigError(str(e))
+        raise AafigError(str(e)) from e
 
     extra = None
     if options["format"].lower() == "svg":
         extra = visitor.get_size_attrs()
-        f = open(metadata_fname, "w")
-        f.write(extra)
-        f.close()
+        with open(metadata_fname, "w") as f:
+            f.write(extra)
 
     return relfn, outfn, id, extra
 
