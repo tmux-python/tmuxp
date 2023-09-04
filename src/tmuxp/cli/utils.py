@@ -218,13 +218,13 @@ def style(
         try:
             bits.append(f"\033[{_interpret_color(fg)}m")
         except KeyError:
-            raise TypeError(f"Unknown color {fg!r}") from None
+            raise UnknownStyleColor(color=fg) from None
 
     if bg:
         try:
             bits.append(f"\033[{_interpret_color(bg, 10)}m")
         except KeyError:
-            raise TypeError(f"Unknown color {bg!r}") from None
+            raise UnknownStyleColor(color=bg) from None
 
     if bold is not None:
         bits.append(f"\033[{1 if bold else 22}m")
