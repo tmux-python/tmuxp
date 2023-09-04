@@ -6,6 +6,7 @@ tmuxp.shell
 """
 import logging
 import os
+import pathlib
 import typing as t
 
 logger = logging.getLogger(__name__)
@@ -106,7 +107,7 @@ def get_ipython(options, **extra_args):
             ipython_arguments = extra_args or get_ipython_arguments()
             start_ipython(argv=ipython_arguments, user_ns=imported_objects)
 
-        return launch_ipython
+        return launch_ipython  # NOQA: TRY300
     except ImportError:
         # IPython < 0.11
         # Explicitly pass an empty list as arguments, because otherwise
@@ -130,7 +131,7 @@ def get_ptpython(options, vi_mode=False):
 
     def launch_ptpython():
         imported_objects = get_launch_args(**options)
-        history_filename = os.path.expanduser("~/.ptpython_history")
+        history_filename = str(pathlib.Path("~/.ptpython_history").expanduser())
         embed(
             globals=imported_objects,
             history_filename=history_filename,
@@ -156,7 +157,7 @@ def get_ptipython(options, vi_mode=False):
 
     def launch_ptipython():
         imported_objects = get_launch_args(**options)
-        history_filename = os.path.expanduser("~/.ptpython_history")
+        history_filename = str(pathlib.Path("~/.ptpython_history").expanduser())
         embed(
             user_ns=imported_objects,
             history_filename=history_filename,
@@ -169,13 +170,17 @@ def get_ptipython(options, vi_mode=False):
 
 def get_launch_args(**kwargs):
     import libtmux
+    from libtmux.pane import Pane
+    from libtmux.server import Server
+    from libtmux.session import Session
+    from libtmux.window import Window
 
     return {
         "libtmux": libtmux,
-        "Server": libtmux.Server,
-        "Session": libtmux.Session,
-        "Window": libtmux.Window,
-        "Pane": libtmux.Pane,
+        "Server": Server,
+        "Session": Session,
+        "Window": Window,
+        "Pane": Pane,
         "server": kwargs.get("server"),
         "session": kwargs.get("session"),
         "window": kwargs.get("window"),
@@ -208,15 +213,16 @@ def get_code(use_pythonrc, imported_objects):
     # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow system
     # conventions and get $PYTHONSTARTUP first then .pythonrc.py.
     if use_pythonrc:
+        PYTHONSTARTUP = os.environ.get("PYTHONSTARTUP")
         for pythonrc in {
-            os.environ.get("PYTHONSTARTUP"),
-            os.path.expanduser("~/.pythonrc.py"),
+            *([pathlib.Path(PYTHONSTARTUP)] if PYTHONSTARTUP is not None else []),
+            pathlib.Path("~/.pythonrc.py").expanduser(),
         }:
             if not pythonrc:
                 continue
-            if not os.path.isfile(pythonrc):
+            if not pythonrc.is_file():
                 continue
-            with open(pythonrc) as handle:
+            with pythonrc.open() as handle:
                 pythonrc_code = handle.read()
             # Match the behavior of the cpython shell where an error in
             # PYTHONSTARTUP prints an exception and continues.
