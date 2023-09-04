@@ -554,7 +554,7 @@ class WorkspaceBuilder:
         current_active_pane = get_current_pane(self.server)
 
         if current_active_pane is None:
-            raise exc.TmuxpException("No session active.")
+            raise exc.ActiveSessionMissingWorkspaceException()
 
         return next(
             (
