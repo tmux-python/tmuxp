@@ -153,9 +153,8 @@ def import_config(
             if prompt_yes_no("Save to %s?" % dest_path):
                 dest = dest_path
 
-        buf = open(dest, "w")
-        buf.write(new_config)
-        buf.close()
+        with open(dest, "w") as buf:
+            buf.write(new_config)
 
         tmuxp_echo("Saved to %s." % dest)
     else:
