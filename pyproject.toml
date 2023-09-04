@@ -181,6 +181,8 @@ combine-as-imports = true
 [tool.ruff.per-file-ignores]
 "*/__init__.py" = ["F401"]
 "src/tmuxp/workspace/finders.py" = ["PTH"]
+"src/tmuxp/cli/*.py" = ["PTH"]
+"docs/_ext/aafig.py" = ["PTH"]
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
