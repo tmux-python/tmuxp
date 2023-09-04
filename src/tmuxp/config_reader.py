@@ -99,7 +99,7 @@ class ConfigReader:
         {'session_name': 'my session'}
         """
         assert isinstance(path, pathlib.Path)
-        content = open(path).read()
+        content = path.open().read()
 
         if path.suffix in [".yaml", ".yml"]:
             format: "FormatLiteral" = "yaml"
