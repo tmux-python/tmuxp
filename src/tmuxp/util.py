@@ -50,13 +50,18 @@ def run_before_script(
             stderr_str = "\n".join(list(filter(None, stderr_strlist)))  # filter empty
 
             raise exc.BeforeLoadScriptError(
-                proc.returncode, os.path.abspath(script_file), stderr_str
+                proc.returncode,
+                os.path.abspath(script_file),  # NOQA: PTH100
+                stderr_str,
             )
-
-        return proc.returncode
+        else:
+            return proc.returncode
     except OSError as e:
         if e.errno == 2:
-            raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
+            raise exc.BeforeLoadScriptNotExists(
+                e,
+                os.path.abspath(script_file),  # NOQA: PTH100
+            ) from e
         else:
             raise
 
@@ -66,21 +71,23 @@ def oh_my_zsh_auto_title() -> None:
 
     See: https://github.com/robbyrussell/oh-my-zsh/pull/257
     """
-    if "SHELL" in os.environ and "zsh" in os.environ.get("SHELL", ""):
-        if os.path.exists(os.path.expanduser("~/.oh-my-zsh")):
-            # oh-my-zsh exists
-            if (
-                "DISABLE_AUTO_TITLE" not in os.environ
-                or os.environ.get("DISABLE_AUTO_TITLE") == "false"
-            ):
-                print(
-                    "Please set:\n\n"
-                    "\texport DISABLE_AUTO_TITLE='true'\n\n"
-                    "in ~/.zshrc or where your zsh profile is stored.\n"
-                    'Remember the "export" at the beginning!\n\n'
-                    "Then create a new shell or type:\n\n"
-                    "\t$ source ~/.zshrc"
-                )
+    if (
+        "SHELL" in os.environ
+        and "zsh" in os.environ.get("SHELL", "")
+        and os.path.exists(os.path.expanduser("~/.oh-my-zsh"))  # NOQA PTH110, PTH111
+        and (
+            "DISABLE_AUTO_TITLE" not in os.environ
+            or os.environ.get("DISABLE_AUTO_TITLE") == "false"
+        )
+    ):
+        print(
+            "Please set:\n\n"
+            "\texport DISABLE_AUTO_TITLE='true'\n\n"
+            "in ~/.zshrc or where your zsh profile is stored.\n"
+            'Remember the "export" at the beginning!\n\n'
+            "Then create a new shell or type:\n\n"
+            "\t$ source ~/.zshrc"
+        )
 
 
 def get_current_pane(server: "Server") -> t.Optional["Pane"]:
