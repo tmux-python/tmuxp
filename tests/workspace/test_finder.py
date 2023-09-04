@@ -53,8 +53,8 @@ def test_get_configs_cwd(
     confdir.mkdir()
 
     monkeypatch.chdir(confdir)
-    config1 = open(".tmuxp.json", "w+b")
-    config1.close()
+    with pathlib.Path(".tmuxp.json").open("w+b") as config1:
+        config1.close()
 
     configs_found = in_cwd()
     assert len(configs_found) == 1
@@ -153,13 +153,13 @@ def test_resolve_dot(
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".tmuxp.json")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".tmuxp.ini")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("../")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("mooooooo")
 
     monkeypatch.chdir(homedir)
@@ -176,15 +176,15 @@ def test_resolve_dot(
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".tmuxp.yaml")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("../")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("mooooooo")
 
     monkeypatch.chdir(configdir)
@@ -198,15 +198,15 @@ def test_resolve_dot(
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".tmuxp.yaml")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("../")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("mooooooo")
 
     monkeypatch.chdir(tmp_path)
@@ -223,15 +223,15 @@ def test_resolve_dot(
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file(".tmuxp.yaml")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("../")
-    with pytest.raises(Exception):
+    with pytest.raises(FileNotFoundError):
         find_workspace_file("mooooooo")
 
 

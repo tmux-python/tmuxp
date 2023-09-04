@@ -6,28 +6,28 @@ tmuxp.workspace.loader
 """
 import logging
 import os
+import pathlib
 from typing import Dict
 
 logger = logging.getLogger(__name__)
 
 
-def expandshell(_path):
-    """
-    Return expanded path based on user's ``$HOME`` and ``env``.
+def expandshell(value: str) -> str:
+    """Returned wih variables expanded based on user's ``$HOME`` and ``env``.
 
-    :py:func:`os.path.expanduser` and :py:func:`os.path.expandvars`.
+    :py:func:`os.path.expanduser` and :py:fubasednc:`os.path.expandvars`.
 
     Parameters
     ----------
-    path : str
-        path to expand
+    value : str
+        value to expand
 
     Returns
     -------
     str
-        path with shell variables expanded
+        value with shell variables expanded
     """
-    return os.path.expandvars(os.path.expanduser(_path))
+    return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
 
 
 def expand_cmd(p: Dict) -> Dict:
@@ -48,9 +48,12 @@ def expand_cmd(p: Dict) -> Dict:
         if not cmds or any(a == cmds for a in [None, "blank", "pane"]):
             cmds = []
 
-        if isinstance(cmds, list) and len(cmds) == int(1):
-            if any(a in cmds for a in [None, "blank", "pane"]):
-                cmds = []
+        if (
+            isinstance(cmds, list)
+            and len(cmds) == 1
+            and any(a in cmds for a in [None, "blank", "pane"])
+        ):
+            cmds = []
 
         for cmd_idx, cmd in enumerate(cmds):
             if isinstance(cmd, str):
@@ -98,8 +101,7 @@ def expand(workspace_dict, cwd=None, parent=None):
 
     # Note: cli.py will expand workspaces relative to project's workspace directory
     # for the first cwd argument.
-    if not cwd:
-        cwd = os.getcwd()
+    cwd = pathlib.Path().cwd() if not cwd else pathlib.Path(cwd)
 
     if "session_name" in workspace_dict:
         workspace_dict["session_name"] = expandshell(workspace_dict["session_name"])
@@ -110,7 +112,7 @@ def expand(workspace_dict, cwd=None, parent=None):
             val = workspace_dict["environment"][key]
             val = expandshell(val)
             if any(val.startswith(a) for a in [".", "./"]):
-                val = os.path.normpath(os.path.join(cwd, val))
+                val = str(cwd / val)
             workspace_dict["environment"][key] = val
     if "global_options" in workspace_dict:
         for key in workspace_dict["global_options"]:
@@ -118,7 +120,7 @@ def expand(workspace_dict, cwd=None, parent=None):
             if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in [".", "./"]):
-                    val = os.path.normpath(os.path.join(cwd, val))
+                    val = str(cwd / val)
             workspace_dict["global_options"][key] = val
     if "options" in workspace_dict:
         for key in workspace_dict["options"]:
@@ -126,7 +128,7 @@ def expand(workspace_dict, cwd=None, parent=None):
             if isinstance(val, str):
                 val = expandshell(val)
                 if any(val.startswith(a) for a in [".", "./"]):
-                    val = os.path.normpath(os.path.join(cwd, val))
+                    val = str(cwd / val)
             workspace_dict["options"][key] = val
 
     # Any workspace section, session, window, pane that can contain the
@@ -144,16 +146,16 @@ def expand(workspace_dict, cwd=None, parent=None):
             # This is for the case where you may be loading a workspace from
             # outside your shell current directory.
             if parent:
-                cwd = parent["start_directory"]
-            start_path = os.path.normpath(os.path.join(cwd, start_path))
+                cwd = pathlib.Path(parent["start_directory"])
+
+            start_path = str((cwd / start_path).resolve(strict=False))
+
             workspace_dict["start_directory"] = start_path
 
     if "before_script" in workspace_dict:
         workspace_dict["before_script"] = expandshell(workspace_dict["before_script"])
         if any(workspace_dict["before_script"].startswith(a) for a in [".", "./"]):
-            workspace_dict["before_script"] = os.path.normpath(
-                os.path.join(cwd, workspace_dict["before_script"])
-            )
+            workspace_dict["before_script"] = str(cwd / workspace_dict["before_script"])
 
     if "shell_command" in workspace_dict and isinstance(
         workspace_dict["shell_command"], str
@@ -206,34 +208,29 @@ def trickle(workspace_dict):
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 
-    if "start_directory" in workspace_dict:
-        session_start_directory = workspace_dict["start_directory"]
-    else:
-        session_start_directory = None
+    session_start_directory = workspace_dict.get("start_directory", None)
 
-    if "suppress_history" in workspace_dict:
-        suppress_history = workspace_dict["suppress_history"]
-    else:
-        suppress_history = None
+    suppress_history = workspace_dict.get("suppress_history", None)
 
     for window_dict in workspace_dict["windows"]:
         # Prepend start_directory to relative window commands
         if session_start_directory:
+            session_start_directory = session_start_directory
             if "start_directory" not in window_dict:
                 window_dict["start_directory"] = session_start_directory
             else:
                 if not any(
                     window_dict["start_directory"].startswith(a) for a in ["~", "/"]
                 ):
-                    window_start_path = os.path.join(
-                        session_start_directory, window_dict["start_directory"]
+                    window_start_path = (
+                        pathlib.Path(session_start_directory)
+                        / window_dict["start_directory"]
                     )
-                    window_dict["start_directory"] = window_start_path
+                    window_dict["start_directory"] = str(window_start_path)
 
         # We only need to trickle to the window, workspace builder checks wconf
-        if suppress_history is not None:
-            if "suppress_history" not in window_dict:
-                window_dict["suppress_history"] = suppress_history
+        if suppress_history is not None and "suppress_history" not in window_dict:
+            window_dict["suppress_history"] = suppress_history
 
         # If panes were NOT specified for a window, assume that a single pane
         # with no shell commands is desired

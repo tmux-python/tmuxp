@@ -126,10 +126,7 @@ def import_teamocil(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     if "session" in workspace_dict:
         workspace_dict = workspace_dict["session"]
 
-    if "name" in workspace_dict:
-        tmuxp_workspace["session_name"] = workspace_dict["name"]
-    else:
-        tmuxp_workspace["session_name"] = None
+    tmuxp_workspace["session_name"] = workspace_dict.get("name", None)
 
     if "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
@@ -144,10 +141,10 @@ def import_teamocil(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
 
         if "filters" in w:
             if "before" in w["filters"]:
-                for b in w["filters"]["before"]:
+                for _b in w["filters"]["before"]:
                     window_dict["shell_command_before"] = w["filters"]["before"]
             if "after" in w["filters"]:
-                for b in w["filters"]["after"]:
+                for _b in w["filters"]["after"]:
                     window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:

@@ -1,10 +1,11 @@
+import contextlib
 import io
 import pathlib
 import typing as t
 
 import pytest
-
 from libtmux.server import Server
+
 from tmuxp import cli
 from tmuxp.config_reader import ConfigReader
 
@@ -47,13 +48,11 @@ def test_freeze(
     monkeypatch.chdir(tmp_path)
     # Use tmux server (socket name) used in the test
     assert server.socket_name is not None
-    cli_args = cli_args + ["-L", server.socket_name]
+    cli_args = [*cli_args, "-L", server.socket_name]
 
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
 
     yaml_config_path = tmp_path / "la.yaml"
     assert yaml_config_path.exists()
@@ -93,13 +92,11 @@ def test_freeze_overwrite(
     monkeypatch.chdir(tmp_path)
     # Use tmux server (socket name) used in the test
     assert server.socket_name is not None
-    cli_args = cli_args + ["-L", server.socket_name]
+    cli_args = [*cli_args, "-L", server.socket_name]
 
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
 
     yaml_config_path = tmp_path / "exists.yaml"
     assert yaml_config_path.exists()

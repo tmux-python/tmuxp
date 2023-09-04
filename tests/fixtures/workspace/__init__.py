@@ -1,4 +1,4 @@
-from . import (  # noqa
+from . import (
     expand1,
     expand2,
     expand_blank,

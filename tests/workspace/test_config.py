@@ -1,5 +1,4 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
-import os
 import pathlib
 import typing as t
 
@@ -44,14 +43,15 @@ def test_export_json(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
 # There's no tests for this
 #
 def test_find_workspace_file(tmp_path: pathlib.Path):
-    configs = []
+    configs = [str(tmp_path / x) for x in tmp_path.rglob("*.[json][ini][yaml]")]
 
     garbage_file = tmp_path / "config.psd"
     garbage_file.write_text("wat", encoding="utf-8")
 
-    for r, d, f in os.walk(str(tmp_path)):
-        for filela in (x for x in f if x.endswith((".json", ".ini", "yaml"))):
-            configs.append(str(tmp_path / filela))
+    # for _r, _d, f in os.walk(str(tmp_path)):
+    #     configs.extend(
+    #         [str(tmp_path / x) for x in f if x.endswith((".json", ".ini", "yaml"))]
+    #     )
 
     files = 0
     config_json = tmp_path / "config.json"

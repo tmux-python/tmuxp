@@ -7,7 +7,6 @@ import sys
 import typing as t
 
 from colorama import Fore
-
 from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import get_version, tmux_cmd
 
@@ -34,7 +33,7 @@ def command_debug_info(
         """
         Prepend tab to strings in list.
         """
-        return list(map(lambda x: "\t%s" % x, strings))
+        return ["\t%s" % x for x in strings]
 
     def output_break():
         """

@@ -50,15 +50,20 @@ def run_before_script(
             stderr_str = "\n".join(list(filter(None, stderr_strlist)))  # filter empty
 
             raise exc.BeforeLoadScriptError(
-                proc.returncode, os.path.abspath(script_file), stderr_str
+                proc.returncode,
+                os.path.abspath(script_file),  # NOQA: PTH100
+                stderr_str,
             )
-
-        return proc.returncode
+        else:
+            return proc.returncode
     except OSError as e:
         if e.errno == 2:
-            raise exc.BeforeLoadScriptNotExists(e, os.path.abspath(script_file))
+            raise exc.BeforeLoadScriptNotExists(
+                e,
+                os.path.abspath(script_file),  # NOQA: PTH100
+            ) from e
         else:
-            raise e
+            raise
 
 
 def oh_my_zsh_auto_title() -> None:
@@ -66,29 +71,31 @@ def oh_my_zsh_auto_title() -> None:
 
     See: https://github.com/robbyrussell/oh-my-zsh/pull/257
     """
-    if "SHELL" in os.environ and "zsh" in os.environ.get("SHELL", ""):
-        if os.path.exists(os.path.expanduser("~/.oh-my-zsh")):
-            # oh-my-zsh exists
-            if (
-                "DISABLE_AUTO_TITLE" not in os.environ
-                or os.environ.get("DISABLE_AUTO_TITLE") == "false"
-            ):
-                print(
-                    "Please set:\n\n"
-                    "\texport DISABLE_AUTO_TITLE='true'\n\n"
-                    "in ~/.zshrc or where your zsh profile is stored.\n"
-                    'Remember the "export" at the beginning!\n\n'
-                    "Then create a new shell or type:\n\n"
-                    "\t$ source ~/.zshrc"
-                )
+    if (
+        "SHELL" in os.environ
+        and "zsh" in os.environ.get("SHELL", "")
+        and os.path.exists(os.path.expanduser("~/.oh-my-zsh"))  # NOQA PTH110, PTH111
+        and (
+            "DISABLE_AUTO_TITLE" not in os.environ
+            or os.environ.get("DISABLE_AUTO_TITLE") == "false"
+        )
+    ):
+        print(
+            "Please set:\n\n"
+            "\texport DISABLE_AUTO_TITLE='true'\n\n"
+            "in ~/.zshrc or where your zsh profile is stored.\n"
+            'Remember the "export" at the beginning!\n\n'
+            "Then create a new shell or type:\n\n"
+            "\t$ source ~/.zshrc"
+        )
 
 
 def get_current_pane(server: "Server") -> t.Optional["Pane"]:
     """Return Pane if one found in env"""
     if os.getenv("TMUX_PANE") is not None:
         try:
-            return [p for p in server.panes if p.pane_id == os.getenv("TMUX_PANE")][0]
-        except IndexError:
+            return next(p for p in server.panes if p.pane_id == os.getenv("TMUX_PANE"))
+        except StopIteration:
             pass
     return None
 
@@ -109,15 +116,13 @@ def get_session(
                 session = server.sessions.get(session_id=current_pane.session_id)
             else:
                 session = server.sessions[0]
-    except Exception:
-        session = None
 
-    if session is None:
+    except Exception as e:
         if session_name:
-            raise exc.TmuxpException("Session not found: %s" % session_name)
-        else:
-            raise exc.TmuxpException("Session not found")
+            raise exc.SessionNotFound(session_name) from e
+        raise exc.SessionNotFound() from e
 
+    assert session is not None
     return session
 
 
@@ -133,17 +138,14 @@ def get_window(
             window = session.windows.get(window_id=current_pane.window_id)
         else:
             window = session.windows[0]
-    except Exception:
-        window = None
-
-    if window is None:
+    except Exception as e:
         if window_name:
-            raise exc.TmuxpException("Window not found: %s" % window_name)
-        if current_pane:
-            raise exc.TmuxpException("Window not found: %s" % current_pane)
-        else:
-            raise exc.TmuxpException("Window not found")
+            raise exc.WindowNotFound(window_target=window_name) from e
+        elif current_pane:
+            raise exc.WindowNotFound(window_target=str(current_pane)) from e
+        raise exc.WindowNotFound() from e
 
+    assert window is not None
     return window
 
 
@@ -151,16 +153,15 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
     pane = None
     try:
         if current_pane is not None:
-            pane = window.panes.get(pane_id=current_pane.pane_id)  # NOQA: F841
+            pane = window.panes.get(pane_id=current_pane.pane_id)
         else:
-            pane = window.attached_pane  # NOQA: F841
+            pane = window.attached_pane
     except exc.TmuxpException as e:
         print(e)
 
     if pane is None:
         if current_pane:
-            raise exc.TmuxpException("Pane not found: %s" % current_pane)
-        else:
-            raise exc.TmuxpException("Pane not found")
+            raise exc.PaneNotFound(str(current_pane))
+        raise exc.PaneNotFound()
 
     return pane

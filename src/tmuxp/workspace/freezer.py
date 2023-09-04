@@ -1,6 +1,10 @@
+import typing as t
+
 from libtmux.pane import Pane
 from libtmux.session import Session
-import typing as t
+
+if t.TYPE_CHECKING:
+    from libtmux.window import Window
 
 
 def inline(workspace_dict):
@@ -23,7 +27,7 @@ def inline(workspace_dict):
     ):
         workspace_dict["shell_command"] = workspace_dict["shell_command"][0]
 
-        if len(workspace_dict.keys()) == int(1):
+        if len(workspace_dict.keys()) == 1:
             workspace_dict = workspace_dict["shell_command"]
     if (
         "shell_command_before" in workspace_dict
@@ -76,10 +80,10 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
-        def pane_has_same_path(pane: Pane) -> bool:
+        def pane_has_same_path(window: "Window", pane: Pane) -> bool:
             return window.panes[0].pane_current_path == pane.pane_current_path
 
-        if all(pane_has_same_path(pane=pane) for pane in window.panes):
+        if all(pane_has_same_path(window=window, pane=pane) for pane in window.panes):
             window_config["start_directory"] = window.panes[0].pane_current_path
 
         for pane in window.panes:
@@ -94,7 +98,7 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
 
             current_cmd = pane.pane_current_command
 
-            def filter_interpretters_and_shells() -> bool:
+            def filter_interpretters_and_shells(current_cmd: t.Optional[str]) -> bool:
                 return current_cmd is not None and (
                     current_cmd.startswith("-")
                     or any(
@@ -102,7 +106,7 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
                     )
                 )
 
-            if filter_interpretters_and_shells():
+            if filter_interpretters_and_shells(current_cmd=current_cmd):
                 current_cmd = None
 
             if current_cmd:

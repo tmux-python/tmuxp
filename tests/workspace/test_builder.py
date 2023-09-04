@@ -1,18 +1,21 @@
 """Test for tmuxp workspacebuilder."""
+import functools
 import os
 import pathlib
 import textwrap
 import time
 import typing as t
 
-import pytest
-
 import libtmux
+import pytest
+from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_gte_version, has_lt_version
+from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
+
 from tmuxp import exc
 from tmuxp.cli.load import load_plugins
 from tmuxp.config_reader import ConfigReader
@@ -24,6 +27,11 @@ from ..fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
+    from typing_extensions import Protocol
+
+    class AssertCallbackProtocol(Protocol):
+        def __call__(self, cmd: str, hist: str) -> bool:
+            ...
 
 
 def test_split_windows(session):
@@ -87,15 +95,10 @@ def test_focus_pane_index(session):
     assert isinstance(_pane_base_index, int)
     pane_base_index = int(_pane_base_index)
 
-    if not pane_base_index:
-        pane_base_index = 0
-    else:
-        pane_base_index = int(pane_base_index)
+    pane_base_index = 0 if not pane_base_index else int(pane_base_index)
 
     # get the pane index for each pane
-    pane_base_indexes = []
-    for pane in session.attached_window.panes:
-        pane_base_indexes.append(int(pane.index))
+    pane_base_indexes = [int(pane.index) for pane in session.attached_window.panes]
 
     pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
     assert pane_indexes_should_be == pane_base_indexes
@@ -182,7 +185,7 @@ def test_suppress_history(session):
         buffer_name = "test"
         sent_cmd = None
 
-        def f():
+        def f(p: Pane, buffer_name: str, assertCase: AssertCallbackProtocol) -> bool:
             # from v0.7.4 libtmux session.cmd adds target -t self.id by default
             # show-buffer doesn't accept -t, use global cmd.
 
@@ -198,7 +201,9 @@ def test_suppress_history(session):
 
             return assertCase(sent_cmd, history_cmd)
 
-        assert retry_until(f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
+        _f = functools.partial(f, p=p, buffer_name=buffer_name, assertCase=assertCase)
+
+        assert retry_until(_f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
 def test_session_options(session):
@@ -231,7 +236,7 @@ def test_global_options(session):
     _status_position = session.show_option("status-position", _global=True)
     assert isinstance(_status_position, str)
     assert "top" in _status_position
-    assert 493 == session.show_option("repeat-time", _global=True)
+    assert session.show_option("repeat-time", _global=True) == 493
 
 
 def test_global_session_env_options(session, monkeypatch):
@@ -338,10 +343,12 @@ def test_window_shell(session):
         if "window_shell" in wconf:
             assert wconf["window_shell"] == "top"
 
-        def f():
+        def f(w: Window) -> bool:
             return w.window_name != "top"
 
-        retry_until(f)
+        _f = functools.partial(f, w=w)
+
+        retry_until(_f)
 
         assert w.name != "top"
 
@@ -530,12 +537,16 @@ def test_start_directory(session, tmp_path: pathlib.Path):
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
 
-            def f():
+            def f(path: str, p: Pane) -> bool:
                 pane_path = p.pane_current_path
-                return path in pane_path or pane_path == path
+                return (
+                    pane_path is not None and path in pane_path
+                ) or pane_path == path
+
+            _f = functools.partial(f, path=path, p=p)
 
             # handle case with OS X adding /private/ to /tmp/ paths
-            assert retry_until(f)
+            assert retry_until(_f)
 
 
 def test_start_directory_relative(session, tmp_path: pathlib.Path):
@@ -567,8 +578,8 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
 
     workspace = loader.trickle(workspace)
 
-    assert os.path.exists(config_dir)
-    assert os.path.exists(test_dir)
+    assert config_dir.exists()
+    assert test_dir.exists()
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
@@ -579,12 +590,16 @@ def test_start_directory_relative(session, tmp_path: pathlib.Path):
     for path, window in zip(dirs, session.windows):
         for p in window.panes:
 
-            def f():
-                # Handle case where directories resolve to /private/ in OSX
+            def f(path: str, p: Pane) -> bool:
                 pane_path = p.pane_current_path
-                return path in pane_path or pane_path == path
+                return (
+                    pane_path is not None and path in pane_path
+                ) or pane_path == path
 
-            assert retry_until(f)
+            _f = functools.partial(f, path=path, p=p)
+
+            # handle case with OS X adding /private/ to /tmp/ paths
+            assert retry_until(_f)
 
 
 @pytest.mark.skipif(
@@ -603,7 +618,7 @@ def test_start_directory_sets_session_path(server):
     builder.build()
 
     session = builder.session
-    expected = "{0}|/usr".format(session.id)
+    expected = f"{session.id}|/usr"
 
     cmd = server.cmd("list-sessions", "-F", "#{session_id}|#{session_path}")
     assert expected in cmd.stdout
@@ -616,14 +631,14 @@ def test_pane_order(session):
     """
     yaml_workspace = test_utils.read_workspace_file(
         "workspace/builder/pane_ordering.yaml"
-    ).format(HOME=os.path.realpath(os.path.expanduser("~")))
+    ).format(HOME=str(pathlib.Path().home().resolve()))
 
     # test order of `panes` (and pane_index) above against pane_dirs
     pane_paths = [
         "/usr/bin",
         "/usr",
         "/etc",
-        os.path.realpath(os.path.expanduser("~")),
+        str(pathlib.Path().home().resolve()),
     ]
 
     workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
@@ -636,7 +651,7 @@ def test_pane_order(session):
     assert len(session.windows) == window_count
 
     for w, wconf in builder.iter_create_windows(session):
-        for p in builder.iter_create_panes(w, wconf):
+        for _ in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
             assert len(session.windows) == window_count
 
@@ -654,11 +669,13 @@ def test_pane_order(session):
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            def f():
+            def f(pane_path: str, p: Pane):
                 p.refresh()
                 return p.pane_current_path == pane_path
 
-            assert retry_until(f)
+            _f = functools.partial(f, pane_path=pane_path, p=p)
+
+            assert retry_until(_f)
 
 
 def test_window_index(session):
@@ -1268,12 +1285,14 @@ def test_first_pane_start_directory(session, tmp_path: pathlib.Path):
     window = session.windows[0]
     for path, p in zip(dirs, window.panes):
 
-        def f():
+        def f(path: str, p: Pane) -> bool:
             pane_path = p.pane_current_path
-            return path in pane_path or pane_path == path
+            return (pane_path is not None and path in pane_path) or pane_path == path
+
+        _f = functools.partial(f, path=path, p=p)
 
         # handle case with OS X adding /private/ to /tmp/ paths
-        assert retry_until(f)
+        assert retry_until(_f)
 
 
 @pytest.mark.skipif(
@@ -1384,7 +1403,14 @@ def test_issue_800_default_size_many_windows(
     builder = WorkspaceBuilder(session_config=workspace, server=server)
 
     if raises:
-        with pytest.raises(Exception):
+        with pytest.raises(
+            (
+                LibTmuxException,
+                exc.TmuxpException,
+                exc.EmptyWorkspaceException,
+                ObjectDoesNotExist,
+            )
+        ):
             builder.build()
 
         assert builder is not None

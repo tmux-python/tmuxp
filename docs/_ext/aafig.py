@@ -12,6 +12,7 @@
 """
 import logging
 import posixpath
+import typing as t
 from hashlib import sha1 as sha
 from os import path
 
@@ -28,11 +29,11 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_FORMATS = dict(html="svg", latex="pdf", text=None)
+DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(dst, src):
-    for (k, v) in src.items():
+    for k, v in src.items():
         if k not in dst:
             dst[k] = v
     return dst
@@ -58,22 +59,22 @@ class AafigDirective(images.Image):
 
     has_content = True
     required_arguments = 0
-    own_option_spec = dict(
-        line_width=float,
-        background=str,
-        foreground=str,
-        fill=str,
-        aspect=nonnegative_int,
-        textual=flag,
-        proportional=flag,
-    )
+    own_option_spec: t.ClassVar = {
+        "line_width": float,
+        "background": str,
+        "foreground": str,
+        "fill": str,
+        "aspect": nonnegative_int,
+        "textual": flag,
+        "proportional": flag,
+    }
     option_spec = images.Image.option_spec.copy()
     option_spec.update(own_option_spec)
 
     def run(self):
-        aafig_options = dict()
-        own_options_keys = [self.own_option_spec.keys()] + ["scale"]
-        for (k, v) in self.options.items():
+        aafig_options = {}
+        own_options_keys = [self.own_option_spec.keys(), "scale"]
+        for k, v in self.options.items():
             if k in own_options_keys:
                 # convert flags to booleans
                 if v is None:
@@ -88,7 +89,7 @@ class AafigDirective(images.Image):
         if isinstance(image_node, nodes.system_message):
             return [image_node]
         text = "\n".join(self.content)
-        image_node.aafig = dict(options=aafig_options, text=text)
+        image_node.aafig = {"options": aafig_options, "text": text}
         return [image_node]
 
 
@@ -138,13 +139,18 @@ def render_aafig_images(app, doctree):
                 img["height"] = height
 
 
+class AafigureNotInstalled(AafigError):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__("aafigure module not installed", *args, **kwargs)
+
+
 def render_aafigure(app, text, options):
     """
     Render an ASCII art figure into the requested format output file.
     """
 
     if aafigure is None:
-        raise AafigError("aafigure module not installed")
+        raise AafigureNotInstalled()
 
     fname = get_basename(text, options)
     fname = "{}.{}".format(get_basename(text, options), options["format"])
@@ -173,10 +179,10 @@ def render_aafigure(app, text, options):
                 f = None
                 try:
                     try:
-                        f = open(metadata_fname)
-                        extra = f.read()
-                    except Exception:
-                        raise AafigError()
+                        with open(metadata_fname) as f:
+                            extra = f.read()
+                    except Exception as e:
+                        raise AafigError() from e
                 finally:
                     if f is not None:
                         f.close()
@@ -190,14 +196,13 @@ def render_aafigure(app, text, options):
         (visitor, output) = aafigure.render(text, outfn, options)
         output.close()
     except aafigure.UnsupportedFormatError as e:
-        raise AafigError(str(e))
+        raise AafigError(str(e)) from e
 
     extra = None
     if options["format"].lower() == "svg":
         extra = visitor.get_size_attrs()
-        f = open(metadata_fname, "w")
-        f.write(extra)
-        f.close()
+        with open(metadata_fname, "w") as f:
+            f.write(extra)
 
     return relfn, outfn, id, extra
 
@@ -206,7 +211,7 @@ def setup(app):
     app.add_directive("aafig", AafigDirective)
     app.connect("doctree-read", render_aafig_images)
     app.add_config_value("aafig_format", DEFAULT_FORMATS, "html")
-    app.add_config_value("aafig_default_options", dict(), "html")
+    app.add_config_value("aafig_default_options", {}, "html")
 
 
 # vim: set expandtab shiftwidth=4 softtabstop=4 :

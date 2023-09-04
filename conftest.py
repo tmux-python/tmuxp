@@ -10,10 +10,9 @@ import shutil
 import typing as t
 
 import pytest
-
 from _pytest.doctest import DoctestItem
-
 from libtmux.test import namer
+
 from tests.fixtures import utils as test_utils
 from tmuxp.workspace.finders import get_workspace_dir
 
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
-@pytest.mark.skipif(USING_ZSH, reason="Using ZSH")
+@pytest.mark.skipif(not USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
 def zshrc(user_path: pathlib.Path) -> pathlib.Path:
     """This quiets ZSH default message.
@@ -70,7 +69,7 @@ def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_fail/",
     ]
     for path in paths:
-        monkeypatch.syspath_prepend(os.path.abspath(os.path.relpath(path)))
+        monkeypatch.syspath_prepend(str(pathlib.Path(path).resolve()))
 
 
 @pytest.fixture(scope="function")

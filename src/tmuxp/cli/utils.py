@@ -4,6 +4,12 @@ import typing as t
 
 from .. import log
 
+if t.TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    CLIColour: TypeAlias = t.Union[int, t.Tuple[int, int, int], str]
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -126,7 +132,7 @@ def prompt_choices(
         if isinstance(choice, str):
             options.append(choice)
         elif isinstance(choice, tuple):
-            options.append("%s [%s]" % (choice, choice[0]))
+            options.append(f"{choice} [{choice[0]}]")
             choice = choice[0]
         _choices.append(choice)
 
@@ -183,10 +189,15 @@ def _interpret_color(
     return str(_ansi_colors[color] + offset)
 
 
+class UnknownStyleColor(Exception):
+    def __init__(self, color: "CLIColour", *args: object, **kwargs: object) -> None:
+        return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
+
+
 def style(
     text: t.Any,
-    fg: t.Optional[t.Union[int, t.Tuple[int, int, int], str]] = None,
-    bg: t.Optional[t.Union[int, t.Tuple[int, int, int], str]] = None,
+    fg: t.Optional["CLIColour"] = None,
+    bg: t.Optional["CLIColour"] = None,
     bold: t.Optional[bool] = None,
     dim: t.Optional[bool] = None,
     underline: t.Optional[bool] = None,
@@ -207,13 +218,13 @@ def style(
         try:
             bits.append(f"\033[{_interpret_color(fg)}m")
         except KeyError:
-            raise TypeError(f"Unknown color {fg!r}") from None
+            raise UnknownStyleColor(color=fg) from None
 
     if bg:
         try:
             bits.append(f"\033[{_interpret_color(bg, 10)}m")
         except KeyError:
-            raise TypeError(f"Unknown color {bg!r}") from None
+            raise UnknownStyleColor(color=bg) from None
 
     if bold is not None:
         bits.append(f"\033[{1 if bold else 22}m")

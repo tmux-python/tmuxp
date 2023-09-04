@@ -6,6 +6,8 @@ tmuxp.exc
 """
 import typing as t
 
+from libtmux._internal.query_list import ObjectDoesNotExist
+
 from ._compat import implements_to_string
 
 
@@ -19,9 +21,57 @@ class WorkspaceError(TmuxpException):
     """Error parsing tmuxp workspace data."""
 
 
+class SessionNotFound(TmuxpException):
+    def __init__(
+        self, session_target: t.Optional[str] = None, *args: object, **kwargs: object
+    ) -> None:
+        msg = "Session not found"
+        if session_target is not None:
+            msg += f": {session_target}"
+        return super().__init__(msg, *args, **kwargs)
+
+
+class WindowNotFound(TmuxpException):
+    def __init__(
+        self, window_target: t.Optional[str] = None, *args: object, **kwargs: object
+    ) -> None:
+        msg = "Window not found"
+        if window_target is not None:
+            msg += f": {window_target}"
+        return super().__init__(msg, *args, **kwargs)
+
+
+class PaneNotFound(TmuxpException):
+    def __init__(
+        self, pane_target: t.Optional[str] = None, *args: object, **kwargs: object
+    ) -> None:
+        msg = "Pane not found"
+        if pane_target is not None:
+            msg += f": {pane_target}"
+        return super().__init__(msg, *args, **kwargs)
+
+
 class EmptyWorkspaceException(WorkspaceError):
 
     """Workspace file is empty."""
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__("Session configuration is empty.", *args, **kwargs)
+
+
+class SessionMissingWorkspaceException(WorkspaceError, ObjectDoesNotExist):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__(
+            "No session object exists for WorkspaceBuilder. "
+            "Tip: Add session_name in constructor or run WorkspaceBuilder.build()",
+            *args,
+            **kwargs,
+        )
+
+
+class ActiveSessionMissingWorkspaceException(WorkspaceError):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__("No session active.", *args, **kwargs)
 
 
 class TmuxpPluginException(TmuxpException):
@@ -50,11 +100,11 @@ class BeforeLoadScriptError(Exception):
         self.cmd = cmd
         self.output = output
         self.message = (
-            "before_script failed with returncode {returncode}.\n"
-            "command: {cmd}\n"
+            f"before_script failed with returncode {self.returncode}.\n"
+            f"command: {self.cmd}\n"
             "Error output:\n"
-            "{output}"
-        ).format(returncode=self.returncode, cmd=self.cmd, output=self.output)
+            f"{self.output}"
+        )
 
     def __str__(self):
         return self.message

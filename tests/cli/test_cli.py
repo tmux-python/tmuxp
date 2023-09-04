@@ -1,12 +1,12 @@
 import argparse
-import os
+import contextlib
 import pathlib
 import typing as t
 
-import pytest
-
 import libtmux
+import pytest
 from libtmux.server import Server
+
 from tmuxp import cli
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
 from tmuxp.cli.load import _reattach, load_plugins
@@ -26,7 +26,7 @@ def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
     """cli.startup() creates config dir if not exists."""
 
     cli.startup(tmp_path)
-    assert os.path.exists(tmp_path)
+    assert tmp_path.exists()
 
 
 @pytest.mark.parametrize(
@@ -42,10 +42,13 @@ def test_help(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture,
 ) -> None:
-    try:
+    # In scrunched terminals, prevent width causing differantiation in result.out.
+    monkeypatch.setenv("COLUMNS", "100")
+    monkeypatch.setenv("LINES", "100")
+
+    with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
-    except SystemExit:
-        pass
+
     result = capsys.readouterr()
 
     assert "usage: tmuxp [-h] [--version] [--log-level log-level]" in result.out
@@ -56,26 +59,28 @@ def test_resolve_behavior(
 ) -> None:
     expect = tmp_path
     monkeypatch.chdir(tmp_path)
-    assert pathlib.Path("../").resolve() == pathlib.Path(os.path.dirname(expect))
-    assert pathlib.Path(".").resolve() == expect
+    assert pathlib.Path("../").resolve() == expect.parent
+    assert pathlib.Path().resolve() == expect
     assert pathlib.Path("./").resolve() == expect
     assert pathlib.Path(expect).resolve() == expect
 
 
 def test_get_tmuxinator_dir(monkeypatch: pytest.MonkeyPatch) -> None:
-    assert get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
+    assert get_tmuxinator_dir() == pathlib.Path("~/.tmuxinator").expanduser()
 
     monkeypatch.setenv("HOME", "/moo")
-    assert get_tmuxinator_dir() == "/moo/.tmuxinator/"
-    assert get_tmuxinator_dir() == os.path.expanduser("~/.tmuxinator/")
+    assert get_tmuxinator_dir() == pathlib.Path("/moo/.tmuxinator/")
+    assert str(get_tmuxinator_dir()) == "/moo/.tmuxinator"
+    assert get_tmuxinator_dir() == pathlib.Path("~/.tmuxinator/").expanduser()
 
 
 def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch) -> None:
-    assert get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
+    assert get_teamocil_dir() == pathlib.Path("~/.teamocil/").expanduser()
 
     monkeypatch.setenv("HOME", "/moo")
-    assert get_teamocil_dir() == "/moo/.teamocil/"
-    assert get_teamocil_dir() == os.path.expanduser("~/.teamocil/")
+    assert get_teamocil_dir() == pathlib.Path("/moo/.teamocil/")
+    assert str(get_teamocil_dir()) == "/moo/.teamocil"
+    assert get_teamocil_dir() == pathlib.Path("~/.teamocil/").expanduser()
 
 
 def test_pass_config_dir_ClickPath(
@@ -129,10 +134,8 @@ def test_reattach_plugins(
     )
     builder.build()
 
-    try:
+    with contextlib.suppress(libtmux.exc.LibTmuxException):
         _reattach(builder)
-    except libtmux.exc.LibTmuxException:
-        pass
 
     assert builder.session is not None
     proc = builder.session.cmd("display-message", "-p", "'#S'")

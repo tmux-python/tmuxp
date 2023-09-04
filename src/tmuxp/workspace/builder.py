@@ -141,7 +141,7 @@ class WorkspaceBuilder:
         self,
         session_config: t.Dict[str, t.Any],
         server: Server,
-        plugins: t.List[t.Any] = [],
+        plugins: t.Optional[t.List[t.Any]] = None,
     ) -> None:
         """Initialize workspace loading.
 
@@ -162,8 +162,10 @@ class WorkspaceBuilder:
         ``self.session``.
         """
 
+        if plugins is None:
+            plugins = []
         if not session_config:
-            raise exc.EmptyWorkspaceException("Session configuration is empty.")
+            raise exc.EmptyWorkspaceException()
 
         # validation.validate_schema(session_config)
 
@@ -188,10 +190,7 @@ class WorkspaceBuilder:
     @property
     def session(self):
         if self._session is None:
-            raise ObjectDoesNotExist(
-                "No session object exists for WorkspaceBuilder. "
-                "Tip: Add session_name in constructor or run WorkspaceBuilder.build()"
-            )
+            raise exc.SessionMissingWorkspaceException()
         return self._session
 
     def session_exists(self, session_name: str) -> bool:
@@ -256,7 +255,7 @@ class WorkspaceBuilder:
         assert session.server is not None
 
         self.server: "Server" = session.server
-        self.server.sessions
+        assert self.server.sessions is not None
         assert self.server.has_session(session.name)
         assert session.id
 
@@ -276,9 +275,9 @@ class WorkspaceBuilder:
                 if "start_directory" in self.session_config:
                     cwd = self.session_config["start_directory"]
                 run_before_script(self.session_config["before_script"], cwd=cwd)
-            except Exception as e:
+            except Exception:
                 self.session.kill_session()
-                raise e
+                raise
 
         if "options" in self.session_config:
             for option, value in self.session_config["options"].items():
@@ -349,10 +348,7 @@ class WorkspaceBuilder:
         for window_iterator, window_config in enumerate(
             self.session_config["windows"], start=1
         ):
-            if "window_name" not in window_config:
-                window_name = None
-            else:
-                window_name = window_config["window_name"]
+            window_name = window_config.get("window_name", None)
 
             is_first_window_pass = self.first_window_pass(
                 window_iterator, session, append
@@ -363,20 +359,14 @@ class WorkspaceBuilder:
                 w1 = session.attached_window
                 w1.move_window("99")
 
-            if "start_directory" in window_config:
-                start_directory = window_config["start_directory"]
-            else:
-                start_directory = None
+            start_directory = window_config.get("start_directory", None)
 
             # If the first pane specifies a start_directory, use that instead.
             panes = window_config["panes"]
             if panes and "start_directory" in panes[0]:
                 start_directory = panes[0]["start_directory"]
 
-            if "window_shell" in window_config:
-                window_shell = window_config["window_shell"]
-            else:
-                window_shell = None
+            window_shell = window_config.get("window_shell", None)
 
             # If the first pane specifies a shell, use that instead.
             try:
@@ -462,7 +452,9 @@ class WorkspaceBuilder:
                 pane = window.attached_pane
             else:
 
-                def get_pane_start_directory():
+                def get_pane_start_directory(
+                    pane_config: t.Dict[str, str], window_config: t.Dict[str, str]
+                ) -> t.Optional[str]:
                     if "start_directory" in pane_config:
                         return pane_config["start_directory"]
                     elif "start_directory" in window_config:
@@ -470,7 +462,9 @@ class WorkspaceBuilder:
                     else:
                         return None
 
-                def get_pane_shell():
+                def get_pane_shell(
+                    pane_config: t.Dict[str, str], window_config: t.Dict[str, str]
+                ) -> t.Optional[str]:
                     if "shell" in pane_config:
                         return pane_config["shell"]
                     elif "window_shell" in window_config:
@@ -496,8 +490,14 @@ class WorkspaceBuilder:
 
                 pane = window.split_window(
                     attach=True,
-                    start_directory=get_pane_start_directory(),
-                    shell=get_pane_shell(),
+                    start_directory=get_pane_start_directory(
+                        pane_config=pane_config,
+                        window_config=window_config,
+                    ),
+                    shell=get_pane_shell(
+                        pane_config=pane_config,
+                        window_config=window_config,
+                    ),
                     target=pane.id,
                     environment=environment,
                 )
@@ -564,7 +564,7 @@ class WorkspaceBuilder:
         current_active_pane = get_current_pane(self.server)
 
         if current_active_pane is None:
-            raise exc.TmuxpException("No session active.")
+            raise exc.ActiveSessionMissingWorkspaceException()
 
         return next(
             (

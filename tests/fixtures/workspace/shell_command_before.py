@@ -1,5 +1,5 @@
-import os
-from typing import Any, Dict
+import pathlib
+import typing as t
 
 config_unexpanded = {  # shell_command_before is string in some areas
     "session_name": "sample workspace",
@@ -38,14 +38,14 @@ config_unexpanded = {  # shell_command_before is string in some areas
 }
 
 
-def config_expanded() -> Dict[str, Any]:
+def config_expanded() -> t.Dict[str, t.Any]:
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
         "start_directory": "/",
         "windows": [
             {
                 "window_name": "editor",
-                "start_directory": os.path.expanduser("~"),
+                "start_directory": str(pathlib.Path().home()),
                 "shell_command_before": {
                     "shell_command": [{"cmd": "source .venv/bin/activate"}]
                 },
@@ -90,14 +90,14 @@ def config_expanded() -> Dict[str, Any]:
     }
 
 
-def config_after() -> Dict[str, Any]:
+def config_after() -> t.Dict[str, t.Any]:
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
         "start_directory": "/",
         "windows": [
             {
                 "window_name": "editor",
-                "start_directory": os.path.expanduser("~"),
+                "start_directory": str(pathlib.Path().home()),
                 "shell_command_before": {
                     "shell_command": [{"cmd": "source .venv/bin/activate"}]
                 },

@@ -19,11 +19,7 @@ if t.TYPE_CHECKING:
 
 def is_workspace_file(
     filename: str,
-    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"]] = [
-        ".yml",
-        ".yaml",
-        ".json",
-    ],
+    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"], None] = None,
 ) -> bool:
     """
     Return True if file has a valid workspace file type.
@@ -39,13 +35,15 @@ def is_workspace_file(
     -------
     bool
     """
+    if extensions is None:
+        extensions = [".yml", ".yaml", ".json"]
     extensions = [extensions] if isinstance(extensions, str) else extensions
     return any(filename.endswith(e) for e in extensions)
 
 
 def in_dir(
-    workspace_dir: t.Union[pathlib.Path, str] = os.path.expanduser("~/.tmuxp"),
-    extensions: t.List["ValidExtensions"] = [".yml", ".yaml", ".json"],
+    workspace_dir: t.Union[pathlib.Path, str, None] = None,
+    extensions: t.Optional[t.List["ValidExtensions"]] = None,
 ) -> t.List[str]:
     """
     Return a list of workspace_files in ``workspace_dir``.
@@ -61,11 +59,17 @@ def in_dir(
     -------
     list
     """
-    workspace_files = []
+    if workspace_dir is None:
+        workspace_dir = os.path.expanduser("~/.tmuxp")
 
-    for filename in os.listdir(workspace_dir):
-        if is_workspace_file(filename, extensions) and not filename.startswith("."):
-            workspace_files.append(filename)
+    if extensions is None:
+        extensions = [".yml", ".yaml", ".json"]
+
+    workspace_files = [
+        filename
+        for filename in os.listdir(workspace_dir)
+        if is_workspace_file(filename, extensions) and not filename.startswith(".")
+    ]
 
     return workspace_files
 
@@ -86,11 +90,11 @@ def in_cwd() -> t.List[str]:
     >>> sorted(in_cwd())
     ['.tmuxp.json', '.tmuxp.yaml']
     """
-    workspace_files = []
-
-    for filename in os.listdir(os.getcwd()):
-        if filename.startswith(".tmuxp") and is_workspace_file(filename):
-            workspace_files.append(filename)
+    workspace_files = [
+        filename
+        for filename in os.listdir(os.getcwd())
+        if filename.startswith(".tmuxp") and is_workspace_file(filename)
+    ]
 
     return workspace_files
 

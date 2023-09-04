@@ -1,4 +1,4 @@
-import os
+import contextlib
 import pathlib
 
 import pytest
@@ -27,7 +27,7 @@ def test_ls_cli(
     # - directories should be ignored
     # - extensions not covered in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
     ignored_filenames = [".git/", ".gitignore/", "session_4.txt"]
-    stems = [os.path.splitext(f)[0] for f in filenames if f not in ignored_filenames]
+    stems = [pathlib.Path(f).stem for f in filenames if f not in ignored_filenames]
 
     for filename in filenames:
         location = tmp_path / f".tmuxp/{filename}"
@@ -36,10 +36,9 @@ def test_ls_cli(
         else:
             location.touch()
 
-    try:
+    with contextlib.suppress(SystemExit):
         cli.cli(["ls"])
-    except SystemExit:
-        pass
+
     cli_output = capsys.readouterr().out
 
     assert cli_output == "\n".join(stems) + "\n"

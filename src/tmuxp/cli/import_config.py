@@ -11,7 +11,7 @@ from ..workspace import importers
 from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 
 
-def get_tmuxinator_dir() -> str:
+def get_tmuxinator_dir() -> pathlib.Path:
     """
     Return tmuxinator configuration directory.
 
@@ -19,7 +19,7 @@ def get_tmuxinator_dir() -> str:
 
     Returns
     -------
-    str :
+    pathlib.Path :
         absolute path to tmuxinator config directory
 
     See Also
@@ -27,25 +27,25 @@ def get_tmuxinator_dir() -> str:
     :meth:`tmuxp.workspace.importers.tmuxinator.import_tmuxinator`
     """
     if "TMUXINATOR_CONFIG" in os.environ:
-        return os.path.expanduser(os.environ["TMUXINATOR_CONFIG"])
+        return pathlib.Path(os.environ["TMUXINATOR_CONFIG"]).expanduser()
 
-    return os.path.expanduser("~/.tmuxinator/")
+    return pathlib.Path("~/.tmuxinator/").expanduser()
 
 
-def get_teamocil_dir() -> str:
+def get_teamocil_dir() -> pathlib.Path:
     """
     Return teamocil configuration directory.
 
     Returns
     -------
-    str :
+    pathlib.Path :
         absolute path to teamocil config directory
 
     See Also
     --------
     :meth:`tmuxp.workspace.importers.teamocil.import_teamocil`
     """
-    return os.path.expanduser("~/.teamocil/")
+    return pathlib.Path("~/.teamocil/").expanduser()
 
 
 def _resolve_path_no_overwrite(workspace_file: str) -> str:
@@ -153,9 +153,8 @@ def import_config(
             if prompt_yes_no("Save to %s?" % dest_path):
                 dest = dest_path
 
-        buf = open(dest, "w")
-        buf.write(new_config)
-        buf.close()
+        with open(dest, "w") as buf:
+            buf.write(new_config)
 
         tmuxp_echo("Saved to %s." % dest)
     else:
