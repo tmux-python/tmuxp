@@ -6,6 +6,8 @@ tmuxp.exc
 """
 import typing as t
 
+from libtmux._internal.query_list import ObjectDoesNotExist
+
 from ._compat import implements_to_string
 
 
@@ -25,6 +27,16 @@ class EmptyWorkspaceException(WorkspaceError):
 
     def __init__(self, *args: object, **kwargs: object) -> None:
         return super().__init__("Session configuration is empty.", *args, **kwargs)
+
+
+class SessionMissingWorkspaceException(WorkspaceError, ObjectDoesNotExist):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        return super().__init__(
+            "No session object exists for WorkspaceBuilder. "
+            "Tip: Add session_name in constructor or run WorkspaceBuilder.build()",
+            *args,
+            **kwargs,
+        )
 
 
 class TmuxpPluginException(TmuxpException):
