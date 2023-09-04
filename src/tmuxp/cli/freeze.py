@@ -10,7 +10,7 @@ from tmuxp.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
 from tmuxp.workspace.finders import get_workspace_dir
 
-from .. import util
+from .. import exc, util
 from ..workspace import freezer
 from .utils import prompt, prompt_choices, prompt_yes_no
 
@@ -106,7 +106,7 @@ def command_freeze(
             session = util.get_session(server)
 
         if not session:
-            raise TmuxpException("Session not found.")
+            raise exc.SessionNotFound()
     except TmuxpException as e:
         print(e)
         return
@@ -195,9 +195,8 @@ def command_freeze(
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
-        buf = open(dest, "w")
-        buf.write(workspace)
-        buf.close()
+        with open(dest, "w") as buf:
+            buf.write(workspace)
 
         if not args.quiet:
             print("Saved to %s." % dest)
