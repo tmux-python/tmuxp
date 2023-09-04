@@ -42,7 +42,7 @@ def is_workspace_file(
 
 
 def in_dir(
-    workspace_dir: t.Union[pathlib.Path, str] = os.path.expanduser("~/.tmuxp"),
+    workspace_dir: t.Union[pathlib.Path, str, None] = None,
     extensions: t.Optional[t.List["ValidExtensions"]] = None,
 ) -> t.List[str]:
     """
@@ -59,13 +59,17 @@ def in_dir(
     -------
     list
     """
+    if workspace_dir is None:
+        workspace_dir = os.path.expanduser("~/.tmuxp")
+
     if extensions is None:
         extensions = [".yml", ".yaml", ".json"]
-    workspace_files = []
 
-    for filename in os.listdir(workspace_dir):
-        if is_workspace_file(filename, extensions) and not filename.startswith("."):
-            workspace_files.append(filename)
+    workspace_files = [
+        filename
+        for filename in os.listdir(workspace_dir)
+        if is_workspace_file(filename, extensions) and not filename.startswith(".")
+    ]
 
     return workspace_files
 
@@ -86,11 +90,11 @@ def in_cwd() -> t.List[str]:
     >>> sorted(in_cwd())
     ['.tmuxp.json', '.tmuxp.yaml']
     """
-    workspace_files = []
-
-    for filename in os.listdir(os.getcwd()):
-        if filename.startswith(".tmuxp") and is_workspace_file(filename):
-            workspace_files.append(filename)
+    workspace_files = [
+        filename
+        for filename in os.listdir(os.getcwd())
+        if filename.startswith(".tmuxp") and is_workspace_file(filename)
+    ]
 
     return workspace_files
 
