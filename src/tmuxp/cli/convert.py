@@ -6,6 +6,7 @@ import typing as t
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
+from .. import exc
 from .utils import prompt_yes_no
 
 if t.TYPE_CHECKING:
@@ -40,6 +41,13 @@ def create_convert_subparser(
     return parser
 
 
+class ConvertUnknownFileType(exc.TmuxpException):
+    def __init__(self, ext: str, *args: object, **kwargs: object) -> None:
+        return super().__init__(
+            f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
+        )
+
+
 def command_convert(
     workspace_file: t.Union[str, pathlib.Path],
     answer_yes: bool,
@@ -61,7 +69,7 @@ def command_convert(
     elif ext in [".yaml", ".yml"]:
         to_filetype = "json"
     else:
-        raise Exception(f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])")
+        raise ConvertUnknownFileType(ext)
 
     configparser = ConfigReader.from_file(workspace_file)
     newfile = workspace_file.parent / (str(workspace_file.stem) + f".{to_filetype}")
@@ -72,13 +80,14 @@ def command_convert(
         **{"default_flow_style": False} if to_filetype == "yaml" else {},
     )
 
-    if not answer_yes:
-        if prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?"):
-            if prompt_yes_no("Save workspace to %s?" % newfile):
-                answer_yes = True
+    if (
+        not answer_yes
+        and prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?")
+        and prompt_yes_no("Save workspace to %s?" % newfile)
+    ):
+        answer_yes = True
 
     if answer_yes:
-        buf = open(newfile, "w")
-        buf.write(new_workspace)
-        buf.close()
+        with open(newfile, "w") as buf:
+            buf.write(new_workspace)
         print(f"New workspace file saved to <{newfile}>.")
