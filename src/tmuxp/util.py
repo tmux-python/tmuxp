@@ -119,8 +119,8 @@ def get_session(
 
     except Exception as e:
         if session_name:
-            raise exc.TmuxpException("Session not found: %s" % session_name) from e
-        raise exc.TmuxpException("Session not found") from e
+            raise exc.SessionNotFound(session_name) from e
+        raise exc.SessionNotFound() from e
 
     assert session is not None
     return session
@@ -140,10 +140,10 @@ def get_window(
             window = session.windows[0]
     except Exception as e:
         if window_name:
-            raise exc.TmuxpException("Window not found: %s" % window_name) from e
-        if current_pane:
-            raise exc.TmuxpException("Window not found: %s" % current_pane) from e
-        raise exc.TmuxpException("Window not found") from e
+            raise exc.WindowNotFound(window_target=window_name) from e
+        elif current_pane:
+            raise exc.WindowNotFound(window_target=str(current_pane)) from e
+        raise exc.WindowNotFound() from e
 
     assert window is not None
     return window
@@ -161,8 +161,7 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
 
     if pane is None:
         if current_pane:
-            raise exc.TmuxpException("Pane not found: %s" % current_pane)
-        else:
-            raise exc.TmuxpException("Pane not found")
+            raise exc.PaneNotFound(str(current_pane))
+        raise exc.PaneNotFound()
 
     return pane
