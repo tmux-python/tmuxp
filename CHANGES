@@ -30,6 +30,7 @@ _Maintenance only, no bug fixes, or new features_
   This includes fixes made by hand alongside ruff's automated fixes. The more
   stringent rules include import sorting, and still runs almost instantly
   against the whole codebase.
+- CI: `black . --check` now runs on pushes and pull requests
 
 ## tmuxp 1.29.1 (2023-09-02)
 
