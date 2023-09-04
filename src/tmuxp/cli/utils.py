@@ -183,6 +183,11 @@ def _interpret_color(
     return str(_ansi_colors[color] + offset)
 
 
+class UnknownStyleColor(Exception):
+    def __init__(self, color: str, *args: object, **kwargs: object) -> None:
+        return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
+
+
 def style(
     text: t.Any,
     fg: t.Optional[t.Union[int, t.Tuple[int, int, int], str]] = None,
