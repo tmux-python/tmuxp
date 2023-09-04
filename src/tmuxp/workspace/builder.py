@@ -190,10 +190,7 @@ class WorkspaceBuilder:
     @property
     def session(self):
         if self._session is None:
-            raise ObjectDoesNotExist(
-                "No session object exists for WorkspaceBuilder. "
-                "Tip: Add session_name in constructor or run WorkspaceBuilder.build()"
-            )
+            raise exc.SessionMissingWorkspaceException()
         return self._session
 
     def session_exists(self, session_name: str) -> bool:
