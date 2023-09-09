@@ -12,9 +12,9 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, TypeAlias
+    from typing_extensions import TypeAlias
 
-    CLIShellLiteral: TypeAlias = Literal[
+    CLIShellLiteral: TypeAlias = t.Literal[
         "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython"
     ]
 

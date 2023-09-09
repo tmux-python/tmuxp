@@ -12,9 +12,9 @@ from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, TypeAlias
+    from typing_extensions import TypeAlias
 
-    ValidExtensions: TypeAlias = Literal[".yml", ".yaml", ".json"]
+    ValidExtensions: TypeAlias = t.Literal[".yml", ".yaml", ".json"]
 
 
 def is_workspace_file(
