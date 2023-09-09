@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- Python 3.7 Dropped (#885)
+
+### Development
+
+- Poetry 1.5.1 -> 1.6.1 (#885)
+
 ## tmuxp 1.30.1 (2023-09-09)
 
 _Maintenance only, no bug fixes or new features_
