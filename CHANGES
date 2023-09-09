@@ -32,6 +32,16 @@ _Maintenance only, no bug fixes or new features_
   against the whole codebase.
 - CI: `black . --check` now runs on pushes and pull requests
 
+### Packaging
+
+- libtmux: v0.23.1 -> v0.23.2
+
+  Final Python 3.7 release of libtmux
+
+### Documentation
+
+- README Example for Nix (#883), thank you @ChristopherHarwell!
+
 ## tmuxp 1.29.1 (2023-09-02)
 
 _Maintenance only, no bug fixes or new features_
