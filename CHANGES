@@ -21,7 +21,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ## tmuxp 1.30.0 (2023-09-04)
 
-_Maintenance only, no bug fixes, or new features_
+_Maintenance only, no bug fixes or new features_
 
 ### Development
 
@@ -34,7 +34,7 @@ _Maintenance only, no bug fixes, or new features_
 
 ## tmuxp 1.29.1 (2023-09-02)
 
-_Maintenance only, no bug fixes, or new features_
+_Maintenance only, no bug fixes or new features_
 
 ### Development
 
@@ -48,7 +48,7 @@ _Maintenance only, no bug fixes, or new features_
 
 ## tmuxp 1.29.0 (2023-08-20)
 
-_Maintenance only, no bug fixes, or new features_
+_Maintenance only, no bug fixes or new features_
 
 ### Development
 
@@ -64,7 +64,7 @@ _Maintenance only, no bug fixes, or new features_
 
 ## tmuxp 1.28.2 (2023-08-20)
 
-_Maintenance only, no bug fixes, or new features_
+_Maintenance only, no bug fixes or new features_
 
 ### Packaging
 
@@ -74,7 +74,7 @@ _Maintenance only, no bug fixes, or new features_
 
 ## tmuxp 1.28.1 (2023-05-28)
 
-_Maintenance only, no bug fixes, or new features_
+_Maintenance only, no bug fixes or new features_
 
 ### Development
 
