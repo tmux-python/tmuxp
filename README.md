@@ -36,6 +36,11 @@ Debian / ubuntu:
 $ sudo apt install tmuxp
 ```
 
+Nix:
+```console
+$ [[ -z $(which tmux) ]] && (nix-env -i tmux && nix-env -i tmuxp) || nix-env -i tmuxp
+```
+
 Find the package for your distro on repology: <https://repology.org/project/tmuxp/versions>
 
 Developmental releases:
