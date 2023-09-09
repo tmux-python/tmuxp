@@ -27,9 +27,8 @@ from ..fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
-    from typing_extensions import Protocol
 
-    class AssertCallbackProtocol(Protocol):
+    class AssertCallbackProtocol(t.Protocol):
         def __call__(self, cmd: str, hist: str) -> bool:
             ...
 

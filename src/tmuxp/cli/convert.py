@@ -10,9 +10,7 @@ from .. import exc
 from .utils import prompt_yes_no
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal
-
-    AllowedFileTypes = Literal["json", "yaml"]
+    AllowedFileTypes = t.Literal["json", "yaml"]
 
 
 def create_convert_subparser(

@@ -12,7 +12,6 @@ classifiers = [
   "Environment :: Web Environment",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -46,7 +45,7 @@ Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
 tmuxp = 'tmuxp:cli.cli'
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 libtmux = "~0.23.2"
 colorama = ">=0.3.9"
 PyYAML = "^6.0"
@@ -58,11 +57,11 @@ sphinx = "*"
 aafigure = ">=0.6"
 pillow = "*"
 furo = "*"
-gp-libs = "~0.0.1"
+gp-libs = "~0.0.2"
 sphinx-autobuild = "*"
 sphinx-autodoc-typehints = "*"
 sphinx-argparse = "*"
-sphinx-inline-tabs = "<2023.4.21"  # For Python 3.7 support
+sphinx-inline-tabs = "*"
 sphinxext-opengraph = "<0.8"  # https://github.com/wpilibsuite/sphinxext-opengraph/issues/100
 sphinx-copybutton = "*"
 sphinxext-rediraffe = "*"
@@ -156,7 +155,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.ruff]
-target-version = "py37"
+target-version = "py38"
 select = [
   "E", # pycodestyle
   "F", # pyflakes

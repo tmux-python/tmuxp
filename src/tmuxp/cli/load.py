@@ -26,9 +26,9 @@ from ..workspace.finders import find_workspace_file, get_workspace_dir
 from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, NotRequired, TypeAlias, TypedDict
+    from typing_extensions import NotRequired, TypeAlias, TypedDict
 
-    CLIColorsLiteral: TypeAlias = Literal[56, 88]
+    CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
 
     class OptionOverrides(TypedDict):
         detached: NotRequired[bool]

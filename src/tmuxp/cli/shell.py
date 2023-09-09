@@ -9,10 +9,10 @@ from .. import util
 from .._compat import PY3, PYMINOR
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, TypeAlias
+    from typing_extensions import TypeAlias
 
-    CLIColorsLiteral: TypeAlias = Literal[56, 88]
-    CLIShellLiteral: TypeAlias = Literal[
+    CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
+    CLIShellLiteral: TypeAlias = t.Literal[
         "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython"
     ]
 

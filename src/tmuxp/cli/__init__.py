@@ -35,13 +35,13 @@ from .utils import tmuxp_echo
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, TypeAlias
+    from typing_extensions import TypeAlias
 
-    CLIVerbosity: TypeAlias = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-    CLISubparserName: TypeAlias = Literal[
+    CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    CLISubparserName: TypeAlias = t.Literal[
         "ls", "load", "convert", "edit", "import", "shell", "debug-info"
     ]
-    CLIImportSubparserName: TypeAlias = Literal["teamocil", "tmuxinator"]
+    CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
 
 
 def create_parser() -> argparse.ArgumentParser:

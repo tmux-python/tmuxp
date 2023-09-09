@@ -5,9 +5,9 @@ import typing as t
 import yaml
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Literal, TypeAlias
+    from typing_extensions import TypeAlias
 
-    FormatLiteral = Literal["json", "yaml"]
+    FormatLiteral = t.Literal["json", "yaml"]
 
     RawConfigData: TypeAlias = t.Dict[t.Any, t.Any]
 
