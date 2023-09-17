@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.11' ]
-        tmux-version: [ '2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', '3.3a', 'master' ]
+        python-version: ['3.11']
+        tmux-version: ['2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', '3.3a', 'master']
         # balance ci coverage across supported python/tmux versions with CI speed
         include:
           - python-version: '3.8'
@@ -19,69 +19,69 @@ jobs:
           - python-version: '3.8'
             tmux-version: 'master'
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install poetry
-      run: pipx install "poetry==1.6.1"
+      - name: Install poetry
+        run: pipx install "poetry==1.6.1"
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'poetry'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
 
-    - name: Setup tmux build cache for tmux ${{ matrix.tmux-version }}
-      id: tmux-build-cache
-      uses: actions/cache@v3
-      with:
-        path: ~/tmux-builds/tmux-${{ matrix.tmux-version }}
-        key: tmux-${{ matrix.tmux-version }}
+      - name: Setup tmux build cache for tmux ${{ matrix.tmux-version }}
+        id: tmux-build-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/tmux-builds/tmux-${{ matrix.tmux-version }}
+          key: tmux-${{ matrix.tmux-version }}
 
-    - name: Build tmux ${{ matrix.tmux-version }}
-      if: steps.tmux-build-cache.outputs.cache-hit != 'true'
-      run: |
-        sudo apt install libevent-dev libncurses5-dev libtinfo-dev libutempter-dev bison
-        mkdir ~/tmux-builds
-        mkdir ~/tmux-src
-        git clone https://github.com/tmux/tmux.git ~/tmux-src/tmux-${{ matrix.tmux-version }}
-        cd ~/tmux-src/tmux-${{ matrix.tmux-version }}
-        git checkout ${{ matrix.tmux-version }}
-        sh autogen.sh
-        ./configure --prefix=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }} && make && make install
-        export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
-        cd ~
-        tmux -V
+      - name: Build tmux ${{ matrix.tmux-version }}
+        if: steps.tmux-build-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt install libevent-dev libncurses5-dev libtinfo-dev libutempter-dev bison
+          mkdir ~/tmux-builds
+          mkdir ~/tmux-src
+          git clone https://github.com/tmux/tmux.git ~/tmux-src/tmux-${{ matrix.tmux-version }}
+          cd ~/tmux-src/tmux-${{ matrix.tmux-version }}
+          git checkout ${{ matrix.tmux-version }}
+          sh autogen.sh
+          ./configure --prefix=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }} && make && make install
+          export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
+          cd ~
+          tmux -V
 
-    - name: Install python dependencies
-      run: |
-        poetry install -E "test coverage lint"
+      - name: Install python dependencies
+        run: |
+          poetry install -E "test coverage lint"
 
-    - name: Lint with black . --check
-      run: poetry run black . --check
+      - name: Lint with black . --check
+        run: poetry run black . --check
 
-    - name: Lint with ruff .
-      run: poetry run ruff .
+      - name: Lint with ruff .
+        run: poetry run ruff .
 
-    - name: Lint with mypy
-      run: poetry run mypy .
+      - name: Lint with mypy
+        run: poetry run mypy .
 
-    - name: Print python versions
-      run: |
-        python -V
-        poetry run python -V
+      - name: Print python versions
+        run: |
+          python -V
+          poetry run python -V
 
-    - name: Test with pytest
-      continue-on-error: ${{ matrix.tmux-version == 'master' }}
-      run: |
-        sudo apt install libevent-2.1-7
-        export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
-        ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
-        tmux -V
-        poetry run py.test --cov=./ --cov-report=xml
+      - name: Test with pytest
+        continue-on-error: ${{ matrix.tmux-version == 'master' }}
+        run: |
+          sudo apt install libevent-2.1-7
+          export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
+          ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
+          tmux -V
+          poetry run py.test --cov=./ --cov-report=xml
 
-    - uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   release:
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ['3.11']
 
     steps:
       - uses: actions/checkout@v3

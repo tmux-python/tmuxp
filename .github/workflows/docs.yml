@@ -7,74 +7,73 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.11' ]
+        python-version: ['3.11']
     steps:
-    - uses: actions/checkout@v3
-    - name: Filter changed file paths to outputs
-      uses: dorny/paths-filter@v2.7.0
-      id: changes
-      with:
-        filters: |
-          root_docs:
-            - CHANGES
-            - README.*
-          docs:
-            - 'docs/**'
-            - 'examples/**'
-          python_files:
-            - 'src/tmuxp/**'
-            - pyproject.toml
-            - poetry.lock
+      - uses: actions/checkout@v3
+      - name: Filter changed file paths to outputs
+        uses: dorny/paths-filter@v2.7.0
+        id: changes
+        with:
+          filters: |
+            root_docs:
+              - CHANGES
+              - README.*
+            docs:
+              - 'docs/**'
+              - 'examples/**'
+            python_files:
+              - 'src/tmuxp/**'
+              - pyproject.toml
+              - poetry.lock
 
-    - name: Should publish
-      if: steps.changes.outputs.docs == 'true' || steps.changes.outputs.root_docs == 'true' || steps.changes.outputs.python_files == 'true'
-      run: echo "PUBLISH=$(echo true)" >> $GITHUB_ENV
+      - name: Should publish
+        if: steps.changes.outputs.docs == 'true' || steps.changes.outputs.root_docs == 'true' || steps.changes.outputs.python_files == 'true'
+        run: echo "PUBLISH=$(echo true)" >> $GITHUB_ENV
 
-    - name: Install poetry
-      if: env.PUBLISH == 'true'
-      run: pipx install "poetry==1.6.1"
+      - name: Install poetry
+        if: env.PUBLISH == 'true'
+        run: pipx install "poetry==1.6.1"
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      if: env.PUBLISH == 'true'
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'poetry'
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        if: env.PUBLISH == 'true'
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
 
-    - name: Install dependencies [w/ docs]
-      if: env.PUBLISH == 'true'
-      run: poetry install --extras "docs lint"
+      - name: Install dependencies [w/ docs]
+        if: env.PUBLISH == 'true'
+        run: poetry install --extras "docs lint"
 
-    - name: Print python versions
-      if: env.PUBLISH == 'true'
-      run: |
-        python -V
-        poetry run python -V
+      - name: Print python versions
+        if: env.PUBLISH == 'true'
+        run: |
+          python -V
+          poetry run python -V
 
-    - name: Build documentation
-      if: env.PUBLISH == 'true'
-      run: |
-        pushd docs; make SPHINXBUILD='poetry run sphinx-build' html; popd
+      - name: Build documentation
+        if: env.PUBLISH == 'true'
+        run: |
+          pushd docs; make SPHINXBUILD='poetry run sphinx-build' html; popd
 
-    - name: Push documentation to S3
-      if: env.PUBLISH == 'true'
-      uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --acl public-read --follow-symlinks --delete
-      env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: 'us-west-1'   # optional: defaults to us-east-1
-        SOURCE_DIR: 'docs/_build/html'      # optional: defaults to entire repository 
+      - name: Push documentation to S3
+        if: env.PUBLISH == 'true'
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-west-1' # optional: defaults to us-east-1
+          SOURCE_DIR: 'docs/_build/html' # optional: defaults to entire repository
 
-    - name: Purge cache on Cloudflare
-      if: env.PUBLISH == 'true'
-      uses: jakejarvis/cloudflare-purge-action@v0.3.0
-      env:
-        CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
-        CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+      - name: Purge cache on Cloudflare
+        if: env.PUBLISH == 'true'
+        uses: jakejarvis/cloudflare-purge-action@v0.3.0
+        env:
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
