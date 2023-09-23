@@ -21,6 +21,10 @@ from docutils.parsers.rst.directives import flag, images, nonnegative_int
 from sphinx.errors import SphinxError
 from sphinx.util.osutil import ensuredir, relative_uri
 
+if t.TYPE_CHECKING:
+    from sphinx.application import Sphinx
+
+
 try:
     import aafigure
 except ImportError:
@@ -32,14 +36,18 @@ logger = logging.getLogger(__name__)
 DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
-def merge_dict(dst, src):
+def merge_dict(
+    dst: t.Dict[str, t.Optional[str]], src: t.Dict[str, t.Optional[str]]
+) -> t.Dict[str, t.Optional[str]]:
     for k, v in src.items():
         if k not in dst:
             dst[k] = v
     return dst
 
 
-def get_basename(text, options, prefix="aafig"):
+def get_basename(
+    text: str, options: t.Dict[str, str], prefix: t.Optional[str] = "aafig"
+) -> str:
     options = options.copy()
     if "format" in options:
         del options["format"]
@@ -52,7 +60,7 @@ class AafigError(SphinxError):
     category = "aafig error"
 
 
-class AafigDirective(images.Image):
+class AafigDirective(images.Image):  # type:ignore
     """
     Directive to insert an ASCII art figure to be rendered by aafigure.
     """
@@ -71,7 +79,7 @@ class AafigDirective(images.Image):
     option_spec = images.Image.option_spec.copy()
     option_spec.update(own_option_spec)
 
-    def run(self):
+    def run(self) -> t.List[nodes.Node]:
         aafig_options = {}
         own_options_keys = [self.own_option_spec.keys(), "scale"]
         for k, v in self.options.items():
@@ -93,7 +101,7 @@ class AafigDirective(images.Image):
         return [image_node]
 
 
-def render_aafig_images(app, doctree):
+def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
     format_map = app.builder.config.aafig_format
     merge_dict(format_map, DEFAULT_FORMATS)
     if aafigure is None:
@@ -144,7 +152,9 @@ class AafigureNotInstalled(AafigError):
         return super().__init__("aafigure module not installed", *args, **kwargs)
 
 
-def render_aafigure(app, text, options):
+def render_aafigure(
+    app: "Sphinx", text: str, options: t.Dict[str, str]
+) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
     """
     Render an ASCII art figure into the requested format output file.
     """
@@ -186,7 +196,7 @@ def render_aafigure(app, text, options):
                 finally:
                     if f is not None:
                         f.close()
-            return relfn, outfn, id, extra
+            return relfn, outfn, None, extra
     except AafigError:
         pass
 
@@ -204,10 +214,10 @@ def render_aafigure(app, text, options):
         with open(metadata_fname, "w") as f:
             f.write(extra)
 
-    return relfn, outfn, id, extra
+    return relfn, outfn, None, extra
 
 
-def setup(app):
+def setup(app: "Sphinx") -> None:
     app.add_directive("aafig", AafigDirective)
     app.connect("doctree-read", render_aafig_images)
     app.add_config_value("aafig_format", DEFAULT_FORMATS, "html")
