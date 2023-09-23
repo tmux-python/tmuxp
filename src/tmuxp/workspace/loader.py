@@ -30,7 +30,7 @@ def expandshell(value: str) -> str:
     return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
 
 
-def expand_cmd(p: t.Dict) -> t.Dict:
+def expand_cmd(p: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     if isinstance(p, str):
         p = {"shell_command": [p]}
     elif isinstance(p, list):
