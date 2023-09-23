@@ -31,12 +31,6 @@ class CLIFreezeNamespace(argparse.Namespace):
     force: t.Optional[bool]
 
 
-def session_completion(ctx, params, incomplete):
-    server = Server()
-    choices = [session.name for session in server.sessions]
-    return sorted(str(c) for c in choices if str(c).startswith(incomplete))
-
-
 def create_freeze_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
