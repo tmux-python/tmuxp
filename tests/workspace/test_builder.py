@@ -149,7 +149,7 @@ Test needs to be rewritten, assertion not reliable across platforms
 and CI. See https://github.com/tmux-python/tmuxp/issues/310.
     """.strip()
 )
-def test_suppress_history(session):
+def test_suppress_history(session: Session) -> None:
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/suppress_history.yaml")
     )
@@ -162,10 +162,10 @@ def test_suppress_history(session):
     inHistoryWindow = session.windows.get(window_name="inHistory")
     isMissingWindow = session.windows.get(window_name="isMissing")
 
-    def assertHistory(cmd, hist):
+    def assertHistory(cmd: str, hist: str) -> bool:
         return "inHistory" in cmd and cmd.endswith(hist)
 
-    def assertIsMissing(cmd, hist):
+    def assertIsMissing(cmd: str, hist: str) -> bool:
         return "isMissing" in cmd and not cmd.endswith(hist)
 
     for w, window_name, assertCase in [
@@ -303,8 +303,8 @@ def test_window_options_after(session: Session) -> None:
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    def assert_last_line(p, s):
-        def f():
+    def assert_last_line(p: Pane, s: str) -> bool:
+        def f() -> bool:
             pane_out = p.cmd("capture-pane", "-p", "-J").stdout
             while not pane_out[-1].strip():  # delete trailing lines tmux 1.8
                 pane_out.pop()
@@ -400,7 +400,9 @@ def test_environment_variables(session: Session) -> None:
     has_gte_version("3.0"),
     reason="warnings are not needed for tmux >= 3.0",
 )
-def test_environment_variables_logs(session: Session, caplog: pytest.LogCaptureFixture):
+def test_environment_variables_logs(
+    session: Session, caplog: pytest.LogCaptureFixture
+) -> None:
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/environment_vars.yaml")
     )
@@ -468,7 +470,7 @@ def test_automatic_rename_option(
     assert w.name != "renamed_window"
 
     def check_window_name_mismatch() -> bool:
-        return w.name != portable_command
+        return bool(w.name != portable_command)
 
     assert retry_until(check_window_name_mismatch, 5, interval=0.25)
 
@@ -670,7 +672,7 @@ def test_pane_order(session: Session) -> None:
             # at 0 since python list.
             pane_path = pane_paths[p_index - pane_base_index]
 
-            def f(pane_path: str, p: Pane):
+            def f(pane_path: str, p: Pane) -> bool:
                 p.refresh()
                 return p.pane_current_path == pane_path
 
@@ -713,6 +715,7 @@ def test_before_load_throw_error_if_retcode_error(server: Server) -> None:
 
     with temp_session(server) as sess:
         session_name = sess.name
+        assert session_name is not None
 
         with pytest.raises(exc.BeforeLoadScriptError):
             builder.build(session=sess)
@@ -736,7 +739,9 @@ def test_before_load_throw_error_if_file_not_exists(server: Server) -> None:
 
     with temp_session(server) as session:
         session_name = session.name
-        temp_session_exists = server.has_session(session.name)
+
+        assert session_name is not None
+        temp_session_exists = server.has_session(session_name)
         assert temp_session_exists
         with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)) as excinfo:
             builder.build(session=session)
@@ -985,6 +990,8 @@ def test_find_current_active_pane(
     # Assign an active pane to the session
     second_session = server.sessions[1]
     first_pane_on_second_session_id = second_session.windows[0].panes[0].pane_id
+
+    assert first_pane_on_second_session_id is not None
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
@@ -1134,7 +1141,7 @@ def test_load_workspace_enter(
     pane = session.attached_pane
     assert isinstance(pane, Pane)
 
-    def fn():
+    def fn() -> bool:
         captured_pane = "\n".join(pane.capture_pane())
 
         if should_see:
@@ -1320,11 +1327,11 @@ def test_layout_main_horizontal(session: Session) -> None:
     assert len(window.panes) == 3
     main_horizontal_pane, *panes = window.panes
 
-    def height(p):
-        return int(p.pane_height)
+    def height(p: Pane) -> int:
+        return int(p.pane_height) if p.pane_height is not None else 0
 
-    def width(p):
-        return int(p.pane_width)
+    def width(p: Pane) -> int:
+        return int(p.pane_width) if p.pane_width is not None else 0
 
     main_horizontal_pane_height = height(main_horizontal_pane)
     pane_heights = [height(pane) for pane in panes]
@@ -1337,7 +1344,7 @@ def test_layout_main_horizontal(session: Session) -> None:
     ), "The bottom row should be uniform height"
     assert width(main_horizontal_pane) > width(panes[0])
 
-    def is_almost_equal(x, y):
+    def is_almost_equal(x: int, y: int) -> bool:
         return abs(x - y) <= 1
 
     assert is_almost_equal(height(panes[0]), height(panes[1]))
