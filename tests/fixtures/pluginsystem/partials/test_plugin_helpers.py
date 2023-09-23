@@ -1,10 +1,16 @@
-from typing import Iterable, Mapping, Union
+import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
 
 
+class Config(t.TypedDict):
+    tmux_version: t.Optional[str]
+    tmuxp_version: t.Optional[str]
+    libtmux_version: t.Optional[str]
+
+
 class MyTestTmuxpPlugin(TmuxpPlugin):
-    def __init__(self, config: Mapping[str, Union[str, Iterable[str]]]) -> None:
+    def __init__(self, config: Config) -> None:
         assert isinstance(config, dict)
         tmux_version = config.pop("tmux_version", None)
         libtmux_version = config.pop("libtmux_version", None)
