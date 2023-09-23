@@ -2,8 +2,8 @@ from .test_plugin_helpers import MyTestTmuxpPlugin
 
 
 class TmuxVersionFailMinPlugin(MyTestTmuxpPlugin):
-    def __init__(self):
-        config = {
+    def __init__(self) -> None:
+        config: dict[str, str] = {
             "plugin_name": "tmux-min-version-fail",
             "tmux_min_version": "1.8",
             "tmux_version": "1.7",
@@ -12,8 +12,8 @@ class TmuxVersionFailMinPlugin(MyTestTmuxpPlugin):
 
 
 class TmuxVersionFailMaxPlugin(MyTestTmuxpPlugin):
-    def __init__(self):
-        config = {
+    def __init__(self) -> None:
+        config: dict[str, str] = {
             "plugin_name": "tmux-max-version-fail",
             "tmux_max_version": "3.0",
             "tmux_version": "3.5",
@@ -22,8 +22,8 @@ class TmuxVersionFailMaxPlugin(MyTestTmuxpPlugin):
 
 
 class TmuxVersionFailIncompatiblePlugin(MyTestTmuxpPlugin):
-    def __init__(self):
-        config = {
+    def __init__(self) -> None:
+        config: dict[str, str | list[str]] = {
             "plugin_name": "tmux-incompatible-version-fail",
             "tmux_version_incompatible": ["2.3"],
             "tmux_version": "2.3",
