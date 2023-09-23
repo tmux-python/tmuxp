@@ -27,7 +27,11 @@ TMUXP_MAX_VERSION = None
 
 
 if t.TYPE_CHECKING:
-    from typing_extensions import TypedDict
+    from libtmux.session import Session
+    from libtmux.window import Window
+    from typing_extensions import TypedDict, TypeGuard, Unpack
+
+    from ._types import PluginConfigSchema
 
     class VersionConstraints(TypedDict):
         version: t.Union[Version, str]
@@ -41,20 +45,52 @@ if t.TYPE_CHECKING:
         libtmux: VersionConstraints
 
 
+class Config(t.TypedDict):
+    plugin_name: str
+    tmux_min_version: str
+    tmux_max_version: t.Optional[str]
+    tmux_version_incompatible: t.Optional[t.List[str]]
+    libtmux_min_version: str
+    libtmux_max_version: t.Optional[str]
+    libtmux_version_incompatible: t.Optional[t.List[str]]
+    tmuxp_min_version: str
+    tmuxp_max_version: t.Optional[str]
+    tmuxp_version_incompatible: t.Optional[t.List[str]]
+
+
+DEFAULT_CONFIG: "Config" = {
+    "plugin_name": "tmuxp-plugin",
+    "tmux_min_version": TMUX_MIN_VERSION,
+    "tmux_max_version": TMUX_MAX_VERSION,
+    "tmux_version_incompatible": None,
+    "libtmux_min_version": LIBTMUX_MIN_VERSION,
+    "libtmux_max_version": LIBTMUX_MAX_VERSION,
+    "libtmux_version_incompatible": None,
+    "tmuxp_min_version": TMUXP_MIN_VERSION,
+    "tmuxp_max_version": TMUXP_MAX_VERSION,
+    "tmuxp_version_incompatible": None,
+}
+
+
+def validate_plugin_config(config: "PluginConfigSchema") -> "TypeGuard[Config]":
+    return isinstance(config, dict)
+
+
+def setup_plugin_config(
+    config: "PluginConfigSchema", default_config: "Config" = DEFAULT_CONFIG
+) -> "Config":
+    new_config = config.copy()
+    for default_key, default_value in default_config.items():
+        if default_key not in new_config:
+            new_config[default_key] = default_value  # type:ignore
+
+    assert validate_plugin_config(new_config)
+
+    return new_config
+
+
 class TmuxpPlugin:
-    def __init__(
-        self,
-        plugin_name: str = "tmuxp-plugin",
-        tmux_min_version: str = TMUX_MIN_VERSION,
-        tmux_max_version: t.Optional[str] = TMUX_MAX_VERSION,
-        tmux_version_incompatible: t.Optional[t.List[str]] = None,
-        libtmux_min_version: str = LIBTMUX_MIN_VERSION,
-        libtmux_max_version: t.Optional[str] = LIBTMUX_MAX_VERSION,
-        libtmux_version_incompatible: t.Optional[t.List[str]] = None,
-        tmuxp_min_version: str = TMUXP_MIN_VERSION,
-        tmuxp_max_version: t.Optional[str] = TMUXP_MAX_VERSION,
-        tmuxp_version_incompatible: t.Optional[t.List[str]] = None,
-    ) -> None:
+    def __init__(self, **kwargs: "Unpack[PluginConfigSchema]") -> None:
         """
         Initialize plugin.
 
@@ -95,7 +131,8 @@ class TmuxpPlugin:
             Versions of tmuxp that are incompatible with the plugin
 
         """
-        self.plugin_name = plugin_name
+        config = setup_plugin_config(config=kwargs)
+        self.plugin_name = config["plugin_name"]
 
         # Dependency versions
         self.tmux_version = get_version()
@@ -105,26 +142,26 @@ class TmuxpPlugin:
         self.version_constraints: "TmuxpPluginVersionConstraints" = {
             "tmux": {
                 "version": self.tmux_version,
-                "vmin": tmux_min_version,
-                "vmax": tmux_max_version,
-                "incompatible": tmux_version_incompatible
-                if tmux_version_incompatible
+                "vmin": config["tmux_min_version"],
+                "vmax": config["tmux_max_version"],
+                "incompatible": config["tmux_version_incompatible"]
+                if config["tmux_version_incompatible"]
                 else [],
             },
             "libtmux": {
                 "version": self.libtmux_version,
-                "vmin": libtmux_min_version,
-                "vmax": libtmux_max_version,
-                "incompatible": libtmux_version_incompatible
-                if libtmux_version_incompatible
+                "vmin": config["libtmux_min_version"],
+                "vmax": config["libtmux_max_version"],
+                "incompatible": config["libtmux_version_incompatible"]
+                if config["libtmux_version_incompatible"]
                 else [],
             },
             "tmuxp": {
                 "version": self.tmuxp_version,
-                "vmin": tmuxp_min_version,
-                "vmax": tmuxp_max_version,
-                "incompatible": tmuxp_version_incompatible
-                if tmuxp_version_incompatible
+                "vmin": config["tmuxp_min_version"],
+                "vmax": config["tmuxp_max_version"],
+                "incompatible": config["tmuxp_version_incompatible"]
+                if config["tmuxp_version_incompatible"]
                 else [],
             },
         }
@@ -167,7 +204,7 @@ class TmuxpPlugin:
 
         return True
 
-    def before_workspace_builder(self, session):
+    def before_workspace_builder(self, session: "Session") -> None:
         """
         Provide a session hook previous to creating the workspace.
 
@@ -180,7 +217,7 @@ class TmuxpPlugin:
             session to hook into
         """
 
-    def on_window_create(self, window):
+    def on_window_create(self, window: "Window") -> None:
         """
         Provide a window hook previous to doing anything with a window.
 
@@ -192,7 +229,7 @@ class TmuxpPlugin:
             window to hook into
         """
 
-    def after_window_finished(self, window):
+    def after_window_finished(self, window: "Window") -> None:
         """
         Provide a window hook after creating the window.
 
@@ -206,7 +243,7 @@ class TmuxpPlugin:
             window to hook into
         """
 
-    def before_script(self, session):
+    def before_script(self, session: "Session") -> None:
         """
         Provide a session hook after the workspace has been built.
 
@@ -234,7 +271,7 @@ class TmuxpPlugin:
             session to hook into
         """
 
-    def reattach(self, session):
+    def reattach(self, session: "Session") -> None:
         """
         Provide a session hook before reattaching to the session.
 

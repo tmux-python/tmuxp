@@ -138,10 +138,12 @@ exclude_lines = [
 ]
 
 [tool.mypy]
+strict = true
 files = [
   "src/",
   "tests/",
 ]
+enable_incomplete_feature = ["Unpack"]
 
 [[tool.mypy.overrides]]
 module = [

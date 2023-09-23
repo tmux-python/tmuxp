@@ -178,7 +178,7 @@ class CLILoadFixture(t.NamedTuple):
     expected_not_in_err: "ExpectedOutput" = None
 
 
-TEST_LOAD_FIXTURES = [
+TEST_LOAD_FIXTURES: t.List[CLILoadFixture] = [
     CLILoadFixture(
         test_id="dir-relative-dot-samedir",
         cli_args=["load", "."],
@@ -262,7 +262,7 @@ def test_load(
     tmuxp_configdir: pathlib.Path,
     server: "Server",
     session: Session,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
     test_id: str,
     cli_args: t.List[str],
@@ -318,7 +318,7 @@ def test_regression_00132_session_name_with_dots(
     tmp_path: pathlib.Path,
     server: "Server",
     session: Session,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     yaml_config = FIXTURE_PATH / "workspace/builder" / "regression_00132_dots.yaml"
     cli_args = [str(yaml_config)]
@@ -333,7 +333,7 @@ def test_load_zsh_autotitle_warning(
     cli_args: t.List[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
     server: "Server",
 ) -> None:
     # create dummy tmuxp yaml so we don't get yelled at
@@ -392,7 +392,7 @@ def test_load_log_file(
     cli_args: t.List[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     # create dummy tmuxp yaml that breaks to prevent actually loading tmux
     tmuxp_config_path = tmp_path / ".tmuxp.yaml"
@@ -450,7 +450,10 @@ def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
     ],
 )
 def test_load_plugins_version_fail_skip(
-    monkeypatch_plugin_test_packages, cli_args, inputs, capsys: pytest.CaptureFixture
+    monkeypatch_plugin_test_packages: None,
+    cli_args: t.List[str],
+    inputs: t.List[str],
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
@@ -474,7 +477,7 @@ def test_load_plugins_version_fail_no_skip(
     cli_args: t.List[str],
     inputs: t.List[str],
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
 
@@ -493,7 +496,7 @@ def test_load_plugins_version_fail_no_skip(
 def test_load_plugins_plugin_missing(
     monkeypatch_plugin_test_packages: None,
     cli_args: t.List[str],
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
@@ -519,7 +522,7 @@ def test_plugin_system_before_script(
         session_file, socket_name=server.socket_name, detached=True
     )
 
-    assert isinstance(session, libtmux.Session)
+    assert isinstance(session, Session)
     assert session.name == "plugin_test_bs"
 
 

@@ -8,7 +8,7 @@ from tmuxp import cli
 def test_debug_info_cli(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: pathlib.Path,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.setenv("SHELL", "/bin/bash")
 

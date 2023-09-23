@@ -240,7 +240,7 @@ def test_find_workspace_file_arg(
     configdir: pathlib.Path,
     projectdir: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("workspace_file", type=str)
@@ -257,7 +257,7 @@ def test_find_workspace_file_arg(
 
     project_config = projectdir / ".tmuxp.yaml"
 
-    def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
+    def check_cmd(config_arg: str) -> "_pytest.capture.CaptureResult[str]":
         args = parser.parse_args([config_arg])
         config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()

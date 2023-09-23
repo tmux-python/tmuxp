@@ -59,7 +59,7 @@ def command_import(
     workspace_file: str,
     print_list: str,
     parser: argparse.ArgumentParser,
-):
+) -> None:
     """Import a teamocil/tmuxinator config."""
 
 
@@ -116,9 +116,14 @@ def create_import_subparser(
     return parser
 
 
+class ImportConfigFn(t.Protocol):
+    def __call__(self, workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+        ...
+
+
 def import_config(
     workspace_file: str,
-    importfunc: t.Callable,
+    importfunc: ImportConfigFn,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
     existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))

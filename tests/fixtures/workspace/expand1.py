@@ -1,4 +1,5 @@
 import pathlib
+import typing as t
 
 before_workspace = {
     "session_name": "sample workspace",
@@ -30,7 +31,7 @@ before_workspace = {
 }
 
 
-def after_workspace():
+def after_workspace() -> t.Dict[str, t.Any]:
     return {
         "session_name": "sample workspace",
         "start_directory": str(pathlib.Path().home()),

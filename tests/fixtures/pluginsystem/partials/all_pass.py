@@ -1,9 +1,14 @@
+import typing as t
+
 from .test_plugin_helpers import MyTestTmuxpPlugin
+
+if t.TYPE_CHECKING:
+    from ._types import PluginTestConfigSchema
 
 
 class AllVersionPassPlugin(MyTestTmuxpPlugin):
     def __init__(self) -> None:
-        config = {
+        config: "PluginTestConfigSchema" = {
             "plugin_name": "tmuxp-plugin-my-tmuxp-plugin",
             "tmux_min_version": "1.8",
             "tmux_max_version": "100.0",
@@ -17,4 +22,4 @@ class AllVersionPassPlugin(MyTestTmuxpPlugin):
             "tmux_version": "3.0",
             "tmuxp_version": "1.7.0",
         }
-        MyTestTmuxpPlugin.__init__(self, config)
+        MyTestTmuxpPlugin.__init__(self, **config)

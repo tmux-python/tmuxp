@@ -115,8 +115,8 @@ class LogFormatter(logging.Formatter):
 
         return levelname + asctime + name
 
-    def __init__(self, color: bool = True, *args, **kwargs) -> None:
-        logging.Formatter.__init__(self, *args, **kwargs)
+    def __init__(self, color: bool = True, **kwargs: t.Any) -> None:
+        logging.Formatter.__init__(self, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
         try:
@@ -125,7 +125,7 @@ class LogFormatter(logging.Formatter):
             record.message = f"Bad message ({e!r}): {record.__dict__!r}"
 
         date_format = "%H:%m:%S"
-        formatting = self.converter(record.created)  # type:ignore
+        formatting = self.converter(record.created)
         record.asctime = time.strftime(date_format, formatting)
 
         prefix = self.template(record) % record.__dict__

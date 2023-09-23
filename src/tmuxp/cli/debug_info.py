@@ -29,19 +29,19 @@ def command_debug_info(
     Print debug info to submit with Issues.
     """
 
-    def prepend_tab(strings):
+    def prepend_tab(strings: t.List[str]) -> t.List[str]:
         """
         Prepend tab to strings in list.
         """
         return ["\t%s" % x for x in strings]
 
-    def output_break():
+    def output_break() -> str:
         """
         Generate output break.
         """
         return "-" * 25
 
-    def format_tmux_resp(std_resp):
+    def format_tmux_resp(std_resp: tmux_cmd) -> str:
         """
         Format tmux command response for tmuxp stdout.
         """

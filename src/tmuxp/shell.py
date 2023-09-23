@@ -12,11 +12,34 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from types import ModuleType
+
+    from libtmux.pane import Pane
+    from libtmux.server import Server
+    from libtmux.session import Session
+    from libtmux.window import Window
+    from typing_extensions import NotRequired, TypeAlias, TypedDict, Unpack
 
     CLIShellLiteral: TypeAlias = t.Literal[
         "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython"
     ]
+
+    class LaunchOptionalImports(TypedDict):
+        server: NotRequired["Server"]
+        session: NotRequired["Session"]
+        window: NotRequired["Window"]
+        pane: NotRequired["Pane"]
+
+    class LaunchImports(t.TypedDict):
+        libtmux: ModuleType
+        Server: t.Type[Server]
+        Session: t.Type[Session]
+        Window: t.Type[Window]
+        Pane: t.Type[Pane]
+        server: t.Optional["Server"]
+        session: t.Optional["Session"]
+        window: t.Optional["Window"]
+        pane: t.Optional["Pane"]
 
 
 def has_ipython() -> bool:
@@ -77,13 +100,15 @@ def detect_best_shell() -> "CLIShellLiteral":
     return "code"
 
 
-def get_bpython(options, extra_args=None):
+def get_bpython(
+    options: "LaunchOptionalImports", extra_args: t.Optional[t.Dict[str, t.Any]] = None
+) -> t.Callable[[], None]:
     if extra_args is None:
         extra_args = {}
 
     from bpython import embed  # F841
 
-    def launch_bpython():
+    def launch_bpython() -> None:
         imported_objects = get_launch_args(**options)
         kwargs = {}
         if extra_args:
@@ -93,16 +118,18 @@ def get_bpython(options, extra_args=None):
     return launch_bpython
 
 
-def get_ipython_arguments():
+def get_ipython_arguments() -> t.List[str]:
     ipython_args = "IPYTHON_ARGUMENTS"
     return os.environ.get(ipython_args, "").split()
 
 
-def get_ipython(options, **extra_args):
+def get_ipython(
+    options: "LaunchOptionalImports", **extra_args: t.Dict[str, t.Any]
+) -> t.Any:
     try:
         from IPython import start_ipython
 
-        def launch_ipython():
+        def launch_ipython() -> None:
             imported_objects = get_launch_args(**options)
             ipython_arguments = extra_args or get_ipython_arguments()
             start_ipython(argv=ipython_arguments, user_ns=imported_objects)
@@ -115,7 +142,7 @@ def get_ipython(options, **extra_args):
         # Notebook not supported for IPython < 0.11.
         from IPython.Shell import IPShell
 
-        def launch_ipython():
+        def launch_ipython() -> None:
             imported_objects = get_launch_args(**options)
             shell = IPShell(argv=[], user_ns=imported_objects)
             shell.mainloop()
@@ -123,13 +150,13 @@ def get_ipython(options, **extra_args):
         return launch_ipython
 
 
-def get_ptpython(options, vi_mode=False):
+def get_ptpython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
     try:
         from ptpython.repl import embed, run_config
     except ImportError:
         from prompt_toolkit.contrib.repl import embed, run_config
 
-    def launch_ptpython():
+    def launch_ptpython() -> None:
         imported_objects = get_launch_args(**options)
         history_filename = str(pathlib.Path("~/.ptpython_history").expanduser())
         embed(
@@ -142,7 +169,7 @@ def get_ptpython(options, vi_mode=False):
     return launch_ptpython
 
 
-def get_ptipython(options, vi_mode=False):
+def get_ptipython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
     """Based on django-extensions
 
     Run renamed to launch, get_imported_objects renamed to get_launch_args
@@ -155,7 +182,7 @@ def get_ptipython(options, vi_mode=False):
         from prompt_toolkit.contrib.ipython import embed
         from prompt_toolkit.contrib.repl import run_config
 
-    def launch_ptipython():
+    def launch_ptipython() -> None:
         imported_objects = get_launch_args(**options)
         history_filename = str(pathlib.Path("~/.ptpython_history").expanduser())
         embed(
@@ -168,7 +195,7 @@ def get_ptipython(options, vi_mode=False):
     return launch_ptipython
 
 
-def get_launch_args(**kwargs):
+def get_launch_args(**kwargs: "Unpack[LaunchOptionalImports]") -> "LaunchImports":
     import libtmux
     from libtmux.pane import Pane
     from libtmux.server import Server
@@ -188,7 +215,7 @@ def get_launch_args(**kwargs):
     }
 
 
-def get_code(use_pythonrc, imported_objects):
+def get_code(use_pythonrc: bool, imported_objects: "LaunchImports") -> t.Any:
     import code
 
     try:
@@ -201,7 +228,11 @@ def get_code(use_pythonrc, imported_objects):
         # we already know 'readline' was imported successfully.
         import rlcompleter
 
-        readline.set_completer(rlcompleter.Completer(imported_objects).complete)
+        readline.set_completer(
+            rlcompleter.Completer(
+                imported_objects,  # type:ignore
+            ).complete
+        )
         # Enable tab completion on systems using libedit (e.g. macOS).
         # These lines are copied from Lib/site.py on Python 3.4.
         readline_doc = getattr(readline, "__doc__", "")
@@ -226,9 +257,12 @@ def get_code(use_pythonrc, imported_objects):
                 pythonrc_code = handle.read()
             # Match the behavior of the cpython shell where an error in
             # PYTHONSTARTUP prints an exception and continues.
-            exec(compile(pythonrc_code, pythonrc, "exec"), imported_objects)
+            exec(
+                compile(pythonrc_code, pythonrc, "exec"),
+                imported_objects,  # type:ignore
+            )
 
-    def launch_code():
+    def launch_code() -> None:
         code.interact(local=imported_objects)
 
     return launch_code
@@ -238,7 +272,7 @@ def launch(
     shell: t.Optional["CLIShellLiteral"] = "best",
     use_pythonrc: bool = False,
     use_vi_mode: bool = False,
-    **kwargs
+    **kwargs: "Unpack[LaunchOptionalImports]"
 ) -> None:
     # Also allowing passing shell='code' to force using code.interact
     imported_objects = get_launch_args(**kwargs)

@@ -22,7 +22,7 @@ def create_edit_subparser(
 def command_edit(
     workspace_file: t.Union[str, pathlib.Path],
     parser: t.Optional[argparse.ArgumentParser] = None,
-):
+) -> None:
     workspace_file = find_workspace_file(workspace_file)
 
     sys_editor = os.environ.get("EDITOR", "vim")

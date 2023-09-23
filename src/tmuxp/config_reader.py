@@ -36,12 +36,15 @@ class ConfigReader:
         {'session_name': 'my session'}
         """
         if format == "yaml":
-            return yaml.load(
-                content,
-                Loader=yaml.SafeLoader,
+            return t.cast(
+                t.Dict[str, t.Any],
+                yaml.load(
+                    content,
+                    Loader=yaml.SafeLoader,
+                ),
             )
         elif format == "json":
-            return json.loads(content)
+            return t.cast(t.Dict[str, t.Any], json.loads(content))
         else:
             raise NotImplementedError(f"{format} not supported in configuration")
 

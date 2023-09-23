@@ -153,7 +153,7 @@ def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
     return plugins
 
 
-def _reattach(builder: WorkspaceBuilder):
+def _reattach(builder: WorkspaceBuilder) -> None:
     """
     Reattach session (depending on env being inside tmux already or not)
 

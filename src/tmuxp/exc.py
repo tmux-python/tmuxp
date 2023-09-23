@@ -80,10 +80,10 @@ class TmuxpPluginException(TmuxpException):
 
 
 class BeforeLoadScriptNotExists(OSError):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
 
-        self.strerror = "before_script file '%s' doesn't exist." % self.strerror
+        self.strerror = f"before_script file '{self.strerror}' doesn't exist."
 
 
 @implements_to_string
@@ -106,5 +106,5 @@ class BeforeLoadScriptError(Exception):
             f"{self.output}"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.message

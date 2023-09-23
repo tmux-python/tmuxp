@@ -15,7 +15,7 @@ def test_import(
     cli_args: t.List[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     cli.cli(cli_args)
     result = capsys.readouterr()

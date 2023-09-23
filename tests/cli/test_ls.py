@@ -9,7 +9,7 @@ from tmuxp import cli
 def test_ls_cli(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: pathlib.Path,
-    capsys: pytest.CaptureFixture,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))

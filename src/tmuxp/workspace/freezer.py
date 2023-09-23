@@ -7,7 +7,7 @@ if t.TYPE_CHECKING:
     from libtmux.window import Window
 
 
-def inline(workspace_dict):
+def inline(workspace_dict: t.Dict[str, t.Any]) -> t.Any:
     """Return workspace with inlined shorthands. Opposite of :meth:`loader.expand`.
 
     Parameters
@@ -28,7 +28,7 @@ def inline(workspace_dict):
         workspace_dict["shell_command"] = workspace_dict["shell_command"][0]
 
         if len(workspace_dict.keys()) == 1:
-            workspace_dict = workspace_dict["shell_command"]
+            return workspace_dict["shell_command"]
     if (
         "shell_command_before" in workspace_dict
         and isinstance(workspace_dict["shell_command_before"], list)

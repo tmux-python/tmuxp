@@ -31,12 +31,6 @@ class CLIFreezeNamespace(argparse.Namespace):
     force: t.Optional[bool]
 
 
-def session_completion(ctx, params, incomplete):
-    server = Server()
-    choices = [session.name for session in server.sessions]
-    return sorted(str(c) for c in choices if str(c).startswith(incomplete))
-
-
 def create_freeze_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
@@ -177,12 +171,14 @@ def command_freeze(
 
         workspace_format = extract_workspace_format(dest)
         if not is_valid_ext(workspace_format):
-            workspace_format = prompt_choices(
+            _workspace_format = prompt_choices(
                 "Couldn't ascertain one of [%s] from file name. Convert to"
                 % ", ".join(valid_workspace_formats),
-                choices=valid_workspace_formats,
+                choices=t.cast(t.List[str], valid_workspace_formats),
                 default="yaml",
             )
+            assert is_valid_ext(_workspace_format)
+            workspace_format = _workspace_format
 
     if workspace_format == "yaml":
         workspace = configparser.dump(

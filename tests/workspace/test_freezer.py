@@ -3,6 +3,8 @@ import pathlib
 import time
 import typing
 
+from libtmux.session import Session
+
 from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import freezer, validation
 from tmuxp.workspace.builder import WorkspaceBuilder
@@ -13,7 +15,7 @@ if typing.TYPE_CHECKING:
     from ..fixtures.structures import WorkspaceTestData
 
 
-def test_freeze_config(session):
+def test_freeze_config(session: Session) -> None:
     session_config = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml")
     )
@@ -76,14 +78,16 @@ iafter_workspace = {
 }
 
 
-def test_inline_workspace():
+def test_inline_workspace() -> None:
     """:meth:`freezer.inline()` shell commands list to string."""
 
     test_workspace = freezer.inline(ibefore_workspace)
     assert test_workspace == iafter_workspace
 
 
-def test_export_yaml(tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"):
+def test_export_yaml(
+    tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
+) -> None:
     yaml_workspace_file = tmp_path / "config.yaml"
 
     sample_workspace = freezer.inline(
