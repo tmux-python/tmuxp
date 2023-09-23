@@ -1,9 +1,14 @@
+import typing as t
+
 from .test_plugin_helpers import MyTestTmuxpPlugin
+
+if t.TYPE_CHECKING:
+    from ._types import PluginTestConfigSchema
 
 
 class LibtmuxVersionFailMinPlugin(MyTestTmuxpPlugin):
     def __init__(self) -> None:
-        config: dict[str, str] = {
+        config: "PluginTestConfigSchema" = {
             "plugin_name": "libtmux-min-version-fail",
             "libtmux_min_version": "0.8.3",
             "libtmux_version": "0.7.0",
@@ -13,7 +18,7 @@ class LibtmuxVersionFailMinPlugin(MyTestTmuxpPlugin):
 
 class LibtmuxVersionFailMaxPlugin(MyTestTmuxpPlugin):
     def __init__(self) -> None:
-        config: dict[str, str] = {
+        config: "PluginTestConfigSchema" = {
             "plugin_name": "libtmux-max-version-fail",
             "libtmux_max_version": "3.0",
             "libtmux_version": "3.5",
@@ -23,7 +28,7 @@ class LibtmuxVersionFailMaxPlugin(MyTestTmuxpPlugin):
 
 class LibtmuxVersionFailIncompatiblePlugin(MyTestTmuxpPlugin):
     def __init__(self) -> None:
-        config: dict[str, str | list[str]] = {
+        config: "PluginTestConfigSchema" = {
             "plugin_name": "libtmux-incompatible-version-fail",
             "libtmux_version_incompatible": ["0.7.1"],
             "libtmux_version": "0.7.1",

@@ -2,19 +2,20 @@ import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
 
+if t.TYPE_CHECKING:
+    from tmuxp._types import PluginConfigSchema
 
-class Config(t.TypedDict):
-    tmux_version: t.Optional[str]
-    tmuxp_version: t.Optional[str]
-    libtmux_version: t.Optional[str]
+    from ._types import PluginTestConfigSchema
 
 
 class MyTestTmuxpPlugin(TmuxpPlugin):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: "PluginTestConfigSchema") -> None:
         assert isinstance(config, dict)
         tmux_version = config.pop("tmux_version", None)
         libtmux_version = config.pop("libtmux_version", None)
         tmuxp_version = config.pop("tmuxp_version", None)
+
+        t.cast("PluginConfigSchema", config)
 
         TmuxpPlugin.__init__(self, **config)
 
