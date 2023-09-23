@@ -97,7 +97,11 @@ def test_focus_pane_index(session: Session) -> None:
     pane_base_index = 0 if not pane_base_index else int(pane_base_index)
 
     # get the pane index for each pane
-    pane_base_indexes = [int(pane.index) for pane in session.attached_window.panes]
+    pane_base_indexes = [
+        int(pane.index)
+        for pane in session.attached_window.panes
+        if pane is not None and pane.index is not None
+    ]
 
     pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
     assert pane_indexes_should_be == pane_base_indexes
@@ -129,7 +133,7 @@ def test_focus_pane_index(session: Session) -> None:
     p = None
     pane_path = "/"
 
-    def f_check_again():
+    def f_check_again() -> bool:
         nonlocal p
         p = window3.attached_pane
         assert p is not None
@@ -160,7 +164,9 @@ def test_suppress_history(session: Session) -> None:
     builder.build(session=session)
 
     inHistoryWindow = session.windows.get(window_name="inHistory")
+    assert inHistoryWindow is not None
     isMissingWindow = session.windows.get(window_name="isMissing")
+    assert isMissingWindow is not None
 
     def assertHistory(cmd: str, hist: str) -> bool:
         return "inHistory" in cmd and cmd.endswith(hist)
@@ -175,6 +181,7 @@ def test_suppress_history(session: Session) -> None:
         assert w.name == window_name
         w.select_window()
         p = w.attached_pane
+        assert p is not None
         p.select_pane()
 
         # Print the last-in-history command in the pane
