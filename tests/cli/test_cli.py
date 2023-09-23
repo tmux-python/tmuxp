@@ -102,7 +102,7 @@ def test_pass_config_dir_ClickPath(
     def config_cmd(workspace_file: str) -> None:
         tmuxp_echo(find_workspace_file(workspace_file, workspace_dir=configdir))
 
-    def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
+    def check_cmd(config_arg: str) -> "_pytest.capture.CaptureResult[str]":
         args = parser.parse_args([config_arg])
         config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()
