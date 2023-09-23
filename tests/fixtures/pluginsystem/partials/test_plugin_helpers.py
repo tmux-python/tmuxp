@@ -21,7 +21,9 @@ class MyTestTmuxpPlugin(TmuxpPlugin):
 
         assert "tmux_version" not in config
 
-        super().__init__(**config)
+        # tests/fixtures/pluginsystem/partials/test_plugin_helpers.py:24: error: Extra
+        # argument "tmux_version" from **args for "__init__" of "TmuxpPlugin"  [misc]
+        super().__init__(**config)  # type:ignore
 
         # WARNING! This should not be done in anything but a test
         if tmux_version:
