@@ -58,6 +58,7 @@ def test_get_session_should_default_to_local_attached_session(
 
     # Assign an active pane to the session
     first_pane_on_second_session_id = second_session.windows[0].panes[0].pane_id
+    assert first_pane_on_second_session_id is not None
     monkeypatch.setenv("TMUX_PANE", first_pane_on_second_session_id)
 
     assert get_session(server) == second_session
