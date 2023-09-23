@@ -963,7 +963,9 @@ def test_load_configs_separate_sessions(server: Server) -> None:
     assert len(server.sessions[1].windows) == 2
 
 
-def test_find_current_active_pane(server: Server, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_find_current_active_pane(
+    server: Server, monkeypatch: pytest.MonkeyPatch
+) -> None:
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/three_windows.yaml")
     )
