@@ -34,9 +34,9 @@ def tmuxp_echo(
 
 def prompt(
     name: str,
-    default: t.Any = None,
+    default: t.Optional[str] = None,
     value_proc: t.Optional[t.Callable[[str], str]] = None,
-) -> t.Any:
+) -> str:
     """Return user input from command line.
     :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from
     `flask-script`_. See the `flask-script license`_.
@@ -107,15 +107,12 @@ def prompt_yes_no(name: str, default: bool = True) -> bool:
     return prompt_bool(name, default=default)
 
 
-_C = t.TypeVar("_C")
-
-
 def prompt_choices(
     name: str,
-    choices: t.Union[t.List[_C], t.Tuple[str, _C]],
-    default: t.Optional[_C] = None,
+    choices: t.Union[t.List[str], t.Tuple[str, str]],
+    default: t.Optional[str] = None,
     no_choice: t.Sequence[str] = ("none",),
-) -> t.Optional[_C]:
+) -> t.Optional[str]:
     """Return user input from command line from set of provided choices.
     :param name: prompt text
     :param choices: list or tuple of available choices. Choices may be
@@ -125,8 +122,8 @@ def prompt_choices(
     :rtype: str
     """
 
-    _choices = []
-    options = []
+    _choices: t.List[str] = []
+    options: t.List[str] = []
 
     for choice in choices:
         if isinstance(choice, str):
