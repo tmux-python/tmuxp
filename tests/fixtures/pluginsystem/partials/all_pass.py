@@ -22,4 +22,4 @@ class AllVersionPassPlugin(MyTestTmuxpPlugin):
             "tmux_version": "3.0",
             "tmuxp_version": "1.7.0",
         }
-        MyTestTmuxpPlugin.__init__(self, config)
+        MyTestTmuxpPlugin.__init__(self, **config)

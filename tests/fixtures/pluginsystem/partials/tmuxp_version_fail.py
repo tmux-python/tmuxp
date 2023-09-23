@@ -13,7 +13,7 @@ class TmuxpVersionFailMinPlugin(MyTestTmuxpPlugin):
             "tmuxp_min_version": "1.7.0",
             "tmuxp_version": "1.6.3",
         }
-        MyTestTmuxpPlugin.__init__(self, config)
+        MyTestTmuxpPlugin.__init__(self, **config)
 
 
 class TmuxpVersionFailMaxPlugin(MyTestTmuxpPlugin):
@@ -23,7 +23,7 @@ class TmuxpVersionFailMaxPlugin(MyTestTmuxpPlugin):
             "tmuxp_max_version": "2.0.0",
             "tmuxp_version": "2.5",
         }
-        MyTestTmuxpPlugin.__init__(self, config)
+        MyTestTmuxpPlugin.__init__(self, **config)
 
 
 class TmuxpVersionFailIncompatiblePlugin(MyTestTmuxpPlugin):
@@ -33,4 +33,4 @@ class TmuxpVersionFailIncompatiblePlugin(MyTestTmuxpPlugin):
             "tmuxp_version_incompatible": ["1.5.0"],
             "tmuxp_version": "1.5.0",
         }
-        MyTestTmuxpPlugin.__init__(self, config)
+        MyTestTmuxpPlugin.__init__(self, **config)

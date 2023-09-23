@@ -3,13 +3,15 @@ import typing as t
 from tmuxp.plugin import TmuxpPlugin
 
 if t.TYPE_CHECKING:
+    from typing_extensions import Unpack
+
     from tmuxp._types import PluginConfigSchema
 
     from ._types import PluginTestConfigSchema
 
 
 class MyTestTmuxpPlugin(TmuxpPlugin):
-    def __init__(self, config: "PluginTestConfigSchema") -> None:
+    def __init__(self, **config: "Unpack[PluginTestConfigSchema]") -> None:
         assert isinstance(config, dict)
         tmux_version = config.pop("tmux_version", None)
         libtmux_version = config.pop("libtmux_version", None)
@@ -17,7 +19,9 @@ class MyTestTmuxpPlugin(TmuxpPlugin):
 
         t.cast("PluginConfigSchema", config)
 
-        TmuxpPlugin.__init__(self, **config)
+        assert "tmux_version" not in config
+
+        super().__init__(**config)
 
         # WARNING! This should not be done in anything but a test
         if tmux_version:
