@@ -257,7 +257,7 @@ def test_find_workspace_file_arg(
 
     project_config = projectdir / ".tmuxp.yaml"
 
-    def check_cmd(config_arg) -> "_pytest.capture.CaptureResult":
+    def check_cmd(config_arg: str) -> "_pytest.capture.CaptureResult[str]":
         args = parser.parse_args([config_arg])
         config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()
