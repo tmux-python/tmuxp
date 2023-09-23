@@ -178,7 +178,7 @@ class CLILoadFixture(t.NamedTuple):
     expected_not_in_err: "ExpectedOutput" = None
 
 
-TEST_LOAD_FIXTURES = [
+TEST_LOAD_FIXTURES: t.List[CLILoadFixture] = [
     CLILoadFixture(
         test_id="dir-relative-dot-samedir",
         cli_args=["load", "."],
