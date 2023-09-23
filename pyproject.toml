@@ -143,6 +143,7 @@ files = [
   "src/",
   "tests/",
 ]
+enable_incomplete_feature = ["Unpack"]
 
 [[tool.mypy.overrides]]
 module = [
