@@ -29,7 +29,7 @@ TMUXP_MAX_VERSION = None
 if t.TYPE_CHECKING:
     from libtmux.session import Session
     from libtmux.window import Window
-    from typing_extensions import TypedDict, Unpack
+    from typing_extensions import TypedDict, TypeGuard, Unpack
 
     from ._types import PluginConfigSchema
 
@@ -72,7 +72,7 @@ DEFAULT_CONFIG: "Config" = {
 }
 
 
-def validate_plugin_config(config: "PluginConfigSchema") -> t.TypeGuard["Config"]:
+def validate_plugin_config(config: "PluginConfigSchema") -> "TypeGuard[Config]":
     return isinstance(config, dict)
 
 
@@ -82,7 +82,7 @@ def setup_plugin_config(
     new_config = config.copy()
     for default_key, default_value in default_config.items():
         if default_key not in new_config:
-            new_config[default_key] = default_value
+            new_config[default_key] = default_value  # type:ignore
 
     assert validate_plugin_config(new_config)
 
@@ -204,7 +204,7 @@ class TmuxpPlugin:
 
         return True
 
-    def before_workspace_builder(self, session: "Session"):
+    def before_workspace_builder(self, session: "Session") -> None:
         """
         Provide a session hook previous to creating the workspace.
 
@@ -217,7 +217,7 @@ class TmuxpPlugin:
             session to hook into
         """
 
-    def on_window_create(self, window: "Window"):
+    def on_window_create(self, window: "Window") -> None:
         """
         Provide a window hook previous to doing anything with a window.
 
@@ -229,7 +229,7 @@ class TmuxpPlugin:
             window to hook into
         """
 
-    def after_window_finished(self, window: "Window"):
+    def after_window_finished(self, window: "Window") -> None:
         """
         Provide a window hook after creating the window.
 
@@ -243,7 +243,7 @@ class TmuxpPlugin:
             window to hook into
         """
 
-    def before_script(self, session: "Session"):
+    def before_script(self, session: "Session") -> None:
         """
         Provide a session hook after the workspace has been built.
 
@@ -271,7 +271,7 @@ class TmuxpPlugin:
             session to hook into
         """
 
-    def reattach(self, session: "Session"):
+    def reattach(self, session: "Session") -> None:
         """
         Provide a session hook before reattaching to the session.
 
