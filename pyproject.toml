@@ -184,6 +184,18 @@ combine-as-imports = true
 "src/tmuxp/cli/*.py" = ["PTH"]
 "docs/_ext/aafig.py" = ["PTH"]
 
+[tool.pytest.ini_options]
+addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"
+doctest_optionflags = "ELLIPSIS NORMALIZE_WHITESPACE"
+testpaths = [
+  "src/tmuxp",
+  "tests",
+  "docs",
+]
+filterwarnings = [
+  "ignore:The frontend.Option(Parser)? class.*:DeprecationWarning::",
+]
+
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
