@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.11']
+        python-version: ['3.12']
         tmux-version: ['2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', '3.3a', 'master']
         # balance ci coverage across supported python/tmux versions with CI speed
         include:
@@ -90,7 +90,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.11']
+        python-version: ['3.12']
 
     steps:
       - uses: actions/checkout@v3
