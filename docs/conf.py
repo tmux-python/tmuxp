@@ -130,49 +130,14 @@ copybutton_remove_prompts = True
 rediraffe_redirects = "redirects.txt"
 rediraffe_branch = "master~1"
 
-htmlhelp_basename = f"{about['__title__']}doc"
-
-latex_documents = [
-    (
-        "index",
-        f"{about['__package_name__']}.tex",
-        f"{about['__title__']} Documentation",
-        about["__author__"],
-        "manual",
-    )
-]
-
-man_pages = [
-    (
-        "index",
-        about["__package_name__"],
-        f"{about['__title__']} Documentation",
-        about["__author__"],
-        1,
-    )
-]
-
-texinfo_documents = [
-    (
-        "index",
-        about["__package_name__"],
-        f"{about['__title__']} Documentation",
-        about["__author__"],
-        about["__package_name__"],
-        about["__description__"],
-        "Miscellaneous",
-    )
-]
+# aafig format, try to get working with pdf
+aafig_format = {"latex": "pdf", "html": "gif"}
+aafig_default_options = {"scale": 0.75, "aspect": 0.5, "proportional": True}
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
     "libtmux": ("https://libtmux.git-pull.com/", None),
 }
-
-# aafig format, try to get working with pdf
-aafig_format = {"latex": "pdf", "html": "gif"}
-
-aafig_default_options = {"scale": 0.75, "aspect": 0.5, "proportional": True}
 
 
 def linkcode_resolve(domain: str, info: t.Dict[str, str]) -> t.Union[None, str]:
