@@ -896,7 +896,7 @@ _Mostly internal cleanups, no features_
 ## tmuxp 1.7.0 (2021-01-09)
 
 This will be the last Python 2.7 release of tmuxp. Bug fixes for python
-2.7 will live in the [1.7.x branch][1.7.x branch].
+2.7 will live in the [1.7.x branch].
 
 - #530 New feature: Plugin system
 
@@ -957,7 +957,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 ## tmuxp 1.6.3 (2020-11-22)
 
-- #647 Adding option to dump {}`load` output to log file, thank you
+- #647 Adding option to dump `load` output to log file, thank you
   @joseph-flinn!
 
   `tmuxp load file.yaml --log-file yourfile.txt`
@@ -977,7 +977,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 - #641 Improvements to `shell`
 
-  Thanks [django-extensions][django-extensions] (licensed MIT) for the shell detection abstraction.
+  Thanks [django-extensions] (licensed MIT) for the shell detection abstraction.
 
   - Deprecate `shell_plus`
   - `tmuxp shell` now detects the best shell available by default
@@ -990,10 +990,10 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
     - `--pdb`: Use plain old `breakpoint()` (python 3.7+) or
       `pdb.set_trace`
     - `--code`: Drop into `code.interact`, accepts `--use-pythonrc`
-    - `--bpython`: Drop into [bpython][bpython]
-    - `--ipython`: Drop into [ipython][ipython]
-    - `--ptpython`: Drop into [ptpython][ptpython], accepts `--use-vi-mode`
-    - `--ptipython`: Drop into [ipython][ipython] + [ptpython][ptpython], accepts
+    - `--bpython`: Drop into [bpython]
+    - `--ipython`: Drop into [ipython]
+    - `--ptpython`: Drop into [ptpython], accepts `--use-vi-mode`
+    - `--ptipython`: Drop into [ipython], accepts
       `--use-vi-mode`
 
 [django-extensions]: https://github.com/django-extensions/django-extensions
@@ -1002,7 +1002,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 - #636 + #638 New command: `tmuxp shell`
 
-  Automatically preloads session, window, and pane via [libtmux][libtmux]
+  Automatically preloads session, window, and pane via [libtmux]
   {ref}`API objects <libtmux:api>` and makes them available in a python
   console.
 
@@ -1012,8 +1012,8 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
   ```
 
   As of {ref}`1.6.1 (above) <v1-6-1>`, `tmuxp shell` will find the most
-  feature-rich shell available. If you have [ipython][ipython], [ptpython][ptpython], or
-  [bpython][bpython] available, it will be selected automatically. Pass `--pdb`
+  feature-rich shell available. If you have [ipython], or
+  [bpython] available, it will be selected automatically. Pass `--pdb`
   to use standard library pdb, or `--code` to use `code.interact`.
 
   In python 3.7+, supports `PYTHONBREAKPOINT`:
@@ -1189,8 +1189,8 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 ## tmuxp 1.3.4 (2017-10-12)
 
-- {}`before_script` now respects {}`start_directory`
-  in the session root. This makes it easier to run things like {}`pipenv install` as a {}`before_script`.
+- `before_script` now respects `start_directory`
+  in the session root. This makes it easier to run things like `pipenv install` as a `before_script`.
 
 ## tmuxp 1.3.3 (2017-10-07)
 
@@ -1302,7 +1302,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 - version jump 0.11.1 to 1.0
 - tests moved to py.test framework
-- [libtmux][libtmux] core split into its own project
+- [libtmux] core split into its own project
 - #145 Add new-window command functionality, @ikirudennis
 - #146 Optionally disable shell history suppression, @kmactavish
 - #147 Patching unittest timing for shell history suppression
@@ -1313,32 +1313,32 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 ## tmuxp 0.11.0 (2016-02-29)
 
 - #137 Support for environment settings in configs, thanks
-  {}`@tasdomas`
-- Spelling correction, thanks [@sehe][@sehe].
+  `@tasdomas`
+- Spelling correction, thanks [@sehe].
 
 ## tmuxp 0.10.0 (2016-01-30)
 
-- #135 Load multiple tmux sessions at once, thanks [@madprog][@madprog].
+- #135 Load multiple tmux sessions at once, thanks [@madprog].
 - #131 #133 README and Documentation fixes
 
 ## tmuxp 0.9.3 (2016-01-06)
 
 - switch to `.venv` for virtualenv directory to not conflict
-  with `.env` (used by [autoenv][autoenv]).
-- #130 move to [entr(1)][entr(1)] for file watching in tests. update docs.
-- [compatibility] Support [Anaconda Python][anaconda python] 2 and 3
+  with `.env` (used by [autoenv]).
+- #130 move to [entr(1)] for file watching in tests. update docs.
+- [compatibility] Support [Anaconda Python] 2 and 3
 
 ## tmuxp 0.9.2 (2015-10-21)
 
-- #122 Update to support tmux 2.1, thank you [@estin][@estin].
+- #122 Update to support tmux 2.1, thank you [@estin].
 - use travis container infrastructure for faster tests
 - change test in workspace builder test to use `top(1)` instead of
   `man(1)`. `man(1)` caused errors on some systems where `PAGER` is set.
 
 ## tmuxp 0.9.1 (2015-08-23)
 
-- #119 Add fix python 3 for [sysutils/pytmuxp][sysutils/pytmuxp] on FreeBSD ports.
-  See GH issue 119 and [#201564][#201564] @ FreeBSD Bugzilla. Thanks Ruslan
+- #119 Add fix python 3 for [sysutils/pytmuxp] on FreeBSD ports.
+  See GH issue 119 and [#201564] @ FreeBSD Bugzilla. Thanks Ruslan
   Makhmatkhanov.
 
 ## tmuxp 0.9.0 (2015-07-08)
@@ -1351,13 +1351,13 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
   `session_name` and `window_name`.
 - [examples]: add example for environmental variables,
   `examples/env-variables.json` and `examples/env-variables.yaml`.
-- #110 de-vendorize [colorama][colorama]. Thanks [@marbu][@marbu].
+- #110 de-vendorize [colorama].
 - #109 fix failure of test_pane_order on fedora machines from
-  [@marbu][@marbu]
+  [@marbu]
 - #105 append `.txt` extension to manuals (repo only)
-  from [@yegortimoshenko][@yegortimoshenko].
+  from [@yegortimoshenko].
 - #107 Fix Server.attached_sessions return type by
-  [@thomasballinger][@thomasballinger].
+  [@thomasballinger].
 - update travis to use new tmux git repository.
 
 ## tmuxp 0.8.1 (2015-05-09)
@@ -1388,18 +1388,18 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 - `scent.py` for building docs
 - docutils from 0.11 to 0.12
 - `bootstrap_env.py` will check for linux, darwin (OS X) and
-  windows and install the correct [sniffer][sniffer] file watcher plugin.
+  windows and install the correct [sniffer] file watcher plugin.
 - testsuite for cli uses {py:func}`tempfile.mkdtemp()` instead
   `TMP_DIR` (which resolved to `.tmuxp` in the testsuite directory.
-- replace [watchingtestrunner][watchingtestrunner] with [sniffer][sniffer] in examples.
+- replace [watchingtestrunner] in examples.
   `.tmuxp.conf` and `.tmux.json` updated
 - updates to doc links
 - `make checkbuild` for verifying internal / intersphinx doc
   references.
-- Add Warning tmux versions less than 1.4 from [@techtonik][@techtonik].
+- Add Warning tmux versions less than 1.4 from [@techtonik].
 - Add documentation on leading space in `send_keys`
-  from [@thomasballinger][@thomasballinger].
-- Update about page from teamocil and erb support from [@raine][@raine].
+  from [@thomasballinger].
+- Update about page from teamocil and erb support from [@raine].
 
 ## tmuxp 0.1.12 (2014-08-06)
 
@@ -1432,7 +1432,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 ## tmuxp 0.1.10 (2014-04-02)
 
 - 2 bug fixes and allow panes with no shell commands to accept options,
-  thanks for these 3 patches, [@ThiefMaster][@thiefmaster]:
+  thanks for these 3 patches, [@ThiefMaster]:
 - #73 Fix an error caused by spaces in
   `start_directory`.
 - #77 Fix bug where having a `-` in a
@@ -1447,7 +1447,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 ## tmuxp 0.1.8 (2014-03-30)
 
 - #72 Create destination directory if it doesn't exist. Thanks
-  [@ThiefMaster][@thiefmaster].
+  [@ThiefMaster].
 - New context manager for tests, `temp_session`.
 - New testsuite, `testsuite.test_utils` for testing testsuite
   tools.
@@ -1481,13 +1481,13 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 - section heading normalization.
 - tao of tmux section now treated as a chatper. tao of tmux may be
   split off into its own project.
-- use conventions from [tony/cookiecutter-pypackage][tony/cookiecutter-pypackage].
+- use conventions from [tony/cookiecutter-pypackage].
 
 ## tmuxp 0.1.4 (2014-02-02)
 
 - Fix `$ tmuxp freeze` CLI output.
 - Update `_compat` support module.
-- Fix extra space in [PEP 263][pep 263].
+- Fix extra space in [PEP 263].
 
 ## tmuxp 0.1.3 (2014-01-29)
 
@@ -1500,7 +1500,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 - now using werkzeug / flask style testsuites.
 - #43 Merge `tmuxp -d` for loading in detached mode.
-  Thanks [roxit][roxit].
+  Thanks [roxit].
 
 ## tmuxp 0.1.1 (2013-12-25)
 
@@ -1556,8 +1556,8 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 ## tmuxp 0.1-rc1 (2013-11-23)
 
-- [pep8][pep8] and [pep257][pep257] in unit tests.
-- Changelog will now be updated on a version basis, use [pep440][pep440]
+- [pep8] in unit tests.
+- Changelog will now be updated on a version basis, use [pep440]
   versioning.
 
 ## tmuxp 0.1-dev (2013-11-21)
@@ -1593,7 +1593,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 ## tmuxp 0.1-dev (2013-11-09)
 
-- [translation] [documentation in Chinese][documentation in chinese] from [wrongwaycn][wrongwaycn].
+- [translation] [documentation in Chinese].
 - More work done on the {ref}`about-tmux` page.
 - {meth}`Pane.split_window()` for splitting {class}`Window` at
   `target-pane` location.
@@ -1620,9 +1620,9 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 ## tmuxp 0.1-dev (2013-11-07)
 
-- Remove old logger (based on [tornado's log.py][tornado's log.py]), replace
+- Remove old logger (based on [tornado's log.py]), replace
   with new, simpler one.
-- fix [teamocil][teamocil] import.
+- fix [teamocil] import.
 - support import teamocil `root` to
   `start_directory`.
 
@@ -1643,16 +1643,16 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
   autocompletion and when loading. Note, switching client into another
   socket may cause an error.
 - Documentation tweaking to {ref}`API`, {ref}`about-tmux`.
-- [pep257][pep257], [pep8][pep8].
+- [pep257].
 
 ## tmuxp 0.1-dev (2013-11-04)
 
-- [pep257][pep257], [pep8][pep8].
+- [pep257].
 - tagged version `v0.0.36`.
 
 ## tmuxp 0.1-dev (2013-11-02)
 
-- Many documentation, [pep257][pep257], [pep8][pep8] fixes
+- Many documentation, [pep257] fixes
 - move old {class}`Server` methods `__list_panes()`,
   `__list_windows` and `__list_sessions` into the single underscore.
 - #12 fix for `$ tmuxp freeze` by @finder.
@@ -1728,7 +1728,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 - fix `tmuxp load .` fixed
 - fix `tmuxp convert <file>` fixed.
-- [pep257][pep257] fixes.
+- [pep257] fixes.
 - {class}`Pane` now has {meth}`Pane.set_width` and
   {meth}`Pane.set_height`.
 - `./run_tests.py --tests` now automatically prepends
@@ -1738,14 +1738,14 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
 ## tmuxp 0.1-dev (2013-10-27)
 
-- [argcomplete][argcomplete] overhaul for CLI bash completion.
+- [argcomplete] overhaul for CLI bash completion.
 - `tmuxp load`, `tmuxp convert` and `tmuxp import` now support
   relative and full filenames in addition to searching the config
   directory.
 
 ## tmuxp 0.1-dev (2013-10-26)
 
-- initial version of [tmuxinator][tmuxinator] and [teamocil][teamocil]
+- initial version of [tmuxinator]
   config importer. it does not support all options and it not guaranteed
   to fully convert window/pane size and state.
 - {meth}`config.in_dir` supports a list of `extensions` for
@@ -1761,7 +1761,7 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 - property handle case where no tmux server exists when
   `attach-session` or `kill-session` is used.
 - test fixtures and initial work for importing
-  [tmuxinator][tmuxinator] and [teamocil][teamocil] configs
+  [tmuxinator] configs
 
 ## tmuxp 0.1-dev (2013-10-24)
 
@@ -1859,10 +1859,10 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 - Server is now a subclass of `util.TmuxObject`.
 - subclasses of {class}`util.TmuxRelationalObject`,
   {class}`Server`, {class}`Session`, {class}`Window`, {class}`Pane` now
-  have {meth}`util.TmuxRelationalObject.getById` (similar to [.get()][.get()] in
-  [backbone.js][backbone.js] collection), {meth}`util.TmuxRelationalObject.where` and
-  {meth}`util.TmuxRelationalObject.findWhere` ([.where()][.where()] and
-  [.findWhere()][.findwhere()] in [underscore.js][underscore.js]), to easily find child objects.
+  have {meth}`util.TmuxRelationalObject.getById` (similar to [.get()] in
+  [backbone.js] collection), {meth}`util.TmuxRelationalObject.where` and
+  {meth}`util.TmuxRelationalObject.findWhere` ([.where()] and
+  [.findWhere()]), to easily find child objects.
 - tmux object mapping has been split into
   {class}`util.TmuxMappingObject`. The mapping and the relational has been
   decoupled to allow {class}`Server` to have children while not being a
