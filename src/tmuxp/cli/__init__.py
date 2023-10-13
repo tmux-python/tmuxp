@@ -39,7 +39,7 @@ if t.TYPE_CHECKING:
 
     CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     CLISubparserName: TypeAlias = t.Literal[
-        "ls", "load", "convert", "edit", "import", "shell", "debug-info"
+        "ls", "load", "freeze", "convert", "edit", "import", "shell", "debug-info"
     ]
     CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
 
