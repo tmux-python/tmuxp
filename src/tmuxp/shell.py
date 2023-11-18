@@ -272,7 +272,7 @@ def launch(
     shell: t.Optional["CLIShellLiteral"] = "best",
     use_pythonrc: bool = False,
     use_vi_mode: bool = False,
-    **kwargs: "Unpack[LaunchOptionalImports]"
+    **kwargs: "Unpack[LaunchOptionalImports]",
 ) -> None:
     # Also allowing passing shell='code' to force using code.interact
     imported_objects = get_launch_args(**kwargs)

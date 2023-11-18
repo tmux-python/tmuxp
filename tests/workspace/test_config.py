@@ -317,9 +317,7 @@ def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
       panes:
       - shell_command:
       - htop
-    """.format(
-        TEST_VAR="${%s}" % env_key
-    )
+    """.format(TEST_VAR="${%s}" % env_key)
 
     sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
 
