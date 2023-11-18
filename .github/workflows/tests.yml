@@ -56,11 +56,11 @@ jobs:
         run: |
           poetry install -E "test coverage lint"
 
-      - name: Lint with black . --check
-        run: poetry run black . --check
-
       - name: Lint with ruff .
         run: poetry run ruff .
+
+      - name: Format with ruff
+        run: poetry run ruff format . --check
 
       - name: Lint with mypy
         run: poetry run mypy .

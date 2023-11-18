@@ -321,14 +321,14 @@ def test_window_options_after(session: Session) -> None:
         return retry_until(f, raises=False)
 
     for i, pane in enumerate(session.attached_window.panes):
-        assert assert_last_line(
-            pane, str(i)
-        ), "Initial command did not execute properly/" + str(i)
+        assert assert_last_line(pane, str(i)), (
+            "Initial command did not execute properly/" + str(i)
+        )
         pane.cmd("send-keys", "Up")  # Will repeat echo
         pane.enter()  # in each iteration
-        assert assert_last_line(
-            pane, str(i)
-        ), "Repeated command did not execute properly/" + str(i)
+        assert assert_last_line(pane, str(i)), (
+            "Repeated command did not execute properly/" + str(i)
+        )
 
     session.cmd("send-keys", " echo moo")
     session.cmd("send-keys", "Enter")
