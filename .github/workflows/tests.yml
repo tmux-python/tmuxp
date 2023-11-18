@@ -53,8 +53,7 @@ jobs:
           tmux -V
 
       - name: Install python dependencies
-        run: |
-          poetry install -E "test coverage lint"
+        run: poetry install --with=test,coverage,lint
 
       - name: Lint with ruff .
         run: poetry run ruff .

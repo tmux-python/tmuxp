@@ -50,7 +50,7 @@ libtmux = "~0.23.2"
 colorama = ">=0.3.9"
 PyYAML = "^6.0"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.docs.dependencies]
 ### Docs ###
 sphinx = "*"
 aafigure = ">=0.6"
@@ -67,6 +67,7 @@ sphinxext-rediraffe = "*"
 myst_parser = ">=0.18.1"
 docutils = "*"
 
+[tool.poetry.group.test.dependencies]
 ### Testing ###
 pytest = "*"
 pytest-rerunfailures = "*"
@@ -74,43 +75,18 @@ pytest-mock = "*"
 pytest-cov = "*"
 pytest-watcher = "*"
 
+[tool.poetry.group.coverage.dependencies]
 ### Coverage ###
 codecov = "*"
 coverage = "*"
 
+[tool.poetry.group.lint.dependencies]
 ### Lint ###
 ruff = "*"
 mypy = "*"
 types-colorama = "*"
 types-docutils = "*"
 types-PyYAML = "*"
-
-[tool.poetry.extras]
-docs = [
-  "docutils",
-  "sphinx",
-  "sphinx-argparse",
-  "sphinx-autodoc-typehints",
-  "sphinx-autobuild",
-  "sphinx-copybutton",
-  "sphinxext-opengraph",
-  "sphinx-inline-tabs",
-  "sphinxext-rediraffe",
-  "myst_parser",
-  "furo",
-  "gp-libs",
-  "aafigure",
-  "pillow",
-]
-test = ["pytest", "pytest-rerunfailures", "pytest-mock", "pytest-watcher"]
-coverage = ["codecov", "coverage", "pytest-cov"]
-lint = [
-  "ruff",
-  "mypy",
-  "types-colorama",
-  "types-docutils",
-  "types-PyYAML",
-]
 
 [tool.coverage.run]
 branch = true

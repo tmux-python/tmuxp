@@ -46,7 +46,7 @@ jobs:
 
       - name: Install dependencies [w/ docs]
         if: env.PUBLISH == 'true'
-        run: poetry install --extras "docs lint"
+        run: poetry install --with=docs,lint
 
       - name: Print python versions
         if: env.PUBLISH == 'true'
