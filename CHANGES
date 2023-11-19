@@ -30,6 +30,7 @@ _Maintenance only, no bug fixes or new features_
 
   See also: https://github.com/python-poetry/poetry/blob/1.7.0/CHANGELOG.md
 
+- Add Python 3.12 to trove classifiers
 - Packaging (poetry): Fix development dependencies
 
   Per [Poetry's docs on managing dependencies] and `poetry check`, we had it wrong: Instead of using extras, we should create these:
