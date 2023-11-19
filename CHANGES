@@ -28,6 +28,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Development
 
+- libtmux: 0.23.0 -> 0.24.0 (maintenance release)
 - Move formatting from `black` to [`ruff format`] (#890)
 
   This retains the same formatting style of `black` while eliminating a
