@@ -75,6 +75,7 @@ pytest-rerunfailures = "*"
 pytest-mock = "*"
 pytest-cov = "*"
 pytest-watcher = "*"
+gp-libs = "~0.0.4"
 
 [tool.poetry.group.coverage.dependencies]
 ### Coverage ###
