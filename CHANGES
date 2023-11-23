@@ -806,7 +806,7 @@ _Mostly internal cleanups, no features_
   "echo hello"
   ```
 
-  After, [`dict`](dict):
+  After, {py:class}`dict`:
 
   ```python
   {
