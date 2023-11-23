@@ -19,6 +19,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.32.1 (2023-11-23)
+
 ### Packaging
 
 - pypoetry: Add `gp-lib` to `test` dependency group
