@@ -42,7 +42,7 @@ def test_help(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    # In scrunched terminals, prevent width causing differantiation in result.out.
+    # In scrunched terminals, prevent width causing differentiation in result.out.
     monkeypatch.setenv("COLUMNS", "100")
     monkeypatch.setenv("LINES", "100")
 

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def expandshell(value: str) -> str:
-    """Returned wih variables expanded based on user's ``$HOME`` and ``env``.
+    """Returned with variables expanded based on user's ``$HOME`` and ``env``.
 
     :py:func:`os.path.expanduser` and :py:fubasednc:`os.path.expandvars`.
 
