@@ -59,7 +59,8 @@ def multisession_config() -> (
     """Return loaded multisession teamocil config as a dictionary.
 
     Also prevents re-running assertion the loads the yaml, since ordering of
-    deep list items like panes will be inconsistent."""
+    deep list items like panes will be inconsistent.
+    """
     teamocil_yaml_file = fixtures.layouts.teamocil_yaml_file
     test_config = config_reader.ConfigReader._from_file(teamocil_yaml_file)
     teamocil_dict: t.Dict[str, t.Any] = fixtures.layouts.teamocil_dict

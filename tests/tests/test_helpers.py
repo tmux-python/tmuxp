@@ -18,7 +18,6 @@ def test_kills_session(server: Server) -> None:
 @pytest.mark.flaky(reruns=5)
 def test_if_session_killed_before(server: Server) -> None:
     """Handles situation where session already closed within context"""
-
     server = server
     session_name = get_test_session_name(server=server)
 

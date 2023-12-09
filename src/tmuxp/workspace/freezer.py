@@ -19,7 +19,6 @@ def inline(workspace_dict: t.Dict[str, t.Any]) -> t.Any:
     dict
         workspace with shorthands inlined.
     """
-
     if (
         "shell_command" in workspace_dict
         and isinstance(workspace_dict["shell_command"], list)

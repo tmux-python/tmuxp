@@ -12,12 +12,10 @@ from ._compat import implements_to_string
 
 
 class TmuxpException(Exception):
-
     """Base Exception for Tmuxp Errors."""
 
 
 class WorkspaceError(TmuxpException):
-
     """Error parsing tmuxp workspace data."""
 
 
@@ -52,7 +50,6 @@ class PaneNotFound(TmuxpException):
 
 
 class EmptyWorkspaceException(WorkspaceError):
-
     """Workspace file is empty."""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
@@ -75,7 +72,6 @@ class ActiveSessionMissingWorkspaceException(WorkspaceError):
 
 
 class TmuxpPluginException(TmuxpException):
-
     """Base Exception for Tmuxp Errors."""
 
 
@@ -88,7 +84,6 @@ class BeforeLoadScriptNotExists(OSError):
 
 @implements_to_string
 class BeforeLoadScriptError(Exception):
-
     """Exception replacing :py:class:`subprocess.CalledProcessError` for
     :meth:`tmuxp.util.run_before_script`.
     """

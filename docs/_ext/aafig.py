@@ -1,14 +1,14 @@
 """
-    sphinxcontrib.aafig
-    ~~~~~~~~~~~~~~~~~~~
+sphinxcontrib.aafig
+~~~~~~~~~~~~~~~~~~~
 
-    Allow embedded ASCII art to be rendered as nice looking images
-    using the aafigure reStructuredText extension.
+Allow embedded ASCII art to be rendered as nice looking images
+using the aafigure reStructuredText extension.
 
-    See the README file for details.
+See the README file for details.
 
-    :author: Leandro Lucarella <llucax@gmail.com>
-    :license: BOLA, see LICENSE for details
+:author: Leandro Lucarella <llucax@gmail.com>
+:license: BOLA, see LICENSE for details
 """
 import logging
 import posixpath
@@ -158,7 +158,6 @@ def render_aafigure(
     """
     Render an ASCII art figure into the requested format output file.
     """
-
     if aafigure is None:
         raise AafigureNotInstalled()
 

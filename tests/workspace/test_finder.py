@@ -20,7 +20,6 @@ if t.TYPE_CHECKING:
 
 def test_in_dir_from_config_dir(tmp_path: pathlib.Path) -> None:
     """config.in_dir() finds configs config dir."""
-
     cli.startup(tmp_path)
     yaml_config = tmp_path / "myconfig.yaml"
     yaml_config.touch()
@@ -33,7 +32,6 @@ def test_in_dir_from_config_dir(tmp_path: pathlib.Path) -> None:
 
 def test_ignore_non_configs_from_current_dir(tmp_path: pathlib.Path) -> None:
     """cli.in_dir() ignore non-config from config dir."""
-
     cli.startup(tmp_path)
 
     junk_config = tmp_path / "myconfig.psd"
@@ -48,7 +46,6 @@ def test_get_configs_cwd(
     tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """config.in_cwd() find config in shell current working directory."""
-
     confdir = tmp_path / "tmuxpconf2"
     confdir.mkdir()
 

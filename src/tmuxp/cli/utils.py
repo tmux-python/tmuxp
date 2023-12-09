@@ -47,7 +47,6 @@ def prompt(
     :param default: default value if no input provided.
     :rtype: string
     """
-
     _prompt = name + (default and " [%s]" % default or "")
     _prompt += name.endswith("?") and " " or ": "
     while True:
@@ -78,7 +77,6 @@ def prompt_bool(
     :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
     :rtype: bool
     """
-
     yes_choices = yes_choices or ("y", "yes", "1", "on", "true", "t")
     no_choices = no_choices or ("n", "no", "0", "off", "false", "f")
 
@@ -121,7 +119,6 @@ def prompt_choices(
     :param no_choice: acceptable list of strings for "null choice"
     :rtype: str
     """
-
     _choices: t.List[str] = []
     options: t.List[str] = []
 

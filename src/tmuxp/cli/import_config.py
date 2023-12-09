@@ -176,7 +176,8 @@ def command_import_tmuxinator(
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
     """Convert a tmuxinator config from workspace_file to tmuxp format and import
-    it into tmuxp."""
+    it into tmuxp.
+    """
     workspace_file = find_workspace_file(
         workspace_file, workspace_dir=get_tmuxinator_dir()
     )
@@ -188,7 +189,8 @@ def command_import_teamocil(
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
     """Convert a teamocil config from workspace_file to tmuxp format and import
-    it into tmuxp."""
+    it into tmuxp.
+    """
     workspace_file = find_workspace_file(
         workspace_file, workspace_dir=get_teamocil_dir()
     )

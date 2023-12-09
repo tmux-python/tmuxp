@@ -113,7 +113,6 @@ def get_workspace_dir() -> str:
     str :
         absolute path to tmuxp config directory
     """
-
     paths = []
     if "TMUXP_CONFIGDIR" in os.environ:
         paths.append(os.environ["TMUXP_CONFIGDIR"])

@@ -24,7 +24,6 @@ if t.TYPE_CHECKING:
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
     """cli.startup() creates config dir if not exists."""
-
     cli.startup(tmp_path)
     assert tmp_path.exists()
 

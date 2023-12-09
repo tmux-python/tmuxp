@@ -111,8 +111,8 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
 
     Pass the "--help" argument to any command to see detailed help.
     See detailed documentation and examples at:
-    http://tmuxp.git-pull.com/"""
-
+    http://tmuxp.git-pull.com/
+    """
     try:
         has_minimum_version()
     except TmuxCommandNotFound:
@@ -186,6 +186,5 @@ def startup(config_dir: pathlib.Path) -> None:
     ----------
     str : get_workspace_dir(): Config directory to search
     """
-
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)

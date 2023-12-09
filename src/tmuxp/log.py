@@ -155,7 +155,6 @@ def debug_log_template(
     str
         Log template.
     """
-
     reset = Style.RESET_ALL
     levelname = (
         LEVEL_COLORS.get(record.levelname, "")

@@ -90,7 +90,8 @@ def command_freeze(
     """Snapshot a tmux session into a tmuxp workspace.
 
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the
-    current session."""
+    current session.
+    """
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
     try:

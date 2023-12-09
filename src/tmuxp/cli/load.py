@@ -50,8 +50,8 @@ class CLILoadNamespace(argparse.Namespace):
 def set_layout_hook(session: Session, hook_name: str) -> None:
     """Set layout hooks to normalize layout.
 
-    References:
-
+    References
+    ----------
         - tmuxp issue: https://github.com/tmux-python/tmuxp/issues/309
         - tmux issue: https://github.com/tmux/tmux/issues/1106
 
@@ -305,7 +305,6 @@ def load_workspace(
 
     Notes
     -----
-
     tmuxp will check and load a workspace file. The file will use ConfigReader
     to load a JSON/YAML into a :py:obj:`dict`. Then :func:`loader.expand` and
     :func:`loader.trickle` will be used to expand any shorthands, template

@@ -80,7 +80,6 @@ iafter_workspace = {
 
 def test_inline_workspace() -> None:
     """:meth:`freezer.inline()` shell commands list to string."""
-
     test_workspace = freezer.inline(ibefore_workspace)
     assert test_workspace == iafter_workspace
 

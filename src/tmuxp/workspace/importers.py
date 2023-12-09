@@ -15,7 +15,6 @@ def import_tmuxinator(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     -------
     dict
     """
-
     tmuxp_workspace = {}
 
     if "project_name" in workspace_dict:
@@ -111,7 +110,6 @@ def import_teamocil(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
 
     Notes
     -----
-
     Todos:
 
     - change  'root' to a cd or start_directory
@@ -120,7 +118,6 @@ def import_teamocil(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     - clear
     - cmd_separator
     """
-
     tmuxp_workspace = {}
 
     if "session" in workspace_dict:

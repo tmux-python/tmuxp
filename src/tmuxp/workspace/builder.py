@@ -33,7 +33,6 @@ class WorkspaceBuilder:
 
     Examples
     --------
-
     >>> import yaml
 
     >>> session_config = yaml.load('''
@@ -161,7 +160,6 @@ class WorkspaceBuilder:
         TODO: Initialize :class:`libtmux.Session` from here, in
         ``self.session``.
         """
-
         if plugins is None:
             plugins = []
         if not session_config:
@@ -222,7 +220,6 @@ class WorkspaceBuilder:
         append : bool
             append windows in current active session
         """
-
         if not session:
             if not self.server:
                 raise exc.TmuxpException(

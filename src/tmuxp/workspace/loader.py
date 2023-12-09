@@ -102,7 +102,6 @@ def expand(
     -------
     dict
     """
-
     # Note: cli.py will expand workspaces relative to project's workspace directory
     # for the first cwd argument.
     cwd = pathlib.Path().cwd() if not cwd else pathlib.Path(cwd)
@@ -208,7 +207,6 @@ def trickle(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     -------
     dict
     """
-
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 
