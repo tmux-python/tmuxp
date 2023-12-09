@@ -12,7 +12,7 @@ jobs:
       matrix:
         python-version: ['3.12']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Filter changed file paths to outputs
         uses: dorny/paths-filter@v2.11.1
         id: changes
