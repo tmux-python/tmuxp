@@ -7,7 +7,7 @@ from ..constants import FIXTURE_PATH
 def get_workspace_file(
     _file: t.Union[str, pathlib.Path],
 ) -> pathlib.Path:
-    """Return fixture data, relative to __file__"""
+    """Return fixture data, relative to __file__."""
     if isinstance(_file, str):
         _file = pathlib.Path(_file)
 
@@ -15,7 +15,7 @@ def get_workspace_file(
 
 
 def read_workspace_file(_file: t.Union[pathlib.Path, str]) -> str:
-    """Return fixture data, relative to __file__"""
+    """Return fixture data, relative to __file__."""
     if isinstance(_file, str):
         _file = pathlib.Path(_file)
 

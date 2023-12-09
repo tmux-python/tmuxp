@@ -1,4 +1,4 @@
-"""Internal :term:`type annotations <annotation>`
+"""Internal :term:`type annotations <annotation>`.
 
 Notes
 -----

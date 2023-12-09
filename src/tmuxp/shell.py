@@ -170,7 +170,7 @@ def get_ptpython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.A
 
 
 def get_ptipython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
-    """Based on django-extensions
+    """Based on django-extensions.
 
     Run renamed to launch, get_imported_objects renamed to get_launch_args
     """

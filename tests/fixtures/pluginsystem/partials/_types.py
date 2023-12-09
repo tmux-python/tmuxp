@@ -1,4 +1,4 @@
-"""Internal, :const:`typing.TYPE_CHECKING` guarded :term:`type annotations <annotation>`
+"""Internal, :const:`typing.TYPE_CHECKING` guarded :term:`type annotations <annotation>`.
 
 These are _not_ to be imported at runtime as `typing_extensions` is not
 bundled with tmuxp. Usage example:
@@ -15,7 +15,7 @@ from typing_extensions import NotRequired, TypedDict
 
 
 class PluginTestConfigSchema(TypedDict):
-    """Same as PluginConfigSchema, but with tmux, libtmux, and tmuxp version"""
+    """Same as PluginConfigSchema, but with tmux, libtmux, and tmuxp version."""
 
     tmux_version: NotRequired[str]
     libtmux_version: NotRequired[str]

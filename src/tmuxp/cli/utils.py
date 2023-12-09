@@ -18,9 +18,7 @@ def tmuxp_echo(
     log_level: str = "INFO",
     style_log: bool = False,
 ) -> None:
-    """
-    Combines logging.log and click.echo
-    """
+    """Combines logging.log and click.echo."""
     if message is None:
         return
 
@@ -45,7 +43,7 @@ def prompt(
         https://github.com/techniq/flask-script/blob/master/LICENSE
     :param name: prompt text
     :param default: default value if no input provided.
-    :rtype: string
+    :rtype: string.
     """
     _prompt = name + (default and " [%s]" % default or "")
     _prompt += name.endswith("?") and " " or ": "
@@ -75,7 +73,7 @@ def prompt_bool(
     :param default: default value if no input provided.
     :param yes_choices: default 'y', 'yes', '1', 'on', 'true', 't'
     :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
-    :rtype: bool
+    :rtype: bool.
     """
     yes_choices = yes_choices or ("y", "yes", "1", "on", "true", "t")
     no_choices = no_choices or ("n", "no", "0", "off", "false", "f")
@@ -117,7 +115,7 @@ def prompt_choices(
                     single strings or (key, value) tuples.
     :param default: default value if no input provided.
     :param no_choice: acceptable list of strings for "null choice"
-    :rtype: str
+    :rtype: str.
     """
     _choices: t.List[str] = []
     options: t.List[str] = []
@@ -202,7 +200,7 @@ def style(
     strikethrough: t.Optional[bool] = None,
     reset: bool = True,
 ) -> str:
-    """Credit: click"""
+    """Credit: click."""
     if not isinstance(text, str):
         text = str(text)
 

@@ -1,5 +1,5 @@
 """
-sphinxcontrib.aafig
+sphinxcontrib.aafig.
 ~~~~~~~~~~~~~~~~~~~
 
 Allow embedded ASCII art to be rendered as nice looking images
@@ -61,9 +61,7 @@ class AafigError(SphinxError):
 
 
 class AafigDirective(images.Image):  # type:ignore
-    """
-    Directive to insert an ASCII art figure to be rendered by aafigure.
-    """
+    """Directive to insert an ASCII art figure to be rendered by aafigure."""
 
     has_content = True
     required_arguments = 0
@@ -155,9 +153,7 @@ class AafigureNotInstalled(AafigError):
 def render_aafigure(
     app: "Sphinx", text: str, options: t.Dict[str, str]
 ) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
-    """
-    Render an ASCII art figure into the requested format output file.
-    """
+    """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:
         raise AafigureNotInstalled()
 

@@ -169,9 +169,7 @@ class TmuxpPlugin:
         self._version_check()
 
     def _version_check(self) -> None:
-        """
-        Check all dependency versions for compatibility.
-        """
+        """Check all dependency versions for compatibility."""
         for dep, constraints in self.version_constraints.items():
             assert isinstance(constraints, dict)
             try:
@@ -192,9 +190,7 @@ class TmuxpPlugin:
         vmax: t.Optional[str],
         incompatible: t.List[t.Union[t.Any, str]],
     ) -> bool:
-        """
-        Provide affirmative if version compatibility is correct.
-        """
+        """Provide affirmative if version compatibility is correct."""
         if vmin and version < Version(vmin):
             return False
         if vmax and version > Version(vmax):

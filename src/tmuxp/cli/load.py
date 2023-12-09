@@ -105,9 +105,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
 
 
 def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
-    """
-    Load and return plugins in workspace
-    """
+    """Load and return plugins in workspace."""
     plugins = []
     if "plugins" in session_config:
         for plugin in session_config["plugins"]:
@@ -155,7 +153,7 @@ def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
 
 def _reattach(builder: WorkspaceBuilder) -> None:
     """
-    Reattach session (depending on env being inside tmux already or not)
+    Reattach session (depending on env being inside tmux already or not).
 
     Parameters
     ----------
@@ -185,7 +183,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
 
 def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     """
-    Load workspace in new session
+    Load workspace in new session.
 
     Parameters
     ----------
@@ -219,7 +217,7 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
 
 def _load_detached(builder: WorkspaceBuilder) -> None:
     """
-    Load workspace in new session but don't attach
+    Load workspace in new session but don't attach.
 
     Parameters
     ----------
@@ -238,7 +236,7 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     """
-    Load workspace as new windows in current session
+    Load workspace as new windows in current session.
 
     Parameters
     ----------
@@ -254,7 +252,7 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
 
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     """
-    Runs after before_script
+    Runs after before_script.
 
     Parameters
     ----------

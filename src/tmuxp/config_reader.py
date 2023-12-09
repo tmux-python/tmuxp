@@ -118,7 +118,7 @@ class ConfigReader:
 
     @classmethod
     def from_file(cls, path: pathlib.Path) -> "ConfigReader":
-        r"""Load data from file path
+        r"""Load data from file path.
 
         **YAML file**
 
