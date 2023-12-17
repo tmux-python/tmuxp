@@ -1,3 +1,4 @@
+"""Tmuxp test plugin with version constraints guaranteed to pass."""
 import typing as t
 
 from .test_plugin_helpers import MyTestTmuxpPlugin
@@ -7,6 +8,8 @@ if t.TYPE_CHECKING:
 
 
 class AllVersionPassPlugin(MyTestTmuxpPlugin):
+    """Tmuxp plugin with config constraints guaranteed to validate."""
+
     def __init__(self) -> None:
         config: "PluginTestConfigSchema" = {
             "plugin_name": "tmuxp-plugin-my-tmuxp-plugin",
