@@ -14,12 +14,6 @@ if t.TYPE_CHECKING:
     from ..fixtures.structures import WorkspaceTestData
 
 
-def load_yaml(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
-    return ConfigReader._from_file(
-        pathlib.Path(path) if isinstance(path, str) else path
-    )
-
-
 def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path
