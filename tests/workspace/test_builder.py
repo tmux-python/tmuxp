@@ -1,4 +1,4 @@
-"""Test for tmuxp workspacebuilder."""
+"""Test for tmuxp workspace builder."""
 import functools
 import os
 import pathlib
@@ -29,11 +29,15 @@ from ..fixtures import utils as test_utils
 if t.TYPE_CHECKING:
 
     class AssertCallbackProtocol(t.Protocol):
+        """Assertion callback type protocol."""
+
         def __call__(self, cmd: str, hist: str) -> bool:
+            """Run function code for testing assertion."""
             ...
 
 
 def test_split_windows(session: Session) -> None:
+    """Test workspace builder splits windows in a tmux session."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/two_pane.yaml")
     )
@@ -54,6 +58,7 @@ def test_split_windows(session: Session) -> None:
 
 
 def test_split_windows_three_pane(session: Session) -> None:
+    """Test workspace builder splits windows in a tmux session."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/three_pane.yaml")
     )
@@ -76,6 +81,7 @@ def test_split_windows_three_pane(session: Session) -> None:
 
 
 def test_focus_pane_index(session: Session) -> None:
+    """Test focus of pane by index works correctly, including with pane-base-index."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/focus_and_pane.yaml")
     )
@@ -154,6 +160,7 @@ and CI. See https://github.com/tmux-python/tmuxp/issues/310.
     """.strip()
 )
 def test_suppress_history(session: Session) -> None:
+    """Test suppression of command history."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/suppress_history.yaml")
     )
@@ -213,6 +220,7 @@ def test_suppress_history(session: Session) -> None:
 
 
 def test_session_options(session: Session) -> None:
+    """Test setting of options to session scope."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/session_options.yaml")
     )
@@ -231,6 +239,7 @@ def test_session_options(session: Session) -> None:
 
 
 def test_global_options(session: Session) -> None:
+    """Test setting of global options."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/global_options.yaml")
     )
@@ -246,8 +255,10 @@ def test_global_options(session: Session) -> None:
 
 
 def test_global_session_env_options(
-    session: Session, monkeypatch: pytest.MonkeyPatch
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test setting of global option variables."""
     visual_silence = "on"
     monkeypatch.setenv("VISUAL_SILENCE", str(visual_silence))
     repeat_time = 738
@@ -272,7 +283,10 @@ def test_global_session_env_options(
     )
 
 
-def test_window_options(session: Session) -> None:
+def test_window_options(
+    session: Session,
+) -> None:
+    """Test setting of window options."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/window_options.yaml")
     )
@@ -301,7 +315,10 @@ def test_window_options(session: Session) -> None:
 
 
 @pytest.mark.flaky(reruns=5)
-def test_window_options_after(session: Session) -> None:
+def test_window_options_after(
+    session: Session,
+) -> None:
+    """Test setting window options via options_after (WorkspaceBuilder.after_window)."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/window_options_after.yaml")
     )
@@ -339,7 +356,10 @@ def test_window_options_after(session: Session) -> None:
         ), "Synchronized command did not execute properly"
 
 
-def test_window_shell(session: Session) -> None:
+def test_window_shell(
+    session: Session,
+) -> None:
+    """Test execution of commands via tmuxp configuration."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/window_shell.yaml")
     )
@@ -365,7 +385,10 @@ def test_window_shell(session: Session) -> None:
     has_lt_version("3.0"),
     reason="needs -e flag for new-window and split-window introduced in tmux 3.0",
 )
-def test_environment_variables(session: Session) -> None:
+def test_environment_variables(
+    session: Session,
+) -> None:
+    """Test setting of environmental variables in tmux via workspace builder."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/environment_vars.yaml")
     )
@@ -407,9 +430,11 @@ def test_environment_variables(session: Session) -> None:
     has_gte_version("3.0"),
     reason="warnings are not needed for tmux >= 3.0",
 )
-def test_environment_variables_logs(
-    session: Session, caplog: pytest.LogCaptureFixture
+def test_environment_variables_warns_prior_to_tmux_3_0(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
+    """Warns when environmental variables cannot be set prior to tmux 3.0."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/environment_vars.yaml")
     )
@@ -454,8 +479,10 @@ def test_environment_variables_logs(
 
 
 def test_automatic_rename_option(
-    server: "Server", monkeypatch: pytest.MonkeyPatch
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test workspace builder with automatic renaming enabled."""
     monkeypatch.setenv("DISABLE_AUTO_TITLE", "true")
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/window_automatic_rename.yaml")
@@ -497,8 +524,13 @@ def test_automatic_rename_option(
     assert retry_until(check_window_name_mismatch, 2, interval=0.25)
 
 
-def test_blank_pane_count(session: Session) -> None:
-    """:todo: Verify blank panes of various types build into workspaces."""
+def test_blank_pane_spawn(
+    session: Session,
+) -> None:
+    """Test various ways of spawning blank panes from a tmuxp configuration.
+
+    :todo: Verify blank panes of various types build into workspaces.
+    """
     yaml_workspace_file = EXAMPLE_PATH / "blank-panes.yaml"
     test_config = ConfigReader._from_file(yaml_workspace_file)
 
@@ -526,6 +558,7 @@ def test_blank_pane_count(session: Session) -> None:
 
 
 def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
+    """Test workspace builder setting start_directory relative to current directory."""
     test_dir = tmp_path / "foo bar"
     test_dir.mkdir()
 
@@ -560,7 +593,9 @@ def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
 
 
 def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> None:
-    """Same as above test, but with relative start directory, mimicking
+    """Test workspace builder setting start_directory relative to project file.
+
+    Same as above test, but with relative start directory, mimicking
     loading it from a location of project file. Like::
 
         $ tmuxp load ~/workspace/myproject/.tmuxp.yaml
@@ -616,6 +651,7 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
     has_lt_version("3.2a"), reason="needs format introduced in tmux >= 3.2a"
 )
 def test_start_directory_sets_session_path(server: Server) -> None:
+    """Test start_directory setting path in session_path."""
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file(
             "workspace/builder/start_directory_session_path.yaml"
@@ -688,7 +724,10 @@ def test_pane_order(session: Session) -> None:
             assert retry_until(_f)
 
 
-def test_window_index(session: Session) -> None:
+def test_window_index(
+    session: Session,
+) -> None:
+    """Test window_index respected by workspace builder."""
     proc = session.cmd("show-option", "-gv", "base-index")
     base_index = int(proc.stdout[0])
     name_index_map = {"zero": 0 + base_index, "one": 1 + base_index, "five": 5}
@@ -706,7 +745,10 @@ def test_window_index(session: Session) -> None:
         assert int(window.window_index) == expected_index
 
 
-def test_before_script_throw_error_if_retcode_error(server: Server) -> None:
+def test_before_script_throw_error_if_retcode_error(
+    server: Server,
+) -> None:
+    """Test tmuxp configuration before_script when command fails."""
     config_script_fails = test_utils.read_workspace_file(
         "workspace/builder/config_script_fails.yaml"
     )
@@ -731,7 +773,10 @@ def test_before_script_throw_error_if_retcode_error(server: Server) -> None:
         assert not result, "Kills session if before_script exits with errcode"
 
 
-def test_before_script_throw_error_if_file_not_exists(server: Server) -> None:
+def test_before_script_throw_error_if_file_not_exists(
+    server: Server,
+) -> None:
+    """Test tmuxp configuration before_script when script does not exist."""
     config_script_not_exists = test_utils.read_workspace_file(
         "workspace/builder/config_script_not_exists.yaml"
     )
@@ -757,7 +802,10 @@ def test_before_script_throw_error_if_file_not_exists(server: Server) -> None:
         assert not result, "Kills session if before_script doesn't exist"
 
 
-def test_before_script_true_if_test_passes(server: Server) -> None:
+def test_before_script_true_if_test_passes(
+    server: Server,
+) -> None:
+    """Test tmuxp configuration before_script when command succeeds."""
     config_script_completes = test_utils.read_workspace_file(
         "workspace/builder/config_script_completes.yaml"
     )
@@ -775,7 +823,10 @@ def test_before_script_true_if_test_passes(server: Server) -> None:
         builder.build(session=session)
 
 
-def test_before_script_true_if_test_passes_with_args(server: Server) -> None:
+def test_before_script_true_if_test_passes_with_args(
+    server: Server,
+) -> None:
+    """Test tmuxp configuration before_script when command passes w/ args."""
     config_script_completes = test_utils.read_workspace_file(
         "workspace/builder/config_script_completes.yaml"
     )
@@ -795,8 +846,10 @@ def test_before_script_true_if_test_passes_with_args(server: Server) -> None:
 
 
 def test_plugin_system_before_workspace_builder(
-    monkeypatch_plugin_test_packages: None, session: Session
+    monkeypatch_plugin_test_packages: None,
+    session: Session,
 ) -> None:
+    """Test tmuxp configuration plugin hook before workspace builder starts."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/plugin_bwb.yaml")
     )
@@ -814,8 +867,10 @@ def test_plugin_system_before_workspace_builder(
 
 
 def test_plugin_system_on_window_create(
-    monkeypatch_plugin_test_packages: None, session: Session
+    monkeypatch_plugin_test_packages: None,
+    session: Session,
 ) -> None:
+    """Test tmuxp configuration plugin hooks work on window creation."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/plugin_owc.yaml")
     )
@@ -833,8 +888,10 @@ def test_plugin_system_on_window_create(
 
 
 def test_plugin_system_after_window_finished(
-    monkeypatch_plugin_test_packages: None, session: Session
+    monkeypatch_plugin_test_packages: None,
+    session: Session,
 ) -> None:
+    """Test tmuxp configuration plugin hooks work after windows created."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/plugin_awf.yaml")
     )
@@ -851,7 +908,10 @@ def test_plugin_system_after_window_finished(
     assert proc.stdout[0] == "'plugin_test_awf'"
 
 
-def test_plugin_system_on_window_create_multiple_windows(session: Session) -> None:
+def test_plugin_system_on_window_create_multiple_windows(
+    session: Session,
+) -> None:
+    """Test tmuxp configuration plugin hooks work on windows creation."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file(
             "workspace/builder/plugin_owc_multiple_windows.yaml"
@@ -872,8 +932,10 @@ def test_plugin_system_on_window_create_multiple_windows(session: Session) -> No
 
 
 def test_plugin_system_after_window_finished_multiple_windows(
-    monkeypatch_plugin_test_packages: None, session: Session
+    monkeypatch_plugin_test_packages: None,
+    session: Session,
 ) -> None:
+    """Test tmuxp configuration plugin hooks work after windows created."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file(
             "workspace/builder/plugin_awf_multiple_windows.yaml"
@@ -894,8 +956,10 @@ def test_plugin_system_after_window_finished_multiple_windows(
 
 
 def test_plugin_system_multiple_plugins(
-    monkeypatch_plugin_test_packages: None, session: Session
+    monkeypatch_plugin_test_packages: None,
+    session: Session,
 ) -> None:
+    """Test tmuxp plugin system works with multiple plugins."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file(
             "workspace/builder/plugin_multiple_plugins.yaml"
@@ -921,7 +985,10 @@ def test_plugin_system_multiple_plugins(
     assert proc.stdout[0] == "'mp_test_awf'"
 
 
-def test_load_configs_same_session(server: Server) -> None:
+def test_load_configs_same_session(
+    server: Server,
+) -> None:
+    """Test tmuxp configuration can be loaded into same session."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/three_windows.yaml")
     )
@@ -952,7 +1019,10 @@ def test_load_configs_same_session(server: Server) -> None:
     assert len(server.sessions[1].windows) == 4
 
 
-def test_load_configs_separate_sessions(server: Server) -> None:
+def test_load_configs_separate_sessions(
+    server: Server,
+) -> None:
+    """Test workspace builder can load configuration in separate session."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/three_windows.yaml")
     )
@@ -976,8 +1046,10 @@ def test_load_configs_separate_sessions(server: Server) -> None:
 
 
 def test_find_current_active_pane(
-    server: Server, monkeypatch: pytest.MonkeyPatch
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Tests workspace builder can find the current active pane (and session)."""
     workspace = ConfigReader._from_file(
         path=test_utils.get_workspace_file("workspace/builder/three_windows.yaml")
     )
@@ -1135,6 +1207,7 @@ def test_load_workspace_enter(
     output: str,
     should_see: bool,
 ) -> None:
+    """Test workspace enters commands to panes in tmuxp configuration."""
     yaml_workspace = tmp_path / "simple.yaml"
     yaml_workspace.write_text(yaml, encoding="utf-8")
     workspace = ConfigReader._from_file(yaml_workspace)
@@ -1257,6 +1330,7 @@ def test_load_workspace_sleep(
     sleep: int,
     output: str,
 ) -> None:
+    """Test sleep commands in tmuxp configuration."""
     yaml_workspace = tmp_path / "simple.yaml"
     yaml_workspace.write_text(yaml, encoding="utf-8")
     workspace = ConfigReader._from_file(yaml_workspace)
@@ -1290,6 +1364,7 @@ def test_load_workspace_sleep(
 
 
 def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
+    """Test the first pane start_directory sticks."""
     yaml_workspace = test_utils.get_workspace_file(
         "workspace/builder/first_pane_start_directory.yaml"
     )
@@ -1322,6 +1397,7 @@ def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) ->
     has_lt_version("2.9"), reason="needs option introduced in tmux >= 2.9"
 )
 def test_layout_main_horizontal(session: Session) -> None:
+    """Test that tmux's main-horizontal layout is used when specified."""
     yaml_workspace = test_utils.get_workspace_file("workspace/builder/three_pane.yaml")
     workspace = ConfigReader._from_file(path=yaml_workspace)
 
@@ -1359,7 +1435,12 @@ def test_layout_main_horizontal(session: Session) -> None:
 
 
 class DefaultSizeNamespaceFixture(t.NamedTuple):
+    """Pytest fixture default-size option in tmuxp workspace builder."""
+
+    # pytest parametrize needs a unique id for each fixture
     test_id: str
+
+    # test params
     TMUXP_DEFAULT_SIZE: t.Optional[str]
     raises: bool
     confoverrides: t.Dict[str, t.Any]
