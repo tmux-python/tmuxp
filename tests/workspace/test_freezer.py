@@ -1,4 +1,4 @@
-"""Tests for freezing tmux sessions with tmuxp."""
+"""Tests tmux session freezing functionality for tmuxp."""
 import pathlib
 import time
 import typing
@@ -16,6 +16,7 @@ if typing.TYPE_CHECKING:
 
 
 def test_freeze_config(session: Session) -> None:
+    """Test freezing a tmux session."""
     session_config = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml")
     )
@@ -87,6 +88,7 @@ def test_inline_workspace() -> None:
 def test_export_yaml(
     tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
 ) -> None:
+    """Test exporting a frozen tmux session to YAML."""
     yaml_workspace_file = tmp_path / "config.yaml"
 
     sample_workspace = freezer.inline(
