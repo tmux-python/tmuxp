@@ -1,3 +1,4 @@
+"""Tmuxp example plugin that fails on initialization."""
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
@@ -7,6 +8,8 @@ if t.TYPE_CHECKING:
 
 
 class PluginFailVersion(TmuxpPlugin):
+    """A tmuxp plugin that is doomed to fail. DOOMED."""
+
     def __init__(self) -> None:
         config: "PluginConfigSchema" = {
             "plugin_name": "tmuxp-plugin-fail-version",
