@@ -706,7 +706,7 @@ def test_window_index(session: Session) -> None:
         assert int(window.window_index) == expected_index
 
 
-def test_before_load_throw_error_if_retcode_error(server: Server) -> None:
+def test_before_script_throw_error_if_retcode_error(server: Server) -> None:
     config_script_fails = test_utils.read_workspace_file(
         "workspace/builder/config_script_fails.yaml"
     )
@@ -731,7 +731,7 @@ def test_before_load_throw_error_if_retcode_error(server: Server) -> None:
         assert not result, "Kills session if before_script exits with errcode"
 
 
-def test_before_load_throw_error_if_file_not_exists(server: Server) -> None:
+def test_before_script_throw_error_if_file_not_exists(server: Server) -> None:
     config_script_not_exists = test_utils.read_workspace_file(
         "workspace/builder/config_script_not_exists.yaml"
     )
@@ -757,7 +757,7 @@ def test_before_load_throw_error_if_file_not_exists(server: Server) -> None:
         assert not result, "Kills session if before_script doesn't exist"
 
 
-def test_before_load_true_if_test_passes(server: Server) -> None:
+def test_before_script_true_if_test_passes(server: Server) -> None:
     config_script_completes = test_utils.read_workspace_file(
         "workspace/builder/config_script_completes.yaml"
     )
@@ -775,7 +775,7 @@ def test_before_load_true_if_test_passes(server: Server) -> None:
         builder.build(session=session)
 
 
-def test_before_load_true_if_test_passes_with_args(server: Server) -> None:
+def test_before_script_true_if_test_passes_with_args(server: Server) -> None:
     config_script_completes = test_utils.read_workspace_file(
         "workspace/builder/config_script_completes.yaml"
     )
