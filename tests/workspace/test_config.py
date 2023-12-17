@@ -35,39 +35,6 @@ def test_export_json(
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
-#
-# There's no tests for this
-#
-def test_find_workspace_file(tmp_path: pathlib.Path) -> None:
-    configs = [str(tmp_path / x) for x in tmp_path.rglob("*.[json][ini][yaml]")]
-
-    garbage_file = tmp_path / "config.psd"
-    garbage_file.write_text("wat", encoding="utf-8")
-
-    # for _r, _d, f in os.walk(str(tmp_path)):
-    #     configs.extend(
-    #         [str(tmp_path / x) for x in f if x.endswith((".json", ".ini", "yaml"))]
-    #     )
-
-    files = 0
-    config_json = tmp_path / "config.json"
-    config_yaml = tmp_path / "config.yaml"
-    config_ini = tmp_path / "config.ini"
-    if config_json.exists():
-        files += 1
-        assert str(config_json) in configs
-
-    if config_yaml.exists():
-        files += 1
-        assert str(config_yaml) in configs
-
-    if config_ini.exists():
-        files += 1
-        assert str(config_ini) in configs
-
-    assert len(configs) == files
-
-
 def test_workspace_expand1(config_fixture: "WorkspaceTestData") -> None:
     """Expand shell commands from string to list."""
     test_workspace = loader.expand(config_fixture.expand1.before_workspace)
