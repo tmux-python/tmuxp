@@ -39,6 +39,7 @@ def test_config_to_dict(
     teamocil_dict: t.Dict[str, t.Any],
     tmuxp_dict: t.Dict[str, t.Any],
 ) -> None:
+    """Test exporting teamocil configuration to dictionary."""
     yaml_to_dict = config_reader.ConfigReader._load(
         format="yaml", content=teamocil_yaml
     )
@@ -89,6 +90,7 @@ def test_multisession_config(
     expected: t.Dict[str, t.Any],
     multisession_config: t.Dict[str, t.Any],
 ) -> None:
+    """Test importing teamocil multisession configuration."""
     # teamocil can fit multiple sessions in a config
     assert importers.import_teamocil(multisession_config[session_name]) == expected
 
