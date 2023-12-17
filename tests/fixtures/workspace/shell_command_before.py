@@ -1,3 +1,4 @@
+"""Test fixture for tmuxp to demonstrate shell_command_before."""
 import pathlib
 import typing as t
 
@@ -39,6 +40,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
 
 
 def config_expanded() -> t.Dict[str, t.Any]:
+    """Return expanded configuration for shell_command_before example."""
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
         "start_directory": "/",
@@ -91,6 +93,7 @@ def config_expanded() -> t.Dict[str, t.Any]:
 
 
 def config_after() -> t.Dict[str, t.Any]:
+    """Return expected configuration for shell_command_before example."""
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
         "start_directory": "/",
