@@ -1,4 +1,5 @@
-"""
+"""aafig plugin for sphinx.
+
 sphinxcontrib.aafig.
 ~~~~~~~~~~~~~~~~~~~
 
