@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp load."""
 import contextlib
 import io
 import pathlib
@@ -25,7 +26,11 @@ from ..constants import FIXTURE_PATH
 from ..fixtures import utils as test_utils
 
 
-def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> None:
+def test_load_workspace(
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Generic test for loading a tmuxp workspace via tmuxp load."""
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -42,8 +47,10 @@ def test_load_workspace(server: "Server", monkeypatch: pytest.MonkeyPatch) -> No
 
 
 def test_load_workspace_passes_tmux_config(
-    server: "Server", monkeypatch: pytest.MonkeyPatch
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test tmuxp load with a tmux configuration file."""
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -64,8 +71,10 @@ def test_load_workspace_passes_tmux_config(
 
 
 def test_load_workspace_named_session(
-    server: "Server", monkeypatch: pytest.MonkeyPatch
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test tmuxp load with a custom tmux session name."""
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -88,8 +97,11 @@ def test_load_workspace_named_session(
     has_lt_version("2.1"), reason="exact session name matches only tmux >= 2.1"
 )
 def test_load_workspace_name_match_regression_252(
-    tmp_path: pathlib.Path, server: "Server", monkeypatch: pytest.MonkeyPatch
+    tmp_path: pathlib.Path,
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test tmuxp load for a regression where tmux shell names would not match."""
     monkeypatch.delenv("TMUX", raising=False)
     session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
 
@@ -101,9 +113,9 @@ def test_load_workspace_name_match_regression_252(
     assert isinstance(session, Session)
     assert session.name == "sample workspace"
 
-    projfile = tmp_path / "simple.yaml"
+    workspace_file = tmp_path / "simple.yaml"
 
-    projfile.write_text(
+    workspace_file.write_text(
         """
 session_name: sampleconfi
 start_directory: './'
@@ -115,15 +127,18 @@ windows:
 
     # open it detached
     session = load_workspace(
-        str(projfile), socket_name=server.socket_name, detached=True
+        str(workspace_file), socket_name=server.socket_name, detached=True
     )
     assert session is not None
     assert session.name == "sampleconfi"
 
 
 def test_load_symlinked_workspace(
-    server: "Server", tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+    server: "Server",
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test tmuxp load can follow a symlinked tmuxp config file."""
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -133,9 +148,9 @@ def test_load_symlinked_workspace(
     realtemp.mkdir()
     linktemp = tmp_path / "symlinktemp"
     linktemp.symlink_to(realtemp)
-    projfile = linktemp / "simple.yaml"
+    workspace_file = linktemp / "simple.yaml"
 
-    projfile.write_text(
+    workspace_file.write_text(
         """
 session_name: samplesimple
 start_directory: './'
@@ -147,7 +162,7 @@ windows:
 
     # open it detached
     session = load_workspace(
-        str(projfile), socket_name=server.socket_name, detached=True
+        str(workspace_file), socket_name=server.socket_name, detached=True
     )
     assert session is not None
     assert session.attached_window is not None
@@ -167,7 +182,12 @@ if t.TYPE_CHECKING:
 
 
 class CLILoadFixture(t.NamedTuple):
+    """Test fixture for tmuxp load tests."""
+
+    # pytest (internal): Test fixture name
     test_id: str
+
+    # test params
     cli_args: t.List[t.Union[str, t.List[str]]]
     config_paths: t.List[str]
     session_names: t.List[str]
@@ -274,6 +294,7 @@ def test_load(
     expected_in_err: "ExpectedOutput",
     expected_not_in_err: "ExpectedOutput",
 ) -> None:
+    """Parametrized test battery for tmuxp load CLI command."""
     assert server.socket_name is not None
 
     monkeypatch.chdir(tmp_path)
@@ -320,6 +341,7 @@ def test_regression_00132_session_name_with_dots(
     session: Session,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Regression test for session names with dots."""
     yaml_config = FIXTURE_PATH / "workspace/builder" / "regression_00132_dots.yaml"
     cli_args = [str(yaml_config)]
     with pytest.raises(libtmux.exc.BadSessionName):
@@ -336,6 +358,7 @@ def test_load_zsh_autotitle_warning(
     capsys: pytest.CaptureFixture[str],
     server: "Server",
 ) -> None:
+    """Test loading ZSH without DISABLE_AUTO_TITLE raises warning."""
     # create dummy tmuxp yaml so we don't get yelled at
     yaml_config = tmp_path / ".tmuxp.yaml"
     yaml_config.write_text(
@@ -394,6 +417,7 @@ def test_load_log_file(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test loading via tmuxp load with --log-file."""
     # create dummy tmuxp yaml that breaks to prevent actually loading tmux
     tmuxp_config_path = tmp_path / ".tmuxp.yaml"
     tmuxp_config_path.write_text(
@@ -418,7 +442,10 @@ session_name: hello
     assert result.out is not None
 
 
-def test_load_plugins(monkeypatch_plugin_test_packages: None) -> None:
+def test_load_plugins(
+    monkeypatch_plugin_test_packages: None,
+) -> None:
+    """Test loading via tmuxp load with plugins."""
     from tmuxp_test_plugin_bwb.plugin import (  # type: ignore
         PluginBeforeWorkspaceBuilder,
     )
@@ -455,6 +482,7 @@ def test_load_plugins_version_fail_skip(
     inputs: t.List[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test tmuxp load with plugins failing version constraints can continue."""
     with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
 
@@ -479,6 +507,7 @@ def test_load_plugins_version_fail_no_skip(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test tmuxp load with plugins failing version constraints can exit."""
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
 
     with contextlib.suppress(SystemExit):
@@ -498,6 +527,7 @@ def test_load_plugins_plugin_missing(
     cli_args: t.List[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test tmuxp load with plugins missing raise an error."""
     with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
 
@@ -511,6 +541,7 @@ def test_plugin_system_before_script(
     server: "Server",
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test tmuxp load with sessions using before_script."""
     # this is an implementation test. Since this testsuite may be ran within
     # a tmux session by the developer himself, delete the TMUX variable
     # temporarily.
@@ -527,8 +558,11 @@ def test_plugin_system_before_script(
 
 
 def test_load_attached(
-    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
 ) -> None:
+    """Test tmuxp load's attachment behavior."""
     # Load a session and attach from outside tmux
     monkeypatch.delenv("TMUX", raising=False)
 
@@ -546,8 +580,11 @@ def test_load_attached(
 
 
 def test_load_attached_detached(
-    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
 ) -> None:
+    """Test tmuxp load when sessions are build without attaching client."""
     # Load a session but don't attach
     monkeypatch.delenv("TMUX", raising=False)
 
@@ -565,8 +602,11 @@ def test_load_attached_detached(
 
 
 def test_load_attached_within_tmux(
-    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
 ) -> None:
+    """Test loading via tmuxp load when already within a tmux session."""
     # Load a session and attach from within tmux
     monkeypatch.setenv("TMUX", "/tmp/tmux-1234/default,123,0")
 
@@ -584,8 +624,11 @@ def test_load_attached_within_tmux(
 
 
 def test_load_attached_within_tmux_detached(
-    server: "Server", monkeypatch: pytest.MonkeyPatch, mocker: MockerFixture
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
 ) -> None:
+    """Test loading via tmuxp load within a tmux session switches clients."""
     # Load a session and attach from within tmux
     monkeypatch.setenv("TMUX", "/tmp/tmux-1234/default,123,0")
 
@@ -603,8 +646,10 @@ def test_load_attached_within_tmux_detached(
 
 
 def test_load_append_windows_to_current_session(
-    server: "Server", monkeypatch: pytest.MonkeyPatch
+    server: "Server",
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test tmuxp load when windows are appended to the current session."""
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     session_config = ConfigReader._load(format="yaml", content=yaml_config)
 
