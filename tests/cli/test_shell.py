@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp shell."""
 import contextlib
 import io
 import pathlib
@@ -116,6 +117,7 @@ def test_shell(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """CLI tests for tmuxp shell."""
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
@@ -207,6 +209,7 @@ def test_shell_target_missing(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """CLI tests for tmuxp shell when target is not specified."""
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
@@ -283,6 +286,7 @@ def test_shell_interactive(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """CLI tests for tmuxp shell when shell is specified."""
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
