@@ -4,7 +4,7 @@ import typing as t
 from tmuxp.plugin import TmuxpPlugin
 
 if t.TYPE_CHECKING:
-    from tmuxp._types import PluginConfigSchema
+    from tmuxp._internal.types import PluginConfigSchema
 
 
 class PluginFailVersion(TmuxpPlugin):

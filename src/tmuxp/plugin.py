@@ -32,7 +32,7 @@ if t.TYPE_CHECKING:
     from libtmux.window import Window
     from typing_extensions import TypedDict, TypeGuard, Unpack
 
-    from ._types import PluginConfigSchema
+    from ._internal.types import PluginConfigSchema
 
     class VersionConstraints(TypedDict):
         """Version constraints mapping for a tmuxp plugin."""
