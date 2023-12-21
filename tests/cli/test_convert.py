@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp convert."""
 import contextlib
 import io
 import json
@@ -24,6 +25,7 @@ def test_convert(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Parametrized tests for tmuxp convert."""
     # create dummy tmuxp yaml so we don't get yelled at
     filename = cli_args[1]
     if filename == ".":
@@ -63,6 +65,7 @@ def test_convert_json(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """CLI test using tmuxp convert to convert configuration from json to yaml."""
     # create dummy tmuxp yaml so we don't get yelled at
     json_config = tmp_path / ".tmuxp.json"
     json_config.write_text('{"session_name": "hello"}', encoding="utf-8")
