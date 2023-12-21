@@ -1,4 +1,5 @@
 # flake8: NOQA: E501
+"""Sphinx documentation configuration for tmuxp."""
 import contextlib
 import inspect
 import pathlib
@@ -212,7 +213,7 @@ def linkcode_resolve(domain: str, info: t.Dict[str, str]) -> t.Union[None, str]:
 
 
 def remove_tabs_js(app: "Sphinx", exc: Exception) -> None:
-    # Fix for sphinx-inline-tabs#18
+    """Fix for sphinx-inline-tabs#18."""
     if app.builder.format == "html" and not exc:
         tabs_js = pathlib.Path(app.builder.outdir) / "_static" / "tabs.js"
         with contextlib.suppress(FileNotFoundError):
@@ -220,4 +221,5 @@ def remove_tabs_js(app: "Sphinx", exc: Exception) -> None:
 
 
 def setup(app: "Sphinx") -> None:
+    """Sphinx setup hook."""
     app.connect("build-finished", remove_tabs_js)
