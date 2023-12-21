@@ -1,3 +1,4 @@
+"""Configuration import adapters to load teamocil, tmuxinator, etc. in tmuxp."""
 import typing as t
 
 
