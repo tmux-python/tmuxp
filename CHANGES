@@ -33,6 +33,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - libtmux: 0.24.0 -> 0.24.1 (maintenance release)
 
+### Tests
+
+- Shell tests: Use named, typed test fixture (#893)
+
 ## tmuxp 1.32.0 (2023-11-19)
 
 _Maintenance only, no bug fixes or new features_
