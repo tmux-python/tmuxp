@@ -1,3 +1,4 @@
+"""CLI for ``tmuxp debug-info`` subcommand."""
 import argparse
 import os
 import pathlib
@@ -19,13 +20,14 @@ tmuxp_path = pathlib.Path(__file__).parent.parent
 def create_debug_info_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``debug-info`` subcommand."""
     return parser
 
 
 def command_debug_info(
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Print debug info to submit with Issues."""
+    """Entrypoint for ``tmuxp debug-info`` to print debug info to submit with issues."""
 
     def prepend_tab(strings: t.List[str]) -> t.List[str]:
         """Prepend tab to strings in list."""
