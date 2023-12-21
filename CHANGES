@@ -24,6 +24,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - libtmux: 0.24.1 -> 0.25.0, maintenance release (#896)
 
   Improve styling via pydocstyle.
+- `config_reader`: Move to `tmuxp._internal` (#897)
 
 ## tmuxp 1.33.0 (2023-12-21)
 
