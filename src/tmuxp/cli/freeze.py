@@ -1,3 +1,4 @@
+"""CLI for ``tmuxp freeze`` subcommand."""
 import argparse
 import os
 import pathlib
@@ -21,6 +22,8 @@ if t.TYPE_CHECKING:
 
 
 class CLIFreezeNamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp freeze command."""
+
     session_name: str
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
@@ -34,6 +37,7 @@ class CLIFreezeNamespace(argparse.Namespace):
 def create_freeze_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``freeze`` subcommand."""
     parser.add_argument(
         dest="session_name",
         metavar="session-name",
@@ -87,10 +91,10 @@ def command_freeze(
     args: CLIFreezeNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Snapshot a tmux session into a tmuxp workspace.
+    """Entrypoint for ``tmuxp freeze``, snapshot a tmux session into a tmuxp workspace.
 
-    If SESSION_NAME is provided, snapshot that session. Otherwise, use the
-    current session.
+    If SESSION_NAME is provided, snapshot that session. Otherwise, use the current
+    session.
     """
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
