@@ -40,8 +40,10 @@ def prompt(
 
     Parameters
     ----------
-    :param name: prompt text
-    :param default: default value if no input provided.
+    name :
+        prompt text
+    default :
+        default value if no input provided.
 
     Returns
     -------
@@ -83,10 +85,14 @@ def prompt_bool(
 
     Parameters
     ----------
-    :param name: prompt text
-    :param default: default value if no input provided.
-    :param yes_choices: default 'y', 'yes', '1', 'on', 'true', 't'
-    :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
+    name :
+        prompt text
+    default :
+        default value if no input provided.
+    yes_choices :
+        default 'y', 'yes', '1', 'on', 'true', 't'
+    no_choices :
+        default 'n', 'no', '0', 'off', 'false', 'f'
 
     Returns
     -------
@@ -130,11 +136,15 @@ def prompt_choices(
 
     Parameters
     ----------
-    :param name: prompt text
-    :param choices: list or tuple of available choices. Choices may be
-                    single strings or (key, value) tuples.
-    :param default: default value if no input provided.
-    :param no_choice: acceptable list of strings for "null choice"
+    name :
+        prompt text
+    choices :
+        list or tuple of available choices. Choices may be single strings or
+        (key, value) tuples.
+    default :
+        default value if no input provided.
+    no_choice :
+        acceptable list of strings for "null choice"
 
     Returns
     -------
@@ -274,6 +284,6 @@ def unstyle(text: str) -> str:
 
     Credit: click.
 
-    :param text: the text to remove style information from.
+    text : the text to remove style information from.
     """
     return strip_ansi(text)
