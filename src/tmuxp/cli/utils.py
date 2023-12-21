@@ -51,12 +51,9 @@ def prompt(
 
     See Also
     --------
-    :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from
-    `flask-script`_. See the `flask-script license`_.
-
-    .. _flask-script: https://github.com/techniq/flask-script
-    .. _flask-script license:
-        https://github.com/techniq/flask-script/blob/master/LICENSE
+    :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`~prompt_choices` are from
+    `flask-script <https://github.com/techniq/flask-script>`_. See the
+    `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
     _prompt = name + (default and " [%s]" % default or "")
     _prompt += name.endswith("?") and " " or ": "
