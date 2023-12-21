@@ -11,81 +11,105 @@ from libtmux.session import Session
 from tmuxp import cli, exc
 
 
+class CLIShellFixture(t.NamedTuple):
+    """Test fixture for tmuxp shell tests."""
+
+    # pytest (internal): Test fixture name
+    test_id: str
+
+    # test params
+    cli_args: t.List[str]
+    inputs: t.List[t.Any]
+    env: t.Dict[str, str]
+    expected_output: str
+
+
+TEST_SHELL_FIXTURES: t.List[CLIShellFixture] = [
+    CLIShellFixture(
+        test_id="print-socket-name",
+        cli_args=["-L{SOCKET_NAME}", "-c", "print(str(server.socket_name))"],
+        inputs=[],
+        env={},
+        expected_output="{SERVER_SOCKET_NAME}",
+    ),
+    CLIShellFixture(
+        test_id="print-session-name",
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "-c",
+            "print(session.name)",
+        ],
+        inputs=[],
+        env={},
+        expected_output="{SESSION_NAME}",
+    ),
+    CLIShellFixture(
+        test_id="print-has-session",
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "{WINDOW_NAME}",
+            "-c",
+            "print(server.has_session(session.name))",
+        ],
+        inputs=[],
+        env={},
+        expected_output="True",
+    ),
+    CLIShellFixture(
+        test_id="print-window-name",
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "{WINDOW_NAME}",
+            "-c",
+            "print(window.name)",
+        ],
+        inputs=[],
+        env={},
+        expected_output="{WINDOW_NAME}",
+    ),
+    CLIShellFixture(
+        test_id="print-pane-id",
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "{WINDOW_NAME}",
+            "-c",
+            "print(pane.id)",
+        ],
+        inputs=[],
+        env={},
+        expected_output="{PANE_ID}",
+    ),
+    CLIShellFixture(
+        test_id="print-pane-id-obeys-tmux-pane-env-var",
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "-c",
+            "print(pane.id)",
+        ],
+        inputs=[],
+        env={"TMUX_PANE": "{PANE_ID}"},
+        expected_output="{PANE_ID}",
+    ),
+]
+
+
 @pytest.mark.parametrize("cli_cmd", [["shell"], ["shell", "--pdb"]])
 @pytest.mark.parametrize(
-    "cli_args,inputs,env,expected_output",
-    [
-        (
-            ["-L{SOCKET_NAME}", "-c", "print(str(server.socket_name))"],
-            [],
-            {},
-            "{SERVER_SOCKET_NAME}",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "{SESSION_NAME}",
-                "-c",
-                "print(session.name)",
-            ],
-            [],
-            {},
-            "{SESSION_NAME}",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "{SESSION_NAME}",
-                "{WINDOW_NAME}",
-                "-c",
-                "print(server.has_session(session.name))",
-            ],
-            [],
-            {},
-            "True",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "{SESSION_NAME}",
-                "{WINDOW_NAME}",
-                "-c",
-                "print(window.name)",
-            ],
-            [],
-            {},
-            "{WINDOW_NAME}",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "{SESSION_NAME}",
-                "{WINDOW_NAME}",
-                "-c",
-                "print(pane.id)",
-            ],
-            [],
-            {},
-            "{PANE_ID}",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "-c",
-                "print(pane.id)",
-            ],
-            [],
-            {"TMUX_PANE": "{PANE_ID}"},
-            "{PANE_ID}",
-        ),
-    ],
+    list(CLIShellFixture._fields),
+    TEST_SHELL_FIXTURES,
+    ids=[test.test_id for test in TEST_SHELL_FIXTURES],
 )
 def test_shell(
     cli_cmd: t.List[str],
+    test_id: str,
     cli_args: t.List[str],
     inputs: t.List[t.Any],
-    expected_output: str,
     env: t.Dict[str, str],
+    expected_output: str,
     server: "Server",
     session: Session,
     tmp_path: pathlib.Path,
