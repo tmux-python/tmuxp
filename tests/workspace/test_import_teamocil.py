@@ -3,7 +3,7 @@ import typing as t
 
 import pytest
 
-from tmuxp import config_reader
+from tmuxp._internal import config_reader
 from tmuxp.workspace import importers, validation
 
 from ..fixtures import import_teamocil as fixtures

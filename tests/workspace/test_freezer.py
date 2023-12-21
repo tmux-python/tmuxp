@@ -5,7 +5,7 @@ import typing
 
 from libtmux.session import Session
 
-from tmuxp.config_reader import ConfigReader
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace import freezer, validation
 from tmuxp.workspace.builder import WorkspaceBuilder
 

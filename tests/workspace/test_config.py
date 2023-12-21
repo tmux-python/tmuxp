@@ -5,7 +5,7 @@ import typing as t
 import pytest
 
 from tmuxp import exc
-from tmuxp.config_reader import ConfigReader
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace import loader, validation
 
 from ..constants import EXAMPLE_PATH

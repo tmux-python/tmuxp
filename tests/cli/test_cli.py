@@ -9,10 +9,10 @@ import pytest
 from libtmux.server import Server
 
 from tmuxp import cli
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
 from tmuxp.cli.load import _reattach, load_plugins
 from tmuxp.cli.utils import tmuxp_echo
-from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file

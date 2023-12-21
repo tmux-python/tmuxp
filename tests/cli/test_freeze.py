@@ -8,7 +8,7 @@ import pytest
 from libtmux.server import Server
 
 from tmuxp import cli
-from tmuxp.config_reader import ConfigReader
+from tmuxp._internal.config_reader import ConfigReader
 
 
 @pytest.mark.parametrize(

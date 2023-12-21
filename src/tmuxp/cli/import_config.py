@@ -5,7 +5,7 @@ import pathlib
 import sys
 import typing as t
 
-from tmuxp.config_reader import ConfigReader
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace.finders import find_workspace_file
 
 from ..workspace import importers

@@ -3,7 +3,7 @@ import typing as t
 
 import pytest
 
-from tmuxp.config_reader import ConfigReader
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace import importers, validation
 
 from ..fixtures import import_tmuxinator as fixtures
