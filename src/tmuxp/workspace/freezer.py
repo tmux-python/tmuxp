@@ -1,3 +1,4 @@
+"""Tmux session freezing functionality for tmuxp."""
 import typing as t
 
 from libtmux.pane import Pane
