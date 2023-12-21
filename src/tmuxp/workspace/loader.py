@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def expandshell(value: str) -> str:
-    """Returned with variables expanded based on user's ``$HOME`` and ``env``.
+    """Resolve shell variables based on user's ``$HOME`` and ``env``.
 
     :py:func:`os.path.expanduser` and :py:fubasednc:`os.path.expandvars`.
 
@@ -31,6 +31,7 @@ def expandshell(value: str) -> str:
 
 
 def expand_cmd(p: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+    """Resolve shell variables and expand shorthands in a tmuxp config mapping."""
     if isinstance(p, str):
         p = {"shell_command": [p]}
     elif isinstance(p, list):
@@ -71,7 +72,7 @@ def expand(
     cwd: t.Optional[t.Union[pathlib.Path, str]] = None,
     parent: t.Optional[t.Any] = None,
 ) -> t.Dict[str, t.Any]:
-    """Return workspace with shorthand and inline properties expanded.
+    """Resolve workspace variables and expand shorthand style / inline properties.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
     and also allow for neat, short-hand "sugarified" syntax.
