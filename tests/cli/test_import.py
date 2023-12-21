@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp import."""
 import contextlib
 import io
 import pathlib
@@ -17,6 +18,7 @@ def test_import(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Basic CLI test for tmuxp import."""
     cli.cli(cli_args)
     result = capsys.readouterr()
     assert "tmuxinator" in result.out
@@ -46,6 +48,7 @@ def test_import_teamocil(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """CLI test for tmuxp import w/ teamocil."""
     teamocil_config = test_utils.read_workspace_file("import_teamocil/test4.yaml")
 
     teamocil_path = tmp_path / ".teamocil"
@@ -92,6 +95,7 @@ def test_import_tmuxinator(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """CLI test for tmuxp import w/ tmuxinator."""
     tmuxinator_config = test_utils.read_workspace_file("import_tmuxinator/test3.yaml")
 
     tmuxinator_path = tmp_path / ".tmuxinator"
