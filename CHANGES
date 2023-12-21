@@ -27,6 +27,11 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 - `config_reader`: Move to `tmuxp._internal` (#897)
 - `_types`: Move to `tmuxp._internal` (#900)
 
+### Documentation
+
+- Refactor API docs to split across multiple pages (#898)
+- Remove unused reStructuredText section headers from some modules (#898)
+
 ## tmuxp 1.33.0 (2023-12-21)
 
 _Maintenance only, no bug fixes or new features_

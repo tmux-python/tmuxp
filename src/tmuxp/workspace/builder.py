@@ -1,9 +1,4 @@
-"""Create a tmux workspace from a workspace :py:obj:`dict`.
-
-tmuxp.workspace.builder
-~~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Create a tmux workspace from a workspace :py:obj:`dict`."""
 import logging
 import time
 import typing as t

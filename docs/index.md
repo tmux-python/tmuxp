@@ -32,7 +32,7 @@ plugins/index
 :hidden:
 
 developing
-api
+api/index
 history
 migration
 about_tmux

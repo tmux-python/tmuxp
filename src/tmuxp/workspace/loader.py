@@ -1,9 +1,4 @@
-"""Workspace hydration and loading for tmuxp.
-
-tmuxp.workspace.loader
-~~~~~~~~~~~~~~~~~~~~~~
-
-"""
+"""Workspace hydration and loading for tmuxp."""
 import logging
 import os
 import pathlib

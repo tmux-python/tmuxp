@@ -1,9 +1,4 @@
-"""Utility and helper methods for tmuxp.
-
-tmuxp.util
-~~~~~~~~~~
-
-"""
+"""Utility and helper methods for tmuxp."""
 import logging
 import os
 import pathlib
