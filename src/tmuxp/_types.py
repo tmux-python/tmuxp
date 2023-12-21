@@ -1,4 +1,4 @@
-"""Internal, :const:`typing.TYPE_CHECKING` guarded :term:`type annotations <annotation>`.
+"""Internal, :const:`typing.TYPE_CHECKING` guarded :term:`typings <annotation>`.
 
 These are _not_ to be imported at runtime as `typing_extensions` is not
 bundled with tmuxp. Usage example:
