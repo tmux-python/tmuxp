@@ -1,9 +1,4 @@
-"""Exceptions for tmuxp.
-
-tmuxp.exc
-~~~~~~~~~
-
-"""
+"""Exceptions for tmuxp."""
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist

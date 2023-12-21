@@ -1,6 +1,6 @@
 """aafig plugin for sphinx.
 
-sphinxcontrib.aafig.
+sphinxcontrib.aafig
 ~~~~~~~~~~~~~~~~~~~
 
 Allow embedded ASCII art to be rendered as nice looking images

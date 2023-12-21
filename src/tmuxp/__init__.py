@@ -1,12 +1,8 @@
 # flake8: NOQA: F401
 """tmux session manager.
 
-tmuxp
-~~~~~
-
 :copyright: Copyright 2013- Tony Narlock.
 :license: MIT, see LICENSE for details
-
 """
 from . import cli, util
 from .__about__ import (
