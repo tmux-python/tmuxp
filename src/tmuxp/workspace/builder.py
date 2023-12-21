@@ -97,7 +97,7 @@ class WorkspaceBuilder:
 
     1. Load JSON / YAML file via via :class:`pathlib.Path`::
 
-           from tmuxp import config_reader
+           from tmuxp._internal import config_reader
            session_config = config_reader.ConfigReader._load(raw_yaml)
 
        The reader automatically detects the file type from :attr:`pathlib.suffix`.
@@ -105,7 +105,7 @@ class WorkspaceBuilder:
        We can also parse raw file::
 
            import pathlib
-           from tmuxp import config_reader
+           from tmuxp._internal import config_reader
 
            session_config = config_reader.ConfigReader._from_file(
                pathlib.Path('path/to/config.yaml')

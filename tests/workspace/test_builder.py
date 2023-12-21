@@ -18,8 +18,8 @@ from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
 
 from tmuxp import exc
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
-from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 

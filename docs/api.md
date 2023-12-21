@@ -110,7 +110,7 @@ If you need an internal API stabilized please [file an issue](https://github.com
 ## Configuration reader
 
 ```{eval-rst}
-.. automodule:: tmuxp.config_reader
+.. automodule:: tmuxp._internal.config_reader
 ```
 
 ## Workspace Builder

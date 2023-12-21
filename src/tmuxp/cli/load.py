@@ -14,7 +14,8 @@ from libtmux.session import Session
 
 from tmuxp.types import StrPath
 
-from .. import config_reader, exc, log, util
+from .. import exc, log, util
+from .._internal import config_reader
 from ..workspace import loader
 from ..workspace.builder import WorkspaceBuilder
 from ..workspace.finders import find_workspace_file, get_workspace_dir

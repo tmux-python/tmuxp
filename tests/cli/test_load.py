@@ -12,13 +12,13 @@ from libtmux.session import Session
 from pytest_mock import MockerFixture
 
 from tmuxp import cli
+from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
     _load_attached,
     load_plugins,
     load_workspace,
 )
-from tmuxp.config_reader import ConfigReader
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 

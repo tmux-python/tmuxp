@@ -55,13 +55,13 @@ class ConfigReader:
 
         >>> cfg = ConfigReader.load("json", '{ "session_name": "my session" }')
         >>> cfg
-        <tmuxp.config_reader.ConfigReader object at ...>
+        <tmuxp._internal.config_reader.ConfigReader object at ...>
         >>> cfg.content
         {'session_name': 'my session'}
 
         >>> cfg = ConfigReader.load("yaml", 'session_name: my session')
         >>> cfg
-        <tmuxp.config_reader.ConfigReader object at ...>
+        <tmuxp._internal.config_reader.ConfigReader object at ...>
         >>> cfg.content
         {'session_name': 'my session'}
         """
@@ -133,7 +133,7 @@ class ConfigReader:
 
         >>> cfg = ConfigReader.from_file(yaml_file)
         >>> cfg
-        <tmuxp.config_reader.ConfigReader object at ...>
+        <tmuxp._internal.config_reader.ConfigReader object at ...>
 
         >>> cfg.content
         {'session_name': 'my session'}
@@ -150,7 +150,7 @@ class ConfigReader:
 
         >>> cfg = ConfigReader.from_file(json_file)
         >>> cfg
-        <tmuxp.config_reader.ConfigReader object at ...>
+        <tmuxp._internal.config_reader.ConfigReader object at ...>
 
         >>> cfg.content
         {'session_name': 'my session'}
