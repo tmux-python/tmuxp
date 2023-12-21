@@ -1,9 +1,4 @@
-"""CLI utilities for tmuxp.
-
-tmuxp.cli
-~~~~~~~~~
-
-"""
+"""CLI utilities for tmuxp."""
 import argparse
 import logging
 import os
@@ -45,6 +40,7 @@ if t.TYPE_CHECKING:
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """Create CLI :class:`argparse.ArgumentParser` for tmuxp."""
     parser = argparse.ArgumentParser(prog="tmuxp")
     parser.add_argument(
         "--version",
@@ -97,6 +93,8 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 class CLINamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp root-level CLI."""
+
     log_level: "CLIVerbosity"
     subparser_name: "CLISubparserName"
     import_subparser_name: t.Optional["CLIImportSubparserName"]
