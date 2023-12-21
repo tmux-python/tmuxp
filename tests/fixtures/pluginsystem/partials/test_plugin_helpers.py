@@ -6,7 +6,7 @@ from tmuxp.plugin import TmuxpPlugin
 if t.TYPE_CHECKING:
     from typing_extensions import Unpack
 
-    from tmuxp._types import PluginConfigSchema
+    from tmuxp._internal.types import PluginConfigSchema
 
     from ._types import PluginTestConfigSchema
 

@@ -6,7 +6,7 @@ bundled with tmuxp. Usage example:
 >>> import typing as t
 
 >>> if t.TYPE_CHECKING:
-...     from tmuxp._types import PluginConfigSchema
+...     from tmuxp._internal.types import PluginConfigSchema
 ...
 """
 import typing as t
