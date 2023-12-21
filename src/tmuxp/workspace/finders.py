@@ -1,3 +1,4 @@
+"""Workspace (configuration file) finders for tmuxp."""
 import logging
 import os
 import pathlib
