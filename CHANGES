@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- libtmux: 0.24.1 -> 0.25.0, maintenance release (#896)
+
+  Improve styling via pydocstyle.
+
 ## tmuxp 1.33.0 (2023-12-21)
 
 _Maintenance only, no bug fixes or new features_
