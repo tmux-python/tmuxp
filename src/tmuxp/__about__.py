@@ -1,7 +1,7 @@
 """Metadata for tmuxp package."""
 __title__ = "tmuxp"
 __package_name__ = "tmuxp"
-__version__ = "1.33.0"
+__version__ = "1.34.0"
 __description__ = "tmux session manager"
 __email__ = "tony@git-pull.com"
 __author__ = "Tony Narlock"
