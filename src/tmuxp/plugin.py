@@ -1,3 +1,4 @@
+"""Plugin system for tmuxp."""
 import typing as t
 
 import libtmux
@@ -34,18 +35,24 @@ if t.TYPE_CHECKING:
     from ._types import PluginConfigSchema
 
     class VersionConstraints(TypedDict):
+        """Version constraints mapping for a tmuxp plugin."""
+
         version: t.Union[Version, str]
         vmin: str
         vmax: t.Optional[str]
         incompatible: t.List[t.Union[t.Any, str]]
 
     class TmuxpPluginVersionConstraints(TypedDict):
+        """Version constraints for a tmuxp plugin."""
+
         tmux: VersionConstraints
         tmuxp: VersionConstraints
         libtmux: VersionConstraints
 
 
 class Config(t.TypedDict):
+    """tmuxp plugin configuration mapping."""
+
     plugin_name: str
     tmux_min_version: str
     tmux_max_version: t.Optional[str]
@@ -73,12 +80,14 @@ DEFAULT_CONFIG: "Config" = {
 
 
 def validate_plugin_config(config: "PluginConfigSchema") -> "TypeGuard[Config]":
+    """Return True if tmuxp plugin configuration valid, also upcasts."""
     return isinstance(config, dict)
 
 
 def setup_plugin_config(
     config: "PluginConfigSchema", default_config: "Config" = DEFAULT_CONFIG
 ) -> "Config":
+    """Initialize tmuxp plugin configuration."""
     new_config = config.copy()
     for default_key, default_value in default_config.items():
         if default_key not in new_config:
@@ -90,6 +99,8 @@ def setup_plugin_config(
 
 
 class TmuxpPlugin:
+    """Base class for a tmuxp plugin."""
+
     def __init__(self, **kwargs: "Unpack[PluginConfigSchema]") -> None:
         """
         Initialize plugin.
