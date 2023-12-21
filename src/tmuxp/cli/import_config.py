@@ -24,7 +24,7 @@ def get_tmuxinator_dir() -> pathlib.Path:
 
     See Also
     --------
-    :meth:`tmuxp.workspace.importers.tmuxinator.import_tmuxinator`
+    :meth:`tmuxp.workspace.importers.import_tmuxinator`
     """
     if "TMUXINATOR_CONFIG" in os.environ:
         return pathlib.Path(os.environ["TMUXINATOR_CONFIG"]).expanduser()
@@ -42,7 +42,7 @@ def get_teamocil_dir() -> pathlib.Path:
 
     See Also
     --------
-    :meth:`tmuxp.workspace.importers.teamocil.import_teamocil`
+    :meth:`tmuxp.workspace.importers.import_teamocil`
     """
     return pathlib.Path("~/.teamocil/").expanduser()
 
