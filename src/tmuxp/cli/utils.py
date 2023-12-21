@@ -1,3 +1,4 @@
+"""CLI utility helpers for tmuxp."""
 import logging
 import re
 import typing as t
@@ -18,7 +19,7 @@ def tmuxp_echo(
     log_level: str = "INFO",
     style_log: bool = False,
 ) -> None:
-    """Combines logging.log and click.echo."""
+    """Combine logging.log and click.echo."""
     if message is None:
         return
 
@@ -36,14 +37,24 @@ def prompt(
     value_proc: t.Optional[t.Callable[[str], str]] = None,
 ) -> str:
     """Return user input from command line.
+
+    Parameters
+    ----------
+    :param name: prompt text
+    :param default: default value if no input provided.
+
+    Returns
+    -------
+    str
+
+    See Also
+    --------
     :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`prompt_choices` are from
     `flask-script`_. See the `flask-script license`_.
+
     .. _flask-script: https://github.com/techniq/flask-script
     .. _flask-script license:
         https://github.com/techniq/flask-script/blob/master/LICENSE
-    :param name: prompt text
-    :param default: default value if no input provided.
-    :rtype: string.
     """
     _prompt = name + (default and " [%s]" % default or "")
     _prompt += name.endswith("?") and " " or ": "
@@ -68,12 +79,18 @@ def prompt_bool(
     yes_choices: t.Optional[t.Sequence[t.Any]] = None,
     no_choices: t.Optional[t.Sequence[t.Any]] = None,
 ) -> bool:
-    """Return user input from command line and converts to boolean value.
+    """Return True / False by prompting user input from command line.
+
+    Parameters
+    ----------
     :param name: prompt text
     :param default: default value if no input provided.
     :param yes_choices: default 'y', 'yes', '1', 'on', 'true', 't'
     :param no_choices: default 'n', 'no', '0', 'off', 'false', 'f'
-    :rtype: bool.
+
+    Returns
+    -------
+    bool
     """
     yes_choices = yes_choices or ("y", "yes", "1", "on", "true", "t")
     no_choices = no_choices or ("n", "no", "0", "off", "false", "f")
@@ -110,12 +127,18 @@ def prompt_choices(
     no_choice: t.Sequence[str] = ("none",),
 ) -> t.Optional[str]:
     """Return user input from command line from set of provided choices.
+
+    Parameters
+    ----------
     :param name: prompt text
     :param choices: list or tuple of available choices. Choices may be
                     single strings or (key, value) tuples.
     :param default: default value if no input provided.
     :param no_choice: acceptable list of strings for "null choice"
-    :rtype: str.
+
+    Returns
+    -------
+    str
     """
     _choices: t.List[str] = []
     options: t.List[str] = []
@@ -143,6 +166,7 @@ _ansi_re = re.compile(r"\033\[[;?0-9]*[a-zA-Z]")
 
 
 def strip_ansi(value: str) -> str:
+    """Clear ANSI from a string value."""
     return _ansi_re.sub("", value)
 
 
@@ -182,6 +206,8 @@ def _interpret_color(
 
 
 class UnknownStyleColor(Exception):
+    """Raised when encountering an unknown terminal style color."""
+
     def __init__(self, color: "CLIColour", *args: object, **kwargs: object) -> None:
         return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
 
@@ -241,11 +267,12 @@ def style(
 
 
 def unstyle(text: str) -> str:
-    """Removes ANSI styling information from a string.  Usually it's not
-    necessary to use this function as tmuxp_echo function will
+    """Remove ANSI styling information from a string.
+
+    Usually it's not necessary to use this function as tmuxp_echo function will
     automatically remove styling if necessary.
 
-    credit: click.
+    Credit: click.
 
     :param text: the text to remove style information from.
     """
