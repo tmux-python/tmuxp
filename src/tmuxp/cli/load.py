@@ -1,9 +1,4 @@
-"""Command line tool for managing tmuxp workspaces.
-
-tmuxp.cli.load
-~~~~~~~~~~~~~~
-
-"""
+"""CLI for ``tmuxp load`` subcommand."""
 import argparse
 import importlib
 import logging
@@ -31,11 +26,15 @@ if t.TYPE_CHECKING:
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
 
     class OptionOverrides(TypedDict):
+        """Optional argument overrides for tmuxp load."""
+
         detached: NotRequired[bool]
         new_session_name: NotRequired[t.Optional[str]]
 
 
 class CLILoadNamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp load command."""
+
     workspace_files: t.List[str]
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
@@ -50,8 +49,8 @@ class CLILoadNamespace(argparse.Namespace):
 def set_layout_hook(session: Session, hook_name: str) -> None:
     """Set layout hooks to normalize layout.
 
-    References:
-
+    References
+    ----------
         - tmuxp issue: https://github.com/tmux-python/tmuxp/issues/309
         - tmux issue: https://github.com/tmux/tmux/issues/1106
 
@@ -105,9 +104,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
 
 
 def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
-    """
-    Load and return plugins in workspace
-    """
+    """Load and return plugins in workspace."""
     plugins = []
     if "plugins" in session_config:
         for plugin in session_config["plugins"]:
@@ -155,7 +152,7 @@ def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
 
 def _reattach(builder: WorkspaceBuilder) -> None:
     """
-    Reattach session (depending on env being inside tmux already or not)
+    Reattach session (depending on env being inside tmux already or not).
 
     Parameters
     ----------
@@ -185,7 +182,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
 
 def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     """
-    Load workspace in new session
+    Load workspace in new session.
 
     Parameters
     ----------
@@ -219,7 +216,7 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
 
 def _load_detached(builder: WorkspaceBuilder) -> None:
     """
-    Load workspace in new session but don't attach
+    Load workspace in new session but don't attach.
 
     Parameters
     ----------
@@ -238,7 +235,7 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     """
-    Load workspace as new windows in current session
+    Load workspace as new windows in current session.
 
     Parameters
     ----------
@@ -253,8 +250,7 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
 
 
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
-    """
-    Runs after before_script
+    """Execute hooks for plugins running after ``before_script``.
 
     Parameters
     ----------
@@ -278,8 +274,7 @@ def load_workspace(
     answer_yes: bool = False,
     append: bool = False,
 ) -> t.Optional[Session]:
-    """
-    Load a tmux "workspace" session via tmuxp file.
+    """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
     Parameters
     ----------
@@ -305,7 +300,6 @@ def load_workspace(
 
     Notes
     -----
-
     tmuxp will check and load a workspace file. The file will use ConfigReader
     to load a JSON/YAML into a :py:obj:`dict`. Then :func:`loader.expand` and
     :func:`loader.trickle` will be used to expand any shorthands, template
@@ -489,6 +483,7 @@ def load_workspace(
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``load`` subcommand."""
     workspace_files = parser.add_argument(
         "workspace_files",
         nargs="+",

@@ -1,9 +1,4 @@
-"""CLI utilities for tmuxp.
-
-tmuxp.cli
-~~~~~~~~~
-
-"""
+"""CLI utilities for tmuxp."""
 import argparse
 import logging
 import os
@@ -45,6 +40,7 @@ if t.TYPE_CHECKING:
 
 
 def create_parser() -> argparse.ArgumentParser:
+    """Create CLI :class:`argparse.ArgumentParser` for tmuxp."""
     parser = argparse.ArgumentParser(prog="tmuxp")
     parser.add_argument(
         "--version",
@@ -97,6 +93,8 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 class CLINamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp root-level CLI."""
+
     log_level: "CLIVerbosity"
     subparser_name: "CLISubparserName"
     import_subparser_name: t.Optional["CLIImportSubparserName"]
@@ -111,8 +109,8 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
 
     Pass the "--help" argument to any command to see detailed help.
     See detailed documentation and examples at:
-    http://tmuxp.git-pull.com/"""
-
+    http://tmuxp.git-pull.com/
+    """
     try:
         has_minimum_version()
     except TmuxCommandNotFound:
@@ -186,6 +184,5 @@ def startup(config_dir: pathlib.Path) -> None:
     ----------
     str : get_workspace_dir(): Config directory to search
     """
-
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)

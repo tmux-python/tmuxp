@@ -1,3 +1,4 @@
+"""CLI for ``tmuxp shell`` subcommand."""
 import argparse
 import os
 import pathlib
@@ -18,6 +19,8 @@ if t.TYPE_CHECKING:
 
 
 class CLIShellNamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp shell command."""
+
     session_name: str
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
@@ -31,6 +34,7 @@ class CLIShellNamespace(argparse.Namespace):
 
 
 def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``shell`` subcommand."""
     parser.add_argument("session_name", metavar="session-name", nargs="?")
     parser.add_argument("window_name", metavar="window-name", nargs="?")
     parser.add_argument(
@@ -132,7 +136,7 @@ def command_shell(
     args: CLIShellNamespace,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Launch python shell for tmux server, session, window and pane.
+    """Entrypoint for ``tmuxp shell`` for tmux server, session, window and pane.
 
     Priority given to loaded session/window/pane objects:
 

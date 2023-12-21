@@ -14,13 +14,8 @@ if t.TYPE_CHECKING:
     from ..fixtures.structures import WorkspaceTestData
 
 
-def load_yaml(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
-    return ConfigReader._from_file(
-        pathlib.Path(path) if isinstance(path, str) else path
-    )
-
-
 def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
+    """Load tmuxp workspace configuration from file."""
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path
     )
@@ -29,6 +24,7 @@ def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
 def test_export_json(
     tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
 ) -> None:
+    """Test exporting configuration dictionary to JSON."""
     json_workspace_file = tmp_path / "config.json"
 
     configparser = ConfigReader(config_fixture.sample_workspace.sample_workspace_dict)
@@ -39,39 +35,6 @@ def test_export_json(
 
     new_workspace_data = ConfigReader._from_file(path=json_workspace_file)
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
-
-
-#
-# There's no tests for this
-#
-def test_find_workspace_file(tmp_path: pathlib.Path) -> None:
-    configs = [str(tmp_path / x) for x in tmp_path.rglob("*.[json][ini][yaml]")]
-
-    garbage_file = tmp_path / "config.psd"
-    garbage_file.write_text("wat", encoding="utf-8")
-
-    # for _r, _d, f in os.walk(str(tmp_path)):
-    #     configs.extend(
-    #         [str(tmp_path / x) for x in f if x.endswith((".json", ".ini", "yaml"))]
-    #     )
-
-    files = 0
-    config_json = tmp_path / "config.json"
-    config_yaml = tmp_path / "config.yaml"
-    config_ini = tmp_path / "config.ini"
-    if config_json.exists():
-        files += 1
-        assert str(config_json) in configs
-
-    if config_yaml.exists():
-        files += 1
-        assert str(config_yaml) in configs
-
-    if config_ini.exists():
-        files += 1
-        assert str(config_ini) in configs
-
-    assert len(configs) == files
 
 
 def test_workspace_expand1(config_fixture: "WorkspaceTestData") -> None:
@@ -133,6 +96,7 @@ inheritance_workspace_after = {
 
 
 def test_inheritance_workspace() -> None:
+    """TODO: Create a test to verify workspace config inheritance to object tree."""
     workspace = inheritance_workspace_before
 
     # TODO: Look at verifying window_start_directory
@@ -172,6 +136,7 @@ def test_shell_command_before(config_fixture: "WorkspaceTestData") -> None:
 
 
 def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
+    """Verify shell_command before_session is in session scope."""
     sconfig = ConfigReader._load(
         format="yaml", content=config_fixture.shell_command_before_session.before
     )
@@ -185,11 +150,13 @@ def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
 
 
 def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData") -> None:
+    """Verify tmuxp config proliferates relative start directory to descendants."""
     test_workspace = loader.trickle(config_fixture.trickle.before)
     assert test_workspace == config_fixture.trickle.expected
 
 
 def test_trickle_window_with_no_pane_workspace() -> None:
+    """Verify tmuxp window config automatically infers a single pane."""
     test_yaml = """
     session_name: test_session
     windows:
@@ -240,6 +207,7 @@ def test_expands_blank_panes(config_fixture: "WorkspaceTestData") -> None:
 
 
 def test_no_session_name() -> None:
+    """Verify exception raised when tmuxp configuration has no session name."""
     yaml_workspace = """
     - window_name: editor
       panes:
@@ -261,6 +229,7 @@ def test_no_session_name() -> None:
 
 
 def test_no_windows() -> None:
+    """Verify exception raised when tmuxp configuration has no windows."""
     yaml_workspace = """
     session_name: test session
     """
@@ -273,6 +242,7 @@ def test_no_windows() -> None:
 
 
 def test_no_window_name() -> None:
+    """Verify exception raised when tmuxp config missing window name."""
     yaml_workspace = """
     session_name: test session
     windows:
@@ -295,6 +265,7 @@ def test_no_window_name() -> None:
 
 
 def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test loading configuration resolves environmental variables."""
     env_key = "TESTHEY92"
     env_val = "HEYO1"
     yaml_workspace = """
@@ -335,7 +306,8 @@ def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "logging @ %s" % env_val == sconfig["windows"][1]["window_name"]
 
 
-def test_plugins() -> None:
+def test_validate_plugins() -> None:
+    """Test validation of plugins loading via tmuxp configuration file."""
     yaml_workspace = """
     session_name: test session
     plugins: tmuxp-plugin-one.plugin.TestPluginOne

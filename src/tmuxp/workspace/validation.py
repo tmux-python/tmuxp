@@ -1,13 +1,18 @@
+"""Validation errors for tmuxp configuration files."""
 import typing as t
 
 from .. import exc
 
 
 class SchemaValidationError(exc.WorkspaceError):
+    """Tmuxp configuration validation base error."""
+
     pass
 
 
 class SessionNameMissingValidationError(SchemaValidationError):
+    """Tmuxp configuration error for session name missing."""
+
     def __init__(self, *args: object, **kwargs: object) -> None:
         return super().__init__(
             'workspace requires "session_name"',
@@ -17,6 +22,8 @@ class SessionNameMissingValidationError(SchemaValidationError):
 
 
 class WindowListMissingValidationError(SchemaValidationError):
+    """Tmuxp configuration error for window list missing."""
+
     def __init__(self, *args: object, **kwargs: object) -> None:
         return super().__init__(
             'workspace requires list of "windows"',
@@ -26,6 +33,8 @@ class WindowListMissingValidationError(SchemaValidationError):
 
 
 class WindowNameMissingValidationError(SchemaValidationError):
+    """Tmuxp configuration error for missing window_name."""
+
     def __init__(self, *args: object, **kwargs: object) -> None:
         return super().__init__(
             'workspace window is missing "window_name"',
@@ -35,6 +44,8 @@ class WindowNameMissingValidationError(SchemaValidationError):
 
 
 class InvalidPluginsValidationError(SchemaValidationError):
+    """Tmuxp configuration error for invalid plugins."""
+
     def __init__(self, plugins: t.Any, *args: object, **kwargs: object) -> None:
         return super().__init__(
             '"plugins" only supports list type. '

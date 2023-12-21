@@ -1,10 +1,11 @@
-"""Tests for .'s helper and utility functions."""
+"""Tests for tmuxp's helper and utility functions."""
 import pytest
 from libtmux.server import Server
 from libtmux.test import get_test_session_name, temp_session
 
 
-def test_kills_session(server: Server) -> None:
+def test_temp_session_kills_session_on_exit(server: Server) -> None:
+    """Test temp_session() context manager kills session on exit."""
     server = server
     session_name = get_test_session_name(server=server)
 
@@ -16,9 +17,8 @@ def test_kills_session(server: Server) -> None:
 
 
 @pytest.mark.flaky(reruns=5)
-def test_if_session_killed_before(server: Server) -> None:
-    """Handles situation where session already closed within context"""
-
+def test_temp_session_if_session_killed_before_exit(server: Server) -> None:
+    """Handles situation where session already closed within context."""
     server = server
     session_name = get_test_session_name(server=server)
 

@@ -30,7 +30,7 @@ PY2 = sys.version_info[0] == 2
 def run_before_script(
     script_file: t.Union[str, pathlib.Path], cwd: t.Optional[pathlib.Path] = None
 ) -> int:
-    """Function to wrap try/except for subprocess.check_call()."""
+    """Execute a shell script, wraps :meth:`subprocess.check_call()` in a try/catch."""
     try:
         proc = subprocess.Popen(
             shlex.split(str(script_file)),
@@ -91,7 +91,7 @@ def oh_my_zsh_auto_title() -> None:
 
 
 def get_current_pane(server: "Server") -> t.Optional["Pane"]:
-    """Return Pane if one found in env"""
+    """Return Pane if one found in env."""
     if os.getenv("TMUX_PANE") is not None:
         try:
             return next(p for p in server.panes if p.pane_id == os.getenv("TMUX_PANE"))
@@ -105,6 +105,7 @@ def get_session(
     session_name: t.Optional[str] = None,
     current_pane: t.Optional["Pane"] = None,
 ) -> "Session":
+    """Get tmux session for server by session name, respects current pane, if passed."""
     try:
         if session_name:
             session = server.sessions.get(session_name=session_name)
@@ -131,6 +132,7 @@ def get_window(
     window_name: t.Optional[str] = None,
     current_pane: t.Optional["Pane"] = None,
 ) -> "Window":
+    """Get tmux window for server by window name, respects current pane, if passed."""
     try:
         if window_name:
             window = session.windows.get(window_name=window_name)
@@ -150,6 +152,7 @@ def get_window(
 
 
 def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane":
+    """Get tmux pane for server by pane name, respects current pane, if passed."""
     pane = None
     try:
         if current_pane is not None:

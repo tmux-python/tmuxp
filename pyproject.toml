@@ -146,6 +146,7 @@ select = [
   "TRY", # Trycertatops
   "PERF", # Perflint
   "RUF", # Ruff-specific rules
+  "D", # pydocstyle
 ]
 
 [tool.ruff.isort]
@@ -153,6 +154,9 @@ known-first-party = [
   "tmuxp",
 ]
 combine-as-imports = true
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.per-file-ignores]
 "*/__init__.py" = ["F401"]

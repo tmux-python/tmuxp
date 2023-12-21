@@ -1,8 +1,13 @@
-"""Conftest.py (root-level)
+"""Conftest.py (root-level).
 
 We keep this in root pytest fixtures in pytest's doctest plugin to be available, as well
-as avoiding conftest.py from being included in the wheel.
+as avoiding conftest.py from being included in the wheel, in addition to pytest_plugin
+for pytester only being available via the root directory.
+
+See "pytest_plugins in non-top-level conftest files" in
+https://docs.pytest.org/en/stable/deprecations.html
 """
+
 import logging
 import os
 import pathlib
@@ -26,7 +31,7 @@ USING_ZSH = "zsh" in os.getenv("SHELL", "")
 @pytest.mark.skipif(not USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
 def zshrc(user_path: pathlib.Path) -> pathlib.Path:
-    """This quiets ZSH default message.
+    """Quiets ZSH default message.
 
     Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.
     """
@@ -37,11 +42,13 @@ def zshrc(user_path: pathlib.Path) -> pathlib.Path:
 
 @pytest.fixture(autouse=True)
 def home_path_default(monkeypatch: pytest.MonkeyPatch, user_path: pathlib.Path) -> None:
+    """Set HOME to user_path (random, temporary directory)."""
     monkeypatch.setenv("HOME", str(user_path))
 
 
 @pytest.fixture
 def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
+    """Ensure and return tmuxp config directory."""
     xdg_config_dir = user_path / ".config"
     xdg_config_dir.mkdir(exist_ok=True)
 
@@ -54,12 +61,14 @@ def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
 def tmuxp_configdir_default(
     monkeypatch: pytest.MonkeyPatch, tmuxp_configdir: pathlib.Path
 ) -> None:
+    """Set tmuxp configuration directory for ``TMUXP_CONFIGDIR``."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmuxp_configdir))
     assert get_workspace_dir() == str(tmuxp_configdir)
 
 
 @pytest.fixture(scope="function")
 def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Monkeypatch tmuxp plugin fixtures to python path."""
     paths = [
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bwb/",
         "tests/fixtures/pluginsystem/plugins/tmuxp_test_plugin_bs/",
@@ -74,12 +83,14 @@ def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture(scope="function")
 def session_params(session_params: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+    """Terminal-friendly tmuxp session_params for dimensions."""
     session_params.update({"x": 800, "y": 600})
     return session_params
 
 
 @pytest.fixture(scope="function")
 def socket_name(request: pytest.FixtureRequest) -> str:
+    """Random socket name for tmuxp."""
     return "tmuxp_test%s" % next(namer)
 
 
@@ -89,6 +100,7 @@ def add_doctest_fixtures(
     doctest_namespace: t.Dict[str, t.Any],
     tmp_path: pathlib.Path,
 ) -> None:
+    """Harness pytest fixtures to doctests namespace."""
     if isinstance(request._pyfuncitem, DoctestItem) and shutil.which("tmux"):
         doctest_namespace["server"] = request.getfixturevalue("server")
         session: "Session" = request.getfixturevalue("session")

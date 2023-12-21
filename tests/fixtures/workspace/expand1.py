@@ -1,3 +1,4 @@
+"""Examples of expansion of tmuxp configurations from shorthand style."""
 import pathlib
 import typing as t
 
@@ -32,6 +33,7 @@ before_workspace = {
 
 
 def after_workspace() -> t.Dict[str, t.Any]:
+    """After expansion of shorthand style."""
     return {
         "session_name": "sample workspace",
         "start_directory": str(pathlib.Path().home()),

@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp ls command."""
 import contextlib
 import pathlib
 
@@ -11,6 +12,7 @@ def test_ls_cli(
     tmp_path: pathlib.Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """CLI test for tmuxp ls."""
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
 

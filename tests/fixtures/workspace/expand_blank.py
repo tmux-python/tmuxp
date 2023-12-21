@@ -1,3 +1,4 @@
+"""Expected expanded configuration for empty workspace panes."""
 expected = {
     "session_name": "Blank pane test",
     "windows": [

@@ -32,11 +32,9 @@ LOG_LEVELS = {
 def setup_logger(
     logger: t.Optional[logging.Logger] = None, level: str = "INFO"
 ) -> None:
-    """
-    Setup logging for CLI use.
+    """Configure tmuxp's logging for CLI use.
 
-    Tries to do some conditionals to prevent handlers from being added twice.
-    Just to be safe.
+    Can checks for any existing loggers to prevent loading handlers twice.
 
     Parameters
     ----------
@@ -58,6 +56,7 @@ def set_style(
     prefix: str = "",
     suffix: str = "",
 ) -> str:
+    """Stylize terminal logging output."""
     if stylized:
         return prefix + style_before + message + style_after + suffix
 
@@ -65,6 +64,8 @@ def set_style(
 
 
 class LogFormatter(logging.Formatter):
+    """Format logs for tmuxp."""
+
     def template(
         self: logging.Formatter,
         record: logging.LogRecord,
@@ -119,6 +120,7 @@ class LogFormatter(logging.Formatter):
         logging.Formatter.__init__(self, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
+        """Format a log record."""
         try:
             record.message = record.getMessage()
         except Exception as e:
@@ -155,7 +157,6 @@ def debug_log_template(
     str
         Log template.
     """
-
     reset = Style.RESET_ALL
     levelname = (
         LEVEL_COLORS.get(record.levelname, "")

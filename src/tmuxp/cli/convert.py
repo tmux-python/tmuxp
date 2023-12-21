@@ -1,3 +1,4 @@
+"""CLI for ``tmuxp convert`` subcommand."""
 import argparse
 import os
 import pathlib
@@ -16,6 +17,7 @@ if t.TYPE_CHECKING:
 def create_convert_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``convert`` subcommand."""
     workspace_file = parser.add_argument(
         dest="workspace_file",
         type=str,
@@ -40,6 +42,8 @@ def create_convert_subparser(
 
 
 class ConvertUnknownFileType(exc.TmuxpException):
+    """Raise if tmuxp convert encounters an unknown filetype."""
+
     def __init__(self, ext: str, *args: object, **kwargs: object) -> None:
         return super().__init__(
             f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
@@ -51,7 +55,7 @@ def command_convert(
     answer_yes: bool,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Convert a tmuxp config between JSON and YAML."""
+    """Entrypoint for ``tmuxp convert`` convert a tmuxp config between JSON and YAML."""
     workspace_file = find_workspace_file(
         workspace_file, workspace_dir=get_workspace_dir()
     )

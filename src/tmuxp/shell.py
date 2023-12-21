@@ -25,12 +25,16 @@ if t.TYPE_CHECKING:
     ]
 
     class LaunchOptionalImports(TypedDict):
+        """tmuxp shell optional imports."""
+
         server: NotRequired["Server"]
         session: NotRequired["Session"]
         window: NotRequired["Window"]
         pane: NotRequired["Pane"]
 
     class LaunchImports(t.TypedDict):
+        """tmuxp shell launch import mapping."""
+
         libtmux: ModuleType
         Server: t.Type[Server]
         Session: t.Type[Session]
@@ -43,6 +47,7 @@ if t.TYPE_CHECKING:
 
 
 def has_ipython() -> bool:
+    """Return True if ipython is installed."""
     try:
         from IPython import start_ipython  # NOQA F841
     except ImportError:
@@ -55,6 +60,7 @@ def has_ipython() -> bool:
 
 
 def has_ptpython() -> bool:
+    """Return True if ptpython is installed."""
     try:
         from ptpython.repl import embed, run_config  # F841
     except ImportError:
@@ -67,6 +73,7 @@ def has_ptpython() -> bool:
 
 
 def has_ptipython() -> bool:
+    """Return True if ptpython + ipython are both installed."""
     try:
         from ptpython.ipython import embed  # F841
         from ptpython.repl import run_config  # F841
@@ -81,6 +88,7 @@ def has_ptipython() -> bool:
 
 
 def has_bpython() -> bool:
+    """Return True if bpython is installed."""
     try:
         from bpython import embed  # NOQA F841
     except ImportError:
@@ -89,6 +97,7 @@ def has_bpython() -> bool:
 
 
 def detect_best_shell() -> "CLIShellLiteral":
+    """Return the best, most feature-rich shell available."""
     if has_ptipython():
         return "ptipython"
     elif has_ptpython():
@@ -103,6 +112,7 @@ def detect_best_shell() -> "CLIShellLiteral":
 def get_bpython(
     options: "LaunchOptionalImports", extra_args: t.Optional[t.Dict[str, t.Any]] = None
 ) -> t.Callable[[], None]:
+    """Return bpython shell."""
     if extra_args is None:
         extra_args = {}
 
@@ -119,6 +129,7 @@ def get_bpython(
 
 
 def get_ipython_arguments() -> t.List[str]:
+    """Return ipython shell args via ``IPYTHON_ARGUMENTS`` environment variables."""
     ipython_args = "IPYTHON_ARGUMENTS"
     return os.environ.get(ipython_args, "").split()
 
@@ -126,6 +137,7 @@ def get_ipython_arguments() -> t.List[str]:
 def get_ipython(
     options: "LaunchOptionalImports", **extra_args: t.Dict[str, t.Any]
 ) -> t.Any:
+    """Return ipython shell."""
     try:
         from IPython import start_ipython
 
@@ -151,6 +163,7 @@ def get_ipython(
 
 
 def get_ptpython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
+    """Return ptpython shell."""
     try:
         from ptpython.repl import embed, run_config
     except ImportError:
@@ -170,7 +183,7 @@ def get_ptpython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.A
 
 
 def get_ptipython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
-    """Based on django-extensions
+    """Based on django-extensions.
 
     Run renamed to launch, get_imported_objects renamed to get_launch_args
     """
@@ -196,6 +209,7 @@ def get_ptipython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.
 
 
 def get_launch_args(**kwargs: "Unpack[LaunchOptionalImports]") -> "LaunchImports":
+    """Return tmuxp shell launch arguments, counting for overrides."""
     import libtmux
     from libtmux.pane import Pane
     from libtmux.server import Server
@@ -216,6 +230,7 @@ def get_launch_args(**kwargs: "Unpack[LaunchOptionalImports]") -> "LaunchImports
 
 
 def get_code(use_pythonrc: bool, imported_objects: "LaunchImports") -> t.Any:
+    """Launch basic python shell via :mod:`code`."""
     import code
 
     try:
@@ -274,6 +289,7 @@ def launch(
     use_vi_mode: bool = False,
     **kwargs: "Unpack[LaunchOptionalImports]",
 ) -> None:
+    """Launch interactive libtmux shell for tmuxp shell."""
     # Also allowing passing shell='code' to force using code.interact
     imported_objects = get_launch_args(**kwargs)
 

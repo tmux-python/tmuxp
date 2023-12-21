@@ -1,14 +1,15 @@
-"""
-    sphinxcontrib.aafig
-    ~~~~~~~~~~~~~~~~~~~
+"""aafig plugin for sphinx.
 
-    Allow embedded ASCII art to be rendered as nice looking images
-    using the aafigure reStructuredText extension.
+sphinxcontrib.aafig.
+~~~~~~~~~~~~~~~~~~~
 
-    See the README file for details.
+Allow embedded ASCII art to be rendered as nice looking images
+using the aafigure reStructuredText extension.
 
-    :author: Leandro Lucarella <llucax@gmail.com>
-    :license: BOLA, see LICENSE for details
+See the README file for details.
+
+:author: Leandro Lucarella <llucax@gmail.com>
+:license: BOLA, see LICENSE for details
 """
 import logging
 import posixpath
@@ -61,9 +62,7 @@ class AafigError(SphinxError):
 
 
 class AafigDirective(images.Image):  # type:ignore
-    """
-    Directive to insert an ASCII art figure to be rendered by aafigure.
-    """
+    """Directive to insert an ASCII art figure to be rendered by aafigure."""
 
     has_content = True
     required_arguments = 0
@@ -155,10 +154,7 @@ class AafigureNotInstalled(AafigError):
 def render_aafigure(
     app: "Sphinx", text: str, options: t.Dict[str, str]
 ) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
-    """
-    Render an ASCII art figure into the requested format output file.
-    """
-
+    """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:
         raise AafigureNotInstalled()
 

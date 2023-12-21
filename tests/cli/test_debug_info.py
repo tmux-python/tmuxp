@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp debuginfo."""
 import pathlib
 
 import pytest
@@ -10,6 +11,7 @@ def test_debug_info_cli(
     tmp_path: pathlib.Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Basic CLI test for tmuxp debug-info."""
     monkeypatch.setenv("SHELL", "/bin/bash")
 
     cli.cli(["debug-info"])

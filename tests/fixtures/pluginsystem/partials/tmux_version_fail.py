@@ -1,3 +1,4 @@
+"""Fixtures for tmuxp plugins for tmux version exceptions."""
 import typing as t
 
 from .test_plugin_helpers import MyTestTmuxpPlugin
@@ -7,6 +8,8 @@ if t.TYPE_CHECKING:
 
 
 class TmuxVersionFailMinPlugin(MyTestTmuxpPlugin):
+    """Tmuxp plugin that fails when tmux below minimum version constraint."""
+
     def __init__(self) -> None:
         config: "PluginTestConfigSchema" = {
             "plugin_name": "tmux-min-version-fail",
@@ -17,6 +20,8 @@ class TmuxVersionFailMinPlugin(MyTestTmuxpPlugin):
 
 
 class TmuxVersionFailMaxPlugin(MyTestTmuxpPlugin):
+    """Tmuxp plugin that fails when tmux above maximum version constraint."""
+
     def __init__(self) -> None:
         config: "PluginTestConfigSchema" = {
             "plugin_name": "tmux-max-version-fail",
@@ -27,6 +32,8 @@ class TmuxVersionFailMaxPlugin(MyTestTmuxpPlugin):
 
 
 class TmuxVersionFailIncompatiblePlugin(MyTestTmuxpPlugin):
+    """Tmuxp plugin that fails when tmux version constraint is invalid."""
+
     def __init__(self) -> None:
         config: "PluginTestConfigSchema" = {
             "plugin_name": "tmux-incompatible-version-fail",

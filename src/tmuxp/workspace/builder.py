@@ -33,7 +33,6 @@ class WorkspaceBuilder:
 
     Examples
     --------
-
     >>> import yaml
 
     >>> session_config = yaml.load('''
@@ -161,7 +160,6 @@ class WorkspaceBuilder:
         TODO: Initialize :class:`libtmux.Session` from here, in
         ``self.session``.
         """
-
         if plugins is None:
             plugins = []
         if not session_config:
@@ -189,11 +187,13 @@ class WorkspaceBuilder:
 
     @property
     def session(self) -> Session:
+        """Return tmux session using in workspace builder session."""
         if self._session is None:
             raise exc.SessionMissingWorkspaceException()
         return self._session
 
     def session_exists(self, session_name: str) -> bool:
+        """Return true if tmux session already exists."""
         assert session_name is not None
         assert isinstance(session_name, str)
         assert self.server is not None
@@ -222,7 +222,6 @@ class WorkspaceBuilder:
         append : bool
             append windows in current active session
         """
-
         if not session:
             if not self.server:
                 raise exc.TmuxpException(
@@ -559,6 +558,7 @@ class WorkspaceBuilder:
                 window.set_window_option(key, val)
 
     def find_current_attached_session(self) -> Session:
+        """Return current attached session."""
         assert self.server is not None
 
         current_active_pane = get_current_pane(self.server)
@@ -575,4 +575,5 @@ class WorkspaceBuilder:
         )
 
     def first_window_pass(self, i: int, session: Session, append: bool) -> bool:
+        """Return True first window, used when iterating session windows."""
         return len(session.windows) == 1 and i == 1 and not append

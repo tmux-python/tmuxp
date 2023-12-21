@@ -1,3 +1,4 @@
+"""CLI for ``tmuxp shell`` subcommand."""
 import argparse
 import os
 import pathlib
@@ -12,8 +13,7 @@ from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 
 
 def get_tmuxinator_dir() -> pathlib.Path:
-    """
-    Return tmuxinator configuration directory.
+    """Return tmuxinator configuration directory.
 
     Checks for ``TMUXINATOR_CONFIG`` environmental variable.
 
@@ -33,8 +33,7 @@ def get_tmuxinator_dir() -> pathlib.Path:
 
 
 def get_teamocil_dir() -> pathlib.Path:
-    """
-    Return teamocil configuration directory.
+    """Return teamocil configuration directory.
 
     Returns
     -------
@@ -66,6 +65,7 @@ def command_import(
 def create_import_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``import`` subparser."""
     importsubparser = parser.add_subparsers(
         title="commands", description="valid commands", help="additional help"
     )
@@ -117,7 +117,10 @@ def create_import_subparser(
 
 
 class ImportConfigFn(t.Protocol):
+    """Typing for import configuration callback function."""
+
     def __call__(self, workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+        """Execute tmuxp import function."""
         ...
 
 
@@ -126,6 +129,7 @@ def import_config(
     importfunc: ImportConfigFn,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
+    """Import a configuration from a workspace_file."""
     existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
     cfg_reader = ConfigReader(importfunc(existing_workspace_file))
 
@@ -175,8 +179,11 @@ def command_import_tmuxinator(
     workspace_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Convert a tmuxinator config from workspace_file to tmuxp format and import
-    it into tmuxp."""
+    """Entrypoint for ``tmuxp import tmuxinator`` subcommand.
+
+    Converts a tmuxinator config from workspace_file to tmuxp format and import
+    it into tmuxp.
+    """
     workspace_file = find_workspace_file(
         workspace_file, workspace_dir=get_tmuxinator_dir()
     )
@@ -187,8 +194,11 @@ def command_import_teamocil(
     workspace_file: str,
     parser: t.Optional[argparse.ArgumentParser] = None,
 ) -> None:
-    """Convert a teamocil config from workspace_file to tmuxp format and import
-    it into tmuxp."""
+    """Entrypoint for ``tmuxp import teamocil`` subcommand.
+
+    Convert a teamocil config from workspace_file to tmuxp format and import
+    it into tmuxp.
+    """
     workspace_file = find_workspace_file(
         workspace_file, workspace_dir=get_teamocil_dir()
     )

@@ -1,3 +1,4 @@
+"""Test workspace freezing functionality for tmuxp."""
 import contextlib
 import io
 import pathlib
@@ -32,6 +33,7 @@ def test_freeze(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Parametrized test for freezing a tmux session to a tmuxp config file."""
     monkeypatch.setenv("HOME", str(tmp_path))
     exists_yaml = tmp_path / "exists.yaml"
     exists_yaml.touch()
@@ -83,6 +85,7 @@ def test_freeze_overwrite(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test overwrite prompt when freezing a tmuxp configuration file."""
     monkeypatch.setenv("HOME", str(tmp_path))
     exists_yaml = tmp_path / "exists.yaml"
     exists_yaml.touch()

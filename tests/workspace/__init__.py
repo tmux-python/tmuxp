@@ -1,0 +1,1 @@
+"""Workspace tests for tmuxp."""

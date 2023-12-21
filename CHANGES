@@ -22,6 +22,11 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 ### CI
 
 - Move CodeQL from advanced configuration file to GitHub's default
+- Add pydocstyle rule to ruff (#891)
+
+### Documentation
+
+- Add docstrings to functions, methods, classes, and packages (#891)
 
 ## tmuxp 1.32.1 (2023-11-23)
 

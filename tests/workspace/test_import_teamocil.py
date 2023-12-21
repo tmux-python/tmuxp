@@ -39,6 +39,7 @@ def test_config_to_dict(
     teamocil_dict: t.Dict[str, t.Any],
     tmuxp_dict: t.Dict[str, t.Any],
 ) -> None:
+    """Test exporting teamocil configuration to dictionary."""
     yaml_to_dict = config_reader.ConfigReader._load(
         format="yaml", content=teamocil_yaml
     )
@@ -59,7 +60,8 @@ def multisession_config() -> (
     """Return loaded multisession teamocil config as a dictionary.
 
     Also prevents re-running assertion the loads the yaml, since ordering of
-    deep list items like panes will be inconsistent."""
+    deep list items like panes will be inconsistent.
+    """
     teamocil_yaml_file = fixtures.layouts.teamocil_yaml_file
     test_config = config_reader.ConfigReader._from_file(teamocil_yaml_file)
     teamocil_dict: t.Dict[str, t.Any] = fixtures.layouts.teamocil_dict
@@ -88,6 +90,7 @@ def test_multisession_config(
     expected: t.Dict[str, t.Any],
     multisession_config: t.Dict[str, t.Any],
 ) -> None:
+    """Test importing teamocil multisession configuration."""
     # teamocil can fit multiple sessions in a config
     assert importers.import_teamocil(multisession_config[session_name]) == expected
 

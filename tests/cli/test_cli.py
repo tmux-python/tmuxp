@@ -1,3 +1,4 @@
+"""CLI tests for tmuxp's core shell functionality."""
 import argparse
 import contextlib
 import pathlib
@@ -24,7 +25,6 @@ if t.TYPE_CHECKING:
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
     """cli.startup() creates config dir if not exists."""
-
     cli.startup(tmp_path)
     assert tmp_path.exists()
 
@@ -42,6 +42,7 @@ def test_help(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test tmuxp --help / -h."""
     # In scrunched terminals, prevent width causing differentiation in result.out.
     monkeypatch.setenv("COLUMNS", "100")
     monkeypatch.setenv("LINES", "100")
@@ -55,8 +56,10 @@ def test_help(
 
 
 def test_resolve_behavior(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test resolution of file paths."""
     expect = tmp_path
     monkeypatch.chdir(tmp_path)
     assert pathlib.Path("../").resolve() == expect.parent
@@ -65,7 +68,10 @@ def test_resolve_behavior(
     assert pathlib.Path(expect).resolve() == expect
 
 
-def test_get_tmuxinator_dir(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_get_tmuxinator_dir(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test get_tmuxinator_dir() helper function."""
     assert get_tmuxinator_dir() == pathlib.Path("~/.tmuxinator").expanduser()
 
     monkeypatch.setenv("HOME", "/moo")
@@ -74,7 +80,10 @@ def test_get_tmuxinator_dir(monkeypatch: pytest.MonkeyPatch) -> None:
     assert get_tmuxinator_dir() == pathlib.Path("~/.tmuxinator/").expanduser()
 
 
-def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_get_teamocil_dir(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test get_teamocil_dir() helper function."""
     assert get_teamocil_dir() == pathlib.Path("~/.teamocil/").expanduser()
 
     monkeypatch.setenv("HOME", "/moo")
@@ -83,11 +92,12 @@ def test_get_teamocil_dir(monkeypatch: pytest.MonkeyPatch) -> None:
     assert get_teamocil_dir() == pathlib.Path("~/.teamocil/").expanduser()
 
 
-def test_pass_config_dir_ClickPath(
+def test_pass_config_dir_argparse(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test workspace configurations can be detected via directory."""
     configdir = tmp_path / "myconfigdir"
     configdir.mkdir()
     user_config_name = "myconfig"
@@ -119,8 +129,10 @@ def test_pass_config_dir_ClickPath(
 
 
 def test_reattach_plugins(
-    monkeypatch_plugin_test_packages: None, server: "Server"
+    monkeypatch_plugin_test_packages: None,
+    server: "Server",
 ) -> None:
+    """Test reattach plugin hook."""
     config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
     session_configig = ConfigReader._load(format="yaml", content=config_plugins)

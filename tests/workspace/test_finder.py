@@ -1,3 +1,4 @@
+"""Test config file searching for tmuxp."""
 import argparse
 import pathlib
 import typing as t
@@ -20,7 +21,6 @@ if t.TYPE_CHECKING:
 
 def test_in_dir_from_config_dir(tmp_path: pathlib.Path) -> None:
     """config.in_dir() finds configs config dir."""
-
     cli.startup(tmp_path)
     yaml_config = tmp_path / "myconfig.yaml"
     yaml_config.touch()
@@ -33,7 +33,6 @@ def test_in_dir_from_config_dir(tmp_path: pathlib.Path) -> None:
 
 def test_ignore_non_configs_from_current_dir(tmp_path: pathlib.Path) -> None:
     """cli.in_dir() ignore non-config from config dir."""
-
     cli.startup(tmp_path)
 
     junk_config = tmp_path / "myconfig.psd"
@@ -48,7 +47,6 @@ def test_get_configs_cwd(
     tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """config.in_cwd() find config in shell current working directory."""
-
     confdir = tmp_path / "tmuxpconf2"
     confdir.mkdir()
 
@@ -78,12 +76,14 @@ def test_get_configs_cwd(
     ],
 )
 def test_is_pure_name(path: str, expect: bool) -> None:
+    """Test is_pure_name() is truthy when file, not directory or config alias."""
     assert is_pure_name(path) == expect
 
 
 def test_tmuxp_configdir_env_var(
     tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Tests get_workspace_dir() when TMUXP_CONFIGDIR is set."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
 
     assert get_workspace_dir() == str(tmp_path)
@@ -92,6 +92,7 @@ def test_tmuxp_configdir_env_var(
 def test_tmuxp_configdir_xdg_config_dir(
     tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Test get_workspace_dir() when XDG_CONFIG_HOME is set."""
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
     tmux_dir = tmp_path / "tmuxp"
     tmux_dir.mkdir()
@@ -101,6 +102,7 @@ def test_tmuxp_configdir_xdg_config_dir(
 
 @pytest.fixture
 def homedir(tmp_path: pathlib.Path) -> pathlib.Path:
+    """Fixture to ensure and return a home directory."""
     home = tmp_path / "home"
     home.mkdir()
     return home
@@ -108,6 +110,7 @@ def homedir(tmp_path: pathlib.Path) -> pathlib.Path:
 
 @pytest.fixture
 def configdir(homedir: pathlib.Path) -> pathlib.Path:
+    """Fixture to ensure user directory for tmuxp and return it, via homedir fixture."""
     conf = homedir / ".tmuxp"
     conf.mkdir()
     return conf
@@ -115,6 +118,7 @@ def configdir(homedir: pathlib.Path) -> pathlib.Path:
 
 @pytest.fixture
 def projectdir(homedir: pathlib.Path) -> pathlib.Path:
+    """Fixture to ensure and return an example project dir."""
     proj = homedir / "work" / "project"
     proj.mkdir(parents=True)
     return proj
@@ -127,6 +131,7 @@ def test_resolve_dot(
     projectdir: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Test find_workspace_file() resolves dots as relative / current directory."""
     monkeypatch.setenv("HOME", str(homedir))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(homedir / ".config"))
 
@@ -242,6 +247,7 @@ def test_find_workspace_file_arg(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
+    """Test find_workspace_file() via file path."""
     parser = argparse.ArgumentParser()
     parser.add_argument("workspace_file", type=str)
 

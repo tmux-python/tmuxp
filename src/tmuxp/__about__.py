@@ -1,3 +1,4 @@
+"""Metadata for tmuxp package."""
 __title__ = "tmuxp"
 __package_name__ = "tmuxp"
 __version__ = "1.32.1"
