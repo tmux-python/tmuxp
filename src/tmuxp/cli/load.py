@@ -1,9 +1,4 @@
-"""Command line tool for managing tmuxp workspaces.
-
-tmuxp.cli.load
-~~~~~~~~~~~~~~
-
-"""
+"""CLI for ``tmuxp load`` subcommand."""
 import argparse
 import importlib
 import logging
@@ -31,11 +26,15 @@ if t.TYPE_CHECKING:
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
 
     class OptionOverrides(TypedDict):
+        """Optional argument overrides for tmuxp load."""
+
         detached: NotRequired[bool]
         new_session_name: NotRequired[t.Optional[str]]
 
 
 class CLILoadNamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp load command."""
+
     workspace_files: t.List[str]
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
@@ -251,8 +250,7 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
 
 
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
-    """
-    Runs after before_script.
+    """Execute hooks for plugins running after ``before_script``.
 
     Parameters
     ----------
@@ -276,8 +274,7 @@ def load_workspace(
     answer_yes: bool = False,
     append: bool = False,
 ) -> t.Optional[Session]:
-    """
-    Load a tmux "workspace" session via tmuxp file.
+    """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
     Parameters
     ----------
@@ -486,6 +483,7 @@ def load_workspace(
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``load`` subcommand."""
     workspace_files = parser.add_argument(
         "workspace_files",
         nargs="+",
