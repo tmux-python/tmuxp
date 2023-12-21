@@ -25,6 +25,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   Improve styling via pydocstyle.
 - `config_reader`: Move to `tmuxp._internal` (#897)
+- `_types`: Move to `tmuxp._internal` (#900)
 
 ## tmuxp 1.33.0 (2023-12-21)
 
