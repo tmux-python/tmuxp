@@ -1,6 +1,6 @@
 # tmuxp
 
-A session manager for tmux. Built on [libtmux](https://github.com/tmux-python/libtmux).
+Session manager for tmux, which allows users to save and load tmux sessions through simple configuration files. Powered by [libtmux](https://github.com/tmux-python/libtmux).
 
 [![Python Package](https://img.shields.io/pypi/v/tmuxp.svg)](https://pypi.org/project/tmuxp/)
 [![Docs](https://github.com/tmux-python/tmuxp/workflows/docs/badge.svg)](https://tmuxp.git-pull.com/)

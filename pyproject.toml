@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tmuxp"
 version = "1.34.0"
-description = "tmux session manager"
+description = "Session manager for tmux, which allows users to save and load tmux sessions through simple configuration files."
 license = "MIT"
 authors = ["Tony Narlock <tony@git-pull.com>"]
 classifiers = [
