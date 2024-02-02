@@ -206,9 +206,9 @@ def trickle(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 
-    session_start_directory = workspace_dict.get("start_directory", None)
+    session_start_directory = workspace_dict.get("start_directory")
 
-    suppress_history = workspace_dict.get("suppress_history", None)
+    suppress_history = workspace_dict.get("suppress_history")
 
     for window_dict in workspace_dict["windows"]:
         # Prepend start_directory to relative window commands

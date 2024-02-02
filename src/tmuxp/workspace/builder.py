@@ -299,10 +299,10 @@ class WorkspaceBuilder:
                 if "layout" in window_config:
                     window.select_layout(window_config["layout"])
 
-                if "focus" in pane_config and pane_config["focus"]:
+                if pane_config.get("focus"):
                     focus_pane = pane
 
-            if "focus" in window_config and window_config["focus"]:
+            if window_config.get("focus"):
                 focus = window
 
             self.config_after_window(window, window_config)
@@ -406,7 +406,7 @@ class WorkspaceBuilder:
                 for key, val in window_config["options"].items():
                     window.set_window_option(key, val)
 
-            if "focus" in window_config and window_config["focus"]:
+            if window_config.get("focus"):
                 window.select_window()
 
             yield window, window_config
@@ -524,7 +524,7 @@ class WorkspaceBuilder:
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
-            if "focus" in pane_config and pane_config["focus"]:
+            if pane_config.get("focus"):
                 assert pane.pane_id is not None
                 window.select_pane(pane.pane_id)
 
