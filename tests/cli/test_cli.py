@@ -135,13 +135,13 @@ def test_reattach_plugins(
     """Test reattach plugin hook."""
     config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
-    session_configig = ConfigReader._load(format="yaml", content=config_plugins)
-    session_configig = loader.expand(session_configig)
+    session_config = ConfigReader._load(format="yaml", content=config_plugins)
+    session_config = loader.expand(session_config)
 
     # open it detached
     builder = WorkspaceBuilder(
-        session_config=session_configig,
-        plugins=load_plugins(session_configig),
+        session_config=session_config,
+        plugins=load_plugins(session_config),
         server=server,
     )
     builder.build()
