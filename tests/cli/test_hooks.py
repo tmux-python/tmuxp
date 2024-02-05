@@ -1,3 +1,4 @@
+"""Tests for tmuxp's tmux(1) hooks."""
 import typing as t
 
 from tmuxp.cli.load import set_layout_hook
