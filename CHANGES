@@ -25,6 +25,25 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
   Doc string + linting stringency updates.
 
+### Development
+
+- Strengthen linting (#907)
+
+  - Add flake8-commas (COM)
+
+    - https://docs.astral.sh/ruff/rules/#flake8-commas-com
+    - https://pypi.org/project/flake8-commas/
+
+  - Add flake8-builtins (A)
+
+    - https://docs.astral.sh/ruff/rules/#flake8-builtins-a
+    - https://pypi.org/project/flake8-builtins/
+
+  - Add flake8-errmsg (EM)
+
+    - https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+    - https://pypi.org/project/flake8-errmsg/
+
 ## tmuxp 1.34.0 (2023-12-21)
 
 _Maintenance only, no bug fixes or new features_
