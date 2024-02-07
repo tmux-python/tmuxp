@@ -193,13 +193,13 @@ def command_freeze(
 
     if workspace_format == "yaml":
         workspace = configparser.dump(
-            format="yaml",
+            fmt="yaml",
             indent=2,
             default_flow_style=False,
             safe=True,
         )
     elif workspace_format == "json":
-        workspace = configparser.dump(format="json", indent=2)
+        workspace = configparser.dump(fmt="json", indent=2)
 
     if args.answer_yes or prompt_yes_no("Save to %s?" % dest):
         destdir = os.path.dirname(dest)

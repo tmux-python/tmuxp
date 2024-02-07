@@ -78,7 +78,7 @@ def command_convert(
     newfile = workspace_file.parent / (str(workspace_file.stem) + f".{to_filetype}")
 
     new_workspace = configparser.dump(
-        format=to_filetype,
+        fmt=to_filetype,
         indent=2,
         **{"default_flow_style": False} if to_filetype == "yaml" else {},
     )

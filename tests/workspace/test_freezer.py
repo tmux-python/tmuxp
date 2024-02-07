@@ -33,14 +33,14 @@ def test_freeze_config(session: Session) -> None:
     validation.validate_schema(new_config)
 
     # These should dump without an error
-    ConfigReader._dump(format="json", content=new_config)
-    ConfigReader._dump(format="yaml", content=new_config)
+    ConfigReader._dump(fmt="json", content=new_config)
+    ConfigReader._dump(fmt="yaml", content=new_config)
 
     # Inline configs should also dump without an error
     compact_config = freezer.inline(new_config)
 
-    ConfigReader._dump(format="json", content=compact_config)
-    ConfigReader._dump(format="yaml", content=compact_config)
+    ConfigReader._dump(fmt="json", content=compact_config)
+    ConfigReader._dump(fmt="yaml", content=compact_config)
 
 
 """Tests for :meth:`freezer.inline()`."""

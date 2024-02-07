@@ -571,7 +571,7 @@ def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
     )
     test_config = yaml_workspace.format(TEST_DIR=test_dir)
 
-    workspace = ConfigReader._load(format="yaml", content=test_config)
+    workspace = ConfigReader._load(fmt="yaml", content=test_config)
     workspace = loader.expand(workspace)
     workspace = loader.trickle(workspace)
 
@@ -620,7 +620,7 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
     config_dir.mkdir()
 
     test_config = yaml_workspace.format(TEST_DIR=test_dir)
-    workspace = ConfigReader._load(format="yaml", content=test_config)
+    workspace = ConfigReader._load(fmt="yaml", content=test_config)
     # the second argument of os.getcwd() mimics the behavior
     # the CLI loader will do, but it passes in the workspace file's location.
     workspace = loader.expand(workspace, config_dir)
@@ -692,7 +692,7 @@ def test_pane_order(session: Session) -> None:
         str(pathlib.Path().home().resolve()),
     ]
 
-    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_workspace)
     workspace = loader.expand(workspace)
     workspace = loader.trickle(workspace)
 
@@ -761,7 +761,7 @@ def test_before_script_throw_error_if_retcode_error(
         script_failed=FIXTURE_PATH / "script_failed.sh",
     )
 
-    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_workspace)
     workspace = loader.expand(workspace)
     workspace = loader.trickle(workspace)
 
@@ -788,7 +788,7 @@ def test_before_script_throw_error_if_file_not_exists(
     yaml_workspace = config_script_not_exists.format(
         script_not_exists=FIXTURE_PATH / "script_not_exists.sh",
     )
-    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_workspace)
     workspace = loader.expand(workspace)
     workspace = loader.trickle(workspace)
 
@@ -818,7 +818,7 @@ def test_before_script_true_if_test_passes(
     assert script_complete_sh.exists()
 
     yaml_workspace = config_script_completes.format(script_complete=script_complete_sh)
-    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_workspace)
     workspace = loader.expand(workspace)
     workspace = loader.trickle(workspace)
 
@@ -840,7 +840,7 @@ def test_before_script_true_if_test_passes_with_args(
 
     yaml_workspace = config_script_completes.format(script_complete=script_complete_sh)
 
-    workspace = ConfigReader._load(format="yaml", content=yaml_workspace)
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_workspace)
     workspace = loader.expand(workspace)
     workspace = loader.trickle(workspace)
 

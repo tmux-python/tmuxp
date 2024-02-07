@@ -35,7 +35,7 @@ def test_config_to_dict(
     tmuxp_dict: t.Dict[str, t.Any],
 ) -> None:
     """Test exporting tmuxinator configuration to dictionary."""
-    yaml_to_dict = ConfigReader._load(format="yaml", content=tmuxinator_yaml)
+    yaml_to_dict = ConfigReader._load(fmt="yaml", content=tmuxinator_yaml)
     assert yaml_to_dict == tmuxinator_dict
 
     assert importers.import_tmuxinator(tmuxinator_dict) == tmuxp_dict

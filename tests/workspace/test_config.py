@@ -47,11 +47,11 @@ def test_workspace_expand1(config_fixture: "WorkspaceTestData") -> None:
 def test_workspace_expand2(config_fixture: "WorkspaceTestData") -> None:
     """Expand shell commands from string to list."""
     unexpanded_dict = ConfigReader._load(
-        format="yaml",
+        fmt="yaml",
         content=config_fixture.expand2.unexpanded_yaml(),
     )
     expanded_dict = ConfigReader._load(
-        format="yaml",
+        fmt="yaml",
         content=config_fixture.expand2.expanded_yaml(),
     )
     assert loader.expand(unexpanded_dict) == expanded_dict
@@ -141,7 +141,7 @@ def test_shell_command_before(config_fixture: "WorkspaceTestData") -> None:
 def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
     """Verify shell_command before_session is in session scope."""
     sconfig = ConfigReader._load(
-        format="yaml",
+        fmt="yaml",
         content=config_fixture.shell_command_before_session.before,
     )
 
@@ -149,7 +149,7 @@ def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
 
     assert loader.expand(sconfig) == sconfig
     assert loader.expand(loader.trickle(sconfig)) == ConfigReader._load(
-        format="yaml",
+        fmt="yaml",
         content=config_fixture.shell_command_before_session.expected,
     )
 
@@ -171,7 +171,7 @@ def test_trickle_window_with_no_pane_workspace() -> None:
         - ls -l
     - window_name: test_no_panes
     """
-    sconfig = ConfigReader._load(format="yaml", content=test_yaml)
+    sconfig = ConfigReader._load(fmt="yaml", content=test_yaml)
     validation.validate_schema(sconfig)
 
     assert loader.expand(loader.trickle(sconfig))["windows"][1]["panes"][0] == {
@@ -226,7 +226,7 @@ def test_no_session_name() -> None:
       - htop
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
+    sconfig = ConfigReader._load(fmt="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
@@ -239,7 +239,7 @@ def test_no_windows() -> None:
     session_name: test session
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
+    sconfig = ConfigReader._load(fmt="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
@@ -262,7 +262,7 @@ def test_no_window_name() -> None:
       - htop
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
+    sconfig = ConfigReader._load(fmt="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
@@ -295,7 +295,7 @@ def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
       - htop
     """.format(TEST_VAR="${%s}" % env_key)
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
+    sconfig = ConfigReader._load(fmt="yaml", content=yaml_workspace)
 
     monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = loader.expand(sconfig)
@@ -324,7 +324,7 @@ def test_validate_plugins() -> None:
       start_directory: /var/log
     """
 
-    sconfig = ConfigReader._load(format="yaml", content=yaml_workspace)
+    sconfig = ConfigReader._load(fmt="yaml", content=yaml_workspace)
 
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)

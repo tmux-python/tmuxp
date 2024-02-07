@@ -56,8 +56,8 @@ def get_basename(
     if "format" in options:
         del options["format"]
     hashkey = text + str(options)
-    id = sha(hashkey.encode("utf-8")).hexdigest()
-    return f"{prefix}-{id}"
+    _id = sha(hashkey.encode("utf-8")).hexdigest()
+    return f"{prefix}-{_id}"
 
 
 class AafigError(SphinxError):
@@ -118,15 +118,15 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             continue
         options = img.aafig["options"]
         text = img.aafig["text"]
-        format = app.builder.format
+        _format = app.builder.format
         merge_dict(options, app.builder.config.aafig_default_options)
-        if format in format_map:
-            options["format"] = format_map[format]
+        if _format in format_map:
+            options["format"] = format_map[_format]
         else:
             logger.warn(
                 'unsupported builder format "%s", please '
                 "add a custom entry in aafig_format config "
-                "option for this builder" % format,
+                "option for this builder" % _format,
             )
             img.replace_self(nodes.literal_block(text, text))
             continue
@@ -134,7 +134,7 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             img.replace_self(nodes.literal_block(text, text))
             continue
         try:
-            fname, outfn, id, extra = render_aafigure(app, text, options)
+            fname, outfn, _id, extra = render_aafigure(app, text, options)
         except AafigError as exc:
             logger.warn("aafigure error: " + str(exc))
             img.replace_self(nodes.literal_block(text, text))
