@@ -28,13 +28,14 @@ logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
-@pytest.mark.skipif(not USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
-def zshrc(user_path: pathlib.Path) -> pathlib.Path:
+def zshrc(user_path: pathlib.Path) -> t.Optional[pathlib.Path]:
     """Quiets ZSH default message.
 
     Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.
     """
+    if not USING_ZSH:
+        return None
     p = user_path / ".zshrc"
     p.touch()
     return p
