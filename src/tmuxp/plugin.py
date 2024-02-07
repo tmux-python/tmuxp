@@ -187,14 +187,17 @@ class TmuxpPlugin:
             try:
                 assert self._pass_version_check(**constraints)
             except AssertionError as e:
-                raise TmuxpPluginException(
+                msg = (
                     "Incompatible {dep} version: {version}\n{plugin_name} "
                     "requirements:\nmin: {vmin} | max: {vmax} | "
                     "incompatible: {incompatible}\n".format(
                         dep=dep,
                         plugin_name=self.plugin_name,
                         **constraints,
-                    ),
+                    )
+                )
+                raise TmuxpPluginException(
+                    msg,
                 ) from e
 
     def _pass_version_check(

@@ -47,7 +47,8 @@ class ConfigReader:
         elif format == "json":
             return t.cast(t.Dict[str, t.Any], json.loads(content))
         else:
-            raise NotImplementedError(f"{format} not supported in configuration")
+            msg = f"{format} not supported in configuration"
+            raise NotImplementedError(msg)
 
     @classmethod
     def load(cls, format: "FormatLiteral", content: str) -> "ConfigReader":
@@ -110,7 +111,8 @@ class ConfigReader:
         elif path.suffix == ".json":
             format = "json"
         else:
-            raise NotImplementedError(f"{path.suffix} not supported in {path}")
+            msg = f"{path.suffix} not supported in {path}"
+            raise NotImplementedError(msg)
 
         return cls._load(
             format=format,
@@ -185,7 +187,8 @@ class ConfigReader:
                 indent=2,
             )
         else:
-            raise NotImplementedError(f"{format} not supported in config")
+            msg = f"{format} not supported in config"
+            raise NotImplementedError(msg)
 
     def dump(self, format: "FormatLiteral", indent: int = 2, **kwargs: t.Any) -> str:
         r"""Dump via ConfigReader instance.
