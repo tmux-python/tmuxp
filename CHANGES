@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+_Maintenance only, no bug fixes or new features_
+
+### Breaking changes
+
+- libtmux: 0.26.0 -> 0.27.0 (#908)
+
+  QueryList generic typing improvements.
+
 ## tmuxp 1.35.0 (2024-02-07)
 
 _Maintenance only, no bug fixes or new features_
