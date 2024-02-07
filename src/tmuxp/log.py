@@ -25,7 +25,8 @@ LOG_LEVELS = {
 
 
 def setup_logger(
-    logger: t.Optional[logging.Logger] = None, level: str = "INFO",
+    logger: t.Optional[logging.Logger] = None,
+    level: str = "INFO",
 ) -> None:
     """Configure tmuxp's logging for CLI use.
 

@@ -34,7 +34,14 @@ if t.TYPE_CHECKING:
 
     CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     CLISubparserName: TypeAlias = t.Literal[
-        "ls", "load", "freeze", "convert", "edit", "import", "shell", "debug-info",
+        "ls",
+        "load",
+        "freeze",
+        "convert",
+        "edit",
+        "import",
+        "shell",
+        "debug-info",
     ]
     CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
 
@@ -60,21 +67,25 @@ def create_parser() -> argparse.ArgumentParser:
     load_parser = subparsers.add_parser("load", help="load tmuxp workspaces")
     create_load_subparser(load_parser)
     shell_parser = subparsers.add_parser(
-        "shell", help="launch python shell for tmux server, session, window and pane",
+        "shell",
+        help="launch python shell for tmux server, session, window and pane",
     )
     create_shell_subparser(shell_parser)
     import_parser = subparsers.add_parser(
-        "import", help="import workspaces from teamocil and tmuxinator.",
+        "import",
+        help="import workspaces from teamocil and tmuxinator.",
     )
     create_import_subparser(import_parser)
 
     convert_parser = subparsers.add_parser(
-        "convert", help="convert workspace files between yaml and json.",
+        "convert",
+        help="convert workspace files between yaml and json.",
     )
     create_convert_subparser(convert_parser)
 
     debug_info_parser = subparsers.add_parser(
-        "debug-info", help="print out all diagnostic info",
+        "debug-info",
+        help="print out all diagnostic info",
     )
     create_debug_info_subparser(debug_info_parser)
 
@@ -85,7 +96,8 @@ def create_parser() -> argparse.ArgumentParser:
     create_edit_subparser(edit_parser)
 
     freeze_parser = subparsers.add_parser(
-        "freeze", help="freeze a live tmux session to a tmuxp workspace file",
+        "freeze",
+        help="freeze a live tmux session to a tmuxp workspace file",
     )
     create_freeze_subparser(freeze_parser)
 

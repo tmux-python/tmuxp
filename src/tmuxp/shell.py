@@ -16,7 +16,13 @@ if t.TYPE_CHECKING:
     from typing_extensions import NotRequired, TypeAlias, TypedDict, Unpack
 
     CLIShellLiteral: TypeAlias = t.Literal[
-        "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython",
+        "best",
+        "pdb",
+        "code",
+        "ptipython",
+        "ptpython",
+        "ipython",
+        "bpython",
     ]
 
     class LaunchOptionalImports(TypedDict):
@@ -105,7 +111,8 @@ def detect_best_shell() -> "CLIShellLiteral":
 
 
 def get_bpython(
-    options: "LaunchOptionalImports", extra_args: t.Optional[t.Dict[str, t.Any]] = None,
+    options: "LaunchOptionalImports",
+    extra_args: t.Optional[t.Dict[str, t.Any]] = None,
 ) -> t.Callable[[], None]:
     """Return bpython shell."""
     if extra_args is None:
@@ -130,7 +137,8 @@ def get_ipython_arguments() -> t.List[str]:
 
 
 def get_ipython(
-    options: "LaunchOptionalImports", **extra_args: t.Dict[str, t.Any],
+    options: "LaunchOptionalImports",
+    **extra_args: t.Dict[str, t.Any],
 ) -> t.Any:
     """Return ipython shell."""
     try:

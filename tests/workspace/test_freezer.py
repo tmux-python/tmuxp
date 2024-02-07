@@ -86,7 +86,8 @@ def test_inline_workspace() -> None:
 
 
 def test_export_yaml(
-    tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData",
+    tmp_path: pathlib.Path,
+    config_fixture: "WorkspaceTestData",
 ) -> None:
     """Test exporting a frozen tmux session to YAML."""
     yaml_workspace_file = tmp_path / "config.yaml"

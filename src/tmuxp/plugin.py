@@ -85,7 +85,8 @@ def validate_plugin_config(config: "PluginConfigSchema") -> "TypeGuard[Config]":
 
 
 def setup_plugin_config(
-    config: "PluginConfigSchema", default_config: "Config" = DEFAULT_CONFIG,
+    config: "PluginConfigSchema",
+    default_config: "Config" = DEFAULT_CONFIG,
 ) -> "Config":
     """Initialize tmuxp plugin configuration."""
     new_config = config.copy()
@@ -190,7 +191,9 @@ class TmuxpPlugin:
                     "Incompatible {dep} version: {version}\n{plugin_name} "
                     "requirements:\nmin: {vmin} | max: {vmax} | "
                     "incompatible: {incompatible}\n".format(
-                        dep=dep, plugin_name=self.plugin_name, **constraints,
+                        dep=dep,
+                        plugin_name=self.plugin_name,
+                        **constraints,
                     ),
                 ) from e
 

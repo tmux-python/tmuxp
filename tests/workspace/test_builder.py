@@ -95,7 +95,8 @@ def test_focus_pane_index(session: Session) -> None:
     assert session.attached_window.name == "focused window"
 
     _pane_base_index = session.attached_window.show_window_option(
-        "pane-base-index", g=True,
+        "pane-base-index",
+        g=True,
     )
     assert isinstance(_pane_base_index, int)
     pane_base_index = int(_pane_base_index)
@@ -352,7 +353,8 @@ def test_window_options_after(
 
     for pane in session.attached_window.panes:
         assert assert_last_line(
-            pane, "moo",
+            pane,
+            "moo",
         ), "Synchronized command did not execute properly"
 
 
@@ -516,7 +518,9 @@ def test_automatic_rename_option(
         )
 
     assert retry_until(
-        check_window_name_match, 4, interval=0.05,
+        check_window_name_match,
+        4,
+        interval=0.05,
     ), f"Window name {w.name} should be {portable_command}"
 
     w.select_pane("-D")
@@ -648,7 +652,8 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
 
 
 @pytest.mark.skipif(
-    has_lt_version("3.2a"), reason="needs format introduced in tmux >= 3.2a",
+    has_lt_version("3.2a"),
+    reason="needs format introduced in tmux >= 3.2a",
 )
 def test_start_directory_sets_session_path(server: Server) -> None:
     """Test start_directory setting path in session_path."""
@@ -856,7 +861,9 @@ def test_plugin_system_before_workspace_builder(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(
-        session_config=workspace, plugins=load_plugins(workspace), server=session.server,
+        session_config=workspace,
+        plugins=load_plugins(workspace),
+        server=session.server,
     )
     assert len(builder.plugins) > 0
 
@@ -877,7 +884,9 @@ def test_plugin_system_on_window_create(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(
-        session_config=workspace, plugins=load_plugins(workspace), server=session.server,
+        session_config=workspace,
+        plugins=load_plugins(workspace),
+        server=session.server,
     )
     assert len(builder.plugins) > 0
 
@@ -898,7 +907,9 @@ def test_plugin_system_after_window_finished(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(
-        session_config=workspace, plugins=load_plugins(workspace), server=session.server,
+        session_config=workspace,
+        plugins=load_plugins(workspace),
+        server=session.server,
     )
     assert len(builder.plugins) > 0
 
@@ -920,7 +931,9 @@ def test_plugin_system_on_window_create_multiple_windows(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(
-        session_config=workspace, plugins=load_plugins(workspace), server=session.server,
+        session_config=workspace,
+        plugins=load_plugins(workspace),
+        server=session.server,
     )
     assert len(builder.plugins) > 0
 
@@ -944,7 +957,9 @@ def test_plugin_system_after_window_finished_multiple_windows(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(
-        session_config=workspace, plugins=load_plugins(workspace), server=session.server,
+        session_config=workspace,
+        plugins=load_plugins(workspace),
+        server=session.server,
     )
     assert len(builder.plugins) > 0
 
@@ -968,7 +983,9 @@ def test_plugin_system_multiple_plugins(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(
-        session_config=workspace, plugins=load_plugins(workspace), server=session.server,
+        session_config=workspace,
+        plugins=load_plugins(workspace),
+        server=session.server,
     )
     assert len(builder.plugins) > 0
 
@@ -1230,7 +1247,8 @@ def test_load_workspace_enter(
             return output not in captured_pane
 
     assert retry_until(
-        fn, 1,
+        fn,
+        1,
     ), f'Should{" " if should_see else "not "} output in captured pane'
 
 
@@ -1394,7 +1412,8 @@ def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) ->
 
 
 @pytest.mark.skipif(
-    has_lt_version("2.9"), reason="needs option introduced in tmux >= 2.9",
+    has_lt_version("2.9"),
+    reason="needs option introduced in tmux >= 2.9",
 )
 def test_layout_main_horizontal(session: Session) -> None:
     """Test that tmux's main-horizontal layout is used when specified."""

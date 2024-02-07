@@ -41,7 +41,8 @@ def test_config_to_dict(
 ) -> None:
     """Test exporting teamocil configuration to dictionary."""
     yaml_to_dict = config_reader.ConfigReader._load(
-        format="yaml", content=teamocil_yaml,
+        format="yaml",
+        content=teamocil_yaml,
     )
     assert yaml_to_dict == teamocil_dict
 

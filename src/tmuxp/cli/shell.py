@@ -14,7 +14,13 @@ if t.TYPE_CHECKING:
 
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
     CLIShellLiteral: TypeAlias = t.Literal[
-        "best", "pdb", "code", "ptipython", "ptpython", "ipython", "bpython",
+        "best",
+        "pdb",
+        "code",
+        "ptipython",
+        "ptpython",
+        "ipython",
+        "bpython",
     ]
 
 
@@ -38,10 +44,16 @@ def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.Argument
     parser.add_argument("session_name", metavar="session-name", nargs="?")
     parser.add_argument("window_name", metavar="window-name", nargs="?")
     parser.add_argument(
-        "-S", dest="socket_path", metavar="socket-path", help="pass-through for tmux -S",
+        "-S",
+        dest="socket_path",
+        metavar="socket-path",
+        help="pass-through for tmux -S",
     )
     parser.add_argument(
-        "-L", dest="socket_name", metavar="socket-name", help="pass-through for tmux -L",
+        "-L",
+        dest="socket_name",
+        metavar="socket-name",
+        help="pass-through for tmux -L",
     )
     parser.add_argument(
         "-c",
@@ -163,11 +175,15 @@ def command_shell(
     current_pane = util.get_current_pane(server=server)
 
     session = util.get_session(
-        server=server, session_name=args.session_name, current_pane=current_pane,
+        server=server,
+        session_name=args.session_name,
+        current_pane=current_pane,
     )
 
     window = util.get_window(
-        session=session, window_name=args.window_name, current_pane=current_pane,
+        session=session,
+        window_name=args.window_name,
+        current_pane=current_pane,
     )
 
     pane = util.get_pane(window=window, current_pane=current_pane)

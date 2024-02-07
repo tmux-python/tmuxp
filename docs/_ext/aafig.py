@@ -38,7 +38,8 @@ DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(
-    dst: t.Dict[str, t.Optional[str]], src: t.Dict[str, t.Optional[str]],
+    dst: t.Dict[str, t.Optional[str]],
+    src: t.Dict[str, t.Optional[str]],
 ) -> t.Dict[str, t.Optional[str]]:
     for k, v in src.items():
         if k not in dst:
@@ -47,7 +48,9 @@ def merge_dict(
 
 
 def get_basename(
-    text: str, options: t.Dict[str, str], prefix: t.Optional[str] = "aafig",
+    text: str,
+    options: t.Dict[str, str],
+    prefix: t.Optional[str] = "aafig",
 ) -> str:
     options = options.copy()
     if "format" in options:
@@ -152,7 +155,9 @@ class AafigureNotInstalled(AafigError):
 
 
 def render_aafigure(
-    app: "Sphinx", text: str, options: t.Dict[str, str],
+    app: "Sphinx",
+    text: str,
+    options: t.Dict[str, str],
 ) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
     """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:

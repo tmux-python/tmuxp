@@ -199,7 +199,8 @@ def test_shell_target_missing(
     env: t.Dict[t.Any, t.Any],
     template_ctx: t.Dict[str, str],
     exception: t.Union[
-        t.Type[exc.TmuxpException], t.Type[subprocess.CalledProcessError],
+        t.Type[exc.TmuxpException],
+        t.Type[subprocess.CalledProcessError],
     ],
     message: str,
     socket_name: str,

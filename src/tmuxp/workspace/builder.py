@@ -317,7 +317,9 @@ class WorkspaceBuilder:
             focus.select_window()
 
     def iter_create_windows(
-        self, session: Session, append: bool = False,
+        self,
+        session: Session,
+        append: bool = False,
     ) -> t.Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -340,12 +342,15 @@ class WorkspaceBuilder:
             that was used to create the window.
         """
         for window_iterator, window_config in enumerate(
-            self.session_config["windows"], start=1,
+            self.session_config["windows"],
+            start=1,
         ):
             window_name = window_config.get("window_name", None)
 
             is_first_window_pass = self.first_window_pass(
-                window_iterator, session, append,
+                window_iterator,
+                session,
+                append,
             )
 
             w1 = None
@@ -401,7 +406,8 @@ class WorkspaceBuilder:
                 session.attached_window.kill_window()
 
             if "options" in window_config and isinstance(
-                window_config["options"], dict,
+                window_config["options"],
+                dict,
             ):
                 for key, val in window_config["options"].items():
                     window.set_window_option(key, val)
@@ -412,7 +418,9 @@ class WorkspaceBuilder:
             yield window, window_config
 
     def iter_create_panes(
-        self, window: Window, window_config: t.Dict[str, t.Any],
+        self,
+        window: Window,
+        window_config: t.Dict[str, t.Any],
     ) -> t.Iterator[t.Any]:
         """Return :class:`libtmux.Pane` iterating through window config dict.
 
@@ -440,14 +448,16 @@ class WorkspaceBuilder:
         pane = None
 
         for pane_index, pane_config in enumerate(
-            window_config["panes"], start=pane_base_index,
+            window_config["panes"],
+            start=pane_base_index,
         ):
             if pane_index == int(pane_base_index):
                 pane = window.attached_pane
             else:
 
                 def get_pane_start_directory(
-                    pane_config: t.Dict[str, str], window_config: t.Dict[str, str],
+                    pane_config: t.Dict[str, str],
+                    window_config: t.Dict[str, str],
                 ) -> t.Optional[str]:
                     if "start_directory" in pane_config:
                         return pane_config["start_directory"]
@@ -457,7 +467,8 @@ class WorkspaceBuilder:
                         return None
 
                 def get_pane_shell(
-                    pane_config: t.Dict[str, str], window_config: t.Dict[str, str],
+                    pane_config: t.Dict[str, str],
+                    window_config: t.Dict[str, str],
                 ) -> t.Optional[str]:
                     if "shell" in pane_config:
                         return pane_config["shell"]
@@ -467,7 +478,8 @@ class WorkspaceBuilder:
                         return None
 
                 environment = pane_config.get(
-                    "environment", window_config.get("environment"),
+                    "environment",
+                    window_config.get("environment"),
                 )
                 if environment and has_lt_version("3.0"):
                     # Just issue a warning when the environment comes from the pane
@@ -531,7 +543,9 @@ class WorkspaceBuilder:
             yield pane, pane_config
 
     def config_after_window(
-        self, window: Window, window_config: t.Dict[str, t.Any],
+        self,
+        window: Window,
+        window_config: t.Dict[str, t.Any],
     ) -> None:
         """Actions to apply to window after window and pane finished.
 
@@ -547,7 +561,8 @@ class WorkspaceBuilder:
             config section for window
         """
         if "options_after" in window_config and isinstance(
-            window_config["options_after"], dict,
+            window_config["options_after"],
+            dict,
         ):
             for key, val in window_config["options_after"].items():
                 window.set_window_option(key, val)

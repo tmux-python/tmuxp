@@ -381,7 +381,8 @@ def load_workspace(
 
     # shapes workspaces relative to config / profile file location
     expanded_workspace = loader.expand(
-        raw_workspace, cwd=os.path.dirname(workspace_file),
+        raw_workspace,
+        cwd=os.path.dirname(workspace_file),
     )
 
     # Overridden session name
@@ -636,7 +637,8 @@ def command_load(
 
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
-            workspace_file, workspace_dir=get_workspace_dir(),
+            workspace_file,
+            workspace_dir=get_workspace_dir(),
         )
 
         detached = original_detached_option

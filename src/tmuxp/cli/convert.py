@@ -57,7 +57,8 @@ def command_convert(
 ) -> None:
     """Entrypoint for ``tmuxp convert`` convert a tmuxp config between JSON and YAML."""
     workspace_file = find_workspace_file(
-        workspace_file, workspace_dir=get_workspace_dir(),
+        workspace_file,
+        workspace_dir=get_workspace_dir(),
     )
 
     if isinstance(workspace_file, str):

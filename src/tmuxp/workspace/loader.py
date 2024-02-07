@@ -157,7 +157,8 @@ def expand(
             workspace_dict["before_script"] = str(cwd / workspace_dict["before_script"])
 
     if "shell_command" in workspace_dict and isinstance(
-        workspace_dict["shell_command"], str,
+        workspace_dict["shell_command"],
+        str,
     ):
         workspace_dict["shell_command"] = [workspace_dict["shell_command"]]
 

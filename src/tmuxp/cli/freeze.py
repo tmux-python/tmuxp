@@ -45,10 +45,16 @@ def create_freeze_subparser(
         action="store",
     )
     parser.add_argument(
-        "-S", dest="socket_path", metavar="socket-path", help="pass-through for tmux -S",
+        "-S",
+        dest="socket_path",
+        metavar="socket-path",
+        help="pass-through for tmux -S",
     )
     parser.add_argument(
-        "-L", dest="socket_name", metavar="socket-name", help="pass-through for tmux -L",
+        "-L",
+        dest="socket_name",
+        metavar="socket-name",
+        help="pass-through for tmux -L",
     )
     parser.add_argument(
         "-f",
@@ -187,7 +193,10 @@ def command_freeze(
 
     if workspace_format == "yaml":
         workspace = configparser.dump(
-            format="yaml", indent=2, default_flow_style=False, safe=True,
+            format="yaml",
+            indent=2,
+            default_flow_style=False,
+            safe=True,
         )
     elif workspace_format == "json":
         workspace = configparser.dump(format="json", indent=2)

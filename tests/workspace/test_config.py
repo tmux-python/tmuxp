@@ -22,7 +22,8 @@ def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
 
 
 def test_export_json(
-    tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData",
+    tmp_path: pathlib.Path,
+    config_fixture: "WorkspaceTestData",
 ) -> None:
     """Test exporting configuration dictionary to JSON."""
     json_workspace_file = tmp_path / "config.json"
@@ -46,10 +47,12 @@ def test_workspace_expand1(config_fixture: "WorkspaceTestData") -> None:
 def test_workspace_expand2(config_fixture: "WorkspaceTestData") -> None:
     """Expand shell commands from string to list."""
     unexpanded_dict = ConfigReader._load(
-        format="yaml", content=config_fixture.expand2.unexpanded_yaml(),
+        format="yaml",
+        content=config_fixture.expand2.unexpanded_yaml(),
     )
     expanded_dict = ConfigReader._load(
-        format="yaml", content=config_fixture.expand2.expanded_yaml(),
+        format="yaml",
+        content=config_fixture.expand2.expanded_yaml(),
     )
     assert loader.expand(unexpanded_dict) == expanded_dict
 
@@ -138,14 +141,16 @@ def test_shell_command_before(config_fixture: "WorkspaceTestData") -> None:
 def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
     """Verify shell_command before_session is in session scope."""
     sconfig = ConfigReader._load(
-        format="yaml", content=config_fixture.shell_command_before_session.before,
+        format="yaml",
+        content=config_fixture.shell_command_before_session.before,
     )
 
     validation.validate_schema(sconfig)
 
     assert loader.expand(sconfig) == sconfig
     assert loader.expand(loader.trickle(sconfig)) == ConfigReader._load(
-        format="yaml", content=config_fixture.shell_command_before_session.expected,
+        format="yaml",
+        content=config_fixture.shell_command_before_session.expected,
     )
 
 

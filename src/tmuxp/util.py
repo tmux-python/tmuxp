@@ -23,7 +23,8 @@ PY2 = sys.version_info[0] == 2
 
 
 def run_before_script(
-    script_file: t.Union[str, pathlib.Path], cwd: t.Optional[pathlib.Path] = None,
+    script_file: t.Union[str, pathlib.Path],
+    cwd: t.Optional[pathlib.Path] = None,
 ) -> int:
     """Execute a shell script, wraps :meth:`subprocess.check_call()` in a try/catch."""
     try:
