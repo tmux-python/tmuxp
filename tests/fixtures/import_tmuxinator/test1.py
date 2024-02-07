@@ -7,7 +7,7 @@ tmuxinator_dict = {
         {"editor": {"layout": "main-vertical", "panes": ["vim", "guard"]}},
         {"server": "bundle exec rails s"},
         {"logs": "tail -f logs/development.log"},
-    ]
+    ],
 }
 
 expected = {

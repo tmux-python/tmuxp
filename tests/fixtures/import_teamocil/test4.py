@@ -9,8 +9,8 @@ teamocil_dict = {
             "name": "erb-example",
             "root": "<%= ENV['MY_PROJECT_ROOT'] %>",
             "panes": [{"cmd": "pwd"}],
-        }
-    ]
+        },
+    ],
 }
 
 expected = {
@@ -20,6 +20,6 @@ expected = {
             "window_name": "erb-example",
             "start_directory": "<%= ENV['MY_PROJECT_ROOT'] %>",
             "panes": [{"shell_command": "pwd"}],
-        }
+        },
     ],
 }

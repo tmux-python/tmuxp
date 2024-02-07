@@ -9,8 +9,8 @@ teamocil_dict = {
             "root": "~/Code/sample/www",
             "layout": "tiled",
             "panes": [{"cmd": "pwd"}, {"cmd": "pwd"}, {"cmd": "pwd"}, {"cmd": "pwd"}],
-        }
-    ]
+        },
+    ],
 }
 
 expected = {
@@ -26,6 +26,6 @@ expected = {
                 {"shell_command": "pwd"},
                 {"shell_command": "pwd"},
             ],
-        }
+        },
     ],
 }

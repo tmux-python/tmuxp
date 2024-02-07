@@ -44,7 +44,7 @@ def test_ignore_non_configs_from_current_dir(tmp_path: pathlib.Path) -> None:
 
 
 def test_get_configs_cwd(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """config.in_cwd() find config in shell current working directory."""
     confdir = tmp_path / "tmuxpconf2"
@@ -81,7 +81,7 @@ def test_is_pure_name(path: str, expect: bool) -> None:
 
 
 def test_tmuxp_configdir_env_var(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Tests get_workspace_dir() when TMUXP_CONFIGDIR is set."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
@@ -90,7 +90,7 @@ def test_tmuxp_configdir_env_var(
 
 
 def test_tmuxp_configdir_xdg_config_dir(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test get_workspace_dir() when XDG_CONFIG_HOME is set."""
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
@@ -153,7 +153,7 @@ def test_resolve_dot(
     assert find_workspace_file("../project/") == expect
     assert find_workspace_file(".tmuxp.yaml") == expect
     assert find_workspace_file("../../.tmuxp/%s.yaml" % user_config_name) == str(
-        user_config
+        user_config,
     )
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
@@ -176,7 +176,7 @@ def test_resolve_dot(
     assert find_workspace_file("./work/project/") == expect
     assert find_workspace_file(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
     assert find_workspace_file("./.tmuxp/%s.yaml" % user_config_name) == str(
-        user_config
+        user_config,
     )
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
@@ -220,10 +220,10 @@ def test_resolve_dot(
     assert find_workspace_file("home/work/project") == expect
     assert find_workspace_file("./home/work/project/") == expect
     assert find_workspace_file("home/.tmuxp/%s.yaml" % user_config_name) == str(
-        user_config
+        user_config,
     )
     assert find_workspace_file("./home/.tmuxp/%s.yaml" % user_config_name) == str(
-        user_config
+        user_config,
     )
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
@@ -287,6 +287,6 @@ def test_find_workspace_file_arg(
     with pytest.raises(FileNotFoundError, match="No tmuxp files found"):
         assert "No tmuxp files found" in check_cmd("../").err
     with pytest.raises(
-        FileNotFoundError, match="workspace-file not found in workspace dir"
+        FileNotFoundError, match="workspace-file not found in workspace dir",
     ):
         assert "workspace-file not found in workspace dir" in check_cmd("moo").err

@@ -134,7 +134,7 @@ def expand(
     # 'shell_command' value
     if "start_directory" in workspace_dict:
         workspace_dict["start_directory"] = expandshell(
-            workspace_dict["start_directory"]
+            workspace_dict["start_directory"],
         )
         start_path = workspace_dict["start_directory"]
         if any(start_path.startswith(a) for a in [".", "./"]):
@@ -157,7 +157,7 @@ def expand(
             workspace_dict["before_script"] = str(cwd / workspace_dict["before_script"])
 
     if "shell_command" in workspace_dict and isinstance(
-        workspace_dict["shell_command"], str
+        workspace_dict["shell_command"], str,
     ):
         workspace_dict["shell_command"] = [workspace_dict["shell_command"]]
 
@@ -241,15 +241,15 @@ def trickle(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
             # Prepend shell_command_before to commands
             if "shell_command_before" in workspace_dict:
                 commands_before.extend(
-                    workspace_dict["shell_command_before"]["shell_command"]
+                    workspace_dict["shell_command_before"]["shell_command"],
                 )
             if "shell_command_before" in window_dict:
                 commands_before.extend(
-                    window_dict["shell_command_before"]["shell_command"]
+                    window_dict["shell_command_before"]["shell_command"],
                 )
             if "shell_command_before" in pane_dict:
                 commands_before.extend(
-                    pane_dict["shell_command_before"]["shell_command"]
+                    pane_dict["shell_command_before"]["shell_command"],
                 )
 
             if "shell_command" in pane_dict:

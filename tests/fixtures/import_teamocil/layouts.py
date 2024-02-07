@@ -25,7 +25,7 @@ teamocil_dict = {
                     {"cmd": "echo 'bar again'", "focus": True, "width": 50},
                 ],
             },
-        ]
+        ],
     },
     "two-windows-with-filters": {
         "windows": [
@@ -40,8 +40,8 @@ teamocil_dict = {
                     {"cmd": "echo 'foo'"},
                     {"cmd": "echo 'foo again'", "width": 50},
                 ],
-            }
-        ]
+            },
+        ],
     },
     "two-windows-with-custom-command-options": {
         "windows": [
@@ -67,7 +67,7 @@ teamocil_dict = {
                     {"cmd": "echo 'bar again'", "focus": True, "width": 50},
                 ],
             },
-        ]
+        ],
     },
     "three-windows-within-a-session": {
         "session": {
@@ -77,7 +77,7 @@ teamocil_dict = {
                 {"name": "second window", "panes": [{"cmd": "echo 'foo'"}]},
                 {"name": "third window", "panes": [{"cmd": "echo 'foo'"}]},
             ],
-        }
+        },
     },
 }
 
@@ -127,7 +127,7 @@ two_windows_with_filters = {
                 {"shell_command": "echo 'foo'"},
                 {"shell_command": "echo 'foo again'"},
             ],
-        }
+        },
     ],
 }
 

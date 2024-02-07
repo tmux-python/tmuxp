@@ -59,7 +59,7 @@ def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
 
 @pytest.fixture
 def tmuxp_configdir_default(
-    monkeypatch: pytest.MonkeyPatch, tmuxp_configdir: pathlib.Path
+    monkeypatch: pytest.MonkeyPatch, tmuxp_configdir: pathlib.Path,
 ) -> None:
     """Set tmuxp configuration directory for ``TMUXP_CONFIGDIR``."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmuxp_configdir))

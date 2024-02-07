@@ -45,7 +45,7 @@ def command_debug_info(
                 Fore.RED,
                 "\n".join(prepend_tab(std_resp.stderr)),
                 Fore.RESET,
-            ]
+            ],
         )
 
     output = [
@@ -58,8 +58,8 @@ def command_debug_info(
                     "arch: %s" % platform.machine(),
                     "uname: %s" % "; ".join(platform.uname()[:3]),
                     "version: %s" % platform.version(),
-                ]
-            )
+                ],
+            ),
         ),
         output_break(),
         "python version: %s" % " ".join(sys.version.split("\n")),

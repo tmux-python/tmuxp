@@ -99,7 +99,7 @@ html_sidebars = {
         "sidebar/navigation.html",
         "sidebar/projects.html",
         "sidebar/scroll-end.html",
-    ]
+    ],
 }
 
 # linkify_issues

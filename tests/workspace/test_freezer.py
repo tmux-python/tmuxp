@@ -18,7 +18,7 @@ if typing.TYPE_CHECKING:
 def test_freeze_config(session: Session) -> None:
     """Test freezing a tmux session."""
     session_config = ConfigReader._from_file(
-        test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml")
+        test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml"),
     )
 
     builder = WorkspaceBuilder(session_config=session_config, server=session.server)
@@ -86,13 +86,13 @@ def test_inline_workspace() -> None:
 
 
 def test_export_yaml(
-    tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData"
+    tmp_path: pathlib.Path, config_fixture: "WorkspaceTestData",
 ) -> None:
     """Test exporting a frozen tmux session to YAML."""
     yaml_workspace_file = tmp_path / "config.yaml"
 
     sample_workspace = freezer.inline(
-        config_fixture.sample_workspace.sample_workspace_dict
+        config_fixture.sample_workspace.sample_workspace_dict,
     )
     configparser = ConfigReader(sample_workspace)
 

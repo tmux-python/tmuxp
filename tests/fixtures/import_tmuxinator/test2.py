@@ -19,7 +19,7 @@ tmuxinator_dict = {
                 ],
                 "layout": "main-vertical",
                 "panes": ["vim", None, "top"],
-            }
+            },
         },
         {"shell": "git pull"},
         {
@@ -30,7 +30,7 @@ tmuxinator_dict = {
                     'echo "Before each pane command!"',
                 ],
                 "panes": [None, None, None],
-            }
+            },
         },
         {"database": "bundle exec rails db"},
         {"server": "bundle exec rails s"},

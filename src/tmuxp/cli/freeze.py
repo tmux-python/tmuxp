@@ -45,10 +45,10 @@ def create_freeze_subparser(
         action="store",
     )
     parser.add_argument(
-        "-S", dest="socket_path", metavar="socket-path", help="pass-through for tmux -S"
+        "-S", dest="socket_path", metavar="socket-path", help="pass-through for tmux -S",
     )
     parser.add_argument(
-        "-L", dest="socket_name", metavar="socket-name", help="pass-through for tmux -L"
+        "-L", dest="socket_name", metavar="socket-name", help="pass-through for tmux -L",
     )
     parser.add_argument(
         "-f",
@@ -118,19 +118,19 @@ def command_freeze(
         print(
             "---------------------------------------------------------------"
             "\n"
-            "Freeze does its best to snapshot live tmux sessions.\n"
+            "Freeze does its best to snapshot live tmux sessions.\n",
         )
     if not (
         args.answer_yes
         or prompt_yes_no(
-            "The new workspace will require adjusting afterwards. Save workspace file?"
+            "The new workspace will require adjusting afterwards. Save workspace file?",
         )
     ):
         if not args.quiet:
             print(
                 "tmuxp has examples in JSON and YAML format at "
                 "<http://tmuxp.git-pull.com/examples.html>\n"
-                "View tmuxp docs at <http://tmuxp.git-pull.com/>."
+                "View tmuxp docs at <http://tmuxp.git-pull.com/>.",
             )
         sys.exit()
 
@@ -143,7 +143,7 @@ def command_freeze(
                     frozen_workspace.get("session_name"),
                     args.workspace_format or "yaml",
                 ),
-            )
+            ),
         )
         dest_prompt = prompt(
             "Save to: %s" % save_to,
@@ -187,7 +187,7 @@ def command_freeze(
 
     if workspace_format == "yaml":
         workspace = configparser.dump(
-            format="yaml", indent=2, default_flow_style=False, safe=True
+            format="yaml", indent=2, default_flow_style=False, safe=True,
         )
     elif workspace_format == "json":
         workspace = configparser.dump(format="json", indent=2)

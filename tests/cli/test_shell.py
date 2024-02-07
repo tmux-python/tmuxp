@@ -199,7 +199,7 @@ def test_shell_target_missing(
     env: t.Dict[t.Any, t.Any],
     template_ctx: t.Dict[str, str],
     exception: t.Union[
-        t.Type[exc.TmuxpException], t.Type[subprocess.CalledProcessError]
+        t.Type[exc.TmuxpException], t.Type[subprocess.CalledProcessError],
     ],
     message: str,
     socket_name: str,
@@ -223,7 +223,7 @@ def test_shell_target_missing(
             "SOCKET_NAME": server.socket_name,
             "SESSION_NAME": session.name,
             "WINDOW_NAME": template_ctx.get("window_name", window_name),
-        }
+        },
     )
     cli_args = cli_cmd + [cli_arg.format(**template_ctx) for cli_arg in cli_args]
 
