@@ -98,7 +98,7 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
 
             current_cmd = pane.pane_current_command
 
-            def filter_interpretters_and_shells(current_cmd: t.Optional[str]) -> bool:
+            def filter_interpreters_and_shells(current_cmd: t.Optional[str]) -> bool:
                 return current_cmd is not None and (
                     current_cmd.startswith("-")
                     or any(
@@ -106,7 +106,7 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
                     )
                 )
 
-            if filter_interpretters_and_shells(current_cmd=current_cmd):
+            if filter_interpreters_and_shells(current_cmd=current_cmd):
                 current_cmd = None
 
             if current_cmd:
