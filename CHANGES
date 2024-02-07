@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- libtmux: 0.25.0 -> 0.26.0, maintenance release (#906)
+
+  Doc string + linting stringency updates.
+
 ## tmuxp 1.34.0 (2023-12-21)
 
 _Maintenance only, no bug fixes or new features_
@@ -28,6 +34,7 @@ _Maintenance only, no bug fixes or new features_
 - libtmux: 0.24.1 -> 0.25.0, maintenance release (#896)
 
   Improve styling via pydocstyle.
+
 - `config_reader`: Move to `tmuxp._internal` (#897)
 - `_types`: Move to `tmuxp._internal` (#900)
 
