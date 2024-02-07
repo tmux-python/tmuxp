@@ -135,7 +135,7 @@ def test_reattach_plugins(
     """Test reattach plugin hook."""
     config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")
 
-    session_config = ConfigReader._load(format="yaml", content=config_plugins)
+    session_config = ConfigReader._load(fmt="yaml", content=config_plugins)
     session_config = loader.expand(session_config)
 
     # open it detached

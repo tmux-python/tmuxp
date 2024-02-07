@@ -41,7 +41,8 @@ def test_config_to_dict(
 ) -> None:
     """Test exporting teamocil configuration to dictionary."""
     yaml_to_dict = config_reader.ConfigReader._load(
-        format="yaml", content=teamocil_yaml
+        fmt="yaml",
+        content=teamocil_yaml,
     )
     assert yaml_to_dict == teamocil_dict
 
@@ -95,5 +96,5 @@ def test_multisession_config(
     assert importers.import_teamocil(multisession_config[session_name]) == expected
 
     validation.validate_schema(
-        importers.import_teamocil(multisession_config[session_name])
+        importers.import_teamocil(multisession_config[session_name]),
     )

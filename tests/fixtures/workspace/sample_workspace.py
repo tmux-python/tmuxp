@@ -17,7 +17,7 @@ sample_workspace_dict = {
                 {
                     "shell_command": ["tail -F /var/log/syslog"],
                     "start_directory": "/var/log",
-                }
+                },
             ],
         },
         {"options": {"automatic_rename": True}, "panes": [{"shell_command": ["htop"]}]},

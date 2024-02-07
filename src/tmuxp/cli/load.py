@@ -117,7 +117,7 @@ def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
                 tmuxp_echo(
                     style("[Plugin Error] ", fg="red")
                     + f"Couldn't load {plugin}\n"
-                    + style(f"{error}", fg="yellow")
+                    + style(f"{error}", fg="yellow"),
                 )
                 sys.exit(1)
 
@@ -137,14 +137,14 @@ def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
                 ):
                     tmuxp_echo(
                         style("[Not Skipping] ", fg="yellow")
-                        + "Plugin versions constraint not met. Exiting..."
+                        + "Plugin versions constraint not met. Exiting...",
                     )
                     sys.exit(1)
             except Exception as error:
                 tmuxp_echo(
                     style("[Plugin Error] ", fg="red")
                     + f"Couldn't load {plugin}\n"
-                    + style(f"{error}", fg="yellow")
+                    + style(f"{error}", fg="yellow"),
                 )
                 sys.exit(1)
 
@@ -373,7 +373,7 @@ def load_workspace(
 
     tmuxp_echo(
         style("[Loading] ", fg="green")
-        + style(str(workspace_file), fg="blue", bold=True)
+        + style(str(workspace_file), fg="blue", bold=True),
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
@@ -381,7 +381,8 @@ def load_workspace(
 
     # shapes workspaces relative to config / profile file location
     expanded_workspace = loader.expand(
-        raw_workspace, cwd=os.path.dirname(workspace_file)
+        raw_workspace,
+        cwd=os.path.dirname(workspace_file),
     )
 
     # Overridden session name
@@ -636,7 +637,8 @@ def command_load(
 
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
-            workspace_file, workspace_dir=get_workspace_dir()
+            workspace_file,
+            workspace_dir=get_workspace_dir(),
         )
 
         detached = original_detached_option

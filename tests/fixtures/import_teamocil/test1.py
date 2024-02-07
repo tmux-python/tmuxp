@@ -9,8 +9,8 @@ teamocil_conf = {
             "root": "~/Code/sample/www",
             "layout": "even-horizontal",
             "panes": [{"cmd": ["pwd", "ls -la"]}, {"cmd": "rails server --port 3000"}],
-        }
-    ]
+        },
+    ],
 }
 
 expected = {
@@ -24,6 +24,6 @@ expected = {
                 {"shell_command": ["pwd", "ls -la"]},
                 {"shell_command": "rails server --port 3000"},
             ],
-        }
+        },
     ],
 }

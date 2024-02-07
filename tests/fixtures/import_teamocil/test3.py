@@ -18,8 +18,8 @@ teamocil_dict = {
                 {"cmd": "bundle exec rails server --port 40", "focus": True},
                 {"cmd": ["sudo service memcached start", "sudo service mongodb start"]},
             ],
-        }
-    ]
+        },
+    ],
 }
 
 expected = {
@@ -38,9 +38,9 @@ expected = {
                     "shell_command": [
                         "sudo service memcached start",
                         "sudo service mongodb start",
-                    ]
+                    ],
                 },
             ],
-        }
+        },
     ],
 }

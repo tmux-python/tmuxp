@@ -60,7 +60,7 @@ def test_freeze(
     assert yaml_config_path.exists()
 
     yaml_config = yaml_config_path.open().read()
-    frozen_config = ConfigReader._load(format="yaml", content=yaml_config)
+    frozen_config = ConfigReader._load(fmt="yaml", content=yaml_config)
 
     assert frozen_config["session_name"] == "myfrozensession"
 

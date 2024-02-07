@@ -30,7 +30,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
                 {
                     "shell_command_before": ["rbenv local 2.0.0-p0"],
                     "shell_command": ["htop"],
-                }
+                },
             ],
         },
         {"options": {"automatic-rename": True}, "panes": [{"shell_command": ["htop"]}]},
@@ -49,13 +49,13 @@ def config_expanded() -> t.Dict[str, t.Any]:
                 "window_name": "editor",
                 "start_directory": str(pathlib.Path().home()),
                 "shell_command_before": {
-                    "shell_command": [{"cmd": "source .venv/bin/activate"}]
+                    "shell_command": [{"cmd": "source .venv/bin/activate"}],
                 },
                 "panes": [
                     {"shell_command": [{"cmd": "vim"}]},
                     {
                         "shell_command_before": {
-                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]
+                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}],
                         },
                         "shell_command": [{"cmd": 'cowsay "hey"'}],
                     },
@@ -64,7 +64,7 @@ def config_expanded() -> t.Dict[str, t.Any]:
             },
             {
                 "shell_command_before": {
-                    "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]
+                    "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}],
                 },
                 "window_name": "logging",
                 "panes": [
@@ -77,10 +77,10 @@ def config_expanded() -> t.Dict[str, t.Any]:
                 "panes": [
                     {
                         "shell_command_before": {
-                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]
+                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}],
                         },
                         "shell_command": [{"cmd": "htop"}],
-                    }
+                    },
                 ],
             },
             {
@@ -102,18 +102,18 @@ def config_after() -> t.Dict[str, t.Any]:
                 "window_name": "editor",
                 "start_directory": str(pathlib.Path().home()),
                 "shell_command_before": {
-                    "shell_command": [{"cmd": "source .venv/bin/activate"}]
+                    "shell_command": [{"cmd": "source .venv/bin/activate"}],
                 },
                 "panes": [
                     {
                         "shell_command": [
                             {"cmd": "source .venv/bin/activate"},
                             {"cmd": "vim"},
-                        ]
+                        ],
                     },
                     {
                         "shell_command_before": {
-                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]
+                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}],
                         },
                         "shell_command": [
                             {"cmd": "source .venv/bin/activate"},
@@ -126,7 +126,7 @@ def config_after() -> t.Dict[str, t.Any]:
             },
             {
                 "shell_command_before": {
-                    "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]
+                    "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}],
                 },
                 "start_directory": "/",
                 "window_name": "logging",
@@ -135,7 +135,7 @@ def config_after() -> t.Dict[str, t.Any]:
                         "shell_command": [
                             {"cmd": "rbenv local 2.0.0-p0"},
                             {"cmd": "tail -F /var/log/syslog"},
-                        ]
+                        ],
                     },
                     {"shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]},
                 ],
@@ -146,13 +146,13 @@ def config_after() -> t.Dict[str, t.Any]:
                 "panes": [
                     {
                         "shell_command_before": {
-                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}]
+                            "shell_command": [{"cmd": "rbenv local 2.0.0-p0"}],
                         },
                         "shell_command": [
                             {"cmd": "rbenv local 2.0.0-p0"},
                             {"cmd": "htop"},
                         ],
-                    }
+                    },
                 ],
             },
             {

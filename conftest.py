@@ -28,13 +28,14 @@ logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
-@pytest.mark.skipif(not USING_ZSH, reason="Using ZSH")
 @pytest.fixture(autouse=USING_ZSH, scope="session")
-def zshrc(user_path: pathlib.Path) -> pathlib.Path:
+def zshrc(user_path: pathlib.Path) -> t.Optional[pathlib.Path]:
     """Quiets ZSH default message.
 
     Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.
     """
+    if not USING_ZSH:
+        return None
     p = user_path / ".zshrc"
     p.touch()
     return p
@@ -59,7 +60,8 @@ def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
 
 @pytest.fixture
 def tmuxp_configdir_default(
-    monkeypatch: pytest.MonkeyPatch, tmuxp_configdir: pathlib.Path
+    monkeypatch: pytest.MonkeyPatch,
+    tmuxp_configdir: pathlib.Path,
 ) -> None:
     """Set tmuxp configuration directory for ``TMUXP_CONFIGDIR``."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmuxp_configdir))

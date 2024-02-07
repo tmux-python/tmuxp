@@ -212,12 +212,12 @@ def find_workspace_file(
                     Fore.RED
                     + "Multiple .tmuxp.{yml,yaml,json} workspace_files in %s"
                     % dirname(workspace_file)
-                    + Fore.RESET
+                    + Fore.RESET,
                 )
                 tmuxp_echo(
                     "This is undefined behavior, use only one. "
                     "Use file names e.g. myproject.json, coolproject.yaml. "
-                    "You can load them by filename."
+                    "You can load them by filename.",
                 )
             elif not len(candidates):
                 file_error = "No tmuxp files found in directory"

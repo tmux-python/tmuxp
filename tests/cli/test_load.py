@@ -39,7 +39,9 @@ def test_load_workspace(
 
     # open it detached
     session = load_workspace(
-        session_file, socket_name=server.socket_name, detached=True
+        session_file,
+        socket_name=server.socket_name,
+        detached=True,
     )
 
     assert isinstance(session, Session)
@@ -94,7 +96,8 @@ def test_load_workspace_named_session(
 
 
 @pytest.mark.skipif(
-    has_lt_version("2.1"), reason="exact session name matches only tmux >= 2.1"
+    has_lt_version("2.1"),
+    reason="exact session name matches only tmux >= 2.1",
 )
 def test_load_workspace_name_match_regression_252(
     tmp_path: pathlib.Path,
@@ -107,7 +110,9 @@ def test_load_workspace_name_match_regression_252(
 
     # open it detached
     session = load_workspace(
-        session_file, socket_name=server.socket_name, detached=True
+        session_file,
+        socket_name=server.socket_name,
+        detached=True,
     )
 
     assert isinstance(session, Session)
@@ -127,7 +132,9 @@ windows:
 
     # open it detached
     session = load_workspace(
-        str(workspace_file), socket_name=server.socket_name, detached=True
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
     )
     assert session is not None
     assert session.name == "sampleconfi"
@@ -162,7 +169,9 @@ windows:
 
     # open it detached
     session = load_workspace(
-        str(workspace_file), socket_name=server.socket_name, detached=True
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
     )
     assert session is not None
     assert session.attached_window is not None
@@ -300,7 +309,7 @@ def test_load(
     monkeypatch.chdir(tmp_path)
     for session_name, config_path in zip(session_names, config_paths):
         tmuxp_config = pathlib.Path(
-            config_path.format(tmp_path=tmp_path, TMUXP_CONFIGDIR=tmuxp_configdir)
+            config_path.format(tmp_path=tmp_path, TMUXP_CONFIGDIR=tmuxp_configdir),
         )
         tmuxp_config.write_text(
             f"""
@@ -349,7 +358,8 @@ def test_regression_00132_session_name_with_dots(
 
 
 @pytest.mark.parametrize(
-    "cli_args", [["load", ".", "-d"], ["load", ".tmuxp.yaml", "-d"]]
+    "cli_args",
+    [["load", ".", "-d"], ["load", ".tmuxp.yaml", "-d"]],
 )
 def test_load_zsh_autotitle_warning(
     cli_args: t.List[str],
@@ -452,7 +462,7 @@ def test_load_plugins(
 
     plugins_config = test_utils.read_workspace_file("workspace/builder/plugin_bwb.yaml")
 
-    session_config = ConfigReader._load(format="yaml", content=plugins_config)
+    session_config = ConfigReader._load(fmt="yaml", content=plugins_config)
     session_config = loader.expand(session_config)
 
     plugins = load_plugins(session_config)
@@ -473,7 +483,7 @@ def test_load_plugins(
         (
             ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
             ["y\n"],
-        )
+        ),
     ],
 )
 def test_load_plugins_version_fail_skip(
@@ -497,7 +507,7 @@ def test_load_plugins_version_fail_skip(
         (
             ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
             ["n\n"],
-        )
+        ),
     ],
 )
 def test_load_plugins_version_fail_no_skip(
@@ -550,7 +560,9 @@ def test_plugin_system_before_script(
 
     # open it detached
     session = load_workspace(
-        session_file, socket_name=server.socket_name, detached=True
+        session_file,
+        socket_name=server.socket_name,
+        detached=True,
     )
 
     assert isinstance(session, Session)
@@ -570,7 +582,7 @@ def test_load_attached(
     attach_session_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    session_config = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(session_config=session_config, server=server)
 
@@ -592,7 +604,7 @@ def test_load_attached_detached(
     attach_session_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    session_config = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(session_config=session_config, server=server)
 
@@ -614,7 +626,7 @@ def test_load_attached_within_tmux(
     switch_client_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    session_config = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(session_config=session_config, server=server)
 
@@ -636,7 +648,7 @@ def test_load_attached_within_tmux_detached(
     switch_client_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    session_config = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(session_config=session_config, server=server)
 
@@ -651,7 +663,7 @@ def test_load_append_windows_to_current_session(
 ) -> None:
     """Test tmuxp load when windows are appended to the current session."""
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
-    session_config = ConfigReader._load(format="yaml", content=yaml_config)
+    session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
 
     builder = WorkspaceBuilder(session_config=session_config, server=server)
     builder.build()

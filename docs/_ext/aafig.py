@@ -38,7 +38,8 @@ DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(
-    dst: t.Dict[str, t.Optional[str]], src: t.Dict[str, t.Optional[str]]
+    dst: t.Dict[str, t.Optional[str]],
+    src: t.Dict[str, t.Optional[str]],
 ) -> t.Dict[str, t.Optional[str]]:
     for k, v in src.items():
         if k not in dst:
@@ -47,14 +48,16 @@ def merge_dict(
 
 
 def get_basename(
-    text: str, options: t.Dict[str, str], prefix: t.Optional[str] = "aafig"
+    text: str,
+    options: t.Dict[str, str],
+    prefix: t.Optional[str] = "aafig",
 ) -> str:
     options = options.copy()
     if "format" in options:
         del options["format"]
     hashkey = text + str(options)
-    id = sha(hashkey.encode("utf-8")).hexdigest()
-    return f"{prefix}-{id}"
+    _id = sha(hashkey.encode("utf-8")).hexdigest()
+    return f"{prefix}-{_id}"
 
 
 class AafigError(SphinxError):
@@ -106,7 +109,7 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
     if aafigure is None:
         logger.warn(
             "aafigure module not installed, ASCII art images "
-            "will be rendered as literal text"
+            "will be rendered as literal text",
         )
     for img in doctree.traverse(nodes.image):
         if not hasattr(img, "aafig"):
@@ -115,15 +118,15 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             continue
         options = img.aafig["options"]
         text = img.aafig["text"]
-        format = app.builder.format
+        _format = app.builder.format
         merge_dict(options, app.builder.config.aafig_default_options)
-        if format in format_map:
-            options["format"] = format_map[format]
+        if _format in format_map:
+            options["format"] = format_map[_format]
         else:
             logger.warn(
                 'unsupported builder format "%s", please '
                 "add a custom entry in aafig_format config "
-                "option for this builder" % format
+                "option for this builder" % _format,
             )
             img.replace_self(nodes.literal_block(text, text))
             continue
@@ -131,7 +134,7 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             img.replace_self(nodes.literal_block(text, text))
             continue
         try:
-            fname, outfn, id, extra = render_aafigure(app, text, options)
+            fname, outfn, _id, extra = render_aafigure(app, text, options)
         except AafigError as exc:
             logger.warn("aafigure error: " + str(exc))
             img.replace_self(nodes.literal_block(text, text))
@@ -152,7 +155,9 @@ class AafigureNotInstalled(AafigError):
 
 
 def render_aafigure(
-    app: "Sphinx", text: str, options: t.Dict[str, str]
+    app: "Sphinx",
+    text: str,
+    options: t.Dict[str, str],
 ) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
     """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:
@@ -172,7 +177,7 @@ def render_aafigure(
                 "aafig: the builder format %s is not officially "
                 "supported, aafigure images could not work. "
                 "Please report problems and working builder to "
-                "avoid this warning in the future" % app.builder.format
+                "avoid this warning in the future" % app.builder.format,
             )
         relfn = fname
         outfn = path.join(app.builder.outdir, fname)

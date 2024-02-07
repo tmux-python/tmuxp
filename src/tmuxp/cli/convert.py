@@ -46,7 +46,7 @@ class ConvertUnknownFileType(exc.TmuxpException):
 
     def __init__(self, ext: str, *args: object, **kwargs: object) -> None:
         return super().__init__(
-            f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])"
+            f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])",
         )
 
 
@@ -57,7 +57,8 @@ def command_convert(
 ) -> None:
     """Entrypoint for ``tmuxp convert`` convert a tmuxp config between JSON and YAML."""
     workspace_file = find_workspace_file(
-        workspace_file, workspace_dir=get_workspace_dir()
+        workspace_file,
+        workspace_dir=get_workspace_dir(),
     )
 
     if isinstance(workspace_file, str):
@@ -77,7 +78,7 @@ def command_convert(
     newfile = workspace_file.parent / (str(workspace_file.stem) + f".{to_filetype}")
 
     new_workspace = configparser.dump(
-        format=to_filetype,
+        fmt=to_filetype,
         indent=2,
         **{"default_flow_style": False} if to_filetype == "yaml" else {},
     )

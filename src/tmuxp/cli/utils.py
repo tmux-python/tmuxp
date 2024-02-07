@@ -200,7 +200,8 @@ _ansi_reset_all = "\033[0m"
 
 
 def _interpret_color(
-    color: t.Union[int, t.Tuple[int, int, int], str], offset: int = 0
+    color: t.Union[int, t.Tuple[int, int, int], str],
+    offset: int = 0,
 ) -> str:
     if isinstance(color, int):
         return f"{38 + offset};5;{color:d}"

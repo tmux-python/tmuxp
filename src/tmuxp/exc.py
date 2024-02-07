@@ -111,7 +111,10 @@ class BeforeLoadScriptError(Exception):
     """
 
     def __init__(
-        self, returncode: int, cmd: str, output: t.Optional[str] = None
+        self,
+        returncode: int,
+        cmd: str,
+        output: t.Optional[str] = None,
     ) -> None:
         self.returncode = returncode
         self.cmd = cmd

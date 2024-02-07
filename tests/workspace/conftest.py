@@ -20,5 +20,5 @@ def config_fixture() -> WorkspaceTestData:
             k: v
             for k, v in test_workspace_data.__dict__.items()
             if isinstance(v, types.ModuleType)
-        }
+        },
     )
