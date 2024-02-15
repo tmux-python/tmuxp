@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup tmux build cache for tmux ${{ matrix.tmux-version }}
         id: tmux-build-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/tmux-builds/tmux-${{ matrix.tmux-version }}
           key: tmux-${{ matrix.tmux-version }}
