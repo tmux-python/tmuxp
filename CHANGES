@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+#### Testing
+
+- CI: Bump actions to node 20+ versions
+
 ## tmuxp 1.37.0 (2024-02-14)
 
 ### Breaking changes
