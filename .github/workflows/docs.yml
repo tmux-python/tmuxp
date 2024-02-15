@@ -38,7 +38,7 @@ jobs:
         run: pipx install "poetry==1.7.1"
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         if: env.PUBLISH == 'true'
         with:
           python-version: ${{ matrix.python-version }}
