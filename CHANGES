@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- libtmux: 0.27.0 -> 0.28.0 (#910)
+
+  Refresh and resize improvements
+
 ### Tests
 
 - CI: Add tmux 3.4 to test matrix (#909)
