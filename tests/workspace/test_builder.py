@@ -187,10 +187,10 @@ def test_suppress_history(session: Session) -> None:
         (isMissingWindow, "isMissing", assertIsMissing),
     ]:
         assert w.name == window_name
-        w.select_window()
+        w.select()
         p = w.attached_pane
         assert p is not None
-        p.select_pane()
+        p.select()
 
         # Print the last-in-history command in the pane
         p.cmd("send-keys", " fc -ln -1")
@@ -1539,8 +1539,8 @@ def test_issue_800_default_size_many_windows(
         assert builder is not None
         assert builder.session is not None
         assert isinstance(builder.session, Session)
-        assert callable(builder.session.kill_session)
-        builder.session.kill_session()
+        assert callable(builder.session.kill)
+        builder.session.kill()
 
         with pytest.raises(libtmux.exc.LibTmuxException, match="no space for new pane"):
             builder.build()

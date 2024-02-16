@@ -474,7 +474,7 @@ def load_workspace(
 
         if choice == "k":
             if builder.session is not None:
-                builder.session.kill_session()
+                builder.session.kill()
                 tmuxp_echo("Session killed.")
         elif choice == "a":
             _reattach(builder)
