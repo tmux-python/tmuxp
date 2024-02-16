@@ -270,7 +270,7 @@ class WorkspaceBuilder:
                     cwd = self.session_config["start_directory"]
                 run_before_script(self.session_config["before_script"], cwd=cwd)
             except Exception:
-                self.session.kill_session()
+                self.session.kill()
                 raise
 
         if "options" in self.session_config:
@@ -311,10 +311,10 @@ class WorkspaceBuilder:
                 plugin.after_window_finished(window)
 
             if focus_pane:
-                focus_pane.select_pane()
+                focus_pane.select()
 
         if focus:
-            focus.select_window()
+            focus.select()
 
     def iter_create_windows(
         self,
@@ -403,7 +403,7 @@ class WorkspaceBuilder:
             assert isinstance(window, Window)
 
             if is_first_window_pass:  # if first window, use window 1
-                session.attached_window.kill_window()
+                session.attached_window.kill()
 
             if "options" in window_config and isinstance(
                 window_config["options"],
@@ -413,7 +413,7 @@ class WorkspaceBuilder:
                     window.set_window_option(key, val)
 
             if window_config.get("focus"):
-                window.select_window()
+                window.select()
 
             yield window, window_config
 

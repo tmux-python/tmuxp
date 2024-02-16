@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+#### Breaking changes
+
+- libtmux: 0.28.1 -> 0.30.1 (#911).
+
+  Updated method names
+
+- Rename methods to libtmux v0.30.0+-style (#911).
+
 ## tmuxp 1.37.1 (2024-02-15)
 
 #### Development
