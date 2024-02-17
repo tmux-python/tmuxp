@@ -355,7 +355,7 @@ class WorkspaceBuilder:
 
             w1 = None
             if is_first_window_pass:  # if first window, use window 1
-                w1 = session.attached_window
+                w1 = session.active_window
                 w1.move_window("99")
 
             start_directory = window_config.get("start_directory", None)
@@ -403,7 +403,7 @@ class WorkspaceBuilder:
             assert isinstance(window, Window)
 
             if is_first_window_pass:  # if first window, use window 1
-                session.attached_window.kill()
+                session.active_window.kill()
 
             if "options" in window_config and isinstance(
                 window_config["options"],
@@ -452,7 +452,7 @@ class WorkspaceBuilder:
             start=pane_base_index,
         ):
             if pane_index == int(pane_base_index):
-                pane = window.attached_pane
+                pane = window.active_pane
             else:
 
                 def get_pane_start_directory(

@@ -123,13 +123,13 @@ def test_shell(
     window = session.new_window(window_name=window_name)
     window.split_window()
 
-    assert window.attached_pane is not None
+    assert window.active_pane is not None
 
     template_ctx = {
         "SOCKET_NAME": server.socket_name,
         "SESSION_NAME": session.name,
         "WINDOW_NAME": window_name,
-        "PANE_ID": window.attached_pane.id,
+        "PANE_ID": window.active_pane.id,
         "SERVER_SOCKET_NAME": server.socket_name,
     }
 
@@ -293,13 +293,13 @@ def test_shell_interactive(
     window = session.new_window(window_name=window_name)
     window.split_window()
 
-    assert window.attached_pane is not None
+    assert window.active_pane is not None
 
     template_ctx = {
         "SOCKET_NAME": server.socket_name,
         "SESSION_NAME": session.name,
         "WINDOW_NAME": window_name,
-        "PANE_ID": window.attached_pane.id,
+        "PANE_ID": window.active_pane.id,
         "SERVER_SOCKET_NAME": server.socket_name,
     }
 

@@ -174,8 +174,8 @@ windows:
         detached=True,
     )
     assert session is not None
-    assert session.attached_window is not None
-    pane = session.attached_window.attached_pane
+    assert session.active_window is not None
+    pane = session.active_window.active_pane
 
     assert isinstance(session, Session)
     assert session.name == "samplesimple"

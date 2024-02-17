@@ -78,9 +78,10 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
     hook_name : str
         hook name to bind to, e.g. 'client-attached'
     """
-    cmd = ["set-hook", "-t", session.id, hook_name]
+    assert session.id is not None
+    cmd: t.List[str] = ["set-hook", "-t", str(session.id), hook_name]
     hook_cmd = []
-    attached_window = session.attached_window
+    active_window = session.active_window
     for window in session.windows:
         # unfortunately, select-layout won't work unless
         # we've literally selected the window at least once
@@ -92,7 +93,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
 
     # unset the hook immediately after executing
     hook_cmd.append(f"set-hook -u -t {session.id} {hook_name}")
-    hook_cmd.append(f"selectw -t {attached_window.id}")
+    hook_cmd.append(f"selectw -t {active_window.id}")
 
     # join the hook's commands with semicolons
     _hook_cmd = "{}".format("; ".join(hook_cmd))

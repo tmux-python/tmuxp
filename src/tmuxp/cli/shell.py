@@ -154,8 +154,8 @@ def command_shell(
 
     - session_name and window_name arguments
     - current shell: envvar ``TMUX_PANE`` for determining window and session
-    - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.attached_window`,
-      :attr:`libtmux.Window.attached_pane`
+    - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.active_window`,
+      :attr:`libtmux.Window.active_pane`
     """
     # If inside a server, detect socket_path
     env_tmux = os.getenv("TMUX")

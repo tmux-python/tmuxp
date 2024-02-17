@@ -19,11 +19,18 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+#### Breaking changes
+
+- libtmux: 0.30.2 -> 0.31.0 (#912)
+
+- Renamings of libtmux 0.31.0's streamlining of `cmd()`, renaming of `attached_{window,pane}s` to
+  `active_{window,pane}s`.
+
 ## tmuxp 1.38.0 (2024-02-16)
 
 #### Breaking changes
 
-- libtmux: 0.28.1 -> 0.30.1 (#911).
+- libtmux: 0.28.1 -> 0.30.1 (#911)
 
   Updated method names
 
