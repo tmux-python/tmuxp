@@ -92,9 +92,9 @@ def test_focus_pane_index(session: Session) -> None:
 
     builder.build(session=session)
 
-    assert session.attached_window.name == "focused window"
+    assert session.active_window.name == "focused window"
 
-    _pane_base_index = session.attached_window.show_window_option(
+    _pane_base_index = session.active_window.show_window_option(
         "pane-base-index",
         g=True,
     )
@@ -106,14 +106,14 @@ def test_focus_pane_index(session: Session) -> None:
     # get the pane index for each pane
     pane_base_indexes = [
         int(pane.index)
-        for pane in session.attached_window.panes
+        for pane in session.active_window.panes
         if pane is not None and pane.index is not None
     ]
 
     pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
     assert pane_indexes_should_be == pane_base_indexes
 
-    w = session.attached_window
+    w = session.active_window
 
     assert w.name != "man"
 
@@ -122,7 +122,7 @@ def test_focus_pane_index(session: Session) -> None:
 
     def f_check() -> bool:
         nonlocal p
-        p = w.attached_pane
+        p = w.active_pane
         assert p is not None
         return p.pane_current_path == pane_path
 
@@ -142,7 +142,7 @@ def test_focus_pane_index(session: Session) -> None:
 
     def f_check_again() -> bool:
         nonlocal p
-        p = window3.attached_pane
+        p = window3.active_pane
         assert p is not None
         return p.pane_current_path == pane_path
 
@@ -188,7 +188,7 @@ def test_suppress_history(session: Session) -> None:
     ]:
         assert w.name == window_name
         w.select()
-        p = w.attached_pane
+        p = w.active_pane
         assert p is not None
         p.select()
 
@@ -279,7 +279,7 @@ def test_global_session_env_options(
     assert isinstance(_visual_silence, str)
     assert visual_silence in _visual_silence
     assert repeat_time == session.show_option("repeat-time")
-    assert main_pane_height == session.attached_window.show_window_option(
+    assert main_pane_height == session.active_window.show_window_option(
         "main-pane-height",
     )
 
@@ -338,7 +338,7 @@ def test_window_options_after(
         # Print output for easier debugging if assertion fails
         return retry_until(f, raises=False)
 
-    for i, pane in enumerate(session.attached_window.panes):
+    for i, pane in enumerate(session.active_window.panes):
         assert assert_last_line(pane, str(i)), (
             "Initial command did not execute properly/" + str(i)
         )
@@ -351,7 +351,7 @@ def test_window_options_after(
     session.cmd("send-keys", " echo moo")
     session.cmd("send-keys", "Enter")
 
-    for pane in session.attached_window.panes:
+    for pane in session.active_window.panes:
         assert assert_last_line(
             pane,
             "moo",
@@ -1235,7 +1235,7 @@ def test_load_workspace_enter(
 
     session = builder.session
     assert isinstance(session, Session)
-    pane = session.attached_pane
+    pane = session.active_pane
     assert isinstance(pane, Pane)
 
     def fn() -> bool:
@@ -1363,7 +1363,7 @@ def test_load_workspace_sleep(
     session = builder.session
     assert isinstance(builder.session, Session)
     assert session is not None
-    pane = session.attached_pane
+    pane = session.active_pane
     assert isinstance(pane, Pane)
 
     assert pane is not None

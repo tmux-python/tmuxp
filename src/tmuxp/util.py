@@ -154,7 +154,7 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
         if current_pane is not None:
             pane = window.panes.get(pane_id=current_pane.pane_id)
         else:
-            pane = window.attached_pane
+            pane = window.active_pane
     except exc.TmuxpException as e:
         print(e)
 
