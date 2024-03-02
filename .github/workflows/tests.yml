@@ -55,8 +55,8 @@ jobs:
       - name: Install python dependencies
         run: poetry install --with=test,coverage,lint
 
-      - name: Lint with ruff .
-        run: poetry run ruff .
+      - name: Lint with ruff check .
+        run: poetry run ruff check .
 
       - name: Format with ruff
         run: poetry run ruff format . --check
