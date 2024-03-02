@@ -1,4 +1,5 @@
 """Tmuxinator data fixtures for import_tmuxinator tests, 3rd dataset."""
+
 from .. import utils as test_utils
 
 tmuxinator_yaml = test_utils.read_workspace_file("import_tmuxinator/test3.yaml")

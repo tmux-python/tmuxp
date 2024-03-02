@@ -1,4 +1,5 @@
 """Constant variables for tmuxp tests."""
+
 import pathlib
 
 TESTS_PATH = pathlib.Path(__file__).parent

@@ -1,4 +1,5 @@
 """Tmuxp example plugin for after_window_finished."""
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin

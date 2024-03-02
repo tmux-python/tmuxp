@@ -1,4 +1,5 @@
 """CLI tests for tmuxp shell."""
+
 import contextlib
 import io
 import pathlib

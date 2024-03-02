@@ -1,4 +1,5 @@
 """Test for tmuxp teamocil configuration."""
+
 import typing as t
 
 import pytest

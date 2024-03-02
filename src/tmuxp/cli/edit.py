@@ -1,4 +1,5 @@
 """CLI for ``tmuxp edit`` subcommand."""
+
 import argparse
 import os
 import pathlib

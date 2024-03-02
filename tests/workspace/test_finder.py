@@ -1,4 +1,5 @@
 """Test config file searching for tmuxp."""
+
 import argparse
 import pathlib
 import typing as t

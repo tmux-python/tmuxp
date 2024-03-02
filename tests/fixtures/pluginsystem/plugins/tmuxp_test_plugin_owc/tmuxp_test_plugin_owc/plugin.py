@@ -1,4 +1,5 @@
 """Tmuxp example plugin for on_window_create."""
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin

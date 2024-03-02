@@ -1,4 +1,5 @@
 """Test for tmuxp workspace builder."""
+
 import functools
 import os
 import pathlib

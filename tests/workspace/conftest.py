@@ -1,4 +1,5 @@
 """Pytest configuration for tmuxp workspace tests."""
+
 import types
 
 import pytest

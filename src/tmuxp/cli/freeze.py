@@ -1,4 +1,5 @@
 """CLI for ``tmuxp freeze`` subcommand."""
+
 import argparse
 import os
 import pathlib

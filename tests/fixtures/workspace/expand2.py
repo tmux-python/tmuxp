@@ -1,4 +1,5 @@
 """YAML examples of expansion of tmuxp configurations from shorthand style."""
+
 import pathlib
 
 from .. import utils as test_utils

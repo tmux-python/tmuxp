@@ -1,4 +1,5 @@
 """Fixtures for tmuxp plugins for tmux version exceptions."""
+
 import typing as t
 
 from .test_plugin_helpers import MyTestTmuxpPlugin

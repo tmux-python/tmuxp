@@ -1,4 +1,5 @@
 """Tests for tmuxp plugin API."""
+
 import pytest
 
 from tmuxp.exc import TmuxpPluginException

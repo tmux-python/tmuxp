@@ -1,4 +1,5 @@
 """Validation errors for tmuxp configuration files."""
+
 import typing as t
 
 from .. import exc

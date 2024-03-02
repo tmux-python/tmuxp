@@ -1,4 +1,5 @@
 """CLI tests for tmuxp debuginfo."""
+
 import pathlib
 
 import pytest
