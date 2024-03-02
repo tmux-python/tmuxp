@@ -1,4 +1,5 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
+
 import pathlib
 import typing as t
 

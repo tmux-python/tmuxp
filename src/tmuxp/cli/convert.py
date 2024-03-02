@@ -1,4 +1,5 @@
 """CLI for ``tmuxp convert`` subcommand."""
+
 import argparse
 import os
 import pathlib

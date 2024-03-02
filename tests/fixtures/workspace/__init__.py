@@ -1,4 +1,5 @@
 """Workspace data fixtures for tmuxp tests."""
+
 from . import (
     expand1,
     expand2,

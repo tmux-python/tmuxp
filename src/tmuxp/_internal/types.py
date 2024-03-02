@@ -9,6 +9,7 @@ bundled with tmuxp. Usage example:
 ...     from tmuxp._internal.types import PluginConfigSchema
 ...
 """
+
 import typing as t
 
 from typing_extensions import NotRequired, TypedDict

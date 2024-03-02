@@ -1,4 +1,5 @@
 """CLI utilities for tmuxp."""
+
 import argparse
 import logging
 import os

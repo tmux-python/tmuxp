@@ -1,4 +1,5 @@
 """Tests for tmuxp shell module."""
+
 from tmuxp import shell
 
 

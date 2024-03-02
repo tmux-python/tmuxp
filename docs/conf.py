@@ -1,5 +1,6 @@
 # flake8: NOQA: E501
 """Sphinx documentation configuration for tmuxp."""
+
 import contextlib
 import inspect
 import pathlib

@@ -1,4 +1,5 @@
 """Tmuxp example plugin for reattaching session."""
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin

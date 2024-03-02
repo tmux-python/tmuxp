@@ -1,4 +1,5 @@
 """Utility functions for tmuxp fixtures."""
+
 import pathlib
 import typing as t
 

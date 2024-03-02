@@ -1,4 +1,5 @@
 """Example workspace fixture for tmuxp WorkspaceBuilder."""
+
 sample_workspace_dict = {
     "session_name": "sample workspace",
     "start_directory": "~",

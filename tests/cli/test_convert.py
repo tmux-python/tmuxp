@@ -1,4 +1,5 @@
 """CLI tests for tmuxp convert."""
+
 import contextlib
 import io
 import json

@@ -1,4 +1,5 @@
 """Configuration parser for YAML and JSON files."""
+
 import json
 import pathlib
 import typing as t

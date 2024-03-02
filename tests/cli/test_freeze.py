@@ -1,4 +1,5 @@
 """Test workspace freezing functionality for tmuxp."""
+
 import contextlib
 import io
 import pathlib

@@ -1,4 +1,5 @@
 """Typings / structures for tmuxp fixtures."""
+
 import dataclasses
 import typing as t
 

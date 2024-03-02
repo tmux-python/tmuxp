@@ -1,4 +1,5 @@
 """CLI tests for tmuxp's core shell functionality."""
+
 import argparse
 import contextlib
 import pathlib

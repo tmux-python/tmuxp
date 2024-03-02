@@ -1,4 +1,5 @@
 """Test for tmuxp tmuxinator configuration."""
+
 import typing as t
 
 import pytest

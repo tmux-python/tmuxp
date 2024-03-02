@@ -1,4 +1,5 @@
 """CLI for ``tmuxp ls`` subcommand."""
+
 import argparse
 import os
 import typing as t

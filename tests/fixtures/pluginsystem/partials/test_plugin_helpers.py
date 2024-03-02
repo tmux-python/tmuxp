@@ -1,4 +1,5 @@
 """Tmuxp test plugin for asserting version constraints."""
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin

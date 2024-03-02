@@ -1,4 +1,5 @@
 """CLI for ``tmuxp debug-info`` subcommand."""
+
 import argparse
 import os
 import pathlib

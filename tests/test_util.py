@@ -1,4 +1,5 @@
 """Tests for tmuxp's utility functions."""
+
 import pytest
 from libtmux.server import Server
 

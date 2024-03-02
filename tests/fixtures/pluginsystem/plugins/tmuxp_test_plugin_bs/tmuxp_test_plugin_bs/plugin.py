@@ -1,4 +1,5 @@
 """Tmux plugin that runs before_script, if it is declared in configuration."""
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin

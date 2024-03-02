@@ -1,4 +1,5 @@
 """CLI for ``tmuxp load`` subcommand."""
+
 import argparse
 import importlib
 import logging

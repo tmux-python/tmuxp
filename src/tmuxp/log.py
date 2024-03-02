@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Log utilities for tmuxp."""
+
 import logging
 import time
 import typing as t

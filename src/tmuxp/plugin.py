@@ -1,4 +1,5 @@
 """Plugin system for tmuxp."""
+
 import typing as t
 
 import libtmux

@@ -1,4 +1,5 @@
 """Tmuxp example plugin for before_worksplace_builder."""
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin

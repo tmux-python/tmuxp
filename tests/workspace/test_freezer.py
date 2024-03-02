@@ -1,4 +1,5 @@
 """Tests tmux session freezing functionality for tmuxp."""
+
 import pathlib
 import time
 import typing
