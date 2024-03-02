@@ -1,1 +1,1 @@
-""" "Test data for tmuxp plugin system."""
+"""Test data for tmuxp plugin system."""
