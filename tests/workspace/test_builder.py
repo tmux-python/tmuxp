@@ -316,6 +316,45 @@ def test_window_options(
         w.select_layout(wconf["layout"])
 
 
+def test_regression_00915_pane_with_hyphen_t_target(
+    tmp_path: pathlib.Path,
+    server: "Server",
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Regression test for send_keys in pane starting with -t."""
+    yaml_config = (
+        FIXTURE_PATH
+        / "workspace/builder"
+        / "regression_send_keys_with_hyphen_t_00915.yaml"
+    )
+    workspace = ConfigReader._from_file(yaml_config)
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    session = builder.session
+    assert session is not None
+
+    window = session.active_window
+
+    assert window is not None
+
+    pane_1 = window.panes[0]
+    assert "t - This echo's correctly." in pane_1.cmd("capture-pane", "-p").stdout[0]
+
+    pane_2 = window.panes[1]
+    assert (
+        "-a - This also echo's correctly." in pane_2.cmd("capture-pane", "-p").stdout[0]
+    )
+
+    pane_3 = window.panes[2]
+    assert (
+        "-t - This is never sent to the pane and instead printed to the current shell."
+        in pane_3.cmd("capture-pane", "-p").stdout[0]
+    )
+
+
 @pytest.mark.flaky(reruns=5)
 def test_window_options_after(
     session: Session,
