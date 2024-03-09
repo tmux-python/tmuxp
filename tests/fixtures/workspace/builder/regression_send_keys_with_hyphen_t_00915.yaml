@@ -1,0 +1,12 @@
+# regression https://github.com/tmux-python/tmuxp/issues/915
+session_name: target hyphen regression 915
+windows:
+  - window_name: target hyphen regression 915 
+    layout: tiled
+    panes:
+      - shell_command:
+        - echo "t - This echo's correctly."
+      - shell_command:
+        - echo "-a - This also echo's correctly."
+      - shell_command:
+        - echo "-t - This is never sent to the pane and instead printed to the current shell."
