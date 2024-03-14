@@ -331,24 +331,36 @@ def test_regression_00915_pane_with_hyphen_t_target(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    # Create a session using the template
     builder.build()
+    # Then append the template again
+    builder.build(builder.session, append=True)
 
     session = builder.session
     assert session is not None
 
-    window = session.active_window
-
-    assert window is not None
-
-    pane_1 = window.panes[0]
+    # Check the panes added when created the session
+    pane_1 = session.windows[0].panes[0]
     assert "t - This echo's correctly." in pane_1.cmd("capture-pane", "-p").stdout[0]
-
-    pane_2 = window.panes[1]
+    pane_2 = session.windows[0].panes[1]
     assert (
         "-a - This also echo's correctly." in pane_2.cmd("capture-pane", "-p").stdout[0]
     )
+    pane_3 = session.windows[0].panes[2]
+    assert (
+        "-t - This is never sent to the pane and instead printed to the current shell."
+        in pane_3.cmd("capture-pane", "-p").stdout[0]
+    )
 
-    pane_3 = window.panes[2]
+    # Check the panes in the appended window
+    pane_1 = session.windows[1].panes[0]
+    assert "t - This echo's correctly." in pane_1.cmd("capture-pane", "-p").stdout[0]
+    pane_2 = session.windows[1].panes[1]
+    assert (
+        "-a - This also echo's correctly." in pane_2.cmd("capture-pane", "-p").stdout[0]
+    )
+    pane_3 = session.windows[1].panes[2]
     assert (
         "-t - This is never sent to the pane and instead printed to the current shell."
         in pane_3.cmd("capture-pane", "-p").stdout[0]
