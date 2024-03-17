@@ -122,7 +122,7 @@ def test_shell(
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
-    window.split_window()
+    window.split()
 
     assert window.active_pane is not None
 
@@ -215,7 +215,7 @@ def test_shell_target_missing(
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
-    window.split_window()
+    window.split()
 
     assert server.socket_name is not None
     assert session.name is not None
@@ -292,7 +292,7 @@ def test_shell_interactive(
     monkeypatch.setenv("HOME", str(tmp_path))
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
-    window.split_window()
+    window.split()
 
     assert window.active_pane is not None
 
