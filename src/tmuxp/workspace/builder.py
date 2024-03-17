@@ -495,7 +495,7 @@ class WorkspaceBuilder:
 
                 assert pane is not None
 
-                pane = window.split_window(
+                pane = pane.split(
                     attach=True,
                     start_directory=get_pane_start_directory(
                         pane_config=pane_config,
@@ -505,7 +505,6 @@ class WorkspaceBuilder:
                         pane_config=pane_config,
                         window_config=window_config,
                     ),
-                    target=pane.id,
                     environment=environment,
                 )
 
