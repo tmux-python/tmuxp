@@ -80,7 +80,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
         hook name to bind to, e.g. 'client-attached'
     """
     assert session.id is not None
-    cmd: t.List[str] = ["set-hook", "-t", str(session.id), hook_name]
+    cmd: t.List[str] = ["set-hook", hook_name]
     hook_cmd = []
     active_window = session.active_window
     for window in session.windows:
@@ -103,7 +103,7 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
     cmd.append(_hook_cmd)
 
     # create the hook
-    session.cmd(*cmd)
+    session.cmd(*cmd, target=session.id)
 
 
 def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
