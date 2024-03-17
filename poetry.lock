@@ -391,13 +391,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "libtmux"
-version = "0.34.0"
+version = "0.35.0"
 description = "Typed library that provides an ORM wrapper for tmux, a terminal multiplexer."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "libtmux-0.34.0-py3-none-any.whl", hash = "sha256:9415ab08dc97dcf1c8f8799ae6b319b31ada5c11262ba5b62bb24485c8595203"},
-    {file = "libtmux-0.34.0.tar.gz", hash = "sha256:ba2b507956b6ff31aae3f0bb7999d521586133a02bc814245ef3b10b93d1458e"},
+    {file = "libtmux-0.35.0-py3-none-any.whl", hash = "sha256:aa3eed2fb0219b5ae4da200d5144778f18450190ba4011f2f01834450eeaaf80"},
+    {file = "libtmux-0.35.0.tar.gz", hash = "sha256:411f6175be67d5a598e414e45a1abf14224d8c167a9d7f7fbdcdd1d1d0fefc11"},
 ]
 
 [[package]]
@@ -1397,4 +1397,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "4fb50a6e242f6e7040d806f28e557c3d4505dee2ce582f12590d7b6970eca169"
+content-hash = "220b257ae019522ec9e3d1cc817268db189d12c946dd84c22d431e66779d5733"
