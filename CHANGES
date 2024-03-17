@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- libtmux: 0.32.0 -> 0.33.0 (#918)
+
+  Move `split_window()` to `split()`.
+
 ### Development
 
 - poetry: 1.7.1 -> 1.8.1
