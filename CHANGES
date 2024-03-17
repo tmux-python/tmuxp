@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- libtmux: 0.34.0 -> 0.35.0 (#920)
+
+  Simplify redundant `target` passing and `window-index` usages (#920)
+
 ## tmuxp 1.42.0 (2024-03-17)
 
 ### Breaking changes
