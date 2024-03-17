@@ -149,7 +149,7 @@ AL - [Abstraction Layer][abstraction layer]
 | {meth}`libtmux.Session.windows`       | `$ tmux list-windows`      |
 | {meth}`libtmux.Session.new_window`    | `$ tmux new-window`        |
 | {meth}`libtmux.Window.panes`          | `$ tmux list-panes`        |
-| {meth}`libtmux.Window.split_window`   | `$ tmux split-window`      |
+| {meth}`libtmux.Window.split`          | `$ tmux split-window`      |
 | {meth}`libtmux.Pane.send_keys`        | `$ tmux send-keys`         |
 
 [import]: http://tmuxp.git-pull.com/commands/#import
