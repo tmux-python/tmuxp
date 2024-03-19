@@ -1103,6 +1103,8 @@ def test_find_current_active_pane(
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
@@ -1116,6 +1118,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1130,6 +1134,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
@@ -1142,6 +1148,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1155,6 +1163,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1169,6 +1179,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1183,6 +1195,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
@@ -1195,6 +1209,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1260,6 +1276,8 @@ def test_load_workspace_enter(
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1276,6 +1294,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1292,6 +1312,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1306,6 +1328,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1320,6 +1344,8 @@ windows:
             textwrap.dedent(
                 """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 shell_command_before:
   - cmd: echo "sleeping before"
     sleep_before: .5
