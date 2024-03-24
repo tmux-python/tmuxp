@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- libtmux: 0.35.0 -> 0.35.1
+
+  Improved support in libtmux when multiple clients attached to a session in a server.
+
 ## tmuxp 1.43.0 (2024-03-17)
 
 ### Breaking changes
