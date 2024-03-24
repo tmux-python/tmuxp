@@ -15,9 +15,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 // Usage: tmuxp@next load yoursession
 ```
 
-## tmuxp 1.45.0 (unreleased)
+## tmuxp 1.46.0 (unreleased)
 
 <!-- Maintainers, insert changes / features for the next release here -->
+
+## tmuxp 1.45.0 (2024-03-24)
+
+_Maintenance only, no bug fixes or new features_
 
 ### Development
 
