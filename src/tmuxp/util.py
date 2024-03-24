@@ -51,16 +51,14 @@ def run_before_script(
                 os.path.abspath(script_file),  # NOQA: PTH100
                 stderr_str,
             )
-        else:
-            return proc.returncode
     except OSError as e:
         if e.errno == 2:
             raise exc.BeforeLoadScriptNotExists(
                 e,
                 os.path.abspath(script_file),  # NOQA: PTH100
             ) from e
-        else:
-            raise
+        raise
+    return proc.returncode
 
 
 def oh_my_zsh_auto_title() -> None:
