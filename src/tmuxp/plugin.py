@@ -213,10 +213,7 @@ class TmuxpPlugin:
             return False
         if vmax and version > Version(vmax):
             return False
-        if version in incompatible:
-            return False
-
-        return True
+        return version not in incompatible
 
     def before_workspace_builder(self, session: "Session") -> None:
         """

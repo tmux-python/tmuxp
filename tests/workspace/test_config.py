@@ -5,14 +5,13 @@ import typing as t
 
 import pytest
 
+from tests.constants import EXAMPLE_PATH
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace import loader, validation
 
-from ..constants import EXAMPLE_PATH
-
 if t.TYPE_CHECKING:
-    from ..fixtures.structures import WorkspaceTestData
+    from tests.fixtures.structures import WorkspaceTestData
 
 
 def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:

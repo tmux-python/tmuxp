@@ -11,8 +11,8 @@ from libtmux.server import Server
 from libtmux.session import Session
 from libtmux.window import Window
 
-from .. import exc
-from ..util import get_current_pane, run_before_script
+from tmuxp import exc
+from tmuxp.util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +159,7 @@ class WorkspaceBuilder:
         if plugins is None:
             plugins = []
         if not session_config:
-            raise exc.EmptyWorkspaceException()
+            raise exc.EmptyWorkspaceException
 
         # validation.validate_schema(session_config)
 
@@ -185,7 +185,7 @@ class WorkspaceBuilder:
     def session(self) -> Session:
         """Return tmux session using in workspace builder session."""
         if self._session is None:
-            raise exc.SessionMissingWorkspaceException()
+            raise exc.SessionMissingWorkspaceException
         return self._session
 
     def session_exists(self, session_name: str) -> bool:
@@ -224,19 +224,18 @@ class WorkspaceBuilder:
                     "WorkspaceBuilder.build requires server to be passed "
                     + "on initialization, or pass in session object to here.",
                 )
-            else:
-                new_session_kwargs = {}
-                if "start_directory" in self.session_config:
-                    new_session_kwargs["start_directory"] = self.session_config[
-                        "start_directory"
-                    ]
-                if has_gte_version("2.6"):
-                    new_session_kwargs["x"] = 800
-                    new_session_kwargs["y"] = 600
-                session = self.server.new_session(
-                    session_name=self.session_config["session_name"],
-                    **new_session_kwargs,
-                )
+            new_session_kwargs = {}
+            if "start_directory" in self.session_config:
+                new_session_kwargs["start_directory"] = self.session_config[
+                    "start_directory"
+                ]
+            if has_gte_version("2.6"):
+                new_session_kwargs["x"] = 800
+                new_session_kwargs["y"] = 600
+            session = self.server.new_session(
+                session_name=self.session_config["session_name"],
+                **new_session_kwargs,
+            )
             assert session is not None
 
             assert self.session_config["session_name"] == session.name
@@ -462,10 +461,9 @@ class WorkspaceBuilder:
                 ) -> t.Optional[str]:
                     if "start_directory" in pane_config:
                         return pane_config["start_directory"]
-                    elif "start_directory" in window_config:
+                    if "start_directory" in window_config:
                         return window_config["start_directory"]
-                    else:
-                        return None
+                    return None
 
                 def get_pane_shell(
                     pane_config: t.Dict[str, str],
@@ -473,10 +471,9 @@ class WorkspaceBuilder:
                 ) -> t.Optional[str]:
                     if "shell" in pane_config:
                         return pane_config["shell"]
-                    elif "window_shell" in window_config:
+                    if "window_shell" in window_config:
                         return window_config["window_shell"]
-                    else:
-                        return None
+                    return None
 
                 environment = pane_config.get(
                     "environment",
@@ -574,7 +571,7 @@ class WorkspaceBuilder:
         current_active_pane = get_current_pane(self.server)
 
         if current_active_pane is None:
-            raise exc.ActiveSessionMissingWorkspaceException()
+            raise exc.ActiveSessionMissingWorkspaceException
 
         return next(
             (

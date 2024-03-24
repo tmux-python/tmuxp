@@ -13,13 +13,13 @@ from libtmux.common import has_gte_version
 from libtmux.server import Server
 from libtmux.session import Session
 
+from tmuxp import exc, log, util
+from tmuxp._internal import config_reader
 from tmuxp.types import StrPath
+from tmuxp.workspace import loader
+from tmuxp.workspace.builder import WorkspaceBuilder
+from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
-from .. import exc, log, util
-from .._internal import config_reader
-from ..workspace import loader
-from ..workspace.builder import WorkspaceBuilder
-from ..workspace.finders import find_workspace_file, get_workspace_dir
 from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
@@ -93,8 +93,9 @@ def set_layout_hook(session: Session, hook_name: str) -> None:
         hook_cmd.append("selectw -p")
 
     # unset the hook immediately after executing
-    hook_cmd.append(f"set-hook -u -t {session.id} {hook_name}")
-    hook_cmd.append(f"selectw -t {active_window.id}")
+    hook_cmd.extend(
+        (f"set-hook -u -t {session.id} {hook_name}", f"selectw -t {active_window.id}")
+    )
 
     # join the hook's commands with semicolons
     _hook_cmd = "{}".format("; ".join(hook_cmd))
@@ -441,7 +442,7 @@ def load_workspace(
             return _setup_plugins(builder)
 
         # append and answer_yes have no meaning if specified together
-        elif answer_yes:
+        if answer_yes:
             _load_attached(builder, detached)
             return _setup_plugins(builder)
 

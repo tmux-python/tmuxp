@@ -12,6 +12,7 @@ See the README file for details.
 :license: BOLA, see LICENSE for details
 """
 
+import locale
 import logging
 import posixpath
 import typing as t
@@ -91,7 +92,7 @@ class AafigDirective(images.Image):  # type:ignore
                 if v is None:
                     v = True
                 # convert percentage to float
-                if k == "scale" or k == "aspect":
+                if k in {"scale", "aspect"}:
                     v = float(v) / 100.0
                 aafig_options[k] = v
                 del self.options[k]
@@ -108,7 +109,7 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
     format_map = app.builder.config.aafig_format
     merge_dict(format_map, DEFAULT_FORMATS)
     if aafigure is None:
-        logger.warn(
+        logger.warning(
             "aafigure module not installed, ASCII art images "
             "will be rendered as literal text",
         )
@@ -124,7 +125,7 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
         if _format in format_map:
             options["format"] = format_map[_format]
         else:
-            logger.warn(
+            logger.warning(
                 'unsupported builder format "%s", please '
                 "add a custom entry in aafig_format config "
                 "option for this builder" % _format,
@@ -135,9 +136,9 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             img.replace_self(nodes.literal_block(text, text))
             continue
         try:
-            fname, outfn, _id, extra = render_aafigure(app, text, options)
+            fname, _outfn, _id, extra = render_aafigure(app, text, options)
         except AafigError as exc:
-            logger.warn("aafigure error: " + str(exc))
+            logger.warning("aafigure error: " + str(exc))
             img.replace_self(nodes.literal_block(text, text))
             continue
         img["uri"] = fname
@@ -162,7 +163,7 @@ def render_aafigure(
 ) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
     """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:
-        raise AafigureNotInstalled()
+        raise AafigureNotInstalled
 
     fname = get_basename(text, options)
     fname = "{}.{}".format(get_basename(text, options), options["format"])
@@ -174,7 +175,7 @@ def render_aafigure(
     else:
         # Non-HTML
         if app.builder.format != "latex":
-            logger.warn(
+            logger.warning(
                 "aafig: the builder format %s is not officially "
                 "supported, aafigure images could not work. "
                 "Please report problems and working builder to "
@@ -191,10 +192,12 @@ def render_aafigure(
                 f = None
                 try:
                     try:
-                        with open(metadata_fname) as f:
+                        with open(
+                            metadata_fname, encoding=locale.getpreferredencoding(False)
+                        ) as f:
                             extra = f.read()
                     except Exception as e:
-                        raise AafigError() from e
+                        raise AafigError from e
                 finally:
                     if f is not None:
                         f.close()
@@ -213,7 +216,9 @@ def render_aafigure(
     extra = None
     if options["format"].lower() == "svg":
         extra = visitor.get_size_attrs()
-        with open(metadata_fname, "w") as f:
+        with open(
+            metadata_fname, "w", encoding=locale.getpreferredencoding(False)
+        ) as f:
             f.write(extra)
 
     return relfn, outfn, None, extra

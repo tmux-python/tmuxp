@@ -1,15 +1,16 @@
 """CLI for ``tmuxp shell`` subcommand."""
 
 import argparse
+import locale
 import os
 import pathlib
 import sys
 import typing as t
 
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp.workspace import importers
 from tmuxp.workspace.finders import find_workspace_file
 
-from ..workspace import importers
 from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 
 
@@ -172,7 +173,7 @@ def import_config(
             if prompt_yes_no("Save to %s?" % dest_path):
                 dest = dest_path
 
-        with open(dest, "w") as buf:
+        with open(dest, "w", encoding=locale.getpreferredencoding(False)) as buf:
             buf.write(new_config)
 
         tmuxp_echo("Saved to %s." % dest)

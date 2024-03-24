@@ -193,9 +193,7 @@ def debug_log_template(
         + "%(lineno)d"
     )
 
-    tpl = reset + levelname + asctime + name + module_funcName + lineno + reset
-
-    return tpl
+    return reset + levelname + asctime + name + module_funcName + lineno + reset
 
 
 class DebugLogFormatter(LogFormatter):

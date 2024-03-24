@@ -218,15 +218,14 @@ def trickle(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
             session_start_directory = session_start_directory
             if "start_directory" not in window_dict:
                 window_dict["start_directory"] = session_start_directory
-            else:
-                if not any(
-                    window_dict["start_directory"].startswith(a) for a in ["~", "/"]
-                ):
-                    window_start_path = (
-                        pathlib.Path(session_start_directory)
-                        / window_dict["start_directory"]
-                    )
-                    window_dict["start_directory"] = str(window_start_path)
+            elif not any(
+                window_dict["start_directory"].startswith(a) for a in ["~", "/"]
+            ):
+                window_start_path = (
+                    pathlib.Path(session_start_directory)
+                    / window_dict["start_directory"]
+                )
+                window_dict["start_directory"] = str(window_start_path)
 
         # We only need to trickle to the window, workspace builder checks wconf
         if suppress_history is not None and "suppress_history" not in window_dict:

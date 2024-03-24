@@ -62,7 +62,7 @@ def test_get_configs_cwd(
 
 
 @pytest.mark.parametrize(
-    "path,expect",
+    ("path", "expect"),
     [
         (".", False),
         ("./", False),
@@ -104,7 +104,7 @@ def test_tmuxp_configdir_xdg_config_dir(
     assert get_workspace_dir() == str(tmux_dir)
 
 
-@pytest.fixture
+@pytest.fixture()
 def homedir(tmp_path: pathlib.Path) -> pathlib.Path:
     """Fixture to ensure and return a home directory."""
     home = tmp_path / "home"
@@ -112,7 +112,7 @@ def homedir(tmp_path: pathlib.Path) -> pathlib.Path:
     return home
 
 
-@pytest.fixture
+@pytest.fixture()
 def configdir(homedir: pathlib.Path) -> pathlib.Path:
     """Fixture to ensure user directory for tmuxp and return it, via homedir fixture."""
     conf = homedir / ".tmuxp"
@@ -120,7 +120,7 @@ def configdir(homedir: pathlib.Path) -> pathlib.Path:
     return conf
 
 
-@pytest.fixture
+@pytest.fixture()
 def projectdir(homedir: pathlib.Path) -> pathlib.Path:
     """Fixture to ensure and return an example project dir."""
     proj = homedir / "work" / "project"

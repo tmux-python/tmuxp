@@ -82,7 +82,7 @@ def import_tmuxinator(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
                 window_dict["panes"] = [v]
                 tmuxp_workspace["windows"].append(window_dict)
                 continue
-            elif isinstance(v, list):
+            if isinstance(v, list):
                 window_dict["panes"] = v
                 tmuxp_workspace["windows"].append(window_dict)
                 continue
@@ -157,7 +157,7 @@ def import_teamocil(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
                 if "cmd" in p:
                     p["shell_command"] = p.pop("cmd")
                 if "width" in p:
-                    # todo support for height/width
+                    # TODO support for height/width
                     p.pop("width")
             window_dict["panes"] = w["panes"]
 

@@ -2,7 +2,7 @@
 
 import pathlib
 
-from .. import utils as test_utils
+from tests.fixtures import utils as test_utils
 
 
 def unexpanded_yaml() -> str:

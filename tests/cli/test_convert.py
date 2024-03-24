@@ -32,7 +32,7 @@ def test_convert(
     if filename == ".":
         filename = ".tmuxp.yaml"
     file_ext = filename.rsplit(".", 1)[-1]
-    assert file_ext in ["yaml", "yml"], file_ext
+    assert file_ext in {"yaml", "yml"}, file_ext
     workspace_file_path = tmp_path / filename
     workspace_file_path.write_text("\nsession_name: hello\n", encoding="utf-8")
     oh_my_zsh_path = tmp_path / ".oh-my-zsh"

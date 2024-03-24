@@ -11,9 +11,10 @@ from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import has_minimum_version
 from libtmux.exc import TmuxCommandNotFound
 
-from .. import exc
-from ..__about__ import __version__
-from ..log import setup_logger
+from tmuxp import exc
+from tmuxp.__about__ import __version__
+from tmuxp.log import setup_logger
+
 from .convert import command_convert, create_convert_subparser
 from .debug_info import command_debug_info, create_debug_info_subparser
 from .edit import command_edit, create_edit_subparser
@@ -141,7 +142,7 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
     if args.subparser_name is None:
         parser.print_help()
         return
-    elif args.subparser_name == "load":
+    if args.subparser_name == "load":
         command_load(
             args=CLILoadNamespace(**vars(args)),
             parser=parser,
@@ -156,7 +157,7 @@ def cli(_args: t.Optional[t.List[str]] = None) -> None:
         if import_subparser_name is None:
             parser.print_help()
             return
-        elif import_subparser_name == "teamocil":
+        if import_subparser_name == "teamocil":
             command_import_teamocil(
                 workspace_file=args.workspace_file,
                 parser=parser,

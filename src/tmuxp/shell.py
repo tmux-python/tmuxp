@@ -102,11 +102,11 @@ def detect_best_shell() -> "CLIShellLiteral":
     """Return the best, most feature-rich shell available."""
     if has_ptipython():
         return "ptipython"
-    elif has_ptpython():
+    if has_ptpython():
         return "ptpython"
-    elif has_ipython():
+    if has_ipython():
         return "ipython"
-    elif has_bpython():
+    if has_bpython():
         return "bpython"
     return "code"
 

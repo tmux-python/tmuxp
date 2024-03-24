@@ -4,14 +4,13 @@ import typing as t
 
 import pytest
 
+from tests.fixtures import import_teamocil as fixtures
 from tmuxp._internal import config_reader
 from tmuxp.workspace import importers, validation
 
-from ..fixtures import import_teamocil as fixtures
-
 
 @pytest.mark.parametrize(
-    "teamocil_yaml,teamocil_dict,tmuxp_dict",
+    ("teamocil_yaml", "teamocil_dict", "tmuxp_dict"),
     [
         (
             fixtures.test1.teamocil_yaml,
@@ -73,7 +72,7 @@ def multisession_config() -> (
 
 
 @pytest.mark.parametrize(
-    "session_name,expected",
+    ("session_name", "expected"),
     [
         ("two-windows", fixtures.layouts.two_windows),
         ("two-windows-with-filters", fixtures.layouts.two_windows_with_filters),
