@@ -19,6 +19,25 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+- Aggressive automated lint fixes via `ruff` (#922)
+
+  via ruff v0.3.4, all automated lint fixes, including unsafe and previews were applied:
+
+  ```sh
+  ruff check --select ALL . --fix --unsafe-fixes --preview --show-fixes; ruff format .
+  ```
+
+  Branches were treated with:
+
+  ```sh
+  git rebase \
+      --strategy-option=theirs \
+      --exec 'poetry run ruff check --select ALL . --fix --unsafe-fixes --preview --show-fixes; poetry run ruff format .; git add src tests; git commit --amend --no-edit' \
+      origin/master
+  ```
+
 ## tmuxp 1.44.0 (2024-03-24)
 
 ### Breaking changes
