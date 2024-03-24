@@ -1,6 +1,6 @@
 """Tmuxinator data fixtures for import_tmuxinator tests, 2nd dataset."""
 
-from .. import utils as test_utils
+from tests.fixtures import utils as test_utils
 
 tmuxinator_yaml = test_utils.read_workspace_file("import_tmuxinator/test2.yaml")
 
@@ -15,7 +15,7 @@ tmuxinator_dict = {
         {
             "editor": {
                 "pre": [
-                    'echo "I get run in each pane, ' 'before each pane command!"',
+                    'echo "I get run in each pane, before each pane command!"',
                     None,
                 ],
                 "layout": "main-vertical",

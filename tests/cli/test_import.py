@@ -7,9 +7,8 @@ import typing as t
 
 import pytest
 
+from tests.fixtures import utils as test_utils
 from tmuxp import cli
-
-from ..fixtures import utils as test_utils
 
 
 @pytest.mark.parametrize("cli_args", [(["import"])])
@@ -27,7 +26,7 @@ def test_import(
 
 
 @pytest.mark.parametrize(
-    "cli_args,inputs",
+    ("cli_args", "inputs"),
     [
         (
             ["import", "teamocil", "./.teamocil/config.yaml"],
@@ -74,7 +73,7 @@ def test_import_teamocil(
 
 
 @pytest.mark.parametrize(
-    "cli_args,inputs",
+    ("cli_args", "inputs"),
     [
         (
             ["import", "tmuxinator", "./.tmuxinator/config.yaml"],

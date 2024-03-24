@@ -18,14 +18,13 @@ from libtmux.session import Session
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
 
+from tests.constants import EXAMPLE_PATH, FIXTURE_PATH
+from tests.fixtures import utils as test_utils
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
-
-from ..constants import EXAMPLE_PATH, FIXTURE_PATH
-from ..fixtures import utils as test_utils
 
 if t.TYPE_CHECKING:
 
@@ -111,7 +110,7 @@ def test_focus_pane_index(session: Session) -> None:
         if pane is not None and pane.index is not None
     ]
 
-    pane_indexes_should_be = [pane_base_index + x for x in range(0, 3)]
+    pane_indexes_should_be = [pane_base_index + x for x in range(3)]
     assert pane_indexes_should_be == pane_base_indexes
 
     w = session.active_window
@@ -513,10 +512,10 @@ def test_automatic_rename_option(
 
     def check_window_name_match() -> bool:
         assert w.show_window_option("automatic-rename") == "on"
-        return (
-            w.name == pathlib.Path(os.getenv("SHELL", "bash")).name
-            or w.name == portable_command
-        )
+        return w.name in {
+            pathlib.Path(os.getenv("SHELL", "bash")).name,
+            portable_command,
+        }
 
     assert retry_until(
         check_window_name_match,
@@ -1097,9 +1096,9 @@ def test_find_current_active_pane(
 
 
 @pytest.mark.parametrize(
-    "yaml,output,should_see",
+    ("yaml", "output", "should_see"),
     [
-        [
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1111,8 +1110,8 @@ windows:
             ),
             "___4___",
             False,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1125,8 +1124,8 @@ windows:
             ),
             "___4___",
             False,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should execute
@@ -1137,8 +1136,8 @@ windows:
             ),
             "___4___",
             True,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should execute
@@ -1150,8 +1149,8 @@ windows:
             ),
             "___4___",
             True,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1164,8 +1163,8 @@ windows:
             ),
             "___4___",
             False,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1178,8 +1177,8 @@ windows:
             ),
             "___4___",
             False,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should execute
@@ -1190,8 +1189,8 @@ windows:
             ),
             "___4___",
             True,
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should execute
@@ -1204,7 +1203,7 @@ windows:
             ),
             "___4___",
             True,
-        ],
+        ),
     ],
     ids=[
         "pane_enter_false_shortform",
@@ -1244,8 +1243,7 @@ def test_load_workspace_enter(
 
         if should_see:
             return output in captured_pane
-        else:
-            return output not in captured_pane
+        return output not in captured_pane
 
     assert retry_until(
         fn,
@@ -1254,9 +1252,9 @@ def test_load_workspace_enter(
 
 
 @pytest.mark.parametrize(
-    "yaml,sleep,output",
+    ("yaml", "sleep", "output"),
     [
-        [
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1271,8 +1269,8 @@ windows:
             ),
             0.5,
             "___4___",
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1287,8 +1285,8 @@ windows:
             ),
             1.25,
             "___4___",
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1301,8 +1299,8 @@ windows:
             ),
             0.5,
             "___4___",
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1315,8 +1313,8 @@ windows:
             ),
             1,
             "___4___",
-        ],
-        [
+        ),
+        (
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1330,7 +1328,7 @@ windows:
             ),
             0.5,
             "___4___",
-        ],
+        ),
     ],
     ids=[
         "command_level_sleep_shortform",

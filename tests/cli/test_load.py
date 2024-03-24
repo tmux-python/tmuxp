@@ -12,6 +12,8 @@ from libtmux.server import Server
 from libtmux.session import Session
 from pytest_mock import MockerFixture
 
+from tests.constants import FIXTURE_PATH
+from tests.fixtures import utils as test_utils
 from tmuxp import cli
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import (
@@ -22,9 +24,6 @@ from tmuxp.cli.load import (
 )
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
-
-from ..constants import FIXTURE_PATH
-from ..fixtures import utils as test_utils
 
 
 def test_load_workspace(
@@ -479,7 +478,7 @@ def test_load_plugins(
 
 @pytest.mark.skip("Not sure how to clean up the tmux session this makes")
 @pytest.mark.parametrize(
-    "cli_args,inputs",
+    ("cli_args", "inputs"),
     [
         (
             ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
@@ -503,7 +502,7 @@ def test_load_plugins_version_fail_skip(
 
 
 @pytest.mark.parametrize(
-    "cli_args,inputs",
+    ("cli_args", "inputs"),
     [
         (
             ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],

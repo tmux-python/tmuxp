@@ -1,6 +1,6 @@
 """Teamocil data fixtures for import_teamocil tests, 3rd test."""
 
-from .. import utils as test_utils
+from tests.fixtures import utils as test_utils
 
 teamocil_yaml = test_utils.read_workspace_file("import_teamocil/test3.yaml")
 
@@ -31,7 +31,7 @@ expected = {
             "layout": "even-vertical",
             "start_directory": "~/Projects/foo-www",
             "shell_command_before": "rbenv local 2.0.0-p0",
-            "shell_command_after": ("echo " "'I am done initializing this pane.'"),
+            "shell_command_after": ("echo 'I am done initializing this pane.'"),
             "panes": [
                 {"shell_command": "git status"},
                 {"shell_command": "bundle exec rails server --port 40", "focus": True},

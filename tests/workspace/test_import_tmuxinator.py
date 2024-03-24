@@ -4,14 +4,13 @@ import typing as t
 
 import pytest
 
+from tests.fixtures import import_tmuxinator as fixtures
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace import importers, validation
 
-from ..fixtures import import_tmuxinator as fixtures
-
 
 @pytest.mark.parametrize(
-    "tmuxinator_yaml,tmuxinator_dict,tmuxp_dict",
+    ("tmuxinator_yaml", "tmuxinator_dict", "tmuxp_dict"),
     [
         (
             fixtures.test1.tmuxinator_yaml,

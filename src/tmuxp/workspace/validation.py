@@ -2,13 +2,11 @@
 
 import typing as t
 
-from .. import exc
+from tmuxp import exc
 
 
 class SchemaValidationError(exc.WorkspaceError):
     """Tmuxp configuration validation base error."""
-
-    pass
 
 
 class SessionNameMissingValidationError(SchemaValidationError):
@@ -72,14 +70,14 @@ def validate_schema(workspace_dict: t.Any) -> bool:
     """
     # verify session_name
     if "session_name" not in workspace_dict:
-        raise SessionNameMissingValidationError()
+        raise SessionNameMissingValidationError
 
     if "windows" not in workspace_dict:
-        raise WindowListMissingValidationError()
+        raise WindowListMissingValidationError
 
     for window in workspace_dict["windows"]:
         if "window_name" not in window:
-            raise WindowNameMissingValidationError()
+            raise WindowNameMissingValidationError
 
     if "plugins" in workspace_dict and not isinstance(workspace_dict["plugins"], list):
         raise InvalidPluginsValidationError(plugins=workspace_dict.get("plugins"))

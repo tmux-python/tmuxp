@@ -4,7 +4,7 @@ import logging
 import re
 import typing as t
 
-from .. import log
+from tmuxp import log
 
 if t.TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -56,8 +56,8 @@ def prompt(
     `flask-script <https://github.com/techniq/flask-script>`_. See the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
-    _prompt = name + (default and " [%s]" % default or "")
-    _prompt += name.endswith("?") and " " or ": "
+    _prompt = name + ((default and " [%s]" % default) or "")
+    _prompt += (name.endswith("?") and " ") or ": "
     while True:
         rv = input(_prompt) or default
         try:
@@ -107,7 +107,7 @@ def prompt_bool(
         prompt_choice = "y/N"
 
     _prompt = name + " [%s]" % prompt_choice
-    _prompt += name.endswith("?") and " " or ": "
+    _prompt += (name.endswith("?") and " ") or ": "
 
     while True:
         rv = input(_prompt)
@@ -115,7 +115,7 @@ def prompt_bool(
             return default
         if rv.lower() in yes_choices:
             return True
-        elif rv.lower() in no_choices:
+        if rv.lower() in no_choices:
             return False
 
 

@@ -47,7 +47,7 @@ def home_path_default(monkeypatch: pytest.MonkeyPatch, user_path: pathlib.Path) 
     monkeypatch.setenv("HOME", str(user_path))
 
 
-@pytest.fixture
+@pytest.fixture()
 def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
     """Ensure and return tmuxp config directory."""
     xdg_config_dir = user_path / ".config"
@@ -58,7 +58,7 @@ def tmuxp_configdir(user_path: pathlib.Path) -> pathlib.Path:
     return tmuxp_configdir
 
 
-@pytest.fixture
+@pytest.fixture()
 def tmuxp_configdir_default(
     monkeypatch: pytest.MonkeyPatch,
     tmuxp_configdir: pathlib.Path,
@@ -68,7 +68,7 @@ def tmuxp_configdir_default(
     assert get_workspace_dir() == str(tmuxp_configdir)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
     """Monkeypatch tmuxp plugin fixtures to python path."""
     paths = [
@@ -83,14 +83,14 @@ def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.syspath_prepend(str(pathlib.Path(path).resolve()))
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def session_params(session_params: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     """Terminal-friendly tmuxp session_params for dimensions."""
     session_params.update({"x": 800, "y": 600})
     return session_params
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def socket_name(request: pytest.FixtureRequest) -> str:
     """Random socket name for tmuxp."""
     return "tmuxp_test%s" % next(namer)

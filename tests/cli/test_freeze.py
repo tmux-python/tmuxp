@@ -6,14 +6,16 @@ import pathlib
 import typing as t
 
 import pytest
-from libtmux.server import Server
 
 from tmuxp import cli
 from tmuxp._internal.config_reader import ConfigReader
 
+if t.TYPE_CHECKING:
+    from libtmux.server import Server
+
 
 @pytest.mark.parametrize(
-    "cli_args,inputs",
+    ("cli_args", "inputs"),
     [
         (["freeze", "myfrozensession"], ["y\n", "./la.yaml\n", "y\n"]),
         (  # Exists
@@ -67,7 +69,7 @@ def test_freeze(
 
 
 @pytest.mark.parametrize(
-    "cli_args,inputs",
+    ("cli_args", "inputs"),
     [
         (  # Overwrite
             ["freeze", "mysession", "--force"],

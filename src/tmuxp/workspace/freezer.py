@@ -112,9 +112,8 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
 
             if current_cmd:
                 pane_config["shell_command"].append(current_cmd)
-            else:
-                if not len(pane_config["shell_command"]):
-                    pane_config = "pane"
+            elif not len(pane_config["shell_command"]):
+                pane_config = "pane"
 
             window_config["panes"].append(pane_config)
 

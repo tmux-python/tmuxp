@@ -51,16 +51,14 @@ def run_before_script(
                 os.path.abspath(script_file),  # NOQA: PTH100
                 stderr_str,
             )
-        else:
-            return proc.returncode
     except OSError as e:
         if e.errno == 2:
             raise exc.BeforeLoadScriptNotExists(
                 e,
                 os.path.abspath(script_file),  # NOQA: PTH100
             ) from e
-        else:
-            raise
+        raise
+    return proc.returncode
 
 
 def oh_my_zsh_auto_title() -> None:
@@ -118,7 +116,7 @@ def get_session(
     except Exception as e:
         if session_name:
             raise exc.SessionNotFound(session_name) from e
-        raise exc.SessionNotFound() from e
+        raise exc.SessionNotFound from e
 
     assert session is not None
     return session
@@ -140,9 +138,9 @@ def get_window(
     except Exception as e:
         if window_name:
             raise exc.WindowNotFound(window_target=window_name) from e
-        elif current_pane:
+        if current_pane:
             raise exc.WindowNotFound(window_target=str(current_pane)) from e
-        raise exc.WindowNotFound() from e
+        raise exc.WindowNotFound from e
 
     assert window is not None
     return window
@@ -162,6 +160,6 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
     if pane is None:
         if current_pane:
             raise exc.PaneNotFound(str(current_pane))
-        raise exc.PaneNotFound()
+        raise exc.PaneNotFound
 
     return pane

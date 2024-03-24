@@ -1,14 +1,15 @@
 """CLI for ``tmuxp convert`` subcommand."""
 
 import argparse
+import locale
 import os
 import pathlib
 import typing as t
 
+from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
-from .. import exc
 from .utils import prompt_yes_no
 
 if t.TYPE_CHECKING:
@@ -70,7 +71,7 @@ def command_convert(
     to_filetype: "AllowedFileTypes"
     if ext == ".json":
         to_filetype = "yaml"
-    elif ext in [".yaml", ".yml"]:
+    elif ext in {".yaml", ".yml"}:
         to_filetype = "json"
     else:
         raise ConvertUnknownFileType(ext)
@@ -92,6 +93,6 @@ def command_convert(
         answer_yes = True
 
     if answer_yes:
-        with open(newfile, "w") as buf:
+        with open(newfile, "w", encoding=locale.getpreferredencoding(False)) as buf:
             buf.write(new_workspace)
         print(f"New workspace file saved to <{newfile}>.")

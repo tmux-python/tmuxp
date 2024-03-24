@@ -7,8 +7,8 @@ import typing as t
 
 from libtmux.server import Server
 
-from .. import util
-from .._compat import PY3, PYMINOR
+from tmuxp import util
+from tmuxp._compat import PY3, PYMINOR
 
 if t.TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -191,24 +191,23 @@ def command_shell(
 
     if args.command is not None:
         exec(args.command)
+    elif args.shell == "pdb" or (
+        os.getenv("PYTHONBREAKPOINT") and PY3 and PYMINOR >= 7
+    ):
+        from tmuxp._compat import breakpoint as tmuxp_breakpoint
+
+        tmuxp_breakpoint()
+        return
     else:
-        if args.shell == "pdb" or (
-            os.getenv("PYTHONBREAKPOINT") and PY3 and PYMINOR >= 7
-        ):
-            from tmuxp._compat import breakpoint as tmuxp_breakpoint
+        from tmuxp.shell import launch
 
-            tmuxp_breakpoint()
-            return
-        else:
-            from ..shell import launch
-
-            launch(
-                shell=args.shell,
-                use_pythonrc=args.use_pythonrc,  # shell: code
-                use_vi_mode=args.use_vi_mode,  # shell: ptpython, ptipython
-                # tmux environment / libtmux variables
-                server=server,
-                session=session,
-                window=window,
-                pane=pane,
-            )
+        launch(
+            shell=args.shell,
+            use_pythonrc=args.use_pythonrc,  # shell: code
+            use_vi_mode=args.use_vi_mode,  # shell: ptpython, ptipython
+            # tmux environment / libtmux variables
+            server=server,
+            session=session,
+            window=window,
+            pane=pane,
+        )

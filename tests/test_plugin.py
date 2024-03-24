@@ -25,7 +25,6 @@ from .fixtures.pluginsystem.partials.tmuxp_version_fail import (
 @pytest.fixture(autouse=True)
 def autopatch_sitedir(monkeypatch_plugin_test_packages: None) -> None:
     """Fixture automatically used that patches sitedir."""
-    pass
 
 
 def test_all_pass() -> None:

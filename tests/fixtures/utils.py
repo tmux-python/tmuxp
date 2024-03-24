@@ -3,7 +3,7 @@
 import pathlib
 import typing as t
 
-from ..constants import FIXTURE_PATH
+from tests.constants import FIXTURE_PATH
 
 
 def get_workspace_file(

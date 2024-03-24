@@ -34,7 +34,7 @@ def test_return_stdout_if_ok(capsys: pytest.CaptureFixture[str]) -> None:
     script_file = FIXTURE_PATH / "script_complete.sh"
 
     run_before_script(script_file)
-    out, err = capsys.readouterr()
+    out, _err = capsys.readouterr()
     assert "hello" in out
 
 

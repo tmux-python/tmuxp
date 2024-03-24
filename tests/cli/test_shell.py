@@ -7,10 +7,12 @@ import subprocess
 import typing as t
 
 import pytest
-from libtmux.server import Server
 from libtmux.session import Session
 
 from tmuxp import cli, exc
+
+if t.TYPE_CHECKING:
+    from libtmux.server import Server
 
 
 class CLIShellFixture(t.NamedTuple):
@@ -154,7 +156,7 @@ def test_shell(
     ],
 )
 @pytest.mark.parametrize(
-    "cli_args,inputs,env,template_ctx,exception,message",
+    ("cli_args", "inputs", "env", "template_ctx", "exception", "message"),
     [
         (
             ["-LDoesNotExist", "-c", "print(str(server.socket_name))"],
@@ -256,7 +258,7 @@ def test_shell_target_missing(
     ],
 )
 @pytest.mark.parametrize(
-    "cli_args,inputs,env,message",
+    ("cli_args", "inputs", "env", "message"),
     [
         (
             [

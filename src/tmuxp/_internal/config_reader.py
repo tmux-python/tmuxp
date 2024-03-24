@@ -45,11 +45,10 @@ class ConfigReader:
                     Loader=yaml.SafeLoader,
                 ),
             )
-        elif fmt == "json":
+        if fmt == "json":
             return t.cast(t.Dict[str, t.Any], json.loads(content))
-        else:
-            msg = f"{fmt} not supported in configuration"
-            raise NotImplementedError(msg)
+        msg = f"{fmt} not supported in configuration"
+        raise NotImplementedError(msg)
 
     @classmethod
     def load(cls, fmt: "FormatLiteral", content: str) -> "ConfigReader":
@@ -107,7 +106,7 @@ class ConfigReader:
         assert isinstance(path, pathlib.Path)
         content = path.open().read()
 
-        if path.suffix in [".yaml", ".yml"]:
+        if path.suffix in {".yaml", ".yml"}:
             fmt: "FormatLiteral" = "yaml"
         elif path.suffix == ".json":
             fmt = "json"
@@ -182,14 +181,13 @@ class ConfigReader:
                 default_flow_style=False,
                 Dumper=yaml.SafeDumper,
             )
-        elif fmt == "json":
+        if fmt == "json":
             return json.dumps(
                 content,
                 indent=2,
             )
-        else:
-            msg = f"{fmt} not supported in config"
-            raise NotImplementedError(msg)
+        msg = f"{fmt} not supported in config"
+        raise NotImplementedError(msg)
 
     def dump(self, fmt: "FormatLiteral", indent: int = 2, **kwargs: t.Any) -> str:
         r"""Dump via ConfigReader instance.

@@ -1,6 +1,7 @@
 """CLI for ``tmuxp freeze`` subcommand."""
 
 import argparse
+import locale
 import os
 import pathlib
 import sys
@@ -8,12 +9,12 @@ import typing as t
 
 from libtmux.server import Server
 
+from tmuxp import exc, util
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.exc import TmuxpException
+from tmuxp.workspace import freezer
 from tmuxp.workspace.finders import get_workspace_dir
 
-from .. import exc, util
-from ..workspace import freezer
 from .utils import prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:
@@ -112,7 +113,7 @@ def command_freeze(
             session = util.get_session(server)
 
         if not session:
-            raise exc.SessionNotFound()
+            raise exc.SessionNotFound
     except TmuxpException as e:
         print(e)
         return
@@ -206,7 +207,7 @@ def command_freeze(
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
-        with open(dest, "w") as buf:
+        with open(dest, "w", encoding=locale.getpreferredencoding(False)) as buf:
             buf.write(workspace)
 
         if not args.quiet:

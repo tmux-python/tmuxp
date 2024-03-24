@@ -6,14 +6,13 @@ import typing
 
 from libtmux.session import Session
 
+from tests.fixtures import utils as test_utils
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace import freezer, validation
 from tmuxp.workspace.builder import WorkspaceBuilder
 
-from ..fixtures import utils as test_utils
-
 if typing.TYPE_CHECKING:
-    from ..fixtures.structures import WorkspaceTestData
+    from tests.fixtures.structures import WorkspaceTestData
 
 
 def test_freeze_config(session: Session) -> None:

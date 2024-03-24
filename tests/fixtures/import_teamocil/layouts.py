@@ -1,6 +1,6 @@
 """Teamocil data fixtures for import_teamocil tests, for layout testing."""
 
-from .. import utils as test_utils
+from tests.fixtures import utils as test_utils
 
 teamocil_yaml_file = test_utils.get_workspace_file("import_teamocil/layouts.yaml")
 teamocil_yaml = test_utils.read_workspace_file("import_teamocil/layouts.yaml")

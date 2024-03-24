@@ -7,8 +7,8 @@ import typing as t
 
 import libtmux
 import pytest
-from libtmux.server import Server
 
+from tests.fixtures import utils as test_utils
 from tmuxp import cli
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.import_config import get_teamocil_dir, get_tmuxinator_dir
@@ -18,10 +18,9 @@ from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file
 
-from ..fixtures import utils as test_utils
-
 if t.TYPE_CHECKING:
     import _pytest.capture
+    from libtmux.server import Server
 
 
 def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:

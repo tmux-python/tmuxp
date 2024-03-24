@@ -12,7 +12,8 @@ from colorama import Fore
 from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import get_version, tmux_cmd
 
-from ..__about__ import __version__
+from tmuxp.__about__ import __version__
+
 from .utils import tmuxp_echo
 
 tmuxp_path = pathlib.Path(__file__).parent.parent
