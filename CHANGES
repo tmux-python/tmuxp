@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+- poetry: 1.8.1 -> 1.8.2
+
+  See also: https://github.com/python-poetry/poetry/blob/1.8.2/CHANGELOG.md
+
 ## tmuxp 1.45.0 (2024-03-24)
 
 _Maintenance only, no bug fixes or new features_
