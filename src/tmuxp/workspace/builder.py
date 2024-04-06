@@ -464,7 +464,7 @@ class WorkspaceBuilder:
         """
         assert isinstance(window, Window)
 
-        pane_base_index_str = window.show_window_option("pane-base-index", g=True)
+        pane_base_index_str = window._show_option("pane-base-index", _global=True)
         assert pane_base_index_str is not None
         pane_base_index = int(pane_base_index_str)
 
