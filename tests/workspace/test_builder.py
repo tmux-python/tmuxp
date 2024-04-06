@@ -76,7 +76,7 @@ def test_split_windows_three_pane(session: Session) -> None:
 
         assert len(session.windows) == window_count
         window_count += 1
-        w.set_window_option("main-pane-height", 50)
+        w.set_option("main-pane-height", 50)
         w.select_layout(wconf["layout"])
 
 
