@@ -94,9 +94,9 @@ def test_focus_pane_index(session: Session) -> None:
 
     assert session.active_window.name == "focused window"
 
-    _pane_base_index = session.active_window.show_window_option(
+    _pane_base_index = session.active_window._show_option(
         "pane-base-index",
-        g=True,
+        _global=True,
     )
     assert isinstance(_pane_base_index, int)
     pane_base_index = int(_pane_base_index)
@@ -279,7 +279,7 @@ def test_global_session_env_options(
     assert isinstance(_visual_silence, bool)
     assert _visual_silence is True
     assert repeat_time == session._show_option("repeat-time")
-    assert main_pane_height == session.active_window.show_window_option(
+    assert main_pane_height == session.active_window._show_option(
         "main-pane-height",
     )
 
@@ -306,9 +306,9 @@ def test_window_options(
             p = p
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
-        assert w.show_window_option("main-pane-height") == 5
+        assert w._show_option("main-pane-height") == 5
         if has_gte_version("2.3"):
-            assert w.show_window_option("pane-border-format") == " #P "
+            assert w._show_option("pane-border-format") == " #P "
 
         assert len(session.windows) == window_count
         window_count += 1
@@ -513,7 +513,7 @@ def test_automatic_rename_option(
     assert retry_until(check_window_name_mismatch, 5, interval=0.25)
 
     def check_window_name_match() -> bool:
-        assert w.show_window_option("automatic-rename")
+        assert w._show_option("automatic-rename")
         return w.name in {
             pathlib.Path(os.getenv("SHELL", "bash")).name,
             portable_command,
@@ -714,8 +714,10 @@ def test_pane_order(session: Session) -> None:
         window_count += 1
 
     for w in session.windows:
-        pane_base_index = w.show_window_option("pane-base-index", g=True)
+        pane_base_index = w._show_option("pane-base-index", _global=True)
+        assert isinstance(pane_base_index, int)
         for p_index, p in enumerate(w.panes, start=pane_base_index):
+            assert p.index is not None
             assert int(p_index) == int(p.index)
 
             # pane-base-index start at base-index, pane_paths always start
