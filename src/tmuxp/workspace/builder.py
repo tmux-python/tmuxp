@@ -349,7 +349,7 @@ class WorkspaceBuilder:
         Generator yielding :class:`libtmux.Window` by iterating through
         ``session_config['windows']``.
 
-        Applies ``window_options`` to window.
+        Applies ``options`` to window.
 
         Parameters
         ----------
