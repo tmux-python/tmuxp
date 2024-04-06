@@ -47,9 +47,8 @@ def test_split_windows(session: Session) -> None:
     window_count = len(session.windows)  # current window count
     assert len(session.windows) == window_count
     for w, wconf in builder.iter_create_windows(session):
-        for p in builder.iter_create_panes(w, wconf):
+        for _ in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
-            p = p
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
 
@@ -68,9 +67,8 @@ def test_split_windows_three_pane(session: Session) -> None:
     window_count = len(session.windows)  # current window count
     assert len(session.windows) == window_count
     for w, wconf in builder.iter_create_windows(session):
-        for p in builder.iter_create_panes(w, wconf):
+        for _ in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
-            p = p
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
 
@@ -301,9 +299,8 @@ def test_window_options(
     window_count = len(session.windows)  # current window count
     assert len(session.windows) == window_count
     for w, wconf in builder.iter_create_windows(session):
-        for p in builder.iter_create_panes(w, wconf):
+        for _ in builder.iter_create_panes(w, wconf):
             w.select_layout("tiled")  # fix glitch with pane size
-            p = p
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
         assert w._show_option("main-pane-height") == 5
