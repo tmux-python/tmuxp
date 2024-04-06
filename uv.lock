@@ -364,12 +364,8 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.39.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/72/c4/e35564de320c876c6c370b8b9303a31ca2fcd632051aa8ac14a2d4700b68/libtmux-0.39.0.tar.gz", hash = "sha256:59346aeef3c0d6017f3bc5e23248d43cdf50f32b775b9cb5d9ff5e2e5f3059f4", size = 314810 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/f8/afdcf3715c7388962c1eef39c7ba415a170f6772808ad83f60f8fdfdc6d0/libtmux-0.39.0-py3-none-any.whl", hash = "sha256:6b6e338be2727f67aa6b7eb67fa134368fa3c3eac5df27565396467692891c1e", size = 56219 },
-]
+version = "0.38.1"
+source = { git = "https://github.com/tmux-python/libtmux.git?branch=improved-options#5415d2595dde9bea2e6a0526e8522d793b94a1aa" }
 
 [[package]]
 name = "linkify-it-py"
@@ -1121,7 +1117,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.3.9" },
-    { name = "libtmux", specifier = "~=0.39.0" },
+    { name = "libtmux", git = "https://github.com/tmux-python/libtmux.git?branch=improved-options" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 

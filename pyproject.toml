@@ -88,6 +88,9 @@ dev-dependencies = [
   "types-PyYAML",
 ]
 
+[tool.uv.sources]
+libtmux = { git = "https://github.com/tmux-python/libtmux.git", branch = "improved-options" }
+
 [dependency-groups]
 docs = [
   "aafigure",
