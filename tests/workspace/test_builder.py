@@ -230,11 +230,11 @@ def test_session_options(session: Session) -> None:
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    _default_shell = session.show_option("default-shell")
+    _default_shell = session._show_option("default-shell")
     assert isinstance(_default_shell, str)
     assert "/bin/sh" in _default_shell
 
-    _default_command = session.show_option("default-command")
+    _default_command = session._show_option("default-command")
     assert isinstance(_default_command, str)
     assert "/bin/sh" in _default_command
 
@@ -249,10 +249,10 @@ def test_global_options(session: Session) -> None:
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    _status_position = session.show_option("status-position", _global=True)
+    _status_position = session._show_option("status-position", _global=True)
     assert isinstance(_status_position, str)
     assert "top" in _status_position
-    assert session.show_option("repeat-time", _global=True) == 493
+    assert session._show_option("repeat-time", _global=True) == 493
 
 
 def test_global_session_env_options(
@@ -275,10 +275,10 @@ def test_global_session_env_options(
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    _visual_silence = session.show_option("visual-silence", _global=True)
+    _visual_silence = session._show_option("visual-silence", _global=True)
     assert isinstance(_visual_silence, str)
     assert visual_silence in _visual_silence
-    assert repeat_time == session.show_option("repeat-time")
+    assert repeat_time == session._show_option("repeat-time")
     assert main_pane_height == session.active_window.show_window_option(
         "main-pane-height",
     )
