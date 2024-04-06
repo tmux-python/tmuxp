@@ -276,8 +276,8 @@ def test_global_session_env_options(
     builder.build(session=session)
 
     _visual_silence = session._show_option("visual-silence", _global=True)
-    assert isinstance(_visual_silence, str)
-    assert visual_silence in _visual_silence
+    assert isinstance(_visual_silence, bool)
+    assert _visual_silence is True
     assert repeat_time == session._show_option("repeat-time")
     assert main_pane_height == session.active_window.show_window_option(
         "main-pane-height",
@@ -513,7 +513,7 @@ def test_automatic_rename_option(
     assert retry_until(check_window_name_mismatch, 5, interval=0.25)
 
     def check_window_name_match() -> bool:
-        assert w.show_window_option("automatic-rename") == "on"
+        assert w.show_window_option("automatic-rename")
         return w.name in {
             pathlib.Path(os.getenv("SHELL", "bash")).name,
             portable_command,
