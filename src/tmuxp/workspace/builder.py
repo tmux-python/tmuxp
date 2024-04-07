@@ -245,7 +245,10 @@ class WorkspaceBuilder:
                     "start_directory"
                 ]
 
-            if has_gte_version("2.6"):
+            if (
+                has_gte_version("2.6")
+                and os.getenv("TMUXP_DETECT_TERMINAL_SIZE", "1") == "1"
+            ):
                 terminal_size = shutil.get_terminal_size(
                     fallback=(get_default_columns(), get_default_rows())
                 )
