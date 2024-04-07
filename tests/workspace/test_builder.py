@@ -486,6 +486,8 @@ def test_automatic_rename_option(
 ) -> None:
     """Test workspace builder with automatic renaming enabled."""
     monkeypatch.setenv("DISABLE_AUTO_TITLE", "true")
+    monkeypatch.setenv("ROWS", "36")
+
     workspace = ConfigReader._from_file(
         test_utils.get_workspace_file("workspace/builder/window_automatic_rename.yaml"),
     )
@@ -1506,7 +1508,12 @@ def test_issue_800_default_size_many_windows(
     a lot of panes.
 
     See also: https://github.com/tmux-python/tmuxp/issues/800
+
+    2024-04-07: This test isn't being used as of this date, as default-size is totally
+    unused in builder.py.
     """
+    monkeypatch.setenv("ROWS", "36")
+
     yaml_workspace = test_utils.get_workspace_file(
         "regressions/issue_800_default_size_many_windows.yaml",
     )
