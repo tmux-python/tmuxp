@@ -36,9 +36,6 @@ def get_default_rows() -> int:
     return int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", ROWS_FALLBACK)))
 
 
-DEFAULT_SIZE = f"{COLUMNS_FALLBACK}x{ROWS_FALLBACK}"
-
-
 class WorkspaceBuilder:
     """Load workspace from workspace :py:obj:`dict` object.
 
