@@ -1526,9 +1526,6 @@ def test_issue_800_default_size_many_windows(
         for k, v in confoverrides.items():
             workspace[k] = v
 
-    if TMUXP_DEFAULT_SIZE is not None:
-        monkeypatch.setenv("TMUXP_DEFAULT_SIZE", TMUXP_DEFAULT_SIZE)
-
     builder = WorkspaceBuilder(session_config=workspace, server=server)
 
     if raises:
