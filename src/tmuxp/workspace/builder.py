@@ -1,6 +1,7 @@
 """Create a tmux workspace from a workspace :py:obj:`dict`."""
 
 import logging
+import os
 import shutil
 import time
 import typing as t
@@ -17,9 +18,25 @@ from tmuxp.util import get_current_pane, run_before_script
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_WIDTH = "800"
-DEFAULT_HEIGHT = "600"
-DEFAULT_SIZE = f"{DEFAULT_WIDTH}x{DEFAULT_HEIGHT}"
+COLUMNS_FALLBACK = 80
+
+
+def get_default_columns() -> int:
+    """Return default session column size use when building new tmux sessions."""
+    return int(
+        os.getenv("TMUXP_DEFAULT_COLUMNS", os.getenv("COLUMNS", COLUMNS_FALLBACK))
+    )
+
+
+ROWS_FALLBACK = int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", 24)))
+
+
+def get_default_rows() -> int:
+    """Return default session row size use when building new tmux sessions."""
+    return int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", ROWS_FALLBACK)))
+
+
+DEFAULT_SIZE = f"{COLUMNS_FALLBACK}x{ROWS_FALLBACK}"
 
 
 class WorkspaceBuilder:
@@ -232,7 +249,9 @@ class WorkspaceBuilder:
                 ]
 
             if has_gte_version("2.6"):
-                terminal_size = shutil.get_terminal_size(fallback=(80, 24))
+                terminal_size = shutil.get_terminal_size(
+                    fallback=(get_default_columns(), get_default_rows())
+                )
                 new_session_kwargs["x"] = terminal_size.columns
                 new_session_kwargs["y"] = terminal_size.lines
 
