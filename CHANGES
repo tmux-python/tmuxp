@@ -19,6 +19,31 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking change
+
+#### Workspace builder now detects terminal size (#926)
+
+Dimensions used by workspace builder now use {py:func}`shutil.get_terminal_size()`.
+
+In conjunction with `main-pane-height: 67%`, for instance, this will render a
+proportional layout:
+
+```yaml
+session_name: my session
+windows:
+- window_name: example with percentage
+  focus: True
+  layout: main-horizontal
+  options:
+    main-pane-height: 67%
+  panes:
+  - focus: true
+  - pane 
+```
+
+To use old behavior, set `TMUXP_DETECT_TERMINAL_SIZE=0` in your terminal
+environment and file an issue on the tracker.
+
 ### Documentation
 
 - Automatically linkify links that were previously only text.

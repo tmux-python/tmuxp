@@ -10,7 +10,7 @@
       "focus": true,
       "layout": "main-horizontal",
       "options": {
-        "main-pane-height": 35
+        "main-pane-height": "67%"
       },
       "panes": [
         {
@@ -25,7 +25,7 @@
       "window_name": "docs",
       "layout": "main-horizontal",
       "options": {
-        "main-pane-height": 35
+        "main-pane-height": "67%"
       },
       "start_directory": "docs/",
       "panes": [

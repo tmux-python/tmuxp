@@ -554,6 +554,30 @@ pane during creation.
 
 ## Main pane height
 
+### Percentage
+
+:::{versionadded} 1.46.0
+
+Before this, tmuxp layouts would not detect the terminal's size.
+
+:::
+
+````{tab} YAML
+```{literalinclude} ../../examples/main-pane-height-percentage.yaml
+:language: yaml
+
+```
+````
+
+````{tab} JSON
+```{literalinclude} ../../examples/main-pane-height-percentage.json
+:language: json
+
+```
+````
+
+### Rows
+
 ````{tab} YAML
 ```{literalinclude} ../../examples/main-pane-height.yaml
 :language: yaml

@@ -9,7 +9,6 @@ import shutil
 import sys
 import typing as t
 
-from libtmux.common import has_gte_version
 from libtmux.server import Server
 from libtmux.session import Session
 
@@ -46,65 +45,6 @@ class CLILoadNamespace(argparse.Namespace):
     append: t.Optional[bool]
     colors: t.Optional["CLIColorsLiteral"]
     log_file: t.Optional[str]
-
-
-def set_layout_hook(session: Session, hook_name: str) -> None:
-    """Set layout hooks to normalize layout.
-
-    References
-    ----------
-        - tmuxp issue: https://github.com/tmux-python/tmuxp/issues/309
-        - tmux issue: https://github.com/tmux/tmux/issues/1106
-
-    tmux 2.6+ requires that the window be viewed with the client before
-    select-layout adjustments can take effect.
-
-    To handle this, this function creates temporary hook for this session to
-    iterate through all windows and select the layout.
-
-    In order for layout changes to take effect, a client must at the very
-    least be attached to the window (not just the session).
-
-    hook_name is provided to allow this to set to multiple scenarios, such
-    as 'client-attached' (which the user attaches the session). You may
-    also want 'after-switch-client' for cases where the user loads tmuxp
-    sessions inside tmux since tmuxp offers to switch for them.
-
-    Also, the hooks are set immediately unbind after they're invoked via -u.
-
-    Parameters
-    ----------
-    session : :class:`libtmux.session.Session`
-        session to bind hook to
-    hook_name : str
-        hook name to bind to, e.g. 'client-attached'
-    """
-    assert session.id is not None
-    cmd: t.List[str] = ["set-hook", hook_name]
-    hook_cmd = []
-    active_window = session.active_window
-    for window in session.windows:
-        # unfortunately, select-layout won't work unless
-        # we've literally selected the window at least once
-        # with the client
-        hook_cmd.append(f"selectw -t {window.id}")
-        # edit: removed -t, or else it won't respect main-pane-w/h
-        hook_cmd.append("selectl")
-        hook_cmd.append("selectw -p")
-
-    # unset the hook immediately after executing
-    hook_cmd.extend(
-        (f"set-hook -u -t {session.id} {hook_name}", f"selectw -t {active_window.id}")
-    )
-
-    # join the hook's commands with semicolons
-    _hook_cmd = "{}".format("; ".join(hook_cmd))
-
-    # append the hook command
-    cmd.append(_hook_cmd)
-
-    # create the hook
-    session.cmd(*cmd, target=session.id)
 
 
 def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
@@ -200,20 +140,10 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
         # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
         tmux_env = os.environ.pop("TMUX")
 
-        if has_gte_version("2.6"):
-            set_layout_hook(builder.session, "client-session-changed")
-
         builder.session.switch_client()  # switch client to new session
 
         os.environ["TMUX"] = tmux_env  # set TMUX back again
     else:
-        if has_gte_version("2.6"):
-            # if attaching for first time
-            set_layout_hook(builder.session, "client-attached")
-
-            # for cases where user switches client for first time
-            set_layout_hook(builder.session, "client-session-changed")
-
         if not detached:
             builder.session.attach_session()
 
@@ -230,10 +160,6 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
     assert builder.session is not None
 
-    if has_gte_version("2.6"):  # prepare for both cases
-        set_layout_hook(builder.session, "client-attached")
-        set_layout_hook(builder.session, "client-session-changed")
-
     print("Session created in detached state.")
 
 
@@ -248,9 +174,6 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     current_attached_session = builder.find_current_attached_session()
     builder.build(current_attached_session, append=True)
     assert builder.session is not None
-    if has_gte_version("2.6"):  # prepare for both cases
-        set_layout_hook(builder.session, "client-attached")
-        set_layout_hook(builder.session, "client-session-changed")
 
 
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
