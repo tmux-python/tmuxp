@@ -7,7 +7,7 @@ windows:
   focus: True
   layout: main-horizontal
   options:
-    main-pane-height: 35
+    main-pane-height: 67%
   panes:
   - focus: true
   - pane 
@@ -16,7 +16,7 @@ windows:
 - window_name: docs
   layout: main-horizontal
   options:
-    main-pane-height: 35
+    main-pane-height: 67%
   start_directory: docs/
   panes:
   - focus: true
