@@ -1,6 +1,7 @@
 """Create a tmux workspace from a workspace :py:obj:`dict`."""
 
 import logging
+import shutil
 import time
 import typing as t
 
@@ -229,9 +230,12 @@ class WorkspaceBuilder:
                 new_session_kwargs["start_directory"] = self.session_config[
                     "start_directory"
                 ]
+
             if has_gte_version("2.6"):
-                new_session_kwargs["x"] = 800
-                new_session_kwargs["y"] = 600
+                terminal_size = shutil.get_terminal_size(fallback=(80, 24))
+                new_session_kwargs["x"] = terminal_size.columns
+                new_session_kwargs["y"] = terminal_size.lines
+
             session = self.server.new_session(
                 session_name=self.session_config["session_name"],
                 **new_session_kwargs,
