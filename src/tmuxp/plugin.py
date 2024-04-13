@@ -157,25 +157,19 @@ class TmuxpPlugin:
                 "version": self.tmux_version,
                 "vmin": config["tmux_min_version"],
                 "vmax": config["tmux_max_version"],
-                "incompatible": config["tmux_version_incompatible"]
-                if config["tmux_version_incompatible"]
-                else [],
+                "incompatible": config["tmux_version_incompatible"] or [],
             },
             "libtmux": {
                 "version": self.libtmux_version,
                 "vmin": config["libtmux_min_version"],
                 "vmax": config["libtmux_max_version"],
-                "incompatible": config["libtmux_version_incompatible"]
-                if config["libtmux_version_incompatible"]
-                else [],
+                "incompatible": config["libtmux_version_incompatible"] or [],
             },
             "tmuxp": {
                 "version": self.tmuxp_version,
                 "vmin": config["tmuxp_min_version"],
                 "vmax": config["tmuxp_max_version"],
-                "incompatible": config["tmuxp_version_incompatible"]
-                if config["tmuxp_version_incompatible"]
-                else [],
+                "incompatible": config["tmuxp_version_incompatible"] or [],
             },
         }
 

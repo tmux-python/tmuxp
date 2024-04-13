@@ -193,7 +193,8 @@ def render_aafigure(
                 try:
                     try:
                         with open(
-                            metadata_fname, encoding=locale.getpreferredencoding(False)
+                            metadata_fname,
+                            encoding=locale.getpreferredencoding(False),
                         ) as f:
                             extra = f.read()
                     except Exception as e:
@@ -217,7 +218,9 @@ def render_aafigure(
     if options["format"].lower() == "svg":
         extra = visitor.get_size_attrs()
         with open(
-            metadata_fname, "w", encoding=locale.getpreferredencoding(False)
+            metadata_fname,
+            "w",
+            encoding=locale.getpreferredencoding(False),
         ) as f:
             f.write(extra)
 
