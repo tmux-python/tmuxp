@@ -50,6 +50,7 @@ environment and file an issue on the tracker.
 
 ### Development
 
+- Another `ruff` linting pass, this time with ruff 0.3.7 (#928)
 - poetry: 1.8.1 -> 1.8.2
 
   See also: https://github.com/python-poetry/poetry/blob/1.8.2/CHANGELOG.md
