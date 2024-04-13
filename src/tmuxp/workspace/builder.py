@@ -24,7 +24,7 @@ COLUMNS_FALLBACK = 80
 def get_default_columns() -> int:
     """Return default session column size use when building new tmux sessions."""
     return int(
-        os.getenv("TMUXP_DEFAULT_COLUMNS", os.getenv("COLUMNS", COLUMNS_FALLBACK))
+        os.getenv("TMUXP_DEFAULT_COLUMNS", os.getenv("COLUMNS", COLUMNS_FALLBACK)),
     )
 
 
@@ -250,7 +250,7 @@ class WorkspaceBuilder:
                 and os.getenv("TMUXP_DETECT_TERMINAL_SIZE", "1") == "1"
             ):
                 terminal_size = shutil.get_terminal_size(
-                    fallback=(get_default_columns(), get_default_rows())
+                    fallback=(get_default_columns(), get_default_rows()),
                 )
                 new_session_kwargs["x"] = terminal_size.columns
                 new_session_kwargs["y"] = terminal_size.lines
