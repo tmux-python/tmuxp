@@ -191,8 +191,8 @@ def find_workspace_file(
             ]
             if not len(candidates):
                 file_error = (
-                    f"workspace-file not found in workspace dir (yaml/yml/json) {workspace_dir} "
-                    "for name"
+                    "workspace-file not found "
+                    + f"in workspace dir (yaml/yml/json) {workspace_dir} for name"
                 )
         else:
             candidates = [
@@ -207,7 +207,8 @@ def find_workspace_file(
             if len(candidates) > 1:
                 tmuxp_echo(
                     Fore.RED
-                    + f"Multiple .tmuxp.{{yml,yaml,json}} workspace_files in {dirname(workspace_file)}"
+                    + "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
+                    + dirname(workspace_file)
                     + Fore.RESET,
                 )
                 tmuxp_echo(
