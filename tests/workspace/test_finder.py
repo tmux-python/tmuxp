@@ -156,7 +156,7 @@ def test_resolve_dot(
     assert find_workspace_file("../project") == expect
     assert find_workspace_file("../project/") == expect
     assert find_workspace_file(".tmuxp.yaml") == expect
-    assert find_workspace_file("../../.tmuxp/%s.yaml" % user_config_name) == str(
+    assert find_workspace_file(f"../../.tmuxp/{user_config_name}.yaml") == str(
         user_config,
     )
     assert find_workspace_file("myconfig") == str(user_config)
@@ -178,8 +178,8 @@ def test_resolve_dot(
     assert find_workspace_file("work/project/") == expect
     assert find_workspace_file("./work/project") == expect
     assert find_workspace_file("./work/project/") == expect
-    assert find_workspace_file(".tmuxp/%s.yaml" % user_config_name) == str(user_config)
-    assert find_workspace_file("./.tmuxp/%s.yaml" % user_config_name) == str(
+    assert find_workspace_file(f".tmuxp/{user_config_name}.yaml") == str(user_config)
+    assert find_workspace_file(f"./.tmuxp/{user_config_name}.yaml") == str(
         user_config,
     )
     assert find_workspace_file("myconfig") == str(user_config)
@@ -202,8 +202,8 @@ def test_resolve_dot(
     assert find_workspace_file("../work/project") == expect
     assert find_workspace_file("../../home/work/project") == expect
     assert find_workspace_file("../work/project/") == expect
-    assert find_workspace_file("%s.yaml" % user_config_name) == str(user_config)
-    assert find_workspace_file("./%s.yaml" % user_config_name) == str(user_config)
+    assert find_workspace_file(f"{user_config_name}.yaml") == str(user_config)
+    assert find_workspace_file(f"./{user_config_name}.yaml") == str(user_config)
     assert find_workspace_file("myconfig") == str(user_config)
     assert find_workspace_file("~/.tmuxp/myconfig.yaml") == str(user_config)
 
@@ -223,10 +223,10 @@ def test_resolve_dot(
     expect = str(project_config)
     assert find_workspace_file("home/work/project") == expect
     assert find_workspace_file("./home/work/project/") == expect
-    assert find_workspace_file("home/.tmuxp/%s.yaml" % user_config_name) == str(
+    assert find_workspace_file(f"home/.tmuxp/{user_config_name}.yaml") == str(
         user_config,
     )
-    assert find_workspace_file("./home/.tmuxp/%s.yaml" % user_config_name) == str(
+    assert find_workspace_file(f"./home/.tmuxp/{user_config_name}.yaml") == str(
         user_config,
     )
     assert find_workspace_file("myconfig") == str(user_config)
@@ -280,7 +280,7 @@ def test_find_workspace_file_arg(
     assert expect in check_cmd("../project").out
     assert expect in check_cmd("../project/").out
     assert expect in check_cmd(".tmuxp.yaml").out
-    assert str(user_config) in check_cmd("../../.tmuxp/%s.yaml" % user_config_name).out
+    assert str(user_config) in check_cmd(f"../../.tmuxp/{user_config_name}.yaml").out
     assert user_config.stem in check_cmd("myconfig").out
     assert str(user_config) in check_cmd("~/.tmuxp/myconfig.yaml").out
 

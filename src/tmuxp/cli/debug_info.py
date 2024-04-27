@@ -33,7 +33,7 @@ def command_debug_info(
 
     def prepend_tab(strings: t.List[str]) -> t.List[str]:
         """Prepend tab to strings in list."""
-        return ["\t%s" % x for x in strings]
+        return [f"\t{x}" for x in strings]
 
     def output_break() -> str:
         """Generate output break."""
@@ -52,33 +52,37 @@ def command_debug_info(
 
     output = [
         output_break(),
-        "environment:\n%s"
-        % "\n".join(
-            prepend_tab(
-                [
-                    "dist: %s" % platform.platform(),
-                    "arch: %s" % platform.machine(),
-                    "uname: %s" % "; ".join(platform.uname()[:3]),
-                    "version: %s" % platform.version(),
-                ],
-            ),
+        "environment:\n{}".format(
+            "\n".join(
+                prepend_tab(
+                    [
+                        f"dist: {platform.platform()}",
+                        f"arch: {platform.machine()}",
+                        "uname: {}".format("; ".join(platform.uname()[:3])),
+                        f"version: {platform.version()}",
+                    ],
+                ),
+            )
         ),
         output_break(),
-        "python version: %s" % " ".join(sys.version.split("\n")),
-        "system PATH: %s" % os.environ["PATH"],
-        "tmux version: %s" % get_version(),
-        "libtmux version: %s" % libtmux_version,
-        "tmuxp version: %s" % __version__,
-        "tmux path: %s" % shutil.which("tmux"),
-        "tmuxp path: %s" % tmuxp_path,
-        "shell: %s" % os.environ["SHELL"],
+        "python version: {}".format(" ".join(sys.version.split("\n"))),
+        "system PATH: {}".format(os.environ["PATH"]),
+        f"tmux version: {get_version()}",
+        f"libtmux version: {libtmux_version}",
+        f"tmuxp version: {__version__}",
+        "tmux path: {}".format(shutil.which("tmux")),
+        f"tmuxp path: {tmuxp_path}",
+        "shell: {}".format(os.environ["SHELL"]),
         output_break(),
-        "tmux sessions:\n%s" % format_tmux_resp(tmux_cmd("list-sessions")),
-        "tmux windows:\n%s" % format_tmux_resp(tmux_cmd("list-windows")),
-        "tmux panes:\n%s" % format_tmux_resp(tmux_cmd("list-panes")),
-        "tmux global options:\n%s" % format_tmux_resp(tmux_cmd("show-options", "-g")),
-        "tmux window options:\n%s"
-        % format_tmux_resp(tmux_cmd("show-window-options", "-g")),
+        "tmux sessions:\n{}".format(format_tmux_resp(tmux_cmd("list-sessions"))),
+        "tmux windows:\n{}".format(format_tmux_resp(tmux_cmd("list-windows"))),
+        "tmux panes:\n{}".format(format_tmux_resp(tmux_cmd("list-panes"))),
+        "tmux global options:\n{}".format(
+            format_tmux_resp(tmux_cmd("show-options", "-g"))
+        ),
+        "tmux window options:\n{}".format(
+            format_tmux_resp(tmux_cmd("show-window-options", "-g"))
+        ),
     ]
 
     tmuxp_echo("\n".join(output))

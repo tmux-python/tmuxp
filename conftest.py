@@ -93,7 +93,7 @@ def session_params(session_params: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
 @pytest.fixture()
 def socket_name(request: pytest.FixtureRequest) -> str:
     """Random socket name for tmuxp."""
-    return "tmuxp_test%s" % next(namer)
+    return f"tmuxp_test{next(namer)}"
 
 
 @pytest.fixture(autouse=True)

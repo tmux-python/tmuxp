@@ -333,7 +333,7 @@ def load_workspace(
             server=t,
         )
     except exc.EmptyWorkspaceException:
-        tmuxp_echo("%s is empty or parsed no workspace data" % workspace_file)
+        tmuxp_echo(f"{workspace_file} is empty or parsed no workspace data")
         return None
 
     session_name = expanded_workspace["session_name"]
@@ -343,7 +343,9 @@ def load_workspace(
         if not detached and (
             answer_yes
             or prompt_yes_no(
-                "%s is already running. Attach?" % style(session_name, fg="green"),
+                "{} is already running. Attach?".format(
+                    style(session_name, fg="green")
+                ),
                 default=True,
             )
         ):
