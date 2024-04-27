@@ -293,22 +293,21 @@ def test_replaces_env_variables(monkeypatch: pytest.MonkeyPatch) -> None:
       panes:
       - shell_command:
       - htop
-    """.format(TEST_VAR="${%s}" % env_key)
+    """.format(TEST_VAR=f"${{{env_key}}}")
 
     sconfig = ConfigReader._load(fmt="yaml", content=yaml_workspace)
 
     monkeypatch.setenv(str(env_key), str(env_val))
     sconfig = loader.expand(sconfig)
-    assert "%s/test" % env_val == sconfig["start_directory"]
+    assert f"{env_val}/test" == sconfig["start_directory"]
     assert (
-        "%s/test2" % env_val
-        in sconfig["shell_command_before"]["shell_command"][0]["cmd"]
+        f"{env_val}/test2" in sconfig["shell_command_before"]["shell_command"][0]["cmd"]
     )
-    assert "%s/test3" % env_val == sconfig["before_script"]
-    assert "hi - %s" % env_val == sconfig["session_name"]
-    assert "%s/moo" % env_val == sconfig["global_options"]["default-shell"]
-    assert "%s/lol" % env_val == sconfig["options"]["default-command"]
-    assert "logging @ %s" % env_val == sconfig["windows"][1]["window_name"]
+    assert f"{env_val}/test3" == sconfig["before_script"]
+    assert f"hi - {env_val}" == sconfig["session_name"]
+    assert f"{env_val}/moo" == sconfig["global_options"]["default-shell"]
+    assert f"{env_val}/lol" == sconfig["options"]["default-command"]
+    assert f"logging @ {env_val}" == sconfig["windows"][1]["window_name"]
 
 
 def test_validate_plugins() -> None:

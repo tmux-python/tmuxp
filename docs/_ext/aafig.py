@@ -126,9 +126,9 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             options["format"] = format_map[_format]
         else:
             logger.warning(
-                'unsupported builder format "%s", please '
+                f'unsupported builder format "{_format}", please '
                 "add a custom entry in aafig_format config "
-                "option for this builder" % _format,
+                "option for this builder",
             )
             img.replace_self(nodes.literal_block(text, text))
             continue
@@ -176,14 +176,14 @@ def render_aafigure(
         # Non-HTML
         if app.builder.format != "latex":
             logger.warning(
-                "aafig: the builder format %s is not officially "
+                f"aafig: the builder format {app.builder.format} is not officially "
                 "supported, aafigure images could not work. "
                 "Please report problems and working builder to "
-                "avoid this warning in the future" % app.builder.format,
+                "avoid this warning in the future",
             )
         relfn = fname
         outfn = path.join(app.builder.outdir, fname)
-    metadata_fname = "%s.aafig" % outfn
+    metadata_fname = f"{outfn}.aafig"
 
     try:
         if path.isfile(outfn):

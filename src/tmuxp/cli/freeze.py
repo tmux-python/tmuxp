@@ -154,11 +154,11 @@ def command_freeze(
             ),
         )
         dest_prompt = prompt(
-            "Save to: %s" % save_to,
+            f"Save to: {save_to}",
             default=save_to,
         )
         if not args.force and os.path.exists(dest_prompt):
-            print("%s exists. Pick a new filename." % dest_prompt)
+            print(f"{dest_prompt} exists. Pick a new filename.")
             continue
 
         dest = dest_prompt
@@ -185,8 +185,9 @@ def command_freeze(
         workspace_format = extract_workspace_format(dest)
         if not is_valid_ext(workspace_format):
             _workspace_format = prompt_choices(
-                "Couldn't ascertain one of [%s] from file name. Convert to"
-                % ", ".join(valid_workspace_formats),
+                "Couldn't ascertain one of [{}] from file name. Convert to".format(
+                    ", ".join(valid_workspace_formats)
+                ),
                 choices=t.cast(t.List[str], valid_workspace_formats),
                 default="yaml",
             )
@@ -203,7 +204,7 @@ def command_freeze(
     elif workspace_format == "json":
         workspace = configparser.dump(fmt="json", indent=2)
 
-    if args.answer_yes or prompt_yes_no("Save to %s?" % dest):
+    if args.answer_yes or prompt_yes_no(f"Save to {dest}?"):
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
@@ -211,4 +212,4 @@ def command_freeze(
             buf.write(workspace)
 
         if not args.quiet:
-            print("Saved to %s." % dest)
+            print(f"Saved to {dest}.")

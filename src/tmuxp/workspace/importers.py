@@ -71,7 +71,7 @@ def import_tmuxinator(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
         if "shell_command_before" not in tmuxp_workspace:
             tmuxp_workspace["shell_command_before"] = []
         tmuxp_workspace["shell_command_before"].append(
-            "rbenv shell %s" % workspace_dict["rbenv"],
+            "rbenv shell {}".format(workspace_dict["rbenv"]),
         )
 
     for window_dict in workspace_dict["windows"]:

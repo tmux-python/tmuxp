@@ -88,7 +88,7 @@ def command_convert(
     if (
         not answer_yes
         and prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?")
-        and prompt_yes_no("Save workspace to %s?" % newfile)
+        and prompt_yes_no(f"Save workspace to {newfile}?")
     ):
         answer_yes = True
 

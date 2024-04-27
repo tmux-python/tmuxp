@@ -56,7 +56,7 @@ def prompt(
     `flask-script <https://github.com/techniq/flask-script>`_. See the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
-    _prompt = name + ((default and " [%s]" % default) or "")
+    _prompt = name + ((default and f" [{default}]") or "")
     _prompt += (name.endswith("?") and " ") or ": "
     while True:
         rv = input(_prompt) or default
@@ -106,7 +106,7 @@ def prompt_bool(
     else:
         prompt_choice = "y/N"
 
-    _prompt = name + " [%s]" % prompt_choice
+    _prompt = name + f" [{prompt_choice}]"
     _prompt += (name.endswith("?") and " ") or ": "
 
     while True:
@@ -160,7 +160,7 @@ def prompt_choices(
         _choices.append(choice)
 
     while True:
-        rv = prompt(name + " - (%s)" % ", ".join(options), default=default)
+        rv = prompt(name + " - ({})".format(", ".join(options)), default=default)
         if not rv or rv == default:
             return default
         rv = rv.lower()

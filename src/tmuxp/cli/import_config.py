@@ -52,7 +52,8 @@ def get_teamocil_dir() -> pathlib.Path:
 def _resolve_path_no_overwrite(workspace_file: str) -> str:
     path = pathlib.Path(workspace_file).resolve()
     if path.exists():
-        raise ValueError("%s exists. Pick a new filename." % path)
+        msg = f"{path} exists. Pick a new filename."
+        raise ValueError(msg)
     return str(path)
 
 
@@ -165,18 +166,18 @@ def import_config(
         dest = None
         while not dest:
             dest_path = prompt(
-                "Save to [%s]" % os.getcwd(),
+                f"Save to [{os.getcwd()}]",
                 value_proc=_resolve_path_no_overwrite,
             )
 
             # dest = dest_prompt
-            if prompt_yes_no("Save to %s?" % dest_path):
+            if prompt_yes_no(f"Save to {dest_path}?"):
                 dest = dest_path
 
         with open(dest, "w", encoding=locale.getpreferredencoding(False)) as buf:
             buf.write(new_config)
 
-        tmuxp_echo("Saved to %s." % dest)
+        tmuxp_echo(f"Saved to {dest}.")
     else:
         tmuxp_echo(
             "tmuxp has examples in JSON and YAML format at "
