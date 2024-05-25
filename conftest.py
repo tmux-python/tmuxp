@@ -105,7 +105,7 @@ def add_doctest_fixtures(
     """Harness pytest fixtures to doctests namespace."""
     if isinstance(request._pyfuncitem, DoctestItem) and shutil.which("tmux"):
         doctest_namespace["server"] = request.getfixturevalue("server")
-        session: "Session" = request.getfixturevalue("session")
+        session: Session = request.getfixturevalue("session")
         doctest_namespace["session"] = session
         doctest_namespace["window"] = session.active_window
         doctest_namespace["pane"] = session.active_pane

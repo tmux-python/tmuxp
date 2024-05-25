@@ -69,7 +69,7 @@ def oh_my_zsh_auto_title() -> None:
     if (
         "SHELL" in os.environ
         and "zsh" in os.environ.get("SHELL", "")
-        and os.path.exists(os.path.expanduser("~/.oh-my-zsh"))  # NOQA PTH110, PTH111
+        and os.path.exists(os.path.expanduser("~/.oh-my-zsh"))  # NOQA: PTH110, PTH111
         and (
             "DISABLE_AUTO_TITLE" not in os.environ
             or os.environ.get("DISABLE_AUTO_TITLE") == "false"

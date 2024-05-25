@@ -12,7 +12,7 @@ class AllVersionPassPlugin(MyTestTmuxpPlugin):
     """Tmuxp plugin with config constraints guaranteed to validate."""
 
     def __init__(self) -> None:
-        config: "PluginTestConfigSchema" = {
+        config: PluginTestConfigSchema = {
             "plugin_name": "tmuxp-plugin-my-tmuxp-plugin",
             "tmux_min_version": "1.8",
             "tmux_max_version": "100.0",

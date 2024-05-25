@@ -152,7 +152,7 @@ class TmuxpPlugin:
         self.libtmux_version = libtmux.__about__.__version__
         self.tmuxp_version = Version(__version__)
 
-        self.version_constraints: "TmuxpPluginVersionConstraints" = {
+        self.version_constraints: TmuxpPluginVersionConstraints = {
             "tmux": {
                 "version": self.tmux_version,
                 "vmin": config["tmux_min_version"],

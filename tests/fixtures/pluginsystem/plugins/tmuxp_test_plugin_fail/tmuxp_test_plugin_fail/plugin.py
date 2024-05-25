@@ -12,7 +12,7 @@ class PluginFailVersion(TmuxpPlugin):
     """A tmuxp plugin that is doomed to fail. DOOMED."""
 
     def __init__(self) -> None:
-        config: "PluginConfigSchema" = {
+        config: PluginConfigSchema = {
             "plugin_name": "tmuxp-plugin-fail-version",
             "tmuxp_max_version": "0.0.0",
         }

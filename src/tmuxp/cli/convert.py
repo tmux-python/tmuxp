@@ -68,7 +68,7 @@ def command_convert(
 
     _, ext = os.path.splitext(workspace_file)
     ext = ext.lower()
-    to_filetype: "AllowedFileTypes"
+    to_filetype: AllowedFileTypes
     if ext == ".json":
         to_filetype = "yaml"
     elif ext in {".yaml", ".yml"}:

@@ -271,7 +271,7 @@ class WorkspaceBuilder:
 
         assert session.server is not None
 
-        self.server: "Server" = session.server
+        self.server: Server = session.server
         assert self.server.sessions is not None
         assert self.server.has_session(session.name)
         assert session.id

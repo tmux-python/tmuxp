@@ -344,7 +344,7 @@ def load_workspace(
             answer_yes
             or prompt_yes_no(
                 "{} is already running. Attach?".format(
-                    style(session_name, fg="green")
+                    style(session_name, fg="green"),
                 ),
                 default=True,
             )

@@ -51,10 +51,10 @@ if t.TYPE_CHECKING:
 def has_ipython() -> bool:
     """Return True if ipython is installed."""
     try:
-        from IPython import start_ipython  # NOQA F841
+        from IPython import start_ipython  # NOQA: F841
     except ImportError:
         try:
-            from IPython.Shell import IPShell  # NOQA F841
+            from IPython.Shell import IPShell  # NOQA: F841
         except ImportError:
             return False
 
@@ -67,7 +67,7 @@ def has_ptpython() -> bool:
         from ptpython.repl import embed, run_config  # F841
     except ImportError:
         try:
-            from prompt_toolkit.contrib.repl import embed, run_config  # NOQA F841
+            from prompt_toolkit.contrib.repl import embed, run_config  # NOQA: F841
         except ImportError:
             return False
 
@@ -81,8 +81,8 @@ def has_ptipython() -> bool:
         from ptpython.repl import run_config  # F841
     except ImportError:
         try:
-            from prompt_toolkit.contrib.ipython import embed  # NOQA F841
-            from prompt_toolkit.contrib.repl import run_config  # NOQA F841
+            from prompt_toolkit.contrib.ipython import embed  # NOQA: F841
+            from prompt_toolkit.contrib.repl import run_config  # NOQA: F841
         except ImportError:
             return False
 
@@ -92,7 +92,7 @@ def has_ptipython() -> bool:
 def has_bpython() -> bool:
     """Return True if bpython is installed."""
     try:
-        from bpython import embed  # NOQA F841
+        from bpython import embed  # NOQA: F841
     except ImportError:
         return False
     return True

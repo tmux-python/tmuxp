@@ -62,7 +62,7 @@ def command_debug_info(
                         f"version: {platform.version()}",
                     ],
                 ),
-            )
+            ),
         ),
         output_break(),
         "python version: {}".format(" ".join(sys.version.split("\n"))),
@@ -78,10 +78,10 @@ def command_debug_info(
         "tmux windows:\n{}".format(format_tmux_resp(tmux_cmd("list-windows"))),
         "tmux panes:\n{}".format(format_tmux_resp(tmux_cmd("list-panes"))),
         "tmux global options:\n{}".format(
-            format_tmux_resp(tmux_cmd("show-options", "-g"))
+            format_tmux_resp(tmux_cmd("show-options", "-g")),
         ),
         "tmux window options:\n{}".format(
-            format_tmux_resp(tmux_cmd("show-window-options", "-g"))
+            format_tmux_resp(tmux_cmd("show-window-options", "-g")),
         ),
     ]
 
