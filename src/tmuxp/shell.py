@@ -51,10 +51,10 @@ if t.TYPE_CHECKING:
 def has_ipython() -> bool:
     """Return True if ipython is installed."""
     try:
-        from IPython import start_ipython  # NOQA: F841
+        from IPython import start_ipython  # NOQA: F401
     except ImportError:
         try:
-            from IPython.Shell import IPShell  # NOQA: F841
+            from IPython.Shell import IPShell  # NOQA: F401
         except ImportError:
             return False
 
@@ -64,10 +64,10 @@ def has_ipython() -> bool:
 def has_ptpython() -> bool:
     """Return True if ptpython is installed."""
     try:
-        from ptpython.repl import embed, run_config  # F841
+        from ptpython.repl import embed, run_config  # F401
     except ImportError:
         try:
-            from prompt_toolkit.contrib.repl import embed, run_config  # NOQA: F841
+            from prompt_toolkit.contrib.repl import embed, run_config  # NOQA: F401
         except ImportError:
             return False
 
@@ -77,12 +77,12 @@ def has_ptpython() -> bool:
 def has_ptipython() -> bool:
     """Return True if ptpython + ipython are both installed."""
     try:
-        from ptpython.ipython import embed  # F841
-        from ptpython.repl import run_config  # F841
+        from ptpython.ipython import embed  # F401
+        from ptpython.repl import run_config  # F401
     except ImportError:
         try:
-            from prompt_toolkit.contrib.ipython import embed  # NOQA: F841
-            from prompt_toolkit.contrib.repl import run_config  # NOQA: F841
+            from prompt_toolkit.contrib.ipython import embed  # NOQA: F401
+            from prompt_toolkit.contrib.repl import run_config  # NOQA: F401
         except ImportError:
             return False
 
@@ -92,7 +92,7 @@ def has_ptipython() -> bool:
 def has_bpython() -> bool:
     """Return True if bpython is installed."""
     try:
-        from bpython import embed  # NOQA: F841
+        from bpython import embed  # NOQA: F401
     except ImportError:
         return False
     return True
@@ -119,7 +119,7 @@ def get_bpython(
     if extra_args is None:
         extra_args = {}
 
-    from bpython import embed  # F841
+    from bpython import embed
 
     def launch_bpython() -> None:
         imported_objects = get_launch_args(**options)
