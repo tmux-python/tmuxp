@@ -1,3 +1,4 @@
+# mypy: allow-untyped-calls
 """Utility and helper methods for tmuxp."""
 
 import logging
