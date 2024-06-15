@@ -331,7 +331,7 @@ this will load the `.tmuxp.yaml` in the root of the project.
 
 ### ruff
 
-The project uses [ruff] to handles formatting, sorting imports and linting.
+The project uses [ruff] to handle formatting, sorting imports and linting.
 
 ````{tab} Command
 
