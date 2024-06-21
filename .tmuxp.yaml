@@ -1,7 +1,5 @@
 session_name: tmuxp
 start_directory: ./ # load session relative to config location (project root).
-shell_command_before:
-- '[ -f .venv/bin/activate ] && source .venv/bin/activate && reset'
 windows:
 - window_name: tmuxp
   focus: True
