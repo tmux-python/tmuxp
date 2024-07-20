@@ -15,6 +15,4 @@ else:
     breakpoint = pdb.set_trace
 
 
-console_encoding = sys.__stdout__.encoding
-
 implements_to_string = _identity
