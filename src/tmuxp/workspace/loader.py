@@ -8,6 +8,49 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 
+def optional_windows_and_pane(
+    workspace_dict: t.Dict[str, t.Any],
+) -> bool:
+    """Determine if a window or pane should be included based on `if` conditions.
+
+    The function evaluates the 'if' condition specified in `workspace_dict` to determine inclusion:
+    - If 'if' key is not present, it defaults to True.
+    - If 'if' is a string or boolean, it's treated as a shell variable.
+    - 'if' can be a dictionary containing 'shell' or 'python' keys with valid expressions.
+    - 'shell' expressions are expanded and checked against true values ('y', 'yes', '1', 'on', 'true', 't').
+    - 'python' expressions are evaluated using `eval()`
+
+    Parameters
+    ----------
+    workspace_dict : Dict
+        A dictionary containing pane/window configuration data.
+
+    Returns
+    -------
+    bool
+        True if the window or pane should be included, False otherwise.
+    """
+    if "if" not in workspace_dict:
+        return True
+    if_cond = workspace_dict["if"]
+    if isinstance(if_cond, (str, bool)):
+        # treat this as shell variable
+        if_cond = {"shell": if_cond}
+    if not isinstance(if_cond, dict) or not ("shell" in if_cond or "python" in if_cond):
+        raise ValueError(f"if conditions does not contains valid expression: {if_cond}")
+    if "shell" in if_cond:
+        if isinstance(if_cond["shell"], str):
+            if expandshell(if_cond["shell"]).lower() not in ("y", "yes", "1", "on", "true", "t"):
+                return False
+        elif isinstance(if_cond["shell"], bool):
+            if not if_cond["shell"]:
+                return False
+    if "python" in if_cond:
+        if if_cond["python"] and not eval(if_cond["python"]):  # dangerous
+            return False
+    return True
+
+
 def expandshell(value: str) -> str:
     """Resolve shell variables based on user's ``$HOME`` and ``env``.
 
@@ -170,18 +213,21 @@ def expand(
 
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
-        workspace_dict["windows"] = [
-            expand(window, parent=workspace_dict)
-            for window in workspace_dict["windows"]
-        ]
+        window_dicts = workspace_dict["windows"]
+        window_dicts = filter(optional_windows_and_pane, window_dicts)
+        window_dicts = map(lambda x: expand(x, parent=workspace_dict), window_dicts)
+        # remove windows that has no panels (e.g. due to if conditions)
+        window_dicts = filter(lambda x: len(x["panes"]), window_dicts)
+        workspace_dict["windows"] = list(window_dicts)
+
     elif "panes" in workspace_dict:
         pane_dicts = workspace_dict["panes"]
         for pane_idx, pane_dict in enumerate(pane_dicts):
             pane_dicts[pane_idx] = {}
             pane_dicts[pane_idx].update(expand_cmd(pane_dict))
-        workspace_dict["panes"] = [
-            expand(pane, parent=workspace_dict) for pane in pane_dicts
-        ]
+        pane_dicts = filter(optional_windows_and_pane, pane_dicts)
+        pane_dicts = map(lambda x: expand(x, parent=workspace_dict), pane_dicts)
+        workspace_dict["panes"] = list(pane_dicts)
 
     return workspace_dict
 
