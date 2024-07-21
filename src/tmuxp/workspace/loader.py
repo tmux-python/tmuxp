@@ -157,6 +157,9 @@ def expand(
             if any(val.startswith(a) for a in [".", "./"]):
                 val = str(cwd / val)
             workspace_dict["environment"][key] = val
+            if key not in os.environ:
+                # using user provided environment variable as default vars
+                os.environ[key] = val
     if "global_options" in workspace_dict:
         for key in workspace_dict["global_options"]:
             val = workspace_dict["global_options"][key]
