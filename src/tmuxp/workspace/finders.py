@@ -172,9 +172,7 @@ def find_workspace_file(
     elif (
         not isabs(workspace_file)
         or len(dirname(workspace_file)) > 1
-        or workspace_file == "."
-        or workspace_file == ""
-        or workspace_file == "./"
+        or workspace_file in {".", "", "./"}
     ):  # if relative, fill in full path
         workspace_file = normpath(join(cwd, workspace_file))
 
@@ -247,6 +245,5 @@ def is_pure_name(path: str) -> bool:
         not os.path.isabs(path)
         and len(os.path.dirname(path)) == 0
         and not os.path.splitext(path)[1]
-        and path != "."
-        and path != ""
+        and path not in {".", ""}
     )

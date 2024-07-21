@@ -7,7 +7,7 @@ import pytest
 from tests.fixtures.structures import WorkspaceTestData
 
 
-@pytest.fixture()
+@pytest.fixture
 def config_fixture() -> WorkspaceTestData:
     """Deferred import of tmuxp.tests.fixtures.*.
 
