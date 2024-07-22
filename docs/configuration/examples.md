@@ -289,7 +289,7 @@ newer and tmux 3.0 or newer.
 
 ## `if` conditions
 
-tmuxp enables one to optionally open windows / panes based on coditions. The `if` conditions can appears in the configuration for window or pane.
+tmuxp enables one to optionally open windows / panes based on conditions. The `if` conditions can appears in the configuration for window or pane.
 
 ````{tab} YAML
 
@@ -320,7 +320,7 @@ should produce **only** a window with upper and lower split panes (others should
 $ show_htop=false tmuxp load examples/if-conditions.yaml
 ```
 
-will insteads suppress the `htop` command pane and resulting in a different behaviour.
+will instead suppress the `htop` command pane and resulting in a different behaviour.
 
 ## Focusing
 

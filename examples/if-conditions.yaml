@@ -12,12 +12,12 @@ windows:
       - echo neither should this $Foo
   - window_name: window 2
     panes:
-      # should not shows up; using shell expression
+      # shell expression condition; should not show up
       - if:
           shell: '[ 5 -lt 4 ]'
         shell_command:
           - echo the above is a false statement
-      # python conditions
+      # python condition
       - if:
           python: import os; os.path.isdir('${PWD}')
         shell_command:

@@ -7,9 +7,7 @@
   "windows": [
     {
       "window_name": "window 1 ${ha} $Foo",
-      "if": {
-        "shell": "${Foo}"
-      },
+      "if": "${Foo}",
       "panes": [
         {
           "shell_command": [
@@ -24,22 +22,25 @@
       "panes": [
         {
           "if": {
-            "python": "1+1==3"
+            "shell": "[ 5 -lt 4 ]"
           },
           "shell_command": [
             "echo the above is a false statement"
           ]
         },
         {
+          "if": {
+            "python": "import os; os.path.isdir('${PWD}')"
+          },
           "shell_command": [
-            "echo no condition",
+            "echo \"checking for PWD (${PWD}) is a directory in python\"",
             "python -m http.server"
           ]
         },
         {
           "if": "${show_htop}",
           "shell_command": [
-            "echo the above is a true statement (by default), but can be disabled on-demand",
+            "echo \"the above is a true statement (by default), but can be disabled on-demand\"",
             "htop"
           ]
         }
