@@ -566,9 +566,7 @@ def test_blank_pane_spawn(
 def test_if_conditions(
     session: Session,
 ) -> None:
-    """
-    Test various ways of spawning panes with conditions from a tmuxp configuration.
-    """
+    """Test various ways of spawning panes with conditions from a tmuxp configuration."""
     yaml_workspace_file = EXAMPLE_PATH / "if-conditions-test.yaml"
     test_config = ConfigReader._from_file(yaml_workspace_file)
 

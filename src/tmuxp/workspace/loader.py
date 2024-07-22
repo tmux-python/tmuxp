@@ -38,13 +38,23 @@ def optional_windows_and_pane(
     if isinstance(if_cond, (str, bool)):
         # treat this as shell variable
         if_cond = {"shell_var": if_cond}
-    if not isinstance(if_cond, dict) or not any(predicate in if_cond for predicate in ("python", "shell", "shell_var")):
-        raise ValueError(f"if conditions does not contains valid expression: {if_cond}")
+    if not isinstance(if_cond, dict) or not any(
+        predicate in if_cond for predicate in ("python", "shell", "shell_var")
+    ):
+        msg = f"if conditions does not contains valid expression: {if_cond}"
+        raise ValueError(msg)
     if "shell_var" in if_cond:
-        if expandshell(str(if_cond["shell_var"])).lower() not in ("y", "yes", "1", "on", "true", "t"):
+        if expandshell(str(if_cond["shell_var"])).lower() not in {
+            "y",
+            "yes",
+            "1",
+            "on",
+            "true",
+            "t",
+        }:
             return False
     if "shell" in if_cond:
-        if subprocess.run(if_cond["shell"], shell=True).returncode != 0:
+        if subprocess.run(if_cond["shell"], shell=True, check=False).returncode != 0:
             return False
     if "python" in if_cond:
         # assign the result of the last statement from the python snippet
@@ -52,7 +62,7 @@ def optional_windows_and_pane(
         py_statements[-1] = f"ret={py_statements[-1]}"
         locals = {}
         exec(";".join(py_statements), {}, locals)
-        if not locals['ret']:
+        if not locals["ret"]:
             return False
     return True
 
@@ -224,7 +234,7 @@ def expand(
     if "windows" in workspace_dict:
         window_dicts = workspace_dict["windows"]
         window_dicts = filter(optional_windows_and_pane, window_dicts)
-        window_dicts = map(lambda x: expand(x, parent=workspace_dict), window_dicts)
+        window_dicts = (expand(x, parent=workspace_dict) for x in window_dicts)
         # remove windows that has no panels (e.g. due to if conditions)
         window_dicts = filter(lambda x: len(x["panes"]), window_dicts)
         workspace_dict["windows"] = list(window_dicts)
@@ -235,7 +245,7 @@ def expand(
             pane_dicts[pane_idx] = {}
             pane_dicts[pane_idx].update(expand_cmd(pane_dict))
         pane_dicts = filter(optional_windows_and_pane, pane_dicts)
-        pane_dicts = map(lambda x: expand(x, parent=workspace_dict), pane_dicts)
+        pane_dicts = (expand(x, parent=workspace_dict) for x in pane_dicts)
         workspace_dict["panes"] = list(pane_dicts)
 
     return workspace_dict
