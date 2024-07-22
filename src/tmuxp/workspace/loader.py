@@ -3,6 +3,7 @@
 import logging
 import os
 import pathlib
+import subprocess
 import typing as t
 
 logger = logging.getLogger(__name__)
@@ -16,9 +17,10 @@ def optional_windows_and_pane(
     The function evaluates the 'if' condition specified in `workspace_dict` to determine inclusion:
     - If 'if' key is not present, it defaults to True.
     - If 'if' is a string or boolean, it's treated as a shell variable.
-    - 'if' can be a dictionary containing 'shell' or 'python' keys with valid expressions.
-    - 'shell' expressions are expanded and checked against true values ('y', 'yes', '1', 'on', 'true', 't').
-    - 'python' expressions are evaluated using `eval()`
+    - 'if' can be a dictionary containing 'shell', 'shell_var' or 'python' keys with valid expressions.
+    - 'shell_var' expressions are expanded and checked against true values ('y', 'yes', '1', 'on', 'true', 't').
+    - 'shell' expressions are evaluated using subprocess
+    - 'python' expressions are evaluated using `exec()`
 
     Parameters
     ----------
@@ -35,18 +37,22 @@ def optional_windows_and_pane(
     if_cond = workspace_dict["if"]
     if isinstance(if_cond, (str, bool)):
         # treat this as shell variable
-        if_cond = {"shell": if_cond}
-    if not isinstance(if_cond, dict) or not ("shell" in if_cond or "python" in if_cond):
+        if_cond = {"shell_var": if_cond}
+    if not isinstance(if_cond, dict) or not any(predicate in if_cond for predicate in ("python", "shell", "shell_var")):
         raise ValueError(f"if conditions does not contains valid expression: {if_cond}")
+    if "shell_var" in if_cond:
+        if expandshell(str(if_cond["shell_var"])).lower() not in ("y", "yes", "1", "on", "true", "t"):
+            return False
     if "shell" in if_cond:
-        if isinstance(if_cond["shell"], str):
-            if expandshell(if_cond["shell"]).lower() not in ("y", "yes", "1", "on", "true", "t"):
-                return False
-        elif isinstance(if_cond["shell"], bool):
-            if not if_cond["shell"]:
-                return False
+        if subprocess.run(if_cond["shell"], shell=True).returncode != 0:
+            return False
     if "python" in if_cond:
-        if if_cond["python"] and not eval(if_cond["python"]):  # dangerous
+        # assign the result of the last statement from the python snippet
+        py_statements = if_cond["python"].split(";")
+        py_statements[-1] = f"ret={py_statements[-1]}"
+        locals = {}
+        exec(";".join(py_statements), {}, locals)
+        if not locals['ret']:
             return False
     return True
 

@@ -5,25 +5,26 @@ environment:
 windows:
   # the following would not shows up as it evaluates to false
   - window_name: window 1 ${ha} $Foo
-    if:
-      shell: ${Foo}
+    if: ${Foo}
     panes:
       - shell_command:
           - echo "this shouldn't shows up"
       - echo neither should this $Foo
   - window_name: window 2
     panes:
-      # should not shows up
+      # should not shows up; using shell expression
       - if:
-          python: 1+1==3
+          shell: '[ 5 -lt 4 ]'
         shell_command:
           - echo the above is a false statement
-      # no if conditions
-      - shell_command:
-          - echo no condition
+      # python conditions
+      - if:
+          python: import os; os.path.isdir('${PWD}')
+        shell_command:
+          - echo "checking for PWD (${PWD}) is a directory in python"
           - python -m http.server
       # display by default, but can be disabled by running `show_htop=false tmuxp load .....`
       - if: ${show_htop}
         shell_command:
-          - echo the above is a true statement (by default), but can be disabled on-demand
+          - echo "the above is a true statement (by default), but can be disabled on-demand"
           - htop
