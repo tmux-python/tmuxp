@@ -19,7 +19,7 @@ windows:
           - echo the above is a false statement
       # python condition
       - if:
-          python: import os; os.path.isdir('${PWD}')
+          python: import os; os.path.isdir(os.path.expandvars('${PWD}'))
         shell_command:
           - echo "checking for PWD (${PWD}) is a directory in python"
           - python -m http.server
