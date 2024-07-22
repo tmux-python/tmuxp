@@ -3,12 +3,12 @@ environment:
   Foo: 'false'
   show_htop: 'true'
 windows:
-  # the following would not shows up as it evaluates to false
+  # the following would not show up as it evaluates to false
   - window_name: window 1 ${ha} $Foo
     if: ${Foo}
     panes:
       - shell_command:
-          - echo "this shouldn't shows up"
+          - echo "this shouldn't show up"
       - echo neither should this $Foo
   - window_name: window 2
     panes:

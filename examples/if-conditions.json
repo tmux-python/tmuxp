@@ -11,7 +11,7 @@
       "panes": [
         {
           "shell_command": [
-            "echo \"this shouldn't shows up\""
+            "echo \"this shouldn't show up\""
           ]
         },
         "echo neither should this $Foo"
