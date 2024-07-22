@@ -3,6 +3,7 @@ environment:
   foo: 'false'
   bar: '1'
   F: '0'
+  MY_VAR: myfoobar
 windows:
   - window_name: window all false
     panes:
@@ -46,3 +47,7 @@ windows:
       - if: ${non_existing_var}
         shell_command:
           - echo pane 9
+      - if:
+          shell: echo ${MY_VAR} | grep -q foo
+        shell_command:
+          - echo pane 10

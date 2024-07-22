@@ -586,7 +586,7 @@ def test_if_conditions(
 
     window3 = session.windows.get(window_name="window 2 of 4 true")
     assert window3 is not None
-    assert len(window3.panes) == 2
+    assert len(window3.panes) == 3
 
 
 def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:

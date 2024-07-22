@@ -54,7 +54,12 @@ def optional_windows_and_pane(
         }:
             return False
     if "shell" in if_cond:
-        if subprocess.run(if_cond["shell"], shell=True, check=False).returncode != 0:
+        if (
+            subprocess.run(
+                expandshell(if_cond["shell"]), shell=True, check=False
+            ).returncode
+            != 0
+        ):
             return False
     if "python" in if_cond:
         # assign the result of the last statement from the python snippet
