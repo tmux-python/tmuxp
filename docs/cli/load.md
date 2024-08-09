@@ -16,7 +16,7 @@
 
 ## Usage
 
-You can load your tmuxp file and attach the vim session via a few
+You can load your tmuxp file and attach the tmux session via a few
 shorthands:
 
 1. The directory with a `.tmuxp.{yaml,yml,json}` file in it
