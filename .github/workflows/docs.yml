@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Filter changed file paths to outputs
-        uses: dorny/paths-filter@v3.0.0
+        uses: dorny/paths-filter@v3.0.2
         id: changes
         with:
           filters: |
