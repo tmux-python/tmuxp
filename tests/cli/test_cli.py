@@ -63,7 +63,7 @@ def test_resolve_behavior(
     expect = tmp_path
     monkeypatch.chdir(tmp_path)
     assert pathlib.Path("../").resolve() == expect.parent
-    assert pathlib.Path().resolve() == expect
+    assert pathlib.Path.cwd() == expect
     assert pathlib.Path("./").resolve() == expect
     assert pathlib.Path(expect).resolve() == expect
 
