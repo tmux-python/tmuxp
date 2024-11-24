@@ -1,6 +1,9 @@
 {
   "session_name": "tmuxp",
   "start_directory": "./",
+  "shell_command_before": [
+    "uv virtualenv --quiet > /dev/null 2>&1 && clear"
+  ],
   "windows": [
     {
       "window_name": "tmuxp",

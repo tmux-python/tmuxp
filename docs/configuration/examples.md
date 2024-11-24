@@ -636,9 +636,9 @@ windows:
   - focus: True
   - blank
   - >
-    poetry run ./manage.py migrate &&
+    uv run ./manage.py migrate &&
     npm -C js run start
-  - poetry run ./manage.py runserver
+  - uv run ./manage.py runserver
   options:
     main-pane-height: 35
 ```

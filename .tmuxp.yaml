@@ -1,5 +1,7 @@
 session_name: tmuxp
 start_directory: ./ # load session relative to config location (project root).
+shell_command_before:
+- uv virtualenv --quiet > /dev/null 2>&1 && clear
 windows:
 - window_name: tmuxp
   focus: True

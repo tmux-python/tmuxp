@@ -33,9 +33,9 @@ $ cd tmuxp
 
 ### Bootstrap
 
-The easiest way to configure a dev environment is through [poetry]. This
+The easiest way to configure a dev environment is through [uv]. This
 automatically will manage virtualenv and python dependencies for tmuxp.
-For information on installing poetry visit the [poetry's documentation].
+For information on installing uv visit the [uv's documentation].
 
 To begin developing, check out the code from github:
 
@@ -48,34 +48,29 @@ $ cd tmuxp
 ```
 
 You can create a virtualenv, and install all of the locked
-packages as listed in poetry.lock:
+packages as listed in uv.lock:
 
 ```console
-$ poetry install
+$ uv sync --all-extras --dev
 ```
 
 If you ever need to update packages during your development session, the
-following command can be used to update all packages as per poetry settings or
-individual package (second command):
+following command can be used to update all packages as per uv settings:
 
 ```console
-$ poetry update
+$ uv sync --all-extras --dev --upgrade
 ```
 
-```console
-$ poetry update requests
-```
-
-Then activate it to your current tty / terminal session with:
+Then before any python command in tty / terminal session, run with:
 
 ```console
-$ poetry shell
+$ uv run [command]
 ```
 
 That is it! You are now ready to code!
 
-[poetry]: https://python-poetry.org/
-[poetry's documentation]: https://python-poetry.org/docs/
+[uv]: https://github.com/astral-sh/uv
+[uv's documentation]: https://docs.astral.sh/uv
 
 ### Advanced: Manual virtualenv
 
@@ -134,7 +129,7 @@ $ make watch_test
 ### Manual (just the command, please)
 
 ```console
-$ poetry run py.test
+$ uv run py.test
 ```
 
 or:
@@ -159,19 +154,19 @@ $ env PYTEST_ADDOPTS="-verbose" make start
 Pick a file:
 
 ```console
-$ env PYTEST_ADDOPTS="tests/workspace/test_builder.py" poetry run make start
+$ env PYTEST_ADDOPTS="tests/workspace/test_builder.py" uv run make start
 ```
 
 Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py`:
 
 ```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py" poetry run make start
+$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py" uv run make start
 ```
 
 Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py` and stop on first error:
 
 ```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py::test_automatic_rename_option" poetry run make start
+$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py::test_automatic_rename_option" uv run make start
 ```
 
 Drop into `pdb` on first error:
@@ -299,10 +294,8 @@ $ cd doc
 $ make watch
 ```
 
-If you're not source'd via `poetry shell`, you can use this:
-
 ```console
-$ make SPHINXBUILD='poetry run sphinx-build' watch
+$ make SPHINXBUILD='uv run sphinx-build' watch
 ```
 
 (tmuxp-developer-config)=
@@ -335,10 +328,10 @@ The project uses [ruff] to handle formatting, sorting imports and linting.
 
 ````{tab} Command
 
-poetry:
+uv:
 
 ```console
-$ poetry run ruff
+$ uv run ruff
 ```
 
 If you setup manually:
@@ -369,10 +362,10 @@ requires [`entr(1)`].
 
 ````{tab} Fix files
 
-poetry:
+uv:
 
 ```console
-$ poetry run ruff check . --fix
+$ uv run ruff check . --fix
 ```
 
 If you setup manually:
@@ -389,10 +382,10 @@ $ ruff check . --fix
 
 ````{tab} Command
 
-poetry:
+uv:
 
 ```console
-$ poetry run ruff format .
+$ uv run ruff format .
 ```
 
 If you setup manually:
@@ -417,10 +410,10 @@ $ make ruff_format
 
 ````{tab} Command
 
-poetry:
+uv:
 
 ```console
-$ poetry run mypy .
+$ uv run mypy .
 ```
 
 If you setup manually:
