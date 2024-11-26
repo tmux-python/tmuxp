@@ -15,9 +15,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 // Usage: tmuxp@next load yoursession
 ```
 
-## tmuxp 1.49.0 (unreleased)
+## tmuxp 1.50.0 (unreleased)
 
 <!-- Maintainers, insert changes / features for the next release here -->
+
+## tmuxp 1.49.0 (2024-11-26)
+
+_Maintenance only, no bug fixes or new features_
 
 ### Breaking changes
 
@@ -26,6 +30,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   tmuxp 1.48.0 was the last release for Python 3.8.
 
   The minimum python for tmuxp as of 1.49.0 is Python 3.9
+- libtmux 0.38.1 -> 0.39.0 (Minimum Python version of 3.9)
 
 ## tmuxp 1.48.0 (2024-11-26)
 
