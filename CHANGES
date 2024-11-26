@@ -21,9 +21,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Development
 
+- Project and package management: poetry to uv (#949)
+
+  [uv] is the new package and project manager for the project, replacing Poetry.
+
 - Code quality: Use f-strings in more places (#931)
 
   via [ruff 0.4.2](https://github.com/astral-sh/ruff/blob/v0.4.2/CHANGELOG.md).
+
+[uv]: https://github.com/astral-sh/uv
 
 ## tmuxp 1.47.0 (2024-04-21)
 

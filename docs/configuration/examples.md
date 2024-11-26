@@ -416,7 +416,7 @@ _Experimental setting_: behavior and api is subject to change until stable.
 Omit sending {kbd}`enter` to key commands. Equivalent to having
 a [`time.sleep`](time.sleep) before and after [`send_keys`](libtmux.Pane.send_keys).
 
-This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, sourcing a configuration, launching a tui app, etc).
+This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, uv, sourcing a configuration, launching a tui app, etc).
 
 ````{tab} Virtualenv
 
@@ -636,9 +636,9 @@ windows:
   - focus: True
   - blank
   - >
-    poetry run ./manage.py migrate &&
+    uv run ./manage.py migrate &&
     npm -C js run start
-  - poetry run ./manage.py runserver
+  - uv run ./manage.py runserver
   options:
     main-pane-height: 35
 ```
@@ -740,7 +740,7 @@ the workspace file / project root.
 
 :::
 
-If you use [pipenv][pipenv] / [poetry][poetry], you can use a script like this to ensure
+If you use [pipenv] / [poetry] / [uv], you can use a script like this to ensure
 your packages are installed:
 
 ````{tab} YAML
@@ -784,6 +784,7 @@ windows:
 
 [pipenv]: https://docs.pipenv.org/
 [poetry]: https://python-poetry.org/
+[uv]: https://github.com/astral-sh/uv
 
 ## Kung fu
 

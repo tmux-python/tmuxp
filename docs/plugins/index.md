@@ -30,15 +30,13 @@ your tmuxp workspace file.
 
 ````
 
-[poetry]: https://python-poetry.org/
-
 ## Developing a Plugin
 
 tmuxp expects all plugins to be class within a python submodule named
 `plugin` that is within a python module that is installed in the local
 python environment. A plugin interface is provided by tmuxp to inherit.
 
-[poetry][poetry] is the chosen python package manager for tmuxp. It is highly
+[uv] is the chosen python package manager for tmuxp. It is highly
 suggested to use it when developing plugins; however, `pip` will work
 just as well. Only one of the configuration files is needed for the packaging
 tool that the package developer decides to use.
@@ -49,37 +47,33 @@ python_module
 ├── tmuxp_plugin_my_plugin_module
 │   ├── __init__.py
 │   └── plugin.py
-├── pyproject.toml  # Poetry's module configuration file
-└── setup.py        # pip's module configuration file
+└── pyproject.toml  # Python project configuration file
 
 ```
 
 When publishing plugins to pypi, tmuxp advocates for standardized naming:
 `tmuxp-plugin-{your-plugin-name}` to allow for easier searching. To create a
-module configuration file with poetry, run `poetry init` in the module
+module configuration file with uv, run `uv virtualenv` in the module
 directory. The resulting file looks something like this:
 
 ```toml
 
-[tool.poetry]
+[project]
 name = "tmuxp-plugin-my-tmuxp-plugin"
 version = "0.0.2"
 description = "An example tmuxp plugin."
 authors = ["Author Name <author.name@<domain>.com>"]
-
-[tool.poetry.dependencies]
-python = "^3.6"
-tmuxp = "^1.6.0"
-
-[tool.poetry.dev-dependencies]
+requires-python = ">=3.8,<4.0"
+dependencies = [
+  "tmuxp^=1.7.0"
+]
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
-
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 ```
 
-The {}`plugin.py` file could contain something like the following:
+The `plugin.py` file could contain something like the following:
 
 ```python
 
@@ -147,3 +141,5 @@ plugins:
 ```{eval-rst}
 .. automethod:: tmuxp.plugin.TmuxpPlugin.reattach
 ```
+
+[uv]: https://github.com/astral-sh/uv

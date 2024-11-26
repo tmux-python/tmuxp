@@ -1,9 +1,12 @@
-[tool.poetry]
+[project]
 name = "tmuxp"
 version = "1.47.0"
 description = "Session manager for tmux, which allows users to save and load tmux sessions through simple configuration files."
-license = "MIT"
-authors = ["Tony Narlock <tony@git-pull.com>"]
+requires-python = ">=3.8,<4.0"
+authors = [
+  {name = "Tony Narlock", email = "tony@git-pull.com"}
+]
+license = { text = "MIT" }
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: MIT License",
@@ -36,61 +39,96 @@ include = [
   { path = "docs", format = "sdist" },
   { path = "conftest.py", format = "sdist" },
 ]
+dependencies = [
+  "libtmux~=0.37.0",
+  "colorama>=0.3.9",
+  "PyYAML>=6.0"
+]
 
-[tool.poetry.urls]
+[project.urls]
 "Bug Tracker" = "https://github.com/tmux-python/tmuxp/issues"
 Documentation = "https://tmuxp.git-pull.com"
 Repository = "https://github.com/tmux-python/tmuxp"
 Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
 
-[tool.poetry.scripts]
+[project.scripts]
 tmuxp = 'tmuxp:cli.cli'
 
-[tool.poetry.dependencies]
-python = "^3.8"
-libtmux = "~0.37.0"
-colorama = ">=0.3.9"
-PyYAML = "^6.0"
+[tool.uv]
+dev-dependencies = [
+  # Docs
+  "aafigure",
+  "pillow",
+  "sphinx",
+  "furo",
+  "gp-libs",
+  "sphinx-autobuild",
+  "sphinx-autodoc-typehints",
+  "sphinx-inline-tabs",
+  "sphinxext-opengraph",
+  "sphinx-copybutton",
+  "sphinxext-rediraffe",
+  "sphinx-argparse",
+  "myst-parser",
+  "linkify-it-py",
+  # Testing
+  "gp-libs",
+  "pytest",
+  "pytest-rerunfailures",
+  "pytest-mock",
+  "pytest-watcher",
+  # Coverage
+  "codecov",
+  "coverage",
+  "pytest-cov",
+  # Lint
+  "ruff",
+  "mypy",
+  "types-colorama",
+  "types-docutils",
+  "types-PyYAML",
+]
 
-[tool.poetry.group.docs.dependencies]
-### Docs ###
-sphinx = "*"
-aafigure = ">=0.6"
-pillow = "*"
-furo = "*"
-gp-libs = "*"
-sphinx-autobuild = "*"
-sphinx-autodoc-typehints = "*"
-sphinx-argparse = "*"
-sphinx-inline-tabs = "*"
-sphinxext-opengraph = "<0.8" # https://github.com/wpilibsuite/sphinxext-opengraph/issues/100
-sphinx-copybutton = "*"
-sphinxext-rediraffe = "*"
-myst_parser = ">=0.18.1"
-docutils = "*"
-linkify-it-py = "*"
+[dependency-groups]
+docs = [
+  "aafigure",
+  "pillow",
+  "sphinx",
+  "furo",
+  "gp-libs",
+  "sphinx-autobuild",
+  "sphinx-autodoc-typehints",
+  "sphinx-inline-tabs",
+  "sphinxext-opengraph",
+  "sphinx-copybutton",
+  "sphinxext-rediraffe",
+  "sphinx-argparse",
+  "myst-parser",
+  "linkify-it-py",
+]
+testing = [
+  "gp-libs",
+  "pytest",
+  "pytest-rerunfailures",
+  "pytest-mock",
+  "pytest-watcher",
+]
+coverage =[
+  "codecov",
+  "coverage",
+  "pytest-cov",
+]
+lint = [
+  "ruff",
+  "mypy",
+  "types-colorama",
+  "types-docutils",
+  "types-PyYAML",
+]
 
-[tool.poetry.group.test.dependencies]
-### Testing ###
-pytest = "*"
-pytest-rerunfailures = "*"
-pytest-mock = "*"
-pytest-cov = "*"
-pytest-watcher = "*"
-gp-libs = "~0.0.4"
-
-[tool.poetry.group.coverage.dependencies]
-### Coverage ###
-codecov = "*"
-coverage = "*"
-
-[tool.poetry.group.lint.dependencies]
-### Lint ###
-ruff = "*"
-mypy = "*"
-types-colorama = "*"
-types-docutils = "*"
-types-PyYAML = "*"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.coverage.run]
 branch = true
@@ -185,7 +223,3 @@ testpaths = [
 filterwarnings = [
   "ignore:The frontend.Option(Parser)? class.*:DeprecationWarning::",
 ]
-
-[build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
