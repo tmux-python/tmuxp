@@ -19,6 +19,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- Minimum libtmux version 0.37.0 -> 0.38.1 (#950)
+
 ### Development
 
 - Project and package management: poetry to uv (#949)
