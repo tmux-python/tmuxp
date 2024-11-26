@@ -292,15 +292,15 @@ wheels = [
 
 [[package]]
 name = "gp-libs"
-version = "0.0.8"
+version = "0.0.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
     { name = "myst-parser" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/ae/4ae53e559046992edda1c18fb377449bf1064ea17f7601660bb4797addd1/gp_libs-0.0.8.tar.gz", hash = "sha256:c150ef6de4ab9287894fb6cb85c9a4efbaf1bd85dc021fd827c1903eb6a4ee77", size = 18836 }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/fc/63e3134cf0d5e7267ee9e19dc64cc59bc94e8a2874cb6c979b0e4e2f799a/gp_libs-0.0.9.tar.gz", hash = "sha256:28b3e56c1690cbcbc01483a36a86c7a707e8751e9f4ea3538ce12f8e4547ef2b", size = 14491 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/bb/69b3ed219a8d170c013338f63988acc0e818d9bbd8cc25eec08c09c90b5a/gp_libs-0.0.8-py3-none-any.whl", hash = "sha256:59b22a69f7162d9d6730a21b17c07d9f1ae054f348adf4179b2c3565fa93b59d", size = 15545 },
+    { url = "https://files.pythonhosted.org/packages/df/f9/e63374b3bbdd2d3600d4f3612f5d050db94b527e40ecf41dbfce32406150/gp_libs-0.0.9-py3-none-any.whl", hash = "sha256:0e945022f071a582466e1828133e0e793e1d8d213d0cf5f7d6867bf04fd353af", size = 15556 },
 ]
 
 [[package]]
@@ -356,11 +356,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.37.0"
+version = "0.38.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4a/51/b2543613a0f85247559073bc69cdca4cc0ccb590a45c98ac3400a51ba877/libtmux-0.37.0.tar.gz", hash = "sha256:21955c5dce6332db41abad5e26ae8c4062ef2b9a89099bd57a36f52be1d5270f", size = 256265 }
+sdist = { url = "https://files.pythonhosted.org/packages/09/05/743bedbf87fade89ca7049654a87009c53a8087a31f24f7a4febc4ea30c8/libtmux-0.38.1.tar.gz", hash = "sha256:3006f95852bf71ea571879662bfd530385dd3b06df2c291a84f3da9d42e56be5", size = 303527 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/21/0703fd85a278f08cabca0db0a159a05511ae5216fd38921c05a89270c9b8/libtmux-0.37.0-py3-none-any.whl", hash = "sha256:7e8cbab30b033d132b6fca5dddb575bb7f6a1fd802328e7174f9b49023556376", size = 56197 },
+    { url = "https://files.pythonhosted.org/packages/29/e8/1b6ec97ab533a4403a7991e60199d64b7e103201bb86694b27094c7fb989/libtmux-0.38.1-py3-none-any.whl", hash = "sha256:f994c5c7ebb027df38932be57ce096062493c2d5ecfbabf37f50be7a3d1872a5", size = 56222 },
 ]
 
 [[package]]
@@ -1115,7 +1115,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.3.9" },
-    { name = "libtmux", specifier = "~=0.37.0" },
+    { name = "libtmux", specifier = "~=0.38.1" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
