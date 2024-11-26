@@ -19,6 +19,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Breaking changes
+
+- Drop Python 3.8. end of life was October 7th, 2024 (#951)
+
+  tmuxp 1.48.0 was the last release for Python 3.8.
+
+  The minimum python for tmuxp as of 1.49.0 is Python 3.9
+
 ## tmuxp 1.48.0 (2024-11-26)
 
 _Maintenance only, no bug fixes or new features_
