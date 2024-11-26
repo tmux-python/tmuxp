@@ -70,7 +70,7 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
 
     for window in session.windows:
         window_config: t.Dict[str, t.Any] = {
-            "options": window.show_window_options(),
+            "options": window._show_options(),
             "window_name": window.name,
             "layout": window.window_layout,
             "panes": [],

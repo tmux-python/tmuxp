@@ -349,7 +349,7 @@ class WorkspaceBuilder:
         Generator yielding :class:`libtmux.Window` by iterating through
         ``session_config['windows']``.
 
-        Applies ``window_options`` to window.
+        Applies ``options`` to window.
 
         Parameters
         ----------
@@ -433,7 +433,7 @@ class WorkspaceBuilder:
                 dict,
             ):
                 for key, val in window_config["options"].items():
-                    window.set_window_option(key, val)
+                    window.set_option(key, val)
 
             if window_config.get("focus"):
                 window.select()
@@ -464,7 +464,7 @@ class WorkspaceBuilder:
         """
         assert isinstance(window, Window)
 
-        pane_base_index_str = window.show_window_option("pane-base-index", g=True)
+        pane_base_index_str = window._show_option("pane-base-index", _global=True)
         assert pane_base_index_str is not None
         pane_base_index = int(pane_base_index_str)
 
@@ -585,7 +585,7 @@ class WorkspaceBuilder:
             dict,
         ):
             for key, val in window_config["options_after"].items():
-                window.set_window_option(key, val)
+                window.set_option(key, val)
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
