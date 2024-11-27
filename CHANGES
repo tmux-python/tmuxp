@@ -38,13 +38,25 @@ _Maintenance only, no bug fixes or new features_
 
 ### Breaking changes
 
-- Minimum libtmux version 0.37.0 -> 0.38.1 (#950)
+#### Project and package management: poetry to uv (#949)
+
+[uv] is the new package and project manager for the project, replacing Poetry.
+
+[uv]: https://github.com/astral-sh/uv
+
+#### Build system: poetry to hatchling (#949)
+
+[Build system] moved from [poetry] to [hatchling].
+
+[Build system]: https://packaging.python.org/en/latest/tutorials/packaging-projects/#choosing-a-build-backend
+[poetry]: https://github.com/python-poetry/poetry
+[hatchling]: https://hatch.pypa.io/latest/
+
+#### Minimum libtmux version 0.37.0 -> 0.38.1 (#950)
+
+Built with uv.
 
 ### Development
-
-- Project and package management: poetry to uv (#949)
-
-  [uv] is the new package and project manager for the project, replacing Poetry.
 
 - Code quality: Use f-strings in more places (#931)
 
