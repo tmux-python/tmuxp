@@ -41,7 +41,7 @@ if t.TYPE_CHECKING:
         version: t.Union[Version, str]
         vmin: str
         vmax: t.Optional[str]
-        incompatible: t.List[t.Union[t.Any, str]]
+        incompatible: list[t.Union[t.Any, str]]
 
     class TmuxpPluginVersionConstraints(TypedDict):
         """Version constraints for a tmuxp plugin."""
@@ -57,13 +57,13 @@ class Config(t.TypedDict):
     plugin_name: str
     tmux_min_version: str
     tmux_max_version: t.Optional[str]
-    tmux_version_incompatible: t.Optional[t.List[str]]
+    tmux_version_incompatible: t.Optional[list[str]]
     libtmux_min_version: str
     libtmux_max_version: t.Optional[str]
-    libtmux_version_incompatible: t.Optional[t.List[str]]
+    libtmux_version_incompatible: t.Optional[list[str]]
     tmuxp_min_version: str
     tmuxp_max_version: t.Optional[str]
-    tmuxp_version_incompatible: t.Optional[t.List[str]]
+    tmuxp_version_incompatible: t.Optional[list[str]]
 
 
 DEFAULT_CONFIG: "Config" = {
@@ -200,7 +200,7 @@ class TmuxpPlugin:
         version: t.Union[str, Version],
         vmin: str,
         vmax: t.Optional[str],
-        incompatible: t.List[t.Union[t.Any, str]],
+        incompatible: list[t.Union[t.Any, str]],
     ) -> bool:
         """Provide affirmative if version compatibility is correct."""
         if vmin and version < Version(vmin):

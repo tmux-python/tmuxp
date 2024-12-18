@@ -187,7 +187,7 @@ windows:
 if t.TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
-    ExpectedOutput: TypeAlias = t.Optional[t.Union[str, t.List[str]]]
+    ExpectedOutput: TypeAlias = t.Optional[t.Union[str, list[str]]]
 
 
 class CLILoadFixture(t.NamedTuple):
@@ -197,9 +197,9 @@ class CLILoadFixture(t.NamedTuple):
     test_id: str
 
     # test params
-    cli_args: t.List[t.Union[str, t.List[str]]]
-    config_paths: t.List[str]
-    session_names: t.List[str]
+    cli_args: list[t.Union[str, list[str]]]
+    config_paths: list[str]
+    session_names: list[str]
     expected_exit_code: int
     expected_in_out: "ExpectedOutput" = None
     expected_not_in_out: "ExpectedOutput" = None
@@ -207,7 +207,7 @@ class CLILoadFixture(t.NamedTuple):
     expected_not_in_err: "ExpectedOutput" = None
 
 
-TEST_LOAD_FIXTURES: t.List[CLILoadFixture] = [
+TEST_LOAD_FIXTURES: list[CLILoadFixture] = [
     CLILoadFixture(
         test_id="dir-relative-dot-samedir",
         cli_args=["load", "."],
@@ -294,9 +294,9 @@ def test_load(
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
     test_id: str,
-    cli_args: t.List[str],
-    config_paths: t.List[str],
-    session_names: t.List[str],
+    cli_args: list[str],
+    config_paths: list[str],
+    session_names: list[str],
     expected_exit_code: int,
     expected_in_out: "ExpectedOutput",
     expected_not_in_out: "ExpectedOutput",
@@ -362,7 +362,7 @@ def test_regression_00132_session_name_with_dots(
     [["load", ".", "-d"], ["load", ".tmuxp.yaml", "-d"]],
 )
 def test_load_zsh_autotitle_warning(
-    cli_args: t.List[str],
+    cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
@@ -422,7 +422,7 @@ def test_load_zsh_autotitle_warning(
     ],
 )
 def test_load_log_file(
-    cli_args: t.List[str],
+    cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
@@ -488,8 +488,8 @@ def test_load_plugins(
 )
 def test_load_plugins_version_fail_skip(
     monkeypatch_plugin_test_packages: None,
-    cli_args: t.List[str],
-    inputs: t.List[str],
+    cli_args: list[str],
+    inputs: list[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """Test tmuxp load with plugins failing version constraints can continue."""
@@ -512,8 +512,8 @@ def test_load_plugins_version_fail_skip(
 )
 def test_load_plugins_version_fail_no_skip(
     monkeypatch_plugin_test_packages: None,
-    cli_args: t.List[str],
-    inputs: t.List[str],
+    cli_args: list[str],
+    inputs: list[str],
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -534,7 +534,7 @@ def test_load_plugins_version_fail_no_skip(
 )
 def test_load_plugins_plugin_missing(
     monkeypatch_plugin_test_packages: None,
-    cli_args: t.List[str],
+    cli_args: list[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     """Test tmuxp load with plugins missing raise an error."""

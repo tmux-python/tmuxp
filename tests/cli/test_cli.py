@@ -37,7 +37,7 @@ def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
     ],
 )
 def test_help(
-    cli_args: t.List[str],
+    cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],

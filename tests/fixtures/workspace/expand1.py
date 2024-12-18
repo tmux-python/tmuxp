@@ -33,7 +33,7 @@ before_workspace = {
 }
 
 
-def after_workspace() -> t.Dict[str, t.Any]:
+def after_workspace() -> dict[str, t.Any]:
     """After expansion of shorthand style."""
     return {
         "session_name": "sample workspace",

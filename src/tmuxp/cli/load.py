@@ -36,7 +36,7 @@ if t.TYPE_CHECKING:
 class CLILoadNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp load command."""
 
-    workspace_files: t.List[str]
+    workspace_files: list[str]
     socket_name: t.Optional[str]
     socket_path: t.Optional[str]
     tmux_config_file: t.Optional[str]
@@ -47,7 +47,7 @@ class CLILoadNamespace(argparse.Namespace):
     log_file: t.Optional[str]
 
 
-def load_plugins(session_config: t.Dict[str, t.Any]) -> t.List[t.Any]:
+def load_plugins(session_config: dict[str, t.Any]) -> list[t.Any]:
     """Load and return plugins in workspace."""
     plugins = []
     if "plugins" in session_config:

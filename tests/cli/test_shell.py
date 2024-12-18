@@ -22,13 +22,13 @@ class CLIShellFixture(t.NamedTuple):
     test_id: str
 
     # test params
-    cli_args: t.List[str]
-    inputs: t.List[t.Any]
-    env: t.Dict[str, str]
+    cli_args: list[str]
+    inputs: list[t.Any]
+    env: dict[str, str]
     expected_output: str
 
 
-TEST_SHELL_FIXTURES: t.List[CLIShellFixture] = [
+TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
     CLIShellFixture(
         test_id="print-socket-name",
         cli_args=["-L{SOCKET_NAME}", "-c", "print(str(server.socket_name))"],
@@ -108,11 +108,11 @@ TEST_SHELL_FIXTURES: t.List[CLIShellFixture] = [
     ids=[test.test_id for test in TEST_SHELL_FIXTURES],
 )
 def test_shell(
-    cli_cmd: t.List[str],
+    cli_cmd: list[str],
     test_id: str,
-    cli_args: t.List[str],
-    inputs: t.List[t.Any],
-    env: t.Dict[str, str],
+    cli_args: list[str],
+    inputs: list[t.Any],
+    env: dict[str, str],
     expected_output: str,
     server: "Server",
     session: Session,
@@ -196,14 +196,14 @@ def test_shell(
     ],
 )
 def test_shell_target_missing(
-    cli_cmd: t.List[str],
-    cli_args: t.List[str],
-    inputs: t.List[t.Any],
-    env: t.Dict[t.Any, t.Any],
-    template_ctx: t.Dict[str, str],
+    cli_cmd: list[str],
+    cli_args: list[str],
+    inputs: list[t.Any],
+    env: dict[t.Any, t.Any],
+    template_ctx: dict[str, str],
     exception: t.Union[
-        t.Type[exc.TmuxpException],
-        t.Type[subprocess.CalledProcessError],
+        type[exc.TmuxpException],
+        type[subprocess.CalledProcessError],
     ],
     message: str,
     socket_name: str,
@@ -279,10 +279,10 @@ def test_shell_target_missing(
     ],
 )
 def test_shell_interactive(
-    cli_cmd: t.List[str],
-    cli_args: t.List[str],
-    inputs: t.List[t.Any],
-    env: t.Dict[str, str],
+    cli_cmd: list[str],
+    cli_args: list[str],
+    inputs: list[t.Any],
+    env: dict[str, str],
     message: str,
     server: "Server",
     session: Session,

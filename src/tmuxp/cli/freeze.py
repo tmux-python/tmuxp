@@ -165,7 +165,7 @@ def command_freeze(
     dest = os.path.abspath(os.path.relpath(os.path.expanduser(dest)))
     workspace_format = args.workspace_format
 
-    valid_workspace_formats: t.List[CLIOutputFormatLiteral] = ["json", "yaml"]
+    valid_workspace_formats: list[CLIOutputFormatLiteral] = ["json", "yaml"]
 
     def is_valid_ext(stem: t.Optional[str]) -> "TypeGuard[CLIOutputFormatLiteral]":
         return stem in valid_workspace_formats
@@ -184,15 +184,15 @@ def command_freeze(
 
         workspace_format = extract_workspace_format(dest)
         if not is_valid_ext(workspace_format):
-            _workspace_format = prompt_choices(
+            workspace_format_ = prompt_choices(
                 "Couldn't ascertain one of [{}] from file name. Convert to".format(
                     ", ".join(valid_workspace_formats),
                 ),
-                choices=t.cast(t.List[str], valid_workspace_formats),
+                choices=t.cast("list[str]", valid_workspace_formats),
                 default="yaml",
             )
-            assert is_valid_ext(_workspace_format)
-            workspace_format = _workspace_format
+            assert is_valid_ext(workspace_format_)
+            workspace_format = workspace_format_
 
     if workspace_format == "yaml":
         workspace = configparser.dump(

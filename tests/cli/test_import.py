@@ -3,7 +3,6 @@
 import contextlib
 import io
 import pathlib
-import typing as t
 
 import pytest
 
@@ -13,7 +12,7 @@ from tmuxp import cli
 
 @pytest.mark.parametrize("cli_args", [(["import"])])
 def test_import(
-    cli_args: t.List[str],
+    cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
@@ -43,8 +42,8 @@ def test_import(
     ],
 )
 def test_import_teamocil(
-    cli_args: t.List[str],
-    inputs: t.List[str],
+    cli_args: list[str],
+    inputs: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -90,8 +89,8 @@ def test_import_teamocil(
     ],
 )
 def test_import_tmuxinator(
-    cli_args: t.List[str],
-    inputs: t.List[str],
+    cli_args: list[str],
+    inputs: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

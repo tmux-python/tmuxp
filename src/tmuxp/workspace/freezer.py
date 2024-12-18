@@ -9,7 +9,7 @@ if t.TYPE_CHECKING:
     from libtmux.window import Window
 
 
-def inline(workspace_dict: t.Dict[str, t.Any]) -> t.Any:
+def inline(workspace_dict: dict[str, t.Any]) -> t.Any:
     """Return workspace with inlined shorthands. Opposite of :meth:`loader.expand`.
 
     Parameters
@@ -50,7 +50,7 @@ def inline(workspace_dict: t.Dict[str, t.Any]) -> t.Any:
     return workspace_dict
 
 
-def freeze(session: Session) -> t.Dict[str, t.Any]:
+def freeze(session: Session) -> dict[str, t.Any]:
     """Freeze live tmux session into a tmuxp workspacee.
 
     Parameters
@@ -63,13 +63,13 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
     dict
         tmuxp compatible workspace
     """
-    session_config: t.Dict[str, t.Any] = {
+    session_config: dict[str, t.Any] = {
         "session_name": session.session_name,
         "windows": [],
     }
 
     for window in session.windows:
-        window_config: t.Dict[str, t.Any] = {
+        window_config: dict[str, t.Any] = {
             "options": window.show_window_options(),
             "window_name": window.name,
             "layout": window.window_layout,
@@ -88,7 +88,7 @@ def freeze(session: Session) -> t.Dict[str, t.Any]:
             window_config["start_directory"] = window.panes[0].pane_current_path
 
         for pane in window.panes:
-            pane_config: t.Union[str, t.Dict[str, t.Any]] = {"shell_command": []}
+            pane_config: t.Union[str, dict[str, t.Any]] = {"shell_command": []}
             assert isinstance(pane_config, dict)
 
             if "start_directory" not in window_config and pane.pane_current_path:

@@ -4,7 +4,6 @@ import contextlib
 import io
 import json
 import pathlib
-import typing as t
 
 import pytest
 
@@ -22,7 +21,7 @@ from tmuxp import cli
     ],
 )
 def test_convert(
-    cli_args: t.List[str],
+    cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -62,7 +61,7 @@ def test_convert(
     ],
 )
 def test_convert_json(
-    cli_args: t.List[str],
+    cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
