@@ -26,7 +26,7 @@ def expandshell(value: str) -> str:
     return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
 
 
-def expand_cmd(p: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+def expand_cmd(p: dict[str, t.Any]) -> dict[str, t.Any]:
     """Resolve shell variables and expand shorthands in a tmuxp config mapping."""
     if isinstance(p, str):
         p = {"shell_command": [p]}
@@ -64,10 +64,10 @@ def expand_cmd(p: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
 
 
 def expand(
-    workspace_dict: t.Dict[str, t.Any],
+    workspace_dict: dict[str, t.Any],
     cwd: t.Optional[t.Union[pathlib.Path, str]] = None,
     parent: t.Optional[t.Any] = None,
-) -> t.Dict[str, t.Any]:
+) -> dict[str, t.Any]:
     """Resolve workspace variables and expand shorthand style / inline properties.
 
     This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
@@ -186,7 +186,7 @@ def expand(
     return workspace_dict
 
 
-def trickle(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     """Return a dict with "trickled down" / inherited workspace values.
 
     This will only work if workspace has been expanded to full form with

@@ -9,7 +9,7 @@ from tmuxp import log
 if t.TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
-    CLIColour: TypeAlias = t.Union[int, t.Tuple[int, int, int], str]
+    CLIColour: TypeAlias = t.Union[int, tuple[int, int, int], str]
 
 
 logger = logging.getLogger(__name__)
@@ -56,10 +56,10 @@ def prompt(
     `flask-script <https://github.com/techniq/flask-script>`_. See the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
-    _prompt = name + ((default and f" [{default}]") or "")
-    _prompt += (name.endswith("?") and " ") or ": "
+    prompt_ = name + ((default and f" [{default}]") or "")
+    prompt_ += (name.endswith("?") and " ") or ": "
     while True:
-        rv = input(_prompt) or default
+        rv = input(prompt_) or default
         try:
             if value_proc is not None and callable(value_proc):
                 assert isinstance(rv, str)
@@ -106,11 +106,11 @@ def prompt_bool(
     else:
         prompt_choice = "y/N"
 
-    _prompt = name + f" [{prompt_choice}]"
-    _prompt += (name.endswith("?") and " ") or ": "
+    prompt_ = name + f" [{prompt_choice}]"
+    prompt_ += (name.endswith("?") and " ") or ": "
 
     while True:
-        rv = input(_prompt)
+        rv = input(prompt_)
         if not rv:
             return default
         if rv.lower() in yes_choices:
@@ -126,7 +126,7 @@ def prompt_yes_no(name: str, default: bool = True) -> bool:
 
 def prompt_choices(
     name: str,
-    choices: t.Union[t.List[str], t.Tuple[str, str]],
+    choices: t.Union[list[str], tuple[str, str]],
     default: t.Optional[str] = None,
     no_choice: t.Sequence[str] = ("none",),
 ) -> t.Optional[str]:
@@ -148,8 +148,8 @@ def prompt_choices(
     -------
     str
     """
-    _choices: t.List[str] = []
-    options: t.List[str] = []
+    choices_: list[str] = []
+    options: list[str] = []
 
     for choice in choices:
         if isinstance(choice, str):
@@ -157,7 +157,7 @@ def prompt_choices(
         elif isinstance(choice, tuple):
             options.append(f"{choice} [{choice[0]}]")
             choice = choice[0]
-        _choices.append(choice)
+        choices_.append(choice)
 
     while True:
         rv = prompt(name + " - ({})".format(", ".join(options)), default=default)
@@ -166,7 +166,7 @@ def prompt_choices(
         rv = rv.lower()
         if rv in no_choice:
             return None
-        if rv in _choices:
+        if rv in choices_:
             return rv
 
 
@@ -201,7 +201,7 @@ _ansi_reset_all = "\033[0m"
 
 
 def _interpret_color(
-    color: t.Union[int, t.Tuple[int, int, int], str],
+    color: t.Union[int, tuple[int, int, int], str],
     offset: int = 0,
 ) -> str:
     if isinstance(color, int):

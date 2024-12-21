@@ -39,10 +39,10 @@ if t.TYPE_CHECKING:
         """tmuxp shell launch import mapping."""
 
         libtmux: ModuleType
-        Server: t.Type[Server]
-        Session: t.Type[Session]
-        Window: t.Type[Window]
-        Pane: t.Type[Pane]
+        Server: type[Server]
+        Session: type[Session]
+        Window: type[Window]
+        Pane: type[Pane]
         server: t.Optional["Server"]
         session: t.Optional["Session"]
         window: t.Optional["Window"]
@@ -114,7 +114,7 @@ def detect_best_shell() -> "CLIShellLiteral":
 
 def get_bpython(
     options: "LaunchOptionalImports",
-    extra_args: t.Optional[t.Dict[str, t.Any]] = None,
+    extra_args: t.Optional[dict[str, t.Any]] = None,
 ) -> t.Callable[[], None]:
     """Return bpython shell."""
     if extra_args is None:
@@ -132,7 +132,7 @@ def get_bpython(
     return launch_bpython
 
 
-def get_ipython_arguments() -> t.List[str]:
+def get_ipython_arguments() -> list[str]:
     """Return ipython shell args via ``IPYTHON_ARGUMENTS`` environment variables."""
     ipython_args = "IPYTHON_ARGUMENTS"
     return os.environ.get(ipython_args, "").split()
@@ -140,7 +140,7 @@ def get_ipython_arguments() -> t.List[str]:
 
 def get_ipython(
     options: "LaunchOptionalImports",
-    **extra_args: t.Dict[str, t.Any],
+    **extra_args: dict[str, t.Any],
 ) -> t.Any:
     """Return ipython shell."""
     try:

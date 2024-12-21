@@ -3,7 +3,7 @@
 import typing as t
 
 
-def import_tmuxinator(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
@@ -100,7 +100,7 @@ def import_tmuxinator(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
     return tmuxp_workspace
 
 
-def import_teamocil(workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     """Return tmuxp workspace from a `teamocil`_ yaml workspace.
 
     .. _teamocil: https://github.com/remiprev/teamocil

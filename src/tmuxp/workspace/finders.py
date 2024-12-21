@@ -21,7 +21,7 @@ if t.TYPE_CHECKING:
 
 def is_workspace_file(
     filename: str,
-    extensions: t.Union["ValidExtensions", t.List["ValidExtensions"], None] = None,
+    extensions: t.Union["ValidExtensions", list["ValidExtensions"], None] = None,
 ) -> bool:
     """
     Return True if file has a valid workspace file type.
@@ -45,8 +45,8 @@ def is_workspace_file(
 
 def in_dir(
     workspace_dir: t.Union[pathlib.Path, str, None] = None,
-    extensions: t.Optional[t.List["ValidExtensions"]] = None,
-) -> t.List[str]:
+    extensions: t.Optional[list["ValidExtensions"]] = None,
+) -> list[str]:
     """
     Return a list of workspace_files in ``workspace_dir``.
 
@@ -74,7 +74,7 @@ def in_dir(
     ]
 
 
-def in_cwd() -> t.List[str]:
+def in_cwd() -> list[str]:
     """
     Return list of workspace_files in current working directory.
 
@@ -187,7 +187,7 @@ def find_workspace_file(
                 ]
                 if exists(x)
             ]
-            if not len(candidates):
+            if not candidates:
                 file_error = (
                     "workspace-file not found "
                     + f"in workspace dir (yaml/yml/json) {workspace_dir} for name"

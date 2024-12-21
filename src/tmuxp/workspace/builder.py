@@ -149,9 +149,9 @@ class WorkspaceBuilder:
 
     def __init__(
         self,
-        session_config: t.Dict[str, t.Any],
+        session_config: dict[str, t.Any],
         server: Server,
-        plugins: t.Optional[t.List[t.Any]] = None,
+        plugins: t.Optional[list[t.Any]] = None,
     ) -> None:
         """Initialize workspace loading.
 
@@ -443,7 +443,7 @@ class WorkspaceBuilder:
     def iter_create_panes(
         self,
         window: Window,
-        window_config: t.Dict[str, t.Any],
+        window_config: dict[str, t.Any],
     ) -> t.Iterator[t.Any]:
         """Return :class:`libtmux.Pane` iterating through window config dict.
 
@@ -479,8 +479,8 @@ class WorkspaceBuilder:
             else:
 
                 def get_pane_start_directory(
-                    pane_config: t.Dict[str, str],
-                    window_config: t.Dict[str, str],
+                    pane_config: dict[str, str],
+                    window_config: dict[str, str],
                 ) -> t.Optional[str]:
                     if "start_directory" in pane_config:
                         return pane_config["start_directory"]
@@ -489,8 +489,8 @@ class WorkspaceBuilder:
                     return None
 
                 def get_pane_shell(
-                    pane_config: t.Dict[str, str],
-                    window_config: t.Dict[str, str],
+                    pane_config: dict[str, str],
+                    window_config: dict[str, str],
                 ) -> t.Optional[str]:
                     if "shell" in pane_config:
                         return pane_config["shell"]
@@ -565,7 +565,7 @@ class WorkspaceBuilder:
     def config_after_window(
         self,
         window: Window,
-        window_config: t.Dict[str, t.Any],
+        window_config: dict[str, t.Any],
     ) -> None:
         """Actions to apply to window after window and pane finished.
 

@@ -31,8 +31,8 @@ if t.TYPE_CHECKING:
 )
 def test_freeze(
     server: "Server",
-    cli_args: t.List[str],
-    inputs: t.List[str],
+    cli_args: list[str],
+    inputs: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -83,8 +83,8 @@ def test_freeze(
 )
 def test_freeze_overwrite(
     server: "Server",
-    cli_args: t.List[str],
-    inputs: t.List[str],
+    cli_args: list[str],
+    inputs: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

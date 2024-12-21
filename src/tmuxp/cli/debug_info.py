@@ -31,7 +31,7 @@ def command_debug_info(
 ) -> None:
     """Entrypoint for ``tmuxp debug-info`` to print debug info to submit with issues."""
 
-    def prepend_tab(strings: t.List[str]) -> t.List[str]:
+    def prepend_tab(strings: list[str]) -> list[str]:
         """Prepend tab to strings in list."""
         return [f"\t{x}" for x in strings]
 

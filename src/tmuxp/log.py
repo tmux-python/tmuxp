@@ -135,7 +135,7 @@ class LogFormatter(logging.Formatter):
 
 
 def debug_log_template(
-    self: t.Type[logging.Formatter],
+    self: type[logging.Formatter],
     record: logging.LogRecord,
     stylized: t.Optional[bool] = False,
     **kwargs: t.Any,

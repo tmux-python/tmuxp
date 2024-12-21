@@ -118,7 +118,7 @@ class CLINamespace(argparse.Namespace):
 ns = CLINamespace()
 
 
-def cli(_args: t.Optional[t.List[str]] = None) -> None:
+def cli(_args: t.Optional[list[str]] = None) -> None:
     """Manage tmux sessions.
 
     Pass the "--help" argument to any command to see detailed help.

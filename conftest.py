@@ -84,7 +84,7 @@ def monkeypatch_plugin_test_packages(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture
-def session_params(session_params: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+def session_params(session_params: dict[str, t.Any]) -> dict[str, t.Any]:
     """Terminal-friendly tmuxp session_params for dimensions."""
     session_params.update({"x": 800, "y": 600})
     return session_params
@@ -99,7 +99,7 @@ def socket_name(request: pytest.FixtureRequest) -> str:
 @pytest.fixture(autouse=True)
 def add_doctest_fixtures(
     request: pytest.FixtureRequest,
-    doctest_namespace: t.Dict[str, t.Any],
+    doctest_namespace: dict[str, t.Any],
     tmp_path: pathlib.Path,
 ) -> None:
     """Harness pytest fixtures to doctests namespace."""

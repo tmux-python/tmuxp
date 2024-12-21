@@ -14,7 +14,7 @@ if t.TYPE_CHECKING:
     from tests.fixtures.structures import WorkspaceTestData
 
 
-def load_workspace(path: t.Union[str, pathlib.Path]) -> t.Dict[str, t.Any]:
+def load_workspace(path: t.Union[str, pathlib.Path]) -> dict[str, t.Any]:
     """Load tmuxp workspace configuration from file."""
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path,

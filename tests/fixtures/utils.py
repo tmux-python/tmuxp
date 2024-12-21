@@ -7,23 +7,23 @@ from tests.constants import FIXTURE_PATH
 
 
 def get_workspace_file(
-    _file: t.Union[str, pathlib.Path],
+    file: t.Union[str, pathlib.Path],
 ) -> pathlib.Path:
     """Return fixture data, relative to __file__."""
-    if isinstance(_file, str):
-        _file = pathlib.Path(_file)
+    if isinstance(file, str):
+        file = pathlib.Path(file)
 
-    return FIXTURE_PATH / _file
+    return FIXTURE_PATH / file
 
 
 def read_workspace_file(
-    _file: t.Union[pathlib.Path, str],
+    file: t.Union[pathlib.Path, str],
 ) -> str:
     """Return fixture data, relative to __file__."""
-    if isinstance(_file, str):
-        _file = pathlib.Path(_file)
+    if isinstance(file, str):
+        file = pathlib.Path(file)
 
-    return get_workspace_file(_file).open().read()
+    return get_workspace_file(file).open().read()
 
 
 def write_config(

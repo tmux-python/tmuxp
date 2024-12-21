@@ -94,12 +94,12 @@ def test_focus_pane_index(session: Session) -> None:
 
     assert session.active_window.name == "focused window"
 
-    _pane_base_index = session.active_window.show_window_option(
+    pane_base_index_ = session.active_window.show_window_option(
         "pane-base-index",
         g=True,
     )
-    assert isinstance(_pane_base_index, int)
-    pane_base_index = int(_pane_base_index)
+    assert isinstance(pane_base_index_, int)
+    pane_base_index = int(pane_base_index_)
 
     pane_base_index = 0 if not pane_base_index else int(pane_base_index)
 
@@ -215,9 +215,9 @@ def test_suppress_history(session: Session) -> None:
 
             return assertCase(sent_cmd, history_cmd)
 
-        _f = functools.partial(f, p=p, buffer_name=buffer_name, assertCase=assertCase)
+        f_ = functools.partial(f, p=p, buffer_name=buffer_name, assertCase=assertCase)
 
-        assert retry_until(_f), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
+        assert retry_until(f_), f"Unknown sent command: [{sent_cmd}] in {assertCase}"
 
 
 def test_session_options(session: Session) -> None:
@@ -230,13 +230,13 @@ def test_session_options(session: Session) -> None:
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    _default_shell = session.show_option("default-shell")
-    assert isinstance(_default_shell, str)
-    assert "/bin/sh" in _default_shell
+    default_shell = session.show_option("default-shell")
+    assert isinstance(default_shell, str)
+    assert "/bin/sh" in default_shell
 
-    _default_command = session.show_option("default-command")
-    assert isinstance(_default_command, str)
-    assert "/bin/sh" in _default_command
+    default_command = session.show_option("default-command")
+    assert isinstance(default_command, str)
+    assert "/bin/sh" in default_command
 
 
 def test_global_options(session: Session) -> None:
@@ -249,9 +249,9 @@ def test_global_options(session: Session) -> None:
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    _status_position = session.show_option("status-position", _global=True)
-    assert isinstance(_status_position, str)
-    assert "top" in _status_position
+    status_position = session.show_option("status-position", _global=True)
+    assert isinstance(status_position, str)
+    assert "top" in status_position
     assert session.show_option("repeat-time", _global=True) == 493
 
 
@@ -275,9 +275,9 @@ def test_global_session_env_options(
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    _visual_silence = session.show_option("visual-silence", _global=True)
-    assert isinstance(_visual_silence, str)
-    assert visual_silence in _visual_silence
+    visual_silence_ = session.show_option("visual-silence", _global=True)
+    assert isinstance(visual_silence_, str)
+    assert visual_silence in visual_silence_
     assert repeat_time == session.show_option("repeat-time")
     assert main_pane_height == session.active_window.show_window_option(
         "main-pane-height",
@@ -376,9 +376,9 @@ def test_window_shell(
         def f(w: Window) -> bool:
             return w.window_name != "top"
 
-        _f = functools.partial(f, w=w)
+        f_ = functools.partial(f, w=w)
 
-        retry_until(_f)
+        retry_until(f_)
 
         assert w.name != "top"
 
@@ -592,10 +592,10 @@ def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
                     pane_path is not None and path in pane_path
                 ) or pane_path == path
 
-            _f = functools.partial(f, path=path, p=p)
+            f_ = functools.partial(f, path=path, p=p)
 
             # handle case with OS X adding /private/ to /tmp/ paths
-            assert retry_until(_f)
+            assert retry_until(f_)
 
 
 def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> None:
@@ -647,10 +647,10 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
                     pane_path is not None and path in pane_path
                 ) or pane_path == path
 
-            _f = functools.partial(f, path=path, p=p)
+            f_ = functools.partial(f, path=path, p=p)
 
             # handle case with OS X adding /private/ to /tmp/ paths
-            assert retry_until(_f)
+            assert retry_until(f_)
 
 
 @pytest.mark.skipif(
@@ -726,9 +726,9 @@ def test_pane_order(session: Session) -> None:
                 p.refresh()
                 return p.pane_current_path == pane_path
 
-            _f = functools.partial(f, pane_path=pane_path, p=p)
+            f_ = functools.partial(f, pane_path=pane_path, p=p)
 
-            assert retry_until(_f)
+            assert retry_until(f_)
 
 
 def test_window_index(
@@ -1406,10 +1406,10 @@ def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) ->
             pane_path = p.pane_current_path
             return (pane_path is not None and path in pane_path) or pane_path == path
 
-        _f = functools.partial(f, path=path, p=p)
+        f_ = functools.partial(f, path=path, p=p)
 
         # handle case with OS X adding /private/ to /tmp/ paths
-        assert retry_until(_f)
+        assert retry_until(f_)
 
 
 @pytest.mark.skipif(
@@ -1463,7 +1463,7 @@ class DefaultSizeNamespaceFixture(t.NamedTuple):
     # test params
     TMUXP_DEFAULT_SIZE: t.Optional[str]
     raises: bool
-    confoverrides: t.Dict[str, t.Any]
+    confoverrides: dict[str, t.Any]
 
 
 DEFAULT_SIZE_FIXTURES = [
@@ -1500,7 +1500,7 @@ def test_issue_800_default_size_many_windows(
     test_id: str,
     TMUXP_DEFAULT_SIZE: t.Optional[str],
     raises: bool,
-    confoverrides: t.Dict[str, t.Any],
+    confoverrides: dict[str, t.Any],
 ) -> None:
     """Recreate default-size issue.
 

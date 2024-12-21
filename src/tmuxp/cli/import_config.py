@@ -128,7 +128,7 @@ def create_import_subparser(
 class ImportConfigFn(t.Protocol):
     """Typing for import configuration callback function."""
 
-    def __call__(self, workspace_dict: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+    def __call__(self, workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         """Execute tmuxp import function."""
         ...
 

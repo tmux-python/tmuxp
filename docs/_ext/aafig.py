@@ -40,9 +40,9 @@ DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(
-    dst: t.Dict[str, t.Optional[str]],
-    src: t.Dict[str, t.Optional[str]],
-) -> t.Dict[str, t.Optional[str]]:
+    dst: dict[str, t.Optional[str]],
+    src: dict[str, t.Optional[str]],
+) -> dict[str, t.Optional[str]]:
     for k, v in src.items():
         if k not in dst:
             dst[k] = v
@@ -51,15 +51,15 @@ def merge_dict(
 
 def get_basename(
     text: str,
-    options: t.Dict[str, str],
+    options: dict[str, str],
     prefix: t.Optional[str] = "aafig",
 ) -> str:
     options = options.copy()
     if "format" in options:
         del options["format"]
     hashkey = text + str(options)
-    _id = sha(hashkey.encode("utf-8")).hexdigest()
-    return f"{prefix}-{_id}"
+    id_ = sha(hashkey.encode("utf-8")).hexdigest()
+    return f"{prefix}-{id_}"
 
 
 class AafigError(SphinxError):
@@ -83,7 +83,7 @@ class AafigDirective(images.Image):  # type:ignore
     option_spec = images.Image.option_spec.copy()
     option_spec.update(own_option_spec)
 
-    def run(self) -> t.List[nodes.Node]:
+    def run(self) -> list[nodes.Node]:
         aafig_options = {}
         own_options_keys = [self.own_option_spec.keys(), "scale"]
         for k, v in self.options.items():
@@ -120,13 +120,13 @@ def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
             continue
         options = img.aafig["options"]
         text = img.aafig["text"]
-        _format = app.builder.format
+        format_ = app.builder.format
         merge_dict(options, app.builder.config.aafig_default_options)
-        if _format in format_map:
-            options["format"] = format_map[_format]
+        if format_ in format_map:
+            options["format"] = format_map[format_]
         else:
             logger.warning(
-                f'unsupported builder format "{_format}", please '
+                f'unsupported builder format "{format_}", please '
                 "add a custom entry in aafig_format config "
                 "option for this builder",
             )
@@ -159,8 +159,8 @@ class AafigureNotInstalled(AafigError):
 def render_aafigure(
     app: "Sphinx",
     text: str,
-    options: t.Dict[str, str],
-) -> t.Tuple[str, str, t.Optional[str], t.Optional[str]]:
+    options: dict[str, str],
+) -> tuple[str, str, t.Optional[str], t.Optional[str]]:
     """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:
         raise AafigureNotInstalled

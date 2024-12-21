@@ -31,8 +31,8 @@ from tmuxp.workspace import importers, validation
 )
 def test_config_to_dict(
     tmuxinator_yaml: str,
-    tmuxinator_dict: t.Dict[str, t.Any],
-    tmuxp_dict: t.Dict[str, t.Any],
+    tmuxinator_dict: dict[str, t.Any],
+    tmuxp_dict: dict[str, t.Any],
 ) -> None:
     """Test exporting tmuxinator configuration to dictionary."""
     yaml_to_dict = ConfigReader._load(fmt="yaml", content=tmuxinator_yaml)

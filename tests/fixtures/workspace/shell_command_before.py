@@ -40,7 +40,7 @@ config_unexpanded = {  # shell_command_before is string in some areas
 }
 
 
-def config_expanded() -> t.Dict[str, t.Any]:
+def config_expanded() -> dict[str, t.Any]:
     """Return expanded configuration for shell_command_before example."""
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
@@ -93,7 +93,7 @@ def config_expanded() -> t.Dict[str, t.Any]:
     }
 
 
-def config_after() -> t.Dict[str, t.Any]:
+def config_after() -> dict[str, t.Any]:
     """Return expected configuration for shell_command_before example."""
     return {  # shell_command_before is string in some areas
         "session_name": "sample workspace",
