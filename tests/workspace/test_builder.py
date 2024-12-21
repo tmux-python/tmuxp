@@ -249,10 +249,10 @@ def test_global_options(session: Session) -> None:
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    status_position = session.show_option("status-position", _global=True)
+    status_position = session.show_option("status-position", global_=True)
     assert isinstance(status_position, str)
     assert "top" in status_position
-    assert session.show_option("repeat-time", _global=True) == 493
+    assert session.show_option("repeat-time", global_=True) == 493
 
 
 def test_global_session_env_options(
@@ -275,7 +275,7 @@ def test_global_session_env_options(
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session)
 
-    visual_silence_ = session.show_option("visual-silence", _global=True)
+    visual_silence_ = session.show_option("visual-silence", global_=True)
     assert isinstance(visual_silence_, str)
     assert visual_silence in visual_silence_
     assert repeat_time == session.show_option("repeat-time")
