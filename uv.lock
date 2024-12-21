@@ -291,15 +291,15 @@ wheels = [
 
 [[package]]
 name = "gp-libs"
-version = "0.0.9"
+version = "0.0.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
     { name = "myst-parser" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/fc/63e3134cf0d5e7267ee9e19dc64cc59bc94e8a2874cb6c979b0e4e2f799a/gp_libs-0.0.9.tar.gz", hash = "sha256:28b3e56c1690cbcbc01483a36a86c7a707e8751e9f4ea3538ce12f8e4547ef2b", size = 14491 }
+sdist = { url = "https://files.pythonhosted.org/packages/27/8f/02465fe771a79649ec3b01f13cbd5cc980438a7c59e5c8c6a0203cc5706e/gp_libs-0.0.10.tar.gz", hash = "sha256:83e5bf7107465fdba10369e63de90eed0577b5c80c0f21044499f2e703ba225c", size = 14497 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/f9/e63374b3bbdd2d3600d4f3612f5d050db94b527e40ecf41dbfce32406150/gp_libs-0.0.9-py3-none-any.whl", hash = "sha256:0e945022f071a582466e1828133e0e793e1d8d213d0cf5f7d6867bf04fd353af", size = 15556 },
+    { url = "https://files.pythonhosted.org/packages/4b/33/80adaf9da81532a7b3ee45fe0eaaa9ed96fb25eddaae75267406dd24f49d/gp_libs-0.0.10-py3-none-any.whl", hash = "sha256:0ad6cfdddc0974454456fb1bcaec55212f1b95fe6c2c4383ac4665fb47541094", size = 15565 },
 ]
 
 [[package]]
@@ -364,11 +364,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.39.0"
+version = "0.40.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/72/c4/e35564de320c876c6c370b8b9303a31ca2fcd632051aa8ac14a2d4700b68/libtmux-0.39.0.tar.gz", hash = "sha256:59346aeef3c0d6017f3bc5e23248d43cdf50f32b775b9cb5d9ff5e2e5f3059f4", size = 314810 }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/15/769e4985afd47d2706f4286dcef69cea77974728b65cec84f945209e8a5e/libtmux-0.40.0.tar.gz", hash = "sha256:047e19bd6c2e58311734207c78741530e7085c769bf62b09b2b0365e9b577155", size = 317342 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/f8/afdcf3715c7388962c1eef39c7ba415a170f6772808ad83f60f8fdfdc6d0/libtmux-0.39.0-py3-none-any.whl", hash = "sha256:6b6e338be2727f67aa6b7eb67fa134368fa3c3eac5df27565396467692891c1e", size = 56219 },
+    { url = "https://files.pythonhosted.org/packages/48/ed/a531293e1fcd2bd48280494be0d7df87e1525841ba74e92283a9adc7482d/libtmux-0.40.0-py3-none-any.whl", hash = "sha256:e1a8e5758f26437476fa12eff54e5afa4a20f5e0ce359cb0e747c8360a024a2e", size = 56186 },
 ]
 
 [[package]]
@@ -1121,7 +1121,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.3.9" },
-    { name = "libtmux", specifier = "~=0.39.0" },
+    { name = "libtmux", specifier = "~=0.40.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
@@ -1249,11 +1249,11 @@ wheels = [
 
 [[package]]
 name = "types-pyyaml"
-version = "6.0.12.20240917"
+version = "6.0.12.20241221"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/92/7d/a95df0a11f95c8f48d7683f03e4aed1a2c0fc73e9de15cca4d38034bea1a/types-PyYAML-6.0.12.20240917.tar.gz", hash = "sha256:d1405a86f9576682234ef83bcb4e6fff7c9305c8b1fbad5e0bcd4f7dbdc9c587", size = 12381 }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/60/ba3f23024bdd406e65c359b9dbd9757f058986bd57d94f6639015f9a9fae/types_pyyaml-6.0.12.20241221.tar.gz", hash = "sha256:4f149aa893ff6a46889a30af4c794b23833014c469cc57cbc3ad77498a58996f", size = 17034 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/2c/c1d81d680997d24b0542aa336f0a65bd7835e5224b7670f33a7d617da379/types_PyYAML-6.0.12.20240917-py3-none-any.whl", hash = "sha256:392b267f1c0fe6022952462bf5d6523f31e37f6cea49b14cee7ad634b6301570", size = 15264 },
+    { url = "https://files.pythonhosted.org/packages/4b/04/1cc4fffeb4ace85c205e84cd48eb12cb37ec6ffb68245b7eef8f2086d490/types_PyYAML-6.0.12.20241221-py3-none-any.whl", hash = "sha256:0657a4ff8411a030a2116a196e8e008ea679696b5b1a8e1a6aa8ebb737b34688", size = 20023 },
 ]
 
 [[package]]
