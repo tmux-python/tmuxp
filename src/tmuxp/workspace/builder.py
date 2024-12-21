@@ -302,7 +302,7 @@ class WorkspaceBuilder:
 
         if "global_options" in self.session_config:
             for option, value in self.session_config["global_options"].items():
-                self.session.set_option(option, value, _global=True)
+                self.session.set_option(option, value, global_=True)
 
         if "environment" in self.session_config:
             for option, value in self.session_config["environment"].items():

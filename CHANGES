@@ -21,6 +21,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Development
 
+- libtmux: Bump minimum version 0.39.0 -> 0.40.0 (#954)
+
+  Adopts Python 3.9 syntax features
+
 - Aggressive automated lint fixes via `ruff` (#953)
 
   via ruff v0.8.4, all automated lint fixes, including unsafe and previews were applied for Python 3.9:
