@@ -19,6 +19,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+- libtmux: Bump minimum version 0.40.0 -> 0.40.1 (#956)
+
+  Bug fix for server environmental variables from https://github.com/tmux-python/libtmux/pull/553.
+  Thank you @ppentchev!
+
 ## tmuxp 1.50.0 (2024-12-20)
 
 _Maintenance only, no bug fixes or new features_
