@@ -385,11 +385,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.40.0"
+version = "0.40.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b7/15/769e4985afd47d2706f4286dcef69cea77974728b65cec84f945209e8a5e/libtmux-0.40.0.tar.gz", hash = "sha256:047e19bd6c2e58311734207c78741530e7085c769bf62b09b2b0365e9b577155", size = 317342 }
+sdist = { url = "https://files.pythonhosted.org/packages/20/53/d30bf462b0a005e4541b1c217e15107970063aad99145a259d75b23d35bd/libtmux-0.40.1.tar.gz", hash = "sha256:98ffe2b4922449e89dcd0072e1852bcd5757944fd34159d70ed3e57df398796d", size = 318731 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/ed/a531293e1fcd2bd48280494be0d7df87e1525841ba74e92283a9adc7482d/libtmux-0.40.0-py3-none-any.whl", hash = "sha256:e1a8e5758f26437476fa12eff54e5afa4a20f5e0ce359cb0e747c8360a024a2e", size = 56186 },
+    { url = "https://files.pythonhosted.org/packages/92/89/179a35a1f0964466bdeb8db2b3b071780693490abd10d28e151b51088747/libtmux-0.40.1-py3-none-any.whl", hash = "sha256:aa8bd4a052ed6ce2686f46fa884022d79e900321b17428e87cc5d1b91fcb6081", size = 56185 },
 ]
 
 [[package]]
@@ -1250,7 +1250,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.3.9" },
-    { name = "libtmux", specifier = "~=0.40.0" },
+    { name = "libtmux", specifier = "~=0.40.1" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
