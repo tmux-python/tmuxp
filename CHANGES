@@ -19,6 +19,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+## tmuxp 1.50.1 (2024-12-24)
+
 ### Development
 
 - libtmux: Bump minimum version 0.40.0 -> 0.40.1 (#956)
