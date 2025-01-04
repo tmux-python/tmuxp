@@ -1166,7 +1166,7 @@ windows:
             "___4___",
             False,
         ),
-        (
+        (  # NOQA: PT014 RUF100
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1180,7 +1180,7 @@ windows:
             "___4___",
             False,
         ),
-        (
+        (  # NOQA: PT014 RUF100
             textwrap.dedent(
                 """
 session_name: Should execute
