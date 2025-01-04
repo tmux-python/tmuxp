@@ -75,7 +75,7 @@ def oh_my_zsh_auto_title() -> None:
             or os.environ.get("DISABLE_AUTO_TITLE") == "false"
         )
     ):
-        print(
+        print(  # NOQA: T201 RUF100
             "Please set:\n\n"
             "\texport DISABLE_AUTO_TITLE='true'\n\n"
             "in ~/.zshrc or where your zsh profile is stored.\n"
@@ -155,7 +155,7 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
         else:
             pane = window.active_pane
     except exc.TmuxpException as e:
-        print(e)
+        print(e)  # NOQA: T201 RUF100
 
     if pane is None:
         if current_pane:

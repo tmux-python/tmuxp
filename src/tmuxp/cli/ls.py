@@ -25,4 +25,4 @@ def command_ls(
             stem, ext = os.path.splitext(f)
             if os.path.isdir(f) or ext not in VALID_WORKSPACE_DIR_FILE_EXTENSIONS:
                 continue
-            print(stem)
+            print(stem)  # NOQA: T201 RUF100

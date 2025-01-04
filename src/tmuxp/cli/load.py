@@ -115,7 +115,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
-            print(line)
+            print(line)  # NOQA: PT014 RUF100
 
     if "TMUX" in os.environ:
         builder.session.switch_client()
@@ -159,7 +159,7 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
     assert builder.session is not None
 
-    print("Session created in detached state.")
+    print("Session created in detached state.")  # NOQA: PT014 RUF100
 
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
