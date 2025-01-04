@@ -1,6 +1,7 @@
 """CLI for ``tmuxp debug-info`` subcommand."""
 
-import argparse
+from __future__ import annotations
+
 import os
 import pathlib
 import platform
@@ -16,6 +17,9 @@ from tmuxp.__about__ import __version__
 
 from .utils import tmuxp_echo
 
+if t.TYPE_CHECKING:
+    import argparse
+
 tmuxp_path = pathlib.Path(__file__).parent.parent
 
 
@@ -27,7 +31,7 @@ def create_debug_info_subparser(
 
 
 def command_debug_info(
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp debug-info`` to print debug info to submit with issues."""
 

@@ -1,5 +1,7 @@
 """CLI tests for tmuxp load."""
 
+from __future__ import annotations
+
 import contextlib
 import io
 import pathlib
@@ -10,7 +12,6 @@ import pytest
 from libtmux.common import has_lt_version
 from libtmux.server import Server
 from libtmux.session import Session
-from pytest_mock import MockerFixture
 
 from tests.constants import FIXTURE_PATH
 from tests.fixtures import utils as test_utils
@@ -27,7 +28,7 @@ from tmuxp.workspace.builder import WorkspaceBuilder
 
 
 def test_load_workspace(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Generic test for loading a tmuxp workspace via tmuxp load."""
@@ -49,7 +50,7 @@ def test_load_workspace(
 
 
 def test_load_workspace_passes_tmux_config(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test tmuxp load with a tmux configuration file."""
@@ -73,7 +74,7 @@ def test_load_workspace_passes_tmux_config(
 
 
 def test_load_workspace_named_session(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test tmuxp load with a custom tmux session name."""
@@ -101,7 +102,7 @@ def test_load_workspace_named_session(
 )
 def test_load_workspace_name_match_regression_252(
     tmp_path: pathlib.Path,
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test tmuxp load for a regression where tmux shell names would not match."""
@@ -141,7 +142,7 @@ windows:
 
 
 def test_load_symlinked_workspace(
-    server: "Server",
+    server: Server,
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -185,6 +186,7 @@ windows:
 
 
 if t.TYPE_CHECKING:
+    from pytest_mock import MockerFixture
     from typing_extensions import TypeAlias
 
     ExpectedOutput: TypeAlias = t.Optional[t.Union[str, list[str]]]
@@ -197,14 +199,14 @@ class CLILoadFixture(t.NamedTuple):
     test_id: str
 
     # test params
-    cli_args: list[t.Union[str, list[str]]]
+    cli_args: list[str | list[str]]
     config_paths: list[str]
     session_names: list[str]
     expected_exit_code: int
-    expected_in_out: "ExpectedOutput" = None
-    expected_not_in_out: "ExpectedOutput" = None
-    expected_in_err: "ExpectedOutput" = None
-    expected_not_in_err: "ExpectedOutput" = None
+    expected_in_out: ExpectedOutput = None
+    expected_not_in_out: ExpectedOutput = None
+    expected_in_err: ExpectedOutput = None
+    expected_not_in_err: ExpectedOutput = None
 
 
 TEST_LOAD_FIXTURES: list[CLILoadFixture] = [
@@ -289,7 +291,7 @@ TEST_LOAD_FIXTURES: list[CLILoadFixture] = [
 def test_load(
     tmp_path: pathlib.Path,
     tmuxp_configdir: pathlib.Path,
-    server: "Server",
+    server: Server,
     session: Session,
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
@@ -298,10 +300,10 @@ def test_load(
     config_paths: list[str],
     session_names: list[str],
     expected_exit_code: int,
-    expected_in_out: "ExpectedOutput",
-    expected_not_in_out: "ExpectedOutput",
-    expected_in_err: "ExpectedOutput",
-    expected_not_in_err: "ExpectedOutput",
+    expected_in_out: ExpectedOutput,
+    expected_not_in_out: ExpectedOutput,
+    expected_in_err: ExpectedOutput,
+    expected_not_in_err: ExpectedOutput,
 ) -> None:
     """Parametrized test battery for tmuxp load CLI command."""
     assert server.socket_name is not None
@@ -346,7 +348,7 @@ def test_load(
 
 def test_regression_00132_session_name_with_dots(
     tmp_path: pathlib.Path,
-    server: "Server",
+    server: Server,
     session: Session,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -366,7 +368,7 @@ def test_load_zsh_autotitle_warning(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
-    server: "Server",
+    server: Server,
 ) -> None:
     """Test loading ZSH without DISABLE_AUTO_TITLE raises warning."""
     # create dummy tmuxp yaml so we don't get yelled at
@@ -548,7 +550,7 @@ def test_load_plugins_plugin_missing(
 
 def test_plugin_system_before_script(
     monkeypatch_plugin_test_packages: None,
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test tmuxp load with sessions using before_script."""
@@ -570,7 +572,7 @@ def test_plugin_system_before_script(
 
 
 def test_load_attached(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
     mocker: MockerFixture,
 ) -> None:
@@ -592,7 +594,7 @@ def test_load_attached(
 
 
 def test_load_attached_detached(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
     mocker: MockerFixture,
 ) -> None:
@@ -614,7 +616,7 @@ def test_load_attached_detached(
 
 
 def test_load_attached_within_tmux(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
     mocker: MockerFixture,
 ) -> None:
@@ -636,7 +638,7 @@ def test_load_attached_within_tmux(
 
 
 def test_load_attached_within_tmux_detached(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
     mocker: MockerFixture,
 ) -> None:
@@ -658,7 +660,7 @@ def test_load_attached_within_tmux_detached(
 
 
 def test_load_append_windows_to_current_session(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test tmuxp load when windows are appended to the current session."""

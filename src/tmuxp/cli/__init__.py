@@ -1,9 +1,10 @@
 """CLI utilities for tmuxp."""
 
+from __future__ import annotations
+
 import argparse
 import logging
 import os
-import pathlib
 import sys
 import typing as t
 
@@ -32,6 +33,8 @@ from .utils import tmuxp_echo
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from typing_extensions import TypeAlias
 
     CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -109,16 +112,16 @@ def create_parser() -> argparse.ArgumentParser:
 class CLINamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp root-level CLI."""
 
-    log_level: "CLIVerbosity"
-    subparser_name: "CLISubparserName"
-    import_subparser_name: t.Optional["CLIImportSubparserName"]
+    log_level: CLIVerbosity
+    subparser_name: CLISubparserName
+    import_subparser_name: CLIImportSubparserName | None
     version: bool
 
 
 ns = CLINamespace()
 
 
-def cli(_args: t.Optional[list[str]] = None) -> None:
+def cli(_args: list[str] | None = None) -> None:
     """Manage tmux sessions.
 
     Pass the "--help" argument to any command to see detailed help.

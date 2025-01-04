@@ -5,6 +5,8 @@
 :license: MIT, see LICENSE for details
 """
 
+from __future__ import annotations
+
 from . import cli, util
 from .__about__ import (
     __author__,

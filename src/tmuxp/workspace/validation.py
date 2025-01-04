@@ -1,5 +1,7 @@
 """Validation errors for tmuxp configuration files."""
 
+from __future__ import annotations
+
 import typing as t
 
 from tmuxp import exc

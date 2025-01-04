@@ -1,6 +1,7 @@
 """CLI for ``tmuxp convert`` subcommand."""
 
-import argparse
+from __future__ import annotations
+
 import locale
 import os
 import pathlib
@@ -13,6 +14,8 @@ from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 from .utils import prompt_yes_no
 
 if t.TYPE_CHECKING:
+    import argparse
+
     AllowedFileTypes = t.Literal["json", "yaml"]
 
 
@@ -53,9 +56,9 @@ class ConvertUnknownFileType(exc.TmuxpException):
 
 
 def command_convert(
-    workspace_file: t.Union[str, pathlib.Path],
+    workspace_file: str | pathlib.Path,
     answer_yes: bool,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp convert`` convert a tmuxp config between JSON and YAML."""
     workspace_file = find_workspace_file(
@@ -95,4 +98,3 @@ def command_convert(
     if answer_yes:
         with open(newfile, "w", encoding=locale.getpreferredencoding(False)) as buf:
             buf.write(new_workspace)
-        print(f"New workspace file saved to <{newfile}>.")

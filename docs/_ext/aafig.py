@@ -12,6 +12,8 @@ See the README file for details.
 :license: BOLA, see LICENSE for details
 """
 
+from __future__ import annotations
+
 import locale
 import logging
 import posixpath
@@ -40,9 +42,9 @@ DEFAULT_FORMATS = {"html": "svg", "latex": "pdf", "text": None}
 
 
 def merge_dict(
-    dst: dict[str, t.Optional[str]],
-    src: dict[str, t.Optional[str]],
-) -> dict[str, t.Optional[str]]:
+    dst: dict[str, str | None],
+    src: dict[str, str | None],
+) -> dict[str, str | None]:
     for k, v in src.items():
         if k not in dst:
             dst[k] = v
@@ -52,7 +54,7 @@ def merge_dict(
 def get_basename(
     text: str,
     options: dict[str, str],
-    prefix: t.Optional[str] = "aafig",
+    prefix: str | None = "aafig",
 ) -> str:
     options = options.copy()
     if "format" in options:
@@ -105,7 +107,7 @@ class AafigDirective(images.Image):  # type:ignore
         return [image_node]
 
 
-def render_aafig_images(app: "Sphinx", doctree: nodes.Node) -> None:
+def render_aafig_images(app: Sphinx, doctree: nodes.Node) -> None:
     format_map = app.builder.config.aafig_format
     merge_dict(format_map, DEFAULT_FORMATS)
     if aafigure is None:
@@ -157,10 +159,10 @@ class AafigureNotInstalled(AafigError):
 
 
 def render_aafigure(
-    app: "Sphinx",
+    app: Sphinx,
     text: str,
     options: dict[str, str],
-) -> tuple[str, str, t.Optional[str], t.Optional[str]]:
+) -> tuple[str, str, str | None, str | None]:
     """Render an ASCII art figure into the requested format output file."""
     if aafigure is None:
         raise AafigureNotInstalled
@@ -227,7 +229,7 @@ def render_aafigure(
     return relfn, outfn, None, extra
 
 
-def setup(app: "Sphinx") -> None:
+def setup(app: Sphinx) -> None:
     app.add_directive("aafig", AafigDirective)
     app.connect("doctree-read", render_aafig_images)
     app.add_config_value("aafig_format", DEFAULT_FORMATS, "html")

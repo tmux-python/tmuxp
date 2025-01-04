@@ -1,15 +1,17 @@
 # mypy: allow-untyped-calls
 """Utility and helper methods for tmuxp."""
 
+from __future__ import annotations
+
 import logging
 import os
 import pathlib
 import typing as t
-from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
+    from collections.abc import Callable
     from types import ModuleType
 
     from libtmux.pane import Pane
@@ -31,10 +33,10 @@ if t.TYPE_CHECKING:
     class LaunchOptionalImports(TypedDict):
         """tmuxp shell optional imports."""
 
-        server: NotRequired["Server"]
-        session: NotRequired["Session"]
-        window: NotRequired["Window"]
-        pane: NotRequired["Pane"]
+        server: NotRequired[Server]
+        session: NotRequired[Session]
+        window: NotRequired[Window]
+        pane: NotRequired[Pane]
 
     class LaunchImports(t.TypedDict):
         """tmuxp shell launch import mapping."""
@@ -44,10 +46,10 @@ if t.TYPE_CHECKING:
         Session: type[Session]
         Window: type[Window]
         Pane: type[Pane]
-        server: t.Optional["Server"]
-        session: t.Optional["Session"]
-        window: t.Optional["Window"]
-        pane: t.Optional["Pane"]
+        server: Server | None
+        session: Session | None
+        window: Window | None
+        pane: Pane | None
 
 
 def has_ipython() -> bool:
@@ -100,7 +102,7 @@ def has_bpython() -> bool:
     return True
 
 
-def detect_best_shell() -> "CLIShellLiteral":
+def detect_best_shell() -> CLIShellLiteral:
     """Return the best, most feature-rich shell available."""
     if has_ptipython():
         return "ptipython"
@@ -114,8 +116,8 @@ def detect_best_shell() -> "CLIShellLiteral":
 
 
 def get_bpython(
-    options: "LaunchOptionalImports",
-    extra_args: t.Optional[dict[str, t.Any]] = None,
+    options: LaunchOptionalImports,
+    extra_args: dict[str, t.Any] | None = None,
 ) -> Callable[[], None]:
     """Return bpython shell."""
     if extra_args is None:
@@ -140,7 +142,7 @@ def get_ipython_arguments() -> list[str]:
 
 
 def get_ipython(
-    options: "LaunchOptionalImports",
+    options: LaunchOptionalImports,
     **extra_args: dict[str, t.Any],
 ) -> t.Any:
     """Return ipython shell."""
@@ -168,7 +170,7 @@ def get_ipython(
         return launch_ipython
 
 
-def get_ptpython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
+def get_ptpython(options: LaunchOptionalImports, vi_mode: bool = False) -> t.Any:
     """Return ptpython shell."""
     try:
         from ptpython.repl import embed, run_config
@@ -188,7 +190,7 @@ def get_ptpython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.A
     return launch_ptpython
 
 
-def get_ptipython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.Any:
+def get_ptipython(options: LaunchOptionalImports, vi_mode: bool = False) -> t.Any:
     """Based on django-extensions.
 
     Run renamed to launch, get_imported_objects renamed to get_launch_args
@@ -214,7 +216,7 @@ def get_ptipython(options: "LaunchOptionalImports", vi_mode: bool = False) -> t.
     return launch_ptipython
 
 
-def get_launch_args(**kwargs: "Unpack[LaunchOptionalImports]") -> "LaunchImports":
+def get_launch_args(**kwargs: Unpack[LaunchOptionalImports]) -> LaunchImports:
     """Return tmuxp shell launch arguments, counting for overrides."""
     import libtmux
     from libtmux.pane import Pane
@@ -235,7 +237,7 @@ def get_launch_args(**kwargs: "Unpack[LaunchOptionalImports]") -> "LaunchImports
     }
 
 
-def get_code(use_pythonrc: bool, imported_objects: "LaunchImports") -> t.Any:
+def get_code(use_pythonrc: bool, imported_objects: LaunchImports) -> t.Any:
     """Launch basic python shell via :mod:`code`."""
     import code
 
@@ -290,10 +292,10 @@ def get_code(use_pythonrc: bool, imported_objects: "LaunchImports") -> t.Any:
 
 
 def launch(
-    shell: t.Optional["CLIShellLiteral"] = "best",
+    shell: CLIShellLiteral | None = "best",
     use_pythonrc: bool = False,
     use_vi_mode: bool = False,
-    **kwargs: "Unpack[LaunchOptionalImports]",
+    **kwargs: Unpack[LaunchOptionalImports],
 ) -> None:
     """Launch interactive libtmux shell for tmuxp shell."""
     # Also allowing passing shell='code' to force using code.interact

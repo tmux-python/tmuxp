@@ -1,5 +1,7 @@
 """CLI for ``tmuxp freeze`` subcommand."""
 
+from __future__ import annotations
+
 import argparse
 import locale
 import os
@@ -27,13 +29,13 @@ class CLIFreezeNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp freeze command."""
 
     session_name: str
-    socket_name: t.Optional[str]
-    socket_path: t.Optional[str]
-    workspace_format: t.Optional["CLIOutputFormatLiteral"]
-    save_to: t.Optional[str]
-    answer_yes: t.Optional[bool]
-    quiet: t.Optional[bool]
-    force: t.Optional[bool]
+    socket_name: str | None
+    socket_path: str | None
+    workspace_format: CLIOutputFormatLiteral | None
+    save_to: str | None
+    answer_yes: bool | None
+    quiet: bool | None
+    force: bool | None
 
 
 def create_freeze_subparser(
@@ -97,7 +99,7 @@ def create_freeze_subparser(
 
 def command_freeze(
     args: CLIFreezeNamespace,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp freeze``, snapshot a tmux session into a tmuxp workspace.
 
@@ -114,8 +116,7 @@ def command_freeze(
 
         if not session:
             raise exc.SessionNotFound
-    except TmuxpException as e:
-        print(e)
+    except TmuxpException:
         return
 
     frozen_workspace = freezer.freeze(session)
@@ -123,11 +124,7 @@ def command_freeze(
     configparser = ConfigReader(workspace)
 
     if not args.quiet:
-        print(
-            "---------------------------------------------------------------"
-            "\n"
-            "Freeze does its best to snapshot live tmux sessions.\n",
-        )
+        pass
     if not (
         args.answer_yes
         or prompt_yes_no(
@@ -135,11 +132,7 @@ def command_freeze(
         )
     ):
         if not args.quiet:
-            print(
-                "tmuxp has examples in JSON and YAML format at "
-                "<http://tmuxp.git-pull.com/examples.html>\n"
-                "View tmuxp docs at <http://tmuxp.git-pull.com/>.",
-            )
+            pass
         sys.exit()
 
     dest = args.save_to
@@ -158,7 +151,6 @@ def command_freeze(
             default=save_to,
         )
         if not args.force and os.path.exists(dest_prompt):
-            print(f"{dest_prompt} exists. Pick a new filename.")
             continue
 
         dest = dest_prompt
@@ -167,14 +159,14 @@ def command_freeze(
 
     valid_workspace_formats: list[CLIOutputFormatLiteral] = ["json", "yaml"]
 
-    def is_valid_ext(stem: t.Optional[str]) -> "TypeGuard[CLIOutputFormatLiteral]":
+    def is_valid_ext(stem: str | None) -> TypeGuard[CLIOutputFormatLiteral]:
         return stem in valid_workspace_formats
 
     if not is_valid_ext(workspace_format):
 
         def extract_workspace_format(
             val: str,
-        ) -> t.Optional["CLIOutputFormatLiteral"]:
+        ) -> CLIOutputFormatLiteral | None:
             suffix = pathlib.Path(val).suffix
             if isinstance(suffix, str):
                 suffix = suffix.lower().lstrip(".")
@@ -212,4 +204,4 @@ def command_freeze(
             buf.write(workspace)
 
         if not args.quiet:
-            print(f"Saved to {dest}.")
+            pass

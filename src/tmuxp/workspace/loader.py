@@ -1,5 +1,7 @@
 """Workspace hydration and loading for tmuxp."""
 
+from __future__ import annotations
+
 import logging
 import os
 import pathlib
@@ -65,8 +67,8 @@ def expand_cmd(p: dict[str, t.Any]) -> dict[str, t.Any]:
 
 def expand(
     workspace_dict: dict[str, t.Any],
-    cwd: t.Optional[t.Union[pathlib.Path, str]] = None,
-    parent: t.Optional[t.Any] = None,
+    cwd: pathlib.Path | str | None = None,
+    parent: t.Any | None = None,
 ) -> dict[str, t.Any]:
     """Resolve workspace variables and expand shorthand style / inline properties.
 

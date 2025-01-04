@@ -8,6 +8,8 @@ See "pytest_plugins in non-top-level conftest files" in
 https://docs.pytest.org/en/stable/deprecations.html
 """
 
+from __future__ import annotations
+
 import logging
 import os
 import pathlib
@@ -29,7 +31,7 @@ USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
 @pytest.fixture(autouse=USING_ZSH, scope="session")
-def zshrc(user_path: pathlib.Path) -> t.Optional[pathlib.Path]:
+def zshrc(user_path: pathlib.Path) -> pathlib.Path | None:
     """Quiets ZSH default message.
 
     Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.

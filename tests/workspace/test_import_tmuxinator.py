@@ -1,5 +1,7 @@
 """Test for tmuxp tmuxinator configuration."""
 
+from __future__ import annotations
+
 import typing as t
 
 import pytest

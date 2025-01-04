@@ -1,5 +1,7 @@
 """Test for tmuxp configuration import, inlining, expanding and export."""
 
+from __future__ import annotations
+
 import pathlib
 import typing as t
 
@@ -14,7 +16,7 @@ if t.TYPE_CHECKING:
     from tests.fixtures.structures import WorkspaceTestData
 
 
-def load_workspace(path: t.Union[str, pathlib.Path]) -> dict[str, t.Any]:
+def load_workspace(path: str | pathlib.Path) -> dict[str, t.Any]:
     """Load tmuxp workspace configuration from file."""
     return ConfigReader._from_file(
         pathlib.Path(path) if isinstance(path, str) else path,
@@ -23,7 +25,7 @@ def load_workspace(path: t.Union[str, pathlib.Path]) -> dict[str, t.Any]:
 
 def test_export_json(
     tmp_path: pathlib.Path,
-    config_fixture: "WorkspaceTestData",
+    config_fixture: WorkspaceTestData,
 ) -> None:
     """Test exporting configuration dictionary to JSON."""
     json_workspace_file = tmp_path / "config.json"
@@ -38,13 +40,13 @@ def test_export_json(
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
 
 
-def test_workspace_expand1(config_fixture: "WorkspaceTestData") -> None:
+def test_workspace_expand1(config_fixture: WorkspaceTestData) -> None:
     """Expand shell commands from string to list."""
     test_workspace = loader.expand(config_fixture.expand1.before_workspace)
     assert test_workspace == config_fixture.expand1.after_workspace()
 
 
-def test_workspace_expand2(config_fixture: "WorkspaceTestData") -> None:
+def test_workspace_expand2(config_fixture: WorkspaceTestData) -> None:
     """Expand shell commands from string to list."""
     unexpanded_dict = ConfigReader._load(
         fmt="yaml",
@@ -127,7 +129,7 @@ def test_inheritance_workspace() -> None:
     assert workspace == inheritance_workspace_after
 
 
-def test_shell_command_before(config_fixture: "WorkspaceTestData") -> None:
+def test_shell_command_before(config_fixture: WorkspaceTestData) -> None:
     """Config inheritance for the nested 'start_command'."""
     test_workspace = config_fixture.shell_command_before.config_unexpanded
     test_workspace = loader.expand(test_workspace)
@@ -138,7 +140,7 @@ def test_shell_command_before(config_fixture: "WorkspaceTestData") -> None:
     assert test_workspace == config_fixture.shell_command_before.config_after()
 
 
-def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
+def test_in_session_scope(config_fixture: WorkspaceTestData) -> None:
     """Verify shell_command before_session is in session scope."""
     sconfig = ConfigReader._load(
         fmt="yaml",
@@ -154,7 +156,7 @@ def test_in_session_scope(config_fixture: "WorkspaceTestData") -> None:
     )
 
 
-def test_trickle_relative_start_directory(config_fixture: "WorkspaceTestData") -> None:
+def test_trickle_relative_start_directory(config_fixture: WorkspaceTestData) -> None:
     """Verify tmuxp config proliferates relative start directory to descendants."""
     test_workspace = loader.trickle(config_fixture.trickle.before)
     assert test_workspace == config_fixture.trickle.expected
@@ -179,7 +181,7 @@ def test_trickle_window_with_no_pane_workspace() -> None:
     }
 
 
-def test_expands_blank_panes(config_fixture: "WorkspaceTestData") -> None:
+def test_expands_blank_panes(config_fixture: WorkspaceTestData) -> None:
     """Expand blank config into full form.
 
     Handle ``NoneType`` and 'blank'::

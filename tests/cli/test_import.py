@@ -1,13 +1,18 @@
 """CLI tests for tmuxp import."""
 
+from __future__ import annotations
+
 import contextlib
 import io
-import pathlib
+from typing import TYPE_CHECKING
 
 import pytest
 
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
+
+if TYPE_CHECKING:
+    import pathlib
 
 
 @pytest.mark.parametrize("cli_args", [(["import"])])

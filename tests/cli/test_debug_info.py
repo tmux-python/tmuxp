@@ -1,10 +1,15 @@
 """CLI tests for tmuxp debuginfo."""
 
-import pathlib
+from __future__ import annotations
 
-import pytest
+from typing import TYPE_CHECKING
 
 from tmuxp import cli
+
+if TYPE_CHECKING:
+    import pathlib
+
+    import pytest
 
 
 def test_debug_info_cli(

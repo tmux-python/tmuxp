@@ -1,5 +1,7 @@
 """Tmuxp example plugin for on_window_create."""
 
+from __future__ import annotations
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
@@ -14,7 +16,7 @@ class PluginOnWindowCreate(TmuxpPlugin):
     def __init__(self) -> None:
         self.message: str = "[+] This is the Tmuxp Test Plugin"
 
-    def on_window_create(self, window: "Window") -> None:
+    def on_window_create(self, window: Window) -> None:
         """Apply hook that runs for tmux on session reattach."""
         if window.name == "editor":
             window.rename_window("plugin_test_owc")

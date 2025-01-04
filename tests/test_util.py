@@ -1,13 +1,19 @@
 """Tests for tmuxp's utility functions."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
-from libtmux.server import Server
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
 from tmuxp.util import get_session, run_before_script
 
 from .constants import FIXTURE_PATH
+
+if TYPE_CHECKING:
+    from libtmux.server import Server
 
 
 def test_run_before_script_raise_BeforeLoadScriptNotExists_if_not_exists() -> None:

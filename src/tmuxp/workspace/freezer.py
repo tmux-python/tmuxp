@@ -1,11 +1,12 @@
 """Tmux session freezing functionality for tmuxp."""
 
+from __future__ import annotations
+
 import typing as t
 
-from libtmux.pane import Pane
-from libtmux.session import Session
-
 if t.TYPE_CHECKING:
+    from libtmux.pane import Pane
+    from libtmux.session import Session
     from libtmux.window import Window
 
 
@@ -81,14 +82,14 @@ def freeze(session: Session) -> dict[str, t.Any]:
 
         # If all panes have same path, set 'start_directory' instead
         # of using 'cd' shell commands.
-        def pane_has_same_path(window: "Window", pane: Pane) -> bool:
+        def pane_has_same_path(window: Window, pane: Pane) -> bool:
             return window.panes[0].pane_current_path == pane.pane_current_path
 
         if all(pane_has_same_path(window=window, pane=pane) for pane in window.panes):
             window_config["start_directory"] = window.panes[0].pane_current_path
 
         for pane in window.panes:
-            pane_config: t.Union[str, dict[str, t.Any]] = {"shell_command": []}
+            pane_config: str | dict[str, t.Any] = {"shell_command": []}
             assert isinstance(pane_config, dict)
 
             if "start_directory" not in window_config and pane.pane_current_path:
@@ -99,7 +100,7 @@ def freeze(session: Session) -> dict[str, t.Any]:
 
             current_cmd = pane.pane_current_command
 
-            def filter_interpreters_and_shells(current_cmd: t.Optional[str]) -> bool:
+            def filter_interpreters_and_shells(current_cmd: str | None) -> bool:
                 return current_cmd is not None and (
                     current_cmd.startswith("-")
                     or any(

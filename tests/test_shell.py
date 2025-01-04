@@ -1,5 +1,7 @@
 """Tests for tmuxp shell module."""
 
+from __future__ import annotations
+
 from tmuxp import shell
 
 
