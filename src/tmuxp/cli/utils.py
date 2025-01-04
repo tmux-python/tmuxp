@@ -3,6 +3,7 @@
 import logging
 import re
 import typing as t
+from collections.abc import Callable, Sequence
 
 from tmuxp import log
 
@@ -35,7 +36,7 @@ def tmuxp_echo(
 def prompt(
     name: str,
     default: t.Optional[str] = None,
-    value_proc: t.Optional[t.Callable[[str], str]] = None,
+    value_proc: t.Optional[Callable[[str], str]] = None,
 ) -> str:
     """Return user input from command line.
 
@@ -76,8 +77,8 @@ def prompt(
 def prompt_bool(
     name: str,
     default: bool = False,
-    yes_choices: t.Optional[t.Sequence[t.Any]] = None,
-    no_choices: t.Optional[t.Sequence[t.Any]] = None,
+    yes_choices: t.Optional[Sequence[t.Any]] = None,
+    no_choices: t.Optional[Sequence[t.Any]] = None,
 ) -> bool:
     """Return True / False by prompting user input from command line.
 
@@ -128,7 +129,7 @@ def prompt_choices(
     name: str,
     choices: t.Union[list[str], tuple[str, str]],
     default: t.Optional[str] = None,
-    no_choice: t.Sequence[str] = ("none",),
+    no_choice: Sequence[str] = ("none",),
 ) -> t.Optional[str]:
     """Return user input from command line from set of provided choices.
 

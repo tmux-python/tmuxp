@@ -5,6 +5,7 @@ import logging
 import os
 import pathlib
 import typing as t
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +116,7 @@ def detect_best_shell() -> "CLIShellLiteral":
 def get_bpython(
     options: "LaunchOptionalImports",
     extra_args: t.Optional[dict[str, t.Any]] = None,
-) -> t.Callable[[], None]:
+) -> Callable[[], None]:
     """Return bpython shell."""
     if extra_args is None:
         extra_args = {}

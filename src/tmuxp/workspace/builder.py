@@ -5,6 +5,7 @@ import os
 import shutil
 import time
 import typing as t
+from collections.abc import Iterator
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_gte_version, has_lt_version
@@ -343,7 +344,7 @@ class WorkspaceBuilder:
         self,
         session: Session,
         append: bool = False,
-    ) -> t.Iterator[t.Any]:
+    ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
         Generator yielding :class:`libtmux.Window` by iterating through
@@ -444,7 +445,7 @@ class WorkspaceBuilder:
         self,
         window: Window,
         window_config: dict[str, t.Any],
-    ) -> t.Iterator[t.Any]:
+    ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Pane` iterating through window config dict.
 
         Run ``shell_command`` with ``$ tmux send-keys``.
