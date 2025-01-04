@@ -116,7 +116,8 @@ def command_freeze(
 
         if not session:
             raise exc.SessionNotFound
-    except TmuxpException:
+    except TmuxpException as e:
+        print(e)  # NOQA: T201 RUF100
         return
 
     frozen_workspace = freezer.freeze(session)
@@ -124,7 +125,11 @@ def command_freeze(
     configparser = ConfigReader(workspace)
 
     if not args.quiet:
-        pass
+        print(  # NOQA: T201 RUF100
+            "---------------------------------------------------------------"
+            "\n"
+            "Freeze does its best to snapshot live tmux sessions.\n",
+        )
     if not (
         args.answer_yes
         or prompt_yes_no(
@@ -132,7 +137,11 @@ def command_freeze(
         )
     ):
         if not args.quiet:
-            pass
+            print(  # NOQA: T201 RUF100
+                "tmuxp has examples in JSON and YAML format at "
+                "<http://tmuxp.git-pull.com/examples.html>\n"
+                "View tmuxp docs at <http://tmuxp.git-pull.com/>.",
+            )
         sys.exit()
 
     dest = args.save_to
@@ -151,6 +160,7 @@ def command_freeze(
             default=save_to,
         )
         if not args.force and os.path.exists(dest_prompt):
+            print(f"{dest_prompt} exists. Pick a new filename.")  # NOQA: T201 RUF100
             continue
 
         dest = dest_prompt
@@ -204,4 +214,4 @@ def command_freeze(
             buf.write(workspace)
 
         if not args.quiet:
-            pass
+            print(f"Saved to {dest}.")  # NOQA: T201 RUF100

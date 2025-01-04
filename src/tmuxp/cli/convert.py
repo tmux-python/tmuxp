@@ -98,3 +98,4 @@ def command_convert(
     if answer_yes:
         with open(newfile, "w", encoding=locale.getpreferredencoding(False)) as buf:
             buf.write(new_workspace)
+        print(f"New workspace file saved to <{newfile}>.")  # NOQA: T201 RUF100
