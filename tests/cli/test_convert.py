@@ -5,13 +5,13 @@ from __future__ import annotations
 import contextlib
 import io
 import json
-from typing import TYPE_CHECKING
+import typing as t
 
 import pytest
 
 from tmuxp import cli
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     import pathlib
 
 

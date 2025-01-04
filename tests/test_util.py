@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import typing as t
 
 import pytest
 
@@ -12,7 +12,7 @@ from tmuxp.util import get_session, run_before_script
 
 from .constants import FIXTURE_PATH
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from libtmux.server import Server
 
 

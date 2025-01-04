@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import contextlib
 import io
-from typing import TYPE_CHECKING
+import typing as t
 
 import pytest
 
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     import pathlib
 
 

@@ -9,10 +9,10 @@ Notes
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+import typing as t
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from os import PathLike
 
-StrPath = Union[str, "PathLike[str]"]
+StrPath = t.Union[str, "PathLike[str]"]
 """:class:`os.PathLike` or :class:`str`"""

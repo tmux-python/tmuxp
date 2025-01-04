@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import typing as t
 
 import pytest
 from libtmux.test import get_test_session_name, temp_session
 
-if TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from libtmux.server import Server
 
 
