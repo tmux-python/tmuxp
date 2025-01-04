@@ -30,7 +30,7 @@ def tmuxp_echo(
     else:
         logger.log(log.LOG_LEVELS[log_level], unstyle(message))
 
-    print(message)
+    print(message)  # NOQA: T201 RUF100
 
 
 def prompt(
