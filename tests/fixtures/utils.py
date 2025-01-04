@@ -1,13 +1,14 @@
 """Utility functions for tmuxp fixtures."""
 
+from __future__ import annotations
+
 import pathlib
-import typing as t
 
 from tests.constants import FIXTURE_PATH
 
 
 def get_workspace_file(
-    file: t.Union[str, pathlib.Path],
+    file: str | pathlib.Path,
 ) -> pathlib.Path:
     """Return fixture data, relative to __file__."""
     if isinstance(file, str):
@@ -17,7 +18,7 @@ def get_workspace_file(
 
 
 def read_workspace_file(
-    file: t.Union[pathlib.Path, str],
+    file: pathlib.Path | str,
 ) -> str:
     """Return fixture data, relative to __file__."""
     if isinstance(file, str):

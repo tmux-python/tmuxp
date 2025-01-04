@@ -1,5 +1,7 @@
 """Expected expanded configuration for empty workspace panes."""
 
+from __future__ import annotations
+
 expected = {
     "session_name": "Blank pane test",
     "windows": [

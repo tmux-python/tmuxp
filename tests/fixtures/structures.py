@@ -1,5 +1,7 @@
 """Typings / structures for tmuxp fixtures."""
 
+from __future__ import annotations
+
 import dataclasses
 import typing as t
 

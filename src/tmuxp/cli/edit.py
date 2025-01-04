@@ -1,12 +1,16 @@
 """CLI for ``tmuxp edit`` subcommand."""
 
-import argparse
+from __future__ import annotations
+
 import os
-import pathlib
 import subprocess
 import typing as t
 
 from tmuxp.workspace.finders import find_workspace_file
+
+if t.TYPE_CHECKING:
+    import argparse
+    import pathlib
 
 
 def create_edit_subparser(
@@ -23,8 +27,8 @@ def create_edit_subparser(
 
 
 def command_edit(
-    workspace_file: t.Union[str, pathlib.Path],
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    workspace_file: str | pathlib.Path,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp edit``, open tmuxp workspace file in system editor."""
     workspace_file = find_workspace_file(workspace_file)

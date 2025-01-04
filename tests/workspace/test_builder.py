@@ -1,5 +1,7 @@
 """Test for tmuxp workspace builder."""
 
+from __future__ import annotations
+
 import functools
 import os
 import pathlib
@@ -13,7 +15,6 @@ from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_gte_version, has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
-from libtmux.server import Server
 from libtmux.session import Session
 from libtmux.test import retry_until, temp_session
 from libtmux.window import Window
@@ -27,6 +28,7 @@ from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 
 if t.TYPE_CHECKING:
+    from libtmux.server import Server
 
     class AssertCallbackProtocol(t.Protocol):
         """Assertion callback type protocol."""
@@ -481,7 +483,7 @@ def test_environment_variables_warns_prior_to_tmux_3_0(
 
 
 def test_automatic_rename_option(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test workspace builder with automatic renaming enabled."""
@@ -1166,7 +1168,7 @@ windows:
             "___4___",
             False,
         ),
-        (
+        (  # NOQA: PT014 RUF100
             textwrap.dedent(
                 """
 session_name: Should not execute
@@ -1180,7 +1182,7 @@ windows:
             "___4___",
             False,
         ),
-        (
+        (  # NOQA: PT014 RUF100
             textwrap.dedent(
                 """
 session_name: Should execute
@@ -1461,7 +1463,7 @@ class DefaultSizeNamespaceFixture(t.NamedTuple):
     test_id: str
 
     # test params
-    TMUXP_DEFAULT_SIZE: t.Optional[str]
+    TMUXP_DEFAULT_SIZE: str | None
     raises: bool
     confoverrides: dict[str, t.Any]
 
@@ -1495,10 +1497,10 @@ DEFAULT_SIZE_FIXTURES = [
 )
 @pytest.mark.skipif(has_lt_version("2.9"), reason="default-size only applies there")
 def test_issue_800_default_size_many_windows(
-    server: "Server",
+    server: Server,
     monkeypatch: pytest.MonkeyPatch,
     test_id: str,
-    TMUXP_DEFAULT_SIZE: t.Optional[str],
+    TMUXP_DEFAULT_SIZE: str | None,
     raises: bool,
     confoverrides: dict[str, t.Any],
 ) -> None:

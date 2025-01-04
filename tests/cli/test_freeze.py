@@ -1,8 +1,9 @@
 """Test workspace freezing functionality for tmuxp."""
 
+from __future__ import annotations
+
 import contextlib
 import io
-import pathlib
 import typing as t
 
 import pytest
@@ -11,6 +12,8 @@ from tmuxp import cli
 from tmuxp._internal.config_reader import ConfigReader
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from libtmux.server import Server
 
 
@@ -30,7 +33,7 @@ if t.TYPE_CHECKING:
     ],
 )
 def test_freeze(
-    server: "Server",
+    server: Server,
     cli_args: list[str],
     inputs: list[str],
     tmp_path: pathlib.Path,
@@ -82,7 +85,7 @@ def test_freeze(
     ],
 )
 def test_freeze_overwrite(
-    server: "Server",
+    server: Server,
     cli_args: list[str],
     inputs: list[str],
     tmp_path: pathlib.Path,

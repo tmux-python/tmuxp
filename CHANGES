@@ -19,6 +19,17 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+#### chore: Implement PEP 563 deferred annotation resolution (#957)
+
+- Add `from __future__ import annotations` to defer annotation resolution and reduce unnecessary runtime computations during type checking.
+- Enable Ruff checks for PEP-compliant annotations:
+  - [non-pep585-annotation (UP006)](https://docs.astral.sh/ruff/rules/non-pep585-annotation/)
+  - [non-pep604-annotation (UP007)](https://docs.astral.sh/ruff/rules/non-pep604-annotation/)
+
+For more details on PEP 563, see: https://peps.python.org/pep-0563/
+
 ## tmuxp 1.50.1 (2024-12-24)
 
 ### Development

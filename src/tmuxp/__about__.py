@@ -1,5 +1,7 @@
 """Metadata for tmuxp package."""
 
+from __future__ import annotations
+
 __title__ = "tmuxp"
 __package_name__ = "tmuxp"
 __version__ = "1.50.1"

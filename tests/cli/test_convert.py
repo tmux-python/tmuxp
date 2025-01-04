@@ -1,13 +1,18 @@
 """CLI tests for tmuxp convert."""
 
+from __future__ import annotations
+
 import contextlib
 import io
 import json
-import pathlib
+import typing as t
 
 import pytest
 
 from tmuxp import cli
+
+if t.TYPE_CHECKING:
+    import pathlib
 
 
 @pytest.mark.parametrize(

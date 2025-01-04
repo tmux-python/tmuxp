@@ -1,5 +1,7 @@
 """Test data for tmuxp workspace fixture to demo object tree inheritance."""
 
+from __future__ import annotations
+
 before = {  # shell_command_before is string in some areas
     "session_name": "sample workspace",
     "start_directory": "/var",

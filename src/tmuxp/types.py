@@ -7,10 +7,12 @@ Notes
 .. _typeshed's: https://github.com/python/typeshed/blob/9687d5/stdlib/_typeshed/__init__.pyi#L98
 """  # E501
 
-from typing import TYPE_CHECKING, Union
+from __future__ import annotations
 
-if TYPE_CHECKING:
+import typing as t
+
+if t.TYPE_CHECKING:
     from os import PathLike
 
-StrPath = Union[str, "PathLike[str]"]
+StrPath = t.Union[str, "PathLike[str]"]
 """:class:`os.PathLike` or :class:`str`"""

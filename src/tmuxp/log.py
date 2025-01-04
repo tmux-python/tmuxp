@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Log utilities for tmuxp."""
 
+from __future__ import annotations
+
 import logging
 import time
 import typing as t
@@ -26,7 +28,7 @@ LOG_LEVELS = {
 
 
 def setup_logger(
-    logger: t.Optional[logging.Logger] = None,
+    logger: logging.Logger | None = None,
     level: str = "INFO",
 ) -> None:
     """Configure tmuxp's logging for CLI use.
@@ -137,7 +139,7 @@ class LogFormatter(logging.Formatter):
 def debug_log_template(
     self: type[logging.Formatter],
     record: logging.LogRecord,
-    stylized: t.Optional[bool] = False,
+    stylized: bool | None = False,
     **kwargs: t.Any,
 ) -> str:
     """

@@ -1,10 +1,9 @@
 """Tests tmux session freezing functionality for tmuxp."""
 
-import pathlib
+from __future__ import annotations
+
 import time
 import typing
-
-from libtmux.session import Session
 
 from tests.fixtures import utils as test_utils
 from tmuxp._internal.config_reader import ConfigReader
@@ -12,6 +11,10 @@ from tmuxp.workspace import freezer, validation
 from tmuxp.workspace.builder import WorkspaceBuilder
 
 if typing.TYPE_CHECKING:
+    import pathlib
+
+    from libtmux.session import Session
+
     from tests.fixtures.structures import WorkspaceTestData
 
 
@@ -87,7 +90,7 @@ def test_inline_workspace() -> None:
 
 def test_export_yaml(
     tmp_path: pathlib.Path,
-    config_fixture: "WorkspaceTestData",
+    config_fixture: WorkspaceTestData,
 ) -> None:
     """Test exporting a frozen tmux session to YAML."""
     yaml_workspace_file = tmp_path / "config.yaml"

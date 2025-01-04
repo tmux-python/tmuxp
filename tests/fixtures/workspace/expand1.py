@@ -1,5 +1,7 @@
 """Examples of expansion of tmuxp configurations from shorthand style."""
 
+from __future__ import annotations
+
 import pathlib
 import typing as t
 

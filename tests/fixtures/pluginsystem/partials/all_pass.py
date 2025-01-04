@@ -1,5 +1,7 @@
 """Tmuxp test plugin with version constraints guaranteed to pass."""
 
+from __future__ import annotations
+
 import typing as t
 
 from .test_plugin_helpers import MyTestTmuxpPlugin

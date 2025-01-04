@@ -1,5 +1,7 @@
 """CLI for ``tmuxp shell`` subcommand."""
 
+from __future__ import annotations
+
 import argparse
 import os
 import pathlib
@@ -29,13 +31,13 @@ class CLIShellNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp shell command."""
 
     session_name: str
-    socket_name: t.Optional[str]
-    socket_path: t.Optional[str]
-    colors: t.Optional["CLIColorsLiteral"]
-    log_file: t.Optional[str]
-    window_name: t.Optional[str]
-    command: t.Optional[str]
-    shell: t.Optional["CLIShellLiteral"]
+    socket_name: str | None
+    socket_path: str | None
+    colors: CLIColorsLiteral | None
+    log_file: str | None
+    window_name: str | None
+    command: str | None
+    shell: CLIShellLiteral | None
     use_pythonrc: bool
     use_vi_mode: bool
 
@@ -147,7 +149,7 @@ def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.Argument
 
 def command_shell(
     args: CLIShellNamespace,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp shell`` for tmux server, session, window and pane.
 

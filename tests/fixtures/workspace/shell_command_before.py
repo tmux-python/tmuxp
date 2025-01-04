@@ -1,5 +1,7 @@
 """Test fixture for tmuxp to demonstrate shell_command_before."""
 
+from __future__ import annotations
+
 import pathlib
 import typing as t
 

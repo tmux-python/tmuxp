@@ -1,5 +1,7 @@
 """Tmuxp test plugin for asserting version constraints."""
 
+from __future__ import annotations
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
@@ -15,7 +17,7 @@ if t.TYPE_CHECKING:
 class MyTestTmuxpPlugin(TmuxpPlugin):
     """Base class for testing tmuxp plugins with version constraints."""
 
-    def __init__(self, **config: "Unpack[PluginTestConfigSchema]") -> None:
+    def __init__(self, **config: Unpack[PluginTestConfigSchema]) -> None:
         assert isinstance(config, dict)
         tmux_version = config.pop("tmux_version", None)
         libtmux_version = config.pop("libtmux_version", None)

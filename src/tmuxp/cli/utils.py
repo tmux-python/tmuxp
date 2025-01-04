@@ -1,13 +1,16 @@
 """CLI utility helpers for tmuxp."""
 
+from __future__ import annotations
+
 import logging
 import re
 import typing as t
-from collections.abc import Callable, Sequence
 
 from tmuxp import log
 
 if t.TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
     from typing_extensions import TypeAlias
 
     CLIColour: TypeAlias = t.Union[int, tuple[int, int, int], str]
@@ -17,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 def tmuxp_echo(
-    message: t.Optional[str] = None,
+    message: str | None = None,
     log_level: str = "INFO",
     style_log: bool = False,
 ) -> None:
@@ -30,13 +33,13 @@ def tmuxp_echo(
     else:
         logger.log(log.LOG_LEVELS[log_level], unstyle(message))
 
-    print(message)
+    print(message)  # NOQA: T201 RUF100
 
 
 def prompt(
     name: str,
-    default: t.Optional[str] = None,
-    value_proc: t.Optional[Callable[[str], str]] = None,
+    default: str | None = None,
+    value_proc: Callable[[str], str] | None = None,
 ) -> str:
     """Return user input from command line.
 
@@ -77,8 +80,8 @@ def prompt(
 def prompt_bool(
     name: str,
     default: bool = False,
-    yes_choices: t.Optional[Sequence[t.Any]] = None,
-    no_choices: t.Optional[Sequence[t.Any]] = None,
+    yes_choices: Sequence[t.Any] | None = None,
+    no_choices: Sequence[t.Any] | None = None,
 ) -> bool:
     """Return True / False by prompting user input from command line.
 
@@ -127,10 +130,10 @@ def prompt_yes_no(name: str, default: bool = True) -> bool:
 
 def prompt_choices(
     name: str,
-    choices: t.Union[list[str], tuple[str, str]],
-    default: t.Optional[str] = None,
+    choices: list[str] | tuple[str, str],
+    default: str | None = None,
     no_choice: Sequence[str] = ("none",),
-) -> t.Optional[str]:
+) -> str | None:
     """Return user input from command line from set of provided choices.
 
     Parameters
@@ -202,7 +205,7 @@ _ansi_reset_all = "\033[0m"
 
 
 def _interpret_color(
-    color: t.Union[int, tuple[int, int, int], str],
+    color: int | tuple[int, int, int] | str,
     offset: int = 0,
 ) -> str:
     if isinstance(color, int):
@@ -218,22 +221,22 @@ def _interpret_color(
 class UnknownStyleColor(Exception):
     """Raised when encountering an unknown terminal style color."""
 
-    def __init__(self, color: "CLIColour", *args: object, **kwargs: object) -> None:
+    def __init__(self, color: CLIColour, *args: object, **kwargs: object) -> None:
         return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
 
 
 def style(
     text: t.Any,
-    fg: t.Optional["CLIColour"] = None,
-    bg: t.Optional["CLIColour"] = None,
-    bold: t.Optional[bool] = None,
-    dim: t.Optional[bool] = None,
-    underline: t.Optional[bool] = None,
-    overline: t.Optional[bool] = None,
-    italic: t.Optional[bool] = None,
-    blink: t.Optional[bool] = None,
-    reverse: t.Optional[bool] = None,
-    strikethrough: t.Optional[bool] = None,
+    fg: CLIColour | None = None,
+    bg: CLIColour | None = None,
+    bold: bool | None = None,
+    dim: bool | None = None,
+    underline: bool | None = None,
+    overline: bool | None = None,
+    italic: bool | None = None,
+    blink: bool | None = None,
+    reverse: bool | None = None,
+    strikethrough: bool | None = None,
     reset: bool = True,
 ) -> str:
     """Credit: click."""

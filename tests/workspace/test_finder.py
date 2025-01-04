@@ -1,5 +1,7 @@
 """Test config file searching for tmuxp."""
 
+from __future__ import annotations
+
 import argparse
 import pathlib
 import typing as t
@@ -267,7 +269,7 @@ def test_find_workspace_file_arg(
 
     project_config = projectdir / ".tmuxp.yaml"
 
-    def check_cmd(config_arg: str) -> "_pytest.capture.CaptureResult[str]":
+    def check_cmd(config_arg: str) -> _pytest.capture.CaptureResult[str]:
         args = parser.parse_args([config_arg])
         config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()

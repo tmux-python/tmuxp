@@ -1,5 +1,7 @@
 """Pytest configuration for tmuxp workspace tests."""
 
+from __future__ import annotations
+
 import types
 
 import pytest

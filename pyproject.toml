@@ -149,6 +149,9 @@ exclude_lines = [
   "raise NotImplementedError",
   "if __name__ == .__main__.:",
   "def parse_args",
+  "from __future__ import annotations",
+  "if TYPE_CHECKING:",
+  "if t.TYPE_CHECKING:",
 ]
 
 [tool.mypy]
@@ -192,16 +195,25 @@ select = [
   "PERF", # Perflint
   "RUF", # Ruff-specific rules
   "D", # pydocstyle
+  "FA100",  # future annotations
 ]
 ignore = [
   "COM812", # missing trailing comma, ruff format conflict
 ]
+extend-safe-fixes = [
+  "UP006",
+  "UP007",
+]
+pyupgrade.keep-runtime-typing = false
 
 [tool.ruff.lint.isort]
 known-first-party = [
   "tmuxp",
 ]
 combine-as-imports = true
+required-imports = [
+  "from __future__ import annotations",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

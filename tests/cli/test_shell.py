@@ -1,18 +1,21 @@
 """CLI tests for tmuxp shell."""
 
+from __future__ import annotations
+
 import contextlib
 import io
-import pathlib
 import subprocess
 import typing as t
 
 import pytest
-from libtmux.session import Session
 
 from tmuxp import cli, exc
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from libtmux.server import Server
+    from libtmux.session import Session
 
 
 class CLIShellFixture(t.NamedTuple):
@@ -114,7 +117,7 @@ def test_shell(
     inputs: list[t.Any],
     env: dict[str, str],
     expected_output: str,
-    server: "Server",
+    server: Server,
     session: Session,
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -201,13 +204,10 @@ def test_shell_target_missing(
     inputs: list[t.Any],
     env: dict[t.Any, t.Any],
     template_ctx: dict[str, str],
-    exception: t.Union[
-        type[exc.TmuxpException],
-        type[subprocess.CalledProcessError],
-    ],
+    exception: type[exc.TmuxpException | subprocess.CalledProcessError],
     message: str,
     socket_name: str,
-    server: "Server",
+    server: Server,
     session: Session,
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -284,7 +284,7 @@ def test_shell_interactive(
     inputs: list[t.Any],
     env: dict[str, str],
     message: str,
-    server: "Server",
+    server: Server,
     session: Session,
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,

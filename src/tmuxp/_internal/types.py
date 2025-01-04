@@ -10,6 +10,8 @@ bundled with tmuxp. Usage example:
 ...
 """
 
+from __future__ import annotations
+
 from typing_extensions import NotRequired, TypedDict
 
 

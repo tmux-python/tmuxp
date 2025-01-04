@@ -1,8 +1,9 @@
 """Utility and helper methods for tmuxp."""
 
+from __future__ import annotations
+
 import logging
 import os
-import pathlib
 import shlex
 import subprocess
 import sys
@@ -13,6 +14,8 @@ from libtmux._compat import console_to_str
 from . import exc
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from libtmux.pane import Pane
     from libtmux.server import Server
     from libtmux.session import Session
@@ -24,8 +27,8 @@ PY2 = sys.version_info[0] == 2
 
 
 def run_before_script(
-    script_file: t.Union[str, pathlib.Path],
-    cwd: t.Optional[pathlib.Path] = None,
+    script_file: str | pathlib.Path,
+    cwd: pathlib.Path | None = None,
 ) -> int:
     """Execute a shell script, wraps :meth:`subprocess.check_call()` in a try/catch."""
     try:
@@ -75,7 +78,7 @@ def oh_my_zsh_auto_title() -> None:
             or os.environ.get("DISABLE_AUTO_TITLE") == "false"
         )
     ):
-        print(
+        print(  # NOQA: T201 RUF100
             "Please set:\n\n"
             "\texport DISABLE_AUTO_TITLE='true'\n\n"
             "in ~/.zshrc or where your zsh profile is stored.\n"
@@ -85,7 +88,7 @@ def oh_my_zsh_auto_title() -> None:
         )
 
 
-def get_current_pane(server: "Server") -> t.Optional["Pane"]:
+def get_current_pane(server: Server) -> Pane | None:
     """Return Pane if one found in env."""
     if os.getenv("TMUX_PANE") is not None:
         try:
@@ -96,10 +99,10 @@ def get_current_pane(server: "Server") -> t.Optional["Pane"]:
 
 
 def get_session(
-    server: "Server",
-    session_name: t.Optional[str] = None,
-    current_pane: t.Optional["Pane"] = None,
-) -> "Session":
+    server: Server,
+    session_name: str | None = None,
+    current_pane: Pane | None = None,
+) -> Session:
     """Get tmux session for server by session name, respects current pane, if passed."""
     try:
         if session_name:
@@ -123,10 +126,10 @@ def get_session(
 
 
 def get_window(
-    session: "Session",
-    window_name: t.Optional[str] = None,
-    current_pane: t.Optional["Pane"] = None,
-) -> "Window":
+    session: Session,
+    window_name: str | None = None,
+    current_pane: Pane | None = None,
+) -> Window:
     """Get tmux window for server by window name, respects current pane, if passed."""
     try:
         if window_name:
@@ -146,7 +149,7 @@ def get_window(
     return window
 
 
-def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane":
+def get_pane(window: Window, current_pane: Pane | None = None) -> Pane:
     """Get tmux pane for server by pane name, respects current pane, if passed."""
     pane = None
     try:
@@ -155,7 +158,7 @@ def get_pane(window: "Window", current_pane: t.Optional["Pane"] = None) -> "Pane
         else:
             pane = window.active_pane
     except exc.TmuxpException as e:
-        print(e)
+        print(e)  # NOQA: T201 RUF100
 
     if pane is None:
         if current_pane:

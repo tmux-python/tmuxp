@@ -1,5 +1,7 @@
 """CLI tests for tmuxp's core shell functionality."""
 
+from __future__ import annotations
+
 import argparse
 import contextlib
 import pathlib
@@ -112,7 +114,7 @@ def test_pass_config_dir_argparse(
     def config_cmd(workspace_file: str) -> None:
         tmuxp_echo(find_workspace_file(workspace_file, workspace_dir=configdir))
 
-    def check_cmd(config_arg: str) -> "_pytest.capture.CaptureResult[str]":
+    def check_cmd(config_arg: str) -> _pytest.capture.CaptureResult[str]:
         args = parser.parse_args([config_arg])
         config_cmd(workspace_file=args.workspace_file)
         return capsys.readouterr()
@@ -130,7 +132,7 @@ def test_pass_config_dir_argparse(
 
 def test_reattach_plugins(
     monkeypatch_plugin_test_packages: None,
-    server: "Server",
+    server: Server,
 ) -> None:
     """Test reattach plugin hook."""
     config_plugins = test_utils.read_workspace_file("workspace/builder/plugin_r.yaml")

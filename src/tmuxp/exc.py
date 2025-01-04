@@ -1,6 +1,6 @@
 """Exceptions for tmuxp."""
 
-import typing as t
+from __future__ import annotations
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 
@@ -20,7 +20,7 @@ class SessionNotFound(TmuxpException):
 
     def __init__(
         self,
-        session_target: t.Optional[str] = None,
+        session_target: str | None = None,
         *args: object,
         **kwargs: object,
     ) -> None:
@@ -35,7 +35,7 @@ class WindowNotFound(TmuxpException):
 
     def __init__(
         self,
-        window_target: t.Optional[str] = None,
+        window_target: str | None = None,
         *args: object,
         **kwargs: object,
     ) -> None:
@@ -50,7 +50,7 @@ class PaneNotFound(TmuxpException):
 
     def __init__(
         self,
-        pane_target: t.Optional[str] = None,
+        pane_target: str | None = None,
         *args: object,
         **kwargs: object,
     ) -> None:
@@ -115,7 +115,7 @@ class BeforeLoadScriptError(Exception):
         self,
         returncode: int,
         cmd: str,
-        output: t.Optional[str] = None,
+        output: str | None = None,
     ) -> None:
         self.returncode = returncode
         self.cmd = cmd

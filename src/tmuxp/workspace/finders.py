@@ -1,27 +1,31 @@
 """Workspace (configuration file) finders for tmuxp."""
 
+from __future__ import annotations
+
 import logging
 import os
-import pathlib
 import typing as t
 
 from colorama import Fore
 
 from tmuxp.cli.utils import tmuxp_echo
-from tmuxp.types import StrPath
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from typing_extensions import TypeAlias
+
+    from tmuxp.types import StrPath
 
     ValidExtensions: TypeAlias = t.Literal[".yml", ".yaml", ".json"]
 
 
 def is_workspace_file(
     filename: str,
-    extensions: t.Union["ValidExtensions", list["ValidExtensions"], None] = None,
+    extensions: ValidExtensions | list[ValidExtensions] | None = None,
 ) -> bool:
     """
     Return True if file has a valid workspace file type.
@@ -44,8 +48,8 @@ def is_workspace_file(
 
 
 def in_dir(
-    workspace_dir: t.Union[pathlib.Path, str, None] = None,
-    extensions: t.Optional[list["ValidExtensions"]] = None,
+    workspace_dir: pathlib.Path | str | None = None,
+    extensions: list[ValidExtensions] | None = None,
 ) -> list[str]:
     """
     Return a list of workspace_files in ``workspace_dir``.
@@ -130,7 +134,7 @@ def get_workspace_dir() -> str:
 
 def find_workspace_file(
     workspace_file: StrPath,
-    workspace_dir: t.Optional[StrPath] = None,
+    workspace_dir: StrPath | None = None,
 ) -> str:
     """
     Return the real config path or raise an exception.

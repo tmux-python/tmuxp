@@ -1,5 +1,7 @@
 """CLI for ``tmuxp load`` subcommand."""
 
+from __future__ import annotations
+
 import argparse
 import importlib
 import logging
@@ -10,11 +12,9 @@ import sys
 import typing as t
 
 from libtmux.server import Server
-from libtmux.session import Session
 
 from tmuxp import exc, log, util
 from tmuxp._internal import config_reader
-from tmuxp.types import StrPath
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
@@ -22,7 +22,10 @@ from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
+    from libtmux.session import Session
     from typing_extensions import NotRequired, TypeAlias, TypedDict
+
+    from tmuxp.types import StrPath
 
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
 
@@ -30,21 +33,21 @@ if t.TYPE_CHECKING:
         """Optional argument overrides for tmuxp load."""
 
         detached: NotRequired[bool]
-        new_session_name: NotRequired[t.Optional[str]]
+        new_session_name: NotRequired[str | None]
 
 
 class CLILoadNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp load command."""
 
     workspace_files: list[str]
-    socket_name: t.Optional[str]
-    socket_path: t.Optional[str]
-    tmux_config_file: t.Optional[str]
-    new_session_name: t.Optional[str]
-    answer_yes: t.Optional[bool]
-    append: t.Optional[bool]
-    colors: t.Optional["CLIColorsLiteral"]
-    log_file: t.Optional[str]
+    socket_name: str | None
+    socket_path: str | None
+    tmux_config_file: str | None
+    new_session_name: str | None
+    answer_yes: bool | None
+    append: bool | None
+    colors: CLIColorsLiteral | None
+    log_file: str | None
 
 
 def load_plugins(session_config: dict[str, t.Any]) -> list[t.Any]:
@@ -115,7 +118,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
-            print(line)
+            print(line)  # NOQA: T201 RUF100
 
     if "TMUX" in os.environ:
         builder.session.switch_client()
@@ -159,7 +162,7 @@ def _load_detached(builder: WorkspaceBuilder) -> None:
 
     assert builder.session is not None
 
-    print("Session created in detached state.")
+    print("Session created in detached state.")  # NOQA: T201 RUF100
 
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
@@ -191,15 +194,15 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 
 def load_workspace(
     workspace_file: StrPath,
-    socket_name: t.Optional[str] = None,
+    socket_name: str | None = None,
     socket_path: None = None,
-    tmux_config_file: t.Optional[str] = None,
-    new_session_name: t.Optional[str] = None,
-    colors: t.Optional[int] = None,
+    tmux_config_file: str | None = None,
+    new_session_name: str | None = None,
+    colors: int | None = None,
     detached: bool = False,
     answer_yes: bool = False,
     append: bool = False,
-) -> t.Optional[Session]:
+) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
     Parameters
@@ -507,7 +510,7 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
 
 def command_load(
     args: CLILoadNamespace,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Load a tmux workspace from each WORKSPACE_FILE.
 

@@ -1,5 +1,7 @@
 """Configuration import adapters to load teamocil, tmuxinator, etc. in tmuxp."""
 
+from __future__ import annotations
+
 import typing as t
 
 

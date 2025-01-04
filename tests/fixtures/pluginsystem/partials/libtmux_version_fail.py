@@ -1,5 +1,7 @@
 """Fixtures for tmuxp plugins for libtmux version exceptions."""
 
+from __future__ import annotations
+
 import typing as t
 
 from .test_plugin_helpers import MyTestTmuxpPlugin

@@ -1,5 +1,7 @@
 """Plugin system for tmuxp."""
 
+from __future__ import annotations
+
 import typing as t
 
 import libtmux
@@ -38,10 +40,10 @@ if t.TYPE_CHECKING:
     class VersionConstraints(TypedDict):
         """Version constraints mapping for a tmuxp plugin."""
 
-        version: t.Union[Version, str]
+        version: Version | str
         vmin: str
-        vmax: t.Optional[str]
-        incompatible: list[t.Union[t.Any, str]]
+        vmax: str | None
+        incompatible: list[t.Any | str]
 
     class TmuxpPluginVersionConstraints(TypedDict):
         """Version constraints for a tmuxp plugin."""
@@ -56,17 +58,17 @@ class Config(t.TypedDict):
 
     plugin_name: str
     tmux_min_version: str
-    tmux_max_version: t.Optional[str]
-    tmux_version_incompatible: t.Optional[list[str]]
+    tmux_max_version: str | None
+    tmux_version_incompatible: list[str] | None
     libtmux_min_version: str
-    libtmux_max_version: t.Optional[str]
-    libtmux_version_incompatible: t.Optional[list[str]]
+    libtmux_max_version: str | None
+    libtmux_version_incompatible: list[str] | None
     tmuxp_min_version: str
-    tmuxp_max_version: t.Optional[str]
-    tmuxp_version_incompatible: t.Optional[list[str]]
+    tmuxp_max_version: str | None
+    tmuxp_version_incompatible: list[str] | None
 
 
-DEFAULT_CONFIG: "Config" = {
+DEFAULT_CONFIG: Config = {
     "plugin_name": "tmuxp-plugin",
     "tmux_min_version": TMUX_MIN_VERSION,
     "tmux_max_version": TMUX_MAX_VERSION,
@@ -80,15 +82,15 @@ DEFAULT_CONFIG: "Config" = {
 }
 
 
-def validate_plugin_config(config: "PluginConfigSchema") -> "TypeGuard[Config]":
+def validate_plugin_config(config: PluginConfigSchema) -> TypeGuard[Config]:
     """Return True if tmuxp plugin configuration valid, also upcasts."""
     return isinstance(config, dict)
 
 
 def setup_plugin_config(
-    config: "PluginConfigSchema",
-    default_config: "Config" = DEFAULT_CONFIG,
-) -> "Config":
+    config: PluginConfigSchema,
+    default_config: Config = DEFAULT_CONFIG,
+) -> Config:
     """Initialize tmuxp plugin configuration."""
     new_config = config.copy()
     for default_key, default_value in default_config.items():
@@ -103,7 +105,7 @@ def setup_plugin_config(
 class TmuxpPlugin:
     """Base class for a tmuxp plugin."""
 
-    def __init__(self, **kwargs: "Unpack[PluginConfigSchema]") -> None:
+    def __init__(self, **kwargs: Unpack[PluginConfigSchema]) -> None:
         """
         Initialize plugin.
 
@@ -197,10 +199,10 @@ class TmuxpPlugin:
 
     def _pass_version_check(
         self,
-        version: t.Union[str, Version],
+        version: str | Version,
         vmin: str,
-        vmax: t.Optional[str],
-        incompatible: list[t.Union[t.Any, str]],
+        vmax: str | None,
+        incompatible: list[t.Any | str],
     ) -> bool:
         """Provide affirmative if version compatibility is correct."""
         if vmin and version < Version(vmin):
@@ -209,7 +211,7 @@ class TmuxpPlugin:
             return False
         return version not in incompatible
 
-    def before_workspace_builder(self, session: "Session") -> None:
+    def before_workspace_builder(self, session: Session) -> None:
         """
         Provide a session hook previous to creating the workspace.
 
@@ -222,7 +224,7 @@ class TmuxpPlugin:
             session to hook into
         """
 
-    def on_window_create(self, window: "Window") -> None:
+    def on_window_create(self, window: Window) -> None:
         """
         Provide a window hook previous to doing anything with a window.
 
@@ -234,7 +236,7 @@ class TmuxpPlugin:
             window to hook into
         """
 
-    def after_window_finished(self, window: "Window") -> None:
+    def after_window_finished(self, window: Window) -> None:
         """
         Provide a window hook after creating the window.
 
@@ -248,7 +250,7 @@ class TmuxpPlugin:
             window to hook into
         """
 
-    def before_script(self, session: "Session") -> None:
+    def before_script(self, session: Session) -> None:
         """
         Provide a session hook after the workspace has been built.
 
@@ -276,7 +278,7 @@ class TmuxpPlugin:
             session to hook into
         """
 
-    def reattach(self, session: "Session") -> None:
+    def reattach(self, session: Session) -> None:
         """
         Provide a session hook before reattaching to the session.
 

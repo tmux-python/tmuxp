@@ -1,5 +1,7 @@
 """YAML examples of expansion of tmuxp configurations from shorthand style."""
 
+from __future__ import annotations
+
 import pathlib
 
 from tests.fixtures import utils as test_utils

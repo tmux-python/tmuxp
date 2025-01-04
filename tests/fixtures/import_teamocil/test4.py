@@ -1,5 +1,7 @@
 """Teamocil data fixtures for import_teamocil tests, 4th test."""
 
+from __future__ import annotations
+
 from tests.fixtures import utils as test_utils
 
 teamocil_yaml = test_utils.read_workspace_file("import_teamocil/test4.yaml")

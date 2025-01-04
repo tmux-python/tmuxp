@@ -1,5 +1,7 @@
 """Tests for tmuxp plugin API."""
 
+from __future__ import annotations
+
 import pytest
 
 from tmuxp.exc import TmuxpPluginException

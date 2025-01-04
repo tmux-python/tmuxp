@@ -1,11 +1,15 @@
 """CLI tests for tmuxp ls command."""
 
+from __future__ import annotations
+
 import contextlib
 import pathlib
-
-import pytest
+import typing as t
 
 from tmuxp import cli
+
+if t.TYPE_CHECKING:
+    import pytest
 
 
 def test_ls_cli(

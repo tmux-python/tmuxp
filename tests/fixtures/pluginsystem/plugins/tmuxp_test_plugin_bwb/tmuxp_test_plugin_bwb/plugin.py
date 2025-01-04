@@ -1,5 +1,7 @@
 """Tmuxp example plugin for before_worksplace_builder."""
 
+from __future__ import annotations
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
@@ -14,6 +16,6 @@ class PluginBeforeWorkspaceBuilder(TmuxpPlugin):
     def __init__(self) -> None:
         self.message: str = "[+] This is the Tmuxp Test Plugin"
 
-    def before_workspace_builder(self, session: "Session") -> None:
+    def before_workspace_builder(self, session: Session) -> None:
         """Run hook before workspace builder begins."""
         session.rename_session("plugin_test_bwb")

@@ -1,11 +1,12 @@
 """Create a tmux workspace from a workspace :py:obj:`dict`."""
 
+from __future__ import annotations
+
 import logging
 import os
 import shutil
 import time
 import typing as t
-from collections.abc import Iterator
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.common import has_gte_version, has_lt_version
@@ -16,6 +17,9 @@ from libtmux.window import Window
 
 from tmuxp import exc
 from tmuxp.util import get_current_pane, run_before_script
+
+if t.TYPE_CHECKING:
+    from collections.abc import Iterator
 
 logger = logging.getLogger(__name__)
 
@@ -144,15 +148,15 @@ class WorkspaceBuilder:
     a session inside tmux (when `$TMUX` is in the env variables).
     """
 
-    server: "Server"
-    _session: t.Optional["Session"]
+    server: Server
+    _session: Session | None
     session_name: str
 
     def __init__(
         self,
         session_config: dict[str, t.Any],
         server: Server,
-        plugins: t.Optional[list[t.Any]] = None,
+        plugins: list[t.Any] | None = None,
     ) -> None:
         """Initialize workspace loading.
 
@@ -219,7 +223,7 @@ class WorkspaceBuilder:
             return False
         return True
 
-    def build(self, session: t.Optional[Session] = None, append: bool = False) -> None:
+    def build(self, session: Session | None = None, append: bool = False) -> None:
         """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
@@ -482,7 +486,7 @@ class WorkspaceBuilder:
                 def get_pane_start_directory(
                     pane_config: dict[str, str],
                     window_config: dict[str, str],
-                ) -> t.Optional[str]:
+                ) -> str | None:
                     if "start_directory" in pane_config:
                         return pane_config["start_directory"]
                     if "start_directory" in window_config:
@@ -492,7 +496,7 @@ class WorkspaceBuilder:
                 def get_pane_shell(
                     pane_config: dict[str, str],
                     window_config: dict[str, str],
-                ) -> t.Optional[str]:
+                ) -> str | None:
                     if "shell" in pane_config:
                         return pane_config["shell"]
                     if "window_shell" in window_config:

@@ -1,6 +1,7 @@
 """CLI for ``tmuxp shell`` subcommand."""
 
-import argparse
+from __future__ import annotations
+
 import locale
 import os
 import pathlib
@@ -12,6 +13,9 @@ from tmuxp.workspace import importers
 from tmuxp.workspace.finders import find_workspace_file
 
 from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
+
+if t.TYPE_CHECKING:
+    import argparse
 
 
 def get_tmuxinator_dir() -> pathlib.Path:
@@ -136,7 +140,7 @@ class ImportConfigFn(t.Protocol):
 def import_config(
     workspace_file: str,
     importfunc: ImportConfigFn,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Import a configuration from a workspace_file."""
     existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
@@ -189,7 +193,7 @@ def import_config(
 
 def command_import_tmuxinator(
     workspace_file: str,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp import tmuxinator`` subcommand.
 
@@ -205,7 +209,7 @@ def command_import_tmuxinator(
 
 def command_import_teamocil(
     workspace_file: str,
-    parser: t.Optional[argparse.ArgumentParser] = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp import teamocil`` subcommand.
 

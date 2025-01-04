@@ -1,5 +1,7 @@
 """Tmuxp example plugin for after_window_finished."""
 
+from __future__ import annotations
+
 import typing as t
 
 from tmuxp.plugin import TmuxpPlugin
@@ -14,7 +16,7 @@ class PluginAfterWindowFinished(TmuxpPlugin):
     def __init__(self) -> None:
         self.message: str = "[+] This is the Tmuxp Test Plugin"
 
-    def after_window_finished(self, window: "Window") -> None:
+    def after_window_finished(self, window: Window) -> None:
         """Run hook after window creation completed."""
         if window.name == "editor":
             window.rename_window("plugin_test_awf")
