@@ -149,6 +149,9 @@ exclude_lines = [
   "raise NotImplementedError",
   "if __name__ == .__main__.:",
   "def parse_args",
+  "from __future__ import annotations",
+  "if TYPE_CHECKING:",
+  "if t.TYPE_CHECKING:",
 ]
 
 [tool.mypy]
