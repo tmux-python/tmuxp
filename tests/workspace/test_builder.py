@@ -1252,7 +1252,7 @@ def test_load_workspace_enter(
     assert retry_until(
         fn,
         1,
-    ), f'Should{" " if should_see else "not "} output in captured pane'
+    ), f"Should{' ' if should_see else 'not '} output in captured pane"
 
 
 @pytest.mark.parametrize(
@@ -1444,9 +1444,9 @@ def test_layout_main_horizontal(session: Session) -> None:
     assert all(
         main_horizontal_pane_height != pane_height for pane_height in pane_heights
     ), "The top row should not be the same size as the bottom row (even though it can)"
-    assert all(
-        pane_heights[0] == pane_height for pane_height in pane_heights
-    ), "The bottom row should be uniform height"
+    assert all(pane_heights[0] == pane_height for pane_height in pane_heights), (
+        "The bottom row should be uniform height"
+    )
     assert width(main_horizontal_pane) > width(panes[0])
 
     def is_almost_equal(x: int, y: int) -> bool:

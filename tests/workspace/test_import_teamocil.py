@@ -54,12 +54,10 @@ def test_config_to_dict(
 
 
 @pytest.fixture(scope="module")
-def multisession_config() -> (
-    dict[
-        str,
-        dict[str, t.Any],
-    ]
-):
+def multisession_config() -> dict[
+    str,
+    dict[str, t.Any],
+]:
     """Return loaded multisession teamocil config as a dictionary.
 
     Also prevents re-running assertion the loads the yaml, since ordering of
