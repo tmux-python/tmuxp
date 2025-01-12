@@ -75,7 +75,7 @@ jobs:
           export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
           ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
           tmux -V
-          uv run py.test --cov=./ --cov-report=xml
+          uv run py.test --cov=./ --cov-report=xml --verbose
 
       - uses: codecov/codecov-action@v5
         with:
