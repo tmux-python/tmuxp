@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 import typing as t
 
 import pytest
@@ -35,8 +36,15 @@ def test_run_before_script_raise_BeforeLoadScriptError_if_retcode() -> None:
         run_before_script(script_file)
 
 
-def test_return_stdout_if_ok(capsys: pytest.CaptureFixture[str]) -> None:
+def test_return_stdout_if_ok(
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """run_before_script() returns stdout if script succeeds."""
+    # Simulate sys.stdout.isatty() + sys.stderr.isatty()
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    monkeypatch.setattr(sys.stderr, "isatty", lambda: True)
+
     script_file = FIXTURE_PATH / "script_complete.sh"
 
     run_before_script(script_file)
