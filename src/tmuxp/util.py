@@ -65,13 +65,13 @@ def run_before_script(
         # Read one line from stderr, if available
         line_err = proc.stderr.readline() if proc.stderr else ""
 
-        if line_out:
+        if line_out and line_out.strip():
             out_buffer.append(line_out)
             if is_out_tty:
                 sys.stdout.write(line_out)
                 sys.stdout.flush()
 
-        if line_err:
+        if line_err and line_err.strip():
             err_buffer.append(line_err)
             if is_err_tty:
                 sys.stderr.write(line_err)
