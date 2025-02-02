@@ -9,8 +9,6 @@ import subprocess
 import sys
 import typing as t
 
-from libtmux._compat import console_to_str
-
 from . import exc
 
 if t.TYPE_CHECKING:
@@ -37,16 +35,17 @@ def run_before_script(
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
             cwd=cwd,
+            text=True,
         )
         if proc.stdout is not None:
-            for line in iter(proc.stdout.readline, b""):
-                sys.stdout.write(console_to_str(line))
+            for line in iter(proc.stdout.readline, ""):
+                sys.stdout.write(line)
         proc.wait()
 
         if proc.returncode and proc.stderr is not None:
             stderr = proc.stderr.read()
             proc.stderr.close()
-            stderr_strlist = console_to_str(stderr).split("\n")
+            stderr_strlist = stderr.split("\n")
             stderr_str = "\n".join(list(filter(None, stderr_strlist)))  # filter empty
 
             raise exc.BeforeLoadScriptError(
