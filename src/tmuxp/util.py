@@ -37,6 +37,7 @@ def run_before_script(
             cwd=cwd,
             text=True,
             errors="backslashreplace",
+            encoding="utf-8",
         )
         if proc.stdout is not None:
             for line in iter(proc.stdout.readline, ""):
