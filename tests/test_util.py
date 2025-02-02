@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pathlib
+import sys
 import typing as t
 
 import pytest
@@ -35,8 +37,59 @@ def test_run_before_script_raise_BeforeLoadScriptError_if_retcode() -> None:
         run_before_script(script_file)
 
 
-def test_return_stdout_if_ok(capsys: pytest.CaptureFixture[str]) -> None:
+@pytest.fixture
+def temp_script(tmp_path: pathlib.Path) -> pathlib.Path:
+    """Fixture of an example script that prints "Hello, world!"."""
+    script = tmp_path / "test_script.sh"
+    script.write_text(
+        """#!/bin/sh
+echo "Hello, World!"
+exit 0
+"""
+    )
+    script.chmod(0o755)
+    return script
+
+
+@pytest.mark.parametrize(
+    ["isatty_value", "expected_output"],
+    [
+        (True, "Hello, World!"),  # if stdout is a TTY, output should be passed through
+        (False, ""),  # if not a TTY, output is not written to sys.stdout
+    ],
+)
+def test_run_before_script_isatty(
+    temp_script: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    isatty_value: bool,
+    expected_output: str,
+) -> None:
+    """Verify behavior of ``isatty()``, which we mock in `run_before_script()`."""
+    # Mock sys.stdout.isatty() to return the desired value.
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: isatty_value)
+
+    # Run the script.
+    returncode = run_before_script(temp_script)
+
+    # Assert that the script ran successfully.
+    assert returncode == 0
+
+    out, _err = capsys.readouterr()
+
+    # In TTY mode, we expect the output; in non-TTY mode, we expect it to be suppressed.
+    assert expected_output in out
+
+
+def test_return_stdout_if_ok(
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """run_before_script() returns stdout if script succeeds."""
+    # Simulate sys.stdout.isatty() + sys.stderr.isatty()
+    monkeypatch.setattr(sys.stdout, "isatty", lambda: True)
+    monkeypatch.setattr(sys.stderr, "isatty", lambda: True)
+
     script_file = FIXTURE_PATH / "script_complete.sh"
 
     run_before_script(script_file)

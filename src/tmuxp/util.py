@@ -28,41 +28,72 @@ def run_before_script(
     script_file: str | pathlib.Path,
     cwd: pathlib.Path | None = None,
 ) -> int:
-    """Execute a shell script, wraps :meth:`subprocess.check_call()` in a try/catch."""
+    """Execute shell script, ``tee``-ing output to both terminal (if TTY) and buffer."""
+    script_cmd = shlex.split(str(script_file))
+
     try:
         proc = subprocess.Popen(
-            shlex.split(str(script_file)),
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
+            script_cmd,
             cwd=cwd,
-            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,  # decode to str
             errors="backslashreplace",
-            encoding="utf-8",
         )
-        if proc.stdout is not None:
-            for line in iter(proc.stdout.readline, ""):
-                sys.stdout.write(line)
-        proc.wait()
+    except FileNotFoundError as e:
+        raise exc.BeforeLoadScriptNotExists(
+            e,
+            os.path.abspath(script_file),  # NOQA: PTH100
+        ) from e
 
-        if proc.returncode and proc.stderr is not None:
-            stderr = proc.stderr.read()
-            proc.stderr.close()
-            stderr_strlist = stderr.split("\n")
-            stderr_str = "\n".join(list(filter(None, stderr_strlist)))  # filter empty
+    out_buffer = []
+    err_buffer = []
 
-            raise exc.BeforeLoadScriptError(
-                proc.returncode,
-                os.path.abspath(script_file),  # NOQA: PTH100
-                stderr_str,
-            )
-    except OSError as e:
-        if e.errno == 2:
-            raise exc.BeforeLoadScriptNotExists(
-                e,
-                os.path.abspath(script_file),  # NOQA: PTH100
-            ) from e
-        raise
-    return proc.returncode
+    # While process is running, read lines from stdout/stderr
+    # and write them to this process's stdout/stderr if isatty
+    is_out_tty = sys.stdout.isatty()
+    is_err_tty = sys.stderr.isatty()
+
+    # You can do a simple loop reading in real-time:
+    while True:
+        # Use .poll() to check if the child has exited
+        return_code = proc.poll()
+
+        # Read one line from stdout, if available
+        line_out = proc.stdout.readline() if proc.stdout else ""
+
+        # Read one line from stderr, if available
+        line_err = proc.stderr.readline() if proc.stderr else ""
+
+        if line_out:
+            out_buffer.append(line_out)
+            if is_out_tty:
+                sys.stdout.write(line_out)
+                sys.stdout.flush()
+
+        if line_err:
+            err_buffer.append(line_err)
+            if is_err_tty:
+                sys.stderr.write(line_err)
+                sys.stderr.flush()
+
+        # If no more data from pipes and process ended, break
+        if not line_out and not line_err and return_code is not None:
+            break
+
+    # At this point, the process has finished
+    return_code = proc.wait()
+
+    if return_code != 0:
+        # Join captured stderr lines for your exception
+        stderr_str = "".join(err_buffer).strip()
+        raise exc.BeforeLoadScriptError(
+            return_code,
+            os.path.abspath(script_file),  # NOQA: PTH100
+            stderr_str,
+        )
+
+    return return_code
 
 
 def oh_my_zsh_auto_title() -> None:
