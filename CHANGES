@@ -19,6 +19,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### Development
+
+- libtmux: Bump minimum version from 0.40.1 -> 0.42.0 (#958)
+
+  - `run_before_script()`: Remove reliance on `console_to_str()`
+
 ## tmuxp 1.51.0 (2025-02-02)
 
 _Maintenance only, no bug fixes or new features_
