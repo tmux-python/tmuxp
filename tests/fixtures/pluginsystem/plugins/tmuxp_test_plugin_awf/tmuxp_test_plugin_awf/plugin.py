@@ -26,5 +26,3 @@ class PluginAfterWindowFinished(TmuxpPlugin):
             window.rename_window("plugin_test_awf_mw_2")
         elif window.name == "mp_test_owc":
             window.rename_window("mp_test_awf")
-        else:
-            pass

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pathlib
 import sys
 import typing as t
 
@@ -15,6 +14,8 @@ from tmuxp.util import get_session, run_before_script
 from .constants import FIXTURE_PATH
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from libtmux.server import Server
 
 
@@ -45,7 +46,7 @@ def temp_script(tmp_path: pathlib.Path) -> pathlib.Path:
         """#!/bin/sh
 echo "Hello, World!"
 exit 0
-"""
+""",
     )
     script.chmod(0o755)
     return script
