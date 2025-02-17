@@ -63,23 +63,83 @@ def test_get_configs_cwd(
     assert ".tmuxp.json" in configs_found
 
 
+class PureNameTestFixture(t.NamedTuple):
+    """Test fixture for verifying pure name path validation."""
+
+    test_id: str
+    path: str
+    expect: bool
+
+
+PURE_NAME_TEST_FIXTURES: list[PureNameTestFixture] = [
+    PureNameTestFixture(
+        test_id="current_dir",
+        path=".",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="current_dir_slash",
+        path="./",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="empty_path",
+        path="",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="tmuxp_yaml",
+        path=".tmuxp.yaml",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="parent_tmuxp_yaml",
+        path="../.tmuxp.yaml",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="parent_dir",
+        path="../",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="absolute_path",
+        path="/hello/world",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="home_tmuxp_path",
+        path="~/.tmuxp/hey",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="home_work_path",
+        path="~/work/c/tmux/",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="home_work_tmuxp_yaml",
+        path="~/work/c/tmux/.tmuxp.yaml",
+        expect=False,
+    ),
+    PureNameTestFixture(
+        test_id="pure_name",
+        path="myproject",
+        expect=True,
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ("path", "expect"),
-    [
-        (".", False),
-        ("./", False),
-        ("", False),
-        (".tmuxp.yaml", False),
-        ("../.tmuxp.yaml", False),
-        ("../", False),
-        ("/hello/world", False),
-        ("~/.tmuxp/hey", False),
-        ("~/work/c/tmux/", False),
-        ("~/work/c/tmux/.tmuxp.yaml", False),
-        ("myproject", True),
-    ],
+    list(PureNameTestFixture._fields),
+    PURE_NAME_TEST_FIXTURES,
+    ids=[test.test_id for test in PURE_NAME_TEST_FIXTURES],
 )
-def test_is_pure_name(path: str, expect: bool) -> None:
+def test_is_pure_name(
+    test_id: str,
+    path: str,
+    expect: bool,
+) -> None:
     """Test is_pure_name() is truthy when file, not directory or config alias."""
     assert is_pure_name(path) == expect
 
