@@ -111,7 +111,7 @@ One screen can be used to edit a file, and another may be used to
    +--------+--------+
 ```
 
-tmux supports as manys terminals as you want.
+tmux supports as many terminals as you want.
 
 ```{eval-rst}
 .. aafig::
