@@ -209,7 +209,7 @@ a sandwich, and re-(attach), all applications are still running!
 - Programmers like to have an editor open with a CLI nearby.
 
 Applications running on a remote server can be launched inside of a tmux
-session, detached, and reattached next timeyour ["train of
+session, detached, and reattached next time your ["train of
 thought"](http://en.wikipedia.org/wiki/Train_of_thought) and work.
 
 Multitasking. Preserving the thinking you have.
