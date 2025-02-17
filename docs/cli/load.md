@@ -98,7 +98,7 @@ Or (a)ppend windows in the current active session?
 
 All of these options can be preselected to skip the prompt:
 
-- Attach / open client after load:
+- Attach / open the client after load:
 
   ```console
   $ tmuxp load -y config
