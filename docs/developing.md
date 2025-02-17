@@ -105,8 +105,8 @@ $ tmuxp
 
 [pytest] is used for tests.
 
-As you seen above, the `tmuxp` command will now be available to you,
-since you are in the virtual environment, your {}`PATH` environment was
+As you've seen above, the `tmuxp` command will now be available to you,
+since you are in the virtual environment, your `PATH` environment was
 updated to include a special version of `python` inside your `.venv`
 folder with its own packages.
 
@@ -248,7 +248,7 @@ This requires [`entr(1)`].
 
 :::
 
-Install [entr]. Packages are available available on most Linux and BSD
+Install [entr]. Packages are available on most Linux and BSD
 variants, including Debian, Ubuntu, FreeBSD, OS X.
 
 To run all tests upon editing any `.py` file:

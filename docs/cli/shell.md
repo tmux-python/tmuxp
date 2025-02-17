@@ -24,7 +24,7 @@ $ tmuxp shell -c 'python code'
 
 ## Guide
 
-Launch into a python console with [libtmux] objects. Compare to django's shell.
+Launch into a Python console with [libtmux] objects. Compare to django's shell.
 
 Automatically preloads current tmux {class}`server <libtmux.Server>`,
 {class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`

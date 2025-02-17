@@ -8,7 +8,7 @@
 
 tmuxp helps you manage tmux workspaces.
 
-Built on a object relational mapper for tmux. tmux users can reload common
+Built on an object relational mapper for tmux. tmux users can reload common
 workspaces from YAML, JSON and {py:obj}`dict` workspace files like
 [tmuxinator] and [teamocil].
 
@@ -46,7 +46,7 @@ tmuxinator may have support for earlier versions.
 
 ### Differences
 
-**Programming Language** python. teamocil and tmuxinator uses ruby.
+**Programming Language** python. teamocil and tmuxinator use ruby.
 
 **Workspace building process** teamocil and tmuxinator process configs
 directly shell commands. tmuxp processes configuration via ORM layer.
