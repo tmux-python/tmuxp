@@ -28,6 +28,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 ### Development
 
 - CI: Check for runtime dependencies (#965)
+- libtmux: Bump minimum version from 0.42.0 -> 0.44.2 (#962)
 - Tests: Improve parametrized test suite (#964)
 
   Convert remaining `pytest.mark.parametrize()` tests to `NamedTuple` fixtures:
