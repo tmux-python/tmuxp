@@ -21,6 +21,22 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Future release notes will be placed here_
 
+### Development
+
+- Tests: Improve parametrized test suite (#964)
+
+  Convert remaining `pytest.mark.parametrize()` tests to `NamedTuple` fixtures:
+
+  - Improved test maintainability and readability
+  - Added descriptive test IDs for better failure reporting
+  - Added docstrings to test fixtures
+  - Files updated:
+    - `test_cli.py`: Added `HelpTestFixture`
+    - `test_convert.py`: Added `ConvertTestFixture` and `ConvertJsonTestFixture`
+    - `test_freeze.py`: Added `FreezeTestFixture` and `FreezeOverwriteTestFixture`
+    - `test_import.py`: Added `ImportTestFixture`, `ImportTeamocilTestFixture`, and `ImportTmuxinatorTestFixture`
+    - `test_load.py`: Added `ZshAutotitleTestFixture`, `LogFileTestFixture`, `PluginVersionTestFixture`, and `PluginMissingTestFixture`
+
 ## tmuxp 1.52.2 (2025-02-02)
 
 ### Bug fixes
