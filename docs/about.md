@@ -46,7 +46,7 @@ tmuxinator may have support for earlier versions.
 
 ### Differences
 
-**Programming Language** python. teamocil and tmuxinator uses ruby.
+**Programming Language** python. teamocil and tmuxinator use ruby.
 
 **Workspace building process** teamocil and tmuxinator process configs
 directly shell commands. tmuxp processes configuration via ORM layer.
