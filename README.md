@@ -79,7 +79,7 @@ windows:
           - ls -al | grep \.log
       - echo second pane # pane no. 2
       - echo third pane # pane no. 3
-      - echo forth pane # pane no. 4
+      - echo fourth pane # pane no. 4
 ```
 
 Save as _mysession.yaml_, and load:
