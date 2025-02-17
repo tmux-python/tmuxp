@@ -17,23 +17,68 @@ if t.TYPE_CHECKING:
     from libtmux.server import Server
 
 
+class FreezeTestFixture(t.NamedTuple):
+    """Test fixture for tmuxp freeze command tests."""
+
+    test_id: str
+    cli_args: list[str]
+    inputs: list[str]
+
+
+class FreezeOverwriteTestFixture(t.NamedTuple):
+    """Test fixture for tmuxp freeze overwrite command tests."""
+
+    test_id: str
+    cli_args: list[str]
+    inputs: list[str]
+
+
+FREEZE_TEST_FIXTURES: list[FreezeTestFixture] = [
+    FreezeTestFixture(
+        test_id="freeze_named_session",
+        cli_args=["freeze", "myfrozensession"],
+        inputs=["y\n", "./la.yaml\n", "y\n"],
+    ),
+    FreezeTestFixture(
+        test_id="freeze_named_session_exists",
+        cli_args=["freeze", "myfrozensession"],
+        inputs=["y\n", "./exists.yaml\n", "./la.yaml\n", "y\n"],
+    ),
+    FreezeTestFixture(
+        test_id="freeze_current_session",
+        cli_args=["freeze"],
+        inputs=["y\n", "./la.yaml\n", "y\n"],
+    ),
+    FreezeTestFixture(
+        test_id="freeze_current_session_exists",
+        cli_args=["freeze"],
+        inputs=["y\n", "./exists.yaml\n", "./la.yaml\n", "y\n"],
+    ),
+]
+
+
+FREEZE_OVERWRITE_TEST_FIXTURES: list[FreezeOverwriteTestFixture] = [
+    FreezeOverwriteTestFixture(
+        test_id="force_overwrite_named_session",
+        cli_args=["freeze", "mysession", "--force"],
+        inputs=["\n", "\n", "y\n", "./exists.yaml\n", "y\n"],
+    ),
+    FreezeOverwriteTestFixture(
+        test_id="force_overwrite_current_session",
+        cli_args=["freeze", "--force"],
+        inputs=["\n", "\n", "y\n", "./exists.yaml\n", "y\n"],
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ("cli_args", "inputs"),
-    [
-        (["freeze", "myfrozensession"], ["y\n", "./la.yaml\n", "y\n"]),
-        (  # Exists
-            ["freeze", "myfrozensession"],
-            ["y\n", "./exists.yaml\n", "./la.yaml\n", "y\n"],
-        ),
-        (  # Imply current session if not entered
-            ["freeze"],
-            ["y\n", "./la.yaml\n", "y\n"],
-        ),
-        (["freeze"], ["y\n", "./exists.yaml\n", "./la.yaml\n", "y\n"]),  # Exists
-    ],
+    list(FreezeTestFixture._fields),
+    FREEZE_TEST_FIXTURES,
+    ids=[test.test_id for test in FREEZE_TEST_FIXTURES],
 )
 def test_freeze(
     server: Server,
+    test_id: str,
     cli_args: list[str],
     inputs: list[str],
     tmp_path: pathlib.Path,
@@ -72,20 +117,13 @@ def test_freeze(
 
 
 @pytest.mark.parametrize(
-    ("cli_args", "inputs"),
-    [
-        (  # Overwrite
-            ["freeze", "mysession", "--force"],
-            ["\n", "\n", "y\n", "./exists.yaml\n", "y\n"],
-        ),
-        (  # Imply current session if not entered
-            ["freeze", "--force"],
-            ["\n", "\n", "y\n", "./exists.yaml\n", "y\n"],
-        ),
-    ],
+    list(FreezeOverwriteTestFixture._fields),
+    FREEZE_OVERWRITE_TEST_FIXTURES,
+    ids=[test.test_id for test in FREEZE_OVERWRITE_TEST_FIXTURES],
 )
 def test_freeze_overwrite(
     server: Server,
+    test_id: str,
     cli_args: list[str],
     inputs: list[str],
     tmp_path: pathlib.Path,

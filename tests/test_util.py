@@ -51,17 +51,38 @@ exit 0
     return script
 
 
+class TTYTestFixture(t.NamedTuple):
+    """Test fixture for isatty behavior verification."""
+
+    test_id: str
+    isatty_value: bool
+    expected_output: str
+
+
+TTY_TEST_FIXTURES: list[TTYTestFixture] = [
+    TTYTestFixture(
+        test_id="tty_enabled_shows_output",
+        isatty_value=True,
+        expected_output="Hello, World!",
+    ),
+    TTYTestFixture(
+        test_id="tty_disabled_suppresses_output",
+        isatty_value=False,
+        expected_output="",
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ["isatty_value", "expected_output"],
-    [
-        (True, "Hello, World!"),  # if stdout is a TTY, output should be passed through
-        (False, ""),  # if not a TTY, output is not written to sys.stdout
-    ],
+    list(TTYTestFixture._fields),
+    TTY_TEST_FIXTURES,
+    ids=[test.test_id for test in TTY_TEST_FIXTURES],
 )
 def test_run_before_script_isatty(
     temp_script: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
+    test_id: str,
     isatty_value: bool,
     expected_output: str,
 ) -> None:

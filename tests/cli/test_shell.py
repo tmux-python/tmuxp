@@ -25,6 +25,7 @@ class CLIShellFixture(t.NamedTuple):
     test_id: str
 
     # test params
+    cli_cmd: list[str]
     cli_args: list[str]
     inputs: list[t.Any]
     env: dict[str, str]
@@ -32,8 +33,10 @@ class CLIShellFixture(t.NamedTuple):
 
 
 TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
+    # Regular shell command
     CLIShellFixture(
         test_id="print-socket-name",
+        cli_cmd=["shell"],
         cli_args=["-L{SOCKET_NAME}", "-c", "print(str(server.socket_name))"],
         inputs=[],
         env={},
@@ -41,6 +44,7 @@ TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
     ),
     CLIShellFixture(
         test_id="print-session-name",
+        cli_cmd=["shell"],
         cli_args=[
             "-L{SOCKET_NAME}",
             "{SESSION_NAME}",
@@ -53,6 +57,7 @@ TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
     ),
     CLIShellFixture(
         test_id="print-has-session",
+        cli_cmd=["shell"],
         cli_args=[
             "-L{SOCKET_NAME}",
             "{SESSION_NAME}",
@@ -66,6 +71,7 @@ TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
     ),
     CLIShellFixture(
         test_id="print-window-name",
+        cli_cmd=["shell"],
         cli_args=[
             "-L{SOCKET_NAME}",
             "{SESSION_NAME}",
@@ -79,6 +85,7 @@ TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
     ),
     CLIShellFixture(
         test_id="print-pane-id",
+        cli_cmd=["shell"],
         cli_args=[
             "-L{SOCKET_NAME}",
             "{SESSION_NAME}",
@@ -92,6 +99,83 @@ TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
     ),
     CLIShellFixture(
         test_id="print-pane-id-obeys-tmux-pane-env-var",
+        cli_cmd=["shell"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "-c",
+            "print(pane.id)",
+        ],
+        inputs=[],
+        env={"TMUX_PANE": "{PANE_ID}"},
+        expected_output="{PANE_ID}",
+    ),
+    # Shell with --pdb
+    CLIShellFixture(
+        test_id="print-socket-name-pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=["-L{SOCKET_NAME}", "-c", "print(str(server.socket_name))"],
+        inputs=[],
+        env={},
+        expected_output="{SERVER_SOCKET_NAME}",
+    ),
+    CLIShellFixture(
+        test_id="print-session-name-pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "-c",
+            "print(session.name)",
+        ],
+        inputs=[],
+        env={},
+        expected_output="{SESSION_NAME}",
+    ),
+    CLIShellFixture(
+        test_id="print-has-session-pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "{WINDOW_NAME}",
+            "-c",
+            "print(server.has_session(session.name))",
+        ],
+        inputs=[],
+        env={},
+        expected_output="True",
+    ),
+    CLIShellFixture(
+        test_id="print-window-name-pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "{WINDOW_NAME}",
+            "-c",
+            "print(window.name)",
+        ],
+        inputs=[],
+        env={},
+        expected_output="{WINDOW_NAME}",
+    ),
+    CLIShellFixture(
+        test_id="print-pane-id-pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "{WINDOW_NAME}",
+            "-c",
+            "print(pane.id)",
+        ],
+        inputs=[],
+        env={},
+        expected_output="{PANE_ID}",
+    ),
+    CLIShellFixture(
+        test_id="print-pane-id-obeys-tmux-pane-env-var-pdb",
+        cli_cmd=["shell", "--pdb"],
         cli_args=[
             "-L{SOCKET_NAME}",
             "-c",
@@ -104,15 +188,14 @@ TEST_SHELL_FIXTURES: list[CLIShellFixture] = [
 ]
 
 
-@pytest.mark.parametrize("cli_cmd", [["shell"], ["shell", "--pdb"]])
 @pytest.mark.parametrize(
     list(CLIShellFixture._fields),
     TEST_SHELL_FIXTURES,
     ids=[test.test_id for test in TEST_SHELL_FIXTURES],
 )
 def test_shell(
-    cli_cmd: list[str],
     test_id: str,
+    cli_cmd: list[str],
     cli_args: list[str],
     inputs: list[t.Any],
     env: dict[str, str],
@@ -151,54 +234,114 @@ def test_shell(
     assert expected_output.format(**template_ctx) in result.out
 
 
+class CLIShellTargetMissingFixture(t.NamedTuple):
+    """Test fixture for tmuxp shell target missing tests."""
+
+    test_id: str
+    cli_cmd: list[str]
+    cli_args: list[str]
+    inputs: list[t.Any]
+    env: dict[t.Any, t.Any]
+    template_ctx: dict[str, str]
+    exception: type[exc.TmuxpException | subprocess.CalledProcessError]
+    message: str
+
+
+TEST_SHELL_TARGET_MISSING_FIXTURES: list[CLIShellTargetMissingFixture] = [
+    # Regular shell command
+    CLIShellTargetMissingFixture(
+        test_id="nonexistent_socket",
+        cli_cmd=["shell"],
+        cli_args=["-LDoesNotExist", "-c", "print(str(server.socket_name))"],
+        inputs=[],
+        env={},
+        template_ctx={},
+        exception=subprocess.CalledProcessError,
+        message=r".*DoesNotExist.*",
+    ),
+    CLIShellTargetMissingFixture(
+        test_id="nonexistent_session",
+        cli_cmd=["shell"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "nonexistent_session",
+            "-c",
+            "print(str(server.socket_name))",
+        ],
+        inputs=[],
+        env={},
+        template_ctx={"session_name": "nonexistent_session"},
+        exception=exc.TmuxpException,
+        message="Session not found: nonexistent_session",
+    ),
+    CLIShellTargetMissingFixture(
+        test_id="nonexistent_window",
+        cli_cmd=["shell"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "nonexistent_window",
+            "-c",
+            "print(str(server.socket_name))",
+        ],
+        inputs=[],
+        env={},
+        template_ctx={"window_name": "nonexistent_window"},
+        exception=exc.TmuxpException,
+        message="Window not found: {WINDOW_NAME}",
+    ),
+    # Shell with --pdb
+    CLIShellTargetMissingFixture(
+        test_id="nonexistent_socket_pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=["-LDoesNotExist", "-c", "print(str(server.socket_name))"],
+        inputs=[],
+        env={},
+        template_ctx={},
+        exception=subprocess.CalledProcessError,
+        message=r".*DoesNotExist.*",
+    ),
+    CLIShellTargetMissingFixture(
+        test_id="nonexistent_session_pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "nonexistent_session",
+            "-c",
+            "print(str(server.socket_name))",
+        ],
+        inputs=[],
+        env={},
+        template_ctx={"session_name": "nonexistent_session"},
+        exception=exc.TmuxpException,
+        message="Session not found: nonexistent_session",
+    ),
+    CLIShellTargetMissingFixture(
+        test_id="nonexistent_window_pdb",
+        cli_cmd=["shell", "--pdb"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+            "{SESSION_NAME}",
+            "nonexistent_window",
+            "-c",
+            "print(str(server.socket_name))",
+        ],
+        inputs=[],
+        env={},
+        template_ctx={"window_name": "nonexistent_window"},
+        exception=exc.TmuxpException,
+        message="Window not found: {WINDOW_NAME}",
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "cli_cmd",
-    [
-        ["shell"],
-        ["shell", "--pdb"],
-    ],
-)
-@pytest.mark.parametrize(
-    ("cli_args", "inputs", "env", "template_ctx", "exception", "message"),
-    [
-        (
-            ["-LDoesNotExist", "-c", "print(str(server.socket_name))"],
-            [],
-            {},
-            {},
-            subprocess.CalledProcessError,
-            r".*DoesNotExist.*",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "nonexistent_session",
-                "-c",
-                "print(str(server.socket_name))",
-            ],
-            [],
-            {},
-            {"session_name": "nonexistent_session"},
-            exc.TmuxpException,
-            "Session not found: nonexistent_session",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-                "{SESSION_NAME}",
-                "nonexistent_window",
-                "-c",
-                "print(str(server.socket_name))",
-            ],
-            [],
-            {},
-            {"window_name": "nonexistent_window"},
-            exc.TmuxpException,
-            "Window not found: {WINDOW_NAME}",
-        ),
-    ],
+    list(CLIShellTargetMissingFixture._fields),
+    TEST_SHELL_TARGET_MISSING_FIXTURES,
+    ids=[test.test_id for test in TEST_SHELL_TARGET_MISSING_FIXTURES],
 )
 def test_shell_target_missing(
+    test_id: str,
     cli_cmd: list[str],
     cli_args: list[str],
     inputs: list[t.Any],
@@ -206,7 +349,6 @@ def test_shell_target_missing(
     template_ctx: dict[str, str],
     exception: type[exc.TmuxpException | subprocess.CalledProcessError],
     message: str,
-    socket_name: str,
     server: Server,
     session: Session,
     tmp_path: pathlib.Path,
@@ -245,40 +387,48 @@ def test_shell_target_missing(
         assert message.format(**template_ctx) in result.out
 
 
+class CLIShellInteractiveFixture(t.NamedTuple):
+    """Test fixture for tmuxp shell interactive tests."""
+
+    test_id: str
+    cli_cmd: list[str]
+    cli_args: list[str]
+    inputs: list[t.Any]
+    env: dict[str, str]
+    message: str
+
+
+TEST_SHELL_INTERACTIVE_FIXTURES: list[CLIShellInteractiveFixture] = [
+    CLIShellInteractiveFixture(
+        test_id="basic_interactive",
+        cli_cmd=["shell", "--code"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+        ],
+        inputs=[],
+        env={},
+        message="(InteractiveConsole)",
+    ),
+    CLIShellInteractiveFixture(
+        test_id="interactive_with_pane_id",
+        cli_cmd=["shell", "--code"],
+        cli_args=[
+            "-L{SOCKET_NAME}",
+        ],
+        inputs=[],
+        env={"PANE_ID": "{PANE_ID}"},
+        message="(InteractiveConsole)",
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "cli_cmd",
-    [
-        # ['shell'],
-        # ['shell', '--pdb'),
-        ["shell", "--code"],
-        # ['shell', '--bpython'],
-        # ['shell', '--ptipython'],
-        # ['shell', '--ptpython'],
-        # ['shell', '--ipython'],
-    ],
-)
-@pytest.mark.parametrize(
-    ("cli_args", "inputs", "env", "message"),
-    [
-        (
-            [
-                "-L{SOCKET_NAME}",
-            ],
-            [],
-            {},
-            "(InteractiveConsole)",
-        ),
-        (
-            [
-                "-L{SOCKET_NAME}",
-            ],
-            [],
-            {"PANE_ID": "{PANE_ID}"},
-            "(InteractiveConsole)",
-        ),
-    ],
+    list(CLIShellInteractiveFixture._fields),
+    TEST_SHELL_INTERACTIVE_FIXTURES,
+    ids=[test.test_id for test in TEST_SHELL_INTERACTIVE_FIXTURES],
 )
 def test_shell_interactive(
+    test_id: str,
     cli_cmd: list[str],
     cli_args: list[str],
     inputs: list[t.Any],

@@ -11,32 +11,50 @@ from tmuxp._internal import config_reader
 from tmuxp.workspace import importers, validation
 
 
+class TeamocilConfigTestFixture(t.NamedTuple):
+    """Test fixture for teamocil config conversion tests."""
+
+    test_id: str
+    teamocil_yaml: str
+    teamocil_dict: dict[str, t.Any]
+    tmuxp_dict: dict[str, t.Any]
+
+
+TEAMOCIL_CONFIG_TEST_FIXTURES: list[TeamocilConfigTestFixture] = [
+    TeamocilConfigTestFixture(
+        test_id="test1",
+        teamocil_yaml=fixtures.test1.teamocil_yaml,
+        teamocil_dict=fixtures.test1.teamocil_conf,
+        tmuxp_dict=fixtures.test1.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="test2",
+        teamocil_yaml=fixtures.test2.teamocil_yaml,
+        teamocil_dict=fixtures.test2.teamocil_dict,
+        tmuxp_dict=fixtures.test2.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="test3",
+        teamocil_yaml=fixtures.test3.teamocil_yaml,
+        teamocil_dict=fixtures.test3.teamocil_dict,
+        tmuxp_dict=fixtures.test3.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="test4",
+        teamocil_yaml=fixtures.test4.teamocil_yaml,
+        teamocil_dict=fixtures.test4.teamocil_dict,
+        tmuxp_dict=fixtures.test4.expected,
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ("teamocil_yaml", "teamocil_dict", "tmuxp_dict"),
-    [
-        (
-            fixtures.test1.teamocil_yaml,
-            fixtures.test1.teamocil_conf,
-            fixtures.test1.expected,
-        ),
-        (
-            fixtures.test2.teamocil_yaml,
-            fixtures.test2.teamocil_dict,
-            fixtures.test2.expected,
-        ),
-        (
-            fixtures.test3.teamocil_yaml,
-            fixtures.test3.teamocil_dict,
-            fixtures.test3.expected,
-        ),
-        (
-            fixtures.test4.teamocil_yaml,
-            fixtures.test4.teamocil_dict,
-            fixtures.test4.expected,
-        ),
-    ],
+    list(TeamocilConfigTestFixture._fields),
+    TEAMOCIL_CONFIG_TEST_FIXTURES,
+    ids=[test.test_id for test in TEAMOCIL_CONFIG_TEST_FIXTURES],
 )
 def test_config_to_dict(
+    test_id: str,
     teamocil_yaml: str,
     teamocil_dict: dict[str, t.Any],
     tmuxp_dict: dict[str, t.Any],
@@ -71,22 +89,45 @@ def multisession_config() -> dict[
     return teamocil_dict
 
 
+class TeamocilMultiSessionTestFixture(t.NamedTuple):
+    """Test fixture for teamocil multisession config tests."""
+
+    test_id: str
+    session_name: str
+    expected: dict[str, t.Any]
+
+
+TEAMOCIL_MULTISESSION_TEST_FIXTURES: list[TeamocilMultiSessionTestFixture] = [
+    TeamocilMultiSessionTestFixture(
+        test_id="basic_two_windows",
+        session_name="two-windows",
+        expected=fixtures.layouts.two_windows,
+    ),
+    TeamocilMultiSessionTestFixture(
+        test_id="two_windows_with_filters",
+        session_name="two-windows-with-filters",
+        expected=fixtures.layouts.two_windows_with_filters,
+    ),
+    TeamocilMultiSessionTestFixture(
+        test_id="two_windows_with_custom_command_options",
+        session_name="two-windows-with-custom-command-options",
+        expected=fixtures.layouts.two_windows_with_custom_command_options,
+    ),
+    TeamocilMultiSessionTestFixture(
+        test_id="three_windows_within_session",
+        session_name="three-windows-within-a-session",
+        expected=fixtures.layouts.three_windows_within_a_session,
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ("session_name", "expected"),
-    [
-        ("two-windows", fixtures.layouts.two_windows),
-        ("two-windows-with-filters", fixtures.layouts.two_windows_with_filters),
-        (
-            "two-windows-with-custom-command-options",
-            fixtures.layouts.two_windows_with_custom_command_options,
-        ),
-        (
-            "three-windows-within-a-session",
-            fixtures.layouts.three_windows_within_a_session,
-        ),
-    ],
+    list(TeamocilMultiSessionTestFixture._fields),
+    TEAMOCIL_MULTISESSION_TEST_FIXTURES,
+    ids=[test.test_id for test in TEAMOCIL_MULTISESSION_TEST_FIXTURES],
 )
 def test_multisession_config(
+    test_id: str,
     session_name: str,
     expected: dict[str, t.Any],
     multisession_config: dict[str, t.Any],

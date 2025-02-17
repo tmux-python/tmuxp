@@ -31,14 +31,32 @@ def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
     assert tmp_path.exists()
 
 
+class HelpTestFixture(t.NamedTuple):
+    """Test fixture for help command tests."""
+
+    test_id: str
+    cli_args: list[str]
+
+
+HELP_TEST_FIXTURES: list[HelpTestFixture] = [
+    HelpTestFixture(
+        test_id="help_long_flag",
+        cli_args=["--help"],
+    ),
+    HelpTestFixture(
+        test_id="help_short_flag",
+        cli_args=["-h"],
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "cli_args",
-    [
-        (["--help"]),
-        (["-h"]),
-    ],
+    list(HelpTestFixture._fields),
+    HELP_TEST_FIXTURES,
+    ids=[test.test_id for test in HELP_TEST_FIXTURES],
 )
 def test_help(
+    test_id: str,
     cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,

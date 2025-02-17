@@ -359,18 +359,39 @@ def test_regression_00132_session_name_with_dots(
         cli.cli(["load", *cli_args])
 
 
+class ZshAutotitleTestFixture(t.NamedTuple):
+    """Test fixture for zsh auto title warning tests."""
+
+    test_id: str
+    cli_args: list[str]
+
+
+ZSH_AUTOTITLE_TEST_FIXTURES: list[ZshAutotitleTestFixture] = [
+    ZshAutotitleTestFixture(
+        test_id="load_dot_detached",
+        cli_args=["load", ".", "-d"],
+    ),
+    ZshAutotitleTestFixture(
+        test_id="load_yaml_detached",
+        cli_args=["load", ".tmuxp.yaml", "-d"],
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "cli_args",
-    [["load", ".", "-d"], ["load", ".tmuxp.yaml", "-d"]],
+    list(ZshAutotitleTestFixture._fields),
+    ZSH_AUTOTITLE_TEST_FIXTURES,
+    ids=[test.test_id for test in ZSH_AUTOTITLE_TEST_FIXTURES],
 )
 def test_load_zsh_autotitle_warning(
+    test_id: str,
     cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
     server: Server,
 ) -> None:
-    """Test loading ZSH without DISABLE_AUTO_TITLE raises warning."""
+    """Test warning when ZSH auto title is enabled."""
     # create dummy tmuxp yaml so we don't get yelled at
     yaml_config = tmp_path / ".tmuxp.yaml"
     yaml_config.write_text(
@@ -417,19 +438,34 @@ def test_load_zsh_autotitle_warning(
     assert "Please set" not in result.out
 
 
+class LogFileTestFixture(t.NamedTuple):
+    """Test fixture for log file tests."""
+
+    test_id: str
+    cli_args: list[str]
+
+
+LOG_FILE_TEST_FIXTURES: list[LogFileTestFixture] = [
+    LogFileTestFixture(
+        test_id="load_with_log_file",
+        cli_args=["load", ".", "--log-file", "log.txt", "-d"],
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "cli_args",
-    [
-        (["load", ".", "--log-file", "log.txt", "-d"]),
-    ],
+    list(LogFileTestFixture._fields),
+    LOG_FILE_TEST_FIXTURES,
+    ids=[test.test_id for test in LOG_FILE_TEST_FIXTURES],
 )
 def test_load_log_file(
+    test_id: str,
     cli_args: list[str],
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Test loading via tmuxp load with --log-file."""
+    """Test loading with a log file."""
     # create dummy tmuxp yaml that breaks to prevent actually loading tmux
     tmuxp_config_path = tmp_path / ".tmuxp.yaml"
     tmuxp_config_path.write_text(
@@ -478,23 +514,37 @@ def test_load_plugins(
         assert plugin.__class__ in test_plugin_class_types
 
 
+class PluginVersionTestFixture(t.NamedTuple):
+    """Test fixture for plugin version tests."""
+
+    test_id: str
+    cli_args: list[str]
+    inputs: list[str]
+
+
+PLUGIN_VERSION_SKIP_TEST_FIXTURES: list[PluginVersionTestFixture] = [
+    PluginVersionTestFixture(
+        test_id="skip_version_fail",
+        cli_args=["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
+        inputs=["y\n"],
+    ),
+]
+
+
 @pytest.mark.skip("Not sure how to clean up the tmux session this makes")
 @pytest.mark.parametrize(
-    ("cli_args", "inputs"),
-    [
-        (
-            ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
-            ["y\n"],
-        ),
-    ],
+    list(PluginVersionTestFixture._fields),
+    PLUGIN_VERSION_SKIP_TEST_FIXTURES,
+    ids=[test.test_id for test in PLUGIN_VERSION_SKIP_TEST_FIXTURES],
 )
 def test_load_plugins_version_fail_skip(
     monkeypatch_plugin_test_packages: None,
+    test_id: str,
     cli_args: list[str],
     inputs: list[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Test tmuxp load with plugins failing version constraints can continue."""
+    """Test plugin version failure with skip."""
     with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
 
@@ -503,23 +553,29 @@ def test_load_plugins_version_fail_skip(
     assert "[Loading]" in result.out
 
 
+PLUGIN_VERSION_NO_SKIP_TEST_FIXTURES: list[PluginVersionTestFixture] = [
+    PluginVersionTestFixture(
+        test_id="no_skip_version_fail",
+        cli_args=["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
+        inputs=["n\n"],
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ("cli_args", "inputs"),
-    [
-        (
-            ["load", "tests/fixtures/workspace/builder/plugin_versions_fail.yaml"],
-            ["n\n"],
-        ),
-    ],
+    list(PluginVersionTestFixture._fields),
+    PLUGIN_VERSION_NO_SKIP_TEST_FIXTURES,
+    ids=[test.test_id for test in PLUGIN_VERSION_NO_SKIP_TEST_FIXTURES],
 )
 def test_load_plugins_version_fail_no_skip(
     monkeypatch_plugin_test_packages: None,
+    test_id: str,
     cli_args: list[str],
     inputs: list[str],
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Test tmuxp load with plugins failing version constraints can exit."""
+    """Test plugin version failure without skip."""
     monkeypatch.setattr("sys.stdin", io.StringIO("".join(inputs)))
 
     with contextlib.suppress(SystemExit):
@@ -530,16 +586,33 @@ def test_load_plugins_version_fail_no_skip(
     assert "[Not Skipping]" in result.out
 
 
+class PluginMissingTestFixture(t.NamedTuple):
+    """Test fixture for plugin missing tests."""
+
+    test_id: str
+    cli_args: list[str]
+
+
+PLUGIN_MISSING_TEST_FIXTURES: list[PluginMissingTestFixture] = [
+    PluginMissingTestFixture(
+        test_id="missing_plugin",
+        cli_args=["load", "tests/fixtures/workspace/builder/plugin_missing_fail.yaml"],
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "cli_args",
-    [(["load", "tests/fixtures/workspace/builder/plugin_missing_fail.yaml"])],
+    list(PluginMissingTestFixture._fields),
+    PLUGIN_MISSING_TEST_FIXTURES,
+    ids=[test.test_id for test in PLUGIN_MISSING_TEST_FIXTURES],
 )
 def test_load_plugins_plugin_missing(
     monkeypatch_plugin_test_packages: None,
+    test_id: str,
     cli_args: list[str],
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Test tmuxp load with plugins missing raise an error."""
+    """Test loading with missing plugin."""
     with contextlib.suppress(SystemExit):
         cli.cli(cli_args)
 
