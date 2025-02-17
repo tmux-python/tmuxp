@@ -226,7 +226,7 @@ This documentation is written for version **1.8**. It's important that
 you have the latest stable release of tmux. The latest stable version is
 viewable on the [tmux homepage](http://tmux.sourceforge.net/).
 
-**Mac OS X** users may install that latest stable version of tmux
+**Mac OS X** users may install the latest stable version of tmux
 through [MacPorts](http://www.macports.org/),
 [fink](http://fink.thetis.ig42.org/) or [Homebrew](http://www.brew.sh)
 (aka brew).
