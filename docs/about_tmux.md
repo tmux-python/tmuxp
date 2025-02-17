@@ -270,7 +270,7 @@ carefully**, then try it yourself.
 
 First, you press the _prefix_ key. This is `C-b` by default.
 
-Release. Then pause. For less than second. Then type what's next.
+Release. Then pause. For less than a second. Then type what's next.
 
 `C-b o` means: Press `Ctrl` and `b` at the same time. Release, Then
 press `o`.
