@@ -8,7 +8,7 @@
 
 tmuxp helps you manage tmux workspaces.
 
-Built on a object relational mapper for tmux. tmux users can reload common
+Built on an object relational mapper for tmux. tmux users can reload common
 workspaces from YAML, JSON and {py:obj}`dict` workspace files like
 [tmuxinator] and [teamocil].
 
