@@ -105,7 +105,7 @@ $ tmuxp
 
 [pytest] is used for tests.
 
-As you seen above, the `tmuxp` command will now be available to you,
+As you've seen above, the `tmuxp` command will now be available to you,
 since you are in the virtual environment, your `PATH` environment was
 updated to include a special version of `python` inside your `.venv`
 folder with its own packages.
