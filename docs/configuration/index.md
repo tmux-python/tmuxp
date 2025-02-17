@@ -18,7 +18,7 @@ Once you have `tmuxp` installed alongside tmux, you can load a workspace with:
 $ tmuxp load ./path/to/file
 ```
 
-tmuxp will offers to assist when:
+tmuxp will offer to assist when:
 
 - _Session already exists_: tmuxp will prompt you to re-attach. It does this
   by checking if the workspace's `session_name` matches a session already
