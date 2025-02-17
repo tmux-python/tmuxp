@@ -248,7 +248,7 @@ This requires [`entr(1)`].
 
 :::
 
-Install [entr]. Packages are available available on most Linux and BSD
+Install [entr]. Packages are available on most Linux and BSD
 variants, including Debian, Ubuntu, FreeBSD, OS X.
 
 To run all tests upon editing any `.py` file:
