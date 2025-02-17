@@ -254,7 +254,7 @@ This can generate the error "failed to connect to server".
 
 This could be because:
 
-- tmux server has killed its' last session, killing the server.
+- tmux server has killed its last session, killing the server.
 - tmux server has encountered a crash. (tmux is highly stable,
   this will rarely happen)
 - tmux has not be launched yet at all.
