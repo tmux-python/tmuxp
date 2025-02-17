@@ -32,7 +32,7 @@ your tmuxp workspace file.
 
 ## Developing a Plugin
 
-tmuxp expects all plugins to be class within a python submodule named
+tmuxp expects all plugins to be a class within a python submodule named
 `plugin` that is within a python module that is installed in the local
 python environment. A plugin interface is provided by tmuxp to inherit.
 
