@@ -1099,25 +1099,34 @@ def test_find_current_active_pane(
     assert builder.find_current_attached_session() == second_session
 
 
-@pytest.mark.parametrize(
-    ("yaml", "output", "should_see"),
-    [
-        (
-            textwrap.dedent(
-                """
+class WorkspaceEnterFixture(t.NamedTuple):
+    """Test fixture for workspace enter behavior verification."""
+
+    test_id: str
+    yaml: str
+    output: str
+    should_see: bool
+
+
+WORKSPACE_ENTER_FIXTURES: list[WorkspaceEnterFixture] = [
+    WorkspaceEnterFixture(
+        test_id="pane_enter_false_shortform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
     enter: false
     """,
-            ),
-            "___4___",
-            False,
         ),
-        (
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=False,
+    ),
+    WorkspaceEnterFixture(
+        test_id="pane_enter_false_longform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1125,38 +1134,41 @@ windows:
     - echo "___$((1 + 3))___"
     enter: false
     """,
-            ),
-            "___4___",
-            False,
         ),
-        (
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=False,
+    ),
+    WorkspaceEnterFixture(
+        test_id="pane_enter_default_shortform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should execute
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
   """,
-            ),
-            "___4___",
-            True,
         ),
-        (
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=True,
+    ),
+    WorkspaceEnterFixture(
+        test_id="pane_enter_default_longform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should execute
 windows:
 - panes:
   - shell_command:
     - echo "___$((1 + 3))___"
   """,
-            ),
-            "___4___",
-            True,
         ),
-        (
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=True,
+    ),
+    WorkspaceEnterFixture(
+        test_id="pane_command_enter_false_shortform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1164,13 +1176,14 @@ windows:
     - cmd: echo "___$((1 + 3))___"
       enter: false
     """,
-            ),
-            "___4___",
-            False,
         ),
-        (  # NOQA: PT014 RUF100
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=False,
+    ),
+    WorkspaceEnterFixture(  # NOQA: PT014 RUF100
+        test_id="pane_command_enter_false_longform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1178,25 +1191,27 @@ windows:
     - cmd: echo "___$((1 + 3))___"
       enter: false
     """,
-            ),
-            "___4___",
-            False,
         ),
-        (  # NOQA: PT014 RUF100
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=False,
+    ),
+    WorkspaceEnterFixture(  # NOQA: PT014 RUF100
+        test_id="pane_command_enter_default_shortform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should execute
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
   """,
-            ),
-            "___4___",
-            True,
         ),
-        (
-            textwrap.dedent(
-                """
+        output="___4___",
+        should_see=True,
+    ),
+    WorkspaceEnterFixture(
+        test_id="pane_command_enter_default_longform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should execute
 windows:
 - panes:
@@ -1204,26 +1219,23 @@ windows:
     - cmd: echo "other command"
     - cmd: echo "___$((1 + 3))___"
   """,
-            ),
-            "___4___",
-            True,
         ),
-    ],
-    ids=[
-        "pane_enter_false_shortform",
-        "pane_enter_false_longform",
-        "pane_enter_default_shortform",
-        "pane_enter_default_longform",
-        "pane_command_enter_false_shortform",
-        "pane_command_enter_false_longform",
-        "pane_command_enter_default_shortform",
-        "pane_command_enter_default_longform",
-    ],
+        output="___4___",
+        should_see=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(WorkspaceEnterFixture._fields),
+    WORKSPACE_ENTER_FIXTURES,
+    ids=[test.test_id for test in WORKSPACE_ENTER_FIXTURES],
 )
 def test_load_workspace_enter(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
     yaml: str,
     output: str,
     should_see: bool,
@@ -1255,12 +1267,20 @@ def test_load_workspace_enter(
     ), f"Should{' ' if should_see else 'not '} output in captured pane"
 
 
-@pytest.mark.parametrize(
-    ("yaml", "sleep", "output"),
-    [
-        (
-            textwrap.dedent(
-                """
+class WorkspaceSleepFixture(t.NamedTuple):
+    """Test fixture for workspace sleep behavior verification."""
+
+    test_id: str
+    yaml: str
+    sleep: float
+    output: str
+
+
+WORKSPACE_SLEEP_FIXTURES: list[WorkspaceSleepFixture] = [
+    WorkspaceSleepFixture(
+        test_id="command_level_sleep_shortform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1270,13 +1290,14 @@ windows:
     - cmd: echo "___$((1 + 3))___"
       sleep_before: .35
     """,
-            ),
-            0.5,
-            "___4___",
         ),
-        (
-            textwrap.dedent(
-                """
+        sleep=0.5,
+        output="___4___",
+    ),
+    WorkspaceSleepFixture(
+        test_id="command_level_pane_sleep_longform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1286,13 +1307,14 @@ windows:
     - cmd: echo "___$((1 + 3))___"
       sleep_before: .25
     """,
-            ),
-            1.25,
-            "___4___",
         ),
-        (
-            textwrap.dedent(
-                """
+        sleep=1.25,
+        output="___4___",
+    ),
+    WorkspaceSleepFixture(
+        test_id="pane_sleep_shortform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1300,13 +1322,14 @@ windows:
     - cmd: echo "___$((1 + 3))___"
     sleep_before: .5
     """,
-            ),
-            0.5,
-            "___4___",
         ),
-        (
-            textwrap.dedent(
-                """
+        sleep=0.5,
+        output="___4___",
+    ),
+    WorkspaceSleepFixture(
+        test_id="pane_sleep_longform",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 windows:
 - panes:
@@ -1314,13 +1337,14 @@ windows:
     - cmd: echo "___$((1 + 3))___"
     sleep_before: 1
     """,
-            ),
-            1,
-            "___4___",
         ),
-        (
-            textwrap.dedent(
-                """
+        sleep=1,
+        output="___4___",
+    ),
+    WorkspaceSleepFixture(
+        test_id="shell_before_before_command_level",
+        yaml=textwrap.dedent(
+            """
 session_name: Should not execute
 shell_command_before:
   - cmd: echo "sleeping before"
@@ -1329,26 +1353,26 @@ windows:
 - panes:
   - echo "___$((1 + 3))___"
     """,
-            ),
-            0.5,
-            "___4___",
         ),
-    ],
-    ids=[
-        "command_level_sleep_shortform",
-        "command_level_pane_sleep_longform",
-        "pane_sleep_shortform",
-        "pane_sleep_longform",
-        "shell_before_before_command_level",
-    ],
+        sleep=0.5,
+        output="___4___",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(WorkspaceSleepFixture._fields),
+    WORKSPACE_SLEEP_FIXTURES,
+    ids=[test.test_id for test in WORKSPACE_SLEEP_FIXTURES],
 )
 @pytest.mark.flaky(reruns=3)
 def test_load_workspace_sleep(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
     yaml: str,
-    sleep: int,
+    sleep: float,
     output: str,
 ) -> None:
     """Test sleep commands in tmuxp configuration."""
