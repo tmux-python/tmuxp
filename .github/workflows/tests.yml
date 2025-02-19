@@ -29,6 +29,17 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      - name: Test runtime dependencies
+        run: |
+          uv run --no-dev -p python${{ matrix.python-version }} -- python -c '
+          from tmuxp import _internal, cli, workspace, exc, log, plugin, shell, types, util, __version__
+          from tmuxp._internal import config_reader, types
+          from tmuxp.workspace import builder, constants, finders, freezer, importers, loader, validation
+          from libtmux import __version__ as __libtmux_version__
+          print("tmuxp version:", __version__)
+          print("libtmux version:", __libtmux_version__)
+          '
+
       - name: Install dependencies
         run: uv sync --all-extras --dev
 

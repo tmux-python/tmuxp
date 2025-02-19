@@ -21,8 +21,13 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Future release notes will be placed here_
 
+### Bug fixes
+
+- Fix import type unavailable at runtime (#965)
+
 ### Development
 
+- CI: Check for runtime dependencies (#965)
 - Tests: Improve parametrized test suite (#964)
 
   Convert remaining `pytest.mark.parametrize()` tests to `NamedTuple` fixtures:

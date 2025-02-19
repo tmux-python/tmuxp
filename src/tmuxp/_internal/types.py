@@ -12,7 +12,16 @@ bundled with tmuxp. Usage example:
 
 from __future__ import annotations
 
-from typing_extensions import NotRequired, TypedDict
+import typing as t
+from typing import TypedDict
+
+if t.TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import NotRequired
+    else:
+        from typing_extensions import NotRequired
 
 
 class PluginConfigSchema(TypedDict):
