@@ -1,6 +1,6 @@
 [project]
 name = "tmuxp"
-version = "1.52.2"
+version = "1.53.0"
 description = "Session manager for tmux, which allows users to save and load tmux sessions through simple configuration files."
 requires-python = ">=3.9,<4.0"
 authors = [
