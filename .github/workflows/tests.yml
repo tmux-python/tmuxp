@@ -34,6 +34,7 @@ jobs:
           uv run --no-dev -p python${{ matrix.python-version }} -- python -c '
           from tmuxp import _internal, cli, workspace, exc, log, plugin, shell, types, util, __version__
           from tmuxp._internal import config_reader, types
+          from tmuxp.cli import convert, debug_info, edit, freeze, import_config, load, ls, shell, utils
           from tmuxp.workspace import builder, constants, finders, freezer, importers, loader, validation
           from libtmux import __version__ as __libtmux_version__
           print("tmuxp version:", __version__)
