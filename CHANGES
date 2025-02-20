@@ -21,6 +21,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Future release notes will be placed here_
 
+### Development
+
+- CI: Check CLI modules runtime dependencies (#967)
+
+  An extra set of checks on top of #965.
+
 ## tmuxp 1.53.0 (2025-02-19)
 
 ### Bug fixes
