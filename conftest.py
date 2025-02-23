@@ -18,7 +18,7 @@ import typing as t
 
 import pytest
 from _pytest.doctest import DoctestItem
-from libtmux.test import namer
+from libtmux.test.random import namer
 
 from tests.fixtures import utils as test_utils
 from tmuxp.workspace.finders import get_workspace_dir

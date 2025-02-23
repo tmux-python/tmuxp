@@ -5,7 +5,8 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from libtmux.test import get_test_session_name, temp_session
+from libtmux.test.random import get_test_session_name
+from libtmux.test.temporary import temp_session
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server

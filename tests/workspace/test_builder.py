@@ -16,7 +16,8 @@ from libtmux.common import has_gte_version, has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
-from libtmux.test import retry_until, temp_session
+from libtmux.test.retry import retry_until
+from libtmux.test.temporary import temp_session
 from libtmux.window import Window
 
 from tests.constants import EXAMPLE_PATH, FIXTURE_PATH

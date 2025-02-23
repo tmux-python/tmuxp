@@ -21,6 +21,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Future release notes will be placed here_
 
+### Breaking changes
+
+- libtmux: Bump minimum version from 0.44.2 -> 0.45.0 (#968)
+
+  0.45.0+ needs this release of tmuxp to stay up-to-date with test helpers.
+
 ### Development
 
 - CI: Check CLI modules runtime dependencies (#967)
