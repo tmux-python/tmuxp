@@ -114,7 +114,41 @@
 
 <pytest_testing_guidelines>
 - Use fixtures from conftest.py instead of monkeypatch and MagicMock when available
-- For instance, if using libtmux, use provided fixtures: server, session, window, and pane
+- For libtmux tests, use these provided fixtures for fast, efficient tmux resource management:
+  - `server`: Creates a temporary tmux server with isolated socket
+  - `session`: Creates a temporary tmux session in the server
+  - `window`: Creates a temporary tmux window in the session
+  - `pane`: Creates a temporary tmux pane in the pane
+  - `TestServer`: Factory for creating multiple independent servers with unique socket names
+- Example usage with server fixture:
+  ```python
+  def test_something_with_server(server):
+      # server is already running with proper configuration
+      my_session = server.new_session("test-session")
+      assert server.is_alive()
+  ```
+- Example usage with session fixture:
+  ```python
+  def test_something_with_session(session):
+      # session is already created and configured
+      new_window = session.new_window("test-window")
+      assert new_window in session.windows
+  ```
+- Customize session parameters by overriding the session_params fixture:
+  ```python
+  @pytest.fixture
+  def session_params():
+      return {
+          'x': 800,
+          'y': 600,
+          'window_name': 'custom-window'
+      }
+  ```
+- Benefits of using libtmux fixtures:
+  - No need to manually set up and tear down tmux infrastructure
+  - Tests run in isolated tmux environments
+  - Faster test execution
+  - Reliable test environment with predictable configuration
 - Document in test docstrings why standard fixtures weren't used for exceptional cases
 - Use tmp_path (pathlib.Path) fixture over Python's tempfile
 - Use monkeypatch fixture over unittest.mock
