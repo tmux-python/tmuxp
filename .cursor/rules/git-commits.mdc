@@ -1,0 +1,95 @@
+---
+description: git-commits: Git commit message standards and AI assistance
+globs: git-commits: Git commit message standards and AI assistance | *.git/* .gitignore .github/* CHANGELOG.md CHANGES.md
+alwaysApply: true
+---
+# Optimized Git Commit Standards
+
+## Commit Message Format
+```
+Component/File(commit-type[Subcomponent/method]): Concise description
+
+why: Explanation of necessity or impact.
+what:
+- Specific technical changes made
+- Focused on a single topic
+
+refs: #issue-number, breaking changes, or relevant links
+```
+
+## Component Patterns
+### General Code Changes
+```
+Component/File(feat[method]): Add feature
+Component/File(fix[method]): Fix bug
+Component/File(refactor[method]): Code restructure
+```
+
+### Packages and Dependencies
+| Language   | Standard Packages                  | Dev Packages                  | Extras / Sub-packages                          |
+|------------|------------------------------------|-------------------------------|-----------------------------------------------|
+| General    | `lang(deps):`                      | `lang(deps[dev]):`            |                                               |
+| Python     | `py(deps):`                        | `py(deps[dev]):`              | `py(deps[extra]):`                            |
+| JavaScript | `js(deps):`                        | `js(deps[dev]):`              | `js(deps[subpackage]):`, `js(deps[dev{subpackage}]):` |
+
+#### Examples
+- `py(deps[dev]): Update pytest to v8.1`
+- `js(deps[ui-components]): Upgrade Button component package`
+- `js(deps[dev{linting}]): Add ESLint plugin`
+
+### Documentation Changes
+Prefix with `docs:`
+```
+docs(Component/File[Subcomponent/method]): Update API usage guide
+```
+
+### Test Changes
+Prefix with `tests:`
+```
+tests(Component/File[Subcomponent/method]): Add edge case tests
+```
+
+## Commit Types Summary
+- **feat**: New features or enhancements
+- **fix**: Bug fixes
+- **refactor**: Code restructuring without functional change
+- **docs**: Documentation updates
+- **chore**: Maintenance (dependencies, tooling, config)
+- **test**: Test-related updates
+- **style**: Code style and formatting
+
+## General Guidelines
+- Subject line: Maximum 50 characters
+- Body lines: Maximum 72 characters
+- Use imperative mood (e.g., "Add", "Fix", not "Added", "Fixed")
+- Limit to one topic per commit
+- Separate subject from body with a blank line
+- Mark breaking changes clearly: `BREAKING:`
+- Use `See also:` to provide external references
+
+## AI Assistance Workflow in Cursor
+- Stage changes with `git add`
+- Use `@commit` to generate initial commit message
+- Review and refine generated message
+- Ensure adherence to these standards
+
+## Good Commit Example
+```
+Pane(feat[capture_pane]): Add screenshot capture support
+
+why: Provide visual debugging capability
+what:
+- Implement capturePane method with image export
+- Integrate with existing Pane component logic
+- Document usage in Pane README
+
+refs: #485
+See also: https://example.com/docs/pane-capture
+```
+
+## Bad Commit Example
+```
+fixed stuff and improved some functions
+```
+
+These guidelines ensure clear, consistent commit histories, facilitating easier code review and maintenance.
