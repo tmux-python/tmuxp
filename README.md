@@ -49,13 +49,13 @@ Developmental releases:
 - [pip](https://pip.pypa.io/en/stable/):
 
   ```console
-  $ pip install --user --upgrade --pre tmuxp
+  pip install --user --upgrade --pre tmuxp
   ```
 
 - [pipx](https://pypa.github.io/pipx/docs/):
 
   ```console
-  $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
+  pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
   ```
 
   Then use `tmuxp@next load [session]`.
@@ -85,25 +85,25 @@ windows:
 Save as _mysession.yaml_, and load:
 
 ```console
-$ tmuxp load ./mysession.yaml
+tmuxp load ./mysession.yaml
 ```
 
 Projects with _.tmuxp.yaml_ or _.tmuxp.json_ load via directory:
 
 ```console
-$ tmuxp load path/to/my/project/
+tmuxp load path/to/my/project/
 ```
 
 Load multiple at once (in bg, offer to attach last):
 
 ```console
-$ tmuxp load mysession ./another/project/
+tmuxp load mysession ./another/project/
 ```
 
 Name a session:
 
 ```console
-$ tmuxp load -s session_name ./mysession.yaml
+tmuxp load -s session_name ./mysession.yaml
 ```
 
 [simple](http://tmuxp.git-pull.com/examples.html#short-hand-inline) and
