@@ -55,7 +55,6 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     if "socket_name" in workspace_dict:
         tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
 
-
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
@@ -92,12 +91,8 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
         for k, v in window_item.items():
             new_window: WindowConfig = {"window_name": k}
 
-            if isinstance(v, str):
+            if isinstance(v, str) or v is None:
                 new_window["panes"] = [v]
-                tmuxp_workspace["windows"].append(new_window)
-                continue
-            if v is None:
-                new_window["panes"] = [""]  # Empty pane
                 tmuxp_workspace["windows"].append(new_window)
                 continue
             if isinstance(v, list):
@@ -153,20 +148,17 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     if "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
 
-
     for w in workspace_dict["windows"]:
         window_dict: WindowConfig = {"window_name": w["name"]}
 
         if "clear" in w:
-            # TODO: handle clear attribute
-            pass
+            window_dict["clear"] = w["clear"]
 
         if "filters" in w:
             if "before" in w["filters"]:
                 window_dict["shell_command_before"] = w["filters"]["before"]
             if "after" in w["filters"]:
-                # TODO: handle shell_command_after
-                pass
+                window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:
             window_dict["start_directory"] = w.pop("root")

@@ -59,9 +59,10 @@ class PaneConfig(TypedDict, total=False):
     environment: NotRequired[dict[str, str]]
     focus: NotRequired[str | bool]
     suppress_history: NotRequired[bool]
+    target: NotRequired[str]
 
 
-PaneValue = t.Union[str, PaneConfig]
+PaneValue = t.Union[str, PaneConfig, None]
 
 
 class WindowConfig(TypedDict, total=False):
@@ -70,7 +71,9 @@ class WindowConfig(TypedDict, total=False):
     window_name: str
     start_directory: NotRequired[str]
     shell_command_before: NotRequired[ShellCommandValue]
+    shell_command_after: NotRequired[ShellCommandValue]
     layout: NotRequired[str]
+    clear: NotRequired[bool]
     options: NotRequired[dict[str, t.Any]]
     options_after: NotRequired[dict[str, t.Any]]
     environment: NotRequired[dict[str, str]]

@@ -134,7 +134,7 @@ def create_import_subparser(
 class ImportConfigFn(t.Protocol):
     """Typing for import configuration callback function."""
 
-    def __call__(self, workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+    def __call__(self, workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
         """Execute tmuxp import function."""
         ...
 
@@ -146,7 +146,9 @@ def import_config(
 ) -> None:
     """Import a configuration from a workspace_file."""
     existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
-    cfg_reader = ConfigReader(importfunc(existing_workspace_file))
+    cfg_reader = ConfigReader(
+        t.cast(dict[t.Any, t.Any], importfunc(existing_workspace_file))
+    )
 
     workspace_file_format = prompt_choices(
         "Convert to",
