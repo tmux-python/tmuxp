@@ -17,6 +17,8 @@ from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 if t.TYPE_CHECKING:
     import argparse
 
+    from tmuxp._internal.types import WorkspaceConfig
+
 
 def get_tmuxinator_dir() -> pathlib.Path:
     """Return tmuxinator configuration directory.

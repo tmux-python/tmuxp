@@ -23,7 +23,7 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     dict
         A dictionary conforming to WorkspaceConfig structure.
     """
-    tmuxp_workspace: WorkspaceConfig = {"windows": []}  # type: ignore[typeddict-item]
+    tmuxp_workspace: WorkspaceConfig = {"session_name": None, "windows": []}
 
     if "project_name" in workspace_dict:
         tmuxp_workspace["session_name"] = workspace_dict.pop("project_name")
@@ -75,6 +75,15 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
             tmuxp_workspace["shell_command_before"] = []
+        else:
+            # Ensure shell_command_before is a list
+            current = tmuxp_workspace["shell_command_before"]
+            if isinstance(current, str):
+                tmuxp_workspace["shell_command_before"] = [current]
+            elif isinstance(current, dict):
+                tmuxp_workspace["shell_command_before"] = [current]
+        # Now we can safely append
+        assert isinstance(tmuxp_workspace["shell_command_before"], list)
         tmuxp_workspace["shell_command_before"].append(
             "rbenv shell {}".format(workspace_dict["rbenv"]),
         )
@@ -83,8 +92,12 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
         for k, v in window_item.items():
             new_window: WindowConfig = {"window_name": k}
 
-            if isinstance(v, str) or v is None:
+            if isinstance(v, str):
                 new_window["panes"] = [v]
+                tmuxp_workspace["windows"].append(new_window)
+                continue
+            if v is None:
+                new_window["panes"] = [""]  # Empty pane
                 tmuxp_workspace["windows"].append(new_window)
                 continue
             if isinstance(v, list):
@@ -130,7 +143,7 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     - clear
     - cmd_separator
     """
-    tmuxp_workspace: WorkspaceConfig = {"windows": []}  # type: ignore[typeddict-item]
+    tmuxp_workspace: WorkspaceConfig = {"session_name": None, "windows": []}
 
     if "session" in workspace_dict:
         workspace_dict = workspace_dict["session"]
