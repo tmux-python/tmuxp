@@ -68,7 +68,7 @@ class AafigError(SphinxError):
     category = "aafig error"
 
 
-class AafigDirective(images.Image):  # type:ignore
+class AafigDirective(images.Image):
     """Directive to insert an ASCII art figure to be rendered by aafigure."""
 
     has_content = True
@@ -82,7 +82,9 @@ class AafigDirective(images.Image):  # type:ignore
         "textual": flag,
         "proportional": flag,
     }
-    option_spec = images.Image.option_spec.copy()
+    option_spec = (
+        images.Image.option_spec.copy() if images.Image.option_spec is not None else {}
+    )
     option_spec.update(own_option_spec)
 
     def run(self) -> list[nodes.Node]:
@@ -103,7 +105,7 @@ class AafigDirective(images.Image):  # type:ignore
         if isinstance(image_node, nodes.system_message):
             return [image_node]
         text = "\n".join(self.content)
-        image_node.aafig = {"options": aafig_options, "text": text}
+        image_node.aafig = {"options": aafig_options, "text": text}  # type: ignore[attr-defined]
         return [image_node]
 
 
