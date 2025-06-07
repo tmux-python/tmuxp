@@ -718,7 +718,10 @@ def test_pane_order(session: Session) -> None:
 
     for w in session.windows:
         pane_base_index = w.show_window_option("pane-base-index", g=True)
+        assert pane_base_index is not None
+        pane_base_index = int(pane_base_index)
         for p_index, p in enumerate(w.panes, start=pane_base_index):
+            assert p.index is not None
             assert int(p_index) == int(p.index)
 
             # pane-base-index start at base-index, pane_paths always start
