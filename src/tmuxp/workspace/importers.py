@@ -19,7 +19,7 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
-    tmuxp_workspace = {}
+    tmuxp_workspace: dict[str, t.Any] = {}
 
     if "project_name" in workspace_dict:
         tmuxp_workspace["session_name"] = workspace_dict.pop("project_name")
@@ -122,7 +122,7 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     - clear
     - cmd_separator
     """
-    tmuxp_workspace = {}
+    tmuxp_workspace: dict[str, t.Any] = {}
 
     if "session" in workspace_dict:
         workspace_dict = workspace_dict["session"]
