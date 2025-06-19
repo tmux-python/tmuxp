@@ -50,8 +50,8 @@ class InvalidPluginsValidationError(SchemaValidationError):
     def __init__(self, plugins: t.Any, *args: object, **kwargs: object) -> None:
         return super().__init__(
             '"plugins" only supports list type. '
-            + f" Received {type(plugins)}, "
-            + f"value: {plugins}",
+            f" Received {type(plugins)}, "
+            f"value: {plugins}",
             *args,
             **kwargs,
         )

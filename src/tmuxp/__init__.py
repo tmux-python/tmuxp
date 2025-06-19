@@ -1,4 +1,3 @@
-# flake8: NOQA: F401
 """tmux session manager.
 
 :copyright: Copyright 2013- Tony Narlock.

@@ -240,9 +240,12 @@ class WorkspaceBuilder:
         """
         if not session:
             if not self.server:
-                raise exc.TmuxpException(
+                msg = (
                     "WorkspaceBuilder.build requires server to be passed "
-                    + "on initialization, or pass in session object to here.",
+                    "on initialization, or pass in session object to here."
+                )
+                raise exc.TmuxpException(
+                    msg,
                 )
             new_session_kwargs = {}
             if "start_directory" in self.session_config:

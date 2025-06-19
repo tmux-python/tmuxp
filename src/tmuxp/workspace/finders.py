@@ -194,7 +194,7 @@ def find_workspace_file(
             if not candidates:
                 file_error = (
                     "workspace-file not found "
-                    + f"in workspace dir (yaml/yml/json) {workspace_dir} for name"
+                    f"in workspace dir (yaml/yml/json) {workspace_dir} for name"
                 )
         else:
             candidates = [
