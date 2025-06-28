@@ -218,9 +218,9 @@ def find_workspace_file(
                     "Use file names e.g. myproject.json, coolproject.yaml. "
                     "You can load them by filename.",
                 )
-            elif not len(candidates):
+            elif not candidates:
                 file_error = "No tmuxp files found in directory"
-        if len(candidates):
+        if candidates:
             workspace_file = candidates[0]
     elif not exists(workspace_file):
         file_error = "file not found"
