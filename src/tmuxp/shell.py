@@ -286,7 +286,7 @@ def get_code(use_pythonrc: bool, imported_objects: LaunchImports) -> t.Any:
             )
 
     def launch_code() -> None:
-        code.interact(local=imported_objects)
+        code.interact(local=imported_objects)  # type:ignore
 
     return launch_code
 
