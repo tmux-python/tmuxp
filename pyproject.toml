@@ -53,8 +53,8 @@ Changes = "https://github.com/tmux-python/tmuxp/blob/master/CHANGES"
 [project.scripts]
 tmuxp = 'tmuxp:cli.cli'
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   # Docs
   "aafigure",
   "pillow",
@@ -88,7 +88,6 @@ dev-dependencies = [
   "types-PyYAML",
 ]
 
-[dependency-groups]
 docs = [
   "aafigure",
   "pillow",
