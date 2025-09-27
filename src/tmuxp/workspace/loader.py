@@ -5,9 +5,74 @@ from __future__ import annotations
 import logging
 import os
 import pathlib
+import subprocess
 import typing as t
 
 logger = logging.getLogger(__name__)
+
+
+def optional_windows_and_pane(
+    workspace_dict: t.Dict[str, t.Any],
+) -> bool:
+    """Determine if a window or pane should be included based on `if` conditions.
+
+    The function evaluates the 'if' condition specified in `workspace_dict` to determine inclusion:
+    - If 'if' key is not present, it defaults to True.
+    - If 'if' is a string or boolean, it's treated as a shell variable.
+    - 'if' can be a dictionary containing 'shell', 'shell_var' or 'python' keys with valid expressions.
+    - 'shell_var' expressions are expanded and checked against true values ('y', 'yes', '1', 'on', 'true', 't').
+    - 'shell' expressions are evaluated using subprocess
+    - 'python' expressions are evaluated using `exec()`
+
+    Parameters
+    ----------
+    workspace_dict : Dict
+        A dictionary containing pane/window configuration data.
+
+    Returns
+    -------
+    bool
+        True if the window or pane should be included, False otherwise.
+    """
+    if "if" not in workspace_dict:
+        return True
+    if_cond = workspace_dict["if"]
+    if isinstance(if_cond, (str, bool)):
+        # treat this as shell variable
+        if_cond = {"shell_var": if_cond}
+    if not isinstance(if_cond, dict) or not any(
+        predicate in if_cond for predicate in ("python", "shell", "shell_var")
+    ):
+        msg = f"if conditions does not contains valid expression: {if_cond}"
+        raise ValueError(msg)
+    if "shell_var" in if_cond:
+        if expandshell(str(if_cond["shell_var"])).lower() not in {
+            "y",
+            "yes",
+            "1",
+            "on",
+            "true",
+            "t",
+        }:
+            return False
+    if "shell" in if_cond and (
+        subprocess.run(
+            expandshell(if_cond["shell"]),
+            shell=True,
+            check=False,
+        ).returncode
+        != 0
+    ):
+        return False
+    if "python" in if_cond:
+        # assign the result of the last statement from the python snippet
+        py_statements = if_cond["python"].split(";")
+        py_statements[-1] = f"ret={py_statements[-1]}"
+        locals = {}
+        exec(";".join(py_statements), {}, locals)
+        if not locals["ret"]:
+            return False
+    return True
 
 
 def expandshell(value: str) -> str:
@@ -116,6 +181,9 @@ def expand(
             if any(val.startswith(a) for a in [".", "./"]):
                 val = str(cwd / val)
             workspace_dict["environment"][key] = val
+            if key not in os.environ:
+                # using user provided environment variable as default vars
+                os.environ[key] = val
     if "global_options" in workspace_dict:
         for key in workspace_dict["global_options"]:
             val = workspace_dict["global_options"][key]
@@ -172,18 +240,21 @@ def expand(
 
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
-        workspace_dict["windows"] = [
-            expand(window, parent=workspace_dict)
-            for window in workspace_dict["windows"]
-        ]
+        window_dicts = workspace_dict["windows"]
+        window_dicts = filter(optional_windows_and_pane, window_dicts)
+        window_dicts = (expand(x, parent=workspace_dict) for x in window_dicts)
+        # remove windows that has no panels (e.g. due to if conditions)
+        window_dicts = filter(lambda x: len(x["panes"]), window_dicts)
+        workspace_dict["windows"] = list(window_dicts)
+
     elif "panes" in workspace_dict:
         pane_dicts = workspace_dict["panes"]
         for pane_idx, pane_dict in enumerate(pane_dicts):
             pane_dicts[pane_idx] = {}
             pane_dicts[pane_idx].update(expand_cmd(pane_dict))
-        workspace_dict["panes"] = [
-            expand(pane, parent=workspace_dict) for pane in pane_dicts
-        ]
+        pane_dicts = filter(optional_windows_and_pane, pane_dicts)
+        pane_dicts = (expand(x, parent=workspace_dict) for x in pane_dicts)
+        workspace_dict["panes"] = list(pane_dicts)
 
     return workspace_dict
 
