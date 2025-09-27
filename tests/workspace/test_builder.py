@@ -1118,6 +1118,8 @@ WORKSPACE_ENTER_FIXTURES: list[WorkspaceEnterFixture] = [
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
@@ -1132,6 +1134,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1147,6 +1151,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
@@ -1160,6 +1166,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1174,6 +1182,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1189,6 +1199,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1204,6 +1216,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command: echo "___$((1 + 3))___"
@@ -1217,6 +1231,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1286,6 +1302,8 @@ WORKSPACE_SLEEP_FIXTURES: list[WorkspaceSleepFixture] = [
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1303,6 +1321,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1320,6 +1340,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1335,6 +1357,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 windows:
 - panes:
   - shell_command:
@@ -1350,6 +1374,8 @@ windows:
         yaml=textwrap.dedent(
             """
 session_name: Should not execute
+options:
+  default-shell: /bin/bash
 shell_command_before:
   - cmd: echo "sleeping before"
     sleep_before: .5
