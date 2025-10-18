@@ -18,6 +18,18 @@ Provisional support for completions in tmuxp 1.17+ are powered by [shtab](https:
 $ pip install shtab --user
 ```
 
+With a [uv](https://docs.astral.sh/uv/getting-started/features/#python-versions) project you can add it directly as a development dependency:
+
+```console
+$ uv add --dev shtab
+```
+
+Or reach for [uvx](https://docs.astral.sh/uv/guides/tools/) when you want a pipx-style ephemeral install:
+
+```console
+$ uvx shtab --help
+```
+
 :::{tab} bash
 
 ```bash

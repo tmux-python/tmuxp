@@ -24,6 +24,19 @@ pip:
 $ pip install --user tmuxp
 ```
 
+If you're managing the project with [uv](https://docs.astral.sh/uv/), add tmuxp as a dependency instead:
+
+```console
+$ uv add tmuxp
+```
+
+To run tmuxp without installing it globally, similar to `pipx`, invoke it with
+[uvx](https://docs.astral.sh/uv/guides/tools/):
+
+```console
+$ uvx tmuxp
+```
+
 Homebrew:
 
 ```console
@@ -50,6 +63,19 @@ Developmental releases:
 
   ```console
   pip install --user --upgrade --pre tmuxp
+  ```
+
+  Or request the pre-release from a uv project environment:
+
+  ```console
+  uv add 'tmuxp>=1.10.0b1'
+  ```
+
+
+- [uvx](https://docs.astral.sh/uv/guides/tools/):
+
+  ```console
+  uvx tmuxp
   ```
 
 - [pipx](https://pypa.github.io/pipx/docs/):

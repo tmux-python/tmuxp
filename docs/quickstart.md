@@ -10,10 +10,32 @@ Ensure you have at least tmux **>= 1.8** and python **>= 3.7**.
 $ pip install --user tmuxp
 ```
 
+If you're managing dependencies with [uv]_ inside a project environment,
+add tmuxp directly to your lockfile:
+
+```console
+$ uv add tmuxp
+```
+
+To run tmuxp without installing it globally—similar to what you'd do with
+`pipx`—invoke it via [uvx]_:
+
+```console
+$ uvx tmuxp
+```
+
 You can upgrade to the latest release with:
 
 ```console
 $ pip install --user --upgrade tmuxp
+```
+
+Within a uv-managed project you can upgrade by refreshing the lockfile and
+syncing the environment:
+
+```console
+$ uv lock --upgrade-package tmuxp
+$ uv sync
 ```
 
 Then install {ref}`completion`.
@@ -38,6 +60,18 @@ In their versions you will see notification like `a1`, `b1`, and `rc1`, respecti
   $ pip install --user --upgrade --pre tmuxp
   ```
 
+- [uv]_:
+
+  ```console
+  $ uv add 'tmuxp>=1.10.0b1'
+  ```
+
+- [uvx]_:
+
+  ```console
+  $ uvx --from 'tmuxp>=1.10.0b1' tmuxp
+  ```
+
 - [pipx]\:
 
   ```console
@@ -54,6 +88,18 @@ via trunk (can break easily):
   $ pip install --user -e git+https://github.com/tmux-python/tmuxp.git#egg=tmuxp
   ```
 
+- [uv]_:
+
+  ```console
+  $ uv add "tmuxp @ git+https://github.com/tmux-python/tmuxp.git@master"
+  ```
+
+- [uvx]_:
+
+  ```console
+  $ uvx --from "tmuxp @ git+https://github.com/tmux-python/tmuxp.git@master" tmuxp
+  ```
+
 - [pipx]\:
 
   ```console
@@ -62,6 +108,8 @@ via trunk (can break easily):
 
 [pip]: https://pip.pypa.io/en/stable/
 [pipx]: https://pypa.github.io/pipx/docs/
+[uv]: https://docs.astral.sh/uv/getting-started/features/#python-versions
+[uvx]: https://docs.astral.sh/uv/guides/tools/
 
 ## Commands
 

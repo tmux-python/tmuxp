@@ -57,6 +57,18 @@ compatible debuggers, for instance [ipdb][ipdb]:
 $ pip install --user ipdb
 ```
 
+Inside a [uv](https://docs.astral.sh/uv/getting-started/features/#python-versions)-managed project you can add `ipdb` as a development dependency:
+
+```console
+$ uv add --dev ipdb
+```
+
+For a pipx-style ad hoc install, run it through [uvx](https://docs.astral.sh/uv/guides/tools/):
+
+```console
+$ uvx --from ipdb ipdb3 --help
+```
+
 ```console
 $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 ```

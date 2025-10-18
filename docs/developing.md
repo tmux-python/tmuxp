@@ -97,6 +97,21 @@ This has `pip`, a python package manager install the python package
 in the current directory. `-e` means `--editable`, which means you can
 adjust the code and the installed software will reflect the changes.
 
+When you manage dependencies with
+[uv](https://docs.astral.sh/uv/getting-started/features/#python-versions),
+add the checkout as an editable development dependency instead:
+
+```console
+$ uv add --dev --editable .
+```
+
+Prefer a one-off, pipx-style execution while you hack? Call tmuxp via
+[uvx](https://docs.astral.sh/uv/guides/tools/):
+
+```console
+$ uvx tmuxp
+```
+
 ```console
 $ tmuxp
 ```

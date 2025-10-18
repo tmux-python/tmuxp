@@ -8,6 +8,18 @@ To install the unreleased tmuxp version, see [developmental releases](https://tm
 $ pip install --user --upgrade --pre tmuxp
 ```
 
+[uv](https://docs.astral.sh/uv/getting-started/features/#python-versions):
+
+```console
+$ uv add 'tmuxp>=1.10.0b1'
+```
+
+[uvx](https://docs.astral.sh/uv/guides/tools/):
+
+```console
+$ uvx --from 'tmuxp>=1.10.0b1' tmuxp
+```
+
 [pipx](https://pypa.github.io/pipx/docs/):
 
 ```console
@@ -1490,6 +1502,24 @@ This will be the last Python 2.7 release of tmuxp. Bug fixes for python
 
   $ pip install --user ipdb
   $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
+
+  ```
+
+  Inside a [uv](https://docs.astral.sh/uv/getting-started/features/#python-versions)
+  project you can add `ipdb` as a development dependency instead:
+
+  ```{code-block} sh
+
+  $ uv add --dev ipdb
+
+  ```
+
+  For a pipx-style ad hoc execution, reach for
+  [uvx](https://docs.astral.sh/uv/guides/tools/):
+
+  ```{code-block} sh
+
+  $ uvx --from ipdb ipdb3 --help
 
   ```
 
