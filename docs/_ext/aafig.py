@@ -73,7 +73,7 @@ class AafigDirective(images.Image):
 
     has_content = True
     required_arguments = 0
-    own_option_spec: t.ClassVar = {
+    own_option_spec: t.ClassVar[dict[str, t.Callable[[str], t.Any]]] = {
         "line_width": float,
         "background": str,
         "foreground": str,
