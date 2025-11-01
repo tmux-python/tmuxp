@@ -418,7 +418,10 @@ class WorkspaceBuilder:
                 else:
                     target = "windows"
                 logger.warning(
-                    "Cannot set environment for new %s. You need tmux 3.0 or newer for this.",
+                    (
+                        "Cannot set environment for new %s. "
+                        "You need tmux 3.0 or newer for this."
+                    ),
                     target,
                 )
                 environment = None

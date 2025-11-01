@@ -131,7 +131,10 @@ def render_aafig_images(app: Sphinx, doctree: nodes.Node) -> None:
             options["format"] = format_map[format_]
         else:
             logger.warning(
-                'unsupported builder format "%s", please add a custom entry in aafig_format config option for this builder',
+                (
+                    'unsupported builder format "%s", please add a custom entry in '
+                    "aafig_format config option for this builder"
+                ),
                 format_,
             )
             img.replace_self(nodes.literal_block(text, text))
