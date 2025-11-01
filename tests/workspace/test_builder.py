@@ -457,7 +457,7 @@ def test_environment_variables_warns_prior_to_tmux_3_0(
         sum(
             1
             for record in caplog.records
-            if "Cannot set environment for new windows." in record.msg
+            if "Cannot set environment for new windows." in record.message
         )
         # From window_overrides and both_overrides, but not
         # both_overrides_in_first_pane.
@@ -467,7 +467,7 @@ def test_environment_variables_warns_prior_to_tmux_3_0(
         sum(
             1
             for record in caplog.records
-            if "Cannot set environment for new panes." in record.msg
+            if "Cannot set environment for new panes." in record.message
         )
         # From pane_overrides and both_overrides, but not both_overrides_in_first_pane.
         == 2
@@ -476,7 +476,7 @@ def test_environment_variables_warns_prior_to_tmux_3_0(
         sum(
             1
             for record in caplog.records
-            if "Cannot set environment for new panes and windows." in record.msg
+            if "Cannot set environment for new panes and windows." in record.message
         )
         # From both_overrides_in_first_pane.
         == 1
@@ -586,7 +586,7 @@ def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
     assert session == builder.session
     dirs = ["/usr/bin", "/dev", str(test_dir), "/usr", "/usr"]
 
-    for path, window in zip(dirs, session.windows):
+    for path, window in zip(dirs, session.windows, strict=False):
         for p in window.panes:
 
             def f(path: str, p: Pane) -> bool:
@@ -641,7 +641,7 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
 
     dirs = ["/usr/bin", "/dev", str(test_dir), str(config_dir), str(config_dir)]
 
-    for path, window in zip(dirs, session.windows):
+    for path, window in zip(dirs, session.windows, strict=False):
         for p in window.panes:
 
             def f(path: str, p: Pane) -> bool:
@@ -1430,7 +1430,7 @@ def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) ->
 
     assert session.windows
     window = session.windows[0]
-    for path, p in zip(dirs, window.panes):
+    for path, p in zip(dirs, window.panes, strict=False):
 
         def f(path: str, p: Pane) -> bool:
             pane_path = p.pane_current_path

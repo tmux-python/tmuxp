@@ -22,8 +22,10 @@ from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
 
 if t.TYPE_CHECKING:
+    from typing import TypeAlias
+
     from libtmux.session import Session
-    from typing_extensions import NotRequired, TypeAlias, TypedDict
+    from typing_extensions import NotRequired, TypedDict
 
     from tmuxp.types import StrPath
 

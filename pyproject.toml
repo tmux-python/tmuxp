@@ -2,7 +2,7 @@
 name = "tmuxp"
 version = "1.55.0"
 description = "Session manager for tmux, which allows users to save and load tmux sessions through simple configuration files."
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 authors = [
   {name = "Tony Narlock", email = "tony@git-pull.com"}
 ]
@@ -15,7 +15,6 @@ classifiers = [
   "Environment :: Web Environment",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -156,7 +155,7 @@ exclude_lines = [
 
 [tool.mypy]
 strict = true
-python_version = "3.9"
+python_version = "3.10"
 files = [
   "src/",
   "tests/",
@@ -175,7 +174,7 @@ module = [
 ignore_missing_imports = true
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [

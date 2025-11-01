@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import locale
 import logging
+import pathlib
 import posixpath
 import typing as t
 from hashlib import sha1 as sha
@@ -130,9 +131,11 @@ def render_aafig_images(app: Sphinx, doctree: nodes.Node) -> None:
             options["format"] = format_map[format_]
         else:
             logger.warning(
-                f'unsupported builder format "{format_}", please '
-                "add a custom entry in aafig_format config "
-                "option for this builder",
+                (
+                    'unsupported builder format "%s", please add a custom entry in '
+                    "aafig_format config option for this builder"
+                ),
+                format_,
             )
             img.replace_self(nodes.literal_block(text, text))
             continue
@@ -196,11 +199,9 @@ def render_aafigure(
                 f = None
                 try:
                     try:
-                        with open(
-                            metadata_fname,
-                            encoding=locale.getpreferredencoding(False),
-                        ) as f:
-                            extra = f.read()
+                        extra = pathlib.Path(metadata_fname).read_text(
+                            encoding=locale.getpreferredencoding(False)
+                        )
                     except Exception as e:
                         raise AafigError from e
                 finally:
@@ -221,12 +222,9 @@ def render_aafigure(
     extra = None
     if options["format"].lower() == "svg":
         extra = visitor.get_size_attrs()
-        with open(
-            metadata_fname,
-            "w",
-            encoding=locale.getpreferredencoding(False),
-        ) as f:
-            f.write(extra)
+        pathlib.Path(metadata_fname).write_text(
+            extra, encoding=locale.getpreferredencoding(False)
+        )
 
     return relfn, outfn, None, extra
 

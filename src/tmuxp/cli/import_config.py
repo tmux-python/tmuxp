@@ -178,8 +178,9 @@ def import_config(
             if prompt_yes_no(f"Save to {dest_path}?"):
                 dest = dest_path
 
-        with open(dest, "w", encoding=locale.getpreferredencoding(False)) as buf:
-            buf.write(new_config)
+        pathlib.Path(dest).write_text(
+            new_config, encoding=locale.getpreferredencoding(False)
+        )
 
         tmuxp_echo(f"Saved to {dest}.")
     else:

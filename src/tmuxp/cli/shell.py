@@ -13,7 +13,7 @@ from tmuxp import util
 from tmuxp._compat import PY3, PYMINOR
 
 if t.TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
     CLIShellLiteral: TypeAlias = t.Literal[

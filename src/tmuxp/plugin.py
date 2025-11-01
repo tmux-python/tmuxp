@@ -31,9 +31,11 @@ TMUXP_MAX_VERSION = None
 
 
 if t.TYPE_CHECKING:
+    from typing import TypeGuard
+
     from libtmux.session import Session
     from libtmux.window import Window
-    from typing_extensions import TypedDict, TypeGuard, Unpack
+    from typing_extensions import TypedDict, Unpack
 
     from ._internal.types import PluginConfigSchema
 
