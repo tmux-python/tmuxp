@@ -33,6 +33,10 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 - _Future release notes will be placed here_
 
+### Development
+
+- Add Python 3.14 to test matrix (#986)
+
 ## tmuxp 1.55.0 (2025-02-26)
 
 _Maintenance only, no bug fixes or new features_
