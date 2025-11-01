@@ -11,13 +11,13 @@ $ pip install --user --upgrade --pre tmuxp
 [uv](https://docs.astral.sh/uv/getting-started/features/#python-versions):
 
 ```console
-$ uv add 'tmuxp>=1.10.0b1'
+$ uv add tmuxp --prerelease allow
 ```
 
 [uvx](https://docs.astral.sh/uv/guides/tools/):
 
 ```console
-$ uvx --from 'tmuxp>=1.10.0b1' tmuxp
+$ uvx --from 'tmuxp' --prerelease allow tmuxp
 ```
 
 [pipx](https://pypa.github.io/pipx/docs/):
