@@ -294,7 +294,7 @@ See donation options at <https://tony.sh/support.html>.
 # Project details
 
 - tmux support: 1.8+
-- python support: >= 3.9, pypy, pypy3
+- python support: >= 3.10, pypy, pypy3
 - Source: <https://github.com/tmux-python/tmuxp>
 - Docs: <https://tmuxp.git-pull.com>
 - API: <https://tmuxp.git-pull.com/api.html>
