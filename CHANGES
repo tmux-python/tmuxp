@@ -35,6 +35,7 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Breaking changes
 
+- Bump minimum libtmux from 0.46.0 to 0.47.0
 - Drop Python 3.9, EOL October 5th, 2025 (#987)
 
   tmuxp 1.55.0 was the last release for Python 3.9.
