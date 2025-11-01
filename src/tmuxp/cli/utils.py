@@ -10,10 +10,9 @@ from tmuxp import log
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
+    from typing import TypeAlias
 
-    from typing_extensions import TypeAlias
-
-    CLIColour: TypeAlias = t.Union[int, tuple[int, int, int], str]
+    CLIColour: TypeAlias = int | tuple[int, int, int] | str
 
 
 logger = logging.getLogger(__name__)

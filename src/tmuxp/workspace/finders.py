@@ -15,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     import pathlib
-
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from tmuxp.types import StrPath
 

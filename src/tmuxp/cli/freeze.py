@@ -20,7 +20,7 @@ from tmuxp.workspace.finders import get_workspace_dir
 from .utils import prompt, prompt_choices, prompt_yes_no
 
 if t.TYPE_CHECKING:
-    from typing_extensions import TypeAlias, TypeGuard
+    from typing import TypeAlias, TypeGuard
 
     CLIOutputFormatLiteral: TypeAlias = t.Literal["yaml", "json"]
 

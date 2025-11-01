@@ -34,8 +34,7 @@ logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     import pathlib
-
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     CLISubparserName: TypeAlias = t.Literal[

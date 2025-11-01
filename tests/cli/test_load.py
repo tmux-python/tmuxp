@@ -186,10 +186,11 @@ windows:
 
 
 if t.TYPE_CHECKING:
-    from pytest_mock import MockerFixture
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
-    ExpectedOutput: TypeAlias = t.Optional[t.Union[str, list[str]]]
+    from pytest_mock import MockerFixture
+
+    ExpectedOutput: TypeAlias = str | list[str] | None
 
 
 class CLILoadFixture(t.NamedTuple):

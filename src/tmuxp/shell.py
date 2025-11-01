@@ -13,12 +13,13 @@ logger = logging.getLogger(__name__)
 if t.TYPE_CHECKING:
     from collections.abc import Callable
     from types import ModuleType
+    from typing import TypeAlias
 
     from libtmux.pane import Pane
     from libtmux.server import Server
     from libtmux.session import Session
     from libtmux.window import Window
-    from typing_extensions import NotRequired, TypeAlias, TypedDict, Unpack
+    from typing_extensions import NotRequired, TypedDict, Unpack
 
     CLIShellLiteral: TypeAlias = t.Literal[
         "best",
