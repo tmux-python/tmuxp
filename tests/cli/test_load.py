@@ -310,7 +310,7 @@ def test_load(
     assert server.socket_name is not None
 
     monkeypatch.chdir(tmp_path)
-    for session_name, config_path in zip(session_names, config_paths):
+    for session_name, config_path in zip(session_names, config_paths, strict=False):
         tmuxp_config = pathlib.Path(
             config_path.format(tmp_path=tmp_path, TMUXP_CONFIGDIR=tmuxp_configdir),
         )
