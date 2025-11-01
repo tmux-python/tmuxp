@@ -63,13 +63,13 @@ In their versions you will see notification like `a1`, `b1`, and `rc1`, respecti
 - [uv]_:
 
   ```console
-  $ uv add 'tmuxp>=1.10.0b1'
+  $ uv add tmuxp --prerelease allow
   ```
 
 - [uvx]_:
 
   ```console
-  $ uvx --from 'tmuxp>=1.10.0b1' tmuxp
+  $ uvx --from 'tmuxp' --prerelease allow tmuxp
   ```
 
 - [pipx]\:
