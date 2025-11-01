@@ -200,7 +200,7 @@ def render_aafigure(
                 try:
                     try:
                         extra = pathlib.Path(metadata_fname).read_text(
-                            encoding=locale.getpreferredencoding(False)
+                            encoding=locale.getpreferredencoding(False),
                         )
                     except Exception as e:
                         raise AafigError from e
@@ -223,7 +223,8 @@ def render_aafigure(
     if options["format"].lower() == "svg":
         extra = visitor.get_size_attrs()
         pathlib.Path(metadata_fname).write_text(
-            extra, encoding=locale.getpreferredencoding(False)
+            extra,
+            encoding=locale.getpreferredencoding(False),
         )
 
     return relfn, outfn, None, extra

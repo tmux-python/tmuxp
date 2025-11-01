@@ -211,7 +211,8 @@ def command_freeze(
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
         pathlib.Path(dest).write_text(
-            workspace, encoding=locale.getpreferredencoding(False)
+            workspace,
+            encoding=locale.getpreferredencoding(False),
         )
 
         if not args.quiet:

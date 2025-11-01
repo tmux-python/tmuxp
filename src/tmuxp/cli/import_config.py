@@ -179,7 +179,8 @@ def import_config(
                 dest = dest_path
 
         pathlib.Path(dest).write_text(
-            new_config, encoding=locale.getpreferredencoding(False)
+            new_config,
+            encoding=locale.getpreferredencoding(False),
         )
 
         tmuxp_echo(f"Saved to {dest}.")

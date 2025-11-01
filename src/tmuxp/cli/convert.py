@@ -97,6 +97,7 @@ def command_convert(
 
     if answer_yes:
         pathlib.Path(newfile).write_text(
-            new_workspace, encoding=locale.getpreferredencoding(False)
+            new_workspace,
+            encoding=locale.getpreferredencoding(False),
         )
         print(f"New workspace file saved to <{newfile}>.")  # NOQA: T201 RUF100
