@@ -349,15 +349,15 @@ wheels = [
 
 [[package]]
 name = "gp-libs"
-version = "0.0.15"
+version = "0.0.16"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
     { name = "myst-parser" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ae/1e/b622a471727cff4f6d541b3a9828ed0b381deff8c328106c7aea98fec4b4/gp_libs-0.0.15.tar.gz", hash = "sha256:676e0b495e12966701c495a5c66517f73a85758c6d4287957fae235031f91d9c", size = 14942, upload-time = "2025-11-01T16:59:30.844Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8f/56/362953567933ea627dfcfa83ff938bdcd6d371c7632ae821b5345916b953/gp_libs-0.0.16.tar.gz", hash = "sha256:fe58b25b32c85d1f6e9abd277156e8ea7e768ddacb28ab913f0aa1838d728815", size = 15160, upload-time = "2025-11-25T21:30:25.096Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/dd/3f211777e0401501bdfdbb58e70a8043c977b2569f3eb1a06dc9e32cb05a/gp_libs-0.0.15-py3-none-any.whl", hash = "sha256:66d4dcb67ef23441c7dcff89537eb59f47fc87f8dce2f931bcc3f71e84f4ce4a", size = 15964, upload-time = "2025-11-01T16:59:29.22Z" },
+    { url = "https://files.pythonhosted.org/packages/93/42/40f8ca41c26e84ce00f691e35e3a06569e0c62ad29fe3d1676e689e8a88c/gp_libs-0.0.16-py3-none-any.whl", hash = "sha256:f0aa3bf03d18ec85336ad20fc41ba0056ebb6ba13f0a16dc3fc7be73bab4ea01", size = 16157, upload-time = "2025-11-25T21:30:24.139Z" },
 ]
 
 [[package]]
