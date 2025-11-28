@@ -31,7 +31,11 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
-- _Future release notes will be placed here_
+### What's new
+
+#### tmux 3.6 support (#989)
+
+Added tmux 3.6 to test grid.
 
 ## tmuxp 1.56.0 (2025-11-01)
 
