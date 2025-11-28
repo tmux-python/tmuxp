@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.14']
-        tmux-version: ['2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', '3.3a', '3.4', '3.5', 'master']
+        tmux-version: ['2.6', '2.7', '2.8', '3.0a', '3.1b', '3.2a', '3.3a', '3.4', '3.5', '3.6', 'master']
     steps:
       - uses: actions/checkout@v5
 
