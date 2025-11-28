@@ -33,7 +33,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Breaking changes
 
-- libtmux: Bump minimum version from 0.47.0 -> 0.48.0 (#990)
+#### Minimum tmux version bumped to 3.2+ (#991)
+
+tmux versions below 3.2a are now deprecated (via libtmux v0.48.0).
+
+A `FutureWarning` will be emitted on first use. Support for these versions will be removed in a future release. Set `LIBTMUX_SUPPRESS_VERSION_WARNING=1` to suppress.
+
+#### libtmux 0.48.0 (#990)
+
+libtmux minimum version bumped from 0.47.0 -> 0.48.0.
 
 ### What's new
 
