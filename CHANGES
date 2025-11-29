@@ -33,6 +33,16 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 _Future release notes will be placed here_
 
+### Breaking changes
+
+#### Minimum tmux version bumped to 3.2+ (#992)
+
+tmux versions below 3.2a are now disabled (via libtmux v0.49.0).
+
+#### libtmux 0.49.0 (#992)
+
+libtmux minimum version bumped from 0.48.0 -> 0.49.0.
+
 ## tmuxp 1.57.0 (2025-11-28)
 
 ### Breaking changes
