@@ -39,6 +39,16 @@ _Future release notes will be placed here_
 
 libtmux minimum version bumped from 0.49.0 -> 0.50.0.
 
+Internal updates to use libtmux's new unified options API:
+
+- `Session.attach_session()` → `Session.attach()`
+- `Window.show_window_option()` → `Window.show_option()`
+- `Window.show_window_options()` → `Window.show_options()`
+- `Window.set_window_option()` → `Window.set_option()`
+
+Note: Options now return Python-native types (`True`/`False` instead of
+`"on"`/`"off"`, `int` instead of numeric strings).
+
 ## tmuxp 1.58.0 (2025-11-30)
 
 ### Breaking changes
