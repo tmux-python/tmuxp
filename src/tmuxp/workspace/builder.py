@@ -9,7 +9,6 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.common import has_gte_version
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -253,10 +252,7 @@ class WorkspaceBuilder:
                     "start_directory"
                 ]
 
-            if (
-                has_gte_version("2.6")
-                and os.getenv("TMUXP_DETECT_TERMINAL_SIZE", "1") == "1"
-            ):
+            if os.getenv("TMUXP_DETECT_TERMINAL_SIZE", "1") == "1":
                 terminal_size = shutil.get_terminal_size(
                     fallback=(get_default_columns(), get_default_rows()),
                 )
