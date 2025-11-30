@@ -41,7 +41,7 @@ well tested and adopted.
 
 ### Missing
 
-**Version support** tmuxp only supports `tmux >= 1.8`. Teamocil and
+**Version support** tmuxp only supports `tmux >= 3.2`. Teamocil and
 tmuxinator may have support for earlier versions.
 
 ### Differences
@@ -64,7 +64,7 @@ format [^id4]. See {ref}`cli-freeze`.
 
 **JSON config** JSON config support. See {ref}`Examples`.
 
-**ORM-based API** via [libtmux] - Utilizes tmux >= 1.8's unique ID's for
+**ORM-based API** via [libtmux] - Utilizes tmux's unique IDs for
 panes, windows and sessions to create an object relational view of the tmux
 {class}`~libtmux.Server`, its {class}`~libtmux.Session`,
 {class}`~libtmux.Window`, and {class}`~libtmux.Pane`.
