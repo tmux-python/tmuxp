@@ -12,7 +12,7 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.common import has_gte_version, has_lt_version
+from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -296,8 +296,7 @@ def test_window_options(
     )
     workspace = loader.expand(workspace)
 
-    if has_gte_version("2.3"):
-        workspace["windows"][0]["options"]["pane-border-format"] = " #P "
+    workspace["windows"][0]["options"]["pane-border-format"] = " #P "
 
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
 
@@ -310,8 +309,7 @@ def test_window_options(
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
         assert w.show_window_option("main-pane-height") == 5
-        if has_gte_version("2.3"):
-            assert w.show_window_option("pane-border-format") == " #P "
+        assert w.show_window_option("pane-border-format") == " #P "
 
         assert len(session.windows) == window_count
         window_count += 1
