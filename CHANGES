@@ -33,6 +33,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 _Future release notes will be placed here_
 
+### Breaking changes
+
+#### libtmux 0.50.0 (#996)
+
+libtmux minimum version bumped from 0.49.0 -> 0.50.0.
+
 ## tmuxp 1.58.0 (2025-11-30)
 
 ### Breaking changes
