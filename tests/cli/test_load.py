@@ -9,7 +9,6 @@ import typing as t
 
 import libtmux
 import pytest
-from libtmux.common import has_lt_version
 from libtmux.server import Server
 from libtmux.session import Session
 
@@ -96,10 +95,6 @@ def test_load_workspace_named_session(
     assert session.name == "tmuxp-new"
 
 
-@pytest.mark.skipif(
-    has_lt_version("2.1"),
-    reason="exact session name matches only tmux >= 2.1",
-)
 def test_load_workspace_name_match_regression_252(
     tmp_path: pathlib.Path,
     server: Server,

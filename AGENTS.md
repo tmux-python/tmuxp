@@ -121,4 +121,4 @@ windows:
 - **Doctest format**: Use narrative descriptions with blank lines between sections
 - **Complex examples**: Move to `tests/examples/<path>/test_<example>.py`
 - **Minimum Python**: 3.9+ (as per README)
-- **Minimum tmux**: 1.8+ (as per README)
+- **Minimum tmux**: 3.2+ (as per README)

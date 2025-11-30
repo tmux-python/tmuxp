@@ -35,7 +35,7 @@ _Future release notes will be placed here_
 
 ### Breaking changes
 
-#### Minimum tmux version bumped to 3.2+ (#992)
+#### Minimum tmux version bumped to 3.2+ (#992, #993)
 
 tmux versions below 3.2a are now disabled (via libtmux v0.49.0).
 

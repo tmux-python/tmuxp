@@ -12,7 +12,6 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.common import has_gte_version, has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -296,8 +295,7 @@ def test_window_options(
     )
     workspace = loader.expand(workspace)
 
-    if has_gte_version("2.3"):
-        workspace["windows"][0]["options"]["pane-border-format"] = " #P "
+    workspace["windows"][0]["options"]["pane-border-format"] = " #P "
 
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
 
@@ -310,8 +308,7 @@ def test_window_options(
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
         assert w.show_window_option("main-pane-height") == 5
-        if has_gte_version("2.3"):
-            assert w.show_window_option("pane-border-format") == " #P "
+        assert w.show_window_option("pane-border-format") == " #P "
 
         assert len(session.windows) == window_count
         window_count += 1
@@ -386,10 +383,6 @@ def test_window_shell(
         assert w.name != "top"
 
 
-@pytest.mark.skipif(
-    has_lt_version("3.0"),
-    reason="needs -e flag for new-window and split-window introduced in tmux 3.0",
-)
 def test_environment_variables(
     session: Session,
 ) -> None:
@@ -429,58 +422,6 @@ def test_environment_variables(
     pane = both_overrides_win.panes[1]
     pane.send_keys("echo $FOO")
     assert pane.capture_pane()[1] == "PANE"
-
-
-@pytest.mark.skipif(
-    has_gte_version("3.0"),
-    reason="warnings are not needed for tmux >= 3.0",
-)
-def test_environment_variables_warns_prior_to_tmux_3_0(
-    session: Session,
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Warns when environmental variables cannot be set prior to tmux 3.0."""
-    workspace = ConfigReader._from_file(
-        test_utils.get_workspace_file("workspace/builder/environment_vars.yaml"),
-    )
-    workspace = loader.expand(workspace)
-
-    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
-    builder.build(session)
-
-    # environment on sessions should work as this is done using set-environment
-    # on the session itself
-    assert session.getenv("FOO") == "SESSION"
-    assert session.getenv("PATH") == "/tmp"
-
-    assert (
-        sum(
-            1
-            for record in caplog.records
-            if "Cannot set environment for new windows." in record.message
-        )
-        # From window_overrides and both_overrides, but not
-        # both_overrides_in_first_pane.
-        == 2
-    ), "Warning on creating windows missing"
-    assert (
-        sum(
-            1
-            for record in caplog.records
-            if "Cannot set environment for new panes." in record.message
-        )
-        # From pane_overrides and both_overrides, but not both_overrides_in_first_pane.
-        == 2
-    ), "Warning on creating panes missing"
-    assert (
-        sum(
-            1
-            for record in caplog.records
-            if "Cannot set environment for new panes and windows." in record.message
-        )
-        # From both_overrides_in_first_pane.
-        == 1
-    )
 
 
 def test_automatic_rename_option(
@@ -656,10 +597,6 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
             assert retry_until(f_)
 
 
-@pytest.mark.skipif(
-    has_lt_version("3.2a"),
-    reason="needs format introduced in tmux >= 3.2a",
-)
 def test_start_directory_sets_session_path(server: Server) -> None:
     """Test start_directory setting path in session_path."""
     workspace = ConfigReader._from_file(
@@ -1442,10 +1379,6 @@ def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) ->
         assert retry_until(f_)
 
 
-@pytest.mark.skipif(
-    has_lt_version("2.9"),
-    reason="needs option introduced in tmux >= 2.9",
-)
 def test_layout_main_horizontal(session: Session) -> None:
     """Test that tmux's main-horizontal layout is used when specified."""
     yaml_workspace = test_utils.get_workspace_file("workspace/builder/three_pane.yaml")
@@ -1523,7 +1456,6 @@ DEFAULT_SIZE_FIXTURES = [
     DEFAULT_SIZE_FIXTURES,
     ids=[f.test_id for f in DEFAULT_SIZE_FIXTURES],
 )
-@pytest.mark.skipif(has_lt_version("2.9"), reason="default-size only applies there")
 def test_issue_800_default_size_many_windows(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,

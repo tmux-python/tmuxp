@@ -9,7 +9,6 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.common import has_gte_version, has_lt_version
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -253,10 +252,7 @@ class WorkspaceBuilder:
                     "start_directory"
                 ]
 
-            if (
-                has_gte_version("2.6")
-                and os.getenv("TMUXP_DETECT_TERMINAL_SIZE", "1") == "1"
-            ):
+            if os.getenv("TMUXP_DETECT_TERMINAL_SIZE", "1") == "1":
                 terminal_size = shutil.get_terminal_size(
                     fallback=(get_default_columns(), get_default_rows()),
                 )
@@ -406,25 +402,6 @@ class WorkspaceBuilder:
                 pass
 
             environment = panes[0].get("environment", window_config.get("environment"))
-            if environment and has_lt_version("3.0"):
-                # Falling back to use the environment of the first pane for the window
-                # creation is nice but yields misleading error messages.
-                pane_env = panes[0].get("environment")
-                win_env = window_config.get("environment")
-                if pane_env and win_env:
-                    target = "panes and windows"
-                elif pane_env:
-                    target = "panes"
-                else:
-                    target = "windows"
-                logger.warning(
-                    (
-                        "Cannot set environment for new %s. "
-                        "You need tmux 3.0 or newer for this."
-                    ),
-                    target,
-                )
-                environment = None
 
             window = session.new_window(
                 window_name=window_name,
@@ -513,16 +490,6 @@ class WorkspaceBuilder:
                     "environment",
                     window_config.get("environment"),
                 )
-                if environment and has_lt_version("3.0"):
-                    # Just issue a warning when the environment comes from the pane
-                    # configuration as a warning for the window was already issued when
-                    # the window was created.
-                    if pane_config.get("environment"):
-                        logger.warning(
-                            "Cannot set environment for new panes. "
-                            "You need tmux 3.0 or newer for this.",
-                        )
-                    environment = None
 
                 assert pane is not None
 

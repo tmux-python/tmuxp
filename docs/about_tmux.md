@@ -222,9 +222,8 @@ For the freshest results on how to get tmux installed on your system,
 "How to install tmux on \<my distro>" will do, as directions change and
 are slightly different between distributions.
 
-This documentation is written for version **1.8**. It's important that
-you have the latest stable release of tmux. The latest stable version is
-viewable on the [tmux homepage](http://tmux.sourceforge.net/).
+tmuxp requires tmux **3.2 or newer**. The latest stable version is
+viewable on the [tmux homepage](https://github.com/tmux/tmux).
 
 **Mac OS X** users may install the latest stable version of tmux
 through [MacPorts](http://www.macports.org/),

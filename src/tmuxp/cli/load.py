@@ -275,27 +275,6 @@ def load_workspace(
     prompt to cleanup (``$ tmux kill-session``) the session on the user's
     behalf. An exception raised during this process means it's not easy to
     predict how broken the session is.
-
-    .. versionchanged:: tmux 2.6+
-
-        In tmux 2.6, the way layout and proportion's work when interfacing
-        with tmux in a detached state (outside of a client) changed. Since
-        tmuxp builds workspaces in a detached state, the WorkspaceBuilder isn't
-        able to rely on functionality requiring awarness of session geometry,
-        e.g. ``set-layout``.
-
-        Thankfully, tmux is able to defer commands to run after the user
-        performs certain actions, such as loading a client via
-        ``attach-session`` or ``switch-client``.
-
-        Upon client switch, ``client-session-changed`` is triggered [1]_.
-
-    References
-    ----------
-    .. [1] cmd-switch-client.c hook. GitHub repo for tmux.
-
-       https://github.com/tmux/tmux/blob/2.6/cmd-switch-client.c#L132.
-       Accessed April 8th, 2018.
     """
     # get the canonical path, eliminating any symlinks
     if isinstance(workspace_file, (str, os.PathLike)):
