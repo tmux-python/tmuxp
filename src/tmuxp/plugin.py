@@ -11,8 +11,8 @@ from libtmux.common import get_version
 from .__about__ import __version__
 from .exc import TmuxpPluginException
 
-#: Minimum version of tmux required to run libtmux
-TMUX_MIN_VERSION = "1.8"
+#: Minimum version of tmux required to run tmuxp
+TMUX_MIN_VERSION = "3.2"
 
 #: Most recent version of tmux supported
 TMUX_MAX_VERSION = None
