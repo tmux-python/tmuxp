@@ -421,7 +421,7 @@ class WorkspaceBuilder:
                 dict,
             ):
                 for key, val in window_config["options"].items():
-                    window.set_window_option(key, val)
+                    window.set_option(key, val)
 
             if window_config.get("focus"):
                 window.select()
@@ -452,9 +452,8 @@ class WorkspaceBuilder:
         """
         assert isinstance(window, Window)
 
-        pane_base_index_str = window.show_window_option("pane-base-index", g=True)
-        assert pane_base_index_str is not None
-        pane_base_index = int(pane_base_index_str)
+        pane_base_index = window.show_option("pane-base-index", global_=True)
+        assert pane_base_index is not None
 
         pane = None
 
@@ -563,7 +562,7 @@ class WorkspaceBuilder:
             dict,
         ):
             for key, val in window_config["options_after"].items():
-                window.set_window_option(key, val)
+                window.set_option(key, val)
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""

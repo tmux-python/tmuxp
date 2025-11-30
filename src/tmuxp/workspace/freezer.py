@@ -71,7 +71,7 @@ def freeze(session: Session) -> dict[str, t.Any]:
 
     for window in session.windows:
         window_config: dict[str, t.Any] = {
-            "options": window.show_window_options(),
+            "options": window.show_options(),
             "window_name": window.name,
             "layout": window.window_layout,
             "panes": [],
