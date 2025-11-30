@@ -126,7 +126,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
         builder.session.switch_client()
 
     else:
-        builder.session.attach_session()
+        builder.session.attach()
 
 
 def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
@@ -149,7 +149,7 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
 
         os.environ["TMUX"] = tmux_env  # set TMUX back again
     elif not detached:
-        builder.session.attach_session()
+        builder.session.attach()
 
 
 def _load_detached(builder: WorkspaceBuilder) -> None:

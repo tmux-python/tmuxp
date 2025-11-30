@@ -78,7 +78,7 @@ def test_split_windows_three_pane(session: Session) -> None:
 
         assert len(session.windows) == window_count
         window_count += 1
-        w.set_window_option("main-pane-height", 50)
+        w.set_option("main-pane-height", 50)
         w.select_layout(wconf["layout"])
 
 
@@ -96,9 +96,9 @@ def test_focus_pane_index(session: Session) -> None:
 
     assert session.active_window.name == "focused window"
 
-    pane_base_index_ = session.active_window.show_window_option(
+    pane_base_index_ = session.active_window.show_option(
         "pane-base-index",
-        g=True,
+        global_=True,
     )
     assert isinstance(pane_base_index_, int)
     pane_base_index = int(pane_base_index_)
@@ -278,10 +278,10 @@ def test_global_session_env_options(
     builder.build(session=session)
 
     visual_silence_ = session.show_option("visual-silence", global_=True)
-    assert isinstance(visual_silence_, str)
-    assert visual_silence in visual_silence_
+    assert isinstance(visual_silence_, bool)
+    assert visual_silence_ is True
     assert repeat_time == session.show_option("repeat-time")
-    assert main_pane_height == session.active_window.show_window_option(
+    assert main_pane_height == session.active_window.show_option(
         "main-pane-height",
     )
 
@@ -307,8 +307,8 @@ def test_window_options(
             p = p
             assert len(session.windows) == window_count
         assert isinstance(w, Window)
-        assert w.show_window_option("main-pane-height") == 5
-        assert w.show_window_option("pane-border-format") == " #P "
+        assert w.show_option("main-pane-height") == 5
+        assert w.show_option("pane-border-format") == " #P "
 
         assert len(session.windows) == window_count
         window_count += 1
@@ -457,7 +457,7 @@ def test_automatic_rename_option(
     assert retry_until(check_window_name_mismatch, 5, interval=0.25)
 
     def check_window_name_match() -> bool:
-        assert w.show_window_option("automatic-rename") == "on"
+        assert w.show_option("automatic-rename") is True
         return w.name in {
             pathlib.Path(os.getenv("SHELL", "bash")).name,
             portable_command,
@@ -654,7 +654,7 @@ def test_pane_order(session: Session) -> None:
         window_count += 1
 
     for w in session.windows:
-        pane_base_index = w.show_window_option("pane-base-index", g=True)
+        pane_base_index = w.show_option("pane-base-index", global_=True)
         assert pane_base_index is not None
         pane_base_index = int(pane_base_index)
         for p_index, p in enumerate(w.panes, start=pane_base_index):

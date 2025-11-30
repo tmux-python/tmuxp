@@ -649,8 +649,8 @@ def test_load_attached(
     # Load a session and attach from outside tmux
     monkeypatch.delenv("TMUX", raising=False)
 
-    attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
-    attach_session_mock.return_value.stderr = None
+    attach_mock = mocker.patch("libtmux.session.Session.attach")
+    attach_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
@@ -659,7 +659,7 @@ def test_load_attached(
 
     _load_attached(builder, False)
 
-    assert attach_session_mock.call_count == 1
+    assert attach_mock.call_count == 1
 
 
 def test_load_attached_detached(
@@ -671,8 +671,8 @@ def test_load_attached_detached(
     # Load a session but don't attach
     monkeypatch.delenv("TMUX", raising=False)
 
-    attach_session_mock = mocker.patch("libtmux.session.Session.attach_session")
-    attach_session_mock.return_value.stderr = None
+    attach_mock = mocker.patch("libtmux.session.Session.attach")
+    attach_mock.return_value.stderr = None
 
     yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
     session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
@@ -681,7 +681,7 @@ def test_load_attached_detached(
 
     _load_attached(builder, True)
 
-    assert attach_session_mock.call_count == 0
+    assert attach_mock.call_count == 0
 
 
 def test_load_attached_within_tmux(

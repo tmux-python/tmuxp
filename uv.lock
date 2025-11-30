@@ -61,15 +61,15 @@ wheels = [
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.14.2"
+version = "4.14.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "soupsieve" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/e9/df2358efd7659577435e2177bfa69cba6c33216681af51a707193dec162a/beautifulsoup4-4.14.2.tar.gz", hash = "sha256:2a98ab9f944a11acee9cc848508ec28d9228abfd522ef0fad6a02a72e0ded69e", size = 625822, upload-time = "2025-09-29T10:05:42.613Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/b0/1c6a16426d389813b48d95e26898aff79abbde42ad353958ad95cc8c9b21/beautifulsoup4-4.14.3.tar.gz", hash = "sha256:6292b1c5186d356bba669ef9f7f051757099565ad9ada5dd630bd9de5fa7fb86", size = 627737, upload-time = "2025-11-30T15:08:26.084Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/94/fe/3aed5d0be4d404d12d36ab97e2f1791424d9ca39c2f754a6285d59a3b01d/beautifulsoup4-4.14.2-py3-none-any.whl", hash = "sha256:5ef6fa3a8cbece8488d66985560f97ed091e22bbc4e9c2338508a9d5de6d4515", size = 106392, upload-time = "2025-09-29T10:05:43.771Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/39/47f9197bdd44df24d67ac8893641e16f386c984a0619ef2ee4c51fbbc019/beautifulsoup4-4.14.3-py3-none-any.whl", hash = "sha256:0918bfe44902e6ad8d57732ba310582e98da931428d231a5ecb9e7c703a735bb", size = 107721, upload-time = "2025-11-30T15:08:24.087Z" },
 ]
 
 [[package]]
@@ -482,11 +482,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.49.0"
+version = "0.50.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/27/0d/1576939298d16177872a55b55d50f8f3169bc016bbecdc64979ff9fac3d4/libtmux-0.49.0.tar.gz", hash = "sha256:f462848f5712776910b71a1ccb79d19b54467cf2afd24f2a5d0de4f40e751706", size = 355432, upload-time = "2025-11-29T23:21:54.31Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/70/2c126dc1253c674ae01e89d63078f9b6a6ff3c6e224bfd1ca1fd3108751f/libtmux-0.50.0.tar.gz", hash = "sha256:7e3ae83e7e216903b311d7db25b3d736a1cc3ae61469ff0d5b6b563f6a92c3c0", size = 401066, upload-time = "2025-11-30T21:37:52.694Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/15/c48259d08c365174f2537769ba85f92e8faaec46c0a683f16576a781bd3e/libtmux-0.49.0-py3-none-any.whl", hash = "sha256:d722b08bc7e929968a0307c78f79b93b3b55701bb54f8159b82464d8f7a077c8", size = 59800, upload-time = "2025-11-29T23:21:52.75Z" },
+    { url = "https://files.pythonhosted.org/packages/99/9f/83c08266b4eda111ffca01ef7a0ce77cca01e47abda4c5933205c53ba57a/libtmux-0.50.0-py3-none-any.whl", hash = "sha256:518f80c59574f17de6ae58bab94bfac61d4baa6fafd336021a3019f46676a111", size = 77209, upload-time = "2025-11-30T21:37:51.216Z" },
 ]
 
 [[package]]
@@ -1390,7 +1390,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.3.9" },
-    { name = "libtmux", specifier = "~=0.49.0" },
+    { name = "libtmux", specifier = "~=0.50.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
