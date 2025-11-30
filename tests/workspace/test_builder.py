@@ -12,7 +12,6 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.common import has_lt_version
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -1380,10 +1379,6 @@ def test_first_pane_start_directory(session: Session, tmp_path: pathlib.Path) ->
         assert retry_until(f_)
 
 
-@pytest.mark.skipif(
-    has_lt_version("2.9"),
-    reason="needs option introduced in tmux >= 2.9",
-)
 def test_layout_main_horizontal(session: Session) -> None:
     """Test that tmux's main-horizontal layout is used when specified."""
     yaml_workspace = test_utils.get_workspace_file("workspace/builder/three_pane.yaml")
@@ -1461,7 +1456,6 @@ DEFAULT_SIZE_FIXTURES = [
     DEFAULT_SIZE_FIXTURES,
     ids=[f.test_id for f in DEFAULT_SIZE_FIXTURES],
 )
-@pytest.mark.skipif(has_lt_version("2.9"), reason="default-size only applies there")
 def test_issue_800_default_size_many_windows(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
