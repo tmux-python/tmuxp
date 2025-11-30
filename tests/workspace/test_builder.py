@@ -598,10 +598,6 @@ def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> N
             assert retry_until(f_)
 
 
-@pytest.mark.skipif(
-    has_lt_version("3.2a"),
-    reason="needs format introduced in tmux >= 3.2a",
-)
 def test_start_directory_sets_session_path(server: Server) -> None:
     """Test start_directory setting path in session_path."""
     workspace = ConfigReader._from_file(
