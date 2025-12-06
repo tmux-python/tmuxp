@@ -31,7 +31,21 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
-_Future release notes will be placed here_
+_Upcoming changes will be written here._
+
+### Documentation (#997)
+
+Sphinx build warnings fixed:
+
+- `docs/conf.py`: Add sphinx-autodoc-typehints configuration
+  (`always_document_param_types`, `typehints_use_rtype`) and suppress
+  forward reference warnings from TYPE_CHECKING blocks
+- `src/tmuxp/workspace/builder.py`: Fix "via via" typo in docstring
+- `src/tmuxp/workspace/freezer.py`: Fix "workspacee" typo in docstring
+- `src/tmuxp/log.py`: Fix RST parameter formatting in docstrings
+- `src/tmuxp/workspace/finders.py`: Add missing Returns/Raises sections
+  to `find_workspace_file` docstring
+- `docs/about_tmux.md`: Fix orphan footnote reference
 
 ## tmuxp 1.59.0 (2025-11-30)
 
