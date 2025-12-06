@@ -33,6 +33,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 _Upcoming changes will be written here._
 
+### Breaking changes
+
+#### libtmux 0.50.1 (#998)
+
+libtmux minimum version bumped from 0.50.0 -> 0.50.1.
+
 ### Documentation (#997)
 
 Sphinx build warnings fixed:
