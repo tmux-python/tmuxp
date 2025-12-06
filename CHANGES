@@ -33,6 +33,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 _Upcoming changes will be written here._
 
+#### libtmux 0.51.0 (#999)
+
+libtmux minimum version bumped from 0.50.1 -> 0.51.0.
+
+Hard API deprecations in libtmux 0.51.0 will cause deprecated APIs that faced only warnings to now error.
+
 ## tmuxp 1.59.1 (2025-12-06)
 
 ### Breaking changes

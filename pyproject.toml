@@ -39,7 +39,7 @@ include = [
   { path = "conftest.py", format = "sdist" },
 ]
 dependencies = [
-  "libtmux~=0.50.1",
+  "libtmux~=0.51.0",
   "colorama>=0.3.9",
   "PyYAML>=6.0"
 ]
