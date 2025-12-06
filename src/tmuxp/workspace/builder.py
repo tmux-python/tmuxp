@@ -110,7 +110,7 @@ class WorkspaceBuilder:
 
     The normal phase of loading is:
 
-    1. Load JSON / YAML file via via :class:`pathlib.Path`::
+    1. Load JSON / YAML file via :class:`pathlib.Path`::
 
            from tmuxp._internal import config_reader
            session_config = config_reader.ConfigReader._load(raw_yaml)
