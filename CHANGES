@@ -33,6 +33,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 _Upcoming changes will be written here._
 
+## tmuxp 1.59.1 (2025-12-06)
+
 ### Breaking changes
 
 #### libtmux 0.50.1 (#998)
