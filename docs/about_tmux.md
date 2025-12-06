@@ -572,7 +572,7 @@ line. The interval is determined by the `status-interval`:
 | `C-Up, C-Down` `C-Left, C-Right` | Resize the current pane in steps of one cell.                                                                              |
 | `M-Up, M-Down` `M-Left, M-Right` | Resize the current pane in steps of five cells.                                                                            |
 
-Source: tmux manpage[1].
+Source: tmux manpage[^id2].
 
 To get the text documentation of a `.1` manual file:
 

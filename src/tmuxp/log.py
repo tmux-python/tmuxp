@@ -76,14 +76,13 @@ class LogFormatter(logging.Formatter):
 
         Parameters
         ----------
-        :py:class:`logging.LogRecord` :
-            object. this is passed in from inside the
-            :py:meth:`logging.Formatter.format` record.
+        record : :py:class:`logging.LogRecord`
+            Object passed from :py:meth:`logging.Formatter.format`.
 
         Returns
         -------
         str
-            template for logger message
+            Template for logger message.
         """
         reset = Style.RESET_ALL
         levelname = set_style(
@@ -147,9 +146,8 @@ def debug_log_template(
 
     Parameters
     ----------
-    record :  :py:class:`logging.LogRecord`
-        This is passed in from inside the :py:meth:`logging.Formatter.format`
-        record.
+    record : :py:class:`logging.LogRecord`
+        Object passed from :py:meth:`logging.Formatter.format`.
 
     Returns
     -------

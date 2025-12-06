@@ -52,7 +52,7 @@ def inline(workspace_dict: dict[str, t.Any]) -> t.Any:
 
 
 def freeze(session: Session) -> dict[str, t.Any]:
-    """Freeze live tmux session into a tmuxp workspacee.
+    """Freeze live tmux session into a tmuxp workspace.
 
     Parameters
     ----------
