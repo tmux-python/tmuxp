@@ -153,11 +153,21 @@ def find_workspace_file(
     Parameters
     ----------
     workspace_file : str
-        workspace file, valid examples:
+        Workspace file, valid examples:
 
         - a file name, my_workspace.yaml
         - relative path, ../my_workspace.yaml or ../project
         - a period, .
+
+    Returns
+    -------
+    str
+        Resolved absolute path to workspace file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If workspace file cannot be found.
     """
     if not workspace_dir:
         workspace_dir = get_workspace_dir()
