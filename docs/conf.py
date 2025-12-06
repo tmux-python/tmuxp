@@ -119,6 +119,16 @@ autodoc_default_options = {
     "member-order": "bysource",
 }
 
+# sphinx-autodoc-typehints
+always_document_param_types = True
+typehints_use_rtype = False
+
+# Suppress warnings for forward references that can't be resolved
+# (types in TYPE_CHECKING blocks used for circular import avoidance)
+suppress_warnings = [
+    "sphinx_autodoc_typehints.forward_reference",
+]
+
 # sphinxext.opengraph
 ogp_site_url = about["__docs__"]
 ogp_image = "_static/img/icons/icon-192x192.png"
