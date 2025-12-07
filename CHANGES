@@ -31,7 +31,9 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
-_Upcoming changes will be written here._
+### CI
+
+- Migrate to PyPI Trusted Publisher (#1000)
 
 ## tmuxp 1.60.0 (2025-12-06)
 
