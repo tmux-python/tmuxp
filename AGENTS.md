@@ -111,7 +111,7 @@ windows:
 - Use ruff for formatting and linting
 - Maintain strict mypy type checking
 - Keep imports organized with future annotations at top
-- **Prefer namespace imports**: Use `import enum` and `enum.Enum` instead of `from enum import Enum`
+- **Prefer namespace imports for stdlib**: Use `import enum` and `enum.Enum` instead of `from enum import Enum`; third-party packages may use `from X import Y`
 - **Type imports**: Use `import typing as t` and access via namespace (e.g., `t.Optional`)
 - **Development workflow**: Format → Test → Commit → Lint/Type Check → Test → Final Commit
 
