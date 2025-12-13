@@ -751,3 +751,83 @@ def test_load_append_windows_to_current_session(
 
     assert len(server.sessions) == 1
     assert len(server.windows) == 6
+
+
+class LoadAttachExceptionFixture(t.NamedTuple):
+    """Test fixture for _load_attached() exception handling regression.
+
+    This tests the scenario where Session.attach() raises TmuxObjectDoesNotExist
+    because the session was killed while the user was attached (e.g., user killed
+    all windows from within tmux before detaching).
+
+    See: https://github.com/tmux-python/tmuxp/issues/1002
+    """
+
+    test_id: str
+    session_killed_during_attach: bool
+    should_not_raise: bool
+
+
+LOAD_ATTACH_EXCEPTION_FIXTURES: list[LoadAttachExceptionFixture] = [
+    LoadAttachExceptionFixture(
+        test_id="session_killed_during_attach_should_not_propagate",
+        session_killed_during_attach=True,
+        should_not_raise=True,  # _load_attached should NOT propagate exception
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(LoadAttachExceptionFixture._fields),
+    LOAD_ATTACH_EXCEPTION_FIXTURES,
+    ids=[test.test_id for test in LOAD_ATTACH_EXCEPTION_FIXTURES],
+)
+def test_load_attached_handles_session_killed_during_attach(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
+    test_id: str,
+    session_killed_during_attach: bool,
+    should_not_raise: bool,
+) -> None:
+    """Regression test: _load_attached() handles session killed during attach.
+
+    When a user is attached to a tmux session via `tmuxp load`, then kills the
+    session from within tmux (e.g., kills all windows), and then detaches,
+    the _load_attached() function should complete without raising an exception.
+
+    This was fixed by removing the refresh() call from Session.attach() in libtmux
+    since attach-session is a blocking interactive command and session state can
+    change arbitrarily while the user is attached.
+
+    See: https://github.com/tmux-python/tmuxp/issues/1002
+    """
+    # Load outside of tmux
+    monkeypatch.delenv("TMUX", raising=False)
+
+    yaml_config = test_utils.read_workspace_file("workspace/builder/two_pane.yaml")
+    session_config = ConfigReader._load(fmt="yaml", content=yaml_config)
+
+    builder = WorkspaceBuilder(session_config=session_config, server=server)
+
+    if session_killed_during_attach:
+        # Simulate attach returning successfully but session being killed during
+        # the attachment period. With the fix in libtmux, attach() doesn't call
+        # refresh() anymore, so this doesn't raise an exception.
+        #
+        # We patch at class level since builder.session doesn't exist until build()
+        def mock_attach(self: Session, *args: t.Any, **kwargs: t.Any) -> Session:
+            """Simulate attach() completing after session was killed during attach."""
+            # Kill the session to simulate user action during attachment
+            self.kill()
+            # Return the session object (even though it's now dead)
+            # This is what attach() does now - it doesn't try to refresh
+            return self
+
+        mocker.patch("libtmux.session.Session.attach", mock_attach)
+
+    if should_not_raise:
+        # With the libtmux fix, attach() doesn't call refresh(), so even if the
+        # session was killed during attachment, no exception is raised
+        _load_attached(builder, detached=False)
+        # If we get here without exception, the test passes
