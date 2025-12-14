@@ -482,11 +482,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.52.1"
+version = "0.53.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/94/1f/65921e53ddee1bd0225d19bb2930d0c1033e6c2b80a7ee0e4fb73862c189/libtmux-0.52.1.tar.gz", hash = "sha256:01fc034f7ce62d75eb4dfb6a01475dd0f32f044d92f084431d1f2cd3b5b97506", size = 403676, upload-time = "2025-12-07T21:45:26.003Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e7/28/e2b252817cb181aec2f42fe2d1d7fac5ec9c4d15bfb2b8ea4bd1179e4244/libtmux-0.53.0.tar.gz", hash = "sha256:1d19af4cea0c19543954d7e7317c7025c0739b029cccbe3b843212fae238f1bd", size = 405001, upload-time = "2025-12-14T11:59:11.337Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d6/58/019fda1f2e5c1ba49c32d45bc7edf5225d9935fb8c60d0ab07bea655307a/libtmux-0.52.1-py3-none-any.whl", hash = "sha256:d841a8fc5420d1a4d7ff471995e0069c0c067a8f7a5dece3f2582569ac8b1e02", size = 77583, upload-time = "2025-12-07T21:45:23.869Z" },
+    { url = "https://files.pythonhosted.org/packages/0e/d0/2e8bc5caa639ebb9f8801ba0be7070a28d48d8ed60e2a428d40f71fb88b8/libtmux-0.53.0-py3-none-any.whl", hash = "sha256:024b7ae6a12aae55358e8feb914c8632b3ab9bd61c0987c53559643c6a58ee4f", size = 77582, upload-time = "2025-12-14T11:59:09.739Z" },
 ]
 
 [[package]]
@@ -1390,7 +1390,7 @@ testing = [
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.3.9" },
-    { name = "libtmux", specifier = "~=0.52.1" },
+    { name = "libtmux", specifier = "~=0.53.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
