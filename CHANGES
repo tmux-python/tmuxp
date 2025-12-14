@@ -31,6 +31,18 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
+### Breaking changes
+
+#### libtmux 0.52.1 (#1001)
+
+libtmux minimum version bumped from 0.52.1 -> 0.53.0.
+
+### Bug fixes
+
+#### Fixed traceback on session load (#1002, #1003)
+
+Fixed issue where session killed tracebacks should show after `tmuxp load`'s attach.
+
 ## tmuxp 1.61.0 (2025-12-07)
 
 ### Breaking changes
