@@ -507,6 +507,32 @@ def test_blank_pane_spawn(
     assert len(window4.panes) == 2
 
 
+def test_if_conditions(
+    session: Session,
+) -> None:
+    """Test various ways of spawning panes with conditions from a tmuxp configuration."""
+    yaml_workspace_file = EXAMPLE_PATH / "if-conditions-test.yaml"
+    test_config = ConfigReader._from_file(yaml_workspace_file)
+
+    test_config = loader.expand(test_config)
+    builder = WorkspaceBuilder(session_config=test_config, server=session.server)
+    builder.build(session=session)
+
+    assert session == builder.session
+
+    with pytest.raises(ObjectDoesNotExist):
+        window1 = session.windows.get(window_name="window all false")
+        assert window1 is None
+
+    window2 = session.windows.get(window_name="window 2 of 3 true")
+    assert window2 is not None
+    assert len(window2.panes) == 2
+
+    window3 = session.windows.get(window_name="window 2 of 4 true")
+    assert window3 is not None
+    assert len(window3.panes) == 3
+
+
 def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
     """Test workspace builder setting start_directory relative to current directory."""
     test_dir = tmp_path / "foo bar"
