@@ -52,6 +52,10 @@ jobs:
         if: env.PUBLISH == 'true'
         run: uv sync --all-extras --dev
 
+      - name: Install just
+        if: env.PUBLISH == 'true'
+        uses: extractions/setup-just@v2
+
       - name: Print python versions
         if: env.PUBLISH == 'true'
         run: |
@@ -61,7 +65,7 @@ jobs:
       - name: Build documentation
         if: env.PUBLISH == 'true'
         run: |
-          pushd docs; make SPHINXBUILD='uv run sphinx-build' html; popd
+          cd docs && just html
 
       - name: Configure AWS Credentials
         if: env.PUBLISH == 'true'
