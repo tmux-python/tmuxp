@@ -9,25 +9,25 @@ tmuxp is a session manager for tmux that allows users to save and load tmux sess
 ## Development Commands
 
 ### Testing
-- `make test` or `uv run py.test` - Run all tests
+- `just test` or `uv run py.test` - Run all tests
 - `uv run py.test tests/path/to/test.py::TestClass::test_method` - Run a single test
 - `uv run ptw .` - Continuous test runner with pytest-watcher
 - `uv run ptw . --now --doctest-modules` - Watch tests including doctests
-- `make start` or `make watch_test` - Watch and run tests on file changes
+- `just start` or `just watch-test` - Watch and run tests on file changes
 
 ### Code Quality
-- `make ruff` or `uv run ruff check .` - Run linter
+- `just ruff` or `uv run ruff check .` - Run linter
 - `uv run ruff check . --fix --show-fixes` - Fix linting issues automatically
-- `make ruff_format` or `uv run ruff format .` - Format code
-- `make mypy` or `uv run mypy` - Run type checking (strict mode enabled)
-- `make watch_ruff` - Watch and lint on changes
-- `make watch_mypy` - Watch and type check on changes
+- `just ruff-format` or `uv run ruff format .` - Format code
+- `just mypy` or `uv run mypy` - Run type checking (strict mode enabled)
+- `just watch-ruff` - Watch and lint on changes
+- `just watch-mypy` - Watch and type check on changes
 
 ### Documentation
-- `make build_docs` - Build documentation
-- `make serve_docs` - Serve docs locally at http://localhost:8013
-- `make dev_docs` - Watch and serve docs with auto-reload
-- `make start_docs` - Alternative to dev_docs
+- `just build-docs` - Build documentation
+- `just serve-docs` - Serve docs locally at http://localhost:8013
+- `just dev-docs` - Watch and serve docs with auto-reload
+- `just start-docs` - Alternative to dev_docs
 
 ### CLI Commands
 - `tmuxp load <config>` - Load a tmux session from config
