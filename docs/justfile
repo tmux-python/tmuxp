@@ -20,45 +20,43 @@ allsphinxopts := "-d " + builddir + "/doctrees " + sphinxopts + " ."
 default:
     @just --list
 
-# ============================================================================
-# Build targets
-# ============================================================================
-
 # Build HTML documentation
+[group: 'build']
 html:
     {{ sphinxbuild }} -b html {{ allsphinxopts }} {{ builddir }}/html
     @echo ""
     @echo "Build finished. The HTML pages are in {{ builddir }}/html."
 
-# Clean build directory
-clean:
-    rm -rf {{ builddir }}/*
-
 # Build directory HTML files
+[group: 'build']
 dirhtml:
     {{ sphinxbuild }} -b dirhtml {{ allsphinxopts }} {{ builddir }}/dirhtml
     @echo ""
     @echo "Build finished. The HTML pages are in {{ builddir }}/dirhtml."
 
 # Build single HTML file
+[group: 'build']
 singlehtml:
     {{ sphinxbuild }} -b singlehtml {{ allsphinxopts }} {{ builddir }}/singlehtml
     @echo ""
     @echo "Build finished. The HTML page is in {{ builddir }}/singlehtml."
 
 # Build EPUB
+[group: 'build']
 epub:
     {{ sphinxbuild }} -b epub {{ allsphinxopts }} {{ builddir }}/epub
     @echo ""
     @echo "Build finished. The epub file is in {{ builddir }}/epub."
 
 # Build LaTeX files
+[group: 'build']
 latex:
     {{ sphinxbuild }} -b latex {{ allsphinxopts }} {{ builddir }}/latex
     @echo ""
     @echo "Build finished; the LaTeX files are in {{ builddir }}/latex."
 
 # Build PDF via LaTeX
+[group: 'build']
 latexpdf:
     {{ sphinxbuild }} -b latex {{ allsphinxopts }} {{ builddir }}/latex
     @echo "Running LaTeX files through pdflatex..."
@@ -66,48 +64,62 @@ latexpdf:
     @echo "pdflatex finished; the PDF files are in {{ builddir }}/latex."
 
 # Build plain text files
+[group: 'build']
 text:
     {{ sphinxbuild }} -b text {{ allsphinxopts }} {{ builddir }}/text
     @echo ""
     @echo "Build finished. The text files are in {{ builddir }}/text."
 
 # Build man pages
+[group: 'build']
 man:
     {{ sphinxbuild }} -b man {{ allsphinxopts }} {{ builddir }}/man
     @echo ""
     @echo "Build finished. The manual pages are in {{ builddir }}/man."
 
 # Build JSON output
+[group: 'build']
 json:
     {{ sphinxbuild }} -b json {{ allsphinxopts }} {{ builddir }}/json
     @echo ""
     @echo "Build finished; now you can process the JSON files."
 
+# Clean build directory
+[group: 'misc']
+[confirm]
+clean:
+    rm -rf {{ builddir }}/*
+
 # Build HTML help files
+[group: 'misc']
 htmlhelp:
     {{ sphinxbuild }} -b htmlhelp {{ allsphinxopts }} {{ builddir }}/htmlhelp
     @echo ""
     @echo "Build finished; now you can run HTML Help Workshop with the .hhp project file in {{ builddir }}/htmlhelp."
 
 # Build Qt help files
+[group: 'misc']
 qthelp:
     {{ sphinxbuild }} -b qthelp {{ allsphinxopts }} {{ builddir }}/qthelp
     @echo ""
     @echo "Build finished; now you can run 'qcollectiongenerator' with the .qhcp project file in {{ builddir }}/qthelp."
 
 # Build Devhelp files
+[group: 'misc']
 devhelp:
     {{ sphinxbuild }} -b devhelp {{ allsphinxopts }} {{ builddir }}/devhelp
     @echo ""
     @echo "Build finished."
 
 # Build Texinfo files
+[group: 'misc']
 texinfo:
     {{ sphinxbuild }} -b texinfo {{ allsphinxopts }} {{ builddir }}/texinfo
     @echo ""
     @echo "Build finished. The Texinfo files are in {{ builddir }}/texinfo."
 
 # Build Info files from Texinfo
+[group: 'misc']
 info:
     {{ sphinxbuild }} -b texinfo {{ allsphinxopts }} {{ builddir }}/texinfo
     @echo "Running Texinfo files through makeinfo..."
@@ -115,48 +127,47 @@ info:
     @echo "makeinfo finished; the Info files are in {{ builddir }}/texinfo."
 
 # Build gettext catalogs
+[group: 'misc']
 gettext:
     {{ sphinxbuild }} -b gettext {{ sphinxopts }} . {{ builddir }}/locale
     @echo ""
     @echo "Build finished. The message catalogs are in {{ builddir }}/locale."
 
-# ============================================================================
-# Validation
-# ============================================================================
-
 # Check all external links
+[group: 'validate']
 linkcheck:
     {{ sphinxbuild }} -b linkcheck {{ allsphinxopts }} {{ builddir }}/linkcheck
     @echo ""
     @echo "Link check complete; look for any errors in the above output or in {{ builddir }}/linkcheck/output.txt."
 
 # Run doctests embedded in documentation
+[group: 'validate']
 doctest:
     {{ sphinxbuild }} -b doctest {{ allsphinxopts }} {{ builddir }}/doctest
     @echo "Testing of doctests in the sources finished, look at the results in {{ builddir }}/doctest/output.txt."
 
 # Check build from scratch
+[group: 'validate']
 checkbuild:
     rm -rf {{ builddir }}
     {{ sphinxbuild }} -n -q ./ {{ builddir }}
 
 # Build redirects configuration
+[group: 'misc']
 redirects:
     {{ sphinxbuild }} -b rediraffewritediff {{ allsphinxopts }} {{ builddir }}/redirects
     @echo ""
     @echo "Build finished. The redirects are in rediraffe_redirects."
 
 # Show changes overview
+[group: 'misc']
 changes:
     {{ sphinxbuild }} -b changes {{ allsphinxopts }} {{ builddir }}/changes
     @echo ""
     @echo "The overview file is in {{ builddir }}/changes."
 
-# ============================================================================
-# Development
-# ============================================================================
-
 # Watch files and rebuild on change
+[group: 'dev']
 watch:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -167,6 +178,7 @@ watch:
     fi
 
 # Serve documentation via Python http.server
+[group: 'dev']
 serve:
     @echo '=============================================================='
     @echo ''
@@ -176,6 +188,7 @@ serve:
     python -m http.server {{ http_port }} --directory {{ builddir }}/html
 
 # Watch and serve simultaneously
+[group: 'dev']
 dev:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -183,9 +196,11 @@ dev:
     just serve
 
 # Start sphinx-autobuild server
+[group: 'dev']
 start:
     uv run sphinx-autobuild "{{ sourcedir }}" "{{ builddir }}" {{ sphinxopts }} --port {{ http_port }}
 
 # Design mode: watch static files and disable incremental builds
+[group: 'dev']
 design:
     uv run sphinx-autobuild "{{ sourcedir }}" "{{ builddir }}" {{ sphinxopts }} --port {{ http_port }} --watch "." -a
