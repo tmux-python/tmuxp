@@ -17,8 +17,8 @@
           "focus": true
         },
         "pane",
-        "make watch_mypy",
-        "make watch_test"
+        "just watch-mypy",
+        "just watch-test"
       ]
     },
     {
@@ -34,7 +34,7 @@
         },
         "pane",
         "pane",
-        "make start"
+        "just start"
       ]
     }
   ]
