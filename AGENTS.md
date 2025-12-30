@@ -115,10 +115,48 @@ windows:
 - **Type imports**: Use `import typing as t` and access via namespace (e.g., `t.Optional`)
 - **Development workflow**: Format → Test → Commit → Lint/Type Check → Test → Final Commit
 
-## Important Notes from Cursor Rules
+## Doctests
+
+**All functions and methods MUST have working doctests.** Doctests serve as both documentation and tests.
+
+**CRITICAL RULES:**
+- Doctests MUST actually execute - never comment out function calls or similar
+- Doctests MUST NOT be converted to `.. code-block::` as a workaround (code-blocks don't run)
+- If you cannot create a working doctest, **STOP and ask for help**
+
+**Available tools for doctests:**
+- `doctest_namespace` fixtures: `server`, `session`, `window`, `pane`, `tmp_path`, `test_utils`
+- Ellipsis for variable output: `# doctest: +ELLIPSIS`
+- Update `conftest.py` to add new fixtures to `doctest_namespace`
+
+**`# doctest: +SKIP` is NOT permitted** - it's just another workaround that doesn't test anything. Use the fixtures properly - tmux is required to run tests anyway.
+
+**Using fixtures in doctests:**
+```python
+>>> from tmuxp.workspace.builder import WorkspaceBuilder
+>>> config = {'session_name': 'test', 'windows': [{'window_name': 'main'}]}
+>>> builder = WorkspaceBuilder(session_config=config, server=server)  # doctest: +ELLIPSIS
+>>> builder.build()
+>>> builder.session.name
+'test'
+```
+
+**When output varies, use ellipsis:**
+```python
+>>> session.session_id  # doctest: +ELLIPSIS
+'$...'
+>>> window.window_id  # doctest: +ELLIPSIS
+'@...'
+```
+
+**Additional guidelines:**
+1. **Use narrative descriptions** for test sections rather than inline comments
+2. **Move complex examples** to dedicated test files at `tests/examples/<path>/test_<example>.py`
+3. **Keep doctests simple and focused** on demonstrating usage
+4. **Add blank lines between test sections** for improved readability
+
+## Important Notes
 
 - **QA every edit**: Run formatting and tests before committing
-- **Doctest format**: Use narrative descriptions with blank lines between sections
-- **Complex examples**: Move to `tests/examples/<path>/test_<example>.py`
 - **Minimum Python**: 3.9+ (as per README)
 - **Minimum tmux**: 3.2+ (as per README)
