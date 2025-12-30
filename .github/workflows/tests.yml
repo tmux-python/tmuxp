@@ -13,7 +13,7 @@ jobs:
         python-version: ['3.14']
         tmux-version: ['3.2a', '3.3a', '3.4', '3.5', '3.6', 'master']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -100,7 +100,7 @@ jobs:
         python-version: ['3.14']
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
