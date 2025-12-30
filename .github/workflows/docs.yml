@@ -54,7 +54,7 @@ jobs:
 
       - name: Install just
         if: env.PUBLISH == 'true'
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v3
 
       - name: Print python versions
         if: env.PUBLISH == 'true'
