@@ -39,7 +39,7 @@ jobs:
         run: echo "PUBLISH=$(echo true)" >> $GITHUB_ENV
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
         if: env.PUBLISH == 'true'
         with:
           enable-cache: true
