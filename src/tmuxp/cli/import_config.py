@@ -9,6 +9,7 @@ import sys
 import typing as t
 
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import importers
 from tmuxp.workspace.finders import find_workspace_file
 
@@ -181,12 +182,12 @@ def import_config(
         dest = None
         while not dest:
             dest_path = prompt(
-                f"Save to [{os.getcwd()}]",
+                f"Save to [{PrivatePath(os.getcwd())}]",
                 value_proc=_resolve_path_no_overwrite,
             )
 
             # dest = dest_prompt
-            if prompt_yes_no(f"Save to {dest_path}?"):
+            if prompt_yes_no(f"Save to {PrivatePath(dest_path)}?"):
                 dest = dest_path
 
         pathlib.Path(dest).write_text(
@@ -194,7 +195,9 @@ def import_config(
             encoding=locale.getpreferredencoding(False),
         )
 
-        tmuxp_echo(colors.success("Saved to ") + colors.info(dest) + ".")
+        tmuxp_echo(
+            colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + ".",
+        )
     else:
         tmuxp_echo(
             colors.muted("tmuxp has examples in JSON and YAML format at ")

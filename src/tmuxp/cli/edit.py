@@ -6,6 +6,7 @@ import os
 import subprocess
 import typing as t
 
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file
 
 from ._colors import Colors, get_color_mode
@@ -45,7 +46,7 @@ def command_edit(
     sys_editor = os.environ.get("EDITOR", "vim")
     print(  # NOQA: T201 RUF100
         colors.muted("Opening ")
-        + colors.info(str(workspace_file))
+        + colors.info(str(PrivatePath(workspace_file)))
         + colors.muted(" in ")
         + colors.highlight(sys_editor, bold=False)
         + colors.muted("..."),
