@@ -14,6 +14,7 @@ from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import get_version, tmux_cmd
 
 from tmuxp.__about__ import __version__
+from tmuxp._internal.private_path import PrivatePath, collapse_home_in_string
 
 from ._colors import Colors, get_color_mode
 from .utils import tmuxp_echo
@@ -48,57 +49,67 @@ def command_debug_info(
     color_mode = get_color_mode(args.color if args else None)
     colors = Colors(color_mode)
 
-    def prepend_tab(strings: list[str]) -> list[str]:
-        """Prepend tab to strings in list."""
-        return [f"\t{x}" for x in strings]
-
-    def output_break() -> str:
-        """Generate output break."""
-        return "-" * 25
+    def private(path: pathlib.Path | str | None) -> str:
+        """Privacy-mask a path by collapsing home directory to ~."""
+        if path is None:
+            return ""
+        return str(PrivatePath(path))
 
     def format_tmux_resp(std_resp: tmux_cmd) -> str:
-        """Format tmux command response for tmuxp stdout."""
-        stderr_lines = "\n".join(prepend_tab(std_resp.stderr))
-        return "\n".join(
-            [
-                "\n".join(prepend_tab(std_resp.stdout)),
-                colors.error(stderr_lines) if stderr_lines.strip() else "",
-            ],
-        )
+        """Format tmux command response with syntax highlighting."""
+        stdout_lines = []
+        for line in std_resp.stdout:
+            formatted = colors.format_tmux_option(line)
+            stdout_lines.append(f"\t{formatted}")
+
+        stderr_formatted = ""
+        if std_resp.stderr:
+            stderr_lines = "\n".join(f"\t{line}" for line in std_resp.stderr)
+            if stderr_lines.strip():
+                stderr_formatted = colors.error(stderr_lines)
+
+        return "\n".join(["\n".join(stdout_lines), stderr_formatted])
+
+    # Build environment section with indented key-value pairs
+    env_items = [
+        f"\t{colors.format_kv('dist', platform.platform())}",
+        f"\t{colors.format_kv('arch', platform.machine())}",
+        f"\t{colors.format_kv('uname', '; '.join(platform.uname()[:3]))}",
+        f"\t{colors.format_kv('version', platform.version())}",
+    ]
 
     output = [
-        output_break(),
-        "environment:\n{}".format(
-            "\n".join(
-                prepend_tab(
-                    [
-                        f"dist: {platform.platform()}",
-                        f"arch: {platform.machine()}",
-                        "uname: {}".format("; ".join(platform.uname()[:3])),
-                        f"version: {platform.version()}",
-                    ],
-                ),
-            ),
+        colors.format_separator(),
+        f"{colors.format_label('environment')}:\n" + "\n".join(env_items),
+        colors.format_separator(),
+        colors.format_kv(
+            "python version",
+            " ".join(sys.version.split("\n")),
         ),
-        output_break(),
-        "python version: {}".format(" ".join(sys.version.split("\n"))),
-        "system PATH: {}".format(os.environ["PATH"]),
-        f"tmux version: {get_version()}",
-        f"libtmux version: {libtmux_version}",
-        f"tmuxp version: {__version__}",
-        "tmux path: {}".format(shutil.which("tmux")),
-        f"tmuxp path: {tmuxp_path}",
-        "shell: {}".format(os.environ["SHELL"]),
-        output_break(),
-        "tmux sessions:\n{}".format(format_tmux_resp(tmux_cmd("list-sessions"))),
-        "tmux windows:\n{}".format(format_tmux_resp(tmux_cmd("list-windows"))),
-        "tmux panes:\n{}".format(format_tmux_resp(tmux_cmd("list-panes"))),
-        "tmux global options:\n{}".format(
-            format_tmux_resp(tmux_cmd("show-options", "-g")),
+        colors.format_kv(
+            "system PATH",
+            collapse_home_in_string(os.environ.get("PATH", "")),
         ),
-        "tmux window options:\n{}".format(
-            format_tmux_resp(tmux_cmd("show-window-options", "-g")),
+        colors.format_kv("tmux version", colors.format_version(str(get_version()))),
+        colors.format_kv("libtmux version", colors.format_version(libtmux_version)),
+        colors.format_kv("tmuxp version", colors.format_version(__version__)),
+        colors.format_kv(
+            "tmux path",
+            colors.format_path(private(shutil.which("tmux"))),
         ),
+        colors.format_kv("tmuxp path", colors.format_path(private(tmuxp_path))),
+        colors.format_kv("shell", private(os.environ.get("SHELL", ""))),
+        colors.format_separator(),
+        f"{colors.format_label('tmux sessions')}:\n"
+        + format_tmux_resp(tmux_cmd("list-sessions")),
+        f"{colors.format_label('tmux windows')}:\n"
+        + format_tmux_resp(tmux_cmd("list-windows")),
+        f"{colors.format_label('tmux panes')}:\n"
+        + format_tmux_resp(tmux_cmd("list-panes")),
+        f"{colors.format_label('tmux global options')}:\n"
+        + format_tmux_resp(tmux_cmd("show-options", "-g")),
+        f"{colors.format_label('tmux window options')}:\n"
+        + format_tmux_resp(tmux_cmd("show-window-options", "-g")),
     ]
 
     tmuxp_echo("\n".join(output))
