@@ -15,6 +15,7 @@ from libtmux.server import Server
 
 from tmuxp import exc, log, util
 from tmuxp._internal import config_reader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
@@ -309,7 +310,9 @@ def load_workspace(
         workspace_file = pathlib.Path(workspace_file)
 
     tmuxp_echo(
-        cli_colors.info("[Loading]") + " " + cli_colors.highlight(str(workspace_file)),
+        cli_colors.info("[Loading]")
+        + " "
+        + cli_colors.highlight(str(PrivatePath(workspace_file))),
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
