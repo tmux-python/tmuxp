@@ -74,6 +74,21 @@ def load_plugins(
     -------
     list
         List of loaded plugin instances.
+
+    Examples
+    --------
+    Empty config returns empty list:
+
+    >>> from tmuxp.cli.load import load_plugins
+    >>> load_plugins({'session_name': 'test'})
+    []
+
+    With explicit Colors instance:
+
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> load_plugins({'session_name': 'test'}, colors=colors)
+    []
     """
     if colors is None:
         colors = Colors(ColorMode.AUTO)
