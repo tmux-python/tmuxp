@@ -175,11 +175,13 @@ def cli(_args: list[str] | None = None) -> None:
             command_import_teamocil(
                 workspace_file=args.workspace_file,
                 parser=parser,
+                color=args.color,
             )
         elif import_subparser_name == "tmuxinator":
             command_import_tmuxinator(
                 workspace_file=args.workspace_file,
                 parser=parser,
+                color=args.color,
             )
     elif args.subparser_name == "convert":
         command_convert(
