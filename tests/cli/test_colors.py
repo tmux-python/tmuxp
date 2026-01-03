@@ -6,7 +6,13 @@ import sys
 
 import pytest
 
-from tmuxp.cli._colors import ColorMode, Colors, get_color_mode
+from tmuxp.cli._colors import (
+    ColorMode,
+    Colors,
+    UnknownStyleColor,
+    get_color_mode,
+    style,
+)
 
 # ColorMode tests
 
@@ -233,3 +239,33 @@ def test_disabled_preserves_text() -> None:
 
     with_spaces = "some message"
     assert colors.success(with_spaces) == with_spaces
+
+
+# RGB tuple validation tests
+
+
+def test_style_with_valid_rgb_tuple() -> None:
+    """style() should accept valid RGB tuple."""
+    result = style("test", fg=(255, 128, 0))
+    assert "\033[38;2;255;128;0m" in result
+    assert "test" in result
+
+
+def test_style_with_invalid_2_element_tuple() -> None:
+    """style() should raise UnknownStyleColor for 2-element tuple."""
+    with pytest.raises(UnknownStyleColor):
+        style("test", fg=(255, 128))
+
+
+def test_style_with_invalid_4_element_tuple() -> None:
+    """style() should raise UnknownStyleColor for 4-element tuple."""
+    with pytest.raises(UnknownStyleColor):
+        style("test", fg=(255, 128, 0, 64))
+
+
+def test_style_with_empty_tuple() -> None:
+    """style() treats empty tuple as 'no color' (falsy value)."""
+    result = style("test", fg=())
+    # Empty tuple is falsy, so no fg color is applied
+    assert "test" in result
+    assert "\033[38" not in result  # No foreground color escape
