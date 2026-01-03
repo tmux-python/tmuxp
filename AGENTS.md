@@ -192,5 +192,5 @@ $ uv run pytest --cov
 ## Important Notes
 
 - **QA every edit**: Run formatting and tests before committing
-- **Minimum Python**: 3.9+ (as per README)
+- **Minimum Python**: 3.10+ (per pyproject.toml)
 - **Minimum tmux**: 3.2+ (as per README)
