@@ -11,12 +11,15 @@ from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
+from ._colors import Colors, get_color_mode
 from .utils import prompt_yes_no
 
 if t.TYPE_CHECKING:
     import argparse
+    from typing import TypeAlias
 
     AllowedFileTypes = t.Literal["json", "yaml"]
+    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
 
 def create_convert_subparser(
@@ -59,8 +62,12 @@ def command_convert(
     workspace_file: str | pathlib.Path,
     answer_yes: bool,
     parser: argparse.ArgumentParser | None = None,
+    color: CLIColorModeLiteral | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp convert`` convert a tmuxp config between JSON and YAML."""
+    color_mode = get_color_mode(color)
+    colors = Colors(color_mode)
+
     workspace_file = find_workspace_file(
         workspace_file,
         workspace_dir=get_workspace_dir(),
@@ -90,8 +97,11 @@ def command_convert(
 
     if (
         not answer_yes
-        and prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?")
-        and prompt_yes_no(f"Save workspace to {newfile}?")
+        and prompt_yes_no(
+            f"Convert {colors.info(str(workspace_file))} to "
+            f"{colors.highlight(to_filetype)}?",
+        )
+        and prompt_yes_no(f"Save workspace to {colors.info(str(newfile))}?")
     ):
         answer_yes = True
 
@@ -100,4 +110,8 @@ def command_convert(
             new_workspace,
             encoding=locale.getpreferredencoding(False),
         )
-        print(f"New workspace file saved to <{newfile}>.")  # NOQA: T201 RUF100
+        print(  # NOQA: T201 RUF100
+            colors.success("New workspace file saved to ")
+            + colors.info(f"<{newfile}>")
+            + ".",
+        )
