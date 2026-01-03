@@ -318,6 +318,154 @@ class Colors:
         """
         return self._colorize(text, self.MUTED, bold=False)
 
+    # Formatting helpers for structured output
+
+    def format_label(self, label: str) -> str:
+        """Format a label (key in key:value pair).
+
+        Parameters
+        ----------
+        label : str
+            Label text to format.
+
+        Returns
+        -------
+        str
+            Highlighted label text (bold magenta when colors enabled).
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_label("tmux path")
+        'tmux path'
+        """
+        return self.highlight(label, bold=True)
+
+    def format_path(self, path: str) -> str:
+        """Format a file path with info color.
+
+        Parameters
+        ----------
+        path : str
+            Path string to format.
+
+        Returns
+        -------
+        str
+            Cyan-colored path when colors enabled.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_path("/usr/bin/tmux")
+        '/usr/bin/tmux'
+        """
+        return self.info(path)
+
+    def format_version(self, version: str) -> str:
+        """Format a version string.
+
+        Parameters
+        ----------
+        version : str
+            Version string to format.
+
+        Returns
+        -------
+        str
+            Cyan-colored version when colors enabled.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_version("3.2a")
+        '3.2a'
+        """
+        return self.info(version)
+
+    def format_separator(self, length: int = 25) -> str:
+        """Format a visual separator line.
+
+        Parameters
+        ----------
+        length : int
+            Length of the separator line. Default is 25.
+
+        Returns
+        -------
+        str
+            Muted (blue) separator line when colors enabled.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_separator()
+        '-------------------------'
+        >>> colors.format_separator(10)
+        '----------'
+        """
+        return self.muted("-" * length)
+
+    def format_kv(self, key: str, value: str) -> str:
+        """Format key: value pair with syntax highlighting.
+
+        Parameters
+        ----------
+        key : str
+            Key/label to highlight.
+        value : str
+            Value to display (not colorized, allows caller to format).
+
+        Returns
+        -------
+        str
+            Formatted "key: value" string with highlighted key.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_kv("tmux version", "3.2a")
+        'tmux version: 3.2a'
+        """
+        return f"{self.format_label(key)}: {value}"
+
+    def format_tmux_option(self, line: str) -> str:
+        """Format tmux option line with syntax highlighting.
+
+        Handles both "key=value" and "key value" formats commonly
+        returned by tmux show-options commands.
+
+        Parameters
+        ----------
+        line : str
+            Option line to format.
+
+        Returns
+        -------
+        str
+            Formatted line with highlighted key and info-colored value.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_tmux_option("status on")
+        'status on'
+        >>> colors.format_tmux_option("base-index=1")
+        'base-index=1'
+        """
+        # Handle key=value format
+        if "=" in line:
+            key, val = line.split("=", 1)
+            return f"{self.highlight(key, bold=False)}={self.info(val)}"
+
+        # Handle "key value" format (space-separated)
+        parts = line.split(None, 1)
+        if len(parts) == 2:
+            return f"{self.highlight(parts[0], bold=False)} {self.info(parts[1])}"
+
+        # Single value or unparseable - return as-is
+        return line
+
 
 def get_color_mode(color_arg: str | None = None) -> ColorMode:
     """Convert CLI argument string to ColorMode enum.
