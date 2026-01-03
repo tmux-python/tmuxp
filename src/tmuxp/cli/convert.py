@@ -9,6 +9,7 @@ import typing as t
 
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
 from ._colors import Colors, get_color_mode
@@ -98,10 +99,12 @@ def command_convert(
     if (
         not answer_yes
         and prompt_yes_no(
-            f"Convert {colors.info(str(workspace_file))} to "
+            f"Convert {colors.info(str(PrivatePath(workspace_file)))} to "
             f"{colors.highlight(to_filetype)}?",
         )
-        and prompt_yes_no(f"Save workspace to {colors.info(str(newfile))}?")
+        and prompt_yes_no(
+            f"Save workspace to {colors.info(str(PrivatePath(newfile)))}?",
+        )
     ):
         answer_yes = True
 
@@ -112,6 +115,6 @@ def command_convert(
         )
         print(  # NOQA: T201 RUF100
             colors.success("New workspace file saved to ")
-            + colors.info(f"<{newfile}>")
+            + colors.info(f"<{PrivatePath(newfile)}>")
             + ".",
         )

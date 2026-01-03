@@ -13,6 +13,7 @@ from libtmux.server import Server
 
 from tmuxp import exc, util
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.exc import TmuxpException
 from tmuxp.workspace import freezer
 from tmuxp.workspace.finders import get_workspace_dir
@@ -173,7 +174,7 @@ def command_freeze(
         )
         if not args.force and os.path.exists(dest_prompt):
             print(  # NOQA: T201 RUF100
-                colors.warning(f"{dest_prompt} exists.")
+                colors.warning(f"{PrivatePath(dest_prompt)} exists.")
                 + " "
                 + colors.muted("Pick a new filename."),
             )
@@ -233,5 +234,5 @@ def command_freeze(
 
         if not args.quiet:
             print(  # NOQA: T201 RUF100
-                colors.success("Saved to ") + colors.info(dest) + ".",
+                colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + ".",
             )
