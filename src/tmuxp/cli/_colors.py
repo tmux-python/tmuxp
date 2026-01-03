@@ -1,8 +1,8 @@
 """Color output utilities for tmuxp CLI.
 
 This module provides semantic color utilities following patterns from vcspull
-and CPython's _colorize module. It integrates with the existing style() function
-in utils.py for ANSI rendering.
+and CPython's _colorize module. It includes low-level ANSI styling functions
+and high-level semantic color utilities.
 
 Examples
 --------
@@ -31,7 +31,14 @@ from __future__ import annotations
 
 import enum
 import os
+import re
 import sys
+import typing as t
+
+if t.TYPE_CHECKING:
+    from typing import TypeAlias
+
+    CLIColour: TypeAlias = int | tuple[int, int, int] | str
 
 
 class ColorMode(enum.Enum):
@@ -161,7 +168,7 @@ class Colors:
         return sys.stdout.isatty()
 
     def _colorize(self, text: str, fg: str, bold: bool = False) -> str:
-        """Apply color using existing style() function.
+        """Apply color using style() function.
 
         Parameters
         ----------
@@ -178,9 +185,6 @@ class Colors:
             Colorized text if enabled, plain text otherwise.
         """
         if self._enabled:
-            # Lazy import to avoid circular dependency with utils.py
-            from .utils import style
-
             return style(text, fg=fg, bold=bold)
         return text
 
@@ -513,3 +517,219 @@ def get_color_mode(color_arg: str | None = None) -> ColorMode:
         return ColorMode(color_arg.lower())
     except ValueError:
         return ColorMode.AUTO
+
+
+# ANSI styling utilities (originally from click, via utils.py)
+
+_ansi_re = re.compile(r"\033\[[;?0-9]*[a-zA-Z]")
+
+
+def strip_ansi(value: str) -> str:
+    r"""Clear ANSI escape codes from a string value.
+
+    Parameters
+    ----------
+    value : str
+        String potentially containing ANSI escape codes.
+
+    Returns
+    -------
+    str
+        String with ANSI codes removed.
+
+    Examples
+    --------
+    >>> strip_ansi("\033[32mgreen\033[0m")
+    'green'
+    >>> strip_ansi("plain text")
+    'plain text'
+    """
+    return _ansi_re.sub("", value)
+
+
+_ansi_colors = {
+    "black": 30,
+    "red": 31,
+    "green": 32,
+    "yellow": 33,
+    "blue": 34,
+    "magenta": 35,
+    "cyan": 36,
+    "white": 37,
+    "reset": 39,
+    "bright_black": 90,
+    "bright_red": 91,
+    "bright_green": 92,
+    "bright_yellow": 93,
+    "bright_blue": 94,
+    "bright_magenta": 95,
+    "bright_cyan": 96,
+    "bright_white": 97,
+}
+_ansi_reset_all = "\033[0m"
+
+
+def _interpret_color(
+    color: int | tuple[int, int, int] | str,
+    offset: int = 0,
+) -> str:
+    """Convert color specification to ANSI escape code number.
+
+    Parameters
+    ----------
+    color : int | tuple[int, int, int] | str
+        Color as 256-color index, RGB tuple, or color name.
+    offset : int
+        Offset for background colors (10 for bg).
+
+    Returns
+    -------
+    str
+        ANSI escape code parameters.
+    """
+    if isinstance(color, int):
+        return f"{38 + offset};5;{color:d}"
+
+    if isinstance(color, (tuple, list)):
+        r, g, b = color
+        return f"{38 + offset};2;{r:d};{g:d};{b:d}"
+
+    return str(_ansi_colors[color] + offset)
+
+
+class UnknownStyleColor(Exception):
+    """Raised when encountering an unknown terminal style color.
+
+    Examples
+    --------
+    >>> try:
+    ...     raise UnknownStyleColor("invalid_color")
+    ... except UnknownStyleColor as e:
+    ...     "invalid_color" in str(e)
+    True
+    """
+
+    def __init__(self, color: CLIColour, *args: object, **kwargs: object) -> None:
+        return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
+
+
+def style(
+    text: t.Any,
+    fg: CLIColour | None = None,
+    bg: CLIColour | None = None,
+    bold: bool | None = None,
+    dim: bool | None = None,
+    underline: bool | None = None,
+    overline: bool | None = None,
+    italic: bool | None = None,
+    blink: bool | None = None,
+    reverse: bool | None = None,
+    strikethrough: bool | None = None,
+    reset: bool = True,
+) -> str:
+    r"""Apply ANSI styling to text.
+
+    Credit: click.
+
+    Parameters
+    ----------
+    text : Any
+        Text to style (will be converted to str).
+    fg : CLIColour | None
+        Foreground color (name, 256-index, or RGB tuple).
+    bg : CLIColour | None
+        Background color.
+    bold : bool | None
+        Apply bold style.
+    dim : bool | None
+        Apply dim style.
+    underline : bool | None
+        Apply underline style.
+    overline : bool | None
+        Apply overline style.
+    italic : bool | None
+        Apply italic style.
+    blink : bool | None
+        Apply blink style.
+    reverse : bool | None
+        Apply reverse video style.
+    strikethrough : bool | None
+        Apply strikethrough style.
+    reset : bool
+        Append reset code at end. Default True.
+
+    Returns
+    -------
+    str
+        Styled text with ANSI escape codes.
+
+    Examples
+    --------
+    >>> style("hello", fg="green")  # doctest: +ELLIPSIS
+    '\x1b[32m...'
+    >>> "hello" in style("hello", fg="green")
+    True
+    """
+    if not isinstance(text, str):
+        text = str(text)
+
+    bits = []
+
+    if fg:
+        try:
+            bits.append(f"\033[{_interpret_color(fg)}m")
+        except KeyError:
+            raise UnknownStyleColor(color=fg) from None
+
+    if bg:
+        try:
+            bits.append(f"\033[{_interpret_color(bg, 10)}m")
+        except KeyError:
+            raise UnknownStyleColor(color=bg) from None
+
+    if bold is not None:
+        bits.append(f"\033[{1 if bold else 22}m")
+    if dim is not None:
+        bits.append(f"\033[{2 if dim else 22}m")
+    if underline is not None:
+        bits.append(f"\033[{4 if underline else 24}m")
+    if overline is not None:
+        bits.append(f"\033[{53 if overline else 55}m")
+    if italic is not None:
+        bits.append(f"\033[{3 if italic else 23}m")
+    if blink is not None:
+        bits.append(f"\033[{5 if blink else 25}m")
+    if reverse is not None:
+        bits.append(f"\033[{7 if reverse else 27}m")
+    if strikethrough is not None:
+        bits.append(f"\033[{9 if strikethrough else 29}m")
+    bits.append(text)
+    if reset:
+        bits.append(_ansi_reset_all)
+    return "".join(bits)
+
+
+def unstyle(text: str) -> str:
+    r"""Remove ANSI styling information from a string.
+
+    Usually it's not necessary to use this function as tmuxp_echo function will
+    automatically remove styling if necessary.
+
+    Credit: click.
+
+    Parameters
+    ----------
+    text : str
+        Text to remove style information from.
+
+    Returns
+    -------
+    str
+        Text with ANSI codes removed.
+
+    Examples
+    --------
+    >>> unstyle("\033[32mgreen\033[0m")
+    'green'
+    """
+    return strip_ansi(text)
