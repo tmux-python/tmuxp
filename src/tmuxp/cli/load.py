@@ -116,13 +116,15 @@ def load_plugins(
     return plugins
 
 
-def _reattach(builder: WorkspaceBuilder) -> None:
+def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
     """
     Reattach session (depending on env being inside tmux already or not).
 
     Parameters
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
+    colors : Colors | None
+        Optional Colors instance for styled output.
 
     Notes
     -----
@@ -137,7 +139,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
-            print(line)  # NOQA: T201 RUF100
+            print(colors.info(line) if colors else line)  # NOQA: T201 RUF100
 
     if "TMUX" in os.environ:
         builder.session.switch_client()
@@ -169,19 +171,22 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
         builder.session.attach()
 
 
-def _load_detached(builder: WorkspaceBuilder) -> None:
+def _load_detached(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
     """
     Load workspace in new session but don't attach.
 
     Parameters
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
+    colors : Colors | None
+        Optional Colors instance for styled output.
     """
     builder.build()
 
     assert builder.session is not None
 
-    print("Session created in detached state.")  # NOQA: T201 RUF100
+    msg = "Session created in detached state."
+    print(colors.info(msg) if colors else msg)  # NOQA: T201 RUF100
 
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
@@ -356,12 +361,12 @@ def load_workspace(
                 default=True,
             )
         ):
-            _reattach(builder)
+            _reattach(builder, cli_colors)
         return None
 
     try:
         if detached:
-            _load_detached(builder)
+            _load_detached(builder, cli_colors)
             return _setup_plugins(builder)
 
         if append:
@@ -390,7 +395,7 @@ def load_workspace(
             elif choice == "a":
                 _load_append_windows_to_current_session(builder)
             else:
-                _load_detached(builder)
+                _load_detached(builder, cli_colors)
         else:
             _load_attached(builder, detached)
 
@@ -412,7 +417,7 @@ def load_workspace(
                 builder.session.kill()
                 tmuxp_echo(cli_colors.muted("Session killed."))
         elif choice == "a":
-            _reattach(builder)
+            _reattach(builder, cli_colors)
         else:
             sys.exit()
 
