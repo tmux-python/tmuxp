@@ -8,6 +8,8 @@ import typing as t
 
 from tmuxp import log
 
+from ._colors import ColorMode, Colors
+
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
     from typing import TypeAlias
@@ -59,7 +61,8 @@ def prompt(
     `flask-script <https://github.com/techniq/flask-script>`_. See the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
-    prompt_ = name + ((default and f" [{default}]") or "")
+    colors = Colors(ColorMode.AUTO)
+    prompt_ = name + ((default and " " + colors.info(f"[{default}]")) or "")
     prompt_ += (name.endswith("?") and " ") or ": "
     while True:
         rv = input(prompt_) or default
@@ -99,6 +102,7 @@ def prompt_bool(
     -------
     bool
     """
+    colors = Colors(ColorMode.AUTO)
     yes_choices = yes_choices or ("y", "yes", "1", "on", "true", "t")
     no_choices = no_choices or ("n", "no", "0", "off", "false", "f")
 
@@ -109,7 +113,7 @@ def prompt_bool(
     else:
         prompt_choice = "y/N"
 
-    prompt_ = name + f" [{prompt_choice}]"
+    prompt_ = name + " " + colors.muted(f"[{prompt_choice}]")
     prompt_ += (name.endswith("?") and " ") or ": "
 
     while True:
@@ -151,6 +155,7 @@ def prompt_choices(
     -------
     str
     """
+    colors = Colors(ColorMode.AUTO)
     choices_: list[str] = []
     options: list[str] = []
 
@@ -162,8 +167,13 @@ def prompt_choices(
             choice = choice[0]
         choices_.append(choice)
 
+    choices_str = colors.muted(f"({', '.join(options)})")
+    default_str = " " + colors.info(f"[{default}]") if default else ""
+    prompt_text = f"{name} - {choices_str}{default_str}"
+
     while True:
-        rv = prompt(name + " - ({})".format(", ".join(options)), default=default)
+        prompt_ = prompt_text + ": "
+        rv = input(prompt_) or default
         if not rv or rv == default:
             return default
         rv = rv.lower()
