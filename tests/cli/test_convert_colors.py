@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import pathlib
+
 import pytest
 
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli._colors import ColorMode, Colors
 
 # Convert command color output tests
@@ -96,3 +99,49 @@ def test_convert_save_prompt_format(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "\033[36m" in prompt  # cyan for file path
     assert newfile in prompt
     assert "Save workspace to" in prompt
+
+
+# Privacy masking tests
+
+
+def test_convert_masks_home_in_convert_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Convert should mask home directory in convert prompt."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    workspace_file = pathlib.Path("/home/testuser/.tmuxp/session.yaml")
+    prompt = f"Convert {colors.info(str(PrivatePath(workspace_file)))} to json?"
+
+    assert "~/.tmuxp/session.yaml" in prompt
+    assert "/home/testuser" not in prompt
+
+
+def test_convert_masks_home_in_save_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Convert should mask home directory in save prompt."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    newfile = pathlib.Path("/home/testuser/.tmuxp/session.json")
+    prompt = f"Save workspace to {colors.info(str(PrivatePath(newfile)))}?"
+
+    assert "~/.tmuxp/session.json" in prompt
+    assert "/home/testuser" not in prompt
+
+
+def test_convert_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Convert should mask home directory in saved message."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    newfile = pathlib.Path("/home/testuser/.tmuxp/session.json")
+    output = (
+        colors.success("New workspace file saved to ")
+        + colors.info(f"<{PrivatePath(newfile)}>")
+        + "."
+    )
+
+    assert "<~/.tmuxp/session.json>" in output
+    assert "/home/testuser" not in output

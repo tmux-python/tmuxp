@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import pathlib
+
 import pytest
 
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli._colors import ColorMode, Colors
 
 # Edit command color output tests
@@ -92,3 +95,26 @@ def test_edit_various_editors(monkeypatch: pytest.MonkeyPatch) -> None:
         result = colors.highlight(editor, bold=False)
         assert "\033[35m" in result
         assert editor in result
+
+
+# Privacy masking tests
+
+
+def test_edit_masks_home_in_opening_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Edit should mask home directory in 'Opening' message."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    workspace_file = pathlib.Path("/home/testuser/.tmuxp/dev.yaml")
+    editor = "vim"
+    output = (
+        colors.muted("Opening ")
+        + colors.info(str(PrivatePath(workspace_file)))
+        + colors.muted(" in ")
+        + colors.highlight(editor, bold=False)
+        + colors.muted("...")
+    )
+
+    assert "~/.tmuxp/dev.yaml" in output
+    assert "/home/testuser" not in output
