@@ -34,8 +34,6 @@ import enum
 import os
 import sys
 
-from .utils import style
-
 
 class ColorMode(enum.Enum):
     """Color output modes for CLI.
@@ -178,6 +176,9 @@ class Colors:
             Colorized text if enabled, plain text otherwise.
         """
         if self._enabled:
+            # Lazy import to avoid circular dependency with utils.py
+            from .utils import style
+
             return style(text, fg=fg, bold=bold)
         return text
 
