@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import os
 import pathlib
 import platform
@@ -9,18 +10,26 @@ import shutil
 import sys
 import typing as t
 
-from colorama import Fore
 from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import get_version, tmux_cmd
 
 from tmuxp.__about__ import __version__
 
+from ._colors import Colors, get_color_mode
 from .utils import tmuxp_echo
 
 if t.TYPE_CHECKING:
-    import argparse
+    from typing import TypeAlias
+
+    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
 tmuxp_path = pathlib.Path(__file__).parent.parent
+
+
+class CLIDebugInfoNamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp debug-info command."""
+
+    color: CLIColorModeLiteral
 
 
 def create_debug_info_subparser(
@@ -31,9 +40,13 @@ def create_debug_info_subparser(
 
 
 def command_debug_info(
+    args: CLIDebugInfoNamespace | None = None,
     parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp debug-info`` to print debug info to submit with issues."""
+    # Get color mode from args or default to AUTO
+    color_mode = get_color_mode(args.color if args else None)
+    colors = Colors(color_mode)
 
     def prepend_tab(strings: list[str]) -> list[str]:
         """Prepend tab to strings in list."""
@@ -45,12 +58,11 @@ def command_debug_info(
 
     def format_tmux_resp(std_resp: tmux_cmd) -> str:
         """Format tmux command response for tmuxp stdout."""
+        stderr_lines = "\n".join(prepend_tab(std_resp.stderr))
         return "\n".join(
             [
                 "\n".join(prepend_tab(std_resp.stdout)),
-                Fore.RED,
-                "\n".join(prepend_tab(std_resp.stderr)),
-                Fore.RESET,
+                colors.error(stderr_lines) if stderr_lines.strip() else "",
             ],
         )
 
