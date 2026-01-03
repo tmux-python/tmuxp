@@ -158,15 +158,53 @@ def test_format_tmux_option_space_separated(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_format_tmux_option_single_word() -> None:
-    """format_tmux_option returns single words unchanged."""
+    """format_tmux_option returns single words (empty array options) unchanged."""
     colors = Colors(ColorMode.NEVER)
-    assert colors.format_tmux_option("default") == "default"
+    assert colors.format_tmux_option("pane-colours") == "pane-colours"
+
+
+def test_format_tmux_option_single_word_highlighted(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """format_tmux_option highlights single words (empty array options) as keys."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    result = colors.format_tmux_option("pane-colours")
+    assert "\033[35m" in result  # magenta for key
+    assert "pane-colours" in result
 
 
 def test_format_tmux_option_empty() -> None:
     """format_tmux_option handles empty string."""
     colors = Colors(ColorMode.NEVER)
     assert colors.format_tmux_option("") == ""
+
+
+def test_format_tmux_option_array_indexed(monkeypatch: pytest.MonkeyPatch) -> None:
+    """format_tmux_option handles array-indexed keys like status-format[0]."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    result = colors.format_tmux_option('status-format[0] "#[align=left]"')
+    assert "\033[35m" in result  # magenta for key
+    assert "\033[36m" in result  # cyan for value
+    assert "status-format[0]" in result
+    assert "#[align=left]" in result
+
+
+def test_format_tmux_option_array_indexed_complex_value(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """format_tmux_option handles complex format strings as values."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    # Real tmux status-format value (truncated for test)
+    line = 'status-format[0] "#[align=left range=left #{E:status-left-style}]"'
+    result = colors.format_tmux_option(line)
+    assert "status-format[0]" in result
+    assert "#[align=left" in result
 
 
 def test_format_tmux_option_value_with_spaces(
@@ -185,11 +223,13 @@ def test_format_tmux_option_value_with_spaces(
 def test_format_tmux_option_value_with_equals(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """format_tmux_option handles values containing equals signs."""
+    """format_tmux_option splits only on first equals for key=value format."""
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
 
-    # Only split on first equals
-    result = colors.format_tmux_option("command=echo a=b")
-    assert "command" in result
-    assert "echo a=b" in result
+    # Only split on first equals (no spaces = key=value format)
+    result = colors.format_tmux_option("option=a=b=c")
+    assert "option" in result
+    assert "a=b=c" in result
+    assert "\033[35m" in result  # magenta for key
+    assert "\033[36m" in result  # cyan for value
