@@ -432,8 +432,11 @@ class Colors:
     def format_tmux_option(self, line: str) -> str:
         """Format tmux option line with syntax highlighting.
 
-        Handles both "key=value" and "key value" formats commonly
-        returned by tmux show-options commands.
+        Handles tmux show-options output formats:
+        - "key value" (space-separated)
+        - "key=value" (equals-separated)
+        - "key[index] value" (array-indexed options)
+        - "key" (empty array options with no value)
 
         Parameters
         ----------
@@ -452,18 +455,27 @@ class Colors:
         'status on'
         >>> colors.format_tmux_option("base-index=1")
         'base-index=1'
+        >>> colors.format_tmux_option("pane-colours")
+        'pane-colours'
+        >>> colors.format_tmux_option('status-format[0] "#[align=left]"')
+        'status-format[0] "#[align=left]"'
         """
-        # Handle key=value format
-        if "=" in line:
-            key, val = line.split("=", 1)
-            return f"{self.highlight(key, bold=False)}={self.info(val)}"
-
-        # Handle "key value" format (space-separated)
+        # Handle "key value" format (space-separated) - check first since values
+        # may contain '=' (e.g., status-format[0] "#[align=left]")
         parts = line.split(None, 1)
         if len(parts) == 2:
             return f"{self.highlight(parts[0], bold=False)} {self.info(parts[1])}"
 
-        # Single value or unparseable - return as-is
+        # Handle key=value format (only for single-token lines)
+        if "=" in line:
+            key, val = line.split("=", 1)
+            return f"{self.highlight(key, bold=False)}={self.info(val)}"
+
+        # Single word = key with no value (empty array option like pane-colours)
+        if len(parts) == 1 and parts[0]:
+            return self.highlight(parts[0], bold=False)
+
+        # Empty or unparseable - return as-is
         return line
 
 
