@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import pathlib
+
 import pytest
 
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli._colors import ColorMode, Colors
 
 # Freeze command color output tests
@@ -116,3 +119,32 @@ def test_freeze_url_highlighted_in_help(monkeypatch: pytest.MonkeyPatch) -> None
     assert "\033[34m" in help_text  # blue for muted text
     assert "\033[36m" in help_text  # cyan for URL
     assert url in help_text
+
+
+# Privacy masking tests
+
+
+def test_freeze_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Freeze should mask home directory in 'Saved to' message."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    dest = "/home/testuser/.tmuxp/session.yaml"
+    output = colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + "."
+
+    assert "~/.tmuxp/session.yaml" in output
+    assert "/home/testuser" not in output
+
+
+def test_freeze_masks_home_in_exists_warning(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Freeze should mask home directory in 'exists' warning."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    dest_prompt = "/home/testuser/.tmuxp/session.yaml"
+    output = colors.warning(f"{PrivatePath(dest_prompt)} exists.")
+
+    assert "~/.tmuxp/session.yaml exists." in output
+    assert "/home/testuser" not in output

@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import pathlib
+
 import pytest
 
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli._colors import ColorMode, Colors
 
 # Import command color output tests
@@ -122,3 +125,41 @@ def test_import_banner_with_separator(monkeypatch: pytest.MonkeyPatch) -> None:
     assert separator in output
     assert "Configuration import" in output
     assert config_content in output
+
+
+# Privacy masking tests
+
+
+def test_import_masks_home_in_save_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Import should mask home directory in save prompt."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+
+    cwd = "/home/testuser/projects"
+    prompt = f"Save to [{PrivatePath(cwd)}]"
+
+    assert "[~/projects]" in prompt
+    assert "/home/testuser" not in prompt
+
+
+def test_import_masks_home_in_confirm_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Import should mask home directory in confirmation prompt."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+
+    dest_path = "/home/testuser/.tmuxp/imported.yaml"
+    prompt = f"Save to {PrivatePath(dest_path)}?"
+
+    assert "~/.tmuxp/imported.yaml" in prompt
+    assert "/home/testuser" not in prompt
+
+
+def test_import_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Import should mask home directory in 'Saved to' message."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    dest = "/home/testuser/.tmuxp/imported.yaml"
+    output = colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + "."
+
+    assert "~/.tmuxp/imported.yaml" in output
+    assert "/home/testuser" not in output
