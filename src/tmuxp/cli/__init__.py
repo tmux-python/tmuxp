@@ -188,6 +188,7 @@ def cli(_args: list[str] | None = None) -> None:
             workspace_file=args.workspace_file,
             answer_yes=args.answer_yes,
             parser=parser,
+            color=args.color,
         )
     elif args.subparser_name == "debug-info":
         command_debug_info(
