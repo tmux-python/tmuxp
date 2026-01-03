@@ -591,6 +591,10 @@ def _interpret_color(
         return f"{38 + offset};5;{color:d}"
 
     if isinstance(color, (tuple, list)):
+        if len(color) != 3:
+            raise ValueError(
+                f"RGB color tuple must have exactly 3 values, got {len(color)}"
+            )
         r, g, b = color
         return f"{38 + offset};2;{r:d};{g:d};{b:d}"
 
@@ -678,13 +682,13 @@ def style(
     if fg:
         try:
             bits.append(f"\033[{_interpret_color(fg)}m")
-        except KeyError:
+        except (KeyError, ValueError):
             raise UnknownStyleColor(color=fg) from None
 
     if bg:
         try:
             bits.append(f"\033[{_interpret_color(bg, 10)}m")
-        except KeyError:
+        except (KeyError, ValueError):
             raise UnknownStyleColor(color=bg) from None
 
     if bold is not None:
