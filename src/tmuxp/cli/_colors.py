@@ -89,7 +89,10 @@ class Colors:
 
     >>> colors = Colors(ColorMode.ALWAYS)
     >>> result = colors.success("ok")
-    >>> "\033[" in result  # Contains ANSI escape
+
+    Check that result contains ANSI escape codes:
+
+    >>> "\033[" in result
     True
     """
 
