@@ -68,7 +68,10 @@ def command_debug_info(
             if stderr_lines.strip():
                 stderr_formatted = colors.error(stderr_lines)
 
-        return "\n".join(["\n".join(stdout_lines), stderr_formatted])
+        parts = ["\n".join(stdout_lines)]
+        if stderr_formatted:
+            parts.append(stderr_formatted)
+        return "\n".join(parts)
 
     # Build environment section with indented key-value pairs
     env_items = [
