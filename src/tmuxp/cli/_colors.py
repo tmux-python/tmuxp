@@ -6,10 +6,10 @@ in utils.py for ANSI rendering.
 
 Examples
 --------
-Basic usage with automatic TTY detection:
+Basic usage with automatic TTY detection (AUTO mode is the default).
+In a TTY, colored text is returned; otherwise plain text:
 
->>> colors = Colors()  # AUTO mode by default
->>> # In a TTY, this returns colored text; otherwise plain text
+>>> colors = Colors()
 
 Force colors on or off:
 
@@ -21,11 +21,10 @@ Force colors on or off:
 >>> colors.success("loaded")
 'loaded'
 
-Environment variables (NO_COLOR, FORCE_COLOR) are respected:
+Environment variables NO_COLOR and FORCE_COLOR are respected.
+NO_COLOR takes highest priority. FORCE_COLOR enables colors even without TTY:
 
 >>> import os
->>> # NO_COLOR takes highest priority
->>> # FORCE_COLOR enables colors even without TTY
 """
 
 from __future__ import annotations
