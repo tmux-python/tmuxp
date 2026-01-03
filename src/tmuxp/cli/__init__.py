@@ -17,7 +17,11 @@ from tmuxp.__about__ import __version__
 from tmuxp.log import setup_logger
 
 from .convert import command_convert, create_convert_subparser
-from .debug_info import command_debug_info, create_debug_info_subparser
+from .debug_info import (
+    CLIDebugInfoNamespace,
+    command_debug_info,
+    create_debug_info_subparser,
+)
 from .edit import command_edit, create_edit_subparser
 from .freeze import CLIFreezeNamespace, command_freeze, create_freeze_subparser
 from .import_config import (
@@ -26,7 +30,7 @@ from .import_config import (
     create_import_subparser,
 )
 from .load import CLILoadNamespace, command_load, create_load_subparser
-from .ls import command_ls, create_ls_subparser
+from .ls import CLILsNamespace, command_ls, create_ls_subparser
 from .shell import CLIShellNamespace, command_shell, create_shell_subparser
 from .utils import tmuxp_echo
 
@@ -37,6 +41,7 @@ if t.TYPE_CHECKING:
     from typing import TypeAlias
 
     CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    CLIColorMode: TypeAlias = t.Literal["auto", "always", "never"]
     CLISubparserName: TypeAlias = t.Literal[
         "ls",
         "load",
@@ -66,6 +71,12 @@ def create_parser() -> argparse.ArgumentParser:
         default="info",
         choices=["debug", "info", "warning", "error", "critical"],
         help='log level (debug, info, warning, error, critical) (default "info")',
+    )
+    parser.add_argument(
+        "--color",
+        choices=["auto", "always", "never"],
+        default="auto",
+        help="when to use colors: auto (default), always, or never",
     )
     subparsers = parser.add_subparsers(dest="subparser_name")
     load_parser = subparsers.add_parser("load", help="load tmuxp workspaces")
@@ -112,6 +123,7 @@ class CLINamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp root-level CLI."""
 
     log_level: CLIVerbosity
+    color: CLIColorMode
     subparser_name: CLISubparserName
     import_subparser_name: CLIImportSubparserName | None
     version: bool
@@ -176,7 +188,10 @@ def cli(_args: list[str] | None = None) -> None:
             parser=parser,
         )
     elif args.subparser_name == "debug-info":
-        command_debug_info(parser=parser)
+        command_debug_info(
+            args=CLIDebugInfoNamespace(**vars(args)),
+            parser=parser,
+        )
 
     elif args.subparser_name == "edit":
         command_edit(
@@ -189,7 +204,10 @@ def cli(_args: list[str] | None = None) -> None:
             parser=parser,
         )
     elif args.subparser_name == "ls":
-        command_ls(parser=parser)
+        command_ls(
+            args=CLILsNamespace(**vars(args)),
+            parser=parser,
+        )
 
 
 def startup(config_dir: pathlib.Path) -> None:
