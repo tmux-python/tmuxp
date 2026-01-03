@@ -200,6 +200,7 @@ def cli(_args: list[str] | None = None) -> None:
         command_edit(
             workspace_file=args.workspace_file,
             parser=parser,
+            color=args.color,
         )
     elif args.subparser_name == "freeze":
         command_freeze(
