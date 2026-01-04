@@ -18,7 +18,7 @@ Create search tokens from query terms:
 >>> tokens[0]
 SearchToken(fields=('name',), pattern='dev')
 >>> tokens[1]
-SearchToken(fields=('name', 'session_name', 'path'), pattern='editor')
+SearchToken(fields=('name', 'session_name', 'path', 'window', 'pane'), pattern='editor')
 """
 
 from __future__ import annotations
@@ -123,7 +123,7 @@ class InvalidFieldError(ValueError):
 
     Examples
     --------
-    >>> raise InvalidFieldError("invalid")
+    >>> raise InvalidFieldError("invalid")  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
     tmuxp.cli.search.InvalidFieldError: Unknown search field: 'invalid'. ...
@@ -156,7 +156,7 @@ def normalize_fields(fields: list[str] | None) -> tuple[str, ...]:
     Examples
     --------
     >>> normalize_fields(None)
-    ('name', 'session_name', 'path')
+    ('name', 'session_name', 'path', 'window', 'pane')
 
     >>> normalize_fields(["s", "n"])
     ('session_name', 'name')
@@ -164,7 +164,7 @@ def normalize_fields(fields: list[str] | None) -> tuple[str, ...]:
     >>> normalize_fields(["session_name", "path"])
     ('session_name', 'path')
 
-    >>> normalize_fields(["invalid"])
+    >>> normalize_fields(["invalid"])  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
     tmuxp.cli.search.InvalidFieldError: Unknown search field: 'invalid'. ...
@@ -260,7 +260,7 @@ def parse_query_terms(
     --------
     >>> tokens = parse_query_terms(["dev"])
     >>> tokens[0].fields
-    ('name', 'session_name', 'path')
+    ('name', 'session_name', 'path', 'window', 'pane')
     >>> tokens[0].pattern
     'dev'
 
@@ -274,7 +274,7 @@ def parse_query_terms(
     >>> tokens[0].fields
     ('window',)
     >>> tokens[1].fields
-    ('name', 'session_name', 'path')
+    ('name', 'session_name', 'path', 'window', 'pane')
 
     Unknown prefixes are treated as literal patterns (allows URLs, etc.):
 
@@ -282,7 +282,7 @@ def parse_query_terms(
     >>> tokens[0].pattern
     'http://example.com'
     >>> tokens[0].fields  # Searches default fields
-    ('name', 'session_name', 'path')
+    ('name', 'session_name', 'path', 'window', 'pane')
     """
     result: list[SearchToken] = []
 

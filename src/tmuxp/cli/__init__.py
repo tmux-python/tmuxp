@@ -17,7 +17,7 @@ from tmuxp.__about__ import __version__
 from tmuxp.log import setup_logger
 
 from ._colors import build_description
-from ._formatter import TmuxpHelpFormatter
+from ._formatter import TmuxpHelpFormatter, create_themed_formatter
 from .convert import CONVERT_DESCRIPTION, command_convert, create_convert_subparser
 from .debug_info import (
     DEBUG_INFO_DESCRIPTION,
@@ -162,10 +162,14 @@ if t.TYPE_CHECKING:
 
 def create_parser() -> argparse.ArgumentParser:
     """Create CLI :class:`argparse.ArgumentParser` for tmuxp."""
+    # Use factory to create themed formatter with auto-detected color mode
+    # This respects NO_COLOR, FORCE_COLOR env vars and TTY detection
+    formatter_class = create_themed_formatter()
+
     parser = argparse.ArgumentParser(
         prog="tmuxp",
         description=CLI_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     parser.add_argument(
         "--version",
@@ -192,21 +196,21 @@ def create_parser() -> argparse.ArgumentParser:
         "load",
         help="load tmuxp workspaces",
         description=LOAD_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_load_subparser(load_parser)
     shell_parser = subparsers.add_parser(
         "shell",
         help="launch python shell for tmux server, session, window and pane",
         description=SHELL_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_shell_subparser(shell_parser)
     import_parser = subparsers.add_parser(
         "import",
         help="import workspaces from teamocil and tmuxinator.",
         description=IMPORT_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_import_subparser(import_parser)
 
@@ -214,7 +218,7 @@ def create_parser() -> argparse.ArgumentParser:
         "convert",
         help="convert workspace files between yaml and json.",
         description=CONVERT_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_convert_subparser(convert_parser)
 
@@ -222,7 +226,7 @@ def create_parser() -> argparse.ArgumentParser:
         "debug-info",
         help="print out all diagnostic info",
         description=DEBUG_INFO_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_debug_info_subparser(debug_info_parser)
 
@@ -230,7 +234,7 @@ def create_parser() -> argparse.ArgumentParser:
         "ls",
         help="list workspaces in tmuxp directory",
         description=LS_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_ls_subparser(ls_parser)
 
@@ -238,7 +242,7 @@ def create_parser() -> argparse.ArgumentParser:
         "search",
         help="search workspace files by name, session, path, or content",
         description=SEARCH_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_search_subparser(search_parser)
 
@@ -246,7 +250,7 @@ def create_parser() -> argparse.ArgumentParser:
         "edit",
         help="run $EDITOR on workspace file",
         description=EDIT_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_edit_subparser(edit_parser)
 
@@ -254,7 +258,7 @@ def create_parser() -> argparse.ArgumentParser:
         "freeze",
         help="freeze a live tmux session to a tmuxp workspace file",
         description=FREEZE_DESCRIPTION,
-        formatter_class=TmuxpHelpFormatter,
+        formatter_class=formatter_class,
     )
     create_freeze_subparser(freeze_parser)
 

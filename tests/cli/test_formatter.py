@@ -1,0 +1,186 @@
+"""Tests for TmuxpHelpFormatter and themed formatter factory."""
+
+from __future__ import annotations
+
+import argparse
+
+import pytest
+
+from tmuxp.cli._colors import ColorMode, Colors
+from tmuxp.cli._formatter import (
+    HelpTheme,
+    TmuxpHelpFormatter,
+    create_themed_formatter,
+)
+
+
+class TestCreateThemedFormatter:
+    """Tests for create_themed_formatter factory."""
+
+    def test_factory_returns_formatter_subclass(self) -> None:
+        """Factory returns a TmuxpHelpFormatter subclass."""
+        formatter_cls = create_themed_formatter()
+        assert issubclass(formatter_cls, TmuxpHelpFormatter)
+
+    def test_factory_with_colors_enabled(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Formatter has theme when colors enabled."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        colors = Colors(ColorMode.ALWAYS)
+        formatter_cls = create_themed_formatter(colors)
+        formatter = formatter_cls("test")
+
+        assert formatter._theme is not None
+        assert formatter._theme.prog != ""  # Has color codes
+
+    def test_factory_with_colors_disabled(self) -> None:
+        """Formatter has no theme when colors disabled."""
+        colors = Colors(ColorMode.NEVER)
+        formatter_cls = create_themed_formatter(colors)
+        formatter = formatter_cls("test")
+
+        assert formatter._theme is None
+
+    def test_factory_auto_mode_respects_no_color(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Auto mode respects NO_COLOR environment variable."""
+        monkeypatch.setenv("NO_COLOR", "1")
+        formatter_cls = create_themed_formatter()
+        formatter = formatter_cls("test")
+
+        assert formatter._theme is None
+
+    def test_factory_auto_mode_respects_force_color(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Auto mode respects FORCE_COLOR environment variable."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.setenv("FORCE_COLOR", "1")
+        formatter_cls = create_themed_formatter()
+        formatter = formatter_cls("test")
+
+        assert formatter._theme is not None
+
+
+class TestTmuxpHelpFormatterColorization:
+    """Tests for help text colorization."""
+
+    def test_fill_text_with_theme_colorizes_examples(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Examples section is colorized when theme is set."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        colors = Colors(ColorMode.ALWAYS)
+        formatter_cls = create_themed_formatter(colors)
+        formatter = formatter_cls("tmuxp")
+
+        text = "Examples:\n  tmuxp load myproject"
+        result = formatter._fill_text(text, 80, "")
+
+        # Should contain ANSI escape codes
+        assert "\033[" in result
+        assert "tmuxp" in result
+        assert "load" in result
+
+    def test_fill_text_without_theme_plain_text(self) -> None:
+        """Examples section is plain text when no theme."""
+        colors = Colors(ColorMode.NEVER)
+        formatter_cls = create_themed_formatter(colors)
+        formatter = formatter_cls("tmuxp")
+
+        text = "Examples:\n  tmuxp load myproject"
+        result = formatter._fill_text(text, 80, "")
+
+        # Should NOT contain ANSI escape codes
+        assert "\033[" not in result
+        assert "tmuxp load myproject" in result
+
+
+class TestHelpOutputIntegration:
+    """Integration tests for help output colorization."""
+
+    def test_parser_help_respects_no_color(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Parser --help output is plain when NO_COLOR set."""
+        monkeypatch.setenv("NO_COLOR", "1")
+        monkeypatch.setenv("COLUMNS", "100")
+
+        formatter_cls = create_themed_formatter()
+        parser = argparse.ArgumentParser(
+            prog="test",
+            description="Examples:\n  test command",
+            formatter_class=formatter_cls,
+        )
+
+        with pytest.raises(SystemExit):
+            parser.parse_args(["--help"])
+
+        captured = capsys.readouterr()
+        assert "\033[" not in captured.out
+
+    def test_parser_help_colorized_with_force_color(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Parser --help output is colorized when FORCE_COLOR set."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.setenv("FORCE_COLOR", "1")
+        monkeypatch.setenv("COLUMNS", "100")
+
+        formatter_cls = create_themed_formatter()
+        parser = argparse.ArgumentParser(
+            prog="test",
+            description="Examples:\n  test command",
+            formatter_class=formatter_cls,
+        )
+
+        with pytest.raises(SystemExit):
+            parser.parse_args(["--help"])
+
+        captured = capsys.readouterr()
+        assert "\033[" in captured.out
+
+
+class TestHelpTheme:
+    """Tests for HelpTheme creation."""
+
+    def test_from_colors_with_none_returns_empty_theme(self) -> None:
+        """HelpTheme.from_colors(None) returns empty theme."""
+        theme = HelpTheme.from_colors(None)
+
+        assert theme.prog == ""
+        assert theme.action == ""
+        assert theme.reset == ""
+
+    def test_from_colors_disabled_returns_empty_theme(self) -> None:
+        """HelpTheme.from_colors with disabled colors returns empty theme."""
+        colors = Colors(ColorMode.NEVER)
+        theme = HelpTheme.from_colors(colors)
+
+        assert theme.prog == ""
+        assert theme.action == ""
+        assert theme.reset == ""
+
+    def test_from_colors_enabled_returns_colored_theme(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """HelpTheme.from_colors with enabled colors returns colored theme."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        colors = Colors(ColorMode.ALWAYS)
+        theme = HelpTheme.from_colors(colors)
+
+        # Should have ANSI codes
+        assert "\033[" in theme.prog
+        assert "\033[" in theme.action
+        assert theme.reset == "\033[0m"

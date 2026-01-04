@@ -80,6 +80,9 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     <...TmuxpHelpFormatter object at ...>
     """
 
+    # Theme for colorization, set by create_themed_formatter() or externally
+    _theme: HelpTheme | None = None
+
     def _fill_text(self, text: str, width: int, indent: str) -> str:
         """Fill text, colorizing examples sections if theme is available.
 
@@ -301,3 +304,64 @@ class HelpTheme(t.NamedTuple):
             heading=style("", fg="blue").rstrip("\033[0m"),
             reset="\033[0m",
         )
+
+
+def create_themed_formatter(
+    colors: t.Any | None = None,
+) -> type[TmuxpHelpFormatter]:
+    """Create a help formatter class with theme bound.
+
+    This factory creates a formatter subclass with the theme injected,
+    allowing colorized help output without modifying argparse internals.
+
+    When no colors argument is provided, uses AUTO mode which respects
+    NO_COLOR, FORCE_COLOR environment variables and TTY detection.
+
+    Parameters
+    ----------
+    colors : Colors | None
+        Colors instance for styling. If None, uses ColorMode.AUTO.
+
+    Returns
+    -------
+    type[TmuxpHelpFormatter]
+        Formatter class with theme bound.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> from tmuxp.cli._formatter import create_themed_formatter, HelpTheme
+
+    With explicit colors enabled:
+
+    >>> colors = Colors(ColorMode.ALWAYS)
+    >>> formatter_cls = create_themed_formatter(colors)
+    >>> formatter = formatter_cls("test")
+    >>> formatter._theme is not None
+    True
+
+    With colors disabled:
+
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> formatter_cls = create_themed_formatter(colors)
+    >>> formatter = formatter_cls("test")
+    >>> formatter._theme is None
+    True
+    """
+    # Import here to avoid circular import at module load
+    from tmuxp.cli._colors import ColorMode, Colors
+
+    if colors is None:
+        colors = Colors(ColorMode.AUTO)
+
+    # Create theme if colors are enabled, None otherwise
+    theme = HelpTheme.from_colors(colors) if colors._enabled else None
+
+    class ThemedTmuxpHelpFormatter(TmuxpHelpFormatter):
+        """TmuxpHelpFormatter with theme pre-configured."""
+
+        def __init__(self, prog: str, **kwargs: t.Any) -> None:
+            super().__init__(prog, **kwargs)
+            self._theme = theme
+
+    return ThemedTmuxpHelpFormatter
