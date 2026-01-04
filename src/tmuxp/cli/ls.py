@@ -49,12 +49,14 @@ LS_DESCRIPTION = build_description(
             [
                 "tmuxp ls",
                 "tmuxp ls --tree",
+                "tmuxp ls --full",
             ],
         ),
         (
             "Machine-readable output:",
             [
                 "tmuxp ls --json",
+                "tmuxp ls --json --full",
                 "tmuxp ls --ndjson",
                 "tmuxp ls --json | jq '.[] | .name'",
             ],
@@ -113,6 +115,7 @@ class CLILsNamespace(argparse.Namespace):
     tree: bool
     output_json: bool
     output_ndjson: bool
+    full: bool
 
 
 def create_ls_subparser(
@@ -155,6 +158,11 @@ def create_ls_subparser(
         dest="output_ndjson",
         help="output as NDJSON (one JSON per line)",
     )
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="include full config content in output",
+    )
     return parser
 
 
@@ -162,7 +170,8 @@ def _get_workspace_info(
     filepath: pathlib.Path,
     *,
     source: str = "global",
-) -> WorkspaceInfo:
+    include_config: bool = False,
+) -> dict[str, t.Any]:
     """Extract metadata from a workspace file.
 
     Parameters
@@ -171,11 +180,13 @@ def _get_workspace_info(
         Path to the workspace file.
     source : str
         Source location: "local" or "global". Default "global".
+    include_config : bool
+        If True, include full parsed config content. Default False.
 
     Returns
     -------
-    WorkspaceInfo
-        Workspace metadata dictionary.
+    dict[str, Any]
+        Workspace metadata dictionary. Includes 'config' key when include_config=True.
 
     Examples
     --------
@@ -197,40 +208,136 @@ def _get_workspace_info(
     >>> info_local = _get_workspace_info(temp_path, source="local")
     >>> info_local['source']
     'local'
+    >>> info_full = _get_workspace_info(temp_path, include_config=True)
+    >>> 'config' in info_full
+    True
+    >>> info_full['config']['session_name']
+    'test-session'
     >>> temp_path.unlink()
     """
     stat = filepath.stat()
     ext = filepath.suffix.lower()
     file_format = "json" if ext == ".json" else "yaml"
 
-    # Try to extract session_name from config
+    # Try to extract session_name and optionally full config
     session_name: str | None = None
+    config_content: dict[str, t.Any] | None = None
     try:
         config = ConfigReader.from_file(filepath)
         if isinstance(config.content, dict):
             session_name = config.content.get("session_name")
+            if include_config:
+                config_content = config.content
     except Exception:
         # If we can't parse it, just skip session_name
         pass
 
-    return WorkspaceInfo(
-        name=filepath.stem,
-        path=str(PrivatePath(filepath)),
-        format=file_format,
-        size=stat.st_size,
-        mtime=datetime.datetime.fromtimestamp(
+    result: dict[str, t.Any] = {
+        "name": filepath.stem,
+        "path": str(PrivatePath(filepath)),
+        "format": file_format,
+        "size": stat.st_size,
+        "mtime": datetime.datetime.fromtimestamp(
             stat.st_mtime,
             tz=datetime.timezone.utc,
         ).isoformat(),
-        session_name=session_name,
-        source=source,
-    )
+        "session_name": session_name,
+        "source": source,
+    }
+
+    if include_config:
+        result["config"] = config_content
+
+    return result
+
+
+def _render_config_tree(config: dict[str, t.Any], colors: Colors) -> list[str]:
+    """Render config windows/panes as tree lines for human output.
+
+    Parameters
+    ----------
+    config : dict[str, Any]
+        Parsed config content.
+    colors : Colors
+        Color manager.
+
+    Returns
+    -------
+    list[str]
+        Lines of formatted tree output.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> config = {
+    ...     "session_name": "dev",
+    ...     "windows": [
+    ...         {"window_name": "editor", "layout": "main-horizontal"},
+    ...         {"window_name": "shell"},
+    ...     ],
+    ... }
+    >>> lines = _render_config_tree(config, colors)
+    >>> "editor" in lines[0]
+    True
+    >>> "shell" in lines[1]
+    True
+    """
+    lines: list[str] = []
+    windows = config.get("windows", [])
+
+    for i, window in enumerate(windows):
+        if not isinstance(window, dict):
+            continue
+
+        is_last_window = i == len(windows) - 1
+        prefix = "└── " if is_last_window else "├── "
+        child_prefix = "    " if is_last_window else "│   "
+
+        # Window line
+        window_name = window.get("window_name", f"window {i}")
+        layout = window.get("layout", "")
+        layout_info = f" [{layout}]" if layout else ""
+        lines.append(f"{prefix}{colors.info(window_name)}{colors.muted(layout_info)}")
+
+        # Panes
+        panes = window.get("panes", [])
+        for j, pane in enumerate(panes):
+            is_last_pane = j == len(panes) - 1
+            pane_prefix = "└── " if is_last_pane else "├── "
+
+            # Get pane command summary
+            if isinstance(pane, dict):
+                cmds = pane.get("shell_command", [])
+                if isinstance(cmds, str):
+                    cmd_str = cmds
+                elif isinstance(cmds, list) and cmds:
+                    cmd_str = str(cmds[0])
+                else:
+                    cmd_str = ""
+            elif isinstance(pane, str):
+                cmd_str = pane
+            else:
+                cmd_str = ""
+
+            # Truncate long commands
+            if len(cmd_str) > 40:
+                cmd_str = cmd_str[:37] + "..."
+
+            pane_info = f": {cmd_str}" if cmd_str else ""
+            lines.append(
+                f"{child_prefix}{pane_prefix}{colors.muted(f'pane {j}')}{pane_info}"
+            )
+
+    return lines
 
 
 def _output_flat(
-    workspaces: list[WorkspaceInfo],
+    workspaces: list[dict[str, t.Any]],
     formatter: OutputFormatter,
     colors: Colors,
+    *,
+    full: bool = False,
 ) -> None:
     """Output workspaces in flat list format.
 
@@ -238,25 +345,35 @@ def _output_flat(
 
     Parameters
     ----------
-    workspaces : list[WorkspaceInfo]
+    workspaces : list[dict[str, Any]]
         Workspaces to display.
     formatter : OutputFormatter
         Output formatter.
     colors : Colors
         Color manager.
+    full : bool
+        If True, show full config details in tree format. Default False.
     """
     # Separate by source for human output grouping
     local_workspaces = [ws for ws in workspaces if ws["source"] == "local"]
     global_workspaces = [ws for ws in workspaces if ws["source"] == "global"]
 
+    def output_workspace(ws: dict[str, t.Any], show_path: bool) -> None:
+        """Output a single workspace."""
+        formatter.emit(ws)
+        path_info = f"  {colors.muted(ws['path'])}" if show_path else ""
+        formatter.emit_text(f"  {colors.info(ws['name'])}{path_info}")
+
+        # With --full, show config tree
+        if full and ws.get("config"):
+            for line in _render_config_tree(ws["config"], colors):
+                formatter.emit_text(f"    {line}")
+
     # Output local workspaces first (closest to user's context)
     if local_workspaces:
         formatter.emit_text(colors.muted("Local workspaces:"))
         for ws in local_workspaces:
-            formatter.emit(dict(ws))
-            formatter.emit_text(
-                f"  {colors.info(ws['name'])}  {colors.muted(ws['path'])}"
-            )
+            output_workspace(ws, show_path=True)
 
     # Output global workspaces
     if global_workspaces:
@@ -264,28 +381,31 @@ def _output_flat(
             formatter.emit_text("")  # Blank line separator
         formatter.emit_text(colors.muted("Global workspaces:"))
         for ws in global_workspaces:
-            formatter.emit(dict(ws))
-            formatter.emit_text(f"  {colors.info(ws['name'])}")
+            output_workspace(ws, show_path=False)
 
 
 def _output_tree(
-    workspaces: list[WorkspaceInfo],
+    workspaces: list[dict[str, t.Any]],
     formatter: OutputFormatter,
     colors: Colors,
+    *,
+    full: bool = False,
 ) -> None:
     """Output workspaces grouped by directory (tree view).
 
     Parameters
     ----------
-    workspaces : list[WorkspaceInfo]
+    workspaces : list[dict[str, Any]]
         Workspaces to display.
     formatter : OutputFormatter
         Output formatter.
     colors : Colors
         Color manager.
+    full : bool
+        If True, show full config details in tree format. Default False.
     """
     # Group by parent directory
-    by_directory: dict[str, list[WorkspaceInfo]] = {}
+    by_directory: dict[str, list[dict[str, t.Any]]] = {}
     for ws in workspaces:
         # Extract parent directory from path
         parent = str(pathlib.Path(ws["path"]).parent)
@@ -300,15 +420,20 @@ def _output_tree(
 
         for ws in dir_workspaces:
             # JSON/NDJSON output
-            formatter.emit(dict(ws))
+            formatter.emit(ws)
 
             # Human output: indented workspace name
             ws_name = ws["name"]
-            ws_session = ws["session_name"]
+            ws_session = ws.get("session_name")
             session_info = ""
             if ws_session and ws_session != ws_name:
                 session_info = f" {colors.muted(f'→ {ws_session}')}"
             formatter.emit_text(f"  {colors.info(ws_name)}{session_info}")
+
+            # With --full, show config tree
+            if full and ws.get("config"):
+                for line in _render_config_tree(ws["config"], colors):
+                    formatter.emit_text(f"    {line}")
 
 
 def command_ls(
@@ -335,24 +460,25 @@ def command_ls(
     color_mode = get_color_mode(args.color if args else None)
     colors = Colors(color_mode)
 
-    # Determine output mode
+    # Determine output mode and options
     output_json = args.output_json if args else False
     output_ndjson = args.output_ndjson if args else False
     tree = args.tree if args else False
+    full = args.full if args else False
     output_mode = get_output_mode(output_json, output_ndjson)
     formatter = OutputFormatter(output_mode)
 
     # 1. Collect local workspace files (cwd and parents)
     local_files = find_local_workspace_files()
-    workspaces: list[WorkspaceInfo] = [
-        _get_workspace_info(f, source="local") for f in local_files
+    workspaces: list[dict[str, t.Any]] = [
+        _get_workspace_info(f, source="local", include_config=full) for f in local_files
     ]
 
     # 2. Collect global workspace files (~/.tmuxp/)
     tmuxp_dir = pathlib.Path(get_workspace_dir())
     if tmuxp_dir.exists() and tmuxp_dir.is_dir():
         workspaces.extend(
-            _get_workspace_info(f, source="global")
+            _get_workspace_info(f, source="global", include_config=full)
             for f in sorted(tmuxp_dir.iterdir())
             if not f.is_dir()
             and f.suffix.lower() in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
@@ -365,8 +491,8 @@ def command_ls(
 
     # Output based on mode
     if tree:
-        _output_tree(workspaces, formatter, colors)
+        _output_tree(workspaces, formatter, colors, full=full)
     else:
-        _output_flat(workspaces, formatter, colors)
+        _output_flat(workspaces, formatter, colors, full=full)
 
     formatter.finalize()

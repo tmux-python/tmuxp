@@ -477,3 +477,175 @@ class TestLsLocalWorkspaces:
         output = capsys.readouterr().out
         # Local workspace output shows path (with ~ contraction)
         assert "~/project/.tmuxp.yaml" in output
+
+
+class TestLsFullFlag:
+    """Tests for --full flag in ls command."""
+
+    def test_ls_full_flag_subparser(self) -> None:
+        """Verify --full argument is added to subparser."""
+        import argparse
+
+        from tmuxp.cli.ls import create_ls_subparser
+
+        parser = argparse.ArgumentParser()
+        create_ls_subparser(parser)
+        args = parser.parse_args(["--full"])
+
+        assert args.full is True
+
+    def test_get_workspace_info_include_config(
+        self,
+        tmp_path: pathlib.Path,
+    ) -> None:
+        """Test _get_workspace_info with include_config=True."""
+        workspace = tmp_path / "test.yaml"
+        workspace.write_text("session_name: test\nwindows:\n  - window_name: editor\n")
+
+        info = _get_workspace_info(workspace, include_config=True)
+
+        assert "config" in info
+        assert info["config"]["session_name"] == "test"
+        assert len(info["config"]["windows"]) == 1
+
+    def test_get_workspace_info_no_config_by_default(
+        self,
+        tmp_path: pathlib.Path,
+    ) -> None:
+        """Test _get_workspace_info without include_config doesn't include config."""
+        workspace = tmp_path / "test.yaml"
+        workspace.write_text("session_name: test\nwindows: []\n")
+
+        info = _get_workspace_info(workspace)
+
+        assert "config" not in info
+
+    def test_ls_json_full_includes_config(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """JSON output with --full includes config content."""
+        monkeypatch.setenv("HOME", str(tmp_path))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
+
+        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+        (tmuxp_dir / "dev.yaml").write_text(
+            "session_name: dev\n"
+            "windows:\n"
+            "  - window_name: editor\n"
+            "    panes:\n"
+            "      - vim\n"
+        )
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["ls", "--json", "--full"])
+
+        output = capsys.readouterr().out
+        data = json.loads(output)
+
+        assert len(data) == 1
+        assert "config" in data[0]
+        assert data[0]["config"]["session_name"] == "dev"
+        assert data[0]["config"]["windows"][0]["window_name"] == "editor"
+
+    def test_ls_full_tree_shows_windows(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Tree mode with --full shows window/pane hierarchy."""
+        monkeypatch.setenv("HOME", str(tmp_path))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
+        monkeypatch.delenv("NO_COLOR", raising=False)
+
+        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+        (tmuxp_dir / "dev.yaml").write_text(
+            "session_name: dev\n"
+            "windows:\n"
+            "  - window_name: editor\n"
+            "    layout: main-horizontal\n"
+            "    panes:\n"
+            "      - vim\n"
+            "  - window_name: shell\n"
+        )
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls", "--tree", "--full"])
+
+        output = capsys.readouterr().out
+
+        assert "dev" in output
+        assert "editor" in output
+        assert "main-horizontal" in output
+        assert "shell" in output
+        assert "pane 0" in output
+
+    def test_ls_full_flat_shows_windows(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Flat mode with --full shows window/pane hierarchy."""
+        monkeypatch.setenv("HOME", str(tmp_path))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
+        monkeypatch.delenv("NO_COLOR", raising=False)
+
+        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+        (tmuxp_dir / "dev.yaml").write_text(
+            "session_name: dev\n"
+            "windows:\n"
+            "  - window_name: code\n"
+            "    panes:\n"
+            "      - nvim\n"
+        )
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls", "--full"])
+
+        output = capsys.readouterr().out
+
+        assert "Global workspaces:" in output
+        assert "dev" in output
+        assert "code" in output
+        assert "pane 0" in output
+
+    def test_ls_full_without_json_no_config_in_output(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Non-JSON with --full shows tree but not raw config."""
+        monkeypatch.setenv("HOME", str(tmp_path))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
+        monkeypatch.delenv("NO_COLOR", raising=False)
+
+        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+        (tmuxp_dir / "dev.yaml").write_text(
+            "session_name: dev\nwindows:\n  - window_name: editor\n"
+        )
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls", "--full"])
+
+        output = capsys.readouterr().out
+
+        # Should show tree structure, not raw config keys
+        assert "editor" in output
+        assert "session_name:" not in output  # Raw YAML not in output
