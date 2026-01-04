@@ -722,13 +722,13 @@ def style(
 
     bits = []
 
-    if fg:
+    if fg or fg == 0:
         try:
             bits.append(f"\033[{_interpret_color(fg)}m")
         except (KeyError, ValueError):
             raise UnknownStyleColor(color=fg) from None
 
-    if bg:
+    if bg or bg == 0:
         try:
             bits.append(f"\033[{_interpret_color(bg, 10)}m")
         except (KeyError, ValueError):
