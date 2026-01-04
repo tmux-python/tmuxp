@@ -103,6 +103,7 @@ def add_doctest_fixtures(
     request: pytest.FixtureRequest,
     doctest_namespace: dict[str, t.Any],
     tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Harness pytest fixtures to doctests namespace."""
     if isinstance(request._pyfuncitem, DoctestItem) and shutil.which("tmux"):
@@ -113,3 +114,4 @@ def add_doctest_fixtures(
         doctest_namespace["pane"] = session.active_pane
         doctest_namespace["test_utils"] = test_utils
         doctest_namespace["tmp_path"] = tmp_path
+        doctest_namespace["monkeypatch"] = monkeypatch
