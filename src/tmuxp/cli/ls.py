@@ -34,10 +34,14 @@ import typing as t
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
-from tmuxp.workspace.finders import find_local_workspace_files, get_workspace_dir
+from tmuxp.workspace.finders import (
+    find_local_workspace_files,
+    get_workspace_dir,
+    get_workspace_dir_candidates,
+)
 
 from ._colors import Colors, build_description, get_color_mode
-from ._output import OutputFormatter, get_output_mode
+from ._output import OutputFormatter, OutputMode, get_output_mode
 
 LS_DESCRIPTION = build_description(
     """
@@ -338,6 +342,7 @@ def _output_flat(
     colors: Colors,
     *,
     full: bool = False,
+    global_dir_candidates: list[dict[str, t.Any]] | None = None,
 ) -> None:
     """Output workspaces in flat list format.
 
@@ -353,6 +358,8 @@ def _output_flat(
         Color manager.
     full : bool
         If True, show full config details in tree format. Default False.
+    global_dir_candidates : list[dict[str, Any]] | None
+        List of global workspace directory candidates with metadata.
     """
     # Separate by source for human output grouping
     local_workspaces = [ws for ws in workspaces if ws["source"] == "local"]
@@ -361,8 +368,8 @@ def _output_flat(
     def output_workspace(ws: dict[str, t.Any], show_path: bool) -> None:
         """Output a single workspace."""
         formatter.emit(ws)
-        path_info = f"  {colors.muted(ws['path'])}" if show_path else ""
-        formatter.emit_text(f"  {colors.info(ws['name'])}{path_info}")
+        path_info = f"  {colors.info(ws['path'])}" if show_path else ""
+        formatter.emit_text(f"  {colors.highlight(ws['name'])}{path_info}")
 
         # With --full, show config tree
         if full and ws.get("config"):
@@ -371,17 +378,57 @@ def _output_flat(
 
     # Output local workspaces first (closest to user's context)
     if local_workspaces:
-        formatter.emit_text(colors.muted("Local workspaces:"))
+        formatter.emit_text(colors.heading("Local workspaces:"))
         for ws in local_workspaces:
             output_workspace(ws, show_path=True)
 
-    # Output global workspaces
+    # Output global workspaces with active directory in header
     if global_workspaces:
         if local_workspaces:
             formatter.emit_text("")  # Blank line separator
-        formatter.emit_text(colors.muted("Global workspaces:"))
+
+        # Find active directory for header
+        active_dir = ""
+        if global_dir_candidates:
+            for candidate in global_dir_candidates:
+                if candidate["active"]:
+                    active_dir = candidate["path"]
+                    break
+
+        if active_dir:
+            formatter.emit_text(colors.heading(f"Global workspaces ({active_dir}):"))
+        else:
+            formatter.emit_text(colors.heading("Global workspaces:"))
+
         for ws in global_workspaces:
             output_workspace(ws, show_path=False)
+
+    # Output global workspace directories section
+    if global_dir_candidates:
+        formatter.emit_text("")
+        formatter.emit_text(colors.heading("Global workspace directories:"))
+        for candidate in global_dir_candidates:
+            path = candidate["path"]
+            source = candidate.get("source", "")
+            source_prefix = f"{source}: " if source else ""
+            if candidate["exists"]:
+                count = candidate["workspace_count"]
+                status = f"{count} workspace{'s' if count != 1 else ''}"
+                if candidate["active"]:
+                    status += ", active"
+                    formatter.emit_text(
+                        f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                        f"({colors.success(status)})"
+                    )
+                else:
+                    formatter.emit_text(
+                        f"  {colors.muted(source_prefix)}{colors.info(path)} ({status})"
+                    )
+            else:
+                formatter.emit_text(
+                    f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                    f"({colors.muted('not found')})"
+                )
 
 
 def _output_tree(
@@ -390,6 +437,7 @@ def _output_tree(
     colors: Colors,
     *,
     full: bool = False,
+    global_dir_candidates: list[dict[str, t.Any]] | None = None,
 ) -> None:
     """Output workspaces grouped by directory (tree view).
 
@@ -403,6 +451,8 @@ def _output_tree(
         Color manager.
     full : bool
         If True, show full config details in tree format. Default False.
+    global_dir_candidates : list[dict[str, Any]] | None
+        List of global workspace directory candidates with metadata.
     """
     # Group by parent directory
     by_directory: dict[str, list[dict[str, t.Any]]] = {}
@@ -428,12 +478,39 @@ def _output_tree(
             session_info = ""
             if ws_session and ws_session != ws_name:
                 session_info = f" {colors.muted(f'→ {ws_session}')}"
-            formatter.emit_text(f"  {colors.info(ws_name)}{session_info}")
+            formatter.emit_text(f"  {colors.highlight(ws_name)}{session_info}")
 
             # With --full, show config tree
             if full and ws.get("config"):
                 for line in _render_config_tree(ws["config"], colors):
                     formatter.emit_text(f"    {line}")
+
+    # Output global workspace directories section
+    if global_dir_candidates:
+        formatter.emit_text("")
+        formatter.emit_text(colors.heading("Global workspace directories:"))
+        for candidate in global_dir_candidates:
+            path = candidate["path"]
+            source = candidate.get("source", "")
+            source_prefix = f"{source}: " if source else ""
+            if candidate["exists"]:
+                count = candidate["workspace_count"]
+                status = f"{count} workspace{'s' if count != 1 else ''}"
+                if candidate["active"]:
+                    status += ", active"
+                    formatter.emit_text(
+                        f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                        f"({colors.success(status)})"
+                    )
+                else:
+                    formatter.emit_text(
+                        f"  {colors.muted(source_prefix)}{colors.info(path)} ({status})"
+                    )
+            else:
+                formatter.emit_text(
+                    f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                    f"({colors.muted('not found')})"
+                )
 
 
 def command_ls(
@@ -456,6 +533,9 @@ def command_ls(
     --------
     >>> # command_ls() lists workspaces from cwd/parents and ~/.tmuxp/
     """
+    import json
+    import sys
+
     # Get color mode from args or default to AUTO
     color_mode = get_color_mode(args.color if args else None)
     colors = Colors(color_mode)
@@ -467,6 +547,9 @@ def command_ls(
     full = args.full if args else False
     output_mode = get_output_mode(output_json, output_ndjson)
     formatter = OutputFormatter(output_mode)
+
+    # Get global workspace directory candidates
+    global_dir_candidates = get_workspace_dir_candidates()
 
     # 1. Collect local workspace files (cwd and parents)
     local_files = find_local_workspace_files()
@@ -486,13 +569,67 @@ def command_ls(
 
     if not workspaces:
         formatter.emit_text(colors.warning("No workspaces found."))
-        formatter.finalize()
+        # Still show global workspace directories even with no workspaces
+        if output_mode == OutputMode.HUMAN:
+            formatter.emit_text("")
+            formatter.emit_text(colors.heading("Global workspace directories:"))
+            for candidate in global_dir_candidates:
+                path = candidate["path"]
+                source = candidate.get("source", "")
+                source_prefix = f"{source}: " if source else ""
+                if candidate["exists"]:
+                    if candidate["active"]:
+                        formatter.emit_text(
+                            f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                            f"({colors.success('0 workspaces, active')})"
+                        )
+                    else:
+                        formatter.emit_text(
+                            f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                            f"(0 workspaces)"
+                        )
+                else:
+                    formatter.emit_text(
+                        f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                        f"({colors.muted('not found')})"
+                    )
+        elif output_mode == OutputMode.JSON:
+            # Output structured JSON with empty workspaces
+            output_data = {
+                "workspaces": [],
+                "global_workspace_dirs": global_dir_candidates,
+            }
+            sys.stdout.write(json.dumps(output_data, indent=2) + "\n")
+            sys.stdout.flush()
+        # NDJSON: just output nothing for empty workspaces
         return
 
-    # Output based on mode
+    # JSON mode: output structured object instead of using formatter
+    if output_mode == OutputMode.JSON:
+        output_data = {
+            "workspaces": workspaces,
+            "global_workspace_dirs": global_dir_candidates,
+        }
+        sys.stdout.write(json.dumps(output_data, indent=2) + "\n")
+        sys.stdout.flush()
+        return
+
+    # Human and NDJSON output
     if tree:
-        _output_tree(workspaces, formatter, colors, full=full)
+        _output_tree(
+            workspaces,
+            formatter,
+            colors,
+            full=full,
+            global_dir_candidates=global_dir_candidates,
+        )
     else:
-        _output_flat(workspaces, formatter, colors, full=full)
+        _output_flat(
+            workspaces,
+            formatter,
+            colors,
+            full=full,
+            global_dir_candidates=global_dir_candidates,
+        )
 
     formatter.finalize()

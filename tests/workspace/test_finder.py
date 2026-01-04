@@ -13,6 +13,7 @@ from tmuxp.cli.utils import tmuxp_echo
 from tmuxp.workspace.finders import (
     find_workspace_file,
     get_workspace_dir,
+    get_workspace_dir_candidates,
     in_cwd,
     in_dir,
     is_pure_name,
@@ -357,3 +358,159 @@ def test_find_workspace_file_arg(
         match="workspace-file not found in workspace dir",
     ):
         assert "workspace-file not found in workspace dir" in check_cmd("moo").err
+
+
+class GetWorkspaceDirCandidatesFixture(t.NamedTuple):
+    """Test fixture for get_workspace_dir_candidates()."""
+
+    test_id: str
+    env_vars: dict[str, str]  # Relative to tmp_path
+    dirs_to_create: list[str]  # Relative to tmp_path
+    workspace_files: dict[str, int]  # dir -> count of .yaml files to create
+    expected_active_suffix: str  # Suffix of active dir (e.g., ".tmuxp")
+    expected_candidates_count: int
+
+
+GET_WORKSPACE_DIR_CANDIDATES_FIXTURES: list[GetWorkspaceDirCandidatesFixture] = [
+    GetWorkspaceDirCandidatesFixture(
+        test_id="default_tmuxp_only",
+        env_vars={},
+        dirs_to_create=["home/.tmuxp"],
+        workspace_files={"home/.tmuxp": 3},
+        expected_active_suffix=".tmuxp",
+        expected_candidates_count=2,  # ~/.config/tmuxp (not found) + ~/.tmuxp
+    ),
+    GetWorkspaceDirCandidatesFixture(
+        test_id="xdg_exists_tmuxp_not",
+        env_vars={"XDG_CONFIG_HOME": "home/.config"},
+        dirs_to_create=["home/.config/tmuxp"],
+        workspace_files={"home/.config/tmuxp": 2},
+        expected_active_suffix="tmuxp",  # XDG takes precedence
+        expected_candidates_count=2,
+    ),
+    GetWorkspaceDirCandidatesFixture(
+        test_id="both_exist_xdg_wins",
+        env_vars={"XDG_CONFIG_HOME": "home/.config"},
+        dirs_to_create=["home/.config/tmuxp", "home/.tmuxp"],
+        workspace_files={"home/.config/tmuxp": 2, "home/.tmuxp": 5},
+        expected_active_suffix="tmuxp",  # XDG wins when both exist
+        expected_candidates_count=2,
+    ),
+    GetWorkspaceDirCandidatesFixture(
+        test_id="custom_configdir",
+        env_vars={"TMUXP_CONFIGDIR": "custom/workspaces"},
+        dirs_to_create=["custom/workspaces", "home/.tmuxp"],
+        workspace_files={"custom/workspaces": 4},
+        expected_active_suffix="workspaces",
+        expected_candidates_count=3,  # custom + ~/.config/tmuxp + ~/.tmuxp
+    ),
+    GetWorkspaceDirCandidatesFixture(
+        test_id="none_exist_fallback",
+        env_vars={},
+        dirs_to_create=[],  # No dirs created
+        workspace_files={},
+        expected_active_suffix=".tmuxp",  # Falls back to ~/.tmuxp
+        expected_candidates_count=2,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(GetWorkspaceDirCandidatesFixture._fields),
+    GET_WORKSPACE_DIR_CANDIDATES_FIXTURES,
+    ids=[test.test_id for test in GET_WORKSPACE_DIR_CANDIDATES_FIXTURES],
+)
+def test_get_workspace_dir_candidates(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    env_vars: dict[str, str],
+    dirs_to_create: list[str],
+    workspace_files: dict[str, int],
+    expected_active_suffix: str,
+    expected_candidates_count: int,
+) -> None:
+    """Test get_workspace_dir_candidates() returns correct candidates."""
+    # Setup home directory
+    home = tmp_path / "home"
+    home.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setenv("HOME", str(home))
+
+    # Clear any existing env vars that might interfere
+    monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+    monkeypatch.delenv("XDG_CONFIG_HOME", raising=False)
+
+    # Create directories
+    for dir_path in dirs_to_create:
+        (tmp_path / dir_path).mkdir(parents=True, exist_ok=True)
+
+    # Create workspace files
+    for dir_path, count in workspace_files.items():
+        dir_full = tmp_path / dir_path
+        for i in range(count):
+            (dir_full / f"workspace{i}.yaml").touch()
+
+    # Set environment variables (resolve relative paths)
+    for var, path in env_vars.items():
+        monkeypatch.setenv(var, str(tmp_path / path))
+
+    # Get candidates
+    candidates = get_workspace_dir_candidates()
+
+    # Verify count
+    assert len(candidates) == expected_candidates_count, (
+        f"Expected {expected_candidates_count} candidates, got {len(candidates)}"
+    )
+
+    # Verify structure
+    for candidate in candidates:
+        assert "path" in candidate
+        assert "source" in candidate
+        assert "exists" in candidate
+        assert "workspace_count" in candidate
+        assert "active" in candidate
+
+    # Verify exactly one is active
+    active_candidates = [c for c in candidates if c["active"]]
+    assert len(active_candidates) == 1, "Expected exactly one active candidate"
+
+    # Verify active suffix
+    active = active_candidates[0]
+    assert active["path"].endswith(expected_active_suffix), (
+        f"Expected active path to end with '{expected_active_suffix}', "
+        f"got '{active['path']}'"
+    )
+
+    # Verify workspace counts for existing directories
+    for candidate in candidates:
+        if candidate["exists"]:
+            # Find the matching dir in workspace_files by the last path component
+            candidate_suffix = candidate["path"].split("/")[-1]
+            for dir_path, expected_count in workspace_files.items():
+                if dir_path.endswith(candidate_suffix):
+                    assert candidate["workspace_count"] == expected_count, (
+                        f"Expected {expected_count} workspaces in {candidate['path']}, "
+                        f"got {candidate['workspace_count']}"
+                    )
+                    break  # Found match, stop checking
+
+
+def test_get_workspace_dir_candidates_uses_private_path(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that get_workspace_dir_candidates() masks home directory with ~."""
+    home = tmp_path / "home"
+    tmuxp_dir = home / ".tmuxp"
+    tmuxp_dir.mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+    monkeypatch.delenv("XDG_CONFIG_HOME", raising=False)
+
+    candidates = get_workspace_dir_candidates()
+
+    # All paths should use ~ instead of full home path
+    for candidate in candidates:
+        path = candidate["path"]
+        assert str(home) not in path, f"Path should be masked: {path}"
+        assert path.startswith("~"), f"Path should start with ~: {path}"
