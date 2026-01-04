@@ -249,3 +249,16 @@ def test_search_subcommand_examples_are_valid() -> None:
     # Verify each example has valid structure
     for example in examples:
         assert example.startswith("tmuxp search"), f"Bad example format: {example}"
+
+
+def test_search_no_args_shows_help() -> None:
+    """Running 'tmuxp search' with no args shows help."""
+    result = subprocess.run(
+        ["tmuxp", "search"],
+        capture_output=True,
+        text=True,
+    )
+    # Should show help (usage line present)
+    assert "usage: tmuxp search" in result.stdout
+    # Should exit successfully (not error)
+    assert result.returncode == 0
