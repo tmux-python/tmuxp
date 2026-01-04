@@ -61,7 +61,7 @@ VALID_FIELDS: frozenset[str] = frozenset(
 )
 
 #: Default fields to search when no field prefix is specified
-DEFAULT_FIELDS: tuple[str, ...] = ("name", "session_name", "path")
+DEFAULT_FIELDS: tuple[str, ...] = ("name", "session_name", "path", "window", "pane")
 
 
 class SearchToken(t.NamedTuple):
