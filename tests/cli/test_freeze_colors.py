@@ -125,7 +125,7 @@ def test_freeze_url_highlighted_in_help(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_freeze_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> None:
-    """freeze should mask home directory in 'Saved to' message."""
+    """Freeze should mask home directory in 'Saved to' message."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
@@ -138,7 +138,7 @@ def test_freeze_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_freeze_masks_home_in_exists_warning(monkeypatch: pytest.MonkeyPatch) -> None:
-    """freeze should mask home directory in 'exists' warning."""
+    """Freeze should mask home directory in 'exists' warning."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)

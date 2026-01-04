@@ -131,7 +131,7 @@ def test_import_banner_with_separator(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_import_masks_home_in_save_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
-    """import should mask home directory in save prompt."""
+    """Import should mask home directory in save prompt."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
 
     cwd = "/home/testuser/projects"
@@ -142,7 +142,7 @@ def test_import_masks_home_in_save_prompt(monkeypatch: pytest.MonkeyPatch) -> No
 
 
 def test_import_masks_home_in_confirm_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
-    """import should mask home directory in confirmation prompt."""
+    """Import should mask home directory in confirmation prompt."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
 
     dest_path = "/home/testuser/.tmuxp/imported.yaml"
@@ -153,7 +153,7 @@ def test_import_masks_home_in_confirm_prompt(monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_import_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> None:
-    """import should mask home directory in 'Saved to' message."""
+    """Import should mask home directory in 'Saved to' message."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)

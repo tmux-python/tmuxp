@@ -101,7 +101,7 @@ def test_edit_various_editors(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_edit_masks_home_in_opening_message(monkeypatch: pytest.MonkeyPatch) -> None:
-    """edit should mask home directory in 'Opening' message."""
+    """Edit should mask home directory in 'Opening' message."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)

@@ -759,7 +759,7 @@ def test_load_append_windows_to_current_session(
 
 
 def test_load_masks_home_in_loading_message(monkeypatch: pytest.MonkeyPatch) -> None:
-    """load command should mask home directory in [Loading] message."""
+    """Load command should mask home directory in [Loading] message."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)

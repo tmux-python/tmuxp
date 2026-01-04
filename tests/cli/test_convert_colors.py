@@ -105,7 +105,7 @@ def test_convert_save_prompt_format(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_convert_masks_home_in_convert_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
-    """convert should mask home directory in convert prompt."""
+    """Convert should mask home directory in convert prompt."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
@@ -118,7 +118,7 @@ def test_convert_masks_home_in_convert_prompt(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_convert_masks_home_in_save_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
-    """convert should mask home directory in save prompt."""
+    """Convert should mask home directory in save prompt."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
@@ -131,7 +131,7 @@ def test_convert_masks_home_in_save_prompt(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_convert_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) -> None:
-    """convert should mask home directory in saved message."""
+    """Convert should mask home directory in saved message."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
