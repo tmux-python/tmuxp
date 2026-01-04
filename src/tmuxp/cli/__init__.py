@@ -88,6 +88,9 @@ CLI_DESCRIPTION = build_description(
             "ls",
             [
                 "tmuxp ls",
+                "tmuxp ls --tree",
+                "tmuxp ls --full",
+                "tmuxp ls --json",
             ],
         ),
         (
@@ -95,6 +98,8 @@ CLI_DESCRIPTION = build_description(
             [
                 "tmuxp search dev",
                 "tmuxp search name:myproject",
+                "tmuxp search -i DEV",
+                "tmuxp search --json dev",
             ],
         ),
         (
