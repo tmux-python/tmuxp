@@ -161,6 +161,7 @@ def command_freeze(
         args.answer_yes
         or prompt_yes_no(
             "The new workspace will require adjusting afterwards. Save workspace file?",
+            color_mode=color_mode,
         )
     ):
         if not args.quiet:
@@ -188,6 +189,7 @@ def command_freeze(
         dest_prompt = prompt(
             f"Save to: {save_to}",
             default=save_to,
+            color_mode=color_mode,
         )
         if not args.force and os.path.exists(dest_prompt):
             print(  # NOQA: T201 RUF100
@@ -226,6 +228,7 @@ def command_freeze(
                 ),
                 choices=t.cast("list[str]", valid_workspace_formats),
                 default="yaml",
+                color_mode=color_mode,
             )
             assert is_valid_ext(workspace_format_)
             workspace_format = workspace_format_
@@ -240,7 +243,7 @@ def command_freeze(
     elif workspace_format == "json":
         workspace = configparser.dump(fmt="json", indent=2)
 
-    if args.answer_yes or prompt_yes_no(f"Save to {dest}?"):
+    if args.answer_yes or prompt_yes_no(f"Save to {dest}?", color_mode=color_mode):
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)

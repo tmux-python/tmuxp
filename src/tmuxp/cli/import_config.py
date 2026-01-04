@@ -179,6 +179,7 @@ def import_config(
         "Convert to",
         choices=["yaml", "json"],
         default="yaml",
+        color_mode=colors.mode,
     )
 
     if workspace_file_format == "yaml":
@@ -198,16 +199,21 @@ def import_config(
     )
     if prompt_yes_no(
         "The new config *WILL* require adjusting afterwards. Save config?",
+        color_mode=colors.mode,
     ):
         dest = None
         while not dest:
             dest_path = prompt(
                 f"Save to [{PrivatePath(os.getcwd())}]",
                 value_proc=_resolve_path_no_overwrite,
+                color_mode=colors.mode,
             )
 
             # dest = dest_prompt
-            if prompt_yes_no(f"Save to {PrivatePath(dest_path)}?"):
+            if prompt_yes_no(
+                f"Save to {PrivatePath(dest_path)}?",
+                color_mode=colors.mode,
+            ):
                 dest = dest_path
 
         pathlib.Path(dest).write_text(

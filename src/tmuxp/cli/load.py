@@ -134,6 +134,7 @@ def load_plugins(
                 if not prompt_yes_no(
                     f"{colors.warning(str(error))}Skip loading {plugin_name}?",
                     default=True,
+                    color_mode=colors.mode,
                 ):
                     tmuxp_echo(
                         colors.warning("[Not Skipping]")
@@ -396,6 +397,7 @@ def load_workspace(
             or prompt_yes_no(
                 f"{cli_colors.highlight(session_name)} is already running. Attach?",
                 default=True,
+                color_mode=cli_colors.mode,
             )
         ):
             _reattach(builder, cli_colors)
@@ -425,7 +427,7 @@ def load_workspace(
                 "Or (a)ppend windows in the current active session?\n[y/n/a]"
             )
             options = ["y", "n", "a"]
-            choice = prompt_choices(msg, choices=options)
+            choice = prompt_choices(msg, choices=options, color_mode=cli_colors.mode)
 
             if choice == "y":
                 _load_attached(builder, detached)
@@ -447,6 +449,7 @@ def load_workspace(
             + " (k)ill, (a)ttach, (d)etach?",
             choices=["k", "a", "d"],
             default="k",
+            color_mode=cli_colors.mode,
         )
 
         if choice == "k":
