@@ -134,6 +134,7 @@ CLI_DESCRIPTION = build_description(
             "debug-info",
             [
                 "tmuxp debug-info",
+                "tmuxp debug-info --json",
             ],
         ),
     ),
