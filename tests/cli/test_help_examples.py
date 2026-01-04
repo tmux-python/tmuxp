@@ -78,6 +78,7 @@ def test_main_help_examples_are_valid_subcommands() -> None:
         "ls",
         "edit",
         "freeze",
+        "search",
     }
 
     for example in examples:
@@ -100,6 +101,7 @@ def test_main_help_examples_are_valid_subcommands() -> None:
         "ls",
         "edit",
         "freeze",
+        "search",
     ],
 )
 def test_subcommand_help_has_examples(subcommand: str) -> None:
@@ -232,3 +234,18 @@ def test_debug_info_subcommand_examples_are_valid() -> None:
     # Verify each example has valid structure
     for example in examples:
         assert example.startswith("tmuxp debug-info"), f"Bad example format: {example}"
+
+
+def test_search_subcommand_examples_are_valid() -> None:
+    """Search subcommand examples should have valid flags."""
+    result = subprocess.run(
+        ["tmuxp", "search", "--help"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    examples = extract_examples_from_help(result.stdout)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp search"), f"Bad example format: {example}"
