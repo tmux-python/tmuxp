@@ -148,3 +148,27 @@ def test_freeze_masks_home_in_exists_warning(monkeypatch: pytest.MonkeyPatch) ->
 
     assert "~/.tmuxp/session.yaml exists." in output
     assert "/home/testuser" not in output
+
+
+def test_freeze_masks_home_in_save_to_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Freeze should mask home directory in 'Save to:' prompt."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+
+    save_to = "/home/testuser/.tmuxp/session.yaml"
+    prompt_text = f"Save to: {PrivatePath(save_to)}"
+
+    assert "~/.tmuxp/session.yaml" in prompt_text
+    assert "/home/testuser" not in prompt_text
+
+
+def test_freeze_masks_home_in_save_confirmation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Freeze should mask home directory in 'Save to ...?' confirmation."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+
+    dest = "/home/testuser/.tmuxp/session.yaml"
+    prompt_text = f"Save to {PrivatePath(dest)}?"
+
+    assert "~/.tmuxp/session.yaml" in prompt_text
+    assert "/home/testuser" not in prompt_text

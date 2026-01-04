@@ -187,7 +187,7 @@ def command_freeze(
             ),
         )
         dest_prompt = prompt(
-            f"Save to: {save_to}",
+            f"Save to: {PrivatePath(save_to)}",
             default=save_to,
             color_mode=color_mode,
         )
@@ -243,7 +243,10 @@ def command_freeze(
     elif workspace_format == "json":
         workspace = configparser.dump(fmt="json", indent=2)
 
-    if args.answer_yes or prompt_yes_no(f"Save to {dest}?", color_mode=color_mode):
+    if args.answer_yes or prompt_yes_no(
+        f"Save to {PrivatePath(dest)}?",
+        color_mode=color_mode,
+    ):
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
