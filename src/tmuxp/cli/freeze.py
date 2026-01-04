@@ -39,10 +39,10 @@ FREEZE_DESCRIPTION = build_description(
 )
 
 if t.TYPE_CHECKING:
-    from typing import TypeAlias, TypeGuard
+    from typing import TypeGuard
 
-    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
-    CLIOutputFormatLiteral: TypeAlias = t.Literal["yaml", "json"]
+    CLIColorModeLiteral: t.TypeAlias = t.Literal["auto", "always", "never"]
+    CLIOutputFormatLiteral: t.TypeAlias = t.Literal["yaml", "json"]
 
 
 class CLIFreezeNamespace(argparse.Namespace):
