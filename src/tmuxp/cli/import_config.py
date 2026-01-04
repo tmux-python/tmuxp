@@ -189,10 +189,9 @@ def import_config(
     else:
         sys.exit(colors.error("Unknown config format."))
 
-    separator = "---------------------------------------------------------------"
     tmuxp_echo(
         new_config
-        + colors.muted(separator)
+        + colors.format_separator(63)
         + "\n"
         + colors.muted("Configuration import does its best to convert files.")
         + "\n",
