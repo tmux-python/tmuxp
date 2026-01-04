@@ -150,9 +150,7 @@ def command_freeze(
 
     if not args.quiet:
         print(  # NOQA: T201 RUF100
-            colors.muted(
-                "---------------------------------------------------------------"
-            )
+            colors.format_separator(63)
             + "\n"
             + colors.muted("Freeze does its best to snapshot live tmux sessions.")
             + "\n",
