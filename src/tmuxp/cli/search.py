@@ -1011,7 +1011,7 @@ def _output_search_results(
 
     # Output local results first
     if local_results:
-        formatter.emit_text(colors.muted("Local workspaces:"))
+        formatter.emit_text(colors.heading("Local workspaces:"))
         for result in local_results:
             output_result(result, show_path=True)
 
@@ -1019,7 +1019,7 @@ def _output_search_results(
     if global_results:
         if local_results:
             formatter.emit_text("")  # Blank line separator
-        formatter.emit_text(colors.muted("Global workspaces:"))
+        formatter.emit_text(colors.heading("Global workspaces:"))
         for result in global_results:
             output_result(result, show_path=False)
 
