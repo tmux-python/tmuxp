@@ -384,7 +384,7 @@ def load_workspace(
     except exc.EmptyWorkspaceException:
         tmuxp_echo(
             cli_colors.warning("[Warning]")
-            + f" {workspace_file} is empty or parsed no workspace data",
+            + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
         )
         return None
 

@@ -132,6 +132,6 @@ def command_convert(
         )
         print(  # NOQA: T201 RUF100
             colors.success("New workspace file saved to ")
-            + colors.info(f"<{PrivatePath(newfile)}>")
+            + colors.info(str(PrivatePath(newfile)))
             + ".",
         )

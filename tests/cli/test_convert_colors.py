@@ -139,9 +139,9 @@ def test_convert_masks_home_in_saved_message(monkeypatch: pytest.MonkeyPatch) ->
     newfile = pathlib.Path("/home/testuser/.tmuxp/session.json")
     output = (
         colors.success("New workspace file saved to ")
-        + colors.info(f"<{PrivatePath(newfile)}>")
+        + colors.info(str(PrivatePath(newfile)))
         + "."
     )
 
-    assert "<~/.tmuxp/session.json>" in output
+    assert "~/.tmuxp/session.json" in output
     assert "/home/testuser" not in output
