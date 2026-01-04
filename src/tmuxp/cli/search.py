@@ -30,6 +30,9 @@ import typing as t
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 
+from ._colors import Colors
+from ._output import OutputFormatter
+
 if t.TYPE_CHECKING:
     pass
 
@@ -845,3 +848,172 @@ def find_search_matches(
             )
 
     return results
+
+
+def highlight_matches(
+    text: str,
+    patterns: list[SearchPattern],
+    *,
+    colors: Colors,
+) -> str:
+    """Highlight regex matches in text.
+
+    Parameters
+    ----------
+    text : str
+        Text to search and highlight.
+    patterns : list[SearchPattern]
+        Compiled search patterns (uses their regex attribute).
+    colors : Colors
+        Color manager for highlighting.
+
+    Returns
+    -------
+    str
+        Text with matches highlighted, or original text if no matches.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> pattern = SearchPattern(
+    ...     fields=("name",),
+    ...     raw="dev",
+    ...     regex=re.compile("dev"),
+    ... )
+    >>> highlight_matches("development", [pattern], colors=colors)
+    'development'
+
+    With colors enabled (ALWAYS mode):
+
+    >>> colors_on = Colors(ColorMode.ALWAYS)
+    >>> result = highlight_matches("development", [pattern], colors=colors_on)
+    >>> "dev" in result
+    True
+    >>> chr(27) in result  # Contains ANSI escape
+    True
+    """
+    if not patterns:
+        return text
+
+    # Collect all match spans
+    spans: list[tuple[int, int]] = []
+    for pattern in patterns:
+        spans.extend((m.start(), m.end()) for m in pattern.regex.finditer(text))
+
+    if not spans:
+        return text
+
+    # Sort and merge overlapping spans
+    spans.sort()
+    merged: list[tuple[int, int]] = []
+    for start, end in spans:
+        if merged and start <= merged[-1][1]:
+            # Overlapping or adjacent, extend previous
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+
+    # Build result with highlights
+    result: list[str] = []
+    pos = 0
+    for start, end in merged:
+        # Add non-matching text before this match
+        if pos < start:
+            result.append(text[pos:start])
+        # Add highlighted match
+        result.append(colors.highlight(text[start:end]))
+        pos = end
+
+    # Add any remaining text after last match
+    if pos < len(text):
+        result.append(text[pos:])
+
+    return "".join(result)
+
+
+def _output_search_results(
+    results: list[WorkspaceSearchResult],
+    patterns: list[SearchPattern],
+    formatter: OutputFormatter,
+    colors: Colors,
+) -> None:
+    """Output search results in human-readable or JSON format.
+
+    Parameters
+    ----------
+    results : list[WorkspaceSearchResult]
+        Search results to output.
+    patterns : list[SearchPattern]
+        Patterns used for highlighting.
+    formatter : OutputFormatter
+        Output formatter for JSON/NDJSON/human modes.
+    colors : Colors
+        Color manager.
+    """
+    if not results:
+        formatter.emit_text(colors.warning("No matching workspaces found."))
+        return
+
+    # Group by source for human output
+    local_results = [r for r in results if r["source"] == "local"]
+    global_results = [r for r in results if r["source"] == "global"]
+
+    def output_result(result: WorkspaceSearchResult, show_path: bool) -> None:
+        """Output a single search result."""
+        fields = result["fields"]
+
+        # JSON/NDJSON output: emit structured data
+        json_data = {
+            "name": fields["name"],
+            "path": fields["path"],
+            "session_name": fields["session_name"],
+            "source": result["source"],
+            "matched_fields": list(result["matches"].keys()),
+            "matches": result["matches"],
+        }
+        formatter.emit(json_data)
+
+        # Human output: formatted text with highlighting
+        name_display = highlight_matches(fields["name"], patterns, colors=colors)
+        path_info = f"  {colors.muted(fields['path'])}" if show_path else ""
+        formatter.emit_text(f"  {colors.info(name_display)}{path_info}")
+
+        # Show matched session_name if different from name
+        session_name = fields["session_name"]
+        if session_name and session_name != fields["name"]:
+            session_display = highlight_matches(session_name, patterns, colors=colors)
+            formatter.emit_text(f"    session: {session_display}")
+
+        # Show matched windows
+        if result["matches"].get("window"):
+            window_names = [
+                highlight_matches(w, patterns, colors=colors) for w in fields["windows"]
+            ]
+            if window_names:
+                formatter.emit_text(f"    windows: {', '.join(window_names)}")
+
+        # Show matched panes
+        if result["matches"].get("pane"):
+            pane_cmds = fields["panes"][:3]  # Limit to first 3
+            pane_displays = [
+                highlight_matches(p, patterns, colors=colors) for p in pane_cmds
+            ]
+            if len(fields["panes"]) > 3:
+                pane_displays.append("...")
+            if pane_displays:
+                formatter.emit_text(f"    panes: {', '.join(pane_displays)}")
+
+    # Output local results first
+    if local_results:
+        formatter.emit_text(colors.muted("Local workspaces:"))
+        for result in local_results:
+            output_result(result, show_path=True)
+
+    # Output global results
+    if global_results:
+        if local_results:
+            formatter.emit_text("")  # Blank line separator
+        formatter.emit_text(colors.muted("Global workspaces:"))
+        for result in global_results:
+            output_result(result, show_path=False)
