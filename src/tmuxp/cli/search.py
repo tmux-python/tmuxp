@@ -1096,6 +1096,7 @@ class CLISearchNamespace(argparse.Namespace):
     match_any: bool
     output_json: bool
     output_ndjson: bool
+    print_help: t.Callable[[], None]
 
 
 def create_search_subparser(
@@ -1190,6 +1191,9 @@ def create_search_subparser(
         help="output as NDJSON (one JSON per line)",
     )
 
+    # Store print_help for use when no arguments provided
+    parser.set_defaults(print_help=parser.print_help)
+
     return parser
 
 
@@ -1227,9 +1231,8 @@ def command_search(
     query_terms = args.query_terms if args else []
 
     if not query_terms:
-        formatter.emit_text(colors.warning("No search pattern provided."))
-        formatter.emit_text(colors.muted("Usage: tmuxp search PATTERN [PATTERN ...]"))
-        formatter.finalize()
+        if args and hasattr(args, "print_help"):
+            args.print_help()
         return
 
     # Parse and compile patterns
