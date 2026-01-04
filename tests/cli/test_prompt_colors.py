@@ -134,3 +134,41 @@ def test_prompt_empty_input_with_value_proc_no_crash(
 
     result = prompt("Enter path", value_proc=validate_path)
     assert result == "/valid/path"
+
+
+def test_prompt_default_uses_private_path(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Verify prompt() masks home directory in default value display.
+
+    The displayed default should use PrivatePath to show ~ instead of
+    the full home directory path.
+    """
+    import pathlib
+
+    from tmuxp.cli.utils import prompt
+
+    # Create a path under the user's home directory
+    home = pathlib.Path.home()
+    test_path = str(home / ".tmuxp" / "session.yaml")
+
+    # Capture what prompt displays
+    displayed_prompt = None
+
+    def capture_input(prompt_text: str) -> str:
+        nonlocal displayed_prompt
+        displayed_prompt = prompt_text
+        return ""  # User presses Enter, accepting default
+
+    monkeypatch.setattr("builtins.input", capture_input)
+
+    result = prompt("Save to", default=test_path)
+
+    # The result should be the original path (for actual saving)
+    assert result == test_path
+
+    # The displayed prompt should use ~ instead of full home path
+    assert displayed_prompt is not None
+    assert "~/.tmuxp/session.yaml" in displayed_prompt
+    assert str(home) not in displayed_prompt

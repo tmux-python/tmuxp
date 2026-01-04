@@ -6,6 +6,7 @@ import logging
 import typing as t
 
 from tmuxp import log
+from tmuxp._internal.private_path import PrivatePath
 
 from ._colors import (
     ColorMode,
@@ -83,7 +84,11 @@ def prompt(
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
     colors = Colors(color_mode if color_mode is not None else ColorMode.AUTO)
-    prompt_ = name + ((default and " " + colors.info(f"[{default}]")) or "")
+    # Use PrivatePath to mask home directory in displayed default
+    display_default = str(PrivatePath(default)) if default else None
+    prompt_ = name + (
+        (display_default and " " + colors.info(f"[{display_default}]")) or ""
+    )
     prompt_ += (name.endswith("?") and " ") or ": "
     while True:
         rv = input(prompt_) or default
