@@ -87,22 +87,23 @@ def prompt(
     prompt_ += (name.endswith("?") and " ") or ": "
     while True:
         rv = input(prompt_) or default
-        try:
-            if value_proc is not None and callable(value_proc):
-                assert isinstance(rv, str)
+        # Validate with value_proc only if we have a string value
+        if rv is not None and value_proc is not None and callable(value_proc):
+            try:
                 value_proc(rv)
-        except ValueError as e:
-            return prompt(
-                str(e),
-                default=default,
-                value_proc=value_proc,
-                color_mode=color_mode,
-            )
+            except ValueError as e:
+                return prompt(
+                    str(e),
+                    default=default,
+                    value_proc=value_proc,
+                    color_mode=color_mode,
+                )
 
         if rv:
             return rv
         if default is not None:
             return default
+        # No input and no default - loop to re-prompt
 
 
 def prompt_bool(
