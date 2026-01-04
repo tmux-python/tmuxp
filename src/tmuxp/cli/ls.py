@@ -9,7 +9,21 @@ import typing as t
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 from tmuxp.workspace.finders import get_workspace_dir
 
-from ._colors import Colors, get_color_mode
+from ._colors import Colors, build_description, get_color_mode
+
+LS_DESCRIPTION = build_description(
+    """
+    List workspace files in the tmuxp configuration directory.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp ls",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias

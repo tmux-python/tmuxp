@@ -16,8 +16,22 @@ from libtmux.common import get_version, tmux_cmd
 from tmuxp.__about__ import __version__
 from tmuxp._internal.private_path import PrivatePath, collapse_home_in_string
 
-from ._colors import Colors, get_color_mode
+from ._colors import Colors, build_description, get_color_mode
 from .utils import tmuxp_echo
+
+DEBUG_INFO_DESCRIPTION = build_description(
+    """
+    Print diagnostic information for debugging and issue reports.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp debug-info",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias

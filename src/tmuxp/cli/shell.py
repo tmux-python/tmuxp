@@ -12,7 +12,24 @@ from libtmux.server import Server
 from tmuxp import util
 from tmuxp._compat import PY3, PYMINOR
 
-from ._colors import Colors, get_color_mode
+from ._colors import Colors, build_description, get_color_mode
+
+SHELL_DESCRIPTION = build_description(
+    """
+    Launch interactive Python shell with tmux server, session, window and pane.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp shell",
+                "tmuxp shell -L mysocket",
+                "tmuxp shell -c 'print(server.sessions)'",
+                "tmuxp shell --best",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias

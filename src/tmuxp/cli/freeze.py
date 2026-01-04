@@ -18,8 +18,25 @@ from tmuxp.exc import TmuxpException
 from tmuxp.workspace import freezer
 from tmuxp.workspace.finders import get_workspace_dir
 
-from ._colors import Colors, get_color_mode
+from ._colors import Colors, build_description, get_color_mode
 from .utils import prompt, prompt_choices, prompt_yes_no
+
+FREEZE_DESCRIPTION = build_description(
+    """
+    Freeze a live tmux session to a tmuxp workspace file.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp freeze mysession",
+                "tmuxp freeze mysession -o session.yaml",
+                "tmuxp freeze -f json mysession",
+                "tmuxp freeze -y mysession",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias, TypeGuard
