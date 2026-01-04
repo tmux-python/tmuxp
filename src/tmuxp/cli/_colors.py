@@ -351,6 +351,30 @@ class Colors:
         """
         return self._colorize(text, self.MUTED, bold=False)
 
+    def heading(self, text: str) -> str:
+        """Format text as a section heading (cyan, bold).
+
+        Used for section headers like 'Local workspaces:' or 'Global workspaces:'.
+        Distinguished from info() by being bold.
+
+        Parameters
+        ----------
+        text : str
+            Text to format.
+
+        Returns
+        -------
+        str
+            Formatted text.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.heading("Local workspaces:")
+        'Local workspaces:'
+        """
+        return self._colorize(text, self.INFO, bold=True)
+
     # Formatting helpers for structured output
 
     def format_label(self, label: str) -> str:

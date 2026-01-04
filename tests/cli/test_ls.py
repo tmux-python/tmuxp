@@ -172,8 +172,8 @@ class TestLsCli:
 
         cli_output = capsys.readouterr().out
 
-        # Output now has headers, check for workspace names
-        assert "Global workspaces:" in cli_output
+        # Output now has headers with directory path, check for workspace names
+        assert "Global workspaces (~/.tmuxp):" in cli_output
         for stem in stems:
             assert stem in cli_output
 
@@ -201,14 +201,19 @@ class TestLsCli:
         output = capsys.readouterr().out
         data = json.loads(output)
 
-        assert isinstance(data, list)
-        assert len(data) == 2
+        # JSON output is now an object with workspaces and global_workspace_dirs
+        assert isinstance(data, dict)
+        assert "workspaces" in data
+        assert "global_workspace_dirs" in data
 
-        names = {item["name"] for item in data}
+        workspaces = data["workspaces"]
+        assert len(workspaces) == 2
+
+        names = {item["name"] for item in workspaces}
         assert names == {"dev", "prod"}
 
         # Verify all expected fields are present
-        for item in data:
+        for item in workspaces:
             assert "name" in item
             assert "path" in item
             assert "format" in item
@@ -411,7 +416,7 @@ class TestLsLocalWorkspaces:
 
         output = capsys.readouterr().out
         assert "Local workspaces:" in output
-        assert "Global workspaces:" in output
+        assert "Global workspaces (~/.tmuxp):" in output
         assert ".tmuxp" in output
         assert "global" in output
 
@@ -442,11 +447,15 @@ class TestLsLocalWorkspaces:
         output = capsys.readouterr().out
         data = json.loads(output)
 
-        sources = {item["source"] for item in data}
+        # JSON output is now an object with workspaces and global_workspace_dirs
+        assert isinstance(data, dict)
+        workspaces = data["workspaces"]
+
+        sources = {item["source"] for item in workspaces}
         assert sources == {"local", "global"}
 
-        local_items = [item for item in data if item["source"] == "local"]
-        global_items = [item for item in data if item["source"] == "global"]
+        local_items = [item for item in workspaces if item["source"] == "local"]
+        global_items = [item for item in workspaces if item["source"] == "global"]
 
         assert len(local_items) == 1
         assert len(global_items) == 1
@@ -548,10 +557,14 @@ class TestLsFullFlag:
         output = capsys.readouterr().out
         data = json.loads(output)
 
-        assert len(data) == 1
-        assert "config" in data[0]
-        assert data[0]["config"]["session_name"] == "dev"
-        assert data[0]["config"]["windows"][0]["window_name"] == "editor"
+        # JSON output is now an object with workspaces and global_workspace_dirs
+        assert isinstance(data, dict)
+        workspaces = data["workspaces"]
+
+        assert len(workspaces) == 1
+        assert "config" in workspaces[0]
+        assert workspaces[0]["config"]["session_name"] == "dev"
+        assert workspaces[0]["config"]["windows"][0]["window_name"] == "editor"
 
     def test_ls_full_tree_shows_windows(
         self,
@@ -617,7 +630,7 @@ class TestLsFullFlag:
 
         output = capsys.readouterr().out
 
-        assert "Global workspaces:" in output
+        assert "Global workspaces (~/.tmuxp):" in output
         assert "dev" in output
         assert "code" in output
         assert "pane 0" in output
@@ -649,3 +662,197 @@ class TestLsFullFlag:
         # Should show tree structure, not raw config keys
         assert "editor" in output
         assert "session_name:" not in output  # Raw YAML not in output
+
+
+class TestLsGlobalWorkspaceDirs:
+    """Tests for global workspace directories display in ls command."""
+
+    def test_ls_shows_global_workspace_dirs_section(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Human output shows global workspace directories section."""
+        home = tmp_path / "home"
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(home)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+        monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+
+        (tmuxp_dir / "workspace.yaml").write_text("session_name: test\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+
+        assert "Global workspace directories:" in output
+        assert "Legacy: ~/.tmuxp" in output
+        assert "1 workspace" in output
+        assert "active" in output
+        assert "~/.config/tmuxp" in output
+        assert "not found" in output
+
+    def test_ls_global_header_shows_active_dir(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Global workspaces header shows active directory path."""
+        home = tmp_path / "home"
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(home)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+        monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+
+        (tmuxp_dir / "workspace.yaml").write_text("session_name: test\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+
+        # Header should include the active directory
+        assert "Global workspaces (~/.tmuxp):" in output
+
+    def test_ls_json_includes_global_workspace_dirs(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """JSON output includes global_workspace_dirs array."""
+        home = tmp_path / "home"
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(home)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+        monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+
+        (tmuxp_dir / "workspace.yaml").write_text("session_name: test\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["ls", "--json"])
+
+        output = capsys.readouterr().out
+        data = json.loads(output)
+
+        # JSON should be an object with workspaces and global_workspace_dirs
+        assert isinstance(data, dict)
+        assert "workspaces" in data
+        assert "global_workspace_dirs" in data
+
+        # Check global_workspace_dirs structure
+        dirs = data["global_workspace_dirs"]
+        assert isinstance(dirs, list)
+        assert len(dirs) >= 1
+
+        for d in dirs:
+            assert "path" in d
+            assert "source" in d
+            assert "exists" in d
+            assert "workspace_count" in d
+            assert "active" in d
+
+        # Find the active one
+        active_dirs = [d for d in dirs if d["active"]]
+        assert len(active_dirs) == 1
+        assert active_dirs[0]["path"] == "~/.tmuxp"
+        assert active_dirs[0]["exists"] is True
+        assert active_dirs[0]["workspace_count"] == 1
+
+    def test_ls_json_empty_still_has_global_workspace_dirs(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """JSON output with no workspaces still includes global_workspace_dirs."""
+        home = tmp_path / "home"
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)  # Empty directory
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(home)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+        monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["ls", "--json"])
+
+        output = capsys.readouterr().out
+        data = json.loads(output)
+
+        assert "workspaces" in data
+        assert "global_workspace_dirs" in data
+        assert len(data["workspaces"]) == 0
+        assert len(data["global_workspace_dirs"]) >= 1
+
+    def test_ls_xdg_takes_precedence_in_header(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When XDG dir exists, it shows in header instead of ~/.tmuxp."""
+        home = tmp_path / "home"
+        xdg_tmuxp = home / ".config" / "tmuxp"
+        xdg_tmuxp.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(home)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+        monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+
+        (xdg_tmuxp / "workspace.yaml").write_text("session_name: test\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+
+        # Header should show XDG path when it's active
+        assert "Global workspaces (~/.config/tmuxp):" in output
+
+    def test_ls_tree_shows_global_workspace_dirs(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Tree mode also shows global workspace directories section."""
+        home = tmp_path / "home"
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(home)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+        monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
+
+        (tmuxp_dir / "workspace.yaml").write_text("session_name: test\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls", "--tree"])
+
+        output = capsys.readouterr().out
+
+        assert "Global workspace directories:" in output
+        assert "Legacy: ~/.tmuxp" in output
+        assert "active" in output
