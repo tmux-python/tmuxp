@@ -592,9 +592,8 @@ def _interpret_color(
 
     if isinstance(color, (tuple, list)):
         if len(color) != 3:
-            raise ValueError(
-                f"RGB color tuple must have exactly 3 values, got {len(color)}"
-            )
+            msg = f"RGB color tuple must have exactly 3 values, got {len(color)}"
+            raise ValueError(msg)
         r, g, b = color
         return f"{38 + offset};2;{r:d};{g:d};{b:d}"
 
@@ -737,3 +736,52 @@ def unstyle(text: str) -> str:
     'green'
     """
     return strip_ansi(text)
+
+
+def build_description(
+    intro: str,
+    example_blocks: t.Sequence[tuple[str | None, t.Sequence[str]]],
+) -> str:
+    r"""Assemble help text with optional example sections.
+
+    Parameters
+    ----------
+    intro : str
+        The introductory description text.
+    example_blocks : sequence of (heading, commands) tuples
+        Each tuple contains an optional heading and a sequence of example commands.
+        If heading is None, the section is titled "examples:".
+
+    Returns
+    -------
+    str
+        Formatted description with examples.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._colors import build_description
+    >>> build_description("My tool.", [(None, ["mytool run"])])
+    'My tool.\n\nexamples:\n  mytool run'
+
+    >>> build_description("My tool.", [("sync", ["mytool sync repo"])])
+    'My tool.\n\nsync examples:\n  mytool sync repo'
+
+    >>> build_description("", [(None, ["cmd"])])
+    'examples:\n  cmd'
+    """
+    import textwrap
+
+    sections: list[str] = []
+    intro_text = textwrap.dedent(intro).strip()
+    if intro_text:
+        sections.append(intro_text)
+
+    for heading, commands in example_blocks:
+        if not commands:
+            continue
+        title = "examples:" if heading is None else f"{heading} examples:"
+        lines = [title]
+        lines.extend(f"  {command}" for command in commands)
+        sections.append("\n".join(lines))
+
+    return "\n\n".join(sections)

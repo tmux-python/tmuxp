@@ -12,8 +12,24 @@ from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
-from ._colors import Colors, get_color_mode
+from ._colors import Colors, build_description, get_color_mode
 from .utils import prompt_yes_no
+
+CONVERT_DESCRIPTION = build_description(
+    """
+    Convert workspace files between YAML and JSON format.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp convert workspace.yaml",
+                "tmuxp convert workspace.json",
+                "tmuxp convert -y workspace.yaml",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     import argparse

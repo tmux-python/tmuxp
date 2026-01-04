@@ -254,18 +254,18 @@ def test_style_with_valid_rgb_tuple() -> None:
 def test_style_with_invalid_2_element_tuple() -> None:
     """style() should raise UnknownStyleColor for 2-element tuple."""
     with pytest.raises(UnknownStyleColor):
-        style("test", fg=(255, 128))
+        style("test", fg=(255, 128))  # type: ignore[arg-type]
 
 
 def test_style_with_invalid_4_element_tuple() -> None:
     """style() should raise UnknownStyleColor for 4-element tuple."""
     with pytest.raises(UnknownStyleColor):
-        style("test", fg=(255, 128, 0, 64))
+        style("test", fg=(255, 128, 0, 64))  # type: ignore[arg-type]
 
 
 def test_style_with_empty_tuple() -> None:
     """style() treats empty tuple as 'no color' (falsy value)."""
-    result = style("test", fg=())
+    result = style("test", fg=())  # type: ignore[arg-type]
     # Empty tuple is falsy, so no fg color is applied
     assert "test" in result
     assert "\033[38" not in result  # No foreground color escape

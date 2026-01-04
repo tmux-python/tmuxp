@@ -9,7 +9,22 @@ import typing as t
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file
 
-from ._colors import Colors, get_color_mode
+from ._colors import Colors, build_description, get_color_mode
+
+EDIT_DESCRIPTION = build_description(
+    """
+    Open tmuxp workspace file in your system editor ($EDITOR).
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp edit myproject",
+                "tmuxp edit ./workspace.yaml",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     import argparse

@@ -13,8 +13,28 @@ from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import importers
 from tmuxp.workspace.finders import find_workspace_file
 
-from ._colors import ColorMode, Colors, get_color_mode
+from ._colors import ColorMode, Colors, build_description, get_color_mode
 from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
+
+IMPORT_DESCRIPTION = build_description(
+    """
+    Import workspaces from teamocil and tmuxinator configuration files.
+    """,
+    (
+        (
+            "teamocil",
+            [
+                "tmuxp import teamocil ~/.teamocil/project.yml",
+            ],
+        ),
+        (
+            "tmuxinator",
+            [
+                "tmuxp import tmuxinator ~/.tmuxinator/project.yml",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     import argparse

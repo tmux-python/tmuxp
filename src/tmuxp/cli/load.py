@@ -20,8 +20,27 @@ from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
-from ._colors import ColorMode, Colors, get_color_mode
+from ._colors import ColorMode, Colors, build_description, get_color_mode
 from .utils import prompt_choices, prompt_yes_no, tmuxp_echo
+
+LOAD_DESCRIPTION = build_description(
+    """
+    Load tmuxp workspace file(s) and create or attach to a tmux session.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp load myproject",
+                "tmuxp load ./workspace.yaml",
+                "tmuxp load -d myproject",
+                "tmuxp load -y dev staging",
+                "tmuxp load -L other-socket myproject",
+                "tmuxp load -a myproject",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias
