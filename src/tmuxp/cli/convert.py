@@ -33,10 +33,9 @@ CONVERT_DESCRIPTION = build_description(
 
 if t.TYPE_CHECKING:
     import argparse
-    from typing import TypeAlias
 
     AllowedFileTypes = t.Literal["json", "yaml"]
-    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
+    CLIColorModeLiteral: t.TypeAlias = t.Literal["auto", "always", "never"]
 
 
 def create_convert_subparser(
