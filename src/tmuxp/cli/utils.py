@@ -3,17 +3,36 @@
 from __future__ import annotations
 
 import logging
-import re
 import typing as t
 
 from tmuxp import log
 
+from ._colors import (
+    ColorMode,
+    Colors,
+    UnknownStyleColor,
+    strip_ansi,
+    style,
+    unstyle,
+)
+
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
-    from typing import TypeAlias
 
-    CLIColour: TypeAlias = int | tuple[int, int, int] | str
-
+# Re-export for backward compatibility
+__all__ = [
+    "ColorMode",
+    "Colors",
+    "UnknownStyleColor",
+    "prompt",
+    "prompt_bool",
+    "prompt_choices",
+    "prompt_yes_no",
+    "strip_ansi",
+    "style",
+    "tmuxp_echo",
+    "unstyle",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +78,8 @@ def prompt(
     `flask-script <https://github.com/techniq/flask-script>`_. See the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
-    prompt_ = name + ((default and f" [{default}]") or "")
+    colors = Colors(ColorMode.AUTO)
+    prompt_ = name + ((default and " " + colors.info(f"[{default}]")) or "")
     prompt_ += (name.endswith("?") and " ") or ": "
     while True:
         rv = input(prompt_) or default
@@ -99,6 +119,7 @@ def prompt_bool(
     -------
     bool
     """
+    colors = Colors(ColorMode.AUTO)
     yes_choices = yes_choices or ("y", "yes", "1", "on", "true", "t")
     no_choices = no_choices or ("n", "no", "0", "off", "false", "f")
 
@@ -109,7 +130,7 @@ def prompt_bool(
     else:
         prompt_choice = "y/N"
 
-    prompt_ = name + f" [{prompt_choice}]"
+    prompt_ = name + " " + colors.muted(f"[{prompt_choice}]")
     prompt_ += (name.endswith("?") and " ") or ": "
 
     while True:
@@ -151,6 +172,7 @@ def prompt_choices(
     -------
     str
     """
+    colors = Colors(ColorMode.AUTO)
     choices_: list[str] = []
     options: list[str] = []
 
@@ -162,8 +184,13 @@ def prompt_choices(
             choice = choice[0]
         choices_.append(choice)
 
+    choices_str = colors.muted(f"({', '.join(options)})")
+    default_str = " " + colors.info(f"[{default}]") if default else ""
+    prompt_text = f"{name} - {choices_str}{default_str}"
+
     while True:
-        rv = prompt(name + " - ({})".format(", ".join(options)), default=default)
+        prompt_ = prompt_text + ": "
+        rv = input(prompt_) or default
         if not rv or rv == default:
             return default
         rv = rv.lower()
@@ -171,121 +198,3 @@ def prompt_choices(
             return None
         if rv in choices_:
             return rv
-
-
-_ansi_re = re.compile(r"\033\[[;?0-9]*[a-zA-Z]")
-
-
-def strip_ansi(value: str) -> str:
-    """Clear ANSI from a string value."""
-    return _ansi_re.sub("", value)
-
-
-_ansi_colors = {
-    "black": 30,
-    "red": 31,
-    "green": 32,
-    "yellow": 33,
-    "blue": 34,
-    "magenta": 35,
-    "cyan": 36,
-    "white": 37,
-    "reset": 39,
-    "bright_black": 90,
-    "bright_red": 91,
-    "bright_green": 92,
-    "bright_yellow": 93,
-    "bright_blue": 94,
-    "bright_magenta": 95,
-    "bright_cyan": 96,
-    "bright_white": 97,
-}
-_ansi_reset_all = "\033[0m"
-
-
-def _interpret_color(
-    color: int | tuple[int, int, int] | str,
-    offset: int = 0,
-) -> str:
-    if isinstance(color, int):
-        return f"{38 + offset};5;{color:d}"
-
-    if isinstance(color, (tuple, list)):
-        r, g, b = color
-        return f"{38 + offset};2;{r:d};{g:d};{b:d}"
-
-    return str(_ansi_colors[color] + offset)
-
-
-class UnknownStyleColor(Exception):
-    """Raised when encountering an unknown terminal style color."""
-
-    def __init__(self, color: CLIColour, *args: object, **kwargs: object) -> None:
-        return super().__init__(f"Unknown color {color!r}", *args, **kwargs)
-
-
-def style(
-    text: t.Any,
-    fg: CLIColour | None = None,
-    bg: CLIColour | None = None,
-    bold: bool | None = None,
-    dim: bool | None = None,
-    underline: bool | None = None,
-    overline: bool | None = None,
-    italic: bool | None = None,
-    blink: bool | None = None,
-    reverse: bool | None = None,
-    strikethrough: bool | None = None,
-    reset: bool = True,
-) -> str:
-    """Credit: click."""
-    if not isinstance(text, str):
-        text = str(text)
-
-    bits = []
-
-    if fg:
-        try:
-            bits.append(f"\033[{_interpret_color(fg)}m")
-        except KeyError:
-            raise UnknownStyleColor(color=fg) from None
-
-    if bg:
-        try:
-            bits.append(f"\033[{_interpret_color(bg, 10)}m")
-        except KeyError:
-            raise UnknownStyleColor(color=bg) from None
-
-    if bold is not None:
-        bits.append(f"\033[{1 if bold else 22}m")
-    if dim is not None:
-        bits.append(f"\033[{2 if dim else 22}m")
-    if underline is not None:
-        bits.append(f"\033[{4 if underline else 24}m")
-    if overline is not None:
-        bits.append(f"\033[{53 if overline else 55}m")
-    if italic is not None:
-        bits.append(f"\033[{3 if italic else 23}m")
-    if blink is not None:
-        bits.append(f"\033[{5 if blink else 25}m")
-    if reverse is not None:
-        bits.append(f"\033[{7 if reverse else 27}m")
-    if strikethrough is not None:
-        bits.append(f"\033[{9 if strikethrough else 29}m")
-    bits.append(text)
-    if reset:
-        bits.append(_ansi_reset_all)
-    return "".join(bits)
-
-
-def unstyle(text: str) -> str:
-    """Remove ANSI styling information from a string.
-
-    Usually it's not necessary to use this function as tmuxp_echo function will
-    automatically remove styling if necessary.
-
-    Credit: click.
-
-    text : the text to remove style information from.
-    """
-    return strip_ansi(text)

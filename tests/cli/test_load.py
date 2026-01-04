@@ -16,6 +16,8 @@ from tests.constants import FIXTURE_PATH
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
+from tmuxp.cli._colors import ColorMode, Colors
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
     _load_attached,
@@ -751,3 +753,23 @@ def test_load_append_windows_to_current_session(
 
     assert len(server.sessions) == 1
     assert len(server.windows) == 6
+
+
+# Privacy masking in load command
+
+
+def test_load_masks_home_in_loading_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Load command should mask home directory in [Loading] message."""
+    monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+
+    workspace_file = pathlib.Path("/home/testuser/work/project/.tmuxp.yaml")
+    output = (
+        colors.info("[Loading]")
+        + " "
+        + colors.highlight(str(PrivatePath(workspace_file)))
+    )
+
+    assert "~/work/project/.tmuxp.yaml" in output
+    assert "/home/testuser" not in output

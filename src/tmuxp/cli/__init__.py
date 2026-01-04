@@ -16,27 +16,117 @@ from tmuxp import exc
 from tmuxp.__about__ import __version__
 from tmuxp.log import setup_logger
 
-from .convert import command_convert, create_convert_subparser
-from .debug_info import command_debug_info, create_debug_info_subparser
-from .edit import command_edit, create_edit_subparser
-from .freeze import CLIFreezeNamespace, command_freeze, create_freeze_subparser
+from ._colors import build_description
+from ._formatter import HelpTheme, TmuxpHelpFormatter
+from .convert import CONVERT_DESCRIPTION, command_convert, create_convert_subparser
+from .debug_info import (
+    DEBUG_INFO_DESCRIPTION,
+    CLIDebugInfoNamespace,
+    command_debug_info,
+    create_debug_info_subparser,
+)
+from .edit import EDIT_DESCRIPTION, command_edit, create_edit_subparser
+from .freeze import (
+    FREEZE_DESCRIPTION,
+    CLIFreezeNamespace,
+    command_freeze,
+    create_freeze_subparser,
+)
 from .import_config import (
+    IMPORT_DESCRIPTION,
     command_import_teamocil,
     command_import_tmuxinator,
     create_import_subparser,
 )
-from .load import CLILoadNamespace, command_load, create_load_subparser
-from .ls import command_ls, create_ls_subparser
-from .shell import CLIShellNamespace, command_shell, create_shell_subparser
+from .load import (
+    LOAD_DESCRIPTION,
+    CLILoadNamespace,
+    command_load,
+    create_load_subparser,
+)
+from .ls import LS_DESCRIPTION, CLILsNamespace, command_ls, create_ls_subparser
+from .shell import (
+    SHELL_DESCRIPTION,
+    CLIShellNamespace,
+    command_shell,
+    create_shell_subparser,
+)
 from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
+
+CLI_DESCRIPTION = build_description(
+    """
+    tmuxp - tmux session manager.
+
+    Manage and launch tmux sessions from YAML/JSON workspace files.
+    """,
+    (
+        (
+            "load",
+            [
+                "tmuxp load myproject",
+                "tmuxp load ./workspace.yaml",
+                "tmuxp load -d myproject",
+                "tmuxp load -y dev staging",
+            ],
+        ),
+        (
+            "freeze",
+            [
+                "tmuxp freeze mysession",
+                "tmuxp freeze mysession -o session.yaml",
+            ],
+        ),
+        (
+            "ls",
+            [
+                "tmuxp ls",
+            ],
+        ),
+        (
+            "shell",
+            [
+                "tmuxp shell",
+                "tmuxp shell -L mysocket",
+                "tmuxp shell -c 'print(server.sessions)'",
+            ],
+        ),
+        (
+            "convert",
+            [
+                "tmuxp convert workspace.yaml",
+                "tmuxp convert workspace.json",
+            ],
+        ),
+        (
+            "import",
+            [
+                "tmuxp import teamocil ~/.teamocil/project.yml",
+                "tmuxp import tmuxinator ~/.tmuxinator/project.yml",
+            ],
+        ),
+        (
+            "edit",
+            [
+                "tmuxp edit myproject",
+            ],
+        ),
+        (
+            "debug-info",
+            [
+                "tmuxp debug-info",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     import pathlib
     from typing import TypeAlias
 
     CLIVerbosity: TypeAlias = t.Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    CLIColorMode: TypeAlias = t.Literal["auto", "always", "never"]
     CLISubparserName: TypeAlias = t.Literal[
         "ls",
         "load",
@@ -52,7 +142,11 @@ if t.TYPE_CHECKING:
 
 def create_parser() -> argparse.ArgumentParser:
     """Create CLI :class:`argparse.ArgumentParser` for tmuxp."""
-    parser = argparse.ArgumentParser(prog="tmuxp")
+    parser = argparse.ArgumentParser(
+        prog="tmuxp",
+        description=CLI_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
+    )
     parser.add_argument(
         "--version",
         "-V",
@@ -67,41 +161,72 @@ def create_parser() -> argparse.ArgumentParser:
         choices=["debug", "info", "warning", "error", "critical"],
         help='log level (debug, info, warning, error, critical) (default "info")',
     )
+    parser.add_argument(
+        "--color",
+        choices=["auto", "always", "never"],
+        default="auto",
+        help="when to use colors: auto (default), always, or never",
+    )
     subparsers = parser.add_subparsers(dest="subparser_name")
-    load_parser = subparsers.add_parser("load", help="load tmuxp workspaces")
+    load_parser = subparsers.add_parser(
+        "load",
+        help="load tmuxp workspaces",
+        description=LOAD_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
+    )
     create_load_subparser(load_parser)
     shell_parser = subparsers.add_parser(
         "shell",
         help="launch python shell for tmux server, session, window and pane",
+        description=SHELL_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
     )
     create_shell_subparser(shell_parser)
     import_parser = subparsers.add_parser(
         "import",
         help="import workspaces from teamocil and tmuxinator.",
+        description=IMPORT_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
     )
     create_import_subparser(import_parser)
 
     convert_parser = subparsers.add_parser(
         "convert",
         help="convert workspace files between yaml and json.",
+        description=CONVERT_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
     )
     create_convert_subparser(convert_parser)
 
     debug_info_parser = subparsers.add_parser(
         "debug-info",
         help="print out all diagnostic info",
+        description=DEBUG_INFO_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
     )
     create_debug_info_subparser(debug_info_parser)
 
-    ls_parser = subparsers.add_parser("ls", help="list workspaces in tmuxp directory")
+    ls_parser = subparsers.add_parser(
+        "ls",
+        help="list workspaces in tmuxp directory",
+        description=LS_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
+    )
     create_ls_subparser(ls_parser)
 
-    edit_parser = subparsers.add_parser("edit", help="run $EDITOR on workspace file")
+    edit_parser = subparsers.add_parser(
+        "edit",
+        help="run $EDITOR on workspace file",
+        description=EDIT_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
+    )
     create_edit_subparser(edit_parser)
 
     freeze_parser = subparsers.add_parser(
         "freeze",
         help="freeze a live tmux session to a tmuxp workspace file",
+        description=FREEZE_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
     )
     create_freeze_subparser(freeze_parser)
 
@@ -112,6 +237,7 @@ class CLINamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp root-level CLI."""
 
     log_level: CLIVerbosity
+    color: CLIColorMode
     subparser_name: CLISubparserName
     import_subparser_name: CLIImportSubparserName | None
     version: bool
@@ -163,25 +289,32 @@ def cli(_args: list[str] | None = None) -> None:
             command_import_teamocil(
                 workspace_file=args.workspace_file,
                 parser=parser,
+                color=args.color,
             )
         elif import_subparser_name == "tmuxinator":
             command_import_tmuxinator(
                 workspace_file=args.workspace_file,
                 parser=parser,
+                color=args.color,
             )
     elif args.subparser_name == "convert":
         command_convert(
             workspace_file=args.workspace_file,
             answer_yes=args.answer_yes,
             parser=parser,
+            color=args.color,
         )
     elif args.subparser_name == "debug-info":
-        command_debug_info(parser=parser)
+        command_debug_info(
+            args=CLIDebugInfoNamespace(**vars(args)),
+            parser=parser,
+        )
 
     elif args.subparser_name == "edit":
         command_edit(
             workspace_file=args.workspace_file,
             parser=parser,
+            color=args.color,
         )
     elif args.subparser_name == "freeze":
         command_freeze(
@@ -189,7 +322,10 @@ def cli(_args: list[str] | None = None) -> None:
             parser=parser,
         )
     elif args.subparser_name == "ls":
-        command_ls(parser=parser)
+        command_ls(
+            args=CLILsNamespace(**vars(args)),
+            parser=parser,
+        )
 
 
 def startup(config_dir: pathlib.Path) -> None:
