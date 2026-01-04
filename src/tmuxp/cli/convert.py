@@ -117,9 +117,11 @@ def command_convert(
         and prompt_yes_no(
             f"Convert {colors.info(str(PrivatePath(workspace_file)))} to "
             f"{colors.highlight(to_filetype)}?",
+            color_mode=color_mode,
         )
         and prompt_yes_no(
             f"Save workspace to {colors.info(str(PrivatePath(newfile)))}?",
+            color_mode=color_mode,
         )
     ):
         answer_yes = True
