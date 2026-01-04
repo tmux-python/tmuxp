@@ -17,7 +17,7 @@ from tmuxp.__about__ import __version__
 from tmuxp.log import setup_logger
 
 from ._colors import build_description
-from ._formatter import HelpTheme, TmuxpHelpFormatter
+from ._formatter import TmuxpHelpFormatter
 from .convert import CONVERT_DESCRIPTION, command_convert, create_convert_subparser
 from .debug_info import (
     DEBUG_INFO_DESCRIPTION,
