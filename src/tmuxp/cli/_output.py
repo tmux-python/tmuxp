@@ -6,11 +6,6 @@ Examples
 --------
 >>> from tmuxp.cli._output import OutputMode, OutputFormatter, get_output_mode
 
-Basic usage with human mode (default):
-
->>> formatter = OutputFormatter(OutputMode.HUMAN)
->>> formatter.emit_text("Hello, world!")  # doctest: +SKIP
-
 Get output mode from flags:
 
 >>> get_output_mode(json_flag=False, ndjson_flag=False)

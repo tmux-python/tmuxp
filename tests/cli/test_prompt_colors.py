@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pathlib
+
 import pytest
 
 from tmuxp.cli._colors import ColorMode, Colors
