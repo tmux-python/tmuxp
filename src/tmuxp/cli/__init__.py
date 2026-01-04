@@ -45,6 +45,12 @@ from .load import (
     create_load_subparser,
 )
 from .ls import LS_DESCRIPTION, CLILsNamespace, command_ls, create_ls_subparser
+from .search import (
+    SEARCH_DESCRIPTION,
+    CLISearchNamespace,
+    command_search,
+    create_search_subparser,
+)
 from .shell import (
     SHELL_DESCRIPTION,
     CLIShellNamespace,
@@ -82,6 +88,13 @@ CLI_DESCRIPTION = build_description(
             "ls",
             [
                 "tmuxp ls",
+            ],
+        ),
+        (
+            "search",
+            [
+                "tmuxp search dev",
+                "tmuxp search name:myproject",
             ],
         ),
         (
@@ -134,6 +147,7 @@ if t.TYPE_CHECKING:
         "convert",
         "edit",
         "import",
+        "search",
         "shell",
         "debug-info",
     ]
@@ -213,6 +227,14 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=TmuxpHelpFormatter,
     )
     create_ls_subparser(ls_parser)
+
+    search_parser = subparsers.add_parser(
+        "search",
+        help="search workspace files by name, session, path, or content",
+        description=SEARCH_DESCRIPTION,
+        formatter_class=TmuxpHelpFormatter,
+    )
+    create_search_subparser(search_parser)
 
     edit_parser = subparsers.add_parser(
         "edit",
@@ -324,6 +346,11 @@ def cli(_args: list[str] | None = None) -> None:
     elif args.subparser_name == "ls":
         command_ls(
             args=CLILsNamespace(**vars(args)),
+            parser=parser,
+        )
+    elif args.subparser_name == "search":
+        command_search(
+            args=CLISearchNamespace(**vars(args)),
             parser=parser,
         )
 

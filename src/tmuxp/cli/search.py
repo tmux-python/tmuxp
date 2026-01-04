@@ -23,18 +23,23 @@ SearchToken(fields=('name', 'session_name', 'path'), pattern='editor')
 
 from __future__ import annotations
 
+import argparse
 import pathlib
 import re
 import typing as t
 
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
+from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+from tmuxp.workspace.finders import find_local_workspace_files, get_workspace_dir
 
-from ._colors import Colors
-from ._output import OutputFormatter
+from ._colors import Colors, build_description, get_color_mode
+from ._output import OutputFormatter, get_output_mode
 
 if t.TYPE_CHECKING:
-    pass
+    from typing import TypeAlias
+
+    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
 #: Field name aliases for search queries
 FIELD_ALIASES: dict[str, str] = {
@@ -1017,3 +1022,273 @@ def _output_search_results(
         formatter.emit_text(colors.muted("Global workspaces:"))
         for result in global_results:
             output_result(result, show_path=False)
+
+
+SEARCH_DESCRIPTION = build_description(
+    """
+    Search workspace files by name, session, path, window, or pane content.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp search dev",
+                'tmuxp search "my.*project"',
+                "tmuxp search name:dev",
+                "tmuxp search s:development",
+            ],
+        ),
+        (
+            "Field-scoped search:",
+            [
+                "tmuxp search window:editor",
+                "tmuxp search pane:vim",
+                "tmuxp search p:~/.tmuxp",
+            ],
+        ),
+        (
+            "Matching options:",
+            [
+                "tmuxp search -i DEV",
+                "tmuxp search -S DevProject",
+                "tmuxp search -F 'my.project'",
+                "tmuxp search --word-regexp test",
+            ],
+        ),
+        (
+            "Multiple patterns:",
+            [
+                "tmuxp search dev production",
+                "tmuxp search --any dev production",
+                "tmuxp search -v staging",
+            ],
+        ),
+        (
+            "Machine-readable output:",
+            [
+                "tmuxp search --json dev",
+                "tmuxp search --ndjson dev | jq '.name'",
+            ],
+        ),
+    ),
+)
+
+
+class CLISearchNamespace(argparse.Namespace):
+    """Typed :class:`argparse.Namespace` for tmuxp search command.
+
+    Examples
+    --------
+    >>> ns = CLISearchNamespace()
+    >>> ns.query_terms = ["dev"]
+    >>> ns.query_terms
+    ['dev']
+    """
+
+    color: CLIColorModeLiteral
+    query_terms: list[str]
+    field: list[str] | None
+    ignore_case: bool
+    smart_case: bool
+    fixed_strings: bool
+    word_regexp: bool
+    invert_match: bool
+    match_any: bool
+    output_json: bool
+    output_ndjson: bool
+
+
+def create_search_subparser(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``search`` subcommand.
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+        The parser to augment.
+
+    Returns
+    -------
+    argparse.ArgumentParser
+        The augmented parser.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> parser = argparse.ArgumentParser()
+    >>> result = create_search_subparser(parser)
+    >>> result is parser
+    True
+    """
+    # Positional arguments
+    parser.add_argument(
+        "query_terms",
+        nargs="*",
+        metavar="PATTERN",
+        help="search patterns (prefix with field: for field-scoped search)",
+    )
+
+    # Field restriction
+    parser.add_argument(
+        "-f",
+        "--field",
+        action="append",
+        metavar="FIELD",
+        help="restrict search to field(s): name, session/s, path/p, window/w, pane",
+    )
+
+    # Matching options
+    parser.add_argument(
+        "-i",
+        "--ignore-case",
+        action="store_true",
+        help="case-insensitive matching",
+    )
+    parser.add_argument(
+        "-S",
+        "--smart-case",
+        action="store_true",
+        help="case-insensitive unless pattern has uppercase",
+    )
+    parser.add_argument(
+        "-F",
+        "--fixed-strings",
+        action="store_true",
+        help="treat patterns as literal strings, not regex",
+    )
+    parser.add_argument(
+        "-w",
+        "--word-regexp",
+        action="store_true",
+        help="match whole words only",
+    )
+    parser.add_argument(
+        "-v",
+        "--invert-match",
+        action="store_true",
+        help="show workspaces that do NOT match",
+    )
+    parser.add_argument(
+        "--any",
+        dest="match_any",
+        action="store_true",
+        help="match ANY pattern (OR logic); default is ALL (AND logic)",
+    )
+
+    # Output format
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="output_json",
+        help="output as JSON",
+    )
+    parser.add_argument(
+        "--ndjson",
+        action="store_true",
+        dest="output_ndjson",
+        help="output as NDJSON (one JSON per line)",
+    )
+
+    return parser
+
+
+def command_search(
+    args: CLISearchNamespace | None = None,
+    parser: argparse.ArgumentParser | None = None,
+) -> None:
+    """Entrypoint for ``tmuxp search`` subcommand.
+
+    Searches workspace files in local (cwd and parents) and global (~/.tmuxp/)
+    directories.
+
+    Parameters
+    ----------
+    args : CLISearchNamespace | None
+        Parsed command-line arguments.
+    parser : argparse.ArgumentParser | None
+        The argument parser (unused but required by CLI interface).
+
+    Examples
+    --------
+    >>> # command_search() searches workspaces with given patterns
+    """
+    # Get color mode from args or default to AUTO
+    color_mode = get_color_mode(args.color if args else None)
+    colors = Colors(color_mode)
+
+    # Determine output mode
+    output_json = args.output_json if args else False
+    output_ndjson = args.output_ndjson if args else False
+    output_mode = get_output_mode(output_json, output_ndjson)
+    formatter = OutputFormatter(output_mode)
+
+    # Get query terms
+    query_terms = args.query_terms if args else []
+
+    if not query_terms:
+        formatter.emit_text(colors.warning("No search pattern provided."))
+        formatter.emit_text(colors.muted("Usage: tmuxp search PATTERN [PATTERN ...]"))
+        formatter.finalize()
+        return
+
+    # Parse and compile patterns
+    try:
+        # Get default fields (possibly restricted by --field)
+        default_fields = normalize_fields(args.field if args else None)
+        tokens = parse_query_terms(query_terms, default_fields=default_fields)
+
+        if not tokens:
+            formatter.emit_text(colors.warning("No valid search patterns."))
+            formatter.finalize()
+            return
+
+        patterns = compile_search_patterns(
+            tokens,
+            ignore_case=args.ignore_case if args else False,
+            smart_case=args.smart_case if args else False,
+            fixed_strings=args.fixed_strings if args else False,
+            word_regexp=args.word_regexp if args else False,
+        )
+    except InvalidFieldError as e:
+        formatter.emit_text(colors.error(str(e)))
+        formatter.finalize()
+        return
+    except re.error as e:
+        formatter.emit_text(colors.error(f"Invalid regex pattern: {e}"))
+        formatter.finalize()
+        return
+
+    # Collect workspaces: local (cwd + parents) + global (~/.tmuxp/)
+    workspaces: list[tuple[pathlib.Path, str]] = []
+
+    # Local workspace files
+    local_files = find_local_workspace_files()
+    workspaces.extend((f, "local") for f in local_files)
+
+    # Global workspace files
+    tmuxp_dir = pathlib.Path(get_workspace_dir())
+    if tmuxp_dir.exists() and tmuxp_dir.is_dir():
+        workspaces.extend(
+            (f, "global")
+            for f in sorted(tmuxp_dir.iterdir())
+            if not f.is_dir()
+            and f.suffix.lower() in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+        )
+
+    if not workspaces:
+        formatter.emit_text(colors.warning("No workspaces found."))
+        formatter.finalize()
+        return
+
+    # Find matches
+    results = find_search_matches(
+        workspaces,
+        patterns,
+        match_any=args.match_any if args else False,
+        invert_match=args.invert_match if args else False,
+    )
+
+    # Output results
+    _output_search_results(results, patterns, formatter, colors)
+    formatter.finalize()
