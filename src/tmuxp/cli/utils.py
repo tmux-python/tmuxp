@@ -58,6 +58,8 @@ def prompt(
     name: str,
     default: str | None = None,
     value_proc: Callable[[str], str] | None = None,
+    *,
+    color_mode: ColorMode | None = None,
 ) -> str:
     """Return user input from command line.
 
@@ -67,6 +69,8 @@ def prompt(
         prompt text
     default :
         default value if no input provided.
+    color_mode :
+        color mode for prompt styling. Defaults to AUTO if not specified.
 
     Returns
     -------
@@ -78,7 +82,7 @@ def prompt(
     `flask-script <https://github.com/techniq/flask-script>`_. See the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
-    colors = Colors(ColorMode.AUTO)
+    colors = Colors(color_mode if color_mode is not None else ColorMode.AUTO)
     prompt_ = name + ((default and " " + colors.info(f"[{default}]")) or "")
     prompt_ += (name.endswith("?") and " ") or ": "
     while True:
@@ -88,7 +92,12 @@ def prompt(
                 assert isinstance(rv, str)
                 value_proc(rv)
         except ValueError as e:
-            return prompt(str(e), default=default, value_proc=value_proc)
+            return prompt(
+                str(e),
+                default=default,
+                value_proc=value_proc,
+                color_mode=color_mode,
+            )
 
         if rv:
             return rv
@@ -101,6 +110,8 @@ def prompt_bool(
     default: bool = False,
     yes_choices: Sequence[t.Any] | None = None,
     no_choices: Sequence[t.Any] | None = None,
+    *,
+    color_mode: ColorMode | None = None,
 ) -> bool:
     """Return True / False by prompting user input from command line.
 
@@ -114,12 +125,14 @@ def prompt_bool(
         default 'y', 'yes', '1', 'on', 'true', 't'
     no_choices :
         default 'n', 'no', '0', 'off', 'false', 'f'
+    color_mode :
+        color mode for prompt styling. Defaults to AUTO if not specified.
 
     Returns
     -------
     bool
     """
-    colors = Colors(ColorMode.AUTO)
+    colors = Colors(color_mode if color_mode is not None else ColorMode.AUTO)
     yes_choices = yes_choices or ("y", "yes", "1", "on", "true", "t")
     no_choices = no_choices or ("n", "no", "0", "off", "false", "f")
 
@@ -143,9 +156,24 @@ def prompt_bool(
             return False
 
 
-def prompt_yes_no(name: str, default: bool = True) -> bool:
-    """:meth:`prompt_bool()` returning yes by default."""
-    return prompt_bool(name, default=default)
+def prompt_yes_no(
+    name: str,
+    default: bool = True,
+    *,
+    color_mode: ColorMode | None = None,
+) -> bool:
+    """:meth:`prompt_bool()` returning yes by default.
+
+    Parameters
+    ----------
+    name :
+        prompt text
+    default :
+        default value if no input provided.
+    color_mode :
+        color mode for prompt styling. Defaults to AUTO if not specified.
+    """
+    return prompt_bool(name, default=default, color_mode=color_mode)
 
 
 def prompt_choices(
@@ -153,6 +181,8 @@ def prompt_choices(
     choices: list[str] | tuple[str, str],
     default: str | None = None,
     no_choice: Sequence[str] = ("none",),
+    *,
+    color_mode: ColorMode | None = None,
 ) -> str | None:
     """Return user input from command line from set of provided choices.
 
@@ -167,12 +197,14 @@ def prompt_choices(
         default value if no input provided.
     no_choice :
         acceptable list of strings for "null choice"
+    color_mode :
+        color mode for prompt styling. Defaults to AUTO if not specified.
 
     Returns
     -------
     str
     """
-    colors = Colors(ColorMode.AUTO)
+    colors = Colors(color_mode if color_mode is not None else ColorMode.AUTO)
     choices_: list[str] = []
     options: list[str] = []
 
