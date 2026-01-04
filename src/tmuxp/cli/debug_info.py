@@ -30,6 +30,12 @@ DEBUG_INFO_DESCRIPTION = build_description(
                 "tmuxp debug-info",
             ],
         ),
+        (
+            "Machine-readable output:",
+            [
+                "tmuxp debug-info --json",
+            ],
+        ),
     ),
 )
 
@@ -45,13 +51,189 @@ class CLIDebugInfoNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp debug-info command."""
 
     color: CLIColorModeLiteral
+    output_json: bool
 
 
 def create_debug_info_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
     """Augment :class:`argparse.ArgumentParser` with ``debug-info`` subcommand."""
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="output_json",
+        help="output as JSON",
+    )
     return parser
+
+
+def _private(path: pathlib.Path | str | None) -> str:
+    """Privacy-mask a path by collapsing home directory to ~.
+
+    Parameters
+    ----------
+    path : pathlib.Path | str | None
+        Path to mask.
+
+    Returns
+    -------
+    str
+        Path with home directory replaced by ~.
+
+    Examples
+    --------
+    >>> _private(None)
+    ''
+    >>> _private('/usr/bin/tmux')
+    '/usr/bin/tmux'
+    """
+    if path is None:
+        return ""
+    return str(PrivatePath(path))
+
+
+def _collect_debug_info() -> dict[str, t.Any]:
+    """Collect debug information as a structured dictionary.
+
+    All paths are privacy-masked using PrivatePath (home → ~).
+
+    Returns
+    -------
+    dict[str, Any]
+        Debug information with environment, versions, paths, and tmux state.
+
+    Examples
+    --------
+    >>> data = _collect_debug_info()
+    >>> 'environment' in data
+    True
+    >>> 'tmux_version' in data
+    True
+    """
+    # Collect tmux command outputs
+    sessions_resp = tmux_cmd("list-sessions")
+    windows_resp = tmux_cmd("list-windows")
+    panes_resp = tmux_cmd("list-panes")
+    global_opts_resp = tmux_cmd("show-options", "-g")
+    window_opts_resp = tmux_cmd("show-window-options", "-g")
+
+    return {
+        "environment": {
+            "dist": platform.platform(),
+            "arch": platform.machine(),
+            "uname": list(platform.uname()[:3]),
+            "version": platform.version(),
+        },
+        "python_version": " ".join(sys.version.split("\n")),
+        "system_path": collapse_home_in_string(os.environ.get("PATH", "")),
+        "tmux_version": str(get_version()),
+        "libtmux_version": libtmux_version,
+        "tmuxp_version": __version__,
+        "tmux_path": _private(shutil.which("tmux")),
+        "tmuxp_path": _private(tmuxp_path),
+        "shell": _private(os.environ.get("SHELL", "")),
+        "tmux": {
+            "sessions": sessions_resp.stdout,
+            "windows": windows_resp.stdout,
+            "panes": panes_resp.stdout,
+            "global_options": global_opts_resp.stdout,
+            "window_options": window_opts_resp.stdout,
+        },
+    }
+
+
+def _format_human_output(data: dict[str, t.Any], colors: Colors) -> str:
+    """Format debug info as human-readable colored output.
+
+    Parameters
+    ----------
+    data : dict[str, Any]
+        Debug information dictionary.
+    colors : Colors
+        Color manager for formatting.
+
+    Returns
+    -------
+    str
+        Formatted human-readable output.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> data = {
+    ...     "environment": {
+    ...         "dist": "Linux",
+    ...         "arch": "x86_64",
+    ...         "uname": ["Linux", "host", "6.0"],
+    ...         "version": "#1 SMP",
+    ...     },
+    ...     "python_version": "3.12.0",
+    ...     "system_path": "/usr/bin",
+    ...     "tmux_version": "3.4",
+    ...     "libtmux_version": "0.40.0",
+    ...     "tmuxp_version": "1.50.0",
+    ...     "tmux_path": "/usr/bin/tmux",
+    ...     "tmuxp_path": "~/tmuxp",
+    ...     "shell": "/bin/bash",
+    ...     "tmux": {
+    ...         "sessions": [],
+    ...         "windows": [],
+    ...         "panes": [],
+    ...         "global_options": [],
+    ...         "window_options": [],
+    ...     },
+    ... }
+    >>> output = _format_human_output(data, colors)
+    >>> "environment" in output
+    True
+    """
+
+    def format_tmux_section(lines: list[str]) -> str:
+        """Format tmux command output with syntax highlighting."""
+        formatted_lines = []
+        for line in lines:
+            formatted = colors.format_tmux_option(line)
+            formatted_lines.append(f"\t{formatted}")
+        return "\n".join(formatted_lines)
+
+    env = data["environment"]
+    env_items = [
+        f"\t{colors.format_kv('dist', env['dist'])}",
+        f"\t{colors.format_kv('arch', env['arch'])}",
+        f"\t{colors.format_kv('uname', '; '.join(env['uname']))}",
+        f"\t{colors.format_kv('version', env['version'])}",
+    ]
+
+    tmux_data = data["tmux"]
+    output = [
+        colors.format_separator(),
+        f"{colors.format_label('environment')}:\n" + "\n".join(env_items),
+        colors.format_separator(),
+        colors.format_kv("python version", data["python_version"]),
+        colors.format_kv("system PATH", data["system_path"]),
+        colors.format_kv("tmux version", colors.format_version(data["tmux_version"])),
+        colors.format_kv(
+            "libtmux version", colors.format_version(data["libtmux_version"])
+        ),
+        colors.format_kv("tmuxp version", colors.format_version(data["tmuxp_version"])),
+        colors.format_kv("tmux path", colors.format_path(data["tmux_path"])),
+        colors.format_kv("tmuxp path", colors.format_path(data["tmuxp_path"])),
+        colors.format_kv("shell", data["shell"]),
+        colors.format_separator(),
+        f"{colors.format_label('tmux sessions')}:\n"
+        + format_tmux_section(tmux_data["sessions"]),
+        f"{colors.format_label('tmux windows')}:\n"
+        + format_tmux_section(tmux_data["windows"]),
+        f"{colors.format_label('tmux panes')}:\n"
+        + format_tmux_section(tmux_data["panes"]),
+        f"{colors.format_label('tmux global options')}:\n"
+        + format_tmux_section(tmux_data["global_options"]),
+        f"{colors.format_label('tmux window options')}:\n"
+        + format_tmux_section(tmux_data["window_options"]),
+    ]
+
+    return "\n".join(output)
 
 
 def command_debug_info(
@@ -59,74 +241,23 @@ def command_debug_info(
     parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp debug-info`` to print debug info to submit with issues."""
-    # Get color mode from args or default to AUTO
+    import json
+    import sys
+
+    # Get output mode
+    output_json = args.output_json if args else False
+
+    # Get color mode (only used for human output)
     color_mode = get_color_mode(args.color if args else None)
     colors = Colors(color_mode)
 
-    def private(path: pathlib.Path | str | None) -> str:
-        """Privacy-mask a path by collapsing home directory to ~."""
-        if path is None:
-            return ""
-        return str(PrivatePath(path))
+    # Collect debug info
+    data = _collect_debug_info()
 
-    def format_tmux_resp(std_resp: tmux_cmd) -> str:
-        """Format tmux command response with syntax highlighting."""
-        stdout_lines = []
-        for line in std_resp.stdout:
-            formatted = colors.format_tmux_option(line)
-            stdout_lines.append(f"\t{formatted}")
-
-        stderr_formatted = ""
-        if std_resp.stderr:
-            stderr_lines = "\n".join(f"\t{line}" for line in std_resp.stderr)
-            if stderr_lines.strip():
-                stderr_formatted = colors.error(stderr_lines)
-
-        parts = ["\n".join(stdout_lines)]
-        if stderr_formatted:
-            parts.append(stderr_formatted)
-        return "\n".join(parts)
-
-    # Build environment section with indented key-value pairs
-    env_items = [
-        f"\t{colors.format_kv('dist', platform.platform())}",
-        f"\t{colors.format_kv('arch', platform.machine())}",
-        f"\t{colors.format_kv('uname', '; '.join(platform.uname()[:3]))}",
-        f"\t{colors.format_kv('version', platform.version())}",
-    ]
-
-    output = [
-        colors.format_separator(),
-        f"{colors.format_label('environment')}:\n" + "\n".join(env_items),
-        colors.format_separator(),
-        colors.format_kv(
-            "python version",
-            " ".join(sys.version.split("\n")),
-        ),
-        colors.format_kv(
-            "system PATH",
-            collapse_home_in_string(os.environ.get("PATH", "")),
-        ),
-        colors.format_kv("tmux version", colors.format_version(str(get_version()))),
-        colors.format_kv("libtmux version", colors.format_version(libtmux_version)),
-        colors.format_kv("tmuxp version", colors.format_version(__version__)),
-        colors.format_kv(
-            "tmux path",
-            colors.format_path(private(shutil.which("tmux"))),
-        ),
-        colors.format_kv("tmuxp path", colors.format_path(private(tmuxp_path))),
-        colors.format_kv("shell", private(os.environ.get("SHELL", ""))),
-        colors.format_separator(),
-        f"{colors.format_label('tmux sessions')}:\n"
-        + format_tmux_resp(tmux_cmd("list-sessions")),
-        f"{colors.format_label('tmux windows')}:\n"
-        + format_tmux_resp(tmux_cmd("list-windows")),
-        f"{colors.format_label('tmux panes')}:\n"
-        + format_tmux_resp(tmux_cmd("list-panes")),
-        f"{colors.format_label('tmux global options')}:\n"
-        + format_tmux_resp(tmux_cmd("show-options", "-g")),
-        f"{colors.format_label('tmux window options')}:\n"
-        + format_tmux_resp(tmux_cmd("show-window-options", "-g")),
-    ]
-
-    tmuxp_echo("\n".join(output))
+    # Output based on mode
+    if output_json:
+        # Single object, not wrapped in array
+        sys.stdout.write(json.dumps(data, indent=2) + "\n")
+        sys.stdout.flush()
+    else:
+        tmuxp_echo(_format_human_output(data, colors))
