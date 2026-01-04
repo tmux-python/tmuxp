@@ -91,3 +91,46 @@ def test_prompt_colors_disabled_returns_plain_text(
     assert colors.info("[/path/to/file]") == "[/path/to/file]"
     assert "\033[" not in colors.muted("test")
     assert "\033[" not in colors.info("test")
+
+
+def test_prompt_empty_input_no_default_reprompts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify prompt() re-prompts when user enters empty input with no default.
+
+    This is a regression test for the bug where pressing Enter with no default
+    would cause an AssertionError instead of re-prompting.
+    """
+    from tmuxp.cli.utils import prompt
+
+    # Simulate: first input is empty (user presses Enter), second input is valid
+    inputs = iter(["", "valid_input"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = prompt("Enter value")
+    assert result == "valid_input"
+
+
+def test_prompt_empty_input_with_value_proc_no_crash(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify prompt() with value_proc doesn't crash on empty input.
+
+    This is a regression test for the AssertionError that occurred when
+    value_proc was provided but input was empty and no default was set.
+    """
+    from tmuxp.cli.utils import prompt
+
+    def validate_path(val: str) -> str:
+        """Validate that path is absolute."""
+        if not val.startswith("/"):
+            msg = "Must be absolute path"
+            raise ValueError(msg)
+        return val
+
+    # Simulate: first input is empty, second input is valid
+    inputs = iter(["", "/valid/path"])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = prompt("Enter path", value_proc=validate_path)
+    assert result == "/valid/path"
