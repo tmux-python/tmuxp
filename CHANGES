@@ -31,6 +31,20 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
+### Features
+
+#### CLI Colors (#1006)
+
+New semantic color output for all CLI commands:
+
+- New `--color` flag (auto/always/never) on root CLI for controlling color output
+- Respects `NO_COLOR` and `FORCE_COLOR` environment variables per [no-color.org](https://no-color.org) standard
+- Semantic color methods: `success()` (green), `warning()` (yellow), `error()` (red), `info()` (cyan), `highlight()` (magenta), `muted()` (blue)
+- All commands updated with colored output: `load`, `ls`, `freeze`, `convert`, `import`, `edit`, `shell`, `debug-info`
+- Interactive prompts enhanced with color support
+- `PrivatePath` utility masks home directory as `~` for privacy protection in output
+- Beautiful `--help` output with usage examples
+
 ### Development
 
 #### Makefile -> Justfile (#1005)
