@@ -51,6 +51,18 @@ class TestWorkspaceInfo:
         assert info["session_name"] == "my-session"
         assert info["size"] > 0
         assert "T" in info["mtime"]  # ISO format contains T
+        assert info["source"] == "global"  # Default source
+
+    def test_get_workspace_info_source_local(self, tmp_path: pathlib.Path) -> None:
+        """Extract metadata with source=local."""
+        workspace = tmp_path / ".tmuxp.yaml"
+        workspace.write_text("session_name: local-session\nwindows: []")
+
+        info = _get_workspace_info(workspace, source="local")
+
+        assert info["name"] == ".tmuxp"
+        assert info["source"] == "local"
+        assert info["session_name"] == "local-session"
 
     def test_get_workspace_info_json(self, tmp_path: pathlib.Path) -> None:
         """Extract metadata from JSON workspace file."""
@@ -130,6 +142,8 @@ class TestLsCli:
         """CLI test for tmuxp ls."""
         monkeypatch.setenv("HOME", str(tmp_path))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
 
         filenames = [
             ".git/",
@@ -154,11 +168,14 @@ class TestLsCli:
                 location.touch()
 
         with contextlib.suppress(SystemExit):
-            cli.cli(["ls"])
+            cli.cli(["--color=never", "ls"])
 
         cli_output = capsys.readouterr().out
 
-        assert cli_output == "\n".join(stems) + "\n"
+        # Output now has headers, check for workspace names
+        assert "Global workspaces:" in cli_output
+        for stem in stems:
+            assert stem in cli_output
 
     def test_ls_json_output(
         self,
@@ -170,6 +187,8 @@ class TestLsCli:
         monkeypatch.setenv("HOME", str(tmp_path))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
         monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
 
         tmuxp_dir = tmp_path / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
@@ -196,6 +215,8 @@ class TestLsCli:
             assert "size" in item
             assert "mtime" in item
             assert "session_name" in item
+            assert "source" in item
+            assert item["source"] == "global"
 
     def test_ls_ndjson_output(
         self,
@@ -207,6 +228,8 @@ class TestLsCli:
         monkeypatch.setenv("HOME", str(tmp_path))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
         monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
 
         tmuxp_dir = tmp_path / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
@@ -226,6 +249,7 @@ class TestLsCli:
             data = json.loads(line)
             assert "name" in data
             assert "session_name" in data
+            assert "source" in data
 
     def test_ls_tree_output(
         self,
@@ -237,6 +261,8 @@ class TestLsCli:
         monkeypatch.setenv("HOME", str(tmp_path))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
         monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
 
         tmuxp_dir = tmp_path / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
@@ -262,6 +288,8 @@ class TestLsCli:
         monkeypatch.setenv("HOME", str(tmp_path))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
         monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
 
         tmuxp_dir = tmp_path / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
@@ -282,6 +310,8 @@ class TestLsCli:
         monkeypatch.setenv("HOME", str(tmp_path))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
         monkeypatch.delenv("NO_COLOR", raising=False)
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
 
         tmuxp_dir = tmp_path / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
@@ -297,3 +327,153 @@ class TestLsCli:
 
         assert "myfile" in output
         assert "actual-session" in output
+
+
+class TestLsLocalWorkspaces:
+    """Tests for local workspace discovery in ls command."""
+
+    def test_ls_finds_local_workspace_in_cwd(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Ls should find .tmuxp.yaml in current directory."""
+        home = tmp_path / "home"
+        project = home / "project"
+        project.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(project)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+        (project / ".tmuxp.yaml").write_text("session_name: local\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+        assert "Local workspaces:" in output
+        assert ".tmuxp" in output
+
+    def test_ls_finds_local_workspace_in_parent(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Ls should find .tmuxp.yaml in parent directory."""
+        home = tmp_path / "home"
+        project = home / "project"
+        subdir = project / "src" / "module"
+        subdir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(subdir)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+        (project / ".tmuxp.yaml").write_text("session_name: parent-local\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+        assert "Local workspaces:" in output
+        assert ".tmuxp" in output
+
+    def test_ls_shows_local_and_global(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Ls should show both local and global workspaces."""
+        home = tmp_path / "home"
+        project = home / "project"
+        project.mkdir(parents=True)
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(project)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+        # Local workspace
+        (project / ".tmuxp.yaml").write_text("session_name: local\nwindows: []")
+        # Global workspace
+        (tmuxp_dir / "global.yaml").write_text("session_name: global\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+        assert "Local workspaces:" in output
+        assert "Global workspaces:" in output
+        assert ".tmuxp" in output
+        assert "global" in output
+
+    def test_ls_json_includes_source_for_local(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """JSON output should include source=local for local workspaces."""
+        home = tmp_path / "home"
+        project = home / "project"
+        project.mkdir(parents=True)
+        tmuxp_dir = home / ".tmuxp"
+        tmuxp_dir.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(project)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+        (project / ".tmuxp.yaml").write_text("session_name: local\nwindows: []")
+        (tmuxp_dir / "global.yaml").write_text("session_name: global\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["ls", "--json"])
+
+        output = capsys.readouterr().out
+        data = json.loads(output)
+
+        sources = {item["source"] for item in data}
+        assert sources == {"local", "global"}
+
+        local_items = [item for item in data if item["source"] == "local"]
+        global_items = [item for item in data if item["source"] == "global"]
+
+        assert len(local_items) == 1
+        assert len(global_items) == 1
+        assert local_items[0]["session_name"] == "local"
+        assert global_items[0]["session_name"] == "global"
+
+    def test_ls_local_shows_path(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """Local workspaces should show their path in flat mode."""
+        home = tmp_path / "home"
+        project = home / "project"
+        project.mkdir(parents=True)
+
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+        monkeypatch.chdir(project)
+        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+        (project / ".tmuxp.yaml").write_text("session_name: local\nwindows: []")
+
+        with contextlib.suppress(SystemExit):
+            cli.cli(["--color=never", "ls"])
+
+        output = capsys.readouterr().out
+        # Local workspace output shows path (with ~ contraction)
+        assert "~/project/.tmuxp.yaml" in output

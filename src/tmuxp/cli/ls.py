@@ -16,11 +16,12 @@ Create workspace info from file path:
 ...     size=256,
 ...     mtime="2024-01-15T10:30:00",
 ...     session_name="development",
+...     source="global",
 ... )
 >>> ws["name"]
 'dev'
->>> ws["format"]
-'yaml'
+>>> ws["source"]
+'global'
 """
 
 from __future__ import annotations
@@ -33,7 +34,7 @@ import typing as t
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
-from tmuxp.workspace.finders import get_workspace_dir
+from tmuxp.workspace.finders import find_local_workspace_files, get_workspace_dir
 
 from ._colors import Colors, build_description, get_color_mode
 from ._output import OutputFormatter, get_output_mode
@@ -84,6 +85,8 @@ class WorkspaceInfo(t.TypedDict):
         Modification time in ISO format.
     session_name : str | None
         Session name from config if parseable.
+    source : str
+        Source location: "local" (cwd/parents) or "global" (~/.tmuxp/).
     """
 
     name: str
@@ -92,6 +95,7 @@ class WorkspaceInfo(t.TypedDict):
     size: int
     mtime: str
     session_name: str | None
+    source: str
 
 
 class CLILsNamespace(argparse.Namespace):
@@ -154,13 +158,19 @@ def create_ls_subparser(
     return parser
 
 
-def _get_workspace_info(filepath: pathlib.Path) -> WorkspaceInfo:
+def _get_workspace_info(
+    filepath: pathlib.Path,
+    *,
+    source: str = "global",
+) -> WorkspaceInfo:
     """Extract metadata from a workspace file.
 
     Parameters
     ----------
     filepath : pathlib.Path
         Path to the workspace file.
+    source : str
+        Source location: "local" or "global". Default "global".
 
     Returns
     -------
@@ -182,6 +192,11 @@ def _get_workspace_info(filepath: pathlib.Path) -> WorkspaceInfo:
     'test-session'
     >>> info['format']
     'yaml'
+    >>> info['source']
+    'global'
+    >>> info_local = _get_workspace_info(temp_path, source="local")
+    >>> info_local['source']
+    'local'
     >>> temp_path.unlink()
     """
     stat = filepath.stat()
@@ -208,6 +223,7 @@ def _get_workspace_info(filepath: pathlib.Path) -> WorkspaceInfo:
             tz=datetime.timezone.utc,
         ).isoformat(),
         session_name=session_name,
+        source=source,
     )
 
 
@@ -218,6 +234,8 @@ def _output_flat(
 ) -> None:
     """Output workspaces in flat list format.
 
+    Groups workspaces by source (local vs global) for human output.
+
     Parameters
     ----------
     workspaces : list[WorkspaceInfo]
@@ -227,12 +245,27 @@ def _output_flat(
     colors : Colors
         Color manager.
     """
-    for ws in workspaces:
-        # JSON/NDJSON output
-        formatter.emit(dict(ws))
+    # Separate by source for human output grouping
+    local_workspaces = [ws for ws in workspaces if ws["source"] == "local"]
+    global_workspaces = [ws for ws in workspaces if ws["source"] == "global"]
 
-        # Human output
-        formatter.emit_text(colors.info(ws["name"]))
+    # Output local workspaces first (closest to user's context)
+    if local_workspaces:
+        formatter.emit_text(colors.muted("Local workspaces:"))
+        for ws in local_workspaces:
+            formatter.emit(dict(ws))
+            formatter.emit_text(
+                f"  {colors.info(ws['name'])}  {colors.muted(ws['path'])}"
+            )
+
+    # Output global workspaces
+    if global_workspaces:
+        if local_workspaces:
+            formatter.emit_text("")  # Blank line separator
+        formatter.emit_text(colors.muted("Global workspaces:"))
+        for ws in global_workspaces:
+            formatter.emit(dict(ws))
+            formatter.emit_text(f"  {colors.info(ws['name'])}")
 
 
 def _output_tree(
@@ -284,6 +317,9 @@ def command_ls(
 ) -> None:
     """Entrypoint for ``tmuxp ls`` subcommand.
 
+    Lists both local workspaces (from cwd and parent directories) and
+    global workspaces (from ~/.tmuxp/).
+
     Parameters
     ----------
     args : CLILsNamespace | None
@@ -293,7 +329,7 @@ def command_ls(
 
     Examples
     --------
-    >>> # command_ls() lists workspaces from ~/.tmuxp/
+    >>> # command_ls() lists workspaces from cwd/parents and ~/.tmuxp/
     """
     # Get color mode from args or default to AUTO
     color_mode = get_color_mode(args.color if args else None)
@@ -306,16 +342,21 @@ def command_ls(
     output_mode = get_output_mode(output_json, output_ndjson)
     formatter = OutputFormatter(output_mode)
 
-    tmuxp_dir = pathlib.Path(get_workspace_dir())
-    workspaces: list[WorkspaceInfo] = []
+    # 1. Collect local workspace files (cwd and parents)
+    local_files = find_local_workspace_files()
+    workspaces: list[WorkspaceInfo] = [
+        _get_workspace_info(f, source="local") for f in local_files
+    ]
 
+    # 2. Collect global workspace files (~/.tmuxp/)
+    tmuxp_dir = pathlib.Path(get_workspace_dir())
     if tmuxp_dir.exists() and tmuxp_dir.is_dir():
-        for f in sorted(tmuxp_dir.iterdir()):
-            if f.is_dir():
-                continue
-            if f.suffix.lower() not in VALID_WORKSPACE_DIR_FILE_EXTENSIONS:
-                continue
-            workspaces.append(_get_workspace_info(f))
+        workspaces.extend(
+            _get_workspace_info(f, source="global")
+            for f in sorted(tmuxp_dir.iterdir())
+            if not f.is_dir()
+            and f.suffix.lower() in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+        )
 
     if not workspaces:
         formatter.emit_text(colors.warning("No workspaces found."))
