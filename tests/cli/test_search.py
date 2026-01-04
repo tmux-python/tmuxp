@@ -17,6 +17,7 @@ from tmuxp.cli.search import (
     SearchPattern,
     SearchToken,
     WorkspaceFields,
+    WorkspaceSearchResult,
     _get_field_values,
     _output_search_results,
     compile_search_patterns,
@@ -787,7 +788,7 @@ class TestOutputSearchResults:
         colors = Colors(ColorMode.NEVER)
         formatter = OutputFormatter(OutputMode.JSON)
 
-        result = {
+        result: WorkspaceSearchResult = {
             "filepath": "/test/dev.yaml",
             "source": "global",
             "fields": WorkspaceFields(
@@ -813,7 +814,7 @@ class TestOutputSearchResults:
         colors = Colors(ColorMode.NEVER)
         formatter = OutputFormatter(OutputMode.NDJSON)
 
-        result = {
+        result: WorkspaceSearchResult = {
             "filepath": "/test/dev.yaml",
             "source": "global",
             "fields": WorkspaceFields(
