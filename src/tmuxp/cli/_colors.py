@@ -22,9 +22,22 @@ Force colors on or off:
 'loaded'
 
 Environment variables NO_COLOR and FORCE_COLOR are respected.
-NO_COLOR takes highest priority. FORCE_COLOR enables colors even without TTY:
+NO_COLOR takes highest priority (disables even in ALWAYS mode):
 
->>> import os
+>>> monkeypatch.setenv("NO_COLOR", "1")
+>>> colors = Colors(ColorMode.ALWAYS)
+>>> colors.success("loaded")
+'loaded'
+
+FORCE_COLOR enables colors in AUTO mode even without TTY:
+
+>>> import sys
+>>> monkeypatch.delenv("NO_COLOR", raising=False)
+>>> monkeypatch.setenv("FORCE_COLOR", "1")
+>>> monkeypatch.setattr(sys.stdout, "isatty", lambda: False)
+>>> colors = Colors(ColorMode.AUTO)
+>>> colors.success("loaded")  # doctest: +ELLIPSIS
+'...'
 """
 
 from __future__ import annotations
