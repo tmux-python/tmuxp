@@ -96,6 +96,14 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
         -------
         str
             Formatted text, with colorized examples if theme is set.
+
+        Examples
+        --------
+        Without theme, returns text via parent formatter:
+
+        >>> formatter = TmuxpHelpFormatter("test")
+        >>> formatter._fill_text("hello", 80, "")
+        'hello'
         """
         theme = getattr(self, "_theme", None)
         if not text or theme is None:
@@ -171,6 +179,20 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
         -------
         _ColorizedLine
             Named tuple with colorized text and updated expect_value state.
+
+        Examples
+        --------
+        With an empty theme (no colors), returns text unchanged:
+
+        >>> formatter = TmuxpHelpFormatter("test")
+        >>> theme = HelpTheme.from_colors(None)
+        >>> result = formatter._colorize_example_line(
+        ...     "tmuxp load", theme=theme, expect_value=False
+        ... )
+        >>> result.text
+        'tmuxp load'
+        >>> result.expect_value
+        False
         """
         parts: list[str] = []
         expecting_value = expect_value

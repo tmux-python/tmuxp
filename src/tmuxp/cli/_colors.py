@@ -196,6 +196,20 @@ class Colors:
         -------
         str
             Colorized text if enabled, plain text otherwise.
+
+        Examples
+        --------
+        When colors are enabled, applies ANSI escape codes:
+
+        >>> colors = Colors(ColorMode.ALWAYS)
+        >>> colors._colorize("test", "green")  # doctest: +ELLIPSIS
+        '...'
+
+        When colors are disabled, returns plain text:
+
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors._colorize("test", "green")
+        'test'
         """
         if self._enabled:
             return style(text, fg=fg, bold=bold)
@@ -599,6 +613,23 @@ def _interpret_color(
     -------
     str
         ANSI escape code parameters.
+
+    Examples
+    --------
+    Color name returns base ANSI code:
+
+    >>> _interpret_color("red")
+    '31'
+
+    256-color index returns extended format:
+
+    >>> _interpret_color(196)
+    '38;5;196'
+
+    RGB tuple returns 24-bit format:
+
+    >>> _interpret_color((255, 128, 0))
+    '38;2;255;128;0'
     """
     if isinstance(color, int):
         return f"{38 + offset};5;{color:d}"
