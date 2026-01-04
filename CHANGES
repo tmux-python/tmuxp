@@ -52,7 +52,7 @@ New `tmuxp search` command for finding workspace files:
 - Field-scoped search with prefixes: `name:`, `session:`, `path:`, `window:`, `pane:`
 - Matching options: `-i` (ignore-case), `-S` (smart-case), `-F` (fixed-strings), `-w` (word)
 - Logic operators: `--any` for OR, `-v` for invert match
-- Output formats: human (with match highlighting), `--json`, `--ndjson`
+- Output formats: human (with match highlighting), `--json`, `--ndjson` for automation and piping to `jq`
 - Searches local (cwd and parents) and global (~/.tmuxp/) workspaces
 
 #### Enhanced ls Command (#1006)
@@ -61,13 +61,13 @@ New output options for `tmuxp ls`:
 
 - `--tree`: Display workspaces grouped by directory
 - `--full`: Include complete parsed config content
-- `--json` / `--ndjson`: Machine-readable output formats
+- `--json` / `--ndjson`: Machine-readable output for automation and piping to `jq`
 - Local workspace discovery from current directory and parents
 - Source field distinguishes "local" vs "global" workspaces
 
 #### JSON Output for debug-info (#1006)
 
-- `tmuxp debug-info --json`: Structured JSON output for machine parsing
+- `tmuxp debug-info --json`: Structured JSON output for automation, issue reporting, and piping to `jq`
 
 ### Development
 
