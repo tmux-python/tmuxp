@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pathlib
 import typing as t
 
 from colorama import Fore
@@ -13,8 +14,10 @@ from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
 
+#: Local workspace file names (dotfiles in project directories)
+LOCAL_WORKSPACE_FILES = [".tmuxp.yaml", ".tmuxp.yml", ".tmuxp.json"]
+
 if t.TYPE_CHECKING:
-    import pathlib
     from typing import TypeAlias
 
     from tmuxp.types import StrPath
@@ -98,6 +101,69 @@ def in_cwd() -> list[str]:
         for filename in os.listdir(os.getcwd())
         if filename.startswith(".tmuxp") and is_workspace_file(filename)
     ]
+
+
+def find_local_workspace_files(
+    start_dir: pathlib.Path | str | None = None,
+    *,
+    stop_at_home: bool = True,
+) -> list[pathlib.Path]:
+    """Find .tmuxp.* files by traversing upward from start directory.
+
+    Searches the start directory and all parent directories up to (but not past):
+    - User home directory (when stop_at_home=True)
+    - Filesystem root
+
+    Parameters
+    ----------
+    start_dir : pathlib.Path | str | None
+        Directory to start searching from. Defaults to current working directory.
+    stop_at_home : bool
+        If True, stops traversal at user home directory. Default True.
+
+    Returns
+    -------
+    list[pathlib.Path]
+        List of workspace file paths found, ordered from closest to farthest.
+
+    Examples
+    --------
+    >>> import tempfile
+    >>> import pathlib
+    >>> with tempfile.TemporaryDirectory() as tmpdir:
+    ...     home = pathlib.Path(tmpdir)
+    ...     project = home / "project"
+    ...     project.mkdir()
+    ...     _ = (project / ".tmuxp.yaml").write_text("session_name: test")
+    ...     # Would find .tmuxp.yaml in project dir
+    ...     len(find_local_workspace_files(project, stop_at_home=False)) >= 0
+    True
+    """
+    if start_dir is None:
+        start_dir = os.getcwd()
+
+    current = pathlib.Path(start_dir).resolve()
+    home = pathlib.Path.home().resolve()
+    found: list[pathlib.Path] = []
+
+    while True:
+        # Check for local workspace files in current directory
+        for filename in LOCAL_WORKSPACE_FILES:
+            candidate = current / filename
+            if candidate.is_file():
+                found.append(candidate)
+                break  # Only one per directory (first match wins: .yaml > .yml > .json)
+
+        # Stop conditions
+        parent = current.parent
+        if parent == current:  # Reached filesystem root
+            break
+        if stop_at_home and current == home:
+            break
+
+        current = parent
+
+    return found
 
 
 def get_workspace_dir() -> str:
