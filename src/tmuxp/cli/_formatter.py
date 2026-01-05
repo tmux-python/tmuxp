@@ -296,12 +296,12 @@ class HelpTheme(t.NamedTuple):
         from tmuxp.cli._colors import style
 
         return cls(
-            prog=style("", fg="magenta", bold=True).rstrip("\033[0m"),
-            action=style("", fg="cyan").rstrip("\033[0m"),
-            long_option=style("", fg="green").rstrip("\033[0m"),
-            short_option=style("", fg="green").rstrip("\033[0m"),
-            label=style("", fg="yellow").rstrip("\033[0m"),
-            heading=style("", fg="blue").rstrip("\033[0m"),
+            prog=style("", fg="magenta", bold=True).removesuffix("\033[0m"),
+            action=style("", fg="cyan").removesuffix("\033[0m"),
+            long_option=style("", fg="green").removesuffix("\033[0m"),
+            short_option=style("", fg="green").removesuffix("\033[0m"),
+            label=style("", fg="yellow").removesuffix("\033[0m"),
+            heading=style("", fg="blue").removesuffix("\033[0m"),
             reset="\033[0m",
         )
 
