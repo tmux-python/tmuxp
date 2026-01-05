@@ -84,10 +84,12 @@ def _private(path: pathlib.Path | str | None) -> str:
     --------
     >>> _private(None)
     ''
+    >>> _private('')
+    ''
     >>> _private('/usr/bin/tmux')
     '/usr/bin/tmux'
     """
-    if path is None:
+    if path is None or path == "":
         return ""
     return str(PrivatePath(path))
 
