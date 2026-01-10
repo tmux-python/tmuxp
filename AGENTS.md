@@ -213,7 +213,7 @@ Inspired by patterns from **jq** (object keys vs values), **ripgrep** (path/line
 
 | Level | Element Type | Method | Color | Examples |
 |-------|--------------|--------|-------|----------|
-| **L0** | Section headers | `heading()` | Cyan + bold | "Local workspaces:", "Global workspaces:" |
+| **L0** | Section headers | `heading()` | Bright cyan + bold | "Local workspaces:", "Global workspaces:" |
 | **L1** | Primary content | `highlight()` | Magenta + bold | Workspace names (braintree, .tmuxp) |
 | **L2** | Supplementary info | `info()` | Cyan | Paths (~/.tmuxp, ~/project/.tmuxp.yaml) |
 | **L3** | Metadata/labels | `muted()` | Blue | Source labels (Legacy:, XDG default:) |
@@ -229,7 +229,7 @@ Inspired by patterns from **jq** (object keys vs values), **ripgrep** (path/line
 ### Example Output
 
 ```
-Local workspaces:                              ← heading() cyan+bold
+Local workspaces:                              ← heading() bright_cyan+bold
   .tmuxp  ~/work/python/tmuxp/.tmuxp.yaml      ← highlight() + info()
 
 Global workspaces (~/.tmuxp):                  ← heading() + info()
