@@ -279,3 +279,21 @@ def test_style_with_empty_tuple() -> None:
     # Empty tuple is falsy, so no fg color is applied
     assert "test" in result
     assert "\033[38" not in result  # No foreground color escape
+
+
+def test_style_with_rgb_value_too_high() -> None:
+    """style() should reject RGB values > 255."""
+    with pytest.raises(UnknownStyleColor):
+        style("test", fg=(256, 0, 0))
+
+
+def test_style_with_rgb_value_negative() -> None:
+    """style() should reject negative RGB values."""
+    with pytest.raises(UnknownStyleColor):
+        style("test", fg=(-1, 128, 0))
+
+
+def test_style_with_rgb_non_integer() -> None:
+    """style() should reject non-integer RGB values."""
+    with pytest.raises(UnknownStyleColor):
+        style("test", fg=(255.5, 128, 0))  # type: ignore[arg-type]
