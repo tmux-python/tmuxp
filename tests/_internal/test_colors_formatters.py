@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from tests.cli.conftest import ANSI_BLUE, ANSI_BOLD, ANSI_CYAN, ANSI_MAGENTA
-from tmuxp.cli._colors import ColorMode, Colors
+from tests._internal.conftest import ANSI_BLUE, ANSI_BOLD, ANSI_CYAN, ANSI_MAGENTA
+from tmuxp._internal.colors import ColorMode, Colors
 
 # format_label tests
 
