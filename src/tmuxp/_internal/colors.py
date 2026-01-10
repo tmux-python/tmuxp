@@ -670,6 +670,16 @@ def _interpret_color(
             msg = f"RGB color tuple must have exactly 3 values, got {len(color)}"
             raise ValueError(msg)
         r, g, b = color
+        for i, component in enumerate((r, g, b)):
+            if not isinstance(component, int):
+                msg = (
+                    f"RGB values must be integers, "
+                    f"got {type(component).__name__} at index {i}"
+                )
+                raise TypeError(msg)
+            if not 0 <= component <= 255:
+                msg = f"RGB values must be 0-255, got {component} at index {i}"
+                raise ValueError(msg)
         return f"{38 + offset};2;{r:d};{g:d};{b:d}"
 
     return str(_ansi_colors[color] + offset)
@@ -756,13 +766,13 @@ def style(
     if fg or fg == 0:
         try:
             bits.append(f"\033[{_interpret_color(fg)}m")
-        except (KeyError, ValueError):
+        except (KeyError, ValueError, TypeError):
             raise UnknownStyleColor(color=fg) from None
 
     if bg or bg == 0:
         try:
             bits.append(f"\033[{_interpret_color(bg, 10)}m")
-        except (KeyError, ValueError):
+        except (KeyError, ValueError, TypeError):
             raise UnknownStyleColor(color=bg) from None
 
     if bold:
