@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import typing as t
 
-from tmuxp import log
 from tmuxp._internal.colors import (
     ColorMode,
     Colors,
@@ -15,6 +13,7 @@ from tmuxp._internal.colors import (
     unstyle,
 )
 from tmuxp._internal.private_path import PrivatePath
+from tmuxp.log import tmuxp_echo
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -33,25 +32,6 @@ __all__ = [
     "tmuxp_echo",
     "unstyle",
 ]
-
-logger = logging.getLogger(__name__)
-
-
-def tmuxp_echo(
-    message: str | None = None,
-    log_level: str = "INFO",
-    style_log: bool = False,
-) -> None:
-    """Combine logging.log and click.echo."""
-    if message is None:
-        return
-
-    if style_log:
-        logger.log(log.LOG_LEVELS[log_level], message)
-    else:
-        logger.log(log.LOG_LEVELS[log_level], unstyle(message))
-
-    print(message)  # NOQA: T201 RUF100
 
 
 def prompt(

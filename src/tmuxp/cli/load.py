@@ -592,9 +592,10 @@ def command_load(
     if args.log_file:
         logfile_handler = logging.FileHandler(args.log_file)
         logfile_handler.setFormatter(log.LogFormatter())
-        from . import logger
-
-        logger.addHandler(logfile_handler)
+        # Add handler to tmuxp root logger to capture all tmuxp log messages
+        tmuxp_logger = logging.getLogger("tmuxp")
+        tmuxp_logger.setLevel(logging.INFO)  # Ensure logger level allows INFO
+        tmuxp_logger.addHandler(logfile_handler)
 
     if args.workspace_files is None or len(args.workspace_files) == 0:
         tmuxp_echo(cli_colors.error("Enter at least one config"))
