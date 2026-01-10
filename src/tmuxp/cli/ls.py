@@ -194,30 +194,24 @@ def _get_workspace_info(
 
     Examples
     --------
-    >>> import tempfile
-    >>> import pathlib
     >>> content = "session_name: test-session" + chr(10) + "windows: []"
-    >>> with tempfile.NamedTemporaryFile(
-    ...     suffix='.yaml', delete=False, mode='w'
-    ... ) as f:
-    ...     _ = f.write(content)
-    ...     temp_path = pathlib.Path(f.name)
-    >>> info = _get_workspace_info(temp_path)
+    >>> yaml_file = tmp_path / "test.yaml"
+    >>> _ = yaml_file.write_text(content)
+    >>> info = _get_workspace_info(yaml_file)
     >>> info['session_name']
     'test-session'
     >>> info['format']
     'yaml'
     >>> info['source']
     'global'
-    >>> info_local = _get_workspace_info(temp_path, source="local")
+    >>> info_local = _get_workspace_info(yaml_file, source="local")
     >>> info_local['source']
     'local'
-    >>> info_full = _get_workspace_info(temp_path, include_config=True)
+    >>> info_full = _get_workspace_info(yaml_file, include_config=True)
     >>> 'config' in info_full
     True
     >>> info_full['config']['session_name']
     'test-session'
-    >>> temp_path.unlink()
     """
     stat = filepath.stat()
     ext = filepath.suffix.lower()
