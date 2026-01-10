@@ -180,7 +180,9 @@ class Colors:
 
         return sys.stdout.isatty()
 
-    def _colorize(self, text: str, fg: str, bold: bool = False) -> str:
+    def _colorize(
+        self, text: str, fg: str, bold: bool = False, dim: bool = False
+    ) -> str:
         """Apply color using style() function.
 
         Parameters
@@ -191,6 +193,8 @@ class Colors:
             Foreground color name (e.g., "green", "red").
         bold : bool
             Whether to apply bold style. Default is False.
+        dim : bool
+            Whether to apply dim/faint style. Default is False.
 
         Returns
         -------
@@ -212,7 +216,7 @@ class Colors:
         'test'
         """
         if self._enabled:
-            return style(text, fg=fg, bold=bold)
+            return style(text, fg=fg, bold=bold, dim=dim)
         return text
 
     def success(self, text: str, bold: bool = False) -> str:
@@ -331,7 +335,7 @@ class Colors:
         return self._colorize(text, self.HIGHLIGHT, bold)
 
     def muted(self, text: str) -> str:
-        """Format text as muted (blue, never bold).
+        """Format text as muted (blue).
 
         Parameters
         ----------
