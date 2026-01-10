@@ -6,7 +6,7 @@ import pathlib
 
 import pytest
 
-from tmuxp.cli._colors import ColorMode, Colors
+from tmuxp._internal.colors import ColorMode, Colors
 
 # ANSI escape codes for test assertions
 # These constants improve test readability by giving semantic names to color codes

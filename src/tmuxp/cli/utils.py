@@ -6,9 +6,7 @@ import logging
 import typing as t
 
 from tmuxp import log
-from tmuxp._internal.private_path import PrivatePath
-
-from ._colors import (
+from tmuxp._internal.colors import (
     ColorMode,
     Colors,
     UnknownStyleColor,
@@ -16,6 +14,7 @@ from ._colors import (
     style,
     unstyle,
 )
+from tmuxp._internal.private_path import PrivatePath
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
