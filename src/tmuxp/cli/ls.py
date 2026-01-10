@@ -330,6 +330,48 @@ def _render_config_tree(config: dict[str, t.Any], colors: Colors) -> list[str]:
     return lines
 
 
+def _render_global_workspace_dirs(
+    formatter: OutputFormatter,
+    colors: Colors,
+    global_dir_candidates: list[dict[str, t.Any]],
+) -> None:
+    """Render global workspace directories section.
+
+    Parameters
+    ----------
+    formatter : OutputFormatter
+        Output formatter.
+    colors : Colors
+        Color manager.
+    global_dir_candidates : list[dict[str, Any]]
+        List of global workspace directory candidates with metadata.
+    """
+    formatter.emit_text("")
+    formatter.emit_text(colors.heading("Global workspace directories:"))
+    for candidate in global_dir_candidates:
+        path = candidate["path"]
+        source = candidate.get("source", "")
+        source_prefix = f"{source}: " if source else ""
+        if candidate["exists"]:
+            count = candidate["workspace_count"]
+            status = f"{count} workspace{'s' if count != 1 else ''}"
+            if candidate["active"]:
+                status += ", active"
+                formatter.emit_text(
+                    f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                    f"({colors.success(status)})"
+                )
+            else:
+                formatter.emit_text(
+                    f"  {colors.muted(source_prefix)}{colors.info(path)} ({status})"
+                )
+        else:
+            formatter.emit_text(
+                f"  {colors.muted(source_prefix)}{colors.info(path)} "
+                f"({colors.muted('not found')})"
+            )
+
+
 def _output_flat(
     workspaces: list[dict[str, t.Any]],
     formatter: OutputFormatter,
@@ -399,30 +441,7 @@ def _output_flat(
 
     # Output global workspace directories section
     if global_dir_candidates:
-        formatter.emit_text("")
-        formatter.emit_text(colors.heading("Global workspace directories:"))
-        for candidate in global_dir_candidates:
-            path = candidate["path"]
-            source = candidate.get("source", "")
-            source_prefix = f"{source}: " if source else ""
-            if candidate["exists"]:
-                count = candidate["workspace_count"]
-                status = f"{count} workspace{'s' if count != 1 else ''}"
-                if candidate["active"]:
-                    status += ", active"
-                    formatter.emit_text(
-                        f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                        f"({colors.success(status)})"
-                    )
-                else:
-                    formatter.emit_text(
-                        f"  {colors.muted(source_prefix)}{colors.info(path)} ({status})"
-                    )
-            else:
-                formatter.emit_text(
-                    f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                    f"({colors.muted('not found')})"
-                )
+        _render_global_workspace_dirs(formatter, colors, global_dir_candidates)
 
 
 def _output_tree(
@@ -481,30 +500,7 @@ def _output_tree(
 
     # Output global workspace directories section
     if global_dir_candidates:
-        formatter.emit_text("")
-        formatter.emit_text(colors.heading("Global workspace directories:"))
-        for candidate in global_dir_candidates:
-            path = candidate["path"]
-            source = candidate.get("source", "")
-            source_prefix = f"{source}: " if source else ""
-            if candidate["exists"]:
-                count = candidate["workspace_count"]
-                status = f"{count} workspace{'s' if count != 1 else ''}"
-                if candidate["active"]:
-                    status += ", active"
-                    formatter.emit_text(
-                        f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                        f"({colors.success(status)})"
-                    )
-                else:
-                    formatter.emit_text(
-                        f"  {colors.muted(source_prefix)}{colors.info(path)} ({status})"
-                    )
-            else:
-                formatter.emit_text(
-                    f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                    f"({colors.muted('not found')})"
-                )
+        _render_global_workspace_dirs(formatter, colors, global_dir_candidates)
 
 
 def command_ls(
@@ -565,28 +561,7 @@ def command_ls(
         formatter.emit_text(colors.warning("No workspaces found."))
         # Still show global workspace directories even with no workspaces
         if output_mode == OutputMode.HUMAN:
-            formatter.emit_text("")
-            formatter.emit_text(colors.heading("Global workspace directories:"))
-            for candidate in global_dir_candidates:
-                path = candidate["path"]
-                source = candidate.get("source", "")
-                source_prefix = f"{source}: " if source else ""
-                if candidate["exists"]:
-                    if candidate["active"]:
-                        formatter.emit_text(
-                            f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                            f"({colors.success('0 workspaces, active')})"
-                        )
-                    else:
-                        formatter.emit_text(
-                            f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                            f"(0 workspaces)"
-                        )
-                else:
-                    formatter.emit_text(
-                        f"  {colors.muted(source_prefix)}{colors.info(path)} "
-                        f"({colors.muted('not found')})"
-                    )
+            _render_global_workspace_dirs(formatter, colors, global_dir_candidates)
         elif output_mode == OutputMode.JSON:
             # Output structured JSON with empty workspaces
             output_data = {
