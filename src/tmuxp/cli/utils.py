@@ -236,3 +236,7 @@ def prompt_choices(
             return None
         if rv in choices_:
             return rv
+        print(
+            colors.warning(f"Invalid choice '{rv}'. ")
+            + f"Please choose from: {', '.join(choices_)}"
+        )
