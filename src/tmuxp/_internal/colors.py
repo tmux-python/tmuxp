@@ -93,6 +93,8 @@ class Colors:
         Color name for error messages (red)
     INFO : str
         Color name for informational messages (cyan)
+    HEADING : str
+        Color name for section headers (bright_cyan)
     HIGHLIGHT : str
         Color name for highlighted/important text (magenta)
     MUTED : str
@@ -119,9 +121,10 @@ class Colors:
     SUCCESS = "green"  # Success, loaded, up-to-date
     WARNING = "yellow"  # Warnings, changes needed
     ERROR = "red"  # Errors, failures
-    INFO = "cyan"  # Information, paths
-    HIGHLIGHT = "magenta"  # Important labels, session names
-    MUTED = "blue"  # Subdued info, secondary text
+    INFO = "cyan"  # Information, paths, supplementary (L2)
+    HEADING = "bright_cyan"  # Section headers (L0) - brighter than INFO
+    HIGHLIGHT = "magenta"  # Important labels, session names (L1)
+    MUTED = "blue"  # Subdued info, secondary text (L3)
 
     def __init__(self, mode: ColorMode = ColorMode.AUTO) -> None:
         """Initialize color manager.
@@ -356,10 +359,10 @@ class Colors:
         return self._colorize(text, self.MUTED, bold=False)
 
     def heading(self, text: str) -> str:
-        """Format text as a section heading (cyan, bold).
+        """Format text as a section heading (bright cyan, bold).
 
         Used for section headers like 'Local workspaces:' or 'Global workspaces:'.
-        Distinguished from info() by being bold.
+        Uses bright_cyan to visually distinguish from info() which uses cyan.
 
         Parameters
         ----------
@@ -377,7 +380,7 @@ class Colors:
         >>> colors.heading("Local workspaces:")
         'Local workspaces:'
         """
-        return self._colorize(text, self.INFO, bold=True)
+        return self._colorize(text, self.HEADING, bold=True)
 
     # Formatting helpers for structured output
 
