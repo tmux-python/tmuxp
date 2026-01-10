@@ -762,10 +762,10 @@ def style(
         except (KeyError, ValueError):
             raise UnknownStyleColor(color=bg) from None
 
-    if bold is not None:
-        bits.append(f"\033[{1 if bold else 22}m")
-    if dim is not None:
-        bits.append(f"\033[{2 if dim else 22}m")
+    if bold:
+        bits.append("\033[1m")
+    if dim:
+        bits.append("\033[2m")
     if underline is not None:
         bits.append(f"\033[{4 if underline else 24}m")
     if overline is not None:
