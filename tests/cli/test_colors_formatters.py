@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from tests.cli.conftest import ANSI_BLUE, ANSI_BOLD, ANSI_CYAN, ANSI_MAGENTA
 from tmuxp.cli._colors import ColorMode, Colors
 
 # format_label tests
@@ -21,8 +22,8 @@ def test_format_label_applies_highlight(monkeypatch: pytest.MonkeyPatch) -> None
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_label("tmux path")
-    assert "\033[35m" in result  # magenta
-    assert "\033[1m" in result  # bold
+    assert ANSI_MAGENTA in result  # magenta
+    assert ANSI_BOLD in result  # bold
     assert "tmux path" in result
 
 
@@ -41,7 +42,7 @@ def test_format_path_applies_info(monkeypatch: pytest.MonkeyPatch) -> None:
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_path("/usr/bin/tmux")
-    assert "\033[36m" in result  # cyan
+    assert ANSI_CYAN in result  # cyan
     assert "/usr/bin/tmux" in result
 
 
@@ -60,7 +61,7 @@ def test_format_version_applies_info(monkeypatch: pytest.MonkeyPatch) -> None:
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_version("3.2a")
-    assert "\033[36m" in result  # cyan
+    assert ANSI_CYAN in result  # cyan
     assert "3.2a" in result
 
 
@@ -87,7 +88,7 @@ def test_format_separator_applies_muted(monkeypatch: pytest.MonkeyPatch) -> None
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_separator()
-    assert "\033[34m" in result  # blue
+    assert ANSI_BLUE in result  # blue
     assert "-" * 25 in result
 
 
@@ -106,8 +107,8 @@ def test_format_kv_highlights_key(monkeypatch: pytest.MonkeyPatch) -> None:
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_kv("tmux version", "3.2a")
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[1m" in result  # bold for key
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_BOLD in result  # bold for key
     assert "tmux version" in result
     assert ": 3.2a" in result
 
@@ -139,8 +140,8 @@ def test_format_tmux_option_key_value_format(monkeypatch: pytest.MonkeyPatch) ->
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_tmux_option("base-index=1")
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[36m" in result  # cyan for value
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_CYAN in result  # cyan for value
     assert "base-index" in result
     assert "=1" in result or "1" in result
 
@@ -151,8 +152,8 @@ def test_format_tmux_option_space_separated(monkeypatch: pytest.MonkeyPatch) -> 
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_tmux_option("status on")
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[36m" in result  # cyan for value
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_CYAN in result  # cyan for value
     assert "status" in result
     assert "on" in result
 
@@ -171,7 +172,7 @@ def test_format_tmux_option_single_word_highlighted(
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_tmux_option("pane-colours")
-    assert "\033[35m" in result  # magenta for key
+    assert ANSI_MAGENTA in result  # magenta for key
     assert "pane-colours" in result
 
 
@@ -187,8 +188,8 @@ def test_format_tmux_option_array_indexed(monkeypatch: pytest.MonkeyPatch) -> No
     colors = Colors(ColorMode.ALWAYS)
 
     result = colors.format_tmux_option('status-format[0] "#[align=left]"')
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[36m" in result  # cyan for value
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_CYAN in result  # cyan for value
     assert "status-format[0]" in result
     assert "#[align=left]" in result
 
@@ -231,5 +232,5 @@ def test_format_tmux_option_value_with_equals(
     result = colors.format_tmux_option("option=a=b=c")
     assert "option" in result
     assert "a=b=c" in result
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[36m" in result  # cyan for value
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_CYAN in result  # cyan for value

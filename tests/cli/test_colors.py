@@ -6,6 +6,16 @@ import sys
 
 import pytest
 
+from tests.cli.conftest import (
+    ANSI_BLUE,
+    ANSI_BOLD,
+    ANSI_CYAN,
+    ANSI_GREEN,
+    ANSI_MAGENTA,
+    ANSI_RED,
+    ANSI_RESET,
+    ANSI_YELLOW,
+)
 from tmuxp.cli._colors import (
     ColorMode,
     Colors,
@@ -95,9 +105,9 @@ def test_success_applies_green(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.success("ok")
-    assert "\033[32m" in result
+    assert ANSI_GREEN in result
     assert "ok" in result
-    assert result.endswith("\033[0m")
+    assert result.endswith(ANSI_RESET)
 
 
 def test_error_applies_red(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -105,7 +115,7 @@ def test_error_applies_red(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.error("fail")
-    assert "\033[31m" in result
+    assert ANSI_RED in result
     assert "fail" in result
 
 
@@ -114,7 +124,7 @@ def test_warning_applies_yellow(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.warning("caution")
-    assert "\033[33m" in result
+    assert ANSI_YELLOW in result
     assert "caution" in result
 
 
@@ -123,7 +133,7 @@ def test_info_applies_cyan(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.info("message")
-    assert "\033[36m" in result
+    assert ANSI_CYAN in result
     assert "message" in result
 
 
@@ -132,8 +142,8 @@ def test_highlight_applies_magenta_bold(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.highlight("important")
-    assert "\033[35m" in result
-    assert "\033[1m" in result
+    assert ANSI_MAGENTA in result
+    assert ANSI_BOLD in result
     assert "important" in result
 
 
@@ -142,8 +152,8 @@ def test_highlight_no_bold(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.highlight("important", bold=False)
-    assert "\033[35m" in result
-    assert "\033[1m" not in result
+    assert ANSI_MAGENTA in result
+    assert ANSI_BOLD not in result
     assert "important" in result
 
 
@@ -152,8 +162,8 @@ def test_muted_applies_blue(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.muted("secondary")
-    assert "\033[34m" in result
-    assert "\033[1m" not in result
+    assert ANSI_BLUE in result
+    assert ANSI_BOLD not in result
     assert "secondary" in result
 
 
@@ -162,8 +172,8 @@ def test_success_with_bold(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     result = colors.success("done", bold=True)
-    assert "\033[32m" in result
-    assert "\033[1m" in result
+    assert ANSI_GREEN in result
+    assert ANSI_BOLD in result
     assert "done" in result
 
 

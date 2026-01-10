@@ -7,6 +7,7 @@ import typing as t
 
 import pytest
 
+from tests.cli.conftest import ANSI_BOLD, ANSI_MAGENTA, ANSI_RESET
 from tmuxp.cli._colors import ColorMode, Colors, get_color_mode
 
 # Color flag integration tests
@@ -125,7 +126,7 @@ def test_all_semantic_methods_respect_enabled_state(
     for method in methods:
         result = method("test")
         assert "\033[" in result, f"{method.__name__} should include ANSI codes"
-        assert result.endswith("\033[0m"), f"{method.__name__} should reset color"
+        assert result.endswith(ANSI_RESET), f"{method.__name__} should reset color"
 
 
 def test_all_semantic_methods_respect_disabled_state() -> None:
@@ -153,11 +154,11 @@ def test_highlight_bold_parameter(monkeypatch: pytest.MonkeyPatch) -> None:
     with_bold = colors.highlight("test", bold=True)
     without_bold = colors.highlight("test", bold=False)
 
-    assert "\033[1m" in with_bold
-    assert "\033[1m" not in without_bold
+    assert ANSI_BOLD in with_bold
+    assert ANSI_BOLD not in without_bold
     # Both should have magenta
-    assert "\033[35m" in with_bold
-    assert "\033[35m" in without_bold
+    assert ANSI_MAGENTA in with_bold
+    assert ANSI_MAGENTA in without_bold
 
 
 # get_color_mode function tests

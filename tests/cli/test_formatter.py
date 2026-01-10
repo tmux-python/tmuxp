@@ -6,6 +6,7 @@ import argparse
 
 import pytest
 
+from tests.cli.conftest import ANSI_RESET
 from tmuxp.cli._colors import ColorMode, Colors
 from tmuxp.cli._formatter import (
     HelpTheme,
@@ -183,4 +184,4 @@ class TestHelpTheme:
         # Should have ANSI codes
         assert "\033[" in theme.prog
         assert "\033[" in theme.action
-        assert theme.reset == "\033[0m"
+        assert theme.reset == ANSI_RESET

@@ -6,6 +6,7 @@ import pathlib
 
 import pytest
 
+from tests.cli.conftest import ANSI_BLUE, ANSI_BOLD, ANSI_CYAN, ANSI_MAGENTA
 from tmuxp._internal.private_path import PrivatePath, collapse_home_in_string
 from tmuxp.cli._colors import ColorMode, Colors
 
@@ -45,8 +46,8 @@ def test_debug_info_preserves_system_paths(mock_home: pathlib.Path) -> None:
 def test_debug_info_format_kv_labels(colors_always: Colors) -> None:
     """debug-info should highlight labels in key-value pairs."""
     result = colors_always.format_kv("tmux version", "3.2a")
-    assert "\033[35m" in result  # magenta for label
-    assert "\033[1m" in result  # bold for label
+    assert ANSI_MAGENTA in result  # magenta for label
+    assert ANSI_BOLD in result  # bold for label
     assert "tmux version" in result
     assert "3.2a" in result
 
@@ -56,7 +57,7 @@ def test_debug_info_format_version(colors_always: Colors) -> None:
     result = colors_always.format_kv(
         "tmux version", colors_always.format_version("3.2a")
     )
-    assert "\033[36m" in result  # cyan for version
+    assert ANSI_CYAN in result  # cyan for version
     assert "3.2a" in result
 
 
@@ -65,14 +66,14 @@ def test_debug_info_format_path(colors_always: Colors) -> None:
     result = colors_always.format_kv(
         "tmux path", colors_always.format_path("/usr/bin/tmux")
     )
-    assert "\033[36m" in result  # cyan for path
+    assert ANSI_CYAN in result  # cyan for path
     assert "/usr/bin/tmux" in result
 
 
 def test_debug_info_format_separator(colors_always: Colors) -> None:
     """debug-info should use muted separators."""
     result = colors_always.format_separator()
-    assert "\033[34m" in result  # blue for muted
+    assert ANSI_BLUE in result  # blue for muted
     assert "-" * 25 in result
 
 
@@ -82,8 +83,8 @@ def test_debug_info_format_separator(colors_always: Colors) -> None:
 def test_debug_info_format_tmux_option_space_sep(colors_always: Colors) -> None:
     """debug-info should format space-separated tmux options."""
     result = colors_always.format_tmux_option("status on")
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[36m" in result  # cyan for value
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_CYAN in result  # cyan for value
     assert "status" in result
     assert "on" in result
 
@@ -91,8 +92,8 @@ def test_debug_info_format_tmux_option_space_sep(colors_always: Colors) -> None:
 def test_debug_info_format_tmux_option_equals_sep(colors_always: Colors) -> None:
     """debug-info should format equals-separated tmux options."""
     result = colors_always.format_tmux_option("base-index=0")
-    assert "\033[35m" in result  # magenta for key
-    assert "\033[36m" in result  # cyan for value
+    assert ANSI_MAGENTA in result  # magenta for key
+    assert ANSI_CYAN in result  # cyan for value
     assert "base-index" in result
     assert "0" in result
 
@@ -134,8 +135,8 @@ def test_debug_info_combined_path_with_privacy(
 
     assert "~/work/tmuxp/src/tmuxp" in formatted
     assert "/home/testuser" not in formatted
-    assert "\033[36m" in formatted  # cyan for path
-    assert "\033[35m" in formatted  # magenta for label
+    assert ANSI_CYAN in formatted  # cyan for path
+    assert ANSI_MAGENTA in formatted  # magenta for label
 
 
 def test_debug_info_environment_section_format(colors_always: Colors) -> None:

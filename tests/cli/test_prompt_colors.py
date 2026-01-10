@@ -6,6 +6,7 @@ import pathlib
 
 import pytest
 
+from tests.cli.conftest import ANSI_BLUE, ANSI_CYAN, ANSI_RESET
 from tmuxp.cli._colors import ColorMode, Colors
 
 
@@ -13,16 +14,16 @@ def test_prompt_bool_choice_indicator_muted(colors_always: Colors) -> None:
     """Verify [Y/n] uses muted color (blue)."""
     # Test the muted color is applied to choice indicators
     result = colors_always.muted("[Y/n]")
-    assert "\033[34m" in result  # blue foreground
+    assert ANSI_BLUE in result  # blue foreground
     assert "[Y/n]" in result
-    assert result.endswith("\033[0m")
+    assert result.endswith(ANSI_RESET)
 
 
 def test_prompt_bool_choice_indicator_variants(colors_always: Colors) -> None:
     """Verify all choice indicator variants are colored."""
     for indicator in ["[Y/n]", "[y/N]", "[y/n]"]:
         result = colors_always.muted(indicator)
-        assert "\033[34m" in result
+        assert ANSI_BLUE in result
         assert indicator in result
 
 
@@ -30,16 +31,16 @@ def test_prompt_default_value_uses_info(colors_always: Colors) -> None:
     """Verify default path uses info color (cyan)."""
     path = "/home/user/.tmuxp/session.yaml"
     result = colors_always.info(f"[{path}]")
-    assert "\033[36m" in result  # cyan foreground
+    assert ANSI_CYAN in result  # cyan foreground
     assert path in result
-    assert result.endswith("\033[0m")
+    assert result.endswith(ANSI_RESET)
 
 
 def test_prompt_choices_list_muted(colors_always: Colors) -> None:
     """Verify (yaml, json) uses muted color (blue)."""
     choices = "(yaml, json)"
     result = colors_always.muted(choices)
-    assert "\033[34m" in result  # blue foreground
+    assert ANSI_BLUE in result  # blue foreground
     assert choices in result
 
 
@@ -60,8 +61,8 @@ def test_prompt_combined_format(colors_always: Colors) -> None:
     prompt = f"{name} - {choices_str} {default_str}"
 
     # Should contain both blue (muted) and cyan (info) ANSI codes
-    assert "\033[34m" in prompt  # blue for choices
-    assert "\033[36m" in prompt  # cyan for default
+    assert ANSI_BLUE in prompt  # blue for choices
+    assert ANSI_CYAN in prompt  # cyan for default
     assert "Convert to" in prompt
     assert "yaml, json" in prompt
 
