@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pathlib
 
+from tests.cli.conftest import ANSI_BLUE, ANSI_BOLD, ANSI_CYAN, ANSI_MAGENTA
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli._colors import Colors
 
@@ -22,9 +23,9 @@ def test_edit_opening_message_format(colors_always: Colors) -> None:
         + colors_always.muted("...")
     )
     # Should contain blue, cyan, and magenta ANSI codes
-    assert "\033[34m" in output  # blue for muted
-    assert "\033[36m" in output  # cyan for file path
-    assert "\033[35m" in output  # magenta for editor
+    assert ANSI_BLUE in output  # blue for muted
+    assert ANSI_CYAN in output  # cyan for file path
+    assert ANSI_MAGENTA in output  # magenta for editor
     assert workspace_file in output
     assert editor in output
 
@@ -33,7 +34,7 @@ def test_edit_file_path_uses_info(colors_always: Colors) -> None:
     """Verify file paths use info color (cyan)."""
     path = "/path/to/workspace.yaml"
     result = colors_always.info(path)
-    assert "\033[36m" in result  # cyan foreground
+    assert ANSI_CYAN in result  # cyan foreground
     assert path in result
 
 
@@ -41,15 +42,15 @@ def test_edit_editor_highlighted(colors_always: Colors) -> None:
     """Verify editor name uses highlight color without bold."""
     for editor in ["vim", "nano", "code", "emacs", "nvim"]:
         result = colors_always.highlight(editor, bold=False)
-        assert "\033[35m" in result  # magenta foreground
-        assert "\033[1m" not in result  # no bold - subtle
+        assert ANSI_MAGENTA in result  # magenta foreground
+        assert ANSI_BOLD not in result  # no bold - subtle
         assert editor in result
 
 
 def test_edit_muted_for_static_text(colors_always: Colors) -> None:
     """Verify static text uses muted color (blue)."""
     result = colors_always.muted("Opening ")
-    assert "\033[34m" in result  # blue foreground
+    assert ANSI_BLUE in result  # blue foreground
     assert "Opening" in result
 
 
@@ -74,7 +75,7 @@ def test_edit_various_editors(colors_always: Colors) -> None:
     editors = ["vim", "nvim", "nano", "code", "emacs", "hx", "micro"]
     for editor in editors:
         result = colors_always.highlight(editor, bold=False)
-        assert "\033[35m" in result
+        assert ANSI_MAGENTA in result
         assert editor in result
 
 

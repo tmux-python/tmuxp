@@ -8,6 +8,17 @@ import pytest
 
 from tmuxp.cli._colors import ColorMode, Colors
 
+# ANSI escape codes for test assertions
+# These constants improve test readability by giving semantic names to color codes
+ANSI_GREEN = "\033[32m"
+ANSI_RED = "\033[31m"
+ANSI_YELLOW = "\033[33m"
+ANSI_BLUE = "\033[34m"
+ANSI_MAGENTA = "\033[35m"
+ANSI_CYAN = "\033[36m"
+ANSI_RESET = "\033[0m"
+ANSI_BOLD = "\033[1m"
+
 
 @pytest.fixture
 def colors_always(monkeypatch: pytest.MonkeyPatch) -> Colors:
