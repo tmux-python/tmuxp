@@ -42,3 +42,21 @@ def mock_home(monkeypatch: pytest.MonkeyPatch) -> pathlib.Path:
     home = pathlib.Path("/home/testuser")
     monkeypatch.setattr(pathlib.Path, "home", lambda: home)
     return home
+
+
+@pytest.fixture
+def isolated_home(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> pathlib.Path:
+    """Isolate test from user's home directory and environment.
+
+    Sets up tmp_path as HOME with XDG_CONFIG_HOME, clears NO_COLOR,
+    and changes the working directory to tmp_path.
+    """
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
+    return tmp_path

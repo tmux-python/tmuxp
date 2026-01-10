@@ -114,16 +114,10 @@ class TestLsCli:
 
     def test_ls_cli(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """CLI test for tmuxp ls."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
         filenames = [
             ".git/",
             ".gitignore/",
@@ -140,7 +134,7 @@ class TestLsCli:
         stems = [pathlib.Path(f).stem for f in filenames if f not in ignored_filenames]
 
         for filename in filenames:
-            location = tmp_path / f".tmuxp/{filename}"
+            location = isolated_home / f".tmuxp/{filename}"
             if filename.endswith("/"):
                 location.mkdir(parents=True)
             else:
@@ -158,18 +152,11 @@ class TestLsCli:
 
     def test_ls_json_output(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """CLI test for tmuxp ls --json."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.delenv("NO_COLOR", raising=False)
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "dev.yaml").write_text("session_name: development\nwindows: []")
         (tmuxp_dir / "prod.json").write_text('{"session_name": "production"}')
@@ -204,18 +191,11 @@ class TestLsCli:
 
     def test_ls_ndjson_output(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """CLI test for tmuxp ls --ndjson."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.delenv("NO_COLOR", raising=False)
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "ws1.yaml").write_text("session_name: s1\nwindows: []")
         (tmuxp_dir / "ws2.yaml").write_text("session_name: s2\nwindows: []")
@@ -237,18 +217,11 @@ class TestLsCli:
 
     def test_ls_tree_output(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """CLI test for tmuxp ls --tree."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.delenv("NO_COLOR", raising=False)
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "dev.yaml").write_text("session_name: development\nwindows: []")
 
@@ -264,18 +237,11 @@ class TestLsCli:
 
     def test_ls_empty_directory(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """CLI test for tmuxp ls with no workspaces."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.delenv("NO_COLOR", raising=False)
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
 
         with contextlib.suppress(SystemExit):
@@ -286,18 +252,11 @@ class TestLsCli:
 
     def test_ls_tree_shows_session_name_if_different(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Tree mode shows session_name if it differs from file name."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.delenv("NO_COLOR", raising=False)
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         # File named "myfile" but session is "actual-session"
         (tmuxp_dir / "myfile.yaml").write_text(
@@ -510,17 +469,11 @@ class TestLsFullFlag:
 
     def test_ls_json_full_includes_config(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """JSON output with --full includes config content."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "dev.yaml").write_text(
             "session_name: dev\n"
@@ -547,18 +500,11 @@ class TestLsFullFlag:
 
     def test_ls_full_tree_shows_windows(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Tree mode with --full shows window/pane hierarchy."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-        monkeypatch.delenv("NO_COLOR", raising=False)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "dev.yaml").write_text(
             "session_name: dev\n"
@@ -583,18 +529,11 @@ class TestLsFullFlag:
 
     def test_ls_full_flat_shows_windows(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Flat mode with --full shows window/pane hierarchy."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-        monkeypatch.delenv("NO_COLOR", raising=False)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "dev.yaml").write_text(
             "session_name: dev\n"
@@ -616,18 +555,11 @@ class TestLsFullFlag:
 
     def test_ls_full_without_json_no_config_in_output(
         self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: pathlib.Path,
+        isolated_home: pathlib.Path,
         capsys: pytest.CaptureFixture[str],
     ) -> None:
         """Non-JSON with --full shows tree but not raw config."""
-        monkeypatch.setenv("HOME", str(tmp_path))
-        monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
-        monkeypatch.chdir(tmp_path)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
-        monkeypatch.delenv("NO_COLOR", raising=False)
-
-        tmuxp_dir = tmp_path / ".tmuxp"
+        tmuxp_dir = isolated_home / ".tmuxp"
         tmuxp_dir.mkdir(parents=True)
         (tmuxp_dir / "dev.yaml").write_text(
             "session_name: dev\nwindows:\n  - window_name: editor\n"
