@@ -345,6 +345,24 @@ def _render_global_workspace_dirs(
         Color manager.
     global_dir_candidates : list[dict[str, Any]]
         List of global workspace directory candidates with metadata.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._output import OutputFormatter, OutputMode
+    >>> from tmuxp.cli._colors import Colors, ColorMode
+    >>> formatter = OutputFormatter(OutputMode.HUMAN)
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> candidates = [
+    ...     {"path": "~/.tmuxp", "source": "Legacy", "exists": True,
+    ...      "workspace_count": 5, "active": True},
+    ...     {"path": "~/.config/tmuxp", "source": "XDG", "exists": False,
+    ...      "workspace_count": 0, "active": False},
+    ... ]
+    >>> _render_global_workspace_dirs(formatter, colors, candidates)
+    <BLANKLINE>
+    Global workspace directories:
+      Legacy: ~/.tmuxp (5 workspaces, active)
+      XDG: ~/.config/tmuxp (not found)
     """
     formatter.emit_text("")
     formatter.emit_text(colors.heading("Global workspace directories:"))
@@ -396,6 +414,17 @@ def _output_flat(
         If True, show full config details in tree format. Default False.
     global_dir_candidates : list[dict[str, Any]] | None
         List of global workspace directory candidates with metadata.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._output import OutputFormatter, OutputMode
+    >>> from tmuxp.cli._colors import Colors, ColorMode
+    >>> formatter = OutputFormatter(OutputMode.HUMAN)
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> workspaces = [{"name": "dev", "path": "~/.tmuxp/dev.yaml", "source": "global"}]
+    >>> _output_flat(workspaces, formatter, colors)
+    Global workspaces:
+      dev
     """
     # Separate by source for human output grouping
     local_workspaces = [ws for ws in workspaces if ws["source"] == "local"]
@@ -466,6 +495,18 @@ def _output_tree(
         If True, show full config details in tree format. Default False.
     global_dir_candidates : list[dict[str, Any]] | None
         List of global workspace directory candidates with metadata.
+
+    Examples
+    --------
+    >>> from tmuxp.cli._output import OutputFormatter, OutputMode
+    >>> from tmuxp.cli._colors import Colors, ColorMode
+    >>> formatter = OutputFormatter(OutputMode.HUMAN)
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> workspaces = [{"name": "dev", "path": "~/.tmuxp/dev.yaml", "source": "global"}]
+    >>> _output_tree(workspaces, formatter, colors)
+    <BLANKLINE>
+    ~/.tmuxp
+      dev
     """
     # Group by parent directory
     by_directory: dict[str, list[dict[str, t.Any]]] = {}
