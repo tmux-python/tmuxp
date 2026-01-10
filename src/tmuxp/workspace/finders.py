@@ -9,7 +9,7 @@ import typing as t
 
 from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.private_path import PrivatePath
-from tmuxp.cli.utils import tmuxp_echo
+from tmuxp.log import tmuxp_echo
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
