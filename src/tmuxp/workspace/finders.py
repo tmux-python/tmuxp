@@ -7,9 +7,8 @@ import os
 import pathlib
 import typing as t
 
-from colorama import Fore
-
 from tmuxp._internal.private_path import PrivatePath
+from tmuxp.cli._colors import ColorMode, Colors
 from tmuxp.cli.utils import tmuxp_echo
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
@@ -362,11 +361,12 @@ def find_workspace_file(
             ]
 
             if len(candidates) > 1:
+                colors = Colors(ColorMode.AUTO)
                 tmuxp_echo(
-                    Fore.RED
-                    + "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
-                    + dirname(workspace_file)
-                    + Fore.RESET,
+                    colors.error(
+                        "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
+                        + dirname(workspace_file)
+                    ),
                 )
                 tmuxp_echo(
                     "This is undefined behavior, use only one. "
