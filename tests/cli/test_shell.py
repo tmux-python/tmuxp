@@ -208,6 +208,9 @@ def test_shell(
 ) -> None:
     """CLI tests for tmuxp shell."""
     monkeypatch.setenv("HOME", str(tmp_path))
+    # Clear outer tmux environment to prevent pane ID conflicts
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+    monkeypatch.delenv("TMUX", raising=False)
     window_name = "my_window"
     window = session.new_window(window_name=window_name)
     window.split()
