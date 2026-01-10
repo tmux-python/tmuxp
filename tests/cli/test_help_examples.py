@@ -2,10 +2,42 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 import subprocess
 
 import pytest
+
+from tmuxp.cli import create_parser
+
+
+def _get_help_text(subcommand: str | None = None) -> str:
+    """Get CLI help text without spawning subprocess.
+
+    Parameters
+    ----------
+    subcommand : str | None
+        Subcommand name, or None for main help.
+
+    Returns
+    -------
+    str
+        The formatted help text.
+    """
+    parser = create_parser()
+    if subcommand is None:
+        return parser.format_help()
+
+    # Access subparser via _subparsers._group_actions
+    subparsers = parser._subparsers
+    if subparsers is not None:
+        for action in subparsers._group_actions:
+            if isinstance(action, argparse._SubParsersAction):
+                choices = action.choices
+                if choices is not None and subcommand in choices:
+                    return str(choices[subcommand].format_help())
+
+    return parser.format_help()
 
 
 def extract_examples_from_help(help_text: str) -> list[str]:
@@ -48,25 +80,15 @@ def extract_examples_from_help(help_text: str) -> list[str]:
 
 def test_main_help_has_examples() -> None:
     """Main --help should have at least one example."""
-    result = subprocess.run(
-        ["tmuxp", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text()
+    examples = extract_examples_from_help(help_text)
     assert len(examples) > 0, "Main --help should have at least one example"
 
 
 def test_main_help_examples_are_valid_subcommands() -> None:
     """All examples in main --help should reference valid subcommands."""
-    result = subprocess.run(
-        ["tmuxp", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text()
+    examples = extract_examples_from_help(help_text)
 
     # Extract valid subcommands from help output
     valid_subcommands = {
@@ -106,25 +128,15 @@ def test_main_help_examples_are_valid_subcommands() -> None:
 )
 def test_subcommand_help_has_examples(subcommand: str) -> None:
     """Each subcommand --help should have at least one example."""
-    result = subprocess.run(
-        ["tmuxp", subcommand, "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text(subcommand)
+    examples = extract_examples_from_help(help_text)
     assert len(examples) > 0, f"{subcommand} --help should have at least one example"
 
 
 def test_load_subcommand_examples_are_valid() -> None:
     """Load subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "load", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("load")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -133,13 +145,8 @@ def test_load_subcommand_examples_are_valid() -> None:
 
 def test_freeze_subcommand_examples_are_valid() -> None:
     """Freeze subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "freeze", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("freeze")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -148,13 +155,8 @@ def test_freeze_subcommand_examples_are_valid() -> None:
 
 def test_shell_subcommand_examples_are_valid() -> None:
     """Shell subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "shell", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("shell")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -163,13 +165,8 @@ def test_shell_subcommand_examples_are_valid() -> None:
 
 def test_convert_subcommand_examples_are_valid() -> None:
     """Convert subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "convert", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("convert")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -178,13 +175,8 @@ def test_convert_subcommand_examples_are_valid() -> None:
 
 def test_import_subcommand_examples_are_valid() -> None:
     """Import subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "import", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("import")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -193,13 +185,8 @@ def test_import_subcommand_examples_are_valid() -> None:
 
 def test_edit_subcommand_examples_are_valid() -> None:
     """Edit subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "edit", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("edit")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -208,13 +195,8 @@ def test_edit_subcommand_examples_are_valid() -> None:
 
 def test_ls_subcommand_examples_are_valid() -> None:
     """Ls subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "ls", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("ls")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -223,13 +205,8 @@ def test_ls_subcommand_examples_are_valid() -> None:
 
 def test_debug_info_subcommand_examples_are_valid() -> None:
     """Debug-info subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "debug-info", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("debug-info")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -238,13 +215,8 @@ def test_debug_info_subcommand_examples_are_valid() -> None:
 
 def test_search_subcommand_examples_are_valid() -> None:
     """Search subcommand examples should have valid flags."""
-    result = subprocess.run(
-        ["tmuxp", "search", "--help"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    examples = extract_examples_from_help(result.stdout)
+    help_text = _get_help_text("search")
+    examples = extract_examples_from_help(help_text)
 
     # Verify each example has valid structure
     for example in examples:
@@ -252,7 +224,10 @@ def test_search_subcommand_examples_are_valid() -> None:
 
 
 def test_search_no_args_shows_help() -> None:
-    """Running 'tmuxp search' with no args shows help."""
+    """Running 'tmuxp search' with no args shows help.
+
+    Note: This test uses subprocess to verify actual CLI behavior and exit code.
+    """
     result = subprocess.run(
         ["tmuxp", "search"],
         capture_output=True,
