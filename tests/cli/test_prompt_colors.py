@@ -9,50 +9,36 @@ import pytest
 from tmuxp.cli._colors import ColorMode, Colors
 
 
-def test_prompt_bool_choice_indicator_muted(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prompt_bool_choice_indicator_muted(colors_always: Colors) -> None:
     """Verify [Y/n] uses muted color (blue)."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     # Test the muted color is applied to choice indicators
-    result = colors.muted("[Y/n]")
+    result = colors_always.muted("[Y/n]")
     assert "\033[34m" in result  # blue foreground
     assert "[Y/n]" in result
     assert result.endswith("\033[0m")
 
 
-def test_prompt_bool_choice_indicator_variants(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_prompt_bool_choice_indicator_variants(colors_always: Colors) -> None:
     """Verify all choice indicator variants are colored."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     for indicator in ["[Y/n]", "[y/N]", "[y/n]"]:
-        result = colors.muted(indicator)
+        result = colors_always.muted(indicator)
         assert "\033[34m" in result
         assert indicator in result
 
 
-def test_prompt_default_value_uses_info(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prompt_default_value_uses_info(colors_always: Colors) -> None:
     """Verify default path uses info color (cyan)."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     path = "/home/user/.tmuxp/session.yaml"
-    result = colors.info(f"[{path}]")
+    result = colors_always.info(f"[{path}]")
     assert "\033[36m" in result  # cyan foreground
     assert path in result
     assert result.endswith("\033[0m")
 
 
-def test_prompt_choices_list_muted(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prompt_choices_list_muted(colors_always: Colors) -> None:
     """Verify (yaml, json) uses muted color (blue)."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     choices = "(yaml, json)"
-    result = colors.muted(choices)
+    result = colors_always.muted(choices)
     assert "\033[34m" in result  # blue foreground
     assert choices in result
 
@@ -66,14 +52,11 @@ def test_prompts_respect_no_color_env(monkeypatch: pytest.MonkeyPatch) -> None:
     assert colors.info("[default]") == "[default]"
 
 
-def test_prompt_combined_format(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prompt_combined_format(colors_always: Colors) -> None:
     """Verify combined prompt format with choices and default."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     name = "Convert to"
-    choices_str = colors.muted("(yaml, json)")
-    default_str = colors.info("[yaml]")
+    choices_str = colors_always.muted("(yaml, json)")
+    default_str = colors_always.info("[yaml]")
     prompt = f"{name} - {choices_str} {default_str}"
 
     # Should contain both blue (muted) and cyan (info) ANSI codes
@@ -83,16 +66,12 @@ def test_prompt_combined_format(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "yaml, json" in prompt
 
 
-def test_prompt_colors_disabled_returns_plain_text(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_prompt_colors_disabled_returns_plain_text(colors_never: Colors) -> None:
     """Verify disabled colors return plain text without ANSI codes."""
-    colors = Colors(ColorMode.NEVER)
-
-    assert colors.muted("[Y/n]") == "[Y/n]"
-    assert colors.info("[/path/to/file]") == "[/path/to/file]"
-    assert "\033[" not in colors.muted("test")
-    assert "\033[" not in colors.info("test")
+    assert colors_never.muted("[Y/n]") == "[Y/n]"
+    assert colors_never.info("[/path/to/file]") == "[/path/to/file]"
+    assert "\033[" not in colors_never.muted("test")
+    assert "\033[" not in colors_never.info("test")
 
 
 def test_prompt_empty_input_no_default_reprompts(
