@@ -16,6 +16,7 @@ freeze
 import_config
 load
 ls
+search
 shell
 utils
 ```
