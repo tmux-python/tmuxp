@@ -96,10 +96,11 @@ windows:
 
 ## Testing Guidelines
 
+- **Use functional tests only**: Write tests as standalone functions, not classes. Avoid `class TestFoo:` groupings - use descriptive function names and file organization instead.
 - Use pytest fixtures from `tests/fixtures/` for tmux objects
 - Test plugins using mock packages in `tests/fixtures/pluginsystem/`
 - Use `retry_until` utilities for async tmux operations
-- Run single tests with: `uv run py.test tests/file.py::TestClass::test_method`
+- Run single tests with: `uv run py.test tests/file.py::test_function_name`
 - **Use libtmux fixtures**: Prefer `server`, `session`, `window`, `pane` fixtures over manual setup
 - **Avoid mocks when fixtures exist**: Use real tmux fixtures instead of `MagicMock`
 - **Use `tmp_path`** fixture instead of Python's `tempfile`
