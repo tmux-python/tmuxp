@@ -2,26 +2,21 @@
 
 from __future__ import annotations
 
-import pytest
-
-from tmuxp.cli._colors import ColorMode, Colors
+from tmuxp.cli._colors import Colors
 
 # Shell command color output tests
 
 
-def test_shell_launch_message_format(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_shell_launch_message_format(colors_always: Colors) -> None:
     """Verify launch message format with shell type and session."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     shell_name = "ipython"
     session_name = "my-session"
     output = (
-        colors.muted("Launching ")
-        + colors.highlight(shell_name, bold=False)
-        + colors.muted(" shell for session ")
-        + colors.info(session_name)
-        + colors.muted("...")
+        colors_always.muted("Launching ")
+        + colors_always.highlight(shell_name, bold=False)
+        + colors_always.muted(" shell for session ")
+        + colors_always.info(session_name)
+        + colors_always.muted("...")
     )
     # Should contain blue, magenta, and cyan ANSI codes
     assert "\033[34m" in output  # blue for muted
@@ -31,76 +26,59 @@ def test_shell_launch_message_format(monkeypatch: pytest.MonkeyPatch) -> None:
     assert session_name in output
 
 
-def test_shell_pdb_launch_message(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_shell_pdb_launch_message(colors_always: Colors) -> None:
     """Verify pdb launch message format."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     output = (
-        colors.muted("Launching ")
-        + colors.highlight("pdb", bold=False)
-        + colors.muted(" shell...")
+        colors_always.muted("Launching ")
+        + colors_always.highlight("pdb", bold=False)
+        + colors_always.muted(" shell...")
     )
     assert "\033[34m" in output  # blue for muted
     assert "\033[35m" in output  # magenta for pdb
     assert "pdb" in output
 
 
-def test_shell_highlight_not_bold(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_shell_highlight_not_bold(colors_always: Colors) -> None:
     """Verify shell name uses highlight without bold for subtlety."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
-    result = colors.highlight("best", bold=False)
+    result = colors_always.highlight("best", bold=False)
     assert "\033[35m" in result  # magenta foreground
     assert "\033[1m" not in result  # no bold - subtle emphasis
     assert "best" in result
 
 
-def test_shell_session_name_uses_info(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_shell_session_name_uses_info(colors_always: Colors) -> None:
     """Verify session name uses info color (cyan)."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     session_name = "dev-session"
-    result = colors.info(session_name)
+    result = colors_always.info(session_name)
     assert "\033[36m" in result  # cyan foreground
     assert session_name in result
 
 
-def test_shell_muted_for_static_text(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_shell_muted_for_static_text(colors_always: Colors) -> None:
     """Verify static text uses muted color (blue)."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
-    result = colors.muted("Launching ")
+    result = colors_always.muted("Launching ")
     assert "\033[34m" in result  # blue foreground
     assert "Launching" in result
 
 
-def test_shell_colors_disabled_plain_text() -> None:
+def test_shell_colors_disabled_plain_text(colors_never: Colors) -> None:
     """Verify disabled colors return plain text."""
-    colors = Colors(ColorMode.NEVER)
-
     shell_name = "ipython"
     session_name = "my-session"
     output = (
-        colors.muted("Launching ")
-        + colors.highlight(shell_name, bold=False)
-        + colors.muted(" shell for session ")
-        + colors.info(session_name)
-        + colors.muted("...")
+        colors_never.muted("Launching ")
+        + colors_never.highlight(shell_name, bold=False)
+        + colors_never.muted(" shell for session ")
+        + colors_never.info(session_name)
+        + colors_never.muted("...")
     )
     # Should be plain text without ANSI codes
     assert "\033[" not in output
     assert output == f"Launching {shell_name} shell for session {session_name}..."
 
 
-def test_shell_various_shell_names(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_shell_various_shell_names(colors_always: Colors) -> None:
     """Verify all shell types can be highlighted."""
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
-
     shell_types = [
         "best",
         "pdb",
@@ -111,6 +89,6 @@ def test_shell_various_shell_names(monkeypatch: pytest.MonkeyPatch) -> None:
         "bpython",
     ]
     for shell_name in shell_types:
-        result = colors.highlight(shell_name, bold=False)
+        result = colors_always.highlight(shell_name, bold=False)
         assert "\033[35m" in result
         assert shell_name in result
