@@ -62,7 +62,7 @@ LS_DESCRIPTION = build_description(
                 "tmuxp ls --json",
                 "tmuxp ls --json --full",
                 "tmuxp ls --ndjson",
-                "tmuxp ls --json | jq '.[] | .name'",
+                "tmuxp ls --json | jq '.workspaces[].name'",
             ],
         ),
     ),
