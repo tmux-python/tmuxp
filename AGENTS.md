@@ -198,7 +198,7 @@ $ uv run pytest --cov
 
 ## CLI Color Semantics (Revision 1, 2026-01-04)
 
-The CLI uses semantic colors via the `Colors` class in `src/tmuxp/cli/_colors.py`. Colors are chosen based on **hierarchy level** and **semantic meaning**, not just data type.
+The CLI uses semantic colors via the `Colors` class in `src/tmuxp/_internal/colors.py`. Colors are chosen based on **hierarchy level** and **semantic meaning**, not just data type.
 
 ### Design Principles
 
