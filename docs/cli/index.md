@@ -11,6 +11,7 @@
 load
 shell
 ls
+search
 ```
 
 ```{toctree}
