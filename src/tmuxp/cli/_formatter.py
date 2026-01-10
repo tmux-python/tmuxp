@@ -33,8 +33,7 @@ OPTIONS_EXPECTING_VALUE = frozenset(
         "--target",
         "-o",
         "--output",
-        "-d",
-        "--dir",
+        # Note: -d is --detached (flag-only), not a value option
         "--color",
         "-w",
         "--workspace",
