@@ -64,6 +64,7 @@ New output options for `tmuxp ls`:
 - `--json` / `--ndjson`: Machine-readable output for automation and piping to `jq`
 - Local workspace discovery from current directory and parents
 - Source field distinguishes "local" vs "global" workspaces
+- "Global workspace directories" section shows XDG vs legacy paths with status
 
 #### JSON Output for debug-info (#1006)
 
