@@ -163,7 +163,7 @@ def prompt_yes_no(
 
 def prompt_choices(
     name: str,
-    choices: list[str] | tuple[str, str],
+    choices: Sequence[str | tuple[str, str]],
     default: str | None = None,
     no_choice: Sequence[str] = ("none",),
     *,
@@ -176,8 +176,8 @@ def prompt_choices(
     name :
         prompt text
     choices :
-        list or tuple of available choices. Choices may be single strings or
-        (key, value) tuples.
+        Sequence of available choices. Each choice may be a single string or
+        a (key, value) tuple where key is used for matching.
     default :
         default value if no input provided.
     no_choice :
