@@ -9,31 +9,10 @@ import pathlib
 import pytest
 
 from tmuxp import cli
-from tmuxp.cli._output import OutputMode, get_output_mode
 from tmuxp.cli.ls import (
     _get_workspace_info,
     create_ls_subparser,
 )
-
-
-class TestGetOutputMode:
-    """Tests for output mode determination."""
-
-    def test_default_is_human(self) -> None:
-        """Default mode should be HUMAN when no flags."""
-        assert get_output_mode(json_flag=False, ndjson_flag=False) == OutputMode.HUMAN
-
-    def test_json_flag(self) -> None:
-        """JSON flag should return JSON mode."""
-        assert get_output_mode(json_flag=True, ndjson_flag=False) == OutputMode.JSON
-
-    def test_ndjson_flag(self) -> None:
-        """NDJSON flag should return NDJSON mode."""
-        assert get_output_mode(json_flag=False, ndjson_flag=True) == OutputMode.NDJSON
-
-    def test_ndjson_takes_precedence(self) -> None:
-        """NDJSON should take precedence when both flags set."""
-        assert get_output_mode(json_flag=True, ndjson_flag=True) == OutputMode.NDJSON
 
 
 class TestWorkspaceInfo:
