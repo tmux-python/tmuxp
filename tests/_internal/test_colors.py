@@ -1,4 +1,4 @@
-"""Tests for CLI color utilities."""
+"""Tests for _internal color utilities."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import sys
 
 import pytest
 
-from tests.cli.conftest import (
+from tests._internal.conftest import (
     ANSI_BLUE,
     ANSI_BOLD,
     ANSI_CYAN,
@@ -16,7 +16,7 @@ from tests.cli.conftest import (
     ANSI_RESET,
     ANSI_YELLOW,
 )
-from tmuxp.cli._colors import (
+from tmuxp._internal.colors import (
     ColorMode,
     Colors,
     UnknownStyleColor,

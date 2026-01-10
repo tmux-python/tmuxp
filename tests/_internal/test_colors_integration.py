@@ -1,4 +1,4 @@
-"""Integration tests for CLI color output across all commands."""
+"""Integration tests for color output across all commands."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ import typing as t
 
 import pytest
 
-from tests.cli.conftest import ANSI_BOLD, ANSI_MAGENTA, ANSI_RESET
-from tmuxp.cli._colors import ColorMode, Colors, get_color_mode
+from tests._internal.conftest import ANSI_BOLD, ANSI_MAGENTA, ANSI_RESET
+from tmuxp._internal.colors import ColorMode, Colors, get_color_mode
 
 # Color flag integration tests
 
