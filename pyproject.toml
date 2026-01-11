@@ -85,6 +85,7 @@ dev = [
   "mypy",
   "types-colorama",
   "types-docutils",
+  "types-Pygments",
   "types-PyYAML",
 ]
 
@@ -121,6 +122,7 @@ lint = [
   "mypy",
   "types-colorama",
   "types-docutils",
+  "types-Pygments",
   "types-PyYAML",
 ]
 
@@ -170,6 +172,7 @@ module = [
   "ptpython.*",
   "prompt_toolkit.*",
   "bpython",
+  "sphinxarg.*",
 ]
 ignore_missing_imports = true
 
