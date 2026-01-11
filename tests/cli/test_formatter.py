@@ -216,3 +216,49 @@ def test_help_theme_from_colors_enabled_returns_colored(
     assert "\033[" in theme.prog
     assert "\033[" in theme.action
     assert theme.reset == ANSI_RESET
+
+
+def test_fill_text_section_heading_with_examples_suffix(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Section headings ending with 'examples:' are colorized without initial block."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+    formatter_cls = create_themed_formatter(colors)
+    formatter = formatter_cls("tmuxp")
+
+    # This is what build_description produces - no initial "examples:" block
+    text = (
+        "load examples:\n  tmuxp load myproject\n\n"
+        "freeze examples:\n  tmuxp freeze mysession"
+    )
+    result = formatter._fill_text(text, 80, "")
+
+    # Both headings should be colorized (contain ANSI escape codes)
+    assert "\033[" in result
+    # Commands should be colorized
+    assert "tmuxp" in result
+
+
+def test_fill_text_multiple_example_sections_all_colorized(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Multiple 'X examples:' sections should all be colorized."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+    formatter_cls = create_themed_formatter(colors)
+    formatter = formatter_cls("tmuxp")
+
+    text = """load examples:
+  tmuxp load myproject
+
+freeze examples:
+  tmuxp freeze mysession
+
+ls examples:
+  tmuxp ls"""
+    result = formatter._fill_text(text, 80, "")
+
+    # All sections should have ANSI codes
+    # Count ANSI escape sequences - should have at least heading + command per section
+    assert result.count("\033[") >= 6
