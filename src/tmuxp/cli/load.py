@@ -119,7 +119,7 @@ def load_plugins(
                 module_name = plugin.split(".")
                 module_name = ".".join(module_name[:-1])
                 plugin_name = plugin.split(".")[-1]
-            except Exception as error:
+            except AttributeError as error:
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -141,7 +141,7 @@ def load_plugins(
                         + " Plugin versions constraint not met. Exiting...",
                     )
                     sys.exit(1)
-            except Exception as error:
+            except (ImportError, AttributeError) as error:
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
