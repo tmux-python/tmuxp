@@ -31,6 +31,45 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
+### Features
+
+#### CLI Colors (#1006)
+
+New semantic color output for all CLI commands:
+
+- New `--color` flag (auto/always/never) on root CLI for controlling color output
+- Respects `NO_COLOR` and `FORCE_COLOR` environment variables per [no-color.org](https://no-color.org) standard
+- Semantic color methods: `success()` (green), `warning()` (yellow), `error()` (red), `info()` (cyan), `highlight()` (magenta), `muted()` (blue)
+- All commands updated with colored output: `load`, `ls`, `freeze`, `convert`, `import`, `edit`, `shell`, `debug-info`
+- Interactive prompts enhanced with color support
+- `PrivatePath` utility masks home directory as `~` for privacy protection in output
+- Beautiful `--help` output with usage examples
+
+#### Search Command (#1006)
+
+New `tmuxp search` command for finding workspace files:
+
+- Field-scoped search with prefixes: `name:`, `session:`, `path:`, `window:`, `pane:`
+- Matching options: `-i` (ignore-case), `-S` (smart-case), `-F` (fixed-strings), `-w` (word)
+- Logic operators: `--any` for OR, `-v` for invert match
+- Output formats: human (with match highlighting), `--json`, `--ndjson` for automation and piping to `jq`
+- Searches local (cwd and parents) and global (~/.tmuxp/) workspaces
+
+#### Enhanced ls Command (#1006)
+
+New output options for `tmuxp ls`:
+
+- `--tree`: Display workspaces grouped by directory
+- `--full`: Include complete parsed config content
+- `--json` / `--ndjson`: Machine-readable output for automation and piping to `jq`
+- Local workspace discovery from current directory and parents
+- Source field distinguishes "local" vs "global" workspaces
+- "Global workspace directories" section shows XDG vs legacy paths with status
+
+#### JSON Output for debug-info (#1006)
+
+- `tmuxp debug-info --json`: Structured JSON output for automation, issue reporting, and piping to `jq`
+
 ### Development
 
 #### Makefile -> Justfile (#1005)

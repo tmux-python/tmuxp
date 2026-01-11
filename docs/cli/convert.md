@@ -2,8 +2,6 @@
 
 # tmuxp convert
 
-Convert between YAML and JSON
-
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli

@@ -195,3 +195,69 @@ $ uv run pytest --cov
 - **QA every edit**: Run formatting and tests before committing
 - **Minimum Python**: 3.10+ (per pyproject.toml)
 - **Minimum tmux**: 3.2+ (as per README)
+
+## CLI Color Semantics (Revision 1, 2026-01-04)
+
+The CLI uses semantic colors via the `Colors` class in `src/tmuxp/_internal/colors.py`. Colors are chosen based on **hierarchy level** and **semantic meaning**, not just data type.
+
+### Design Principles
+
+1. **Structural hierarchy**: Headers > Items > Details
+2. **Semantic meaning**: What IS this element?
+3. **Visual weight**: What should draw the eye first?
+4. **Depth separation**: Parent elements should visually contain children
+
+Inspired by patterns from **jq** (object keys vs values), **ripgrep** (path/line/match distinction), and **mise/just** (semantic method names).
+
+### Hierarchy-Based Colors
+
+| Level | Element Type | Method | Color | Examples |
+|-------|--------------|--------|-------|----------|
+| **L0** | Section headers | `heading()` | Bright cyan + bold | "Local workspaces:", "Global workspaces:" |
+| **L1** | Primary content | `highlight()` | Magenta + bold | Workspace names (braintree, .tmuxp) |
+| **L2** | Supplementary info | `info()` | Cyan | Paths (~/.tmuxp, ~/project/.tmuxp.yaml) |
+| **L3** | Metadata/labels | `muted()` | Blue | Source labels (Legacy:, XDG default:) |
+
+### Status-Based Colors (Override hierarchy when applicable)
+
+| Status | Method | Color | Examples |
+|--------|--------|-------|----------|
+| Success/Active | `success()` | Green | "active", "18 workspaces" |
+| Warning | `warning()` | Yellow | Deprecation notices |
+| Error | `error()` | Red | Error messages |
+
+### Example Output
+
+```
+Local workspaces:                              ← heading() bright_cyan+bold
+  .tmuxp  ~/work/python/tmuxp/.tmuxp.yaml      ← highlight() + info()
+
+Global workspaces (~/.tmuxp):                  ← heading() + info()
+  braintree                                    ← highlight()
+  cihai                                        ← highlight()
+
+Global workspace directories:                  ← heading()
+  Legacy: ~/.tmuxp (18 workspaces, active)     ← muted() + info() + success()
+  XDG default: ~/.config/tmuxp (not found)     ← muted() + info() + muted()
+```
+
+### Available Methods
+
+```python
+colors = Colors()
+colors.heading("Section:")      # Cyan + bold (section headers)
+colors.highlight("item")        # Magenta + bold (primary content)
+colors.info("/path/to/file")    # Cyan (paths, supplementary info)
+colors.muted("label:")          # Blue (metadata, labels)
+colors.success("ok")            # Green (success states)
+colors.warning("caution")       # Yellow (warnings)
+colors.error("failed")          # Red (errors)
+```
+
+### Key Rules
+
+**Never use the same color for adjacent hierarchy levels.** If headers and items are both blue, they blend together. Each level must be visually distinct.
+
+**Avoid dim/faint styling.** The ANSI dim attribute (`\x1b[2m`) is too dark to read on black terminal backgrounds. This includes both standard and bright color variants with dim.
+
+**Bold may not render distinctly.** Some terminal/font combinations don't differentiate bold from normal weight. Don't rely on bold alone for visual distinction - pair it with color differences.

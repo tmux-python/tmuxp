@@ -1,4 +1,4 @@
-"""CLI for ``tmuxp shell`` subcommand."""
+"""CLI for ``tmuxp import`` subcommand."""
 
 from __future__ import annotations
 
@@ -9,13 +9,38 @@ import sys
 import typing as t
 
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import importers
 from tmuxp.workspace.finders import find_workspace_file
 
+from ._colors import ColorMode, Colors, build_description, get_color_mode
 from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
+
+IMPORT_DESCRIPTION = build_description(
+    """
+    Import workspaces from teamocil and tmuxinator configuration files.
+    """,
+    (
+        (
+            "teamocil",
+            [
+                "tmuxp import teamocil ~/.teamocil/project.yml",
+            ],
+        ),
+        (
+            "tmuxinator",
+            [
+                "tmuxp import tmuxinator ~/.tmuxinator/project.yml",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     import argparse
+    from typing import TypeAlias
+
+    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
 
 def get_tmuxinator_dir() -> pathlib.Path:
@@ -141,8 +166,12 @@ def import_config(
     workspace_file: str,
     importfunc: ImportConfigFn,
     parser: argparse.ArgumentParser | None = None,
+    colors: Colors | None = None,
 ) -> None:
     """Import a configuration from a workspace_file."""
+    if colors is None:
+        colors = Colors(ColorMode.AUTO)
+
     existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
     cfg_reader = ConfigReader(importfunc(existing_workspace_file))
 
@@ -150,6 +179,7 @@ def import_config(
         "Convert to",
         choices=["yaml", "json"],
         default="yaml",
+        color_mode=colors.mode,
     )
 
     if workspace_file_format == "yaml":
@@ -157,25 +187,32 @@ def import_config(
     elif workspace_file_format == "json":
         new_config = cfg_reader.dump("json", indent=2)
     else:
-        sys.exit("Unknown config format.")
+        sys.exit(colors.error("Unknown config format."))
 
     tmuxp_echo(
-        new_config + "---------------------------------------------------------------"
-        "\n"
-        "Configuration import does its best to convert files.\n",
+        new_config
+        + colors.format_separator(63)
+        + "\n"
+        + colors.muted("Configuration import does its best to convert files.")
+        + "\n",
     )
     if prompt_yes_no(
         "The new config *WILL* require adjusting afterwards. Save config?",
+        color_mode=colors.mode,
     ):
         dest = None
         while not dest:
             dest_path = prompt(
-                f"Save to [{os.getcwd()}]",
+                f"Save to [{PrivatePath(os.getcwd())}]",
                 value_proc=_resolve_path_no_overwrite,
+                color_mode=colors.mode,
             )
 
             # dest = dest_prompt
-            if prompt_yes_no(f"Save to {dest_path}?"):
+            if prompt_yes_no(
+                f"Save to {PrivatePath(dest_path)}?",
+                color_mode=colors.mode,
+            ):
                 dest = dest_path
 
         pathlib.Path(dest).write_text(
@@ -183,12 +220,16 @@ def import_config(
             encoding=locale.getpreferredencoding(False),
         )
 
-        tmuxp_echo(f"Saved to {dest}.")
+        tmuxp_echo(
+            colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + ".",
+        )
     else:
         tmuxp_echo(
-            "tmuxp has examples in JSON and YAML format at "
-            "<http://tmuxp.git-pull.com/examples.html>\n"
-            "View tmuxp docs at <http://tmuxp.git-pull.com/>",
+            colors.muted("tmuxp has examples in JSON and YAML format at ")
+            + colors.info("<http://tmuxp.git-pull.com/examples.html>")
+            + "\n"
+            + colors.muted("View tmuxp docs at ")
+            + colors.info("<http://tmuxp.git-pull.com/>"),
         )
         sys.exit()
 
@@ -196,31 +237,39 @@ def import_config(
 def command_import_tmuxinator(
     workspace_file: str,
     parser: argparse.ArgumentParser | None = None,
+    color: CLIColorModeLiteral | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp import tmuxinator`` subcommand.
 
     Converts a tmuxinator config from workspace_file to tmuxp format and import
     it into tmuxp.
     """
+    color_mode = get_color_mode(color)
+    colors = Colors(color_mode)
+
     workspace_file = find_workspace_file(
         workspace_file,
         workspace_dir=get_tmuxinator_dir(),
     )
-    import_config(workspace_file, importers.import_tmuxinator)
+    import_config(workspace_file, importers.import_tmuxinator, colors=colors)
 
 
 def command_import_teamocil(
     workspace_file: str,
     parser: argparse.ArgumentParser | None = None,
+    color: CLIColorModeLiteral | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp import teamocil`` subcommand.
 
     Convert a teamocil config from workspace_file to tmuxp format and import
     it into tmuxp.
     """
+    color_mode = get_color_mode(color)
+    colors = Colors(color_mode)
+
     workspace_file = find_workspace_file(
         workspace_file,
         workspace_dir=get_teamocil_dir(),
     )
 
-    import_config(workspace_file, importers.import_teamocil)
+    import_config(workspace_file, importers.import_teamocil, colors=colors)

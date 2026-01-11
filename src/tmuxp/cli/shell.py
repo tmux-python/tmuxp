@@ -12,9 +12,29 @@ from libtmux.server import Server
 from tmuxp import util
 from tmuxp._compat import PY3, PYMINOR
 
+from ._colors import Colors, build_description, get_color_mode
+
+SHELL_DESCRIPTION = build_description(
+    """
+    Launch interactive Python shell with tmux server, session, window and pane.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp shell",
+                "tmuxp shell -L mysocket",
+                "tmuxp shell -c 'print(server.sessions)'",
+                "tmuxp shell --best",
+            ],
+        ),
+    ),
+)
+
 if t.TYPE_CHECKING:
     from typing import TypeAlias
 
+    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
     CLIShellLiteral: TypeAlias = t.Literal[
         "best",
@@ -30,6 +50,7 @@ if t.TYPE_CHECKING:
 class CLIShellNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp shell command."""
 
+    color: CLIColorModeLiteral
     session_name: str
     socket_name: str | None
     socket_path: str | None
@@ -160,6 +181,9 @@ def command_shell(
     - :attr:`libtmux.Server.attached_sessions`, :attr:`libtmux.Session.active_window`,
       :attr:`libtmux.Window.active_pane`
     """
+    color_mode = get_color_mode(args.color)
+    cli_colors = Colors(color_mode)
+
     # If inside a server, detect socket_path
     env_tmux = os.getenv("TMUX")
     if env_tmux is not None and isinstance(env_tmux, str):
@@ -198,10 +222,24 @@ def command_shell(
     ):
         from tmuxp._compat import breakpoint as tmuxp_breakpoint
 
+        print(  # NOQA: T201 RUF100
+            cli_colors.muted("Launching ")
+            + cli_colors.highlight("pdb", bold=False)
+            + cli_colors.muted(" shell..."),
+        )
         tmuxp_breakpoint()
         return
     else:
         from tmuxp.shell import launch
+
+        shell_name = args.shell or "best"
+        print(  # NOQA: T201 RUF100
+            cli_colors.muted("Launching ")
+            + cli_colors.highlight(shell_name, bold=False)
+            + cli_colors.muted(" shell for session ")
+            + cli_colors.info(session.name or "")
+            + cli_colors.muted("..."),
+        )
 
         launch(
             shell=args.shell,

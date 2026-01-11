@@ -4,9 +4,6 @@
 
 # tmuxp debug-info
 
-Use to collect all relevant information for submitting an issue to
-the project.
-
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli

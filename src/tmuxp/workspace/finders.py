@@ -7,9 +7,9 @@ import os
 import pathlib
 import typing as t
 
-from colorama import Fore
-
-from tmuxp.cli.utils import tmuxp_echo
+from tmuxp._internal.colors import ColorMode, Colors
+from tmuxp._internal.private_path import PrivatePath
+from tmuxp.log import tmuxp_echo
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
@@ -197,6 +197,85 @@ def get_workspace_dir() -> str:
     return path
 
 
+def get_workspace_dir_candidates() -> list[dict[str, t.Any]]:
+    """Return all candidate workspace directories with existence status.
+
+    Returns a list of all directories that tmuxp checks for workspaces,
+    in priority order, with metadata about each.
+
+    The priority order is:
+    1. ``TMUXP_CONFIGDIR`` environment variable (if set)
+    2. ``XDG_CONFIG_HOME/tmuxp`` (if XDG_CONFIG_HOME set) OR ``~/.config/tmuxp/``
+    3. ``~/.tmuxp`` (legacy default)
+
+    Returns
+    -------
+    list[dict[str, Any]]
+        List of dicts with:
+        - path: str (privacy-masked via PrivatePath)
+        - source: str (e.g., "$TMUXP_CONFIGDIR", "$XDG_CONFIG_HOME/tmuxp", "Legacy")
+        - exists: bool
+        - workspace_count: int (0 if not exists)
+        - active: bool (True if this is the directory get_workspace_dir() returns)
+
+    Examples
+    --------
+    >>> candidates = get_workspace_dir_candidates()
+    >>> isinstance(candidates, list)
+    True
+    >>> all('path' in c and 'exists' in c for c in candidates)
+    True
+    """
+    # Build list of candidate paths with sources (same logic as get_workspace_dir)
+    # Each entry is (raw_path, source_label)
+    path_sources: list[tuple[str, str]] = []
+    if "TMUXP_CONFIGDIR" in os.environ:
+        path_sources.append((os.environ["TMUXP_CONFIGDIR"], "$TMUXP_CONFIGDIR"))
+    if "XDG_CONFIG_HOME" in os.environ:
+        path_sources.append(
+            (
+                os.path.join(os.environ["XDG_CONFIG_HOME"], "tmuxp"),
+                "$XDG_CONFIG_HOME/tmuxp",
+            )
+        )
+    else:
+        path_sources.append(("~/.config/tmuxp/", "XDG default"))
+    path_sources.append(("~/.tmuxp", "Legacy"))
+
+    # Get the active directory for comparison
+    active_dir = get_workspace_dir()
+
+    candidates: list[dict[str, t.Any]] = []
+    for raw_path, source in path_sources:
+        expanded = os.path.expanduser(raw_path)
+        exists = os.path.isdir(expanded)
+
+        # Count workspace files if directory exists
+        workspace_count = 0
+        if exists:
+            workspace_count = len(
+                [
+                    f
+                    for f in os.listdir(expanded)
+                    if not f.startswith(".")
+                    and os.path.splitext(f)[1].lower()
+                    in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+                ]
+            )
+
+        candidates.append(
+            {
+                "path": str(PrivatePath(expanded)),
+                "source": source,
+                "exists": exists,
+                "workspace_count": workspace_count,
+                "active": expanded == active_dir,
+            }
+        )
+
+    return candidates
+
+
 def find_workspace_file(
     workspace_file: StrPath,
     workspace_dir: StrPath | None = None,
@@ -282,11 +361,12 @@ def find_workspace_file(
             ]
 
             if len(candidates) > 1:
+                colors = Colors(ColorMode.AUTO)
                 tmuxp_echo(
-                    Fore.RED
-                    + "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
-                    + dirname(workspace_file)
-                    + Fore.RESET,
+                    colors.error(
+                        "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
+                        + dirname(workspace_file)
+                    ),
                 )
                 tmuxp_echo(
                     "This is undefined behavior, use only one. "
