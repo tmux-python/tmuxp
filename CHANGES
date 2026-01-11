@@ -40,6 +40,15 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 ### Documentation
 
+#### pretty_argparse Sphinx extension (#1007)
+
+New Sphinx extension that enhances sphinx-argparse CLI documentation:
+
+- Strip ANSI escape codes from help text (FORCE_COLOR support)
+- Transform examples into proper documentation sections
+- Custom Pygments lexer (`cli-usage`) for usage block syntax highlighting
+- Reorder sections so usage appears before examples
+
 - Migrate docs deployment to AWS OIDC authentication and AWS CLI
 
 ## tmuxp 1.62.0 (2025-12-14)
