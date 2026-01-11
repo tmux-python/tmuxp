@@ -51,11 +51,12 @@ def isolated_home(
 ) -> pathlib.Path:
     """Isolate test from user's home directory and environment.
 
-    Sets up tmp_path as HOME with XDG_CONFIG_HOME, clears NO_COLOR,
-    and changes the working directory to tmp_path.
+    Sets up tmp_path as HOME with XDG_CONFIG_HOME, clears TMUXP_CONFIGDIR
+    and NO_COLOR, and changes the working directory to tmp_path.
     """
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+    monkeypatch.delenv("TMUXP_CONFIGDIR", raising=False)
     monkeypatch.delenv("NO_COLOR", raising=False)
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(pathlib.Path, "home", lambda: tmp_path)
