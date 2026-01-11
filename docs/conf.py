@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.linkcode",
     "aafig",
     "sphinxarg.ext",  # sphinx-argparse
+    "pretty_argparse",  # Enhanced sphinx-argparse: strip ANSI, format examples
     "sphinx_inline_tabs",
     "sphinx_copybutton",
     "sphinxext.opengraph",

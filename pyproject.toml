@@ -85,6 +85,7 @@ dev = [
   "mypy",
   "types-colorama",
   "types-docutils",
+  "types-Pygments",
   "types-PyYAML",
 ]
 
@@ -121,6 +122,7 @@ lint = [
   "mypy",
   "types-colorama",
   "types-docutils",
+  "types-Pygments",
   "types-PyYAML",
 ]
 
@@ -139,6 +141,7 @@ omit = [
   "*/_*",
   "pkg/*",
   "*/log.py",
+  "docs/_ext/*",
 ]
 
 [tool.coverage.report]
@@ -170,6 +173,8 @@ module = [
   "ptpython.*",
   "prompt_toolkit.*",
   "bpython",
+  "sphinxarg.*",
+  "cli_usage_lexer",
 ]
 ignore_missing_imports = true
 
