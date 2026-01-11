@@ -1039,7 +1039,7 @@ SEARCH_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Field-scoped search:",
+            "Field-scoped search",
             [
                 "tmuxp search window:editor",
                 "tmuxp search pane:vim",
@@ -1047,7 +1047,7 @@ SEARCH_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Matching options:",
+            "Matching options",
             [
                 "tmuxp search -i DEV",
                 "tmuxp search -S DevProject",
@@ -1056,7 +1056,7 @@ SEARCH_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Multiple patterns:",
+            "Multiple patterns",
             [
                 "tmuxp search dev production",
                 "tmuxp search --any dev production",
@@ -1064,7 +1064,7 @@ SEARCH_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Machine-readable output:",
+            "Machine-readable output",
             [
                 "tmuxp search --json dev",
                 "tmuxp search --ndjson dev | jq '.name'",
