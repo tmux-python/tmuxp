@@ -9,6 +9,7 @@ import pytest
 from tests._internal.conftest import (
     ANSI_BLUE,
     ANSI_BOLD,
+    ANSI_BRIGHT_CYAN,
     ANSI_CYAN,
     ANSI_GREEN,
     ANSI_MAGENTA,
@@ -297,3 +298,17 @@ def test_style_with_rgb_non_integer() -> None:
     """style() should reject non-integer RGB values."""
     with pytest.raises(UnknownStyleColor):
         style("test", fg=(255.5, 128, 0))  # type: ignore[arg-type]
+
+
+# heading() method tests
+
+
+def test_heading_applies_bright_cyan_bold(monkeypatch: pytest.MonkeyPatch) -> None:
+    """heading() applies bright_cyan with bold when colors are enabled."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    colors = Colors(ColorMode.ALWAYS)
+    result = colors.heading("Local workspaces:")
+    assert ANSI_BRIGHT_CYAN in result
+    assert ANSI_BOLD in result
+    assert "Local workspaces:" in result
+    assert ANSI_RESET in result
