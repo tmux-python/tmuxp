@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import re
 import subprocess
 
 import pytest
@@ -55,19 +54,33 @@ def extract_examples_from_help(help_text: str) -> list[str]:
 
     Examples
     --------
-    >>> text = "load examples:\n  tmuxp load myproject\n\npositions:"
+    >>> text = "load:\n    tmuxp load myproject\n\npositions:"
     >>> extract_examples_from_help(text)
     ['tmuxp load myproject']
 
     >>> text2 = "examples:\n  tmuxp debug-info\n\noptions:"
     >>> extract_examples_from_help(text2)
     ['tmuxp debug-info']
+
+    >>> text3 = "Field-scoped search:\n    tmuxp search window:editor"
+    >>> extract_examples_from_help(text3)
+    ['tmuxp search window:editor']
     """
     examples = []
     in_examples = False
     for line in help_text.splitlines():
-        # Match "examples:" or "load examples:" etc.
-        if re.match(r"^(\S+\s+)?examples?:$", line, re.IGNORECASE):
+        # Match example section headings:
+        # - "examples:" (default examples section)
+        # - "load examples:" or "load:" (category headings)
+        # - "Field-scoped search:" (multi-word category headings)
+        # Exclude argparse sections like "positional arguments:", "options:"
+        stripped = line.strip()
+        is_section_heading = (
+            stripped.endswith(":")
+            and stripped not in ("positional arguments:", "options:")
+            and not stripped.startswith("-")
+        )
+        if is_section_heading:
             in_examples = True
         elif in_examples and line.startswith("  "):
             cmd = line.strip()

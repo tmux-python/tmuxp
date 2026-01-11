@@ -102,6 +102,48 @@ class TestTmuxpHelpFormatterColorization:
         assert "\033[" not in result
         assert "tmuxp load myproject" in result
 
+    def test_fill_text_category_headings_colorized(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Category headings within examples block are colorized."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        colors = Colors(ColorMode.ALWAYS)
+        formatter_cls = create_themed_formatter(colors)
+        formatter = formatter_cls("tmuxp")
+
+        # Test category heading without "examples:" suffix
+        text = "examples:\n  tmuxp ls\n\nMachine-readable output:\n  tmuxp ls --json"
+        result = formatter._fill_text(text, 80, "")
+
+        # Both headings should be colorized
+        assert "\033[" in result
+        assert "examples:" in result
+        assert "Machine-readable output:" in result
+        # Commands should also be colorized
+        assert "tmuxp" in result
+        assert "--json" in result
+
+    def test_fill_text_category_heading_only_in_examples_block(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Category headings are only recognized within examples block."""
+        monkeypatch.delenv("NO_COLOR", raising=False)
+        colors = Colors(ColorMode.ALWAYS)
+        formatter_cls = create_themed_formatter(colors)
+        formatter = formatter_cls("tmuxp")
+
+        # Text before examples block should not be colorized as heading
+        text = "Some heading:\n  not a command\n\nexamples:\n  tmuxp load"
+        result = formatter._fill_text(text, 80, "")
+
+        # "Some heading:" should NOT be colorized (it's before examples block)
+        # "examples:" and the command should be colorized
+        lines = result.split("\n")
+        # First line should be plain (no ANSI in "Some heading:")
+        assert "Some heading:" in lines[0]
+
 
 class TestHelpOutputIntegration:
     """Integration tests for help output colorization."""

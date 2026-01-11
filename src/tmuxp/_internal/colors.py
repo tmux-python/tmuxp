@@ -836,6 +836,7 @@ def build_description(
     example_blocks : sequence of (heading, commands) tuples
         Each tuple contains an optional heading and a sequence of example commands.
         If heading is None, the section is titled "examples:".
+        If heading is provided, it becomes the section title (without "examples:").
 
     Returns
     -------
@@ -849,7 +850,7 @@ def build_description(
     'My tool.\n\nexamples:\n  mytool run'
 
     >>> build_description("My tool.", [("sync", ["mytool sync repo"])])
-    'My tool.\n\nsync examples:\n  mytool sync repo'
+    'My tool.\n\nsync:\n  mytool sync repo'
 
     >>> build_description("", [(None, ["cmd"])])
     'examples:\n  cmd'
@@ -864,7 +865,7 @@ def build_description(
     for heading, commands in example_blocks:
         if not commands:
             continue
-        title = "examples:" if heading is None else f"{heading} examples:"
+        title = "examples:" if heading is None else f"{heading}:"
         lines = [title]
         lines.extend(f"  {command}" for command in commands)
         sections.append("\n".join(lines))

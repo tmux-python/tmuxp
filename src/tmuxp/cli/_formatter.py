@@ -129,11 +129,18 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
             leading = stripped_line[:leading_length]
             content = stripped_line[leading_length:]
             content_lower = content.lower()
-            is_section_heading = (
-                content_lower.endswith("examples:") and content_lower != "examples:"
+            # Recognize example section headings:
+            # - "examples:" starts the examples block
+            # - "X examples:" or "X:" are sub-section headings within examples
+            is_examples_start = content_lower == "examples:"
+            is_category_in_block = (
+                in_examples_block and content.endswith(":") and not content[0].isspace()
             )
+            is_section_heading = (
+                content_lower.endswith("examples:") or is_category_in_block
+            ) and not is_examples_start
 
-            if is_section_heading or content_lower == "examples:":
+            if is_section_heading or is_examples_start:
                 formatted_content = f"{theme.heading}{content}{theme.reset}"
                 in_examples_block = True
                 expect_value = False
