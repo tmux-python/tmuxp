@@ -33,6 +33,8 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 _Notes on the upcoming release will go here._
 
+## tmuxp 1.63.1 (2026-01-11)
+
 ### Bug fixes
 
 #### CLI example colorization (#1008)
