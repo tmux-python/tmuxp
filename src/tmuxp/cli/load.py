@@ -15,11 +15,32 @@ from libtmux.server import Server
 
 from tmuxp import exc, log, util
 from tmuxp._internal import config_reader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
-from .utils import prompt_choices, prompt_yes_no, style, tmuxp_echo
+from ._colors import ColorMode, Colors, build_description, get_color_mode
+from .utils import prompt_choices, prompt_yes_no, tmuxp_echo
+
+LOAD_DESCRIPTION = build_description(
+    """
+    Load tmuxp workspace file(s) and create or attach to a tmux session.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp load myproject",
+                "tmuxp load ./workspace.yaml",
+                "tmuxp load -d myproject",
+                "tmuxp load -y dev staging",
+                "tmuxp load -L other-socket myproject",
+                "tmuxp load -a myproject",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias
@@ -30,6 +51,7 @@ if t.TYPE_CHECKING:
     from tmuxp.types import StrPath
 
     CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
+    CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
     class OptionOverrides(TypedDict):
         """Optional argument overrides for tmuxp load."""
@@ -47,13 +69,49 @@ class CLILoadNamespace(argparse.Namespace):
     tmux_config_file: str | None
     new_session_name: str | None
     answer_yes: bool | None
+    detached: bool
     append: bool | None
     colors: CLIColorsLiteral | None
+    color: CLIColorModeLiteral
     log_file: str | None
 
 
-def load_plugins(session_config: dict[str, t.Any]) -> list[t.Any]:
-    """Load and return plugins in workspace."""
+def load_plugins(
+    session_config: dict[str, t.Any],
+    colors: Colors | None = None,
+) -> list[t.Any]:
+    """Load and return plugins in workspace.
+
+    Parameters
+    ----------
+    session_config : dict
+        Session configuration dictionary.
+    colors : Colors | None
+        Colors instance for output formatting. If None, uses AUTO mode.
+
+    Returns
+    -------
+    list
+        List of loaded plugin instances.
+
+    Examples
+    --------
+    Empty config returns empty list:
+
+    >>> from tmuxp.cli.load import load_plugins
+    >>> load_plugins({'session_name': 'test'})
+    []
+
+    With explicit Colors instance:
+
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> load_plugins({'session_name': 'test'}, colors=colors)
+    []
+    """
+    if colors is None:
+        colors = Colors(ColorMode.AUTO)
+
     plugins = []
     if "plugins" in session_config:
         for plugin in session_config["plugins"]:
@@ -61,11 +119,11 @@ def load_plugins(session_config: dict[str, t.Any]) -> list[t.Any]:
                 module_name = plugin.split(".")
                 module_name = ".".join(module_name[:-1])
                 plugin_name = plugin.split(".")[-1]
-            except Exception as error:
+            except AttributeError as error:
                 tmuxp_echo(
-                    style("[Plugin Error] ", fg="red")
-                    + f"Couldn't load {plugin}\n"
-                    + style(f"{error}", fg="yellow"),
+                    colors.error("[Plugin Error]")
+                    + f" Couldn't load {plugin}\n"
+                    + colors.warning(f"{error}"),
                 )
                 sys.exit(1)
 
@@ -74,38 +132,35 @@ def load_plugins(session_config: dict[str, t.Any]) -> list[t.Any]:
                 plugins.append(plugin())
             except exc.TmuxpPluginException as error:
                 if not prompt_yes_no(
-                    "{}Skip loading {}?".format(
-                        style(
-                            str(error),
-                            fg="yellow",
-                        ),
-                        plugin_name,
-                    ),
+                    f"{colors.warning(str(error))}Skip loading {plugin_name}?",
                     default=True,
+                    color_mode=colors.mode,
                 ):
                     tmuxp_echo(
-                        style("[Not Skipping] ", fg="yellow")
-                        + "Plugin versions constraint not met. Exiting...",
+                        colors.warning("[Not Skipping]")
+                        + " Plugin versions constraint not met. Exiting...",
                     )
                     sys.exit(1)
-            except Exception as error:
+            except (ImportError, AttributeError) as error:
                 tmuxp_echo(
-                    style("[Plugin Error] ", fg="red")
-                    + f"Couldn't load {plugin}\n"
-                    + style(f"{error}", fg="yellow"),
+                    colors.error("[Plugin Error]")
+                    + f" Couldn't load {plugin}\n"
+                    + colors.warning(f"{error}"),
                 )
                 sys.exit(1)
 
     return plugins
 
 
-def _reattach(builder: WorkspaceBuilder) -> None:
+def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
     """
     Reattach session (depending on env being inside tmux already or not).
 
     Parameters
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
+    colors : Colors | None
+        Optional Colors instance for styled output.
 
     Notes
     -----
@@ -120,7 +175,7 @@ def _reattach(builder: WorkspaceBuilder) -> None:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
-            print(line)  # NOQA: T201 RUF100
+            print(colors.info(line) if colors else line)  # NOQA: T201 RUF100
 
     if "TMUX" in os.environ:
         builder.session.switch_client()
@@ -152,19 +207,22 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
         builder.session.attach()
 
 
-def _load_detached(builder: WorkspaceBuilder) -> None:
+def _load_detached(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
     """
     Load workspace in new session but don't attach.
 
     Parameters
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
+    colors : Colors | None
+        Optional Colors instance for styled output.
     """
     builder.build()
 
     assert builder.session is not None
 
-    print("Session created in detached state.")  # NOQA: T201 RUF100
+    msg = "Session created in detached state."
+    print(colors.info(msg) if colors else msg)  # NOQA: T201 RUF100
 
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
@@ -197,13 +255,14 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 def load_workspace(
     workspace_file: StrPath,
     socket_name: str | None = None,
-    socket_path: None = None,
+    socket_path: str | None = None,
     tmux_config_file: str | None = None,
     new_session_name: str | None = None,
     colors: int | None = None,
     detached: bool = False,
     answer_yes: bool = False,
     append: bool = False,
+    cli_colors: Colors | None = None,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -217,9 +276,8 @@ def load_workspace(
         ``tmux -S <socket-path>``
     new_session_name: str, options
         ``tmux new -s <new_session_name>``
-    colors : str, optional
-        '-2'
-            Force tmux to support 256 colors
+    colors : int, optional
+        Force tmux to support 256 or 88 colors.
     detached : bool
         Force detached state. default False.
     answer_yes : bool
@@ -228,6 +286,8 @@ def load_workspace(
     append : bool
        Assume current when given prompt to append windows in same session.
        Default False.
+    cli_colors : Colors, optional
+        Colors instance for CLI output formatting. If None, uses AUTO mode.
 
     Notes
     -----
@@ -276,13 +336,18 @@ def load_workspace(
     behalf. An exception raised during this process means it's not easy to
     predict how broken the session is.
     """
+    # Initialize CLI colors if not provided
+    if cli_colors is None:
+        cli_colors = Colors(ColorMode.AUTO)
+
     # get the canonical path, eliminating any symlinks
     if isinstance(workspace_file, (str, os.PathLike)):
         workspace_file = pathlib.Path(workspace_file)
 
     tmuxp_echo(
-        style("[Loading] ", fg="green")
-        + style(str(workspace_file), fg="blue", bold=True),
+        cli_colors.info("[Loading]")
+        + " "
+        + cli_colors.highlight(str(PrivatePath(workspace_file))),
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
@@ -313,11 +378,14 @@ def load_workspace(
     try:  # load WorkspaceBuilder object for tmuxp workspace / tmux server
         builder = WorkspaceBuilder(
             session_config=expanded_workspace,
-            plugins=load_plugins(expanded_workspace),
+            plugins=load_plugins(expanded_workspace, colors=cli_colors),
             server=t,
         )
     except exc.EmptyWorkspaceException:
-        tmuxp_echo(f"{workspace_file} is empty or parsed no workspace data")
+        tmuxp_echo(
+            cli_colors.warning("[Warning]")
+            + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
+        )
         return None
 
     session_name = expanded_workspace["session_name"]
@@ -327,18 +395,17 @@ def load_workspace(
         if not detached and (
             answer_yes
             or prompt_yes_no(
-                "{} is already running. Attach?".format(
-                    style(session_name, fg="green"),
-                ),
+                f"{cli_colors.highlight(session_name)} is already running. Attach?",
                 default=True,
+                color_mode=cli_colors.mode,
             )
         ):
-            _reattach(builder)
+            _reattach(builder, cli_colors)
         return None
 
     try:
         if detached:
-            _load_detached(builder)
+            _load_detached(builder, cli_colors)
             return _setup_plugins(builder)
 
         if append:
@@ -360,14 +427,14 @@ def load_workspace(
                 "Or (a)ppend windows in the current active session?\n[y/n/a]"
             )
             options = ["y", "n", "a"]
-            choice = prompt_choices(msg, choices=options)
+            choice = prompt_choices(msg, choices=options, color_mode=cli_colors.mode)
 
             if choice == "y":
                 _load_attached(builder, detached)
             elif choice == "a":
                 _load_append_windows_to_current_session(builder)
             else:
-                _load_detached(builder)
+                _load_detached(builder, cli_colors)
         else:
             _load_attached(builder, detached)
 
@@ -375,20 +442,22 @@ def load_workspace(
         import traceback
 
         tmuxp_echo(traceback.format_exc())
-        tmuxp_echo(str(e))
+        tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
 
         choice = prompt_choices(
-            "Error loading workspace. (k)ill, (a)ttach, (d)etach?",
+            cli_colors.error("Error loading workspace.")
+            + " (k)ill, (a)ttach, (d)etach?",
             choices=["k", "a", "d"],
             default="k",
+            color_mode=cli_colors.mode,
         )
 
         if choice == "k":
             if builder.session is not None:
                 builder.session.kill()
-                tmuxp_echo("Session killed.")
+                tmuxp_echo(cli_colors.muted("Session killed."))
         elif choice == "a":
-            _reattach(builder)
+            _reattach(builder, cli_colors)
         else:
             sys.exit()
 
@@ -517,34 +586,27 @@ def command_load(
     """
     util.oh_my_zsh_auto_title()
 
+    # Create Colors instance based on CLI --color flag
+    cli_colors = Colors(get_color_mode(args.color))
+
     if args.log_file:
         logfile_handler = logging.FileHandler(args.log_file)
         logfile_handler.setFormatter(log.LogFormatter())
-        from . import logger
-
-        logger.addHandler(logfile_handler)
-
-    tmux_options = {
-        "socket_name": args.socket_name,
-        "socket_path": args.socket_path,
-        "tmux_config_file": args.tmux_config_file,
-        "new_session_name": args.new_session_name,
-        "answer_yes": args.answer_yes,
-        "colors": args.colors,
-        "detached": args.detached,
-        "append": args.append,
-    }
+        # Add handler to tmuxp root logger to capture all tmuxp log messages
+        tmuxp_logger = logging.getLogger("tmuxp")
+        tmuxp_logger.setLevel(logging.INFO)  # Ensure logger level allows INFO
+        tmuxp_logger.addHandler(logfile_handler)
 
     if args.workspace_files is None or len(args.workspace_files) == 0:
-        tmuxp_echo("Enter at least one config")
+        tmuxp_echo(cli_colors.error("Enter at least one config"))
         if parser is not None:
             parser.print_help()
         sys.exit()
         return
 
     last_idx = len(args.workspace_files) - 1
-    original_detached_option = tmux_options.pop("detached")
-    original_new_session_name = tmux_options.pop("new_session_name")
+    original_detached_option = args.detached
+    original_new_session_name = args.new_session_name
 
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
@@ -561,7 +623,13 @@ def command_load(
 
         load_workspace(
             workspace_file,
-            detached=detached,
+            socket_name=args.socket_name,
+            socket_path=args.socket_path,
+            tmux_config_file=args.tmux_config_file,
             new_session_name=new_session_name,
-            **tmux_options,
+            colors=args.colors,
+            detached=detached,
+            answer_yes=args.answer_yes or False,
+            append=args.append or False,
+            cli_colors=cli_colors,
         )

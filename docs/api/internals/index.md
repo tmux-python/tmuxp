@@ -9,6 +9,8 @@ If you need an internal API stabilized please [file an issue](https://github.com
 :::
 
 ```{toctree}
+colors
 config_reader
+private_path
 types
 ```

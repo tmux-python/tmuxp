@@ -9,14 +9,33 @@ import typing as t
 
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
+from ._colors import Colors, build_description, get_color_mode
 from .utils import prompt_yes_no
+
+CONVERT_DESCRIPTION = build_description(
+    """
+    Convert workspace files between YAML and JSON format.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp convert workspace.yaml",
+                "tmuxp convert workspace.json",
+                "tmuxp convert -y workspace.yaml",
+            ],
+        ),
+    ),
+)
 
 if t.TYPE_CHECKING:
     import argparse
 
     AllowedFileTypes = t.Literal["json", "yaml"]
+    CLIColorModeLiteral: t.TypeAlias = t.Literal["auto", "always", "never"]
 
 
 def create_convert_subparser(
@@ -59,8 +78,12 @@ def command_convert(
     workspace_file: str | pathlib.Path,
     answer_yes: bool,
     parser: argparse.ArgumentParser | None = None,
+    color: CLIColorModeLiteral | None = None,
 ) -> None:
     """Entrypoint for ``tmuxp convert`` convert a tmuxp config between JSON and YAML."""
+    color_mode = get_color_mode(color)
+    colors = Colors(color_mode)
+
     workspace_file = find_workspace_file(
         workspace_file,
         workspace_dir=get_workspace_dir(),
@@ -90,8 +113,15 @@ def command_convert(
 
     if (
         not answer_yes
-        and prompt_yes_no(f"Convert to <{workspace_file}> to {to_filetype}?")
-        and prompt_yes_no(f"Save workspace to {newfile}?")
+        and prompt_yes_no(
+            f"Convert {colors.info(str(PrivatePath(workspace_file)))} to "
+            f"{colors.highlight(to_filetype)}?",
+            color_mode=color_mode,
+        )
+        and prompt_yes_no(
+            f"Save workspace to {colors.info(str(PrivatePath(newfile)))}?",
+            color_mode=color_mode,
+        )
     ):
         answer_yes = True
 
@@ -100,4 +130,8 @@ def command_convert(
             new_workspace,
             encoding=locale.getpreferredencoding(False),
         )
-        print(f"New workspace file saved to <{newfile}>.")  # NOQA: T201 RUF100
+        print(  # NOQA: T201 RUF100
+            colors.success("New workspace file saved to ")
+            + colors.info(str(PrivatePath(newfile)))
+            + ".",
+        )

@@ -13,21 +13,42 @@ from libtmux.server import Server
 
 from tmuxp import exc, util
 from tmuxp._internal.config_reader import ConfigReader
+from tmuxp._internal.private_path import PrivatePath
 from tmuxp.exc import TmuxpException
 from tmuxp.workspace import freezer
 from tmuxp.workspace.finders import get_workspace_dir
 
+from ._colors import Colors, build_description, get_color_mode
 from .utils import prompt, prompt_choices, prompt_yes_no
 
-if t.TYPE_CHECKING:
-    from typing import TypeAlias, TypeGuard
+FREEZE_DESCRIPTION = build_description(
+    """
+    Freeze a live tmux session to a tmuxp workspace file.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp freeze mysession",
+                "tmuxp freeze mysession -o session.yaml",
+                "tmuxp freeze -f json mysession",
+                "tmuxp freeze -y mysession",
+            ],
+        ),
+    ),
+)
 
-    CLIOutputFormatLiteral: TypeAlias = t.Literal["yaml", "json"]
+if t.TYPE_CHECKING:
+    from typing import TypeGuard
+
+    CLIColorModeLiteral: t.TypeAlias = t.Literal["auto", "always", "never"]
+    CLIOutputFormatLiteral: t.TypeAlias = t.Literal["yaml", "json"]
 
 
 class CLIFreezeNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp freeze command."""
 
+    color: CLIColorModeLiteral
     session_name: str
     socket_name: str | None
     socket_path: str | None
@@ -106,6 +127,9 @@ def command_freeze(
     If SESSION_NAME is provided, snapshot that session. Otherwise, use the current
     session.
     """
+    color_mode = get_color_mode(args.color)
+    colors = Colors(color_mode)
+
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
     try:
@@ -117,7 +141,7 @@ def command_freeze(
         if not session:
             raise exc.SessionNotFound
     except TmuxpException as e:
-        print(e)  # NOQA: T201 RUF100
+        print(colors.error(str(e)))  # NOQA: T201 RUF100
         return
 
     frozen_workspace = freezer.freeze(session)
@@ -126,21 +150,26 @@ def command_freeze(
 
     if not args.quiet:
         print(  # NOQA: T201 RUF100
-            "---------------------------------------------------------------"
-            "\n"
-            "Freeze does its best to snapshot live tmux sessions.\n",
+            colors.format_separator(63)
+            + "\n"
+            + colors.muted("Freeze does its best to snapshot live tmux sessions.")
+            + "\n",
         )
     if not (
         args.answer_yes
         or prompt_yes_no(
             "The new workspace will require adjusting afterwards. Save workspace file?",
+            color_mode=color_mode,
         )
     ):
         if not args.quiet:
             print(  # NOQA: T201 RUF100
-                "tmuxp has examples in JSON and YAML format at "
-                "<http://tmuxp.git-pull.com/examples.html>\n"
-                "View tmuxp docs at <http://tmuxp.git-pull.com/>.",
+                colors.muted("tmuxp has examples in JSON and YAML format at ")
+                + colors.info("<http://tmuxp.git-pull.com/examples.html>")
+                + "\n"
+                + colors.muted("View tmuxp docs at ")
+                + colors.info("<http://tmuxp.git-pull.com/>")
+                + ".",
             )
         sys.exit()
 
@@ -156,11 +185,16 @@ def command_freeze(
             ),
         )
         dest_prompt = prompt(
-            f"Save to: {save_to}",
+            f"Save to: {PrivatePath(save_to)}",
             default=save_to,
+            color_mode=color_mode,
         )
         if not args.force and os.path.exists(dest_prompt):
-            print(f"{dest_prompt} exists. Pick a new filename.")  # NOQA: T201 RUF100
+            print(  # NOQA: T201 RUF100
+                colors.warning(f"{PrivatePath(dest_prompt)} exists.")
+                + " "
+                + colors.muted("Pick a new filename."),
+            )
             continue
 
         dest = dest_prompt
@@ -192,6 +226,7 @@ def command_freeze(
                 ),
                 choices=t.cast("list[str]", valid_workspace_formats),
                 default="yaml",
+                color_mode=color_mode,
             )
             assert is_valid_ext(workspace_format_)
             workspace_format = workspace_format_
@@ -206,7 +241,10 @@ def command_freeze(
     elif workspace_format == "json":
         workspace = configparser.dump(fmt="json", indent=2)
 
-    if args.answer_yes or prompt_yes_no(f"Save to {dest}?"):
+    if args.answer_yes or prompt_yes_no(
+        f"Save to {PrivatePath(dest)}?",
+        color_mode=color_mode,
+    ):
         destdir = os.path.dirname(dest)
         if not os.path.isdir(destdir):
             os.makedirs(destdir)
@@ -216,4 +254,6 @@ def command_freeze(
         )
 
         if not args.quiet:
-            print(f"Saved to {dest}.")  # NOQA: T201 RUF100
+            print(  # NOQA: T201 RUF100
+                colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + ".",
+            )

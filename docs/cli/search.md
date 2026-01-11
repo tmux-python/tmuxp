@@ -1,13 +1,13 @@
-(cli-ls)=
+(cli-search)=
 
-(ls-config)=
+(search-config)=
 
-# tmuxp ls
+# tmuxp search
 
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
     :func: create_parser
     :prog: tmuxp
-    :path: ls
+    :path: search
 ```

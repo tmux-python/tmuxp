@@ -1,6 +1,4 @@
-(api_cli)=
-
-# CLI
+# Private path - `tmuxp._internal.private_path`
 
 :::{warning}
 Be careful with these! Internal APIs are **not** covered by version policies. They can break or be removed between minor versions!
@@ -8,23 +6,8 @@ Be careful with these! Internal APIs are **not** covered by version policies. Th
 If you need an internal API stabilized please [file an issue](https://github.com/tmux-python/tmuxp/issues).
 :::
 
-```{toctree}
-convert
-debug_info
-edit
-freeze
-import_config
-load
-ls
-search
-shell
-utils
-```
-
-## `tmuxp.cli`
-
 ```{eval-rst}
-.. automodule:: tmuxp.cli
+.. automodule:: tmuxp._internal.private_path
    :members:
    :show-inheritance:
    :undoc-members:
