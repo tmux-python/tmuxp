@@ -141,6 +141,7 @@ omit = [
   "*/_*",
   "pkg/*",
   "*/log.py",
+  "docs/_ext/*",
 ]
 
 [tool.coverage.report]
