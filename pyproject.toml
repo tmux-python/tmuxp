@@ -173,6 +173,7 @@ module = [
   "prompt_toolkit.*",
   "bpython",
   "sphinxarg.*",
+  "cli_usage_lexer",
 ]
 ignore_missing_imports = true
 
