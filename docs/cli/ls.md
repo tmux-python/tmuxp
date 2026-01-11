@@ -4,8 +4,6 @@
 
 # tmuxp ls
 
-List sessions.
-
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
