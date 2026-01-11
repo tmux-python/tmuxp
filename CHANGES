@@ -31,7 +31,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
-_Notes on the upcoming release will go here.__
+_Notes on the upcoming release will go here._
+
+### Bug fixes
+
+#### CLI example colorization (#1008)
+
+- Fix example sections not being colorized in `tmuxp --help` output
+- Change `build_description` to use `"{heading} examples:"` format (e.g., "load examples:") for proper formatter detection
 
 ## tmuxp 1.63.0 (2026-01-11)
 

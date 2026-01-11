@@ -850,7 +850,7 @@ def build_description(
     'My tool.\n\nexamples:\n  mytool run'
 
     >>> build_description("My tool.", [("sync", ["mytool sync repo"])])
-    'My tool.\n\nsync:\n  mytool sync repo'
+    'My tool.\n\nsync examples:\n  mytool sync repo'
 
     >>> build_description("", [(None, ["cmd"])])
     'examples:\n  cmd'
@@ -865,7 +865,7 @@ def build_description(
     for heading, commands in example_blocks:
         if not commands:
             continue
-        title = "examples:" if heading is None else f"{heading}:"
+        title = "examples:" if heading is None else f"{heading} examples:"
         lines = [title]
         lines.extend(f"  {command}" for command in commands)
         sections.append("\n".join(lines))

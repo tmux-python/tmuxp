@@ -21,6 +21,7 @@ from tmuxp._internal.colors import (
     ColorMode,
     Colors,
     UnknownStyleColor,
+    build_description,
     get_color_mode,
     style,
 )
@@ -312,3 +313,50 @@ def test_heading_applies_bright_cyan_bold(monkeypatch: pytest.MonkeyPatch) -> No
     assert ANSI_BOLD in result
     assert "Local workspaces:" in result
     assert ANSI_RESET in result
+
+
+# build_description tests
+
+
+def test_build_description_named_heading_includes_examples_suffix() -> None:
+    """Named heading should include 'examples:' suffix for formatter detection."""
+    result = build_description("My tool.", [("sync", ["mytool sync repo"])])
+
+    # Should be "sync examples:" not just "sync:"
+    assert "sync examples:" in result
+    # Verify the old format is not present (unless contained in "sync examples:")
+    lines = result.split("\n")
+    heading_line = next(line for line in lines if "sync" in line.lower())
+    assert heading_line == "sync examples:"
+
+
+def test_build_description_no_heading_uses_examples() -> None:
+    """Heading=None should produce bare 'examples:' title."""
+    result = build_description("My tool.", [(None, ["mytool run"])])
+
+    assert "examples:" in result
+    assert result.count("examples:") == 1  # Just one
+
+
+def test_build_description_multiple_named_headings() -> None:
+    """Multiple named headings should all have 'examples:' suffix."""
+    result = build_description(
+        "My tool.",
+        [
+            ("load", ["mytool load"]),
+            ("freeze", ["mytool freeze"]),
+            ("ls", ["mytool ls"]),
+        ],
+    )
+
+    assert "load examples:" in result
+    assert "freeze examples:" in result
+    assert "ls examples:" in result
+
+
+def test_build_description_empty_intro() -> None:
+    """Empty intro should not add blank sections."""
+    result = build_description("", [(None, ["cmd"])])
+
+    assert result.startswith("examples:")
+    assert "cmd" in result

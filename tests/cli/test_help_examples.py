@@ -71,7 +71,7 @@ def extract_examples_from_help(help_text: str) -> list[str]:
     for line in help_text.splitlines():
         # Match example section headings:
         # - "examples:" (default examples section)
-        # - "load examples:" or "load:" (category headings)
+        # - "load examples:" (category headings with examples suffix)
         # - "Field-scoped search:" (multi-word category headings)
         # Exclude argparse sections like "positional arguments:", "options:"
         stripped = line.strip()
@@ -250,3 +250,24 @@ def test_search_no_args_shows_help() -> None:
     assert "usage: tmuxp search" in result.stdout
     # Should exit successfully (not error)
     assert result.returncode == 0
+
+
+def test_main_help_example_sections_have_examples_suffix() -> None:
+    """Main --help should have section headings ending with 'examples:'."""
+    help_text = _get_help_text()
+
+    # Should have "load examples:", "freeze examples:", etc.
+    # NOT just "load:", "freeze:"
+    assert "load examples:" in help_text.lower()
+    assert "freeze examples:" in help_text.lower()
+
+
+def test_main_help_examples_are_colorized(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Main --help should have colorized example sections when FORCE_COLOR is set."""
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.setenv("FORCE_COLOR", "1")
+
+    help_text = _get_help_text()
+
+    # Should contain ANSI escape codes for colorization
+    assert "\033[" in help_text, "Example sections should be colorized"
