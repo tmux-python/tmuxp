@@ -345,6 +345,13 @@ def test_compile_search_patterns(
     assert bool(match) == should_match
 
 
+def test_compile_search_patterns_invalid_regex_raises() -> None:
+    """Invalid regex pattern raises re.error."""
+    tokens = [SearchToken(fields=("name",), pattern="[invalid(")]
+    with pytest.raises(re.error):
+        compile_search_patterns(tokens)
+
+
 def test_extract_workspace_fields_basic(tmp_path: pathlib.Path) -> None:
     """Extract fields from basic workspace file."""
     workspace = tmp_path / "test.yaml"
