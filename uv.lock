@@ -1324,7 +1324,7 @@ wheels = [
 
 [[package]]
 name = "tmuxp"
-version = "1.63.0a0"
+version = "1.63.0"
 source = { editable = "." }
 dependencies = [
     { name = "colorama" },
