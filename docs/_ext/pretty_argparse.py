@@ -21,6 +21,44 @@ if t.TYPE_CHECKING:
 
 _ANSI_RE = re.compile(r"\033\[[;?0-9]*[a-zA-Z]")
 
+# Match asterisks that trigger RST emphasis (preceded by delimiter like - or space)
+# but NOT asterisks already escaped or in code/literal contexts
+_RST_EMPHASIS_RE = re.compile(r"(?<=[^\s\\])-\*(?=[^\s*]|$)")
+
+
+def escape_rst_emphasis(text: str) -> str:
+    r"""Escape asterisks that would trigger RST inline emphasis.
+
+    In reStructuredText, ``*text*`` creates emphasis. When argparse help text
+    contains patterns like ``django-*``, the dash (a delimiter character) followed
+    by asterisk triggers emphasis detection, causing warnings like:
+    "Inline emphasis start-string without end-string."
+
+    This function escapes such asterisks with a backslash so they render literally.
+
+    Parameters
+    ----------
+    text : str
+        Text potentially containing problematic asterisks.
+
+    Returns
+    -------
+    str
+        Text with asterisks escaped where needed.
+
+    Examples
+    --------
+    >>> escape_rst_emphasis('tmuxp load "my-*"')
+    'tmuxp load "my-\\*"'
+    >>> escape_rst_emphasis("plain text")
+    'plain text'
+    >>> escape_rst_emphasis("already \\* escaped")
+    'already \\* escaped'
+    >>> escape_rst_emphasis("*emphasis* is ok")
+    '*emphasis* is ok'
+    """
+    return _RST_EMPHASIS_RE.sub(r"-\*", text)
+
 
 def strip_ansi(text: str) -> str:
     r"""Remove ANSI escape codes from text.
@@ -639,6 +677,16 @@ def _reorder_nodes(processed: list[nodes.Node]) -> list[nodes.Node]:
 
 class CleanArgParseDirective(ArgParseDirective):  # type: ignore[misc]
     """ArgParse directive that strips ANSI codes and formats examples."""
+
+    def _nested_parse_paragraph(self, text: str) -> nodes.Node:
+        """Parse text as RST, escaping problematic characters first.
+
+        Overrides the parent class to escape asterisks in patterns like
+        ``session-*`` that would otherwise trigger RST emphasis warnings.
+        """
+        escaped_text = escape_rst_emphasis(text)
+        result: nodes.Node = super()._nested_parse_paragraph(escaped_text)
+        return result
 
     def run(self) -> list[nodes.Node]:
         """Run the directive, clean output, format examples, and reorder."""

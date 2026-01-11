@@ -10,6 +10,7 @@ from pretty_argparse import (  # type: ignore[import-not-found]
     _is_examples_section,
     _is_usage_block,
     _reorder_nodes,
+    escape_rst_emphasis,
     is_base_examples_term,
     is_examples_term,
     make_section_id,
@@ -81,6 +82,96 @@ STRIP_ANSI_FIXTURES: list[StripAnsiFixture] = [
 def test_strip_ansi(test_id: str, input_text: str, expected: str) -> None:
     """Test ANSI escape code stripping."""
     assert strip_ansi(input_text) == expected
+
+
+# --- escape_rst_emphasis tests ---
+
+
+class EscapeRstEmphasisFixture(t.NamedTuple):
+    """Test fixture for escape_rst_emphasis function."""
+
+    test_id: str
+    input_text: str
+    expected: str
+
+
+ESCAPE_RST_EMPHASIS_FIXTURES: list[EscapeRstEmphasisFixture] = [
+    EscapeRstEmphasisFixture(
+        test_id="glob_pattern_escaped",
+        input_text='tmuxp load "django-*"',
+        expected='tmuxp load "django-\\*"',
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="multiple_glob_patterns",
+        input_text='tmuxp load "flask-*" "django-*"',
+        expected='tmuxp load "flask-\\*" "django-\\*"',
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="plain_text_unchanged",
+        input_text="tmuxp load",
+        expected="tmuxp load",
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="single_asterisk_unchanged",
+        input_text="tmuxp load *",
+        expected="tmuxp load *",
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="emphasis_unchanged",
+        input_text="*emphasis* text",
+        expected="*emphasis* text",
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="strong_unchanged",
+        input_text="**strong** text",
+        expected="**strong** text",
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="already_escaped_unchanged",
+        input_text='tmuxp load "django-\\*"',
+        expected='tmuxp load "django-\\*"',
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="hyphen_asterisk_space_unchanged",
+        input_text="- * bullet",
+        expected="- * bullet",
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="glob_at_end_of_string",
+        input_text='Filter by "flask-*',
+        expected='Filter by "flask-\\*',
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="underscore_asterisk_unchanged",
+        input_text='Use pattern "my_*"',
+        expected='Use pattern "my_*"',
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="hyphen_escaped_underscore_unchanged",
+        input_text='"a-*" or "b_*" patterns',
+        expected='"a-\\*" or "b_*" patterns',
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="empty_string",
+        input_text="",
+        expected="",
+    ),
+    EscapeRstEmphasisFixture(
+        test_id="asterisk_in_word_unchanged",
+        input_text="multi*plied value",
+        expected="multi*plied value",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    EscapeRstEmphasisFixture._fields,
+    ESCAPE_RST_EMPHASIS_FIXTURES,
+    ids=[f.test_id for f in ESCAPE_RST_EMPHASIS_FIXTURES],
+)
+def test_escape_rst_emphasis(test_id: str, input_text: str, expected: str) -> None:
+    """Test RST emphasis escaping for glob patterns."""
+    assert escape_rst_emphasis(input_text) == expected
 
 
 # --- is_examples_term tests ---
