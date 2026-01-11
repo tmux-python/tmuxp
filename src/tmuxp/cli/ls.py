@@ -28,8 +28,11 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import json
 import pathlib
 import typing as t
+
+import yaml
 
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
@@ -226,7 +229,7 @@ def _get_workspace_info(
             session_name = config.content.get("session_name")
             if include_config:
                 config_content = config.content
-    except Exception:
+    except (yaml.YAMLError, json.JSONDecodeError, OSError):
         # If we can't parse it, just skip session_name
         pass
 
