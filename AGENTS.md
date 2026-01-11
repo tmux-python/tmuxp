@@ -216,7 +216,7 @@ Inspired by patterns from **jq** (object keys vs values), **ripgrep** (path/line
 | **L0** | Section headers | `heading()` | Cyan + bold | "Local workspaces:", "Global workspaces:" |
 | **L1** | Primary content | `highlight()` | Magenta + bold | Workspace names (braintree, .tmuxp) |
 | **L2** | Supplementary info | `info()` | Cyan | Paths (~/.tmuxp, ~/project/.tmuxp.yaml) |
-| **L3** | Metadata/labels | `muted()` | Blue (dim) | Source labels (Legacy:, XDG default:) |
+| **L3** | Metadata/labels | `muted()` | Blue | Source labels (Legacy:, XDG default:) |
 
 ### Status-Based Colors (Override hierarchy when applicable)
 
@@ -248,12 +248,16 @@ colors = Colors()
 colors.heading("Section:")      # Cyan + bold (section headers)
 colors.highlight("item")        # Magenta + bold (primary content)
 colors.info("/path/to/file")    # Cyan (paths, supplementary info)
-colors.muted("label:")          # Blue dim (metadata, labels)
+colors.muted("label:")          # Blue (metadata, labels)
 colors.success("ok")            # Green (success states)
 colors.warning("caution")       # Yellow (warnings)
 colors.error("failed")          # Red (errors)
 ```
 
-### Key Rule
+### Key Rules
 
 **Never use the same color for adjacent hierarchy levels.** If headers and items are both blue, they blend together. Each level must be visually distinct.
+
+**Avoid dim/faint styling.** The ANSI dim attribute (`\x1b[2m`) is too dark to read on black terminal backgrounds. This includes both standard and bright color variants with dim.
+
+**Bold may not render distinctly.** Some terminal/font combinations don't differentiate bold from normal weight. Don't rely on bold alone for visual distinction - pair it with color differences.
