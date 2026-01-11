@@ -1067,7 +1067,7 @@ SEARCH_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Machine-readable output",
+            "Machine-readable output examples",
             [
                 "tmuxp search --json dev",
                 "tmuxp search --ndjson dev | jq '.name'",

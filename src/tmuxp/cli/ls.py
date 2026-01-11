@@ -60,7 +60,7 @@ LS_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Machine-readable output",
+            "Machine-readable output examples",
             [
                 "tmuxp ls --json",
                 "tmuxp ls --json --full",

@@ -586,6 +586,29 @@ def test_transform_definition_list_code_blocks_created() -> None:
     assert code_blocks[2].astext() == "$ cmd3"
 
 
+def test_transform_definition_list_machine_readable_code_blocks() -> None:
+    """Machine-readable output examples creates separate code blocks per line.
+
+    Regression test: Ensures category example sections like "Machine-readable
+    output examples:" split multi-line commands into separate code blocks,
+    not clumped together as a single block.
+    """
+    dl = nodes.definition_list()
+    dl += _make_dl_item(
+        "Machine-readable output examples:",
+        "tmuxp ls --json\ntmuxp ls --json --full\ntmuxp ls --ndjson",
+    )
+
+    result = transform_definition_list(dl)
+
+    section = result[0]
+    code_blocks = [c for c in section.children if isinstance(c, nodes.literal_block)]
+    assert len(code_blocks) == 3, "Each command should be a separate code block"
+    assert code_blocks[0].astext() == "$ tmuxp ls --json"
+    assert code_blocks[1].astext() == "$ tmuxp ls --json --full"
+    assert code_blocks[2].astext() == "$ tmuxp ls --ndjson"
+
+
 # --- _is_usage_block tests ---
 
 

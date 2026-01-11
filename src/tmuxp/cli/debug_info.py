@@ -31,7 +31,7 @@ DEBUG_INFO_DESCRIPTION = build_description(
             ],
         ),
         (
-            "Machine-readable output",
+            "Machine-readable output examples",
             [
                 "tmuxp debug-info --json",
             ],
