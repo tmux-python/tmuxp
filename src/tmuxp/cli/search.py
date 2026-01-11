@@ -984,8 +984,8 @@ def _output_search_results(
 
         # Human output: formatted text with highlighting
         name_display = highlight_matches(fields["name"], patterns, colors=colors)
-        path_info = f"  {colors.muted(fields['path'])}" if show_path else ""
-        formatter.emit_text(f"  {colors.info(name_display)}{path_info}")
+        path_info = f"  {colors.info(fields['path'])}" if show_path else ""
+        formatter.emit_text(f"  {colors.highlight(name_display)}{path_info}")
 
         # Show matched session_name if different from name
         session_name = fields["session_name"]
