@@ -24,9 +24,12 @@ SearchToken(fields=('name', 'session_name', 'path', 'window', 'pane'), pattern='
 from __future__ import annotations
 
 import argparse
+import json
 import pathlib
 import re
 import typing as t
+
+import yaml
 
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
@@ -602,7 +605,7 @@ def extract_workspace_fields(filepath: pathlib.Path) -> WorkspaceFields:
                             panes.append(cmds)
                         elif isinstance(cmds, list):
                             panes.extend(str(cmd) for cmd in cmds if cmd)
-    except Exception:
+    except (yaml.YAMLError, json.JSONDecodeError, OSError):
         # If config parsing fails, continue with empty content fields
         pass
 
