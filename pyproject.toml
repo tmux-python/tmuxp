@@ -58,7 +58,7 @@ dev = [
   # Docs
   "aafigure",
   "pillow",
-  "sphinx",
+  "sphinx<9",
   "furo",
   "gp-libs",
   "sphinx-autobuild",
@@ -92,7 +92,7 @@ dev = [
 docs = [
   "aafigure",
   "pillow",
-  "sphinx",
+  "sphinx<9",
   "furo",
   "gp-libs",
   "sphinx-autobuild",
