@@ -67,7 +67,6 @@ dev = [
   "sphinxext-opengraph",
   "sphinx-copybutton",
   "sphinxext-rediraffe",
-  "sphinx-argparse",
   "myst-parser",
   "linkify-it-py",
   # Testing
@@ -101,7 +100,6 @@ docs = [
   "sphinxext-opengraph",
   "sphinx-copybutton",
   "sphinxext-rediraffe",
-  "sphinx-argparse",
   "myst-parser",
   "linkify-it-py",
 ]
@@ -163,6 +161,9 @@ files = [
   "src/",
   "tests/",
 ]
+exclude = [
+  "tests/docs/",
+]
 enable_incomplete_feature = []
 
 [[tool.mypy.overrides]]
@@ -173,8 +174,15 @@ module = [
   "ptpython.*",
   "prompt_toolkit.*",
   "bpython",
-  "sphinxarg.*",
+  "sphinx_argparse_neo",
+  "sphinx_argparse_neo.*",
   "cli_usage_lexer",
+  "argparse_lexer",
+  "argparse_roles",
+  "docutils",
+  "docutils.*",
+  "pygments",
+  "pygments.*",
 ]
 ignore_missing_imports = true
 

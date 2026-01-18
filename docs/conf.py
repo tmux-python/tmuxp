@@ -36,8 +36,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "aafig",
-    "sphinxarg.ext",  # sphinx-argparse
-    "pretty_argparse",  # Enhanced sphinx-argparse: strip ANSI, format examples
+    "argparse_exemplar",  # Custom sphinx-argparse replacement
     "sphinx_inline_tabs",
     "sphinx_copybutton",
     "sphinxext.opengraph",

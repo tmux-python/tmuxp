@@ -1,178 +1,30 @@
-"""Tests for pretty_argparse sphinx extension."""
+"""Tests for argparse_exemplar sphinx extension.
+
+This tests the examples transformation functionality that converts argparse
+epilog definition lists into proper documentation sections.
+
+Note: Tests for strip_ansi have moved to
+tests/docs/_ext/sphinx_argparse_neo/test_utils.py since that utility
+now lives in sphinx_argparse_neo.utils.
+"""
 
 from __future__ import annotations
 
 import typing as t
 
 import pytest
-from docutils import nodes
-from pretty_argparse import (  # type: ignore[import-not-found]
+from argparse_exemplar import (  # type: ignore[import-not-found]
+    ExemplarConfig,
     _is_examples_section,
     _is_usage_block,
     _reorder_nodes,
-    escape_rst_emphasis,
     is_base_examples_term,
     is_examples_term,
     make_section_id,
     make_section_title,
-    strip_ansi,
     transform_definition_list,
 )
-
-# --- strip_ansi tests ---
-
-
-class StripAnsiFixture(t.NamedTuple):
-    """Test fixture for strip_ansi function."""
-
-    test_id: str
-    input_text: str
-    expected: str
-
-
-STRIP_ANSI_FIXTURES: list[StripAnsiFixture] = [
-    StripAnsiFixture(
-        test_id="plain_text",
-        input_text="hello",
-        expected="hello",
-    ),
-    StripAnsiFixture(
-        test_id="green_color",
-        input_text="\033[32mgreen\033[0m",
-        expected="green",
-    ),
-    StripAnsiFixture(
-        test_id="bold_blue",
-        input_text="\033[1;34mbold\033[0m",
-        expected="bold",
-    ),
-    StripAnsiFixture(
-        test_id="multiple_codes",
-        input_text="\033[1m\033[32mtest\033[0m",
-        expected="test",
-    ),
-    StripAnsiFixture(
-        test_id="empty_string",
-        input_text="",
-        expected="",
-    ),
-    StripAnsiFixture(
-        test_id="mixed_content",
-        input_text="pre\033[31mred\033[0mpost",
-        expected="preredpost",
-    ),
-    StripAnsiFixture(
-        test_id="reset_only",
-        input_text="\033[0m",
-        expected="",
-    ),
-    StripAnsiFixture(
-        test_id="sgr_params",
-        input_text="\033[38;5;196mred256\033[0m",
-        expected="red256",
-    ),
-]
-
-
-@pytest.mark.parametrize(
-    StripAnsiFixture._fields,
-    STRIP_ANSI_FIXTURES,
-    ids=[f.test_id for f in STRIP_ANSI_FIXTURES],
-)
-def test_strip_ansi(test_id: str, input_text: str, expected: str) -> None:
-    """Test ANSI escape code stripping."""
-    assert strip_ansi(input_text) == expected
-
-
-# --- escape_rst_emphasis tests ---
-
-
-class EscapeRstEmphasisFixture(t.NamedTuple):
-    """Test fixture for escape_rst_emphasis function."""
-
-    test_id: str
-    input_text: str
-    expected: str
-
-
-ESCAPE_RST_EMPHASIS_FIXTURES: list[EscapeRstEmphasisFixture] = [
-    EscapeRstEmphasisFixture(
-        test_id="glob_pattern_escaped",
-        input_text='tmuxp load "django-*"',
-        expected='tmuxp load "django-\\*"',
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="multiple_glob_patterns",
-        input_text='tmuxp load "flask-*" "django-*"',
-        expected='tmuxp load "flask-\\*" "django-\\*"',
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="plain_text_unchanged",
-        input_text="tmuxp load",
-        expected="tmuxp load",
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="single_asterisk_unchanged",
-        input_text="tmuxp load *",
-        expected="tmuxp load *",
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="emphasis_unchanged",
-        input_text="*emphasis* text",
-        expected="*emphasis* text",
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="strong_unchanged",
-        input_text="**strong** text",
-        expected="**strong** text",
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="already_escaped_unchanged",
-        input_text='tmuxp load "django-\\*"',
-        expected='tmuxp load "django-\\*"',
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="hyphen_asterisk_space_unchanged",
-        input_text="- * bullet",
-        expected="- * bullet",
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="glob_at_end_of_string",
-        input_text='Filter by "flask-*',
-        expected='Filter by "flask-\\*',
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="underscore_asterisk_unchanged",
-        input_text='Use pattern "my_*"',
-        expected='Use pattern "my_*"',
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="hyphen_escaped_underscore_unchanged",
-        input_text='"a-*" or "b_*" patterns',
-        expected='"a-\\*" or "b_*" patterns',
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="empty_string",
-        input_text="",
-        expected="",
-    ),
-    EscapeRstEmphasisFixture(
-        test_id="asterisk_in_word_unchanged",
-        input_text="multi*plied value",
-        expected="multi*plied value",
-    ),
-]
-
-
-@pytest.mark.parametrize(
-    EscapeRstEmphasisFixture._fields,
-    ESCAPE_RST_EMPHASIS_FIXTURES,
-    ids=[f.test_id for f in ESCAPE_RST_EMPHASIS_FIXTURES],
-)
-def test_escape_rst_emphasis(test_id: str, input_text: str, expected: str) -> None:
-    """Test RST emphasis escaping for glob patterns."""
-    assert escape_rst_emphasis(input_text) == expected
-
+from docutils import nodes
 
 # --- is_examples_term tests ---
 
@@ -386,6 +238,28 @@ def test_make_section_id(
     assert make_section_id(term_text, counter, is_subsection=is_subsection) == expected
 
 
+def test_make_section_id_with_page_prefix() -> None:
+    """Test section ID generation with page_prefix for cross-page uniqueness."""
+    # Base "examples:" with page_prefix becomes "sync-examples"
+    assert make_section_id("examples:", page_prefix="sync") == "sync-examples"
+    assert make_section_id("examples:", page_prefix="add") == "add-examples"
+
+    # Prefixed examples already unique - page_prefix not added
+    assert (
+        make_section_id("Machine-readable output examples:", page_prefix="sync")
+        == "machine-readable-output-examples"
+    )
+
+    # Subsection with page_prefix
+    result = make_section_id(
+        "Field-scoped examples:", is_subsection=True, page_prefix="sync"
+    )
+    assert result == "field-scoped"
+
+    # Empty page_prefix behaves like before
+    assert make_section_id("examples:", page_prefix="") == "examples"
+
+
 # --- make_section_title tests ---
 
 
@@ -483,7 +357,7 @@ def _make_dl_item(term: str, definition: str) -> nodes.definition_list_item:
 def test_transform_definition_list_single_examples() -> None:
     """Single examples section creates one section node."""
     dl = nodes.definition_list()
-    dl += _make_dl_item("examples:", "tmuxp ls")
+    dl += _make_dl_item("examples:", "vcspull ls")
 
     result = transform_definition_list(dl)
 
@@ -495,8 +369,8 @@ def test_transform_definition_list_single_examples() -> None:
 def test_transform_definition_list_nested_examples() -> None:
     """Base examples with category creates nested sections."""
     dl = nodes.definition_list()
-    dl += _make_dl_item("examples:", "tmuxp ls")
-    dl += _make_dl_item("Machine-readable output examples:", "tmuxp ls --json")
+    dl += _make_dl_item("examples:", "vcspull ls")
+    dl += _make_dl_item("Machine-readable output examples:", "vcspull ls --json")
 
     result = transform_definition_list(dl)
 
@@ -515,9 +389,9 @@ def test_transform_definition_list_nested_examples() -> None:
 def test_transform_definition_list_multiple_categories() -> None:
     """Multiple example categories all nest under parent."""
     dl = nodes.definition_list()
-    dl += _make_dl_item("examples:", "tmuxp ls")
-    dl += _make_dl_item("Field-scoped examples:", "tmuxp ls --field name")
-    dl += _make_dl_item("Machine-readable output examples:", "tmuxp ls --json")
+    dl += _make_dl_item("examples:", "vcspull ls")
+    dl += _make_dl_item("Field-scoped examples:", "vcspull ls --field name")
+    dl += _make_dl_item("Machine-readable output examples:", "vcspull ls --json")
 
     result = transform_definition_list(dl)
 
@@ -533,7 +407,7 @@ def test_transform_definition_list_preserves_non_examples() -> None:
     """Non-example items preserved as definition list."""
     dl = nodes.definition_list()
     dl += _make_dl_item("Usage:", "How to use this command")
-    dl += _make_dl_item("examples:", "tmuxp ls")
+    dl += _make_dl_item("examples:", "vcspull ls")
 
     result = transform_definition_list(dl)
 
@@ -560,7 +434,7 @@ def test_transform_definition_list_no_examples() -> None:
 def test_transform_definition_list_only_category_no_base() -> None:
     """Single category example without base examples stays flat."""
     dl = nodes.definition_list()
-    dl += _make_dl_item("Machine-readable output examples:", "tmuxp ls --json")
+    dl += _make_dl_item("Machine-readable output examples:", "vcspull ls --json")
 
     result = transform_definition_list(dl)
 
@@ -586,29 +460,6 @@ def test_transform_definition_list_code_blocks_created() -> None:
     assert code_blocks[2].astext() == "$ cmd3"
 
 
-def test_transform_definition_list_machine_readable_code_blocks() -> None:
-    """Machine-readable output examples creates separate code blocks per line.
-
-    Regression test: Ensures category example sections like "Machine-readable
-    output examples:" split multi-line commands into separate code blocks,
-    not clumped together as a single block.
-    """
-    dl = nodes.definition_list()
-    dl += _make_dl_item(
-        "Machine-readable output examples:",
-        "tmuxp ls --json\ntmuxp ls --json --full\ntmuxp ls --ndjson",
-    )
-
-    result = transform_definition_list(dl)
-
-    section = result[0]
-    code_blocks = [c for c in section.children if isinstance(c, nodes.literal_block)]
-    assert len(code_blocks) == 3, "Each command should be a separate code block"
-    assert code_blocks[0].astext() == "$ tmuxp ls --json"
-    assert code_blocks[1].astext() == "$ tmuxp ls --json --full"
-    assert code_blocks[2].astext() == "$ tmuxp ls --ndjson"
-
-
 # --- _is_usage_block tests ---
 
 
@@ -631,7 +482,7 @@ IS_USAGE_BLOCK_FIXTURES: list[IsUsageBlockFixture] = [
     IsUsageBlockFixture(
         test_id="literal_block_usage_uppercase",
         node_type="literal_block",
-        node_text="Usage: tmuxp load",
+        node_text="Usage: vcspull sync",
         expected=True,
     ),
     IsUsageBlockFixture(
@@ -966,3 +817,203 @@ def test_reorder_nodes_preserves_non_examples_after() -> None:
     assert isinstance(result[1], nodes.literal_block)
     assert isinstance(result[2], nodes.section)
     assert result[3].astext() == "Epilog"
+
+
+# --- ExemplarConfig tests ---
+
+
+def test_exemplar_config_defaults() -> None:
+    """ExemplarConfig has sensible defaults."""
+    config = ExemplarConfig()
+
+    assert config.examples_term_suffix == "examples"
+    assert config.examples_base_term == "examples"
+    assert config.examples_section_title == "Examples"
+    assert config.usage_pattern == "usage:"
+    assert config.command_prefix == "$ "
+    assert config.code_language == "console"
+    assert config.code_classes == ("highlight-console",)
+    assert config.usage_code_language == "cli-usage"
+    assert config.reorder_usage_before_examples is True
+
+
+def test_exemplar_config_custom_values() -> None:
+    """ExemplarConfig accepts custom values."""
+    config = ExemplarConfig(
+        examples_term_suffix="demos",
+        examples_base_term="demos",
+        examples_section_title="Demos",
+        usage_pattern="synopsis:",
+        command_prefix="> ",
+        code_language="bash",
+        code_classes=("highlight-bash",),
+        usage_code_language="cli-synopsis",
+        reorder_usage_before_examples=False,
+    )
+
+    assert config.examples_term_suffix == "demos"
+    assert config.examples_base_term == "demos"
+    assert config.examples_section_title == "Demos"
+    assert config.usage_pattern == "synopsis:"
+    assert config.command_prefix == "> "
+    assert config.code_language == "bash"
+    assert config.code_classes == ("highlight-bash",)
+    assert config.usage_code_language == "cli-synopsis"
+    assert config.reorder_usage_before_examples is False
+
+
+# --- Config integration tests ---
+
+
+def test_is_examples_term_with_custom_config() -> None:
+    """is_examples_term respects custom config."""
+    config = ExemplarConfig(examples_term_suffix="demos")
+
+    # Custom term should match
+    assert is_examples_term("demos:", config=config) is True
+    assert is_examples_term("Machine-readable output demos:", config=config) is True
+
+    # Default term should not match
+    assert is_examples_term("examples:", config=config) is False
+
+
+def test_is_base_examples_term_with_custom_config() -> None:
+    """is_base_examples_term respects custom config."""
+    config = ExemplarConfig(examples_base_term="demos")
+
+    # Custom term should match
+    assert is_base_examples_term("demos:", config=config) is True
+    assert is_base_examples_term("Demos", config=config) is True
+
+    # Default term should not match
+    assert is_base_examples_term("examples:", config=config) is False
+
+    # Prefixed term should not match (not base)
+    assert is_base_examples_term("Output demos:", config=config) is False
+
+
+def test_make_section_id_with_custom_config() -> None:
+    """make_section_id respects custom config."""
+    config = ExemplarConfig(examples_term_suffix="demos")
+
+    assert make_section_id("demos:", config=config) == "demos"
+    assert (
+        make_section_id("Machine-readable output demos:", config=config)
+        == "machine-readable-output-demos"
+    )
+    assert (
+        make_section_id("Field-scoped demos:", is_subsection=True, config=config)
+        == "field-scoped"
+    )
+
+
+def test_make_section_title_with_custom_config() -> None:
+    """make_section_title respects custom config."""
+    config = ExemplarConfig(
+        examples_base_term="demos",
+        examples_term_suffix="demos",
+        examples_section_title="Demos",
+    )
+
+    assert make_section_title("demos:", config=config) == "Demos"
+    assert (
+        make_section_title("Machine-readable output demos:", config=config)
+        == "Machine-Readable Output Demos"
+    )
+    assert (
+        make_section_title("Field-scoped demos:", is_subsection=True, config=config)
+        == "Field-Scoped"
+    )
+
+
+def test_is_usage_block_with_custom_config() -> None:
+    """_is_usage_block respects custom config."""
+    config = ExemplarConfig(usage_pattern="synopsis:")
+
+    # Custom pattern should match
+    assert (
+        _is_usage_block(nodes.literal_block(text="synopsis: cmd [-h]"), config=config)
+        is True
+    )
+    assert (
+        _is_usage_block(nodes.literal_block(text="Synopsis: cmd"), config=config)
+        is True
+    )
+
+    # Default pattern should not match
+    assert (
+        _is_usage_block(nodes.literal_block(text="usage: cmd [-h]"), config=config)
+        is False
+    )
+
+
+def test_is_examples_section_with_custom_config() -> None:
+    """_is_examples_section respects custom config."""
+    config = ExemplarConfig(examples_term_suffix="demos")
+
+    # Custom term should match
+    demos_section = nodes.section()
+    demos_section["ids"] = ["demos"]
+    assert _is_examples_section(demos_section, config=config) is True
+
+    prefixed_demos = nodes.section()
+    prefixed_demos["ids"] = ["output-demos"]
+    assert _is_examples_section(prefixed_demos, config=config) is True
+
+    # Default term should not match
+    examples_section = nodes.section()
+    examples_section["ids"] = ["examples"]
+    assert _is_examples_section(examples_section, config=config) is False
+
+
+def test_reorder_nodes_disabled_via_config() -> None:
+    """Reordering can be disabled via config."""
+    config = ExemplarConfig(reorder_usage_before_examples=False)
+
+    desc = nodes.paragraph(text="Description")
+    examples = _make_examples_section()
+    usage = _make_usage_node()
+
+    # Original order: desc, examples, usage
+    result = _reorder_nodes([desc, examples, usage], config=config)
+
+    # Order should be preserved (not reordered)
+    assert len(result) == 3
+    assert isinstance(result[0], nodes.paragraph)
+    assert isinstance(result[1], nodes.section)  # examples still in position 1
+    assert isinstance(result[2], nodes.literal_block)  # usage still at end
+
+
+def test_transform_definition_list_with_custom_config() -> None:
+    """transform_definition_list respects custom config."""
+    config = ExemplarConfig(
+        examples_term_suffix="demos",
+        examples_base_term="demos",
+        examples_section_title="Demos",
+        command_prefix="> ",
+        code_language="bash",
+        code_classes=("highlight-bash",),
+    )
+
+    dl = nodes.definition_list()
+    dl += _make_dl_item("demos:", "cmd1")
+
+    result = transform_definition_list(dl, config=config)
+
+    # Should create a section with "demos" id
+    assert len(result) == 1
+    section = result[0]
+    assert isinstance(section, nodes.section)
+    assert section["ids"] == ["demos"]
+
+    # Find the title
+    titles = [c for c in section.children if isinstance(c, nodes.title)]
+    assert len(titles) == 1
+    assert titles[0].astext() == "Demos"
+
+    # Find code blocks
+    code_blocks = [c for c in section.children if isinstance(c, nodes.literal_block)]
+    assert len(code_blocks) == 1
+    assert code_blocks[0].astext() == "> cmd1"  # Custom prefix
+    assert code_blocks[0]["language"] == "bash"
+    assert "highlight-bash" in code_blocks[0]["classes"]
