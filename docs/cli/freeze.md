@@ -4,6 +4,10 @@
 
 # tmuxp freeze
 
+Export a running tmux session to a workspace configuration file. This allows you to save the current state of your tmux session for later restoration.
+
+## Command
+
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
@@ -12,23 +16,27 @@
     :path: freeze
 ```
 
-## Usage
+## Basic usage
 
-Freeze sessions
+Freeze the current session:
 
 ```console
 $ tmuxp freeze
 ```
 
+Freeze a specific session by name:
+
 ```console
 $ tmuxp freeze [session_name]
 ```
+
+Overwrite an existing workspace file:
 
 ```console
 $ tmuxp freeze --force [session_name]
 ```
 
-You can save the state of your tmux session by freezing it.
+## Output format
 
 Tmuxp will offer to save your session state to `.json` or `.yaml`.
 

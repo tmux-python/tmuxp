@@ -2,9 +2,15 @@
 
 # tmuxp import
 
+Import and convert workspace configurations from other tmux session managers like teamocil and tmuxinator.
+
 (import-teamocil)=
 
 ## From teamocil
+
+Import teamocil configuration files and convert them to tmuxp format.
+
+### Command
 
 ```{eval-rst}
 .. argparse::
@@ -13,6 +19,8 @@
     :prog: tmuxp
     :path: import teamocil
 ```
+
+### Basic usage
 
 ````{tab} YAML
 
@@ -34,6 +42,10 @@ $ tmuxp import teamocil /path/to/file.json
 
 ## From tmuxinator
 
+Import tmuxinator configuration files and convert them to tmuxp format.
+
+### Command
+
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
@@ -41,6 +53,8 @@ $ tmuxp import teamocil /path/to/file.json
     :prog: tmuxp
     :path: import tmuxinator
 ```
+
+### Basic usage
 
 ````{tab} YAML
 
