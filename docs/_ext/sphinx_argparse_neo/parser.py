@@ -11,6 +11,8 @@ import argparse
 import dataclasses
 import typing as t
 
+from sphinx_argparse_neo.utils import strip_ansi
+
 # Sentinel for "no default" (distinct from None which is a valid default)
 NO_DEFAULT = object()
 
@@ -569,6 +571,9 @@ def _generate_usage(parser: argparse.ArgumentParser) -> str:
         parser.usage, parser._actions, parser._mutually_exclusive_groups
     )
     usage = formatter.format_help().strip()
+
+    # Strip ANSI codes before checking prefix (handles FORCE_COLOR edge case)
+    usage = strip_ansi(usage)
 
     # Remove "usage: " prefix if present
     if usage.lower().startswith("usage:"):

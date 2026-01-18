@@ -10,6 +10,10 @@ sphinxopts := ""
 sphinxbuild := "uv run sphinx-build"
 sourcedir := "."
 
+# Environment to disable colors in Sphinx + argparse output
+export PYTHON_COLORS := "0"
+export NO_COLOR := "1"
+
 # File patterns for watching
 watch_files := "find .. -type f -not -path '*/\\.*' | grep -i '.*[.]\\(rst\\|md\\)$\\|.*[.]py$\\|CHANGES\\|TODO\\|.*conf\\.py' 2> /dev/null"
 

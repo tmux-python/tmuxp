@@ -1,0 +1,263 @@
+/*
+ * Argparse/CLI Highlighting Styles
+ *
+ * Styles for CLI inline roles and argparse help output highlighting.
+ * Uses "One Dark" inspired color palette (Python 3.14 argparse style).
+ *
+ * Color Palette:
+ *   Background:    #282C34
+ *   Default text:  #CCCED4
+ *   Usage label:   #61AFEF (blue, bold)
+ *   Program name:  #C678DD (purple, bold)
+ *   Subcommands:   #98C379 (green)
+ *   Options:       #56B6C2 (teal)
+ *   Metavars:      #E5C07B (yellow, italic)
+ *   Choices:       #98C379 (green)
+ *   Headings:      #E5E5E5 (bright, bold)
+ *   Punctuation:   #CCCED4
+ */
+
+/* ==========================================================================
+   Inline Role Styles
+   ========================================================================== */
+
+/*
+ * CLI Options
+ *
+ * Long options (--verbose) and short options (-h) both use teal color.
+ */
+.cli-option {
+    font-family: var(--font-stack--monospace);
+}
+
+.cli-option-long {
+    color: #56B6C2;
+}
+
+.cli-option-short {
+    color: #56B6C2;
+}
+
+/*
+ * CLI Metavars
+ *
+ * Placeholder values like FILE, PATH, DIRECTORY.
+ * Yellow/amber to indicate "replace me" - distinct from flags (teal).
+ */
+.cli-metavar {
+    font-family: var(--font-stack--monospace);
+    color: #E5C07B;
+    font-style: italic;
+}
+
+/*
+ * CLI Commands
+ *
+ * Subcommand names like sync, add, list.
+ * Green (same as choices) - they're enumerated command options.
+ */
+.cli-command {
+    font-family: var(--font-stack--monospace);
+    color: #98C379;
+    font-weight: bold;
+}
+
+/*
+ * CLI Default Values
+ *
+ * Default values shown in help text like None, "auto".
+ * Subtle styling to not distract from options.
+ */
+.cli-default {
+    font-family: var(--font-stack--monospace);
+    color: #CCCED4;
+    font-style: italic;
+}
+
+/*
+ * CLI Choice Values
+ *
+ * Choice enumeration values like json, yaml, table.
+ * Green color to show they are valid literal values.
+ */
+.cli-choice {
+    font-family: var(--font-stack--monospace);
+    color: #98C379;
+}
+
+/* ==========================================================================
+   Argparse Code Block Highlighting
+   ========================================================================== */
+
+/*
+ * These styles apply within Pygments-highlighted code blocks using the
+ * argparse, argparse-usage, or argparse-help lexers.
+ */
+
+/* Usage heading "usage:" - bold blue */
+.highlight-argparse .gh,
+.highlight-argparse-usage .gh,
+.highlight-argparse-help .gh {
+    color: #61AFEF;
+    font-weight: bold;
+}
+
+/* Section headers like "positional arguments:", "options:" - neutral bright */
+.highlight-argparse .gs,
+.highlight-argparse-help .gs {
+    color: #E5E5E5;
+    font-weight: bold;
+}
+
+/* Long options --foo - teal */
+.highlight-argparse .nt,
+.highlight-argparse-usage .nt,
+.highlight-argparse-help .nt {
+    color: #56B6C2;
+    font-weight: normal;
+}
+
+/* Short options -h - teal (same as long) */
+.highlight-argparse .na,
+.highlight-argparse-usage .na,
+.highlight-argparse-help .na {
+    color: #56B6C2;
+    font-weight: normal;
+}
+
+/* Metavar placeholders FILE, PATH - yellow/amber italic */
+.highlight-argparse .nv,
+.highlight-argparse-usage .nv,
+.highlight-argparse-help .nv {
+    color: #E5C07B;
+    font-style: italic;
+}
+
+/* Command/program names - purple bold */
+.highlight-argparse .nl,
+.highlight-argparse-usage .nl,
+.highlight-argparse-help .nl {
+    color: #C678DD;
+    font-weight: bold;
+}
+
+/* Subcommands - bold green */
+.highlight-argparse .nf,
+.highlight-argparse-usage .nf,
+.highlight-argparse-help .nf {
+    color: #98C379;
+    font-weight: bold;
+}
+
+/* Choice values - green */
+.highlight-argparse .no,
+.highlight-argparse-usage .no,
+.highlight-argparse-help .no,
+.highlight-argparse .nc,
+.highlight-argparse-usage .nc,
+.highlight-argparse-help .nc {
+    color: #98C379;
+}
+
+/* Punctuation [], {}, () - neutral gray */
+.highlight-argparse .p,
+.highlight-argparse-usage .p,
+.highlight-argparse-help .p {
+    color: #CCCED4;
+}
+
+/* Operators like | - neutral gray */
+.highlight-argparse .o,
+.highlight-argparse-usage .o,
+.highlight-argparse-help .o {
+    color: #CCCED4;
+    font-weight: normal;
+}
+
+/* ==========================================================================
+   Argparse Directive Highlighting (.. argparse:: output)
+   ========================================================================== */
+
+/*
+ * These styles apply to the argparse directive output which uses custom
+ * nodes rendered by sphinx_argparse_neo. The directive adds highlight spans
+ * directly to the HTML output.
+ */
+
+/*
+ * Usage Block (.argparse-usage)
+ *
+ * The usage block now has both .argparse-usage and .highlight-argparse-usage
+ * classes. The .highlight-argparse-usage selectors above already handle the
+ * token highlighting. These selectors provide fallback and ensure consistent
+ * styling.
+ */
+.argparse-usage .gh {
+    color: #61AFEF;
+    font-weight: bold;
+}
+
+.argparse-usage .nt {
+    color: #56B6C2;
+    font-weight: normal;
+}
+
+.argparse-usage .na {
+    color: #56B6C2;
+    font-weight: normal;
+}
+
+.argparse-usage .nv {
+    color: #E5C07B;
+    font-style: italic;
+}
+
+.argparse-usage .nl {
+    color: #C678DD;
+    font-weight: bold;
+}
+
+.argparse-usage .nf {
+    color: #98C379;
+    font-weight: bold;
+}
+
+.argparse-usage .no,
+.argparse-usage .nc {
+    color: #98C379;
+}
+
+.argparse-usage .o {
+    color: #CCCED4;
+    font-weight: normal;
+}
+
+.argparse-usage .p {
+    color: #CCCED4;
+}
+
+/*
+ * Argument Name (<dt class="argparse-argument-name">)
+ *
+ * The argument names in the dl/dt structure are highlighted with
+ * semantic spans for options and metavars.
+ */
+.argparse-argument-name .nt {
+    color: #56B6C2;
+    font-weight: normal;
+}
+
+.argparse-argument-name .na {
+    color: #56B6C2;
+    font-weight: normal;
+}
+
+.argparse-argument-name .nv {
+    color: #E5C07B;
+    font-style: italic;
+}
+
+.argparse-argument-name .nl {
+    color: #C678DD;
+    font-weight: bold;
+}

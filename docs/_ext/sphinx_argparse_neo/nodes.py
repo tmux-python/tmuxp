@@ -23,6 +23,7 @@ if str(_ext_dir) not in sys.path:
     sys.path.insert(0, str(_ext_dir))
 
 from argparse_lexer import ArgparseUsageLexer  # noqa: E402
+from sphinx_argparse_neo.utils import strip_ansi  # noqa: E402
 
 
 def _token_to_css_class(token_type: t.Any) -> str:
@@ -347,7 +348,7 @@ def visit_argparse_usage_html(self: HTML5Translator, node: argparse_usage) -> No
     node : argparse_usage
         The usage node being visited.
     """
-    usage = node.get("usage", "")
+    usage = strip_ansi(node.get("usage", ""))
     # Add both argparse-usage class and highlight class for CSS targeting
     self.body.append('<pre class="argparse-usage highlight-argparse-usage">')
     # Prepend "usage: " and highlight the full usage string

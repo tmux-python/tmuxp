@@ -70,7 +70,7 @@ exclude_patterns = ["_build"]
 pygments_style = "monokai"
 pygments_dark_style = "monokai"
 
-html_css_files = ["css/custom.css"]
+html_css_files = ["css/custom.css", "css/argparse-highlight.css"]
 html_extra_path = ["manifest.json"]
 html_static_path = ["_static"]
 html_favicon = "_static/favicon.ico"
