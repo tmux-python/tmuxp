@@ -31,7 +31,28 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
-_Notes on the upcoming release will go here._
+### Documentation
+
+#### CLI documentation overhaul with sphinx_argparse_neo (#1009)
+
+Replaced the `pretty_argparse` extension with a new `sphinx_argparse_neo` package:
+
+- **New argparse documentation engine**: Complete rewrite for cleaner, more maintainable CLI docs
+- **Syntax highlighting**: Custom Pygments lexers for CLI usage blocks and argparse output
+- **Examples transformation**: Automatically converts epilog "examples:" definition lists into proper documentation sections with TOC entries
+- **ANSI stripping**: Removes escape codes when `FORCE_COLOR` is set
+- **RST emphasis escaping**: Prevents warnings from glob patterns like `django-*`
+- **Restructured CLI pages**: Consistent layout matching vcspull documentation pattern
+
+### Bug fixes
+
+#### Docutils node.children protocol (#1009)
+
+- Fixed direct `node.children` assignment that bypassed docutils' parent-child tracking mechanism
+
+#### Mypy type annotation (#1009)
+
+- Added missing type annotation to fix `no-any-return` error
 
 ## tmuxp 1.63.1 (2026-01-11)
 
