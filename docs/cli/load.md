@@ -6,6 +6,10 @@
 
 # tmuxp load
 
+Load tmux sessions from workspace configuration files. This is the primary command for starting sessions from YAML or JSON configurations.
+
+## Command
+
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
@@ -14,7 +18,7 @@
     :path: load
 ```
 
-## Usage
+## Basic usage
 
 You can load your tmuxp file and attach the tmux session via a few
 shorthands:

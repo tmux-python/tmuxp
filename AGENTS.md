@@ -156,6 +156,14 @@ windows:
 3. **Keep doctests simple and focused** on demonstrating usage
 4. **Add blank lines between test sections** for improved readability
 
+**Doctest exceptions** (patterns where doctests are not required):
+
+1. **Sphinx/docutils `visit_*`/`depart_*` methods** - tested via integration tests; 0 examples across docutils (851 methods), Sphinx (800+), and CPython's `ast.NodeVisitor`
+2. **Sphinx `setup()` functions** - entry points not testable in isolation
+3. **Complex recursive traversal functions** - extract helper predicates instead
+
+**Best practice for node processing**: Extract testable helper functions (like `_is_usage_block()`) and doctest those. Keep complex visitor logic in integration tests.
+
 ## Documentation Standards
 
 ### Code Blocks in Documentation

@@ -2,6 +2,10 @@
 
 # tmuxp convert
 
+Convert workspace configuration files between YAML and JSON formats.
+
+## Command
+
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
@@ -10,7 +14,7 @@
     :path: convert
 ```
 
-## Usage
+## Basic usage
 
 ````{tab} YAML -> JSON
 

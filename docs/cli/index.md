@@ -42,7 +42,11 @@ completion
 
 (tmuxp-main)=
 
-## Command: `tmuxp`
+## Main command
+
+The `tmuxp` command is the entry point for all tmuxp operations. Use subcommands to load sessions, manage configurations, and interact with tmux.
+
+### Command
 
 ```{eval-rst}
 .. argparse::

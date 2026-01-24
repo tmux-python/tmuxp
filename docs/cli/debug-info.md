@@ -4,6 +4,10 @@
 
 # tmuxp debug-info
 
+Collect and display system information useful for debugging tmuxp issues and submitting bug reports.
+
+## Command
+
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
@@ -12,7 +16,7 @@
     :path: debug-info
 ```
 
-## Usage
+## Example output
 
 ```console
 

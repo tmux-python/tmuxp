@@ -72,15 +72,15 @@ TOKEN_TYPE_FIXTURES: list[TokenTypeFixture] = [
     ),
     TokenTypeFixture(
         test_id="positional_arg",
-        input_text="session-name",
+        input_text="repo-name",
         expected_token_type="Token.Name.Label",
-        expected_value="session-name",
+        expected_value="repo-name",
     ),
     TokenTypeFixture(
         test_id="command_name",
-        input_text="tmuxp",
+        input_text="vcspull",
         expected_token_type="Token.Name.Label",
-        expected_value="tmuxp",
+        expected_value="vcspull",
     ),
     TokenTypeFixture(
         test_id="open_bracket",
@@ -141,20 +141,20 @@ class ShortOptionValueFixture(t.NamedTuple):
 SHORT_OPTION_VALUE_FIXTURES: list[ShortOptionValueFixture] = [
     ShortOptionValueFixture(
         test_id="lowercase_value",
-        input_text="-S socket-path",
-        option="-S",
-        value="socket-path",
+        input_text="-c config-path",
+        option="-c",
+        value="config-path",
     ),
     ShortOptionValueFixture(
         test_id="uppercase_value",
-        input_text="-c COMMAND",
-        option="-c",
-        value="COMMAND",
+        input_text="-d DIRECTORY",
+        option="-d",
+        value="DIRECTORY",
     ),
     ShortOptionValueFixture(
         test_id="simple_value",
-        input_text="-L name",
-        option="-L",
+        input_text="-r name",
+        option="-r",
         value="name",
     ),
 ]
@@ -255,33 +255,33 @@ USAGE_STRING_FIXTURES: list[UsageStringFixture] = [
     ),
     UsageStringFixture(
         test_id="mutually_exclusive",
-        input_text="[--best | --pdb | --code]",
+        input_text="[--json | --ndjson | --table]",
         expected_contains=[
-            ("Token.Name.Tag", "--best"),
+            ("Token.Name.Tag", "--json"),
             ("Token.Operator", "|"),
-            ("Token.Name.Tag", "--pdb"),
+            ("Token.Name.Tag", "--ndjson"),
             ("Token.Operator", "|"),
-            ("Token.Name.Tag", "--code"),
+            ("Token.Name.Tag", "--table"),
         ],
     ),
     UsageStringFixture(
         test_id="subcommand",
-        input_text="usage: tmuxp shell",
+        input_text="usage: vcspull sync",
         expected_contains=[
             ("Token.Generic.Heading", "usage:"),
-            ("Token.Name.Label", "tmuxp"),
-            ("Token.Name.Label", "shell"),
+            ("Token.Name.Label", "vcspull"),
+            ("Token.Name.Label", "sync"),
         ],
     ),
     UsageStringFixture(
         test_id="positional_args",
-        input_text="[session-name] [window-name]",
+        input_text="[repo-name] [path]",
         expected_contains=[
             ("Token.Punctuation", "["),
-            ("Token.Name.Label", "session-name"),
+            ("Token.Name.Label", "repo-name"),
             ("Token.Punctuation", "]"),
             ("Token.Punctuation", "["),
-            ("Token.Name.Label", "window-name"),
+            ("Token.Name.Label", "path"),
             ("Token.Punctuation", "]"),
         ],
     ),
@@ -306,37 +306,38 @@ def test_usage_string(
         )
 
 
-# --- Real tmuxp usage output test ---
+# --- Real vcspull usage output test ---
 
 
-def test_tmuxp_shell_usage() -> None:
-    """Test real tmuxp shell usage output tokenization."""
+def test_vcspull_sync_usage() -> None:
+    """Test real vcspull sync usage output tokenization."""
     usage_text = """\
-usage: tmuxp shell [-h] [-S socket-path] [-L socket-name] [-c COMMAND]
-                   [--best | --pdb | --code | --ptipython | --ptpython |
-                   --ipython | --bpython] [--use-pythonrc] [--no-startup]
-                   [--use-vi-mode] [--no-vi-mode]
-                   [session-name] [window-name]"""
+usage: vcspull sync [-h] [-c CONFIG] [-d DIRECTORY]
+                    [--json | --ndjson | --table] [--color {auto,always,never}]
+                    [--no-progress] [--verbose]
+                    [repo-name] [path]"""
 
     tokens = get_tokens(usage_text)
 
     # Check key elements are present
-    # Note: COMMAND after -c is Name.Variable (option value), not Name.Constant
+    # Note: DIRECTORY after -d is Name.Variable (option value), not Name.Constant
     expected = [
         ("Token.Generic.Heading", "usage:"),
-        ("Token.Name.Label", "tmuxp"),
-        ("Token.Name.Label", "shell"),
+        ("Token.Name.Label", "vcspull"),
+        ("Token.Name.Label", "sync"),
         ("Token.Name.Attribute", "-h"),
-        ("Token.Name.Attribute", "-S"),
-        ("Token.Name.Variable", "socket-path"),
         ("Token.Name.Attribute", "-c"),
-        ("Token.Name.Variable", "COMMAND"),  # Option value, not standalone metavar
-        ("Token.Name.Tag", "--best"),
-        ("Token.Name.Tag", "--pdb"),
-        ("Token.Name.Tag", "--use-pythonrc"),
-        ("Token.Name.Tag", "--no-vi-mode"),
-        ("Token.Name.Label", "session-name"),
-        ("Token.Name.Label", "window-name"),
+        ("Token.Name.Variable", "CONFIG"),  # Option value, not standalone metavar
+        ("Token.Name.Attribute", "-d"),
+        ("Token.Name.Variable", "DIRECTORY"),  # Option value, not standalone metavar
+        ("Token.Name.Tag", "--json"),
+        ("Token.Name.Tag", "--ndjson"),
+        ("Token.Name.Tag", "--table"),
+        ("Token.Name.Tag", "--color"),
+        ("Token.Name.Tag", "--no-progress"),
+        ("Token.Name.Tag", "--verbose"),
+        ("Token.Name.Label", "repo-name"),
+        ("Token.Name.Label", "path"),
     ]
 
     for expected_type, expected_value in expected:

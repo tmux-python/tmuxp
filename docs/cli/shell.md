@@ -4,6 +4,10 @@
 
 # tmuxp shell
 
+Launch an interactive Python shell with [libtmux] objects pre-loaded. Similar to Django's shell command, this provides quick access to your tmux server, sessions, windows, and panes for scripting and debugging.
+
+## Command
+
 ```{eval-rst}
 .. argparse::
     :module: tmuxp.cli
@@ -22,7 +26,7 @@ $ tmuxp shell -c 'python code'
 :width: 100%
 ```
 
-## Guide
+## Interactive usage
 
 Launch into a Python console with [libtmux] objects. Compare to django's shell.
 
@@ -50,6 +54,8 @@ Window(@3 1:your_window, Session($1 your_project))
 Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
 ```
 
+## Debugger integration
+
 Supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and
 compatible debuggers, for instance [ipdb][ipdb]:
 
@@ -72,6 +78,8 @@ $ uvx --from ipdb ipdb3 --help
 ```console
 $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 ```
+
+## Code execution
 
 You can also pass in python code directly, similar to `python -c`, do
 this via `tmuxp -c`:
