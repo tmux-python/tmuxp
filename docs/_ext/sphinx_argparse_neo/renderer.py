@@ -115,6 +115,37 @@ class ArgparseRenderer:
         self.config = config or RenderConfig()
         self.state = state
 
+    @staticmethod
+    def _extract_id_prefix(prog: str) -> str:
+        """Extract subcommand from prog for unique section IDs.
+
+        Parameters
+        ----------
+        prog : str
+            The program name, potentially with subcommand (e.g., "tmuxp load").
+
+        Returns
+        -------
+        str
+            The subcommand part for use as ID prefix, or empty string if none.
+
+        Examples
+        --------
+        >>> ArgparseRenderer._extract_id_prefix("tmuxp load")
+        'load'
+        >>> ArgparseRenderer._extract_id_prefix("tmuxp")
+        ''
+        >>> ArgparseRenderer._extract_id_prefix("vcspull sync")
+        'sync'
+        >>> ArgparseRenderer._extract_id_prefix("myapp sub cmd")
+        'sub-cmd'
+        """
+        parts = prog.split()
+        if len(parts) <= 1:
+            return ""
+        # Join remaining parts with hyphen for multi-level subcommands
+        return "-".join(parts[1:])
+
     def render(self, parser_info: ParserInfo) -> list[nodes.Node]:
         """Render a complete parser to docutils nodes.
 
@@ -159,13 +190,17 @@ class ArgparseRenderer:
 
         result.append(program_node)
 
+        # Extract ID prefix from prog for unique section IDs
+        # e.g., "tmuxp load" -> "load", "myapp" -> ""
+        id_prefix = self._extract_id_prefix(parser_info.prog)
+
         # Add Usage section as sibling (for TOC visibility)
-        usage_section = self.render_usage_section(parser_info)
+        usage_section = self.render_usage_section(parser_info, id_prefix=id_prefix)
         result.append(usage_section)
 
         # Add argument groups as sibling sections (for TOC visibility)
         for group in parser_info.argument_groups:
-            group_section = self.render_group_section(group)
+            group_section = self.render_group_section(group, id_prefix=id_prefix)
             result.append(group_section)
 
         # Add subcommands
@@ -197,7 +232,9 @@ class ArgparseRenderer:
         usage_node["usage"] = parser_info.bare_usage
         return usage_node
 
-    def render_usage_section(self, parser_info: ParserInfo) -> nodes.section:
+    def render_usage_section(
+        self, parser_info: ParserInfo, *, id_prefix: str = ""
+    ) -> nodes.section:
         """Render usage as a section with heading for TOC visibility.
 
         Creates a proper section node with "Usage" heading containing the
@@ -208,6 +245,10 @@ class ArgparseRenderer:
         ----------
         parser_info : ParserInfo
             The parser information.
+        id_prefix : str
+            Optional prefix for the section ID (e.g., "load" -> "load-usage").
+            Used to ensure unique IDs when multiple argparse directives exist
+            on the same page.
 
         Returns
         -------
@@ -231,11 +272,18 @@ class ArgparseRenderer:
         >>> section = renderer.render_usage_section(info)
         >>> section["ids"]
         ['usage']
+
+        With prefix for subcommand pages:
+
+        >>> section = renderer.render_usage_section(info, id_prefix="load")
+        >>> section["ids"]
+        ['load-usage']
         >>> section.children[0].astext()
         'Usage'
         """
+        section_id = f"{id_prefix}-usage" if id_prefix else "usage"
         section = nodes.section()
-        section["ids"] = ["usage"]
+        section["ids"] = [section_id]
         section["names"] = [nodes.fully_normalize_name("Usage")]
         section += nodes.title("Usage", "Usage")
 
@@ -245,7 +293,9 @@ class ArgparseRenderer:
 
         return section
 
-    def render_group_section(self, group: ArgumentGroup) -> nodes.section:
+    def render_group_section(
+        self, group: ArgumentGroup, *, id_prefix: str = ""
+    ) -> nodes.section:
         """Render an argument group wrapped in a section for TOC visibility.
 
         Creates a proper section node with the group title as heading,
@@ -256,6 +306,10 @@ class ArgparseRenderer:
         ----------
         group : ArgumentGroup
             The argument group to render.
+        id_prefix : str
+            Optional prefix for the section ID (e.g., "load" -> "load-options").
+            Used to ensure unique IDs when multiple argparse directives exist
+            on the same page.
 
         Returns
         -------
@@ -275,6 +329,12 @@ class ArgparseRenderer:
         >>> section = renderer.render_group_section(group)
         >>> section["ids"]
         ['positional-arguments']
+
+        With prefix for subcommand pages:
+
+        >>> section = renderer.render_group_section(group, id_prefix="load")
+        >>> section["ids"]
+        ['load-positional-arguments']
         >>> section.children[0].astext()
         'Positional Arguments'
         """
@@ -285,8 +345,9 @@ class ArgparseRenderer:
         if self.config.group_title_prefix:
             title = f"{self.config.group_title_prefix}{title}"
 
-        # Generate section ID from title
-        section_id = title.lower().replace(" ", "-")
+        # Generate section ID from title (with optional prefix for uniqueness)
+        base_id = title.lower().replace(" ", "-")
+        section_id = f"{id_prefix}-{base_id}" if id_prefix else base_id
 
         # Create section wrapper for TOC discovery
         section = nodes.section()
