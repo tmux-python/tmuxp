@@ -516,6 +516,33 @@ def _create_example_section(
     -------
     nodes.section
         A section node with title and code blocks.
+
+    Examples
+    --------
+    Create a section from a definition node containing example commands:
+
+    >>> from docutils import nodes
+    >>> def_node = nodes.definition()
+    >>> def_node += nodes.paragraph(text="myapp sync")
+    >>> section = _create_example_section("examples:", def_node)
+    >>> section["ids"]
+    ['examples']
+    >>> section[0].astext()
+    'Examples'
+
+    With a page prefix for uniqueness across documentation pages:
+
+    >>> section = _create_example_section("examples:", def_node, page_prefix="sync")
+    >>> section["ids"]
+    ['sync-examples']
+
+    Category-prefixed examples create descriptive section IDs:
+
+    >>> section = _create_example_section("Machine-readable output examples:", def_node)
+    >>> section["ids"]
+    ['machine-readable-output-examples']
+    >>> section[0].astext()
+    'Machine-Readable Output Examples'
     """
     config = config or ExemplarConfig()
     section_id = make_section_id(
