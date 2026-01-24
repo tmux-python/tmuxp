@@ -26,6 +26,7 @@ from sphinx_argparse_neo.parser import (
     ParserInfo,
     SubcommandInfo,
 )
+from sphinx_argparse_neo.utils import escape_rst_emphasis
 
 if t.TYPE_CHECKING:
     from docutils.parsers.rst.states import RSTState
@@ -480,6 +481,9 @@ class ArgparseRenderer:
         """
         if not text:
             return []
+
+        # Escape RST emphasis patterns before parsing (e.g., "django-*" -> "django-\*")
+        text = escape_rst_emphasis(text)
 
         if self.state is None:
             # No state machine available, return as paragraph

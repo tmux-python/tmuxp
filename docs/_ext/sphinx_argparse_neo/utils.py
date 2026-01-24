@@ -39,3 +39,40 @@ def strip_ansi(text: str) -> str:
     'bold blue'
     """
     return _ANSI_RE.sub("", text)
+
+
+# RST emphasis pattern: matches -* that would trigger inline emphasis errors.
+# Pattern matches: non-whitespace/non-backslash char, followed by -*, NOT followed by
+# another * (which would be strong emphasis **).
+_RST_EMPHASIS_RE = re.compile(r"(?<=[^\s\\])-\*(?!\*)")
+
+
+def escape_rst_emphasis(text: str) -> str:
+    r"""Escape asterisks that would trigger RST inline emphasis.
+
+    RST interprets ``*text*`` as emphasis. When argparse help text contains
+    glob patterns like ``django-*``, the ``-*`` sequence triggers RST
+    "Inline emphasis start-string without end-string" warnings.
+
+    This function escapes such asterisks to prevent RST parsing errors.
+
+    Parameters
+    ----------
+    text : str
+        Text potentially containing problematic asterisks.
+
+    Returns
+    -------
+    str
+        Text with asterisks escaped where needed.
+
+    Examples
+    --------
+    >>> escape_rst_emphasis('tmuxp load "my-*"')
+    'tmuxp load "my-\\*"'
+    >>> escape_rst_emphasis("plain text")
+    'plain text'
+    >>> escape_rst_emphasis("*emphasis* is ok")
+    '*emphasis* is ok'
+    """
+    return _RST_EMPHASIS_RE.sub(r"-\*", text)
