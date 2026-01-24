@@ -15,6 +15,7 @@ import typing as t
 import pytest
 from argparse_exemplar import (  # type: ignore[import-not-found]
     ExemplarConfig,
+    _extract_sections_from_container,
     _is_examples_section,
     _is_usage_block,
     _reorder_nodes,
@@ -22,6 +23,7 @@ from argparse_exemplar import (  # type: ignore[import-not-found]
     is_examples_term,
     make_section_id,
     make_section_title,
+    process_node,
     transform_definition_list,
 )
 from docutils import nodes
@@ -1017,3 +1019,55 @@ def test_transform_definition_list_with_custom_config() -> None:
     assert code_blocks[0].astext() == "> cmd1"  # Custom prefix
     assert code_blocks[0]["language"] == "bash"
     assert "highlight-bash" in code_blocks[0]["classes"]
+
+
+# --- Parent reference maintenance tests ---
+
+
+def test_process_node_maintains_parent_reference() -> None:
+    """Verify process_node maintains parent references after child replacement.
+
+    When children are replaced in a container node, the docutils protocol
+    requires using extend() rather than direct assignment to node.children
+    to ensure parent-child relationships are properly maintained.
+    """
+    # Create a container with ANSI-encoded text children
+    container = nodes.container()
+    text_with_ansi = nodes.Text("\033[32mgreen text\033[0m")
+    container += text_with_ansi
+
+    # Process the node (will strip ANSI and replace children)
+    process_node(container)
+
+    # Verify children have correct parent reference
+    for child in container.children:
+        assert child.parent is container, (
+            f"Child {child!r} should have parent reference to container"
+        )
+
+
+def test_extract_sections_maintains_parent_reference() -> None:
+    """Verify _extract_sections_from_container maintains parent references.
+
+    When remaining children are reassigned to the container, the docutils
+    protocol requires using extend() to maintain parent-child relationships.
+    """
+    from sphinx_argparse_neo.nodes import argparse_program
+
+    # Create container with mixed children
+    container = argparse_program()
+    para = nodes.paragraph(text="Description")
+    section = nodes.section()
+    section["ids"] = ["examples"]
+
+    container += para
+    container += section
+
+    # Extract sections
+    modified, _extracted = _extract_sections_from_container(container)
+
+    # Verify remaining children have correct parent reference
+    for child in modified.children:
+        assert child.parent is modified, (
+            f"Child {child!r} should have parent reference to modified container"
+        )

@@ -823,7 +823,8 @@ def process_node(
             else:
                 new_children.append(child)
         if children_changed:
-            node.children = new_children
+            node.children.clear()
+            node.extend(new_children)
 
     return node
 
@@ -1133,7 +1134,8 @@ def _extract_sections_from_container(
             remaining_children.append(child)
 
     # Update container with remaining children only
-    container.children = remaining_children
+    container.children.clear()
+    container.extend(remaining_children)
 
     return container, extracted_sections
 
