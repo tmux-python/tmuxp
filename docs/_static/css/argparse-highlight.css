@@ -192,6 +192,17 @@
  * token highlighting. These selectors provide fallback and ensure consistent
  * styling.
  */
+
+/* Usage block container - match Pygments monokai background and code block styling */
+pre.argparse-usage {
+    background: #272822;  /* Monokai - same as .highlight */
+    padding: .625rem .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+    scrollbar-color: var(--color-foreground-border) transparent;
+    scrollbar-width: thin;
+}
+
 .argparse-usage .gh {
     color: #61AFEF;
     font-weight: bold;
