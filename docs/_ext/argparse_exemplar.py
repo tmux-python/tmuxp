@@ -823,8 +823,7 @@ def process_node(
             else:
                 new_children.append(child)
         if children_changed:
-            node.children.clear()
-            node.extend(new_children)
+            node[:] = new_children  # type: ignore[index]
 
     return node
 
@@ -1134,8 +1133,7 @@ def _extract_sections_from_container(
             remaining_children.append(child)
 
     # Update container with remaining children only
-    container.children.clear()
-    container.extend(remaining_children)
+    container[:] = remaining_children  # type: ignore[index]
 
     return container, extracted_sections
 
