@@ -570,7 +570,7 @@ def _generate_usage(parser: argparse.ArgumentParser) -> str:
     formatter.add_usage(
         parser.usage, parser._actions, parser._mutually_exclusive_groups
     )
-    usage = formatter.format_help().strip()
+    usage: str = formatter.format_help().strip()
 
     # Strip ANSI codes before checking prefix (handles FORCE_COLOR edge case)
     usage = strip_ansi(usage)
