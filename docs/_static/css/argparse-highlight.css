@@ -22,18 +22,22 @@
    ========================================================================== */
 
 /*
+ * Shared monospace font for all CLI inline roles
+ */
+.cli-option,
+.cli-metavar,
+.cli-command,
+.cli-default,
+.cli-choice {
+    font-family: var(--font-stack--monospace);
+}
+
+/*
  * CLI Options
  *
  * Long options (--verbose) and short options (-h) both use teal color.
  */
-.cli-option {
-    font-family: var(--font-stack--monospace);
-}
-
-.cli-option-long {
-    color: #56B6C2;
-}
-
+.cli-option-long,
 .cli-option-short {
     color: #56B6C2;
 }
@@ -45,7 +49,6 @@
  * Yellow/amber to indicate "replace me" - distinct from flags (teal).
  */
 .cli-metavar {
-    font-family: var(--font-stack--monospace);
     color: #E5C07B;
     font-style: italic;
 }
@@ -57,7 +60,6 @@
  * Green (same as choices) - they're enumerated command options.
  */
 .cli-command {
-    font-family: var(--font-stack--monospace);
     color: #98C379;
     font-weight: bold;
 }
@@ -69,7 +71,6 @@
  * Subtle styling to not distract from options.
  */
 .cli-default {
-    font-family: var(--font-stack--monospace);
     color: #CCCED4;
     font-style: italic;
 }
@@ -81,7 +82,6 @@
  * Green color to show they are valid literal values.
  */
 .cli-choice {
-    font-family: var(--font-stack--monospace);
     color: #98C379;
 }
 
@@ -195,7 +195,7 @@
 
 /* Usage block container - match Pygments monokai background and code block styling */
 pre.argparse-usage {
-    background: #272822;  /* Monokai - same as .highlight */
+    background: var(--argparse-code-background);
     padding: .625rem .875rem;
     line-height: 1.5;
     border-radius: .2rem;
@@ -321,7 +321,11 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
     color: #9ca0a5;
 }
 
-.argparse-argument-name:hover .headerlink {
+/*
+ * Show headerlink on hover or when targeted via URL fragment
+ */
+.argparse-argument-name:hover .headerlink,
+.argparse-argument-wrapper:target .argparse-argument-name .headerlink {
     visibility: visible;
 }
 
@@ -339,10 +343,6 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:vis
  */
 .argparse-argument-wrapper:target .argparse-argument-name {
     background-color: var(--color-highlight-on-target);
-}
-
-.argparse-argument-wrapper:target .argparse-argument-name .headerlink {
-    visibility: visible;
 }
 
 /*
