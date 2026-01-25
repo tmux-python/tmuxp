@@ -279,26 +279,32 @@ pre.argparse-usage {
 
 /*
  * Light mode overrides
- * Furo's default inline code background is too dark in light mode.
+ * Use monokai background (#272822) to match code blocks.
  */
 body:not([data-theme="dark"]) {
-    --color-inline-code-background: #eeeeee;
+    --color-inline-code-background: #272822;
+}
+
+/*
+ * Dark mode overrides (respects prefers-color-scheme)
+ * Use monokai background (#272822) to match code blocks.
+ */
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+        --color-inline-code-background: #272822;
+    }
 }
 
 /*
  * Background styling for argument names - subtle background like code.literal
  * This provides visual weight and hierarchy for argument definitions.
- * Light mode uses a lighter tint (50% white mix) for better contrast.
  */
 .argparse-argument-name {
     background: var(--color-inline-code-background);
-    border-radius: .2em;
-    padding: .1em .3em;
+    border-radius: .2rem;
+    padding: .325rem .6rem;
     font-family: var(--font-stack--monospace);
-}
-
-body:not([data-theme="dark"]) .argparse-argument-name {
-    background: color-mix(in srgb, var(--color-inline-code-background), white 50%);
+    width: fit-content;
 }
 
 /*
@@ -319,6 +325,10 @@ body:not([data-theme="dark"]) .argparse-argument-name {
     margin-left: .5rem;
     color: var(--color-foreground-secondary);
     text-decoration: none;
+}
+
+body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+    color: #9ca0a5;
 }
 
 .argparse-argument-name:hover .headerlink {
