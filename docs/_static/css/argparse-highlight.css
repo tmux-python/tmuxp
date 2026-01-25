@@ -295,6 +295,7 @@ pre.argparse-usage {
     padding: .485rem .875rem;
     font-family: var(--font-stack--monospace);
     width: fit-content;
+    position: relative;
 }
 
 /*
@@ -308,11 +309,15 @@ pre.argparse-usage {
 
 /*
  * Headerlink anchor (¶) - hidden until hover
+ * Positioned outside the dt element to the right.
  * Follows Sphinx documentation convention for linkable headings.
  */
 .argparse-argument-name .headerlink {
     visibility: hidden;
-    margin-left: .5rem;
+    position: absolute;
+    right: -1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--color-foreground-secondary);
     text-decoration: none;
 }
@@ -324,8 +329,8 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
 /*
  * Show headerlink on hover or when targeted via URL fragment
  */
-.argparse-argument-name:hover .headerlink,
-.argparse-argument-wrapper:target .argparse-argument-name .headerlink {
+.argparse-argument-wrapper:hover .headerlink,
+.argparse-argument-wrapper:target .headerlink {
     visibility: visible;
 }
 
