@@ -333,12 +333,23 @@ pre.argparse-usage {
 
 /*
  * Light mode headerlink color overrides
+ * Needed because code block has dark background regardless of theme
  */
-body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+body[data-theme="light"] .argparse-argument-name .headerlink {
 	color: #9ca0a5;
 
 	&:hover:not(:visited) {
 		color: #cfd0d0;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+		color: #9ca0a5;
+
+		&:hover:not(:visited) {
+			color: #cfd0d0;
+		}
 	}
 }
 
