@@ -410,6 +410,13 @@ body[data-theme="dark"] .argparse-meta-tag {
 	border-color: #b4530980;
 }
 
+@media (prefers-color-scheme: dark) {
+	body:not([data-theme="light"]) .argparse-meta-tag {
+		background-color: #78350f60;
+		border-color: #b4530980;
+	}
+}
+
 /*
  * Help text description
  * Adds spacing above for visual separation from argument name.
