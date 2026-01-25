@@ -810,16 +810,16 @@ options:
     )
 
 
-def test_tmuxp_load_usage_underscores() -> None:
-    """Test tmuxp load usage with underscore metavars.
+def test_lowercase_metavar_with_underscores() -> None:
+    """Test lowercase metavars with underscores are fully captured.
 
-    Regression test for underscore handling in lowercase metavars.
-    Previously, `socket_name` was tokenized as `socket` + `_name` (split).
+    Regression test: previously `socket_name` was tokenized as `socket` + `_name`.
+    Example from tmuxp load usage.
     """
-    usage = "usage: tmuxp load [-L socket_name] [-S socket_path] [-f tmux_config_file]"
+    usage = "usage: prog [-L socket_name] [-S socket_path] [-f config_file]"
     tokens = get_usage_tokens(usage)
 
     # All underscore metavars should be fully captured
     assert ("Token.Name.Variable", "socket_name") in tokens
     assert ("Token.Name.Variable", "socket_path") in tokens
-    assert ("Token.Name.Variable", "tmux_config_file") in tokens
+    assert ("Token.Name.Variable", "config_file") in tokens
