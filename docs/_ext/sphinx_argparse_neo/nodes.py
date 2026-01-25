@@ -518,30 +518,46 @@ def depart_argparse_argument_html(
     node : argparse_argument
         The argument node being departed.
     """
-    # Add metadata (default, choices, type)
-    metadata: list[str] = []
-
+    # Build metadata as definition list items
     default = node.get("default_string")
-    if default is not None:
-        # Wrap default value in nv span for yellow/italic styling
-        metadata.append(f'Default: <span class="nv">{self.encode(default)}</span>')
-
     choices = node.get("choices")
-    if choices:
-        choices_str = ", ".join(str(c) for c in choices)
-        metadata.append(f"Choices: {self.encode(choices_str)}")
-
     type_name = node.get("type_name")
-    if type_name:
-        metadata.append(f"Type: {self.encode(type_name)}")
-
     required = node.get("required", False)
-    if required:
-        metadata.append("Required")
 
-    if metadata:
-        meta_str = " | ".join(metadata)
-        self.body.append(f'<p class="argparse-argument-meta">{meta_str}</p>')
+    if default is not None or choices or type_name or required:
+        self.body.append('<dl class="argparse-argument-meta">\n')
+
+        if default is not None:
+            self.body.append('<div class="argparse-meta-item">')
+            self.body.append('<dt class="argparse-meta-key">Default</dt>')
+            self.body.append(
+                f'<dd class="argparse-meta-value">'
+                f'<span class="nv">{self.encode(default)}</span></dd>'
+            )
+            self.body.append("</div>\n")
+
+        if type_name:
+            self.body.append('<div class="argparse-meta-item">')
+            self.body.append('<dt class="argparse-meta-key">Type</dt>')
+            self.body.append(
+                f'<dd class="argparse-meta-value">'
+                f'<span class="nv">{self.encode(type_name)}</span></dd>'
+            )
+            self.body.append("</div>\n")
+
+        if choices:
+            choices_str = ", ".join(str(c) for c in choices)
+            self.body.append('<div class="argparse-meta-item">')
+            self.body.append('<dt class="argparse-meta-key">Choices</dt>')
+            self.body.append(
+                f'<dd class="argparse-meta-value">{self.encode(choices_str)}</dd>'
+            )
+            self.body.append("</div>\n")
+
+        if required:
+            self.body.append('<dt class="argparse-meta-tag">Required</dt>\n')
+
+        self.body.append("</dl>\n")
 
     self.body.append("</dd>\n")
     # Close wrapper div

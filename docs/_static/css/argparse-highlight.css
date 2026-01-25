@@ -22,7 +22,7 @@
    ========================================================================== */
 
 /*
- * Shared monospace font for all CLI inline roles
+ * Shared monospace font and code font-size for all CLI inline roles
  */
 .cli-option,
 .cli-metavar,
@@ -30,6 +30,7 @@
 .cli-default,
 .cli-choice {
 	font-family: var(--font-stack--monospace);
+	font-size: var(--code-font-size);
 }
 
 /*
@@ -191,6 +192,7 @@
 /* Usage block container - match Pygments monokai background and code block styling */
 pre.argparse-usage {
 	background: var(--argparse-code-background);
+	font-size: var(--code-font-size);
 	padding: 0.625rem 0.875rem;
 	line-height: 1.5;
 	border-radius: 0.2rem;
@@ -289,6 +291,7 @@ pre.argparse-usage {
 	border-radius: 0.2rem;
 	padding: 0.485rem 0.875rem;
 	font-family: var(--font-stack--monospace);
+	font-size: var(--code-font-size);
 	width: fit-content;
 	position: relative;
 }
@@ -330,12 +333,23 @@ pre.argparse-usage {
 
 /*
  * Light mode headerlink color overrides
+ * Needed because code block has dark background regardless of theme
  */
-body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+body[data-theme="light"] .argparse-argument-name .headerlink {
 	color: #9ca0a5;
 
 	&:hover:not(:visited) {
 		color: #cfd0d0;
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+		color: #9ca0a5;
+
+		&:hover:not(:visited) {
+			color: #cfd0d0;
+		}
 	}
 }
 
@@ -348,16 +362,70 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
 }
 
 /*
- * Default value styling in metadata
- * Styled like inline code with monokai background.
+ * Argument metadata definition list
+ *
+ * Renders metadata (Default, Type, Choices, Required) as a horizontal
+ * flexbox of key-value pairs and standalone tags.
  */
-.argparse-argument-meta .nv {
+.argparse-argument-meta {
+	margin: 0.5rem 0 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	align-items: center;
+}
+
+.argparse-meta-item {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.argparse-meta-key {
+	color: var(--color-foreground-secondary, #6c757d);
+	font-size: var(--code-font-size);
+}
+
+.argparse-meta-key::after {
+	content: ":";
+}
+
+.argparse-meta-value .nv {
 	background: var(--argparse-code-background);
 	border-radius: 0.2rem;
-	padding: 0.1405rem 0.3rem;
+	padding: 0.1rem 0.3rem;
 	font-family: var(--font-stack--monospace);
-	font-size: var(--font-size--small);
+	font-size: var(--code-font-size);
 	color: #e5c07b;
+}
+
+/*
+ * Meta tag (e.g., "Required") - follows Furo's guilabel pattern
+ * Uses semi-transparent amber background with border for visibility
+ * without the harshness of solid fills. Amber conveys "needs attention".
+ */
+.argparse-meta-tag {
+	background-color: #fef3c780;
+	border: 1px solid #fcd34d80;
+	color: var(--color-foreground-primary);
+	font-size: var(--code-font-size);
+	padding: 0.1rem 0.4rem;
+	border-radius: 0.2rem;
+	font-weight: 500;
+}
+
+/* Dark mode: darker amber with adjusted border */
+body[data-theme="dark"] .argparse-meta-tag {
+	background-color: #78350f60;
+	border-color: #b4530980;
+}
+
+@media (prefers-color-scheme: dark) {
+	body:not([data-theme="light"]) .argparse-meta-tag {
+		background-color: #78350f60;
+		border-color: #b4530980;
+	}
 }
 
 /*
