@@ -292,7 +292,7 @@ pre.argparse-usage {
 .argparse-argument-name {
     background: var(--argparse-code-background);
     border-radius: .2rem;
-    padding: .325rem .6rem;
+    padding: .485rem .875rem;
     font-family: var(--font-stack--monospace);
     width: fit-content;
 }
@@ -352,4 +352,12 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:vis
     font-family: var(--font-stack--monospace);
     color: #E5C07B;
     font-style: italic;
+}
+
+/*
+ * Help text description
+ * Adds spacing above for visual separation from argument name.
+ */
+.argparse-argument-help {
+    padding-block-start: 0.5rem;
 }
