@@ -22,20 +22,24 @@
    ========================================================================== */
 
 /*
+ * Shared monospace font for all CLI inline roles
+ */
+.cli-option,
+.cli-metavar,
+.cli-command,
+.cli-default,
+.cli-choice {
+	font-family: var(--font-stack--monospace);
+}
+
+/*
  * CLI Options
  *
  * Long options (--verbose) and short options (-h) both use teal color.
  */
-.cli-option {
-    font-family: var(--font-stack--monospace);
-}
-
-.cli-option-long {
-    color: #56B6C2;
-}
-
+.cli-option-long,
 .cli-option-short {
-    color: #56B6C2;
+	color: #56b6c2;
 }
 
 /*
@@ -45,21 +49,24 @@
  * Yellow/amber to indicate "replace me" - distinct from flags (teal).
  */
 .cli-metavar {
-    font-family: var(--font-stack--monospace);
-    color: #E5C07B;
-    font-style: italic;
+	color: #e5c07b;
+	font-style: italic;
 }
 
 /*
- * CLI Commands
+ * CLI Commands and Choices
  *
- * Subcommand names like sync, add, list.
- * Green (same as choices) - they're enumerated command options.
+ * Both use green to indicate valid enumerated values.
+ * Commands: subcommand names like sync, add, list
+ * Choices: enumeration values like json, yaml, table
  */
+.cli-command,
+.cli-choice {
+	color: #98c379;
+}
+
 .cli-command {
-    font-family: var(--font-stack--monospace);
-    color: #98C379;
-    font-weight: bold;
+	font-weight: bold;
 }
 
 /*
@@ -69,20 +76,8 @@
  * Subtle styling to not distract from options.
  */
 .cli-default {
-    font-family: var(--font-stack--monospace);
-    color: #CCCED4;
-    font-style: italic;
-}
-
-/*
- * CLI Choice Values
- *
- * Choice enumeration values like json, yaml, table.
- * Green color to show they are valid literal values.
- */
-.cli-choice {
-    font-family: var(--font-stack--monospace);
-    color: #98C379;
+	color: #ccced4;
+	font-style: italic;
 }
 
 /* ==========================================================================
@@ -98,55 +93,55 @@
 .highlight-argparse .gh,
 .highlight-argparse-usage .gh,
 .highlight-argparse-help .gh {
-    color: #61AFEF;
-    font-weight: bold;
+	color: #61afef;
+	font-weight: bold;
 }
 
 /* Section headers like "positional arguments:", "options:" - neutral bright */
 .highlight-argparse .gs,
 .highlight-argparse-help .gs {
-    color: #E5E5E5;
-    font-weight: bold;
+	color: #e5e5e5;
+	font-weight: bold;
 }
 
 /* Long options --foo - teal */
 .highlight-argparse .nt,
 .highlight-argparse-usage .nt,
 .highlight-argparse-help .nt {
-    color: #56B6C2;
-    font-weight: normal;
+	color: #56b6c2;
+	font-weight: normal;
 }
 
 /* Short options -h - teal (same as long) */
 .highlight-argparse .na,
 .highlight-argparse-usage .na,
 .highlight-argparse-help .na {
-    color: #56B6C2;
-    font-weight: normal;
+	color: #56b6c2;
+	font-weight: normal;
 }
 
 /* Metavar placeholders FILE, PATH - yellow/amber italic */
 .highlight-argparse .nv,
 .highlight-argparse-usage .nv,
 .highlight-argparse-help .nv {
-    color: #E5C07B;
-    font-style: italic;
+	color: #e5c07b;
+	font-style: italic;
 }
 
 /* Command/program names - purple bold */
 .highlight-argparse .nl,
 .highlight-argparse-usage .nl,
 .highlight-argparse-help .nl {
-    color: #C678DD;
-    font-weight: bold;
+	color: #c678dd;
+	font-weight: bold;
 }
 
 /* Subcommands - bold green */
 .highlight-argparse .nf,
 .highlight-argparse-usage .nf,
 .highlight-argparse-help .nf {
-    color: #98C379;
-    font-weight: bold;
+	color: #98c379;
+	font-weight: bold;
 }
 
 /* Choice values - green */
@@ -156,22 +151,22 @@
 .highlight-argparse .nc,
 .highlight-argparse-usage .nc,
 .highlight-argparse-help .nc {
-    color: #98C379;
+	color: #98c379;
 }
 
 /* Punctuation [], {}, () - neutral gray */
 .highlight-argparse .p,
 .highlight-argparse-usage .p,
 .highlight-argparse-help .p {
-    color: #CCCED4;
+	color: #ccced4;
 }
 
 /* Operators like | - neutral gray */
 .highlight-argparse .o,
 .highlight-argparse-usage .o,
 .highlight-argparse-help .o {
-    color: #CCCED4;
-    font-weight: normal;
+	color: #ccced4;
+	font-weight: normal;
 }
 
 /* ==========================================================================
@@ -195,56 +190,56 @@
 
 /* Usage block container - match Pygments monokai background and code block styling */
 pre.argparse-usage {
-    background: #272822;  /* Monokai - same as .highlight */
-    padding: .625rem .875rem;
-    line-height: 1.5;
-    border-radius: .2rem;
-    scrollbar-color: var(--color-foreground-border) transparent;
-    scrollbar-width: thin;
+	background: var(--argparse-code-background);
+	padding: 0.625rem 0.875rem;
+	line-height: 1.5;
+	border-radius: 0.2rem;
+	scrollbar-color: var(--color-foreground-border) transparent;
+	scrollbar-width: thin;
 }
 
 .argparse-usage .gh {
-    color: #61AFEF;
-    font-weight: bold;
+	color: #61afef;
+	font-weight: bold;
 }
 
 .argparse-usage .nt {
-    color: #56B6C2;
-    font-weight: normal;
+	color: #56b6c2;
+	font-weight: normal;
 }
 
 .argparse-usage .na {
-    color: #56B6C2;
-    font-weight: normal;
+	color: #56b6c2;
+	font-weight: normal;
 }
 
 .argparse-usage .nv {
-    color: #E5C07B;
-    font-style: italic;
+	color: #e5c07b;
+	font-style: italic;
 }
 
 .argparse-usage .nl {
-    color: #C678DD;
-    font-weight: bold;
+	color: #c678dd;
+	font-weight: bold;
 }
 
 .argparse-usage .nf {
-    color: #98C379;
-    font-weight: bold;
+	color: #98c379;
+	font-weight: bold;
 }
 
 .argparse-usage .no,
 .argparse-usage .nc {
-    color: #98C379;
+	color: #98c379;
 }
 
 .argparse-usage .o {
-    color: #CCCED4;
-    font-weight: normal;
+	color: #ccced4;
+	font-weight: normal;
 }
 
 .argparse-usage .p {
-    color: #CCCED4;
+	color: #ccced4;
 }
 
 /*
@@ -254,21 +249,121 @@ pre.argparse-usage {
  * semantic spans for options and metavars.
  */
 .argparse-argument-name .nt {
-    color: #56B6C2;
-    font-weight: normal;
+	color: #56b6c2;
+	font-weight: normal;
 }
 
 .argparse-argument-name .na {
-    color: #56B6C2;
-    font-weight: normal;
+	color: #56b6c2;
+	font-weight: normal;
 }
 
 .argparse-argument-name .nv {
-    color: #E5C07B;
-    font-style: italic;
+	color: #e5c07b;
+	font-style: italic;
 }
 
 .argparse-argument-name .nl {
-    color: #C678DD;
-    font-weight: bold;
+	color: #c678dd;
+	font-weight: bold;
+}
+
+/* ==========================================================================
+   Argument Wrapper and Linking Styles
+   ========================================================================== */
+
+/*
+ * Argparse-specific code background (monokai #272822)
+ * Uses a custom variable to avoid affecting Furo's --color-inline-code-background.
+ */
+:root {
+	--argparse-code-background: #272822;
+}
+
+/*
+ * Background styling for argument names - subtle background like code.literal
+ * This provides visual weight and hierarchy for argument definitions.
+ */
+.argparse-argument-name {
+	background: var(--argparse-code-background);
+	border-radius: 0.2rem;
+	padding: 0.485rem 0.875rem;
+	font-family: var(--font-stack--monospace);
+	width: fit-content;
+	position: relative;
+}
+
+/*
+ * Wrapper for linking - enables scroll-margin for fixed header navigation
+ * and :target pseudo-class for highlighting when linked.
+ */
+.argparse-argument-wrapper {
+	scroll-margin-top: 2.5rem;
+}
+
+/*
+ * Headerlink anchor (¶) - hidden until hover
+ * Positioned outside the dt element to the right.
+ * Follows Sphinx documentation convention for linkable headings.
+ */
+.argparse-argument-name .headerlink {
+	visibility: hidden;
+	position: absolute;
+	right: -1.5rem;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--color-foreground-secondary);
+	text-decoration: none;
+}
+
+/*
+ * Show headerlink on hover or when targeted via URL fragment
+ */
+.argparse-argument-wrapper:hover .headerlink,
+.argparse-argument-wrapper:target .headerlink {
+	visibility: visible;
+}
+
+.argparse-argument-name .headerlink:hover:not(:visited) {
+	color: var(--color-foreground-primary);
+}
+
+/*
+ * Light mode headerlink color overrides
+ */
+body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+	color: #9ca0a5;
+
+	&:hover:not(:visited) {
+		color: #cfd0d0;
+	}
+}
+
+/*
+ * Highlight when targeted via URL fragment
+ * Uses Furo's highlight-on-target color for consistency.
+ */
+.argparse-argument-wrapper:target .argparse-argument-name {
+	background-color: var(--color-highlight-on-target);
+}
+
+/*
+ * Default value styling in metadata
+ * Styled like inline code with monokai background.
+ */
+.argparse-argument-meta .nv {
+	background: var(--argparse-code-background);
+	border-radius: 0.2rem;
+	padding: 0.1405rem 0.3rem;
+	font-family: var(--font-stack--monospace);
+	font-size: var(--font-size--small);
+	color: #e5c07b;
+}
+
+/*
+ * Help text description
+ * Adds spacing above for visual separation from argument name.
+ */
+.argparse-argument-help {
+	padding-block-start: 0.5rem;
 }

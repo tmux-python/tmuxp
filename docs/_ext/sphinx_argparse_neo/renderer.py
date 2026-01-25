@@ -358,13 +358,18 @@ class ArgparseRenderer:
         section += nodes.title(title, title)
 
         # Create the styled group container (with empty title - section provides it)
-        group_node = self.render_group(group, include_title=False)
+        # Pass id_prefix to render_group so arguments get unique IDs
+        group_node = self.render_group(group, include_title=False, id_prefix=id_prefix)
         section += group_node
 
         return section
 
     def render_group(
-        self, group: ArgumentGroup, include_title: bool = True
+        self,
+        group: ArgumentGroup,
+        include_title: bool = True,
+        *,
+        id_prefix: str = "",
     ) -> argparse_group:
         """Render an argument group.
 
@@ -376,6 +381,10 @@ class ArgparseRenderer:
             Whether to include the title in the group node. When False,
             the title is assumed to come from a parent section node.
             Default is True for backwards compatibility.
+        id_prefix : str
+            Optional prefix for argument IDs (e.g., "shell" -> "shell-h").
+            Used to ensure unique IDs when multiple argparse directives exist
+            on the same page.
 
         Returns
         -------
@@ -397,23 +406,29 @@ class ArgparseRenderer:
 
         # Add individual arguments
         for arg in group.arguments:
-            arg_node = self.render_argument(arg)
+            arg_node = self.render_argument(arg, id_prefix=id_prefix)
             group_node.append(arg_node)
 
         # Add mutually exclusive groups
         for mutex in group.mutually_exclusive:
-            mutex_nodes = self.render_mutex_group(mutex)
+            mutex_nodes = self.render_mutex_group(mutex, id_prefix=id_prefix)
             group_node.extend(mutex_nodes)
 
         return group_node
 
-    def render_argument(self, arg: ArgumentInfo) -> argparse_argument:
+    def render_argument(
+        self, arg: ArgumentInfo, *, id_prefix: str = ""
+    ) -> argparse_argument:
         """Render a single argument.
 
         Parameters
         ----------
         arg : ArgumentInfo
             The argument to render.
+        id_prefix : str
+            Optional prefix for the argument ID (e.g., "shell" -> "shell-L").
+            Used to ensure unique IDs when multiple argparse directives exist
+            on the same page.
 
         Returns
         -------
@@ -425,6 +440,7 @@ class ArgparseRenderer:
         arg_node["help"] = arg.help
         arg_node["metavar"] = arg.metavar
         arg_node["required"] = arg.required
+        arg_node["id_prefix"] = id_prefix
 
         if self.config.show_defaults:
             arg_node["default_string"] = arg.default_string
@@ -438,7 +454,7 @@ class ArgparseRenderer:
         return arg_node
 
     def render_mutex_group(
-        self, mutex: MutuallyExclusiveGroup
+        self, mutex: MutuallyExclusiveGroup, *, id_prefix: str = ""
     ) -> list[argparse_argument]:
         """Render a mutually exclusive group.
 
@@ -446,6 +462,8 @@ class ArgparseRenderer:
         ----------
         mutex : MutuallyExclusiveGroup
             The mutually exclusive group.
+        id_prefix : str
+            Optional prefix for argument IDs (e.g., "shell" -> "shell-h").
 
         Returns
         -------
@@ -454,7 +472,7 @@ class ArgparseRenderer:
         """
         result: list[argparse_argument] = []
         for arg in mutex.arguments:
-            arg_node = self.render_argument(arg)
+            arg_node = self.render_argument(arg, id_prefix=id_prefix)
             # Mark as part of mutex group
             arg_node["mutex"] = True
             arg_node["mutex_required"] = mutex.required

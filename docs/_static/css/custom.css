@@ -1,20 +1,21 @@
 .sidebar-tree p.indented-block {
-  padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal) 0
-    var(--sidebar-item-spacing-horizontal);
-  margin-bottom: 0;
+	padding: var(--sidebar-item-spacing-vertical)
+		var(--sidebar-item-spacing-horizontal) 0
+		var(--sidebar-item-spacing-horizontal);
+	margin-bottom: 0;
 }
 
 .sidebar-tree p.indented-block span.indent {
-  margin-left: var(--sidebar-item-spacing-horizontal);
-  display: block;
+	margin-left: var(--sidebar-item-spacing-horizontal);
+	display: block;
 }
 
 .sidebar-tree p.indented-block .project-name {
-  font-size: var(--sidebar-item-font-size);
-  font-weight: bold;
-  margin-right: calc(var(--sidebar-item-spacing-horizontal) / 2.5);
+	font-size: var(--sidebar-item-font-size);
+	font-weight: bold;
+	margin-right: calc(var(--sidebar-item-spacing-horizontal) / 2.5);
 }
 
 .sidebar-tree .active {
-  font-weight: bold;
+	font-weight: bold;
 }
