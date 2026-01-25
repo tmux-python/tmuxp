@@ -278,21 +278,11 @@ pre.argparse-usage {
    ========================================================================== */
 
 /*
- * Light mode overrides
- * Use monokai background (#272822) to match code blocks.
+ * Argparse-specific code background (monokai #272822)
+ * Uses a custom variable to avoid affecting Furo's --color-inline-code-background.
  */
-body:not([data-theme="dark"]) {
-    --color-inline-code-background: #272822;
-}
-
-/*
- * Dark mode overrides (respects prefers-color-scheme)
- * Use monokai background (#272822) to match code blocks.
- */
-@media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
-        --color-inline-code-background: #272822;
-    }
+:root {
+    --argparse-code-background: #272822;
 }
 
 /*
@@ -300,7 +290,7 @@ body:not([data-theme="dark"]) {
  * This provides visual weight and hierarchy for argument definitions.
  */
 .argparse-argument-name {
-    background: var(--color-inline-code-background);
+    background: var(--argparse-code-background);
     border-radius: .2rem;
     padding: .325rem .6rem;
     font-family: var(--font-stack--monospace);
@@ -356,7 +346,7 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:vis
  * Styled like inline code with monokai background.
  */
 .argparse-argument-meta .nv {
-    background: var(--color-inline-code-background);
+    background: var(--argparse-code-background);
     border-radius: .2rem;
     padding: .325rem .6rem;
     font-family: var(--font-stack--monospace);
