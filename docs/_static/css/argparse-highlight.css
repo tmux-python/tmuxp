@@ -307,6 +307,7 @@ body:not([data-theme="dark"]) .argparse-argument-name {
  */
 .argparse-argument-wrapper {
     scroll-margin-top: 2.5rem;
+    width: fit-content;
 }
 
 /*
