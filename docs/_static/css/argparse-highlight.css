@@ -356,8 +356,9 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:vis
 .argparse-argument-meta .nv {
     background: var(--argparse-code-background);
     border-radius: .2rem;
-    padding: .325rem .6rem;
+    padding: .1405rem .3rem;
     font-family: var(--font-stack--monospace);
+    font-size: var(--font-size--small);
     color: #E5C07B;
     font-style: italic;
 }
