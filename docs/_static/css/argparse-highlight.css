@@ -341,6 +341,10 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:vis
     background-color: var(--color-highlight-on-target);
 }
 
+.argparse-argument-wrapper:target .argparse-argument-name .headerlink {
+    visibility: visible;
+}
+
 /*
  * Default value styling in metadata
  * Styled like inline code with monokai background.
