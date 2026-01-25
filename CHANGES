@@ -41,7 +41,7 @@ _Notes on the upcoming release will go here._
 
 CLI documentation now supports direct linking to specific arguments:
 
-- **Linkable options**: Each `--option` and positional argument has a permanent URL anchor (e.g., `cli/load.html#-d`)
+- **Linkable options**: Each `--option` and positional argument has a permanent URL anchor (e.g., `cli/load.html#load-d`)
 - **Headerlinks**: Hover over any argument to reveal a ¶ link for easy sharing
 - **Visual styling**: Argument names displayed with syntax-highlighted backgrounds for better readability
 - **Default value badges**: Default values shown as styled inline code (e.g., `auto`)
