@@ -335,8 +335,12 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
     visibility: visible;
 }
 
-.argparse-argument-name .headerlink:hover {
+.argparse-argument-name .headerlink:hover:not(:visited) {
     color: var(--color-foreground-primary);
+}
+
+body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:visited) {
+    color: #cfd0d0;
 }
 
 /*
