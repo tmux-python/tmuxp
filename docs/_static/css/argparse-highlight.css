@@ -22,7 +22,7 @@
    ========================================================================== */
 
 /*
- * Shared monospace font for all CLI inline roles
+ * Shared monospace font and code font-size for all CLI inline roles
  */
 .cli-option,
 .cli-metavar,
@@ -30,6 +30,7 @@
 .cli-default,
 .cli-choice {
 	font-family: var(--font-stack--monospace);
+	font-size: var(--code-font-size);
 }
 
 /*
@@ -191,6 +192,7 @@
 /* Usage block container - match Pygments monokai background and code block styling */
 pre.argparse-usage {
 	background: var(--argparse-code-background);
+	font-size: var(--code-font-size);
 	padding: 0.625rem 0.875rem;
 	line-height: 1.5;
 	border-radius: 0.2rem;
@@ -289,6 +291,7 @@ pre.argparse-usage {
 	border-radius: 0.2rem;
 	padding: 0.485rem 0.875rem;
 	font-family: var(--font-stack--monospace);
+	font-size: var(--code-font-size);
 	width: fit-content;
 	position: relative;
 }
@@ -370,7 +373,7 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
 
 .argparse-meta-key {
 	color: var(--color-foreground-secondary, #6c757d);
-	font-size: var(--font-size--small);
+	font-size: var(--code-font-size);
 }
 
 .argparse-meta-key::after {
@@ -382,7 +385,7 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
 	border-radius: 0.2rem;
 	padding: 0.1rem 0.3rem;
 	font-family: var(--font-stack--monospace);
-	font-size: var(--font-size--small);
+	font-size: var(--code-font-size);
 	color: #e5c07b;
 }
 
@@ -395,7 +398,7 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
 	background-color: #fef3c780;
 	border: 1px solid #fcd34d80;
 	color: var(--color-foreground-primary);
-	font-size: var(--font-size--small);
+	font-size: var(--code-font-size);
 	padding: 0.1rem 0.4rem;
 	border-radius: 0.2rem;
 	font-weight: 500;
