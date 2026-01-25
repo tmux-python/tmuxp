@@ -278,14 +278,27 @@ pre.argparse-usage {
    ========================================================================== */
 
 /*
+ * Light mode overrides
+ * Furo's default inline code background is too dark in light mode.
+ */
+body:not([data-theme="dark"]) {
+    --color-inline-code-background: #eeeeee;
+}
+
+/*
  * Background styling for argument names - subtle background like code.literal
  * This provides visual weight and hierarchy for argument definitions.
+ * Light mode uses a lighter tint (50% white mix) for better contrast.
  */
 .argparse-argument-name {
     background: var(--color-inline-code-background);
     border-radius: .2em;
     padding: .1em .3em;
     font-family: var(--font-stack--monospace);
+}
+
+body:not([data-theme="dark"]) .argparse-argument-name {
+    background: color-mix(in srgb, var(--color-inline-code-background), white 50%);
 }
 
 /*
