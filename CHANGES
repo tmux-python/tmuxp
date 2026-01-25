@@ -46,6 +46,12 @@ CLI documentation now supports direct linking to specific arguments:
 - **Visual styling**: Argument names displayed with syntax-highlighted backgrounds for better readability
 - **Default value badges**: Default values shown as styled inline code (e.g., `auto`)
 
+#### Improved argument metadata display (#1011)
+
+- **Cleaner layout**: Default, Type, Choices shown as key-value pairs instead of pipe-separated text
+- **Required badge**: Subtle amber tag visible in both light and dark modes
+- **Consistent sizing**: All CLI elements match code block font size
+
 ## tmuxp 1.64.0 (2026-01-24)
 
 ### Documentation
