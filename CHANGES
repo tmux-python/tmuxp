@@ -31,7 +31,9 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
+<!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
+<!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
 ## tmuxp 1.64.0 (2026-01-24)
 
