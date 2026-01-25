@@ -316,10 +316,6 @@ pre.argparse-usage {
     text-decoration: none;
 }
 
-body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
-    color: #9ca0a5;
-}
-
 /*
  * Show headerlink on hover or when targeted via URL fragment
  */
@@ -332,8 +328,15 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
     color: var(--color-foreground-primary);
 }
 
-body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:visited) {
-    color: #cfd0d0;
+/*
+ * Light mode headerlink color overrides
+ */
+body:not([data-theme="dark"]) .argparse-argument-name .headerlink {
+    color: #9ca0a5;
+
+    &:hover:not(:visited) {
+        color: #cfd0d0;
+    }
 }
 
 /*
