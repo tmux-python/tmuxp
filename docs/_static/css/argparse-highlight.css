@@ -54,13 +54,18 @@
 }
 
 /*
- * CLI Commands
+ * CLI Commands and Choices
  *
- * Subcommand names like sync, add, list.
- * Green (same as choices) - they're enumerated command options.
+ * Both use green to indicate valid enumerated values.
+ * Commands: subcommand names like sync, add, list
+ * Choices: enumeration values like json, yaml, table
  */
-.cli-command {
+.cli-command,
+.cli-choice {
     color: #98C379;
+}
+
+.cli-command {
     font-weight: bold;
 }
 
@@ -73,16 +78,6 @@
 .cli-default {
     color: #CCCED4;
     font-style: italic;
-}
-
-/*
- * CLI Choice Values
- *
- * Choice enumeration values like json, yaml, table.
- * Green color to show they are valid literal values.
- */
-.cli-choice {
-    color: #98C379;
 }
 
 /* ==========================================================================
