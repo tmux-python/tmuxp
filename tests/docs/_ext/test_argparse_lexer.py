@@ -477,6 +477,18 @@ SHORT_OPTION_VALUE_FIXTURES: list[ShortOptionValueFixture] = [
         option="-r",
         value="name",
     ),
+    ShortOptionValueFixture(
+        test_id="underscore_metavar",
+        input_text="-L socket_name",
+        option="-L",
+        value="socket_name",
+    ),
+    ShortOptionValueFixture(
+        test_id="multiple_underscores",
+        input_text="-f tmux_config_file",
+        option="-f",
+        value="tmux_config_file",
+    ),
 ]
 
 
@@ -796,3 +808,18 @@ options:
     assert "options:" in token_values or any(
         "options:" in v for v in token_values if isinstance(v, str)
     )
+
+
+def test_tmuxp_load_usage_underscores() -> None:
+    """Test tmuxp load usage with underscore metavars.
+
+    Regression test for underscore handling in lowercase metavars.
+    Previously, `socket_name` was tokenized as `socket` + `_name` (split).
+    """
+    usage = "usage: tmuxp load [-L socket_name] [-S socket_path] [-f tmux_config_file]"
+    tokens = get_usage_tokens(usage)
+
+    # All underscore metavars should be fully captured
+    assert ("Token.Name.Variable", "socket_name") in tokens
+    assert ("Token.Name.Variable", "socket_path") in tokens
+    assert ("Token.Name.Variable", "tmux_config_file") in tokens
