@@ -360,7 +360,6 @@ body:not([data-theme="dark"]) .argparse-argument-name .headerlink:hover:not(:vis
     font-family: var(--font-stack--monospace);
     font-size: var(--font-size--small);
     color: #E5C07B;
-    font-style: italic;
 }
 
 /*
