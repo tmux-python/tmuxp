@@ -272,3 +272,62 @@ pre.argparse-usage {
     color: #C678DD;
     font-weight: bold;
 }
+
+/* ==========================================================================
+   Argument Wrapper and Linking Styles
+   ========================================================================== */
+
+/*
+ * Background styling for argument names - subtle background like code.literal
+ * This provides visual weight and hierarchy for argument definitions.
+ */
+.argparse-argument-name {
+    background: var(--color-inline-code-background);
+    border-radius: .2em;
+    padding: .1em .3em;
+    font-family: var(--font-stack--monospace);
+}
+
+/*
+ * Wrapper for linking - enables scroll-margin for fixed header navigation
+ * and :target pseudo-class for highlighting when linked.
+ */
+.argparse-argument-wrapper {
+    scroll-margin-top: 2.5rem;
+}
+
+/*
+ * Headerlink anchor (¶) - hidden until hover
+ * Follows Sphinx documentation convention for linkable headings.
+ */
+.argparse-argument-name .headerlink {
+    visibility: hidden;
+    margin-left: .5rem;
+    color: var(--color-foreground-secondary);
+    text-decoration: none;
+}
+
+.argparse-argument-name:hover .headerlink {
+    visibility: visible;
+}
+
+.argparse-argument-name .headerlink:hover {
+    color: var(--color-foreground-primary);
+}
+
+/*
+ * Highlight when targeted via URL fragment
+ * Uses Furo's highlight-on-target color for consistency.
+ */
+.argparse-argument-wrapper:target .argparse-argument-name {
+    background-color: var(--color-highlight-on-target);
+}
+
+/*
+ * Default value styling in metadata
+ * Uses .nv (Name.Variable) class for yellow/italic styling consistent with metavars.
+ */
+.argparse-argument-meta .nv {
+    color: #E5C07B;
+    font-style: italic;
+}
