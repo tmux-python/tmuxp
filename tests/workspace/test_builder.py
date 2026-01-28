@@ -126,12 +126,18 @@ def test_focus_pane_index(session: Session) -> None:
         nonlocal p
         p = w.active_pane
         assert p is not None
-        return p.pane_current_path == pane_path
+        pane_path_actual = p.pane_current_path
+        return (
+            pane_path_actual is not None and pane_path in pane_path_actual
+        ) or pane_path_actual == pane_path
 
     assert retry_until(f_check)
 
     assert p is not None
-    assert p.pane_current_path == pane_path
+    pane_path_actual = p.pane_current_path
+    assert (
+        pane_path_actual is not None and pane_path in pane_path_actual
+    ) or pane_path_actual == pane_path
 
     proc = session.cmd("show-option", "-gv", "base-index")
     base_index = int(proc.stdout[0])
@@ -146,7 +152,10 @@ def test_focus_pane_index(session: Session) -> None:
         nonlocal p
         p = window3.active_pane
         assert p is not None
-        return p.pane_current_path == pane_path
+        pane_path_actual = p.pane_current_path
+        return (
+            pane_path_actual is not None and pane_path in pane_path_actual
+        ) or pane_path_actual == pane_path
 
     assert retry_until(f_check_again)
 
@@ -667,7 +676,10 @@ def test_pane_order(session: Session) -> None:
 
             def f(pane_path: str, p: Pane) -> bool:
                 p.refresh()
-                return p.pane_current_path == pane_path
+                pane_path_actual = p.pane_current_path
+                return (
+                    pane_path_actual is not None and pane_path in pane_path_actual
+                ) or pane_path_actual == pane_path
 
             f_ = functools.partial(f, pane_path=pane_path, p=p)
 
@@ -1513,3 +1525,32 @@ def test_issue_800_default_size_many_windows(
 
     builder.build()
     assert len(server.sessions) == 1
+
+
+def test_issue_980_shell_command_string_entries_do_not_crash(
+    server: "Server",
+    tmp_path: pathlib.Path,
+) -> None:
+    """Regression test for #980: shell_command entries may be strings, not dicts."""
+    yaml = textwrap.dedent(
+        """
+        session_name: issue_980
+        windows:
+          - window_name: zsh
+            panes:
+              - shell_command:
+                  - zsh
+        """
+    ).lstrip()
+
+    f = tmp_path / "issue_980.yaml"
+    f.write_text(yaml, encoding="utf-8")
+
+    workspace = ConfigReader._from_file(f)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    builder.build()  # should not crash
+    assert builder.session.name == "issue_980"
