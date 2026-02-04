@@ -13,8 +13,8 @@ Analysis of `import_tmuxinator()` in `src/tmuxp/workspace/importers.py:8-102`.
 | `project_root` | `start_directory` | 31-32 |
 | `root` | `start_directory` | 33-34 |
 | `tabs` | `windows` | 56-57 |
-| `cli_args` (extracts `-f`) | `config` | 36-42 |
-| `tmux_options` (extracts `-f`) | `config` | 43-49 |
+| `cli_args` (extracts `-f`) | `config` | 36-42 (**dead data** — key never read) |
+| `tmux_options` (extracts `-f`) | `config` | 43-49 (**dead data** — key never read) |
 | `socket_name` | `socket_name` | 51-52 |
 | window `pre` | `shell_command_before` | 92-93 |
 | window `root` | `start_directory` | 96-97 |
@@ -73,7 +73,8 @@ Analysis of `import_tmuxinator()` in `src/tmuxp/workspace/importers.py:8-102`.
 | Key | Imported at | Problem |
 |-----|-------------|---------|
 | `socket_name` | Line 51-52 | `load_workspace()` never reads this from config; it only accepts `socket_name` as CLI parameter. See `src/tmuxp/cli/load.py:369-374`. |
-| Non-`-f` flags from `cli_args`/`tmux_options` | Lines 36-49 | Only `-f` is extracted; other flags (e.g., `-2`, `-u`) are stripped and lost. |
+| `config` (from `cli_args`/`tmux_options`) | Lines 36-49 | Extracts `-f` path to `config` key, but neither `load_workspace()` nor `WorkspaceBuilder` reads this key. CLI `-f` works, config key is dead. |
+| Non-`-f` flags from `cli_args`/`tmux_options` | Lines 36-49 | Other flags (e.g., `-2`, `-u`, `-L`) are stripped and lost. |
 
 ---
 
@@ -102,7 +103,23 @@ windows:
 
 Uses `dict.pop()` at lines 25, 27, 32, 34, 57 — destructively modifies the input dict. If the caller reuses the dict, data is lost.
 
-### 3. Missing `rvm` support (only `rbenv`)
+### 3. `pre_window` alone is ignored
+
+The importer only handles `pre_window` when BOTH `pre` AND `pre_window` are present (line 59):
+
+```python
+if "pre" in workspace_dict and "pre_window" in workspace_dict:
+```
+
+If only `pre_window` exists (common case — per-pane commands without session-level pre), it's **silently ignored**.
+
+**Fix**: Handle `pre_window` independently:
+```python
+if "pre_window" in workspace_dict:
+    tmuxp_workspace["shell_command_before"] = ...
+```
+
+### 4. Missing `rvm` support (only `rbenv`)
 
 tmuxinator supports both `rbenv` and `rvm` at `lib/tmuxinator/project.rb:331-341`:
 
@@ -118,7 +135,7 @@ end
 
 But the importer only handles `rbenv` (lines 72-77). `rvm` config keys are silently ignored.
 
-### 4. No named pane support
+### 5. No named pane support
 
 tmuxinator supports named panes via hash syntax:
 
@@ -140,7 +157,7 @@ def build_panes(panes_yml)
 
 The importer extracts commands but loses the title (no tmuxp equivalent anyway).
 
-### 5. Minimal test coverage
+### 6. Minimal test coverage
 
 Only 3 test fixtures exist (`tests/fixtures/import_tmuxinator/test1-3.yaml`). Missing tests for:
 - `synchronize`
@@ -189,8 +206,9 @@ Tests current recommended syntax:
 
 | Category | Count |
 |----------|-------|
-| Keys handled correctly | 12 |
+| Keys handled correctly | 11 |
+| Keys partially handled | 1 (`pre_window` only when `pre` exists) |
 | Keys not handled (could be) | 5 (`rvm`, `pre_tab`, `startup_window`, `startup_pane`, `synchronize`) |
 | Keys not handled (tmuxp lacks feature) | 10 |
-| Dead data (imported but ignored) | 2 (`socket_name`, non-`-f` CLI args) |
-| Code bugs | 2 (loop reassignment, input mutation) |
+| Dead data (imported but ignored) | 3 (`socket_name`, `config` from `-f`, other CLI args) |
+| Code bugs | 3 (loop reassignment, input mutation, `pre_window` alone ignored) |

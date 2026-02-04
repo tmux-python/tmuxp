@@ -218,10 +218,10 @@ Create config from an existing running tmux session.
 |---|---|---|
 | `project_name` / `name` | `session_name` | ✓ |
 | `project_root` / `root` | `start_directory` | ✓ |
-| `cli_args` / `tmux_options` | `config` (extracts `-f`) | ✓ (partial) |
+| `cli_args` / `tmux_options` | `config` (extracts `-f`) | ⚠️ Dead data — key never read |
 | `socket_name` | `socket_name` | ✓ (but dead data — see §A.6) |
 | `pre` | `shell_command_before` | ✓ |
-| `pre_window` | `shell_command_before` | ✓ |
+| `pre_window` | `shell_command_before` | ⚠️ Only when `pre` also exists (bug) |
 | `rbenv` | `shell_command_before` + `rbenv shell X` | ✓ |
 | `tabs` | `windows` | ✓ |
 | window `pre` | `shell_command_before` | ✓ |
