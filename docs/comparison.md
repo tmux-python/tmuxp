@@ -1,4 +1,8 @@
-# Feature Comparison: tmuxp vs tmuxinator vs teamocil
+(comparison)=
+
+# Comparison
+
+*tmuxp vs tmuxinator vs teamocil*
 
 Comparison of tmux session managers as of:
 
