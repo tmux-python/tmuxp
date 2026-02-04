@@ -32,9 +32,9 @@ The v1.0 rewrite (2015) changed the schema significantly. See [teamocil CHANGELO
 | `windows[].splits` | `panes` | 154-155 |
 | `windows[].layout` | `layout` | 166-167 |
 | `panes[].cmd` | `shell_command` | 159-160 |
-| `clear` | `clear` | 140-141 (pass-through) |
+| `clear` | `clear` | 140-141 (pass-through, but **dead data** — WorkspaceBuilder ignores it) |
 | `filters.before` | `shell_command_before` | 144-146 |
-| `filters.after` | `shell_command_after` | 147-149 |
+| `filters.after` | `shell_command_after` | 147-149 (**dead data** — tmuxp only supports `shell_command_before`) |
 | `width` | Dropped | 161-163 (silently removed) |
 
 ### Pass-through keys
@@ -53,8 +53,8 @@ These keys pass through unchanged:
 |-----------------|---------------|-------|
 | `panes[].commands` | `shell_command` | Only `cmd` (v0.x) is handled |
 | `windows[].options` | `options` | Direct mapping, not implemented |
-| `windows[].focus` | `focus: true` | Should pass through |
-| `panes[].focus` | `focus: true` | May pass through implicitly from dict |
+| `windows[].focus` | `focus: true` | NOT handled; only specific keys are copied to `window_dict` |
+| `panes[].focus` | `focus: true` | Passes through implicitly (pane dicts kept intact) |
 
 ### Pane as string (crashes)
 
@@ -206,8 +206,9 @@ To distinguish v0.x from v1.4.2:
 
 | Category | Count |
 |----------|-------|
-| v0.x keys handled correctly | 11 |
-| v1.4.2 keys not handled | 4 (`commands`, `options`, `focus`, string panes) |
+| v0.x keys handled correctly | 9 |
+| v0.x keys → dead data | 2 (`clear`, `filters.after` → `shell_command_after`) |
+| v1.4.2 keys not handled | 4 (`commands`, `options`, window `focus`, string panes) |
 | Code bugs | 5 |
 | Test coverage | v0.x only, no v1.4.2 tests |
 

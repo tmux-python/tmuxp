@@ -26,6 +26,7 @@ Analysis of `import_tmuxinator()` in `src/tmuxp/workspace/importers.py:8-102`.
 | tmuxinator key | Should map to | Notes |
 |----------------|---------------|-------|
 | `rvm` | `shell_command_before` + `rvm use X` | Only `rbenv` handled (lines 72-77) |
+| `pre_tab` | `shell_command_before` | Deprecated alias for `pre_window`, not handled |
 | `post` | — | No equivalent; should emit warning |
 | `startup_window` | Find window by name/index → `focus: true` | tmuxp uses different syntax |
 | `startup_pane` | Set `focus: true` on pane | tmuxp uses different syntax |
@@ -189,7 +190,7 @@ Tests current recommended syntax:
 | Category | Count |
 |----------|-------|
 | Keys handled correctly | 12 |
-| Keys not handled (could be) | 3 (`rvm`, `startup_window`, `startup_pane`, `synchronize`) |
+| Keys not handled (could be) | 5 (`rvm`, `pre_tab`, `startup_window`, `startup_pane`, `synchronize`) |
 | Keys not handled (tmuxp lacks feature) | 10 |
 | Dead data (imported but ignored) | 2 (`socket_name`, non-`-f` CLI args) |
 | Code bugs | 2 (loop reassignment, input mutation) |
