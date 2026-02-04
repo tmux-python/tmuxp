@@ -34,14 +34,45 @@ Deep-dive analysis of tmuxp vs tmuxinator and teamocil. Updates comparison docs 
    - Import behavior analysis
    - WorkspaceBuilder requirements for full parity
 
-6. **Commit each file separately**:
-   - `docs/comparison.md` — "docs(comparison): Update feature comparison table vs tmuxinator and teamocil"
-   - `notes/parity-tmuxinator.md` — "notes(parity): Update tmuxinator feature parity analysis"
-   - `notes/parity-teamocil.md` — "notes(parity): Update teamocil feature parity analysis"
+6. **Commit each file separately**
 
 ## Key areas to verify
 
 - Check `importers.py` line-by-line against actual tmuxinator/teamocil config keys
-- Verify `load_workspace()` actually reads config keys it claims to support (e.g., `socket_name` is dead data)
+- Verify `load_workspace()` actually reads config keys it claims to support
 - Cross-reference CHANGELOGs for version-specific features
 - Check test fixtures match real-world configs
+
+---
+
+# Import Behavior
+
+Study tmuxp, teamocil, and tmuxinator source code. Find any syntax they support that tmuxp's native syntax doesn't.
+
+Create/update:
+- `notes/import-teamocil.md`
+- `notes/import-tmuxinator.md`
+
+## Syntax Level Differences / Limitations
+
+For each config key and syntax pattern discovered, classify as:
+
+### Differences (Translatable)
+
+Syntax that differs but can be automatically converted during import. Document the mapping.
+
+### Limitations (tmuxp needs to add support)
+
+Syntax/features that cannot be imported because tmuxp lacks the underlying capability. For each, note:
+1. What the feature does in the source tool
+2. Why it can't be imported
+3. What tmuxp would need to add
+
+---
+
+# WorkspaceBuilder
+
+Analyze what WorkspaceBuilder needs to:
+
+1. **Auto-detect config format** — Determine heuristics to identify tmuxinator vs teamocil vs tmuxp configs transparently
+2. **100% feature support** — List every feature/behavior needed for complete compatibility, including behavioral idiosyncrasies
