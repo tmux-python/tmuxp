@@ -36,6 +36,9 @@ The v1.0 rewrite (2015) changed the schema significantly. See [teamocil CHANGELO
 | `filters.before` | `shell_command_before` | 144-146 |
 | `filters.after` | `shell_command_after` | 147-149 (**dead data** — tmuxp only supports `shell_command_before`) |
 | `width` | Dropped | 161-163 (silently removed) |
+| `target` | — | Not handled; no tmuxp equivalent for split direction |
+| `cmd_separator` | — | Not handled (TODO in docstring); controls how commands are joined |
+| `with_env_var` | — | Not handled (TODO in docstring); controls env var handling |
 
 ### Pass-through keys
 
@@ -206,7 +209,7 @@ To distinguish v0.x from v1.4.2:
 
 | Category | Count |
 |----------|-------|
-| v0.x keys handled correctly | 9 |
+| v0.x keys handled correctly | 9 (plus 4 silently ignored: `width`, `target`, `cmd_separator`, `with_env_var`) |
 | v0.x keys → dead data | 2 (`clear`, `filters.after` → `shell_command_after`) |
 | v1.4.2 keys not handled | 4 (`commands`, `options`, window `focus`, string panes) |
 | Code bugs | 5 |
