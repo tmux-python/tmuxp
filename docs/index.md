@@ -20,6 +20,7 @@
 :hidden:
 
 about
+comparison
 quickstart
 cli/index
 configuration/index
