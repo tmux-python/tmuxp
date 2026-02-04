@@ -22,15 +22,27 @@ API limitations blocking full tmuxinator/teamocil parity.
 - **Blocks**: tmuxinator's named panes, `enable_pane_titles`, `pane_title_format`
 - **Required**: Add `Pane.set_title(title: str)` using `select-pane -T {title}`
 
-### 3. Server already supports socket/config (not a blocker)
+### 3. send_keys literal vs history suppression mutually exclusive
 
-Server `__init__` at `src/libtmux/server.py:140-179` accepts:
-- `socket_name` — maps to `tmux -L`
-- `socket_path` — maps to `tmux -S`
-- `config_file` — maps to `tmux -f`
-- `colors` — 256 or 88
+- **Blocker**: `Pane.send_keys()` at `src/libtmux/pane.py:423-474` has either/or logic for `-l` flag and space prefix
+- **Blocks**: Sending literal keys while suppressing shell history
+- **Impact**: Minor — most use cases don't need both simultaneously
 
-**Not a libtmux blocker** — tmuxp just needs to read these from config and pass them through.
+### 4. Features that ARE available (not blockers)
+
+| Feature | Method | Location |
+|---------|--------|----------|
+| Window rename | `Window.rename_window()` | `window.py:462-492` |
+| Session rename | `Session.rename_session()` | `session.py:412-433` |
+| Window/Session options | `OptionsMixin.set_option()` | `options.py:568+` |
+| Session hooks | `HooksMixin.set_hook()` | `hooks.py:111` (requires tmux 3.1+) |
+| Environment variables | `EnvironmentMixin.set_environment()` | `common.py:393-560` |
+| Custom layouts | `Window.select_layout()` | `window.py:409-460` |
+| Pane border options | `session.set_option('pane-border-*')` | `constants.py:160-173` |
+| Socket name/path | `Server.__init__()` | `server.py:140-179` |
+| Config file | `Server.__init__(config_file=)` | `server.py:140-179` |
+
+**Not libtmux blockers** — tmuxp just needs to use these APIs.
 
 ---
 
@@ -49,10 +61,13 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 | `shell_command` (session) | tmuxinator importer | `importers.py:60` | Builder only reads window/pane level, not session |
 | `clear` | teamocil importer | `importers.py:140-141` | Pass-through, builder ignores |
 | `attach` | — | N/A | No config key, only CLI `-d` exists |
+| Non-`-f` CLI flags | tmuxinator importer | `importers.py:36-49` | Flags like `-2`, `-u`, `-L` stripped when extracting `-f` |
 
 **trickle() behavior** (`loader.py:191-264`): Passes through unknown keys unchanged — they persist in the dict but are never consumed.
 
-**WorkspaceBuilder keys** (`builder.py:250-313`): Only reads `session_name`, `start_directory`, `before_script`, `options`, `global_options`, `environment`, `windows`.
+**WorkspaceBuilder keys** (`builder.py:225-340`): Only reads `session_name`, `start_directory`, `before_script`, `options`, `global_options`, `environment`, `windows`.
+
+**expand() keys** (`loader.py:68-188`): Processes `session_name`, `window_name`, `environment`, `global_options`, `options`, `start_directory`, `before_script`, `shell_command`, `shell_command_before`, `windows`, `panes`. Does NOT process `socket_name`, `config`, `shell_command_after`, `clear`.
 
 ### 2. Missing config keys
 
@@ -60,12 +75,21 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 |---------|---------------------|--------------|
 | `attach: false` | Config key | CLI `-d` only |
 | `synchronize` | First-class key | Workaround: `options_after: {synchronize-panes: on}` |
-| `enable_pane_titles` | Session-level | Not supported |
-| `pane_title_format` | Session-level | Not supported |
-| `pane_title_position` | Session-level | Not supported |
-| Per-pane `title` | Named panes | Not supported |
-| `on_project_start` | Shell command hook | Only Python plugin API |
+| `enable_pane_titles` | Session-level | Not supported (libtmux CAN do this via `set_option`) |
+| `pane_title_format` | Session-level | Not supported (libtmux CAN do this via `set_option`) |
+| `pane_title_position` | Session-level | Not supported (maps to `pane-border-status`) |
+| Per-pane `title` | Named panes | Not supported (needs `Pane.set_title()` in libtmux) |
+| `on_project_start` | Shell command hook | Only Python plugin API (5 hooks available) |
 | `on_project_exit` | Shell command hook | Only Python plugin API |
+
+**Plugin hooks available** (`plugin.py:216-291`):
+- `before_workspace_builder(session)` — after session init, before windows
+- `on_window_create(window)` — when window created, before panes
+- `after_window_finished(window)` — after all panes and commands complete
+- `before_script(session)` — after workspace fully built
+- `reattach(session)` — before session attachment
+
+**Note**: Plugin hooks provide Python access but don't support shell commands from config.
 
 ### 3. CLI gaps
 
@@ -161,14 +185,34 @@ config_file = args.tmux_config_file or expanded_workspace.get("config")
 
 ## File Reference
 
+### tmuxp
+
 | Component | File | Key Lines |
 |-----------|------|-----------|
-| WorkspaceBuilder | `src/tmuxp/workspace/builder.py` | 250-313 (session keys), 329-344 (focus) |
+| WorkspaceBuilder.build() | `src/tmuxp/workspace/builder.py` | 225-340 (session keys), 329-344 (focus) |
+| iter_create_windows() | `src/tmuxp/workspace/builder.py` | 346-429 |
+| iter_create_panes() | `src/tmuxp/workspace/builder.py` | 431-540 |
 | trickle() | `src/tmuxp/workspace/loader.py` | 191-264 |
-| expand() | `src/tmuxp/workspace/loader.py` | 168-171 |
+| expand() | `src/tmuxp/workspace/loader.py` | 68-188 |
 | load_workspace() | `src/tmuxp/cli/load.py` | 255-374, esp. 369-374 |
+| CLI arguments | `src/tmuxp/cli/load.py` | 467-558 |
 | tmuxinator importer | `src/tmuxp/workspace/importers.py` | 8-102 |
 | teamocil importer | `src/tmuxp/workspace/importers.py` | 105-170 |
-| Server init | `~/work/python/libtmux/src/libtmux/server.py` | 140-179 |
-| tmux binary lookup | `~/work/python/libtmux/src/libtmux/common.py` | 121, 261, 602 |
-| Pane class | `~/work/python/libtmux/src/libtmux/pane.py` | No set_title method |
+| Plugin hooks | `src/tmuxp/plugin.py` | 216-291 |
+| run_before_script() | `src/tmuxp/util.py` | 27-96 |
+
+### libtmux
+
+| Component | File | Key Lines |
+|-----------|------|-----------|
+| Server init | `src/libtmux/server.py` | 140-179 |
+| tmux binary lookup | `src/libtmux/common.py` | 121, 261, 602, 284 (server.py) |
+| Pane class | `src/libtmux/pane.py` | No set_title method |
+| Pane.send_keys() | `src/libtmux/pane.py` | 423-474 |
+| OptionsMixin | `src/libtmux/options.py` | 568+ |
+| HooksMixin | `src/libtmux/hooks.py` | 59+ |
+| EnvironmentMixin | `src/libtmux/common.py` | 393-560 |
+| Window.rename_window() | `src/libtmux/window.py` | 462-492 |
+| Window.select_layout() | `src/libtmux/window.py` | 409-460 |
+| Session.rename_session() | `src/libtmux/session.py` | 412-433 |
+| Pane border options | `src/libtmux/_internal/constants.py` | 160-173 |
