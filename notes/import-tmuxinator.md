@@ -74,6 +74,7 @@ Analysis of `import_tmuxinator()` in `src/tmuxp/workspace/importers.py:8-102`.
 |-----|-------------|---------|
 | `socket_name` | Line 51-52 | `load_workspace()` never reads this from config; it only accepts `socket_name` as CLI parameter. See `src/tmuxp/cli/load.py:369-374`. |
 | `config` (from `cli_args`/`tmux_options`) | Lines 36-49 | Extracts `-f` path to `config` key, but neither `load_workspace()` nor `WorkspaceBuilder` reads this key. CLI `-f` works, config key is dead. |
+| `shell_command` (from `pre` when `pre_window` exists) | Line 60 | Created when both `pre` and `pre_window` exist, but `WorkspaceBuilder` never reads session-level `shell_command`. Only `shell_command_before` is used by `trickle()`. |
 | Non-`-f` flags from `cli_args`/`tmux_options` | Lines 36-49 | Other flags (e.g., `-2`, `-u`, `-L`) are stripped and lost. |
 
 ---
@@ -210,5 +211,5 @@ Tests current recommended syntax:
 | Keys partially handled | 1 (`pre_window` only when `pre` exists) |
 | Keys not handled (could be) | 5 (`rvm`, `pre_tab`, `startup_window`, `startup_pane`, `synchronize`) |
 | Keys not handled (tmuxp lacks feature) | 10 |
-| Dead data (imported but ignored) | 3 (`socket_name`, `config` from `-f`, other CLI args) |
+| Dead data (imported but ignored) | 4 (`socket_name`, `config`, `shell_command` from `pre`, other CLI args) |
 | Code bugs | 3 (loop reassignment, input mutation, `pre_window` alone ignored) |
