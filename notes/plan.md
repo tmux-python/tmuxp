@@ -108,7 +108,10 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 |-----|----------|--------|
 | `pre_window` alone ignored | Line 59: requires both `pre` AND `pre_window` | Common case silently broken |
 | `rvm` not handled | Only `rbenv` at lines 72-77 | rvm users get no shell setup |
+| `pre_tab` not handled | Not implemented | Deprecated alias for `pre_window` |
 | `startup_window`/`startup_pane` not mapped | Not implemented | Should set `focus: true` on matching window/pane |
+| `synchronize` not mapped | Not implemented | Should map to `options_after: {synchronize-panes: on}` |
+| `post` not handled | Not implemented | No equivalent, should warn user |
 | Named panes lose title | Lines extracts commands, drops key name | Pane titles discarded |
 | Loop reassignment bug | Lines 80-81: reassigns loop variable | Only works for single-key window hashes |
 | Input mutation | `dict.pop()` throughout | Caller's dict is destroyed |
@@ -150,8 +153,9 @@ config_file = args.tmux_config_file or expanded_workspace.get("config")
 
 ### Phase 3: Fix importer bugs
 
-1. **tmuxinator**: Handle `pre_window` independently, add `rvm` support, map `startup_*` to focus
+1. **tmuxinator**: Handle `pre_window` independently, add `rvm`/`pre_tab` support, map `startup_*` to focus, map `synchronize` to `options_after`
 2. **teamocil**: Add v1.4.2 format detection, handle string panes, handle `commands` (plural)
+3. **Auto-detect format**: Add `detect_format(config_dict) -> "tmuxp" | "tmuxinator" | "teamocil"` for transparent loading
 
 **Effort**: Improves compatibility, doesn't affect native tmuxp configs.
 
@@ -170,6 +174,23 @@ config_file = args.tmux_config_file or expanded_workspace.get("config")
 2. **`Pane.set_title()`**: Add method using `select-pane -T`
 
 **Effort**: Requires libtmux release, then tmuxp update.
+
+---
+
+## Features Already Supported (No Changes Needed)
+
+| Feature | tmuxp equivalent | Notes |
+|---------|------------------|-------|
+| `focus: true` (window/pane) | `focus: true` | Works identically |
+| `layout` | `layout` | Preset and custom layouts supported |
+| `start_directory` / `root` | `start_directory` | Session/window/pane level |
+| `shell_command_before` / `pre` | `shell_command_before` | Trickling works |
+| `options` / window options | `options` | Arbitrary tmux options |
+| `options_after` | `options_after` | Post-pane options (used for synchronize workaround) |
+| `environment` | `environment` | Session/window/pane level |
+| `suppress_history` | `suppress_history` | Session/window/pane cascade |
+| `window_index` | `window_index` | Explicit window placement |
+| `window_shell` | `window_shell` | tmuxp-only, sets shell for window |
 
 ---
 
