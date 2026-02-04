@@ -102,7 +102,63 @@ Config uses `<%= @args[0] %>`, `<%= @settings["key"] %>`.
 
 **Location**: `lib/tmuxinator/project.rb:43-70`
 
-**tmuxp equivalent**: Environment variable expansion only (`$VAR`, `~`). No argument passing to config files. Not feasible to import — ERB is a full Ruby templating engine.
+**tmuxp equivalent**: Environment variable expansion only (`$VAR`, `~`). No argument passing to config files.
+
+**Import feasibility**: ERB is a full Ruby templating engine — not feasible to import ERB syntax. However, tmuxp can implement equivalent functionality with simpler syntax.
+
+##### Implementation Strategy: CLI Argument Passing
+
+tmuxp can support argument passing using the standard Unix `--` separator and `${...}` placeholder syntax (which already exists for env vars):
+
+**CLI syntax:**
+```bash
+tmuxp load config.yaml -- /path/to/dir name=myproject
+```
+
+**Config syntax:**
+```yaml
+session_name: ${name}
+start_directory: ${1}
+windows:
+  - window_name: editor
+    panes:
+      - vim ${1}/src
+```
+
+**argparse approach:**
+
+The challenge is that argparse doesn't treat `--` as a separator between two positional argument groups. With `nargs="+"` for workspace files, everything gets consumed.
+
+**Solution**: Pre-process `sys.argv` before argparse:
+
+```python
+def split_args_at_separator(args: list[str]) -> tuple[list[str], list[str]]:
+    """Split CLI args at -- separator."""
+    if "--" not in args:
+        return args, []
+    idx = args.index("--")
+    return args[:idx], args[idx + 1:]
+```
+
+Then in `cli()`:
+```python
+command_args, cli_args = split_args_at_separator(sys.argv[1:])
+args = parser.parse_args(command_args)
+args.cli_args = cli_args  # Attach for load command to use
+```
+
+**Substitution approach:**
+
+New functions in `loader.py`:
+
+1. `parse_cli_args(args)` — Convert `["/path", "name=val"]` to `{"1": "/path", "name": "val"}`
+2. `substitute_cli_args(config, context)` — Replace `${key}` placeholders recursively
+
+Substitution runs BEFORE `expandshell()` so that:
+- CLI args like `${1}`, `${name}` get replaced first
+- Remaining `${HOME}`, `${USER}` pass through to env var expansion
+
+**Precedence**: CLI args override env vars with same name.
 
 #### 10. Named panes (pane titles via hash key)
 
