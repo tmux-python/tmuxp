@@ -170,6 +170,11 @@ def expand(
 
         workspace_dict["shell_command_before"] = expand_cmd(shell_command_before)
 
+    if "shell_command_after" in workspace_dict:
+        shell_command_after = workspace_dict["shell_command_after"]
+
+        workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
+
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
         workspace_dict["windows"] = [
@@ -196,7 +201,8 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     tmuxp allows certain commands to be default at the session, window
     level. shell_command_before trickles down and prepends the
-    ``shell_command`` for the pane.
+    ``shell_command`` for the pane. shell_command_after appends commands
+    after the pane's commands.
 
     Parameters
     ----------
@@ -207,8 +213,8 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
-    # prepends a pane's ``shell_command`` list with the window and sessions'
-    # ``shell_command_before``.
+    # Prepends a pane's ``shell_command`` list with the window and session's
+    # ``shell_command_before``, and appends ``shell_command_after``.
 
     session_start_directory = workspace_dict.get("start_directory")
 
@@ -239,7 +245,8 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             window_dict["panes"] = [{"shell_command": []}]
 
         for pane_idx, pane_dict in enumerate(window_dict["panes"]):
-            commands_before = []
+            commands_before: list[str] = []
+            commands_after: list[str] = []
 
             # Prepend shell_command_before to commands
             if "shell_command_before" in workspace_dict:
@@ -255,10 +262,23 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                     pane_dict["shell_command_before"]["shell_command"],
                 )
 
-            if "shell_command" in pane_dict:
-                commands_before.extend(pane_dict["shell_command"])
+            # Append shell_command_after to commands (pane -> window -> session order)
+            if "shell_command_after" in pane_dict:
+                commands_after.extend(
+                    pane_dict["shell_command_after"]["shell_command"],
+                )
+            if "shell_command_after" in window_dict:
+                commands_after.extend(
+                    window_dict["shell_command_after"]["shell_command"],
+                )
+            if "shell_command_after" in workspace_dict:
+                commands_after.extend(
+                    workspace_dict["shell_command_after"]["shell_command"],
+                )
 
-            window_dict["panes"][pane_idx]["shell_command"] = commands_before
-            # pane_dict['shell_command'] = commands_before
+            pane_commands = pane_dict.get("shell_command", [])
+            final_commands = commands_before + pane_commands + commands_after
+
+            window_dict["panes"][pane_idx]["shell_command"] = final_commands
 
     return workspace_dict
