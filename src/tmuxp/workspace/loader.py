@@ -175,6 +175,20 @@ def expand(
 
         workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
 
+    # Expand 'synchronize' sugar to options/options_after (tmuxinator compatibility)
+    # synchronize: true or "before" -> options: {synchronize-panes: on}
+    # synchronize: "after" -> options_after: {synchronize-panes: on}
+    if "synchronize" in workspace_dict:
+        sync_val = workspace_dict.pop("synchronize")
+        if sync_val in (True, "before"):
+            if "options" not in workspace_dict:
+                workspace_dict["options"] = {}
+            workspace_dict["options"]["synchronize-panes"] = "on"
+        elif sync_val == "after":
+            if "options_after" not in workspace_dict:
+                workspace_dict["options_after"] = {}
+            workspace_dict["options_after"]["synchronize-panes"] = "on"
+
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
         workspace_dict["windows"] = [
