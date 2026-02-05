@@ -206,3 +206,170 @@ def test_version_manager_handling(test: VersionManagerFixture) -> None:
     result = importers.import_tmuxinator(test.tmuxinator_dict.copy())
 
     assert result.get("shell_command_before") == test.expected_shell_command_before
+
+
+class SynchronizeFixture(t.NamedTuple):
+    """Test fixture for synchronize handling tests."""
+
+    test_id: str
+    tmuxinator_dict: dict[str, t.Any]
+    expected_options: dict[str, str] | None
+    expected_options_after: dict[str, str] | None
+
+
+TEST_SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
+    SynchronizeFixture(
+        test_id="synchronize_true",
+        tmuxinator_dict={
+            "name": "test",
+            "windows": [{"editor": {"panes": ["vim"], "synchronize": True}}],
+        },
+        expected_options={"synchronize-panes": "on"},
+        expected_options_after=None,
+    ),
+    SynchronizeFixture(
+        test_id="synchronize_before",
+        tmuxinator_dict={
+            "name": "test",
+            "windows": [{"editor": {"panes": ["vim"], "synchronize": "before"}}],
+        },
+        expected_options={"synchronize-panes": "on"},
+        expected_options_after=None,
+    ),
+    SynchronizeFixture(
+        test_id="synchronize_after",
+        tmuxinator_dict={
+            "name": "test",
+            "windows": [{"editor": {"panes": ["vim"], "synchronize": "after"}}],
+        },
+        expected_options=None,
+        expected_options_after={"synchronize-panes": "on"},
+    ),
+    SynchronizeFixture(
+        test_id="synchronize_false",
+        tmuxinator_dict={
+            "name": "test",
+            "windows": [{"editor": {"panes": ["vim"], "synchronize": False}}],
+        },
+        expected_options=None,
+        expected_options_after=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_SYNCHRONIZE_FIXTURES,
+    ids=[test.test_id for test in TEST_SYNCHRONIZE_FIXTURES],
+)
+def test_synchronize_handling(test: SynchronizeFixture) -> None:
+    """Test synchronize handling in tmuxinator import."""
+    result = importers.import_tmuxinator(test.tmuxinator_dict.copy())
+
+    window = result["windows"][0]
+    if test.expected_options:
+        assert window.get("options") == test.expected_options
+    else:
+        assert "options" not in window
+
+    if test.expected_options_after:
+        assert window.get("options_after") == test.expected_options_after
+    else:
+        assert "options_after" not in window
+
+
+class StartupFixture(t.NamedTuple):
+    """Test fixture for startup_window/startup_pane handling tests."""
+
+    test_id: str
+    tmuxinator_dict: dict[str, t.Any]
+    expected_focused_window: str | None
+    expected_focused_pane_index: int | None
+
+
+TEST_STARTUP_FIXTURES: list[StartupFixture] = [
+    StartupFixture(
+        test_id="startup_window",
+        tmuxinator_dict={
+            "name": "test",
+            "startup_window": "logs",
+            "windows": [
+                {"editor": "vim"},
+                {"logs": "tail -f log.txt"},
+            ],
+        },
+        expected_focused_window="logs",
+        expected_focused_pane_index=None,
+    ),
+    StartupFixture(
+        test_id="startup_pane",
+        tmuxinator_dict={
+            "name": "test",
+            "startup_pane": 1,
+            "windows": [{"editor": {"panes": ["vim", "git status", "htop"]}}],
+        },
+        expected_focused_window=None,
+        expected_focused_pane_index=1,
+    ),
+    StartupFixture(
+        test_id="startup_window_and_pane",
+        tmuxinator_dict={
+            "name": "test",
+            "startup_window": "editor",
+            "startup_pane": 2,
+            "windows": [
+                {"editor": {"panes": ["vim", "git status", "htop"]}},
+                {"logs": "tail -f log.txt"},
+            ],
+        },
+        expected_focused_window="editor",
+        expected_focused_pane_index=2,
+    ),
+    StartupFixture(
+        test_id="startup_window_not_found",
+        tmuxinator_dict={
+            "name": "test",
+            "startup_window": "nonexistent",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_focused_window=None,
+        expected_focused_pane_index=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_STARTUP_FIXTURES,
+    ids=[test.test_id for test in TEST_STARTUP_FIXTURES],
+)
+def test_startup_handling(test: StartupFixture) -> None:
+    """Test startup_window/startup_pane handling in tmuxinator import."""
+    result = importers.import_tmuxinator(test.tmuxinator_dict.copy())
+
+    # Check focused window
+    focused_windows = [w for w in result["windows"] if w.get("focus")]
+    if test.expected_focused_window:
+        assert len(focused_windows) == 1
+        assert focused_windows[0]["window_name"] == test.expected_focused_window
+    else:
+        # No window should be focused (unless startup_pane sets implicit focus)
+        if test.expected_focused_pane_index is None:
+            assert len(focused_windows) == 0
+
+    # Check focused pane
+    if test.expected_focused_pane_index is not None:
+        # Find the window that should contain the focused pane
+        if test.expected_focused_window:
+            target_window = next(
+                w
+                for w in result["windows"]
+                if w["window_name"] == test.expected_focused_window
+            )
+        else:
+            target_window = result["windows"][0]
+
+        panes = target_window.get("panes", [])
+        focused_pane = panes[test.expected_focused_pane_index]
+        assert isinstance(focused_pane, dict)
+        assert focused_pane.get("focus") is True
