@@ -185,10 +185,10 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 - `pre_window` alone now works (was requiring both `pre` and `pre_window`)
 - `pre_tab` supported as deprecated alias for `pre_window`
 - `rvm` support added alongside existing `rbenv`
+- `startup_window`/`startup_pane` now mapped to `focus: true`
+- `synchronize` now mapped to `options`/`options_after`
 
 Remaining tmuxinator bugs:
-- `startup_window`/`startup_pane` not mapped to `focus: true`
-- `synchronize` not mapped to `options_after`
 - `post` not handled
 - Named panes lose title
 - Loop reassignment bug (lines 80-81)

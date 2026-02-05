@@ -100,3 +100,17 @@ Tracking completed items from the feature parity plan.
 - `pre_window` alone now correctly maps to `shell_command_before`
 - `pre_tab` is supported as deprecated alias for `pre_window`
 - `rvm` support added alongside existing `rbenv` support
+
+## 2026-02-04: Add synchronize and startup_window/pane to tmuxinator importer
+
+**What**: Map tmuxinator's `synchronize`, `startup_window`, and `startup_pane` options to tmuxp equivalents.
+
+**Files**:
+- `src/tmuxp/workspace/importers.py` - Add synchronize and startup handling
+- `tests/workspace/test_import_tmuxinator.py` - Add 8 parametrized test cases
+
+**Notes**:
+- `synchronize: true` or `"before"` -> `options: {synchronize-panes: on}`
+- `synchronize: "after"` -> `options_after: {synchronize-panes: on}`
+- `startup_window` -> `focus: true` on matching window
+- `startup_pane` -> `focus: true` on matching pane (supports combined with startup_window)
