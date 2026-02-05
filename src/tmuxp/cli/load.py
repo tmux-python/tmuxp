@@ -37,6 +37,7 @@ LOAD_DESCRIPTION = build_description(
                 "tmuxp load -y dev staging",
                 "tmuxp load -L other-socket myproject",
                 "tmuxp load -a myproject",
+                "tmuxp load myproject -- branch=develop",
             ],
         ),
     ),
@@ -76,6 +77,83 @@ class CLILoadNamespace(argparse.Namespace):
     color: CLIColorModeLiteral
     log_file: str | None
     no_shell_command_before: bool | None
+
+
+def set_workspace_args_env(
+    workspace_args: list[str] | None,
+    cli_colors: Colors | None = None,
+) -> dict[str, str]:
+    """Parse workspace arguments and set them as environment variables.
+
+    Arguments in `key=value` format are set as `$key`.
+    Positional arguments are set as `$TMUXP_ARG_0`, `$TMUXP_ARG_1`, etc.
+
+    Parameters
+    ----------
+    workspace_args : list[str] | None
+        List of arguments passed after `--` on the command line.
+    cli_colors : Colors | None
+        Colors instance for warning output.
+
+    Returns
+    -------
+    dict[str, str]
+        Dictionary of environment variables that were set.
+
+    Examples
+    --------
+    Key=value arguments become environment variables:
+
+    >>> import os
+    >>> result = set_workspace_args_env(['branch=develop', 'env=staging'])
+    >>> os.environ.get('branch')
+    'develop'
+    >>> os.environ.get('env')
+    'staging'
+    >>> result == {'branch': 'develop', 'env': 'staging'}
+    True
+
+    Positional arguments become numbered env vars:
+
+    >>> result = set_workspace_args_env(['myvalue', 'another'])
+    >>> os.environ.get('TMUXP_ARG_0')
+    'myvalue'
+    >>> os.environ.get('TMUXP_ARG_1')
+    'another'
+    >>> result == {'TMUXP_ARG_0': 'myvalue', 'TMUXP_ARG_1': 'another'}
+    True
+
+    Leading -- is stripped if present:
+
+    >>> result = set_workspace_args_env(['--', 'key=value'])
+    >>> result == {'key': 'value'}
+    True
+    """
+    if not workspace_args:
+        return {}
+
+    env_vars: dict[str, str] = {}
+    positional_idx = 0
+
+    for arg in workspace_args:
+        # Skip leading -- if present (argparse.REMAINDER may include it)
+        if arg == "--":
+            continue
+
+        if "=" in arg:
+            # key=value format
+            key, _, value = arg.partition("=")
+            if key:
+                env_vars[key] = value
+                os.environ[key] = value
+        else:
+            # Positional argument
+            env_key = f"TMUXP_ARG_{positional_idx}"
+            env_vars[env_key] = arg
+            os.environ[env_key] = arg
+            positional_idx += 1
+
+    return env_vars
 
 
 def load_plugins(

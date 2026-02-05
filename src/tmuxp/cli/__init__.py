@@ -43,6 +43,7 @@ from .load import (
     CLILoadNamespace,
     command_load,
     create_load_subparser,
+    set_workspace_args_env,
 )
 from .ls import LS_DESCRIPTION, CLILsNamespace, command_ls, create_ls_subparser
 from .search import (
@@ -60,6 +61,43 @@ from .shell import (
 from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
+
+
+def extract_workspace_args(args: list[str] | None) -> tuple[list[str], list[str]]:
+    """Extract workspace arguments from command line args.
+
+    Splits arguments at `--` separator. Arguments before `--` are CLI args,
+    arguments after `--` are workspace args that become environment variables.
+
+    Parameters
+    ----------
+    args : list[str] | None
+        Command line arguments. If None, uses sys.argv[1:].
+
+    Returns
+    -------
+    tuple[list[str], list[str]]
+        Tuple of (cli_args, workspace_args).
+
+    Examples
+    --------
+    >>> extract_workspace_args(['load', 'my.yaml', '--', 'branch=develop'])
+    (['load', 'my.yaml'], ['branch=develop'])
+
+    >>> extract_workspace_args(['load', 'my.yaml', '-d'])
+    (['load', 'my.yaml', '-d'], [])
+
+    >>> extract_workspace_args(None)  # doctest: +SKIP
+    (['...'], [])
+    """
+    if args is None:
+        args = sys.argv[1:]
+
+    if "--" in args:
+        sep_idx = args.index("--")
+        return args[:sep_idx], args[sep_idx + 1 :]
+    return args, []
+
 
 CLI_DESCRIPTION = build_description(
     """
@@ -294,8 +332,11 @@ def cli(_args: list[str] | None = None) -> None:
         tmuxp_echo(str(e))
         sys.exit()
 
+    # Extract workspace args (after --) before argparse sees them
+    cli_args, workspace_args = extract_workspace_args(_args)
+
     parser = create_parser()
-    args = parser.parse_args(_args, namespace=ns)
+    args = parser.parse_args(cli_args, namespace=ns)
 
     setup_logger(logger=logger, level=args.log_level.upper())
 
@@ -303,6 +344,8 @@ def cli(_args: list[str] | None = None) -> None:
         parser.print_help()
         return
     if args.subparser_name == "load":
+        # Set workspace args as environment variables for config expansion
+        set_workspace_args_env(workspace_args if workspace_args else None)
         command_load(
             args=CLILoadNamespace(**vars(args)),
             parser=parser,
