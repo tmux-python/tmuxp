@@ -465,6 +465,120 @@ def test_window_clear_option(test: WindowClearFixture) -> None:
     assert first_pane["shell_command"] == test.expected_commands
 
 
+class SynchronizeFixture(t.NamedTuple):
+    """Test fixture for synchronize sugar tests."""
+
+    test_id: str
+    config_unexpanded: dict[str, t.Any]
+    expected_options: dict[str, str] | None
+    expected_options_after: dict[str, str] | None
+
+
+TEST_SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
+    SynchronizeFixture(
+        test_id="synchronize-true-expands-to-options",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "synchronize": True,
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_options={"synchronize-panes": "on"},
+        expected_options_after=None,
+    ),
+    SynchronizeFixture(
+        test_id="synchronize-before-expands-to-options",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "synchronize": "before",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_options={"synchronize-panes": "on"},
+        expected_options_after=None,
+    ),
+    SynchronizeFixture(
+        test_id="synchronize-after-expands-to-options-after",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "synchronize": "after",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_options=None,
+        expected_options_after={"synchronize-panes": "on"},
+    ),
+    SynchronizeFixture(
+        test_id="synchronize-false-no-expansion",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "synchronize": False,
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_options=None,
+        expected_options_after=None,
+    ),
+    SynchronizeFixture(
+        test_id="synchronize-merges-with-existing-options",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "synchronize": True,
+                    "options": {"automatic-rename": "off"},
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_options={"automatic-rename": "off", "synchronize-panes": "on"},
+        expected_options_after=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_SYNCHRONIZE_FIXTURES,
+    ids=[test.test_id for test in TEST_SYNCHRONIZE_FIXTURES],
+)
+def test_synchronize_sugar(test: SynchronizeFixture) -> None:
+    """Test synchronize key expands to options or options_after."""
+    workspace = loader.expand(test.config_unexpanded)
+
+    first_window = workspace["windows"][0]
+
+    # synchronize key should be removed after expansion
+    assert "synchronize" not in first_window
+
+    if test.expected_options:
+        assert first_window.get("options") == test.expected_options
+    else:
+        assert first_window.get("options") is None
+
+    if test.expected_options_after:
+        assert first_window.get("options_after") == test.expected_options_after
+    else:
+        assert first_window.get("options_after") is None
+
+
 def test_trickle_window_with_no_pane_workspace() -> None:
     """Verify tmuxp window config automatically infers a single pane."""
     test_yaml = """
