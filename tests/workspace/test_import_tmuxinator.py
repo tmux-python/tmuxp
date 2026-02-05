@@ -67,7 +67,7 @@ class PreWindowFixture(t.NamedTuple):
 
     test_id: str
     tmuxinator_dict: dict[str, t.Any]
-    expected_shell_command: list[str] | None
+    expected_shell_command: str | list[str] | None
     expected_shell_command_before: list[str] | None
 
 
