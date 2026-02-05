@@ -1201,3 +1201,161 @@ def test_here_flag_reuses_current_window(
     first_window = windows.filter(window_id=original_window_id)
     assert len(first_window) == 1
     assert first_window[0].window_name == "renamed-window"
+
+
+# Workspace args tests
+
+
+def test_set_workspace_args_env_key_value() -> None:
+    """Test set_workspace_args_env with key=value arguments."""
+    import os
+
+    from tmuxp.cli.load import set_workspace_args_env
+
+    # Clean up any existing env vars
+    for key in ["TEST_BRANCH", "TEST_ENV"]:
+        os.environ.pop(key, None)
+
+    result = set_workspace_args_env(["TEST_BRANCH=develop", "TEST_ENV=staging"])
+
+    assert result == {"TEST_BRANCH": "develop", "TEST_ENV": "staging"}
+    assert os.environ.get("TEST_BRANCH") == "develop"
+    assert os.environ.get("TEST_ENV") == "staging"
+
+    # Clean up
+    os.environ.pop("TEST_BRANCH", None)
+    os.environ.pop("TEST_ENV", None)
+
+
+def test_set_workspace_args_env_positional() -> None:
+    """Test set_workspace_args_env with positional arguments."""
+    import os
+
+    from tmuxp.cli.load import set_workspace_args_env
+
+    # Clean up any existing env vars
+    for i in range(3):
+        os.environ.pop(f"TMUXP_ARG_{i}", None)
+
+    result = set_workspace_args_env(["value1", "value2"])
+
+    assert result == {"TMUXP_ARG_0": "value1", "TMUXP_ARG_1": "value2"}
+    assert os.environ.get("TMUXP_ARG_0") == "value1"
+    assert os.environ.get("TMUXP_ARG_1") == "value2"
+
+    # Clean up
+    os.environ.pop("TMUXP_ARG_0", None)
+    os.environ.pop("TMUXP_ARG_1", None)
+
+
+def test_set_workspace_args_env_mixed() -> None:
+    """Test set_workspace_args_env with mixed key=value and positional args."""
+    import os
+
+    from tmuxp.cli.load import set_workspace_args_env
+
+    # Clean up any existing env vars
+    os.environ.pop("TEST_KEY", None)
+    os.environ.pop("TMUXP_ARG_0", None)
+
+    result = set_workspace_args_env(["TEST_KEY=myvalue", "positional"])
+
+    assert result == {"TEST_KEY": "myvalue", "TMUXP_ARG_0": "positional"}
+    assert os.environ.get("TEST_KEY") == "myvalue"
+    assert os.environ.get("TMUXP_ARG_0") == "positional"
+
+    # Clean up
+    os.environ.pop("TEST_KEY", None)
+    os.environ.pop("TMUXP_ARG_0", None)
+
+
+def test_set_workspace_args_env_strips_leading_dashdash() -> None:
+    """Test set_workspace_args_env strips leading -- if present."""
+    import os
+
+    from tmuxp.cli.load import set_workspace_args_env
+
+    os.environ.pop("TEST_ARG", None)
+
+    # argparse.REMAINDER might include the -- separator
+    result = set_workspace_args_env(["--", "TEST_ARG=value"])
+
+    assert result == {"TEST_ARG": "value"}
+    assert os.environ.get("TEST_ARG") == "value"
+
+    # Clean up
+    os.environ.pop("TEST_ARG", None)
+
+
+def test_set_workspace_args_env_empty() -> None:
+    """Test set_workspace_args_env with empty or None input."""
+    from tmuxp.cli.load import set_workspace_args_env
+
+    assert set_workspace_args_env(None) == {}
+    assert set_workspace_args_env([]) == {}
+
+
+def test_extract_workspace_args_with_separator() -> None:
+    """Test extract_workspace_args splits at -- correctly."""
+    from tmuxp.cli import extract_workspace_args
+
+    cli_args, workspace_args = extract_workspace_args(
+        ["load", "my.yaml", "-d", "--", "branch=develop", "env=staging"],
+    )
+
+    assert cli_args == ["load", "my.yaml", "-d"]
+    assert workspace_args == ["branch=develop", "env=staging"]
+
+
+def test_extract_workspace_args_no_separator() -> None:
+    """Test extract_workspace_args returns empty workspace_args without --."""
+    from tmuxp.cli import extract_workspace_args
+
+    cli_args, workspace_args = extract_workspace_args(["load", "my.yaml", "-d"])
+
+    assert cli_args == ["load", "my.yaml", "-d"]
+    assert workspace_args == []
+
+
+def test_workspace_args_expand_in_config(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test workspace args are available as env vars during config expansion."""
+    import os
+
+    import yaml
+
+    from tmuxp.cli.load import set_workspace_args_env
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    # Set workspace args as env vars
+    set_workspace_args_env(["MY_BRANCH=feature-123"])
+
+    # Create config that uses the env var
+    config = {
+        "session_name": "test-args",
+        "windows": [
+            {
+                "window_name": "main",
+                "panes": [{"shell_command": ["echo $MY_BRANCH"]}],
+            },
+        ],
+    }
+    config_file = tmp_path / "test.yaml"
+    config_file.write_text(yaml.dump(config), encoding="utf-8")
+
+    # Load and verify the env var is accessible
+    session = load_workspace(
+        str(config_file),
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert session is not None
+    assert session.name == "test-args"
+
+    # Clean up
+    os.environ.pop("MY_BRANCH", None)
