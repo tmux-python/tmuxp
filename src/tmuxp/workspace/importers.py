@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
@@ -96,38 +99,44 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             f"rvm use {workspace_dict['rvm']}",
         )
 
-    for window_dict in workspace_dict["windows"]:
-        for k, v in window_dict.items():
-            window_dict = {"window_name": k}
+    # Warn about unsupported 'post' key
+    if "post" in workspace_dict:
+        logger.warning(
+            "tmuxinator 'post' key is not supported by tmuxp and will be ignored"
+        )
+
+    for orig_window in workspace_dict["windows"]:
+        for k, v in orig_window.items():
+            new_window: dict[str, t.Any] = {"window_name": k}
 
             if isinstance(v, str) or v is None:
-                window_dict["panes"] = [v]
-                tmuxp_workspace["windows"].append(window_dict)
+                new_window["panes"] = [v]
+                tmuxp_workspace["windows"].append(new_window)
                 continue
             if isinstance(v, list):
-                window_dict["panes"] = v
-                tmuxp_workspace["windows"].append(window_dict)
+                new_window["panes"] = v
+                tmuxp_workspace["windows"].append(new_window)
                 continue
 
             if "pre" in v:
-                window_dict["shell_command_before"] = v["pre"]
+                new_window["shell_command_before"] = v["pre"]
             if "panes" in v:
-                window_dict["panes"] = v["panes"]
+                new_window["panes"] = v["panes"]
             if "root" in v:
-                window_dict["start_directory"] = v["root"]
+                new_window["start_directory"] = v["root"]
 
             if "layout" in v:
-                window_dict["layout"] = v["layout"]
+                new_window["layout"] = v["layout"]
 
             # Handle synchronize option -> options_after
             if "synchronize" in v:
                 sync_val = v["synchronize"]
                 if sync_val in (True, "before"):
-                    window_dict["options"] = {"synchronize-panes": "on"}
+                    new_window["options"] = {"synchronize-panes": "on"}
                 elif sync_val == "after":
-                    window_dict["options_after"] = {"synchronize-panes": "on"}
+                    new_window["options_after"] = {"synchronize-panes": "on"}
 
-            tmuxp_workspace["windows"].append(window_dict)
+            tmuxp_workspace["windows"].append(new_window)
 
     # Handle startup_window - set focus: true on matching window
     if "startup_window" in workspace_dict:
