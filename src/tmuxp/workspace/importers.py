@@ -189,10 +189,8 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -----
     Todos:
 
-    - change  'root' to a cd or start_directory
     - width in pane -> main-pain-width
     - with_env_var
-    - clear
     - cmd_separator
     """
     tmuxp_workspace: dict[str, t.Any] = {}
@@ -207,34 +205,72 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     tmuxp_workspace["windows"] = []
 
-    for w in workspace_dict["windows"]:
-        window_dict = {"window_name": w["name"]}
+    for idx, w in enumerate(workspace_dict["windows"]):
+        # Handle optional window name - use index as fallback
+        window_name = w.get("name") if isinstance(w, dict) else None
+        if window_name is None:
+            window_name = f"window-{idx}"
+        window_dict: dict[str, t.Any] = {"window_name": window_name}
 
         if "clear" in w:
             window_dict["clear"] = w["clear"]
 
         if "filters" in w:
             if "before" in w["filters"]:
-                for _b in w["filters"]["before"]:
-                    window_dict["shell_command_before"] = w["filters"]["before"]
+                window_dict["shell_command_before"] = w["filters"]["before"]
             if "after" in w["filters"]:
-                for _b in w["filters"]["after"]:
-                    window_dict["shell_command_after"] = w["filters"]["after"]
+                window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:
             window_dict["start_directory"] = w.pop("root")
+
+        # Handle window-level options (v1.4.2+)
+        if "options" in w:
+            window_dict["options"] = w["options"]
+
+        # Handle window-level focus (v1.4.2+)
+        if "focus" in w:
+            window_dict["focus"] = w["focus"]
 
         if "splits" in w:
             w["panes"] = w.pop("splits")
 
         if "panes" in w:
+            converted_panes: list[t.Any] = []
             for p in w["panes"]:
-                if "cmd" in p:
-                    p["shell_command"] = p.pop("cmd")
-                if "width" in p:
-                    # TODO support for height/width
-                    p.pop("width")
-            window_dict["panes"] = w["panes"]
+                # Handle string panes (simple command)
+                if isinstance(p, str):
+                    converted_panes.append({"shell_command": p})
+                    continue
+                if p is None:
+                    converted_panes.append(None)
+                    continue
+
+                # p is a dict
+                new_pane: dict[str, t.Any] = {}
+
+                # Handle 'commands' (v1.4.2) and 'cmd' (older) - preserve type
+                if "commands" in p:
+                    new_pane["shell_command"] = p["commands"]
+                elif "cmd" in p:
+                    new_pane["shell_command"] = p["cmd"]
+
+                # Handle pane focus
+                if "focus" in p:
+                    new_pane["focus"] = p["focus"]
+
+                # Handle pane root/start_directory
+                if "root" in p:
+                    new_pane["start_directory"] = p["root"]
+
+                # Handle target (pass through)
+                if "target" in p:
+                    new_pane["target"] = p["target"]
+
+                # TODO: support for height/width
+                converted_panes.append(new_pane if new_pane else None)
+
+            window_dict["panes"] = converted_panes
 
         if "layout" in w:
             window_dict["layout"] = w["layout"]
