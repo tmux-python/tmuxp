@@ -6,15 +6,15 @@ API limitations blocking full tmuxinator/teamocil parity.
 
 | Category | Count | Status |
 |----------|-------|--------|
-| libtmux blockers | 2 | Requires libtmux changes |
+| libtmux blockers | 2 | **DONE** (libtmux tmuxinator-parity branch) |
 | libtmux minor issues | 1 | Low priority |
 | libtmux features available | 9 | Not blockers |
-| Dead config keys | 8 | Phase 1 |
-| Missing config keys | 8 | Phase 2 |
-| CLI flag gaps | 4 | Phase 4 |
+| Dead config keys | 8 | **DONE** (Phase 1) |
+| Missing config keys | 8 | **DONE** (Phase 2) |
+| CLI flag gaps | 4 | 3 **DONE**, 1 blocked |
 | CLI command gaps | 3 | Low priority |
-| tmuxinator importer bugs | 9 | Phase 3 |
-| teamocil importer bugs | 9 | Phase 3 |
+| tmuxinator importer bugs | 9 | **DONE** (Phase 3) |
+| teamocil importer bugs | 9 | **DONE** (Phase 3) |
 | Features already working | 13 | No changes needed |
 
 ---
@@ -112,12 +112,12 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 
 **Flags:**
 
-| Feature | tmuxinator/teamocil | tmuxp |
-|---------|---------------------|-------|
-| `--debug` | Dry-run mode | Not implemented |
-| `--here` | Reuse current window | Not implemented |
-| `--no-pre-window` | Skip pre commands | Not implemented (only `--no-startup` for shell.py) |
-| `config -- args` | CLI argument passing | Not implemented |
+| Feature | tmuxinator/teamocil | tmuxp | Status |
+|---------|---------------------|-------|--------|
+| `--debug` | Dry-run mode | Not implemented | Blocked (needs libtmux dry-run) |
+| `--here` | Reuse current window | `--here` | **DONE** |
+| `--no-pre-window` | Skip pre commands | `--no-shell-command-before` | **DONE** |
+| `config -- args` | CLI argument passing | `config -- KEY=value` | **DONE** |
 
 **Commands** (lower priority — not blocking workspace loading):
 
@@ -212,18 +212,23 @@ Remaining:
 **DONE (2026-02-05)**:
 - `--no-shell-command-before` flag implemented
 - `--here` flag implemented
+- `config -- args` implemented (via environment variables)
 
 Remaining:
-1. **`--debug`**: Print tmux commands without executing
-2. **`config -- args`**: Pre-process sys.argv to extract args after `--`
 
-**Effort**: New optional flags, no behavior change for existing usage.
+1. **`--debug`**: Print tmux commands without executing
+   - **Complexity**: Medium - libtmux now supports dry_run mode
+   - **libtmux ready**: dry_run parameter added to Server and tmux_cmd in tmuxinator-parity branch
+   - **tmuxp implementation**: Pass dry_run=True to Server, then print server.dry_run_commands
+
+**Effort**: libtmux dry_run ready, tmuxp integration straightforward.
 
 ### Phase 5: libtmux changes (requires coordination)
 
 **DONE (2026-02-05)**: Implemented in libtmux `tmuxinator-parity` branch:
 1. **`tmux_bin` parameter**: Added to `Server.__init__()` and `tmux_cmd()`
 2. **`Pane.set_title()`**: Added method using `select-pane -T`
+3. **`dry_run` mode**: Added to `Server.__init__()` and `tmux_cmd()` for debugging
 
 **Remaining**: Merge and release libtmux, then update tmuxp to use these features.
 

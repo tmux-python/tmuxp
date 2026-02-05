@@ -182,3 +182,37 @@ Tracking completed items from the feature parity plan.
 - `tmux_bin` enables tmuxinator's `tmux_command` config for wemux/byobu
 - Requires libtmux release before tmuxp can use these features
 - CHANGES updated with feature documentation
+
+## 2026-02-05: Add dry_run mode to libtmux (Phase 5)
+
+**What**: Added dry_run mode to libtmux for debugging without executing tmux commands.
+
+**Branch**: `tmuxinator-parity` in libtmux repository
+
+**Files** (libtmux):
+- `src/libtmux/common.py` - Add dry_run parameter to tmux_cmd class
+- `src/libtmux/server.py` - Add dry_run parameter to Server, collect commands in dry_run_commands
+- `tests/test_common.py` - Add 3 tests for tmux_cmd dry_run
+- `tests/test_server.py` - Add 4 tests for Server dry_run
+
+**Notes**:
+- When `dry_run=True`, commands are not executed via subprocess
+- Commands are collected in `Server.dry_run_commands` list for inspection
+- Enables tmuxp to implement `--debug` flag similar to tmuxinator
+- CHANGES updated with feature documentation
+
+## 2026-02-05: Add workspace args CLI feature (Phase 4)
+
+**What**: Add support for passing arguments to workspace configs via `--` separator. Arguments are set as environment variables before config expansion, making them available via `$VAR` syntax.
+
+**Files**:
+- `src/tmuxp/cli/__init__.py` - Add extract_workspace_args() function and call set_workspace_args_env() for load command
+- `src/tmuxp/cli/load.py` - Add set_workspace_args_env() function
+- `tests/cli/test_load.py` - Add 8 tests for workspace args feature
+
+**Notes**:
+- Usage: `tmuxp load myconfig.yaml -- KEY=value ANOTHER=value`
+- Key=value args become `$KEY` environment variables
+- Positional args become `$TMUXP_ARG_0`, `$TMUXP_ARG_1`, etc.
+- Works with tmuxp's existing `os.path.expandvars` in `expandshell()`
+- Similar to tmuxinator's ERB `@args` but using shell environment variables
