@@ -139,3 +139,138 @@ def test_multisession_config(
     validation.validate_schema(
         importers.import_teamocil(multisession_config[session_name]),
     )
+
+
+class TeamocilV142Fixture(t.NamedTuple):
+    """Test fixture for teamocil v1.4.2+ features."""
+
+    test_id: str
+    teamocil_dict: dict[str, t.Any]
+    expected_windows: list[dict[str, t.Any]]
+
+
+TEST_TEAMOCIL_V142_FIXTURES: list[TeamocilV142Fixture] = [
+    TeamocilV142Fixture(
+        test_id="string_panes",
+        teamocil_dict={
+            "windows": [
+                {
+                    "name": "editor",
+                    "panes": ["vim", "git status"],
+                },
+            ],
+        },
+        expected_windows=[
+            {
+                "window_name": "editor",
+                "panes": [
+                    {"shell_command": "vim"},
+                    {"shell_command": "git status"},
+                ],
+            },
+        ],
+    ),
+    TeamocilV142Fixture(
+        test_id="commands_plural",
+        teamocil_dict={
+            "windows": [
+                {
+                    "name": "editor",
+                    "panes": [
+                        {"commands": ["cd project", "vim"]},
+                    ],
+                },
+            ],
+        },
+        expected_windows=[
+            {
+                "window_name": "editor",
+                "panes": [
+                    {"shell_command": ["cd project", "vim"]},
+                ],
+            },
+        ],
+    ),
+    TeamocilV142Fixture(
+        test_id="window_options",
+        teamocil_dict={
+            "windows": [
+                {
+                    "name": "editor",
+                    "options": {"synchronize-panes": "on"},
+                    "panes": [{"cmd": "vim"}],
+                },
+            ],
+        },
+        expected_windows=[
+            {
+                "window_name": "editor",
+                "options": {"synchronize-panes": "on"},
+                "panes": [{"shell_command": "vim"}],
+            },
+        ],
+    ),
+    TeamocilV142Fixture(
+        test_id="window_focus",
+        teamocil_dict={
+            "windows": [
+                {"name": "first", "panes": [{"cmd": "ls"}]},
+                {"name": "second", "focus": True, "panes": [{"cmd": "vim"}]},
+            ],
+        },
+        expected_windows=[
+            {"window_name": "first", "panes": [{"shell_command": "ls"}]},
+            {
+                "window_name": "second",
+                "focus": True,
+                "panes": [{"shell_command": "vim"}],
+            },
+        ],
+    ),
+    TeamocilV142Fixture(
+        test_id="optional_window_name",
+        teamocil_dict={
+            "windows": [
+                {"panes": [{"cmd": "vim"}]},
+            ],
+        },
+        expected_windows=[
+            {"window_name": "window-0", "panes": [{"shell_command": "vim"}]},
+        ],
+    ),
+    TeamocilV142Fixture(
+        test_id="pane_focus",
+        teamocil_dict={
+            "windows": [
+                {
+                    "name": "editor",
+                    "panes": [
+                        {"cmd": "vim"},
+                        {"cmd": "git status", "focus": True},
+                    ],
+                },
+            ],
+        },
+        expected_windows=[
+            {
+                "window_name": "editor",
+                "panes": [
+                    {"shell_command": "vim"},
+                    {"shell_command": "git status", "focus": True},
+                ],
+            },
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_TEAMOCIL_V142_FIXTURES,
+    ids=[test.test_id for test in TEST_TEAMOCIL_V142_FIXTURES],
+)
+def test_teamocil_v142_features(test: TeamocilV142Fixture) -> None:
+    """Test teamocil v1.4.2+ feature handling in import."""
+    result = importers.import_teamocil(test.teamocil_dict.copy())
+
+    assert result["windows"] == test.expected_windows
