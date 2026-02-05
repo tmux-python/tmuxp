@@ -209,12 +209,13 @@ Remaining:
 
 ### Phase 4: Add CLI features
 
-**DONE (2026-02-05)**: `--no-shell-command-before` flag implemented.
+**DONE (2026-02-05)**:
+- `--no-shell-command-before` flag implemented
+- `--here` flag implemented
 
 Remaining:
 1. **`--debug`**: Print tmux commands without executing
-2. **`--here`**: Rename current window instead of creating new
-3. **`config -- args`**: Pre-process sys.argv to extract args after `--`
+2. **`config -- args`**: Pre-process sys.argv to extract args after `--`
 
 **Effort**: New optional flags, no behavior change for existing usage.
 

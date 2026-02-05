@@ -143,19 +143,23 @@ Tracking completed items from the feature parity plan.
 - Optional window names fall back to `window-N` index
 - `target` key passed through from panes
 
-## 2026-02-05: Add --no-shell-command-before CLI flag (Phase 4)
+## 2026-02-05: Add --no-shell-command-before and --here CLI flags (Phase 4)
 
-**What**: Add `--no-shell-command-before` flag to skip pre-window commands during workspace loading.
+**What**: Add two CLI flags:
+1. `--no-shell-command-before` - Skip pre-window commands during workspace loading
+2. `--here` - Reuse current window as first window in layout
 
 **Files**:
-- `src/tmuxp/cli/load.py` - Add CLI arg, update CLILoadNamespace, update load_workspace() signature
+- `src/tmuxp/cli/load.py` - Add both CLI args, update CLILoadNamespace, update load_workspace()
 - `src/tmuxp/workspace/loader.py` - Add skip_shell_command_before parameter to trickle()
-- `tests/cli/test_load.py` - Add 2 tests for new flag
-- `tests/workspace/test_config.py` - Add 5 parametrized test cases for trickle() with flag
+- `src/tmuxp/workspace/builder.py` - Add here parameter to build() and iter_create_windows()
+- `tests/cli/test_load.py` - Add 4 tests for new flags
+- `tests/workspace/test_config.py` - Add 5 parametrized test cases for trickle()
 
 **Notes**:
-- Equivalent to tmuxinator's `--no-pre-window` flag
-- Useful for quick session reload, debugging, and bypassing slow setup commands
+- `--no-shell-command-before` is equivalent to tmuxinator's `--no-pre-window` flag
+- `--here` is equivalent to teamocil's `--here` flag
+- `--here` requires running inside tmux and renames current window instead of creating new
 
 ## 2026-02-05: Add libtmux features for tmuxinator parity (Phase 5)
 
