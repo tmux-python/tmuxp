@@ -249,7 +249,7 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             commands_after: list[t.Any] = []
 
             # Prepend session-level shell_command first (runs before everything)
-            # This handles the tmuxinator 'pre' key when both 'pre' and 'pre_window' exist
+            # Handles tmuxinator 'pre' key when both 'pre' and 'pre_window' exist
             if "shell_command" in workspace_dict:
                 session_cmds = workspace_dict["shell_command"]
                 if isinstance(session_cmds, list):
@@ -272,6 +272,11 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                 commands_before.extend(
                     pane_dict["shell_command_before"]["shell_command"],
                 )
+
+            # Handle window-level 'clear' option (from teamocil imports)
+            # Inserts 'clear' command before pane commands
+            if window_dict.get("clear") is True:
+                commands_before.append({"cmd": "clear"})
 
             # Append shell_command_after to commands (pane -> window -> session order)
             if "shell_command_after" in pane_dict:
