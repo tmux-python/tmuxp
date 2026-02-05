@@ -87,3 +87,16 @@ Tracking completed items from the feature parity plan.
 - `synchronize: true` or `"before"` -> `options: {synchronize-panes: on}`
 - `synchronize: "after"` -> `options_after: {synchronize-panes: on}`
 - This completes Phase 2 (all missing config keys now supported)
+
+## 2026-02-04: Fix tmuxinator importer pre_window and add rvm support
+
+**What**: Fix tmuxinator importer to handle `pre_window` alone (without `pre`), add support for `pre_tab` (deprecated alias), and add `rvm` version manager support.
+
+**Files**:
+- `src/tmuxp/workspace/importers.py` - Fix pre_window handling, add pre_tab and rvm
+- `tests/workspace/test_import_tmuxinator.py` - Add 9 parametrized test cases
+
+**Notes**:
+- `pre_window` alone now correctly maps to `shell_command_before`
+- `pre_tab` is supported as deprecated alias for `pre_window`
+- `rvm` support added alongside existing `rbenv` support

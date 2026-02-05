@@ -181,9 +181,29 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 
 ### Phase 3: Fix importer bugs
 
-1. **tmuxinator**: Handle `pre_window` independently, add `rvm`/`pre_tab` support, map `startup_*` to focus, map `synchronize` to `options_after`
-2. **teamocil**: Add v1.4.2 format detection, handle string panes, handle `commands` (plural), map `options`/`focus`, handle optional session name
-3. **Auto-detect format**: Add `detect_format(config_dict) -> "tmuxp" | "tmuxinator" | "teamocil"` for transparent loading
+**DONE (2026-02-04)**: tmuxinator importer fixes:
+- `pre_window` alone now works (was requiring both `pre` and `pre_window`)
+- `pre_tab` supported as deprecated alias for `pre_window`
+- `rvm` support added alongside existing `rbenv`
+
+Remaining tmuxinator bugs:
+- `startup_window`/`startup_pane` not mapped to `focus: true`
+- `synchronize` not mapped to `options_after`
+- `post` not handled
+- Named panes lose title
+- Loop reassignment bug (lines 80-81)
+- Input mutation with `dict.pop()`
+
+Remaining teamocil bugs:
+- v1.4.2 format not supported (uses `commands` not `cmd`)
+- String panes crash
+- Missing window name KeyError
+- `windows[].options` not mapped
+- `windows[].focus` not handled
+- Optional session name issues
+
+Remaining:
+- Auto-detect format function
 
 **Effort**: Improves compatibility, doesn't affect native tmuxp configs.
 
