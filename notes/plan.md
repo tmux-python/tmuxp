@@ -163,16 +163,13 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 
 ### Phase 1: Fix dead config keys (no API changes)
 
-Read existing keys in `load_workspace()` and pass to `Server()`:
+**DONE (2026-02-04)**: `socket_name`, `socket_path`, `config` now read from workspace config.
 
-```python
-# cli/load.py, around line 369
-socket_name = args.socket_name or expanded_workspace.get("socket_name")
-socket_path = args.socket_path or expanded_workspace.get("socket_path")
-config_file = args.tmux_config_file or expanded_workspace.get("config")
-```
-
-**Effort**: Small change, CLI args override config, backwards compatible.
+Remaining dead keys to fix:
+- `shell_command_after` — needs `trickle()` update
+- `shell_command` (session-level) — needs builder update
+- `clear` — needs builder update
+- `attach` — needs `load_workspace()` update
 
 ### Phase 2: Add missing config keys
 
