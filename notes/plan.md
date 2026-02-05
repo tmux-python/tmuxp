@@ -209,19 +209,22 @@ Remaining:
 
 ### Phase 4: Add CLI features
 
+**DONE (2026-02-05)**: `--no-shell-command-before` flag implemented.
+
+Remaining:
 1. **`--debug`**: Print tmux commands without executing
 2. **`--here`**: Rename current window instead of creating new
-3. **`--no-shell-command-before`**: Skip pre commands
-4. **`config -- args`**: Pre-process sys.argv to extract args after `--`
+3. **`config -- args`**: Pre-process sys.argv to extract args after `--`
 
 **Effort**: New optional flags, no behavior change for existing usage.
 
 ### Phase 5: libtmux changes (requires coordination)
 
-1. **`tmux_bin` parameter**: Add to `Server.__init__`, propagate to `tmux_cmd()`
-2. **`Pane.set_title()`**: Add method using `select-pane -T`
+**DONE (2026-02-05)**: Implemented in libtmux `tmuxinator-parity` branch:
+1. **`tmux_bin` parameter**: Added to `Server.__init__()` and `tmux_cmd()`
+2. **`Pane.set_title()`**: Added method using `select-pane -T`
 
-**Effort**: Requires libtmux release, then tmuxp update.
+**Remaining**: Merge and release libtmux, then update tmuxp to use these features.
 
 ---
 

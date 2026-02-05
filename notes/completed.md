@@ -142,3 +142,39 @@ Tracking completed items from the feature parity plan.
 - Pane-level `focus` and `root` now supported
 - Optional window names fall back to `window-N` index
 - `target` key passed through from panes
+
+## 2026-02-05: Add --no-shell-command-before CLI flag (Phase 4)
+
+**What**: Add `--no-shell-command-before` flag to skip pre-window commands during workspace loading.
+
+**Files**:
+- `src/tmuxp/cli/load.py` - Add CLI arg, update CLILoadNamespace, update load_workspace() signature
+- `src/tmuxp/workspace/loader.py` - Add skip_shell_command_before parameter to trickle()
+- `tests/cli/test_load.py` - Add 2 tests for new flag
+- `tests/workspace/test_config.py` - Add 5 parametrized test cases for trickle() with flag
+
+**Notes**:
+- Equivalent to tmuxinator's `--no-pre-window` flag
+- Useful for quick session reload, debugging, and bypassing slow setup commands
+
+## 2026-02-05: Add libtmux features for tmuxinator parity (Phase 5)
+
+**What**: Added two libtmux features needed for full tmuxinator parity:
+1. `Pane.set_title()` method for setting pane titles
+2. `tmux_bin` parameter on Server for custom tmux binary path
+
+**Branch**: `tmuxinator-parity` in libtmux repository
+
+**Files** (libtmux):
+- `src/libtmux/pane.py` - Add Pane.set_title() method using `select-pane -T`
+- `src/libtmux/common.py` - Add tmux_bin kwarg to tmux_cmd.__init__()
+- `src/libtmux/server.py` - Add tmux_bin parameter to Server.__init__(), update cmd() and raise_if_dead()
+- `tests/test_pane.py` - Add 3 tests for set_title()
+- `tests/test_server.py` - Add 3 tests for tmux_bin parameter
+- `tests/test_common.py` - Add 2 tests for tmux_cmd with tmux_bin
+
+**Notes**:
+- `Pane.set_title()` enables tmuxinator's named panes feature
+- `tmux_bin` enables tmuxinator's `tmux_command` config for wemux/byobu
+- Requires libtmux release before tmuxp can use these features
+- CHANGES updated with feature documentation
