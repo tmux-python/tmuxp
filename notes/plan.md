@@ -93,12 +93,22 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 
 ### 3. CLI gaps
 
+**Flags:**
+
 | Feature | tmuxinator/teamocil | tmuxp |
 |---------|---------------------|-------|
 | `--debug` | Dry-run mode | Not implemented |
 | `--here` | Reuse current window | Not implemented |
 | `--no-pre-window` | Skip pre commands | Not implemented (only `--no-startup` for shell.py) |
 | `config -- args` | CLI argument passing | Not implemented |
+
+**Commands** (lower priority — not blocking workspace loading):
+
+| Feature | tmuxinator/teamocil | tmuxp |
+|---------|---------------------|-------|
+| `copy src dst` | Copy config file | Not implemented (use `cp`) |
+| `stop [name]` | Kill session by name | Not implemented (use `tmux kill-session`) |
+| `doctor` | Diagnose issues | `tmuxp debug-info` (partial equivalent) |
 
 ### 4. Importer bugs blocking correct import
 
@@ -124,7 +134,11 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 | String panes crash | Line 158-159: `if "cmd" in p` | TypeError when `p` is string |
 | Missing window name | Line 138: `w["name"]` | KeyError when name optional |
 | `commands` (plural) not handled | Only checks `cmd` | v1.4.2 pane commands ignored |
+| `windows[].options` not mapped | Not implemented | v1.4.2 window options ignored |
+| `windows[].focus` not handled | Not implemented | v1.4.2 window focus ignored |
+| Optional session name | Line 130: sets to `None` | WorkspaceBuilder raises error |
 | Unused loop in filters | Lines 145-146, 148-149 | Pointless iteration |
+| v0.x `target`/`cmd_separator`/`with_env_var` | Lines 117-123 (TODOs) | Silently ignored |
 
 ---
 
@@ -154,7 +168,7 @@ config_file = args.tmux_config_file or expanded_workspace.get("config")
 ### Phase 3: Fix importer bugs
 
 1. **tmuxinator**: Handle `pre_window` independently, add `rvm`/`pre_tab` support, map `startup_*` to focus, map `synchronize` to `options_after`
-2. **teamocil**: Add v1.4.2 format detection, handle string panes, handle `commands` (plural)
+2. **teamocil**: Add v1.4.2 format detection, handle string panes, handle `commands` (plural), map `options`/`focus`, handle optional session name
 3. **Auto-detect format**: Add `detect_format(config_dict) -> "tmuxp" | "tmuxinator" | "teamocil"` for transparent loading
 
 **Effort**: Improves compatibility, doesn't affect native tmuxp configs.
