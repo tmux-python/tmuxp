@@ -38,4 +38,16 @@ Tracking completed items from the feature parity plan.
 
 **Notes**:
 - Enables tmuxinator-style `attach: false` configs to work correctly
-- Remaining dead config keys: `shell_command_after`, `shell_command` (session-level), `clear`
+- Remaining dead config keys: `shell_command` (session-level), `clear`
+
+## 2026-02-04: Support shell_command_after in workspace configs
+
+**What**: Add `shell_command_after` handling to `expand()` and `trickle()` functions. Commands are appended after pane commands in reverse order (pane → window → session), mirroring teardown semantics.
+
+**Files**:
+- `src/tmuxp/workspace/loader.py` - Handle shell_command_after in expand() and trickle()
+- `tests/workspace/test_config.py` - Add 5 parametrized test cases
+
+**Notes**:
+- Enables teamocil's `filters.after` to work correctly when imported
+- Remaining dead config keys: `shell_command` (session-level), `clear`
