@@ -56,24 +56,44 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    if "pre" in workspace_dict and "pre_window" in workspace_dict:
+    # Handle pre/pre_window/pre_tab combinations
+    # pre_tab is deprecated alias for pre_window
+    pre_window = workspace_dict.get("pre_window") or workspace_dict.get("pre_tab")
+
+    if "pre" in workspace_dict and pre_window:
+        # Both present: pre -> session shell_command, pre_window -> shell_command_before
         tmuxp_workspace["shell_command"] = workspace_dict["pre"]
-
-        if isinstance(workspace_dict["pre"], str):
-            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre_window"]]
+        if isinstance(pre_window, str):
+            tmuxp_workspace["shell_command_before"] = [pre_window]
         else:
-            tmuxp_workspace["shell_command_before"] = workspace_dict["pre_window"]
+            tmuxp_workspace["shell_command_before"] = pre_window
+    elif pre_window:
+        # Only pre_window: use it as shell_command_before
+        if isinstance(pre_window, str):
+            tmuxp_workspace["shell_command_before"] = [pre_window]
+        else:
+            tmuxp_workspace["shell_command_before"] = pre_window
     elif "pre" in workspace_dict:
-        if isinstance(workspace_dict["pre"], str):
-            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre"]]
+        # Only pre: use it as shell_command_before
+        pre = workspace_dict["pre"]
+        if isinstance(pre, str):
+            tmuxp_workspace["shell_command_before"] = [pre]
         else:
-            tmuxp_workspace["shell_command_before"] = workspace_dict["pre"]
+            tmuxp_workspace["shell_command_before"] = pre
 
+    # Handle rbenv and rvm version managers
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
             tmuxp_workspace["shell_command_before"] = []
         tmuxp_workspace["shell_command_before"].append(
-            "rbenv shell {}".format(workspace_dict["rbenv"]),
+            f"rbenv shell {workspace_dict['rbenv']}",
+        )
+
+    if "rvm" in workspace_dict:
+        if "shell_command_before" not in tmuxp_workspace:
+            tmuxp_workspace["shell_command_before"] = []
+        tmuxp_workspace["shell_command_before"].append(
+            f"rvm use {workspace_dict['rvm']}",
         )
 
     for window_dict in workspace_dict["windows"]:
