@@ -114,3 +114,31 @@ Tracking completed items from the feature parity plan.
 - `synchronize: "after"` -> `options_after: {synchronize-panes: on}`
 - `startup_window` -> `focus: true` on matching window
 - `startup_pane` -> `focus: true` on matching pane (supports combined with startup_window)
+
+## 2026-02-04: Fix tmuxinator importer loop bug and add post warning
+
+**What**: Fix loop variable reassignment bug and add warning for unsupported `post` key.
+
+**Files**:
+- `src/tmuxp/workspace/importers.py` - Fix loop bug, add logging, warn on post
+- `tests/workspace/test_import_tmuxinator.py` - Add test for post warning
+
+**Notes**:
+- Renamed `window_dict` to `new_window` in loop to avoid shadowing
+- Added warning when `post` key is encountered (no tmuxp equivalent)
+
+## 2026-02-04: Fix teamocil v1.4.2+ compatibility
+
+**What**: Support modern teamocil format with string panes, `commands` key, and window/pane focus.
+
+**Files**:
+- `src/tmuxp/workspace/importers.py` - Comprehensive teamocil importer rewrite
+- `tests/workspace/test_import_teamocil.py` - Add 6 parametrized test cases
+
+**Notes**:
+- String panes now converted to `{shell_command: "cmd"}`
+- `commands` (v1.4.2) supported alongside `cmd`
+- Window-level `options` and `focus` now supported
+- Pane-level `focus` and `root` now supported
+- Optional window names fall back to `window-N` index
+- `target` key passed through from panes

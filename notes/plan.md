@@ -187,23 +187,23 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 - `rvm` support added alongside existing `rbenv`
 - `startup_window`/`startup_pane` now mapped to `focus: true`
 - `synchronize` now mapped to `options`/`options_after`
+- `post` now warns user (no equivalent in tmuxp)
+- Loop reassignment bug fixed (renamed `window_dict` to `new_window`)
 
 Remaining tmuxinator bugs:
-- `post` not handled
-- Named panes lose title
-- Loop reassignment bug (lines 80-81)
-- Input mutation with `dict.pop()`
+- Named panes lose title (blocked by libtmux - needs `Pane.set_title()`)
+- Input mutation with `dict.pop()` (low priority - callers can copy if needed)
 
-Remaining teamocil bugs:
-- v1.4.2 format not supported (uses `commands` not `cmd`)
-- String panes crash
-- Missing window name KeyError
-- `windows[].options` not mapped
-- `windows[].focus` not handled
-- Optional session name issues
+**DONE (2026-02-04)**: teamocil importer fixes:
+- v1.4.2 format now supported (`commands` and `cmd`)
+- String panes now handled
+- Optional window name with fallback to index
+- `windows[].options` now mapped
+- `windows[].focus` now handled
+- Pane-level `focus` and `root` now handled
 
 Remaining:
-- Auto-detect format function
+- Auto-detect format function (optional enhancement)
 
 **Effort**: Improves compatibility, doesn't affect native tmuxp configs.
 
