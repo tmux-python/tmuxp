@@ -50,4 +50,16 @@ Tracking completed items from the feature parity plan.
 
 **Notes**:
 - Enables teamocil's `filters.after` to work correctly when imported
-- Remaining dead config keys: `shell_command` (session-level), `clear`
+- Remaining dead config keys: `clear`
+
+## 2026-02-04: Support session-level shell_command
+
+**What**: Read session-level `shell_command` in `trickle()` and prepend to all pane commands. This handles the tmuxinator import case where both `pre` and `pre_window` are present.
+
+**Files**:
+- `src/tmuxp/workspace/loader.py` - Handle session-level shell_command in trickle(), fix expand_cmd() type hint
+- `tests/workspace/test_config.py` - Add 4 parametrized test cases
+
+**Notes**:
+- Session-level shell_command runs before shell_command_before
+- Remaining dead config keys: `clear`
