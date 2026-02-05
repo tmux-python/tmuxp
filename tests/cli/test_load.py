@@ -915,3 +915,101 @@ def test_config_key_precedence(
     assert captured_server_args.get("socket_name") == test.expected_socket_name
     assert captured_server_args.get("socket_path") == test.expected_socket_path
     assert captured_server_args.get("config_file") == test.expected_config_file
+
+
+# Attach config key tests
+
+
+class AttachConfigFixture(t.NamedTuple):
+    """Test fixture for attach config key tests."""
+
+    test_id: str
+    config_attach: bool | None  # None = key not present
+    cli_detached: bool
+    expected_detached: bool
+
+
+TEST_ATTACH_CONFIG_FIXTURES: list[AttachConfigFixture] = [
+    AttachConfigFixture(
+        test_id="config-attach-false-detaches",
+        config_attach=False,
+        cli_detached=False,
+        expected_detached=True,
+    ),
+    AttachConfigFixture(
+        test_id="config-attach-true-attaches",
+        config_attach=True,
+        cli_detached=False,
+        expected_detached=False,
+    ),
+    AttachConfigFixture(
+        test_id="config-attach-missing-attaches",
+        config_attach=None,
+        cli_detached=False,
+        expected_detached=False,
+    ),
+    AttachConfigFixture(
+        test_id="cli-detached-overrides-config-attach-true",
+        config_attach=True,
+        cli_detached=True,
+        expected_detached=True,
+    ),
+    AttachConfigFixture(
+        test_id="cli-detached-with-config-attach-false",
+        config_attach=False,
+        cli_detached=True,
+        expected_detached=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_ATTACH_CONFIG_FIXTURES,
+    ids=[test.test_id for test in TEST_ATTACH_CONFIG_FIXTURES],
+)
+def test_attach_config_key(
+    test: AttachConfigFixture,
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that attach config key controls detached mode with CLI precedence."""
+    import yaml
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    # Create config with optional attach key
+    config: dict[str, t.Any] = {
+        "session_name": "test-attach",
+        "windows": [{"window_name": "main"}],
+    }
+    if test.config_attach is not None:
+        config["attach"] = test.config_attach
+
+    # Write config file
+    config_file = tmp_path / "test.yaml"
+    config_file.write_text(yaml.dump(config), encoding="utf-8")
+
+    # Track whether _load_detached or _load_attached was called
+    load_mode: dict[str, bool] = {"detached": False}
+
+    def mock_load_detached(builder: t.Any, colors: t.Any) -> None:
+        load_mode["detached"] = True
+        builder.build()
+
+    def mock_load_attached(builder: t.Any, detached: bool) -> None:
+        load_mode["detached"] = detached
+        builder.build()
+
+    monkeypatch.setattr("tmuxp.cli.load._load_detached", mock_load_detached)
+    monkeypatch.setattr("tmuxp.cli.load._load_attached", mock_load_attached)
+
+    load_workspace(
+        str(config_file),
+        socket_name=server.socket_name,
+        detached=test.cli_detached,
+        answer_yes=True,  # Skip prompts
+    )
+
+    assert load_mode["detached"] == test.expected_detached
