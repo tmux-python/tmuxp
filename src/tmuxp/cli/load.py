@@ -366,10 +366,15 @@ def load_workspace(
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
+    # Merge config values with CLI args (CLI takes precedence)
+    final_socket_name = socket_name or expanded_workspace.get("socket_name")
+    final_socket_path = socket_path or expanded_workspace.get("socket_path")
+    final_config_file = tmux_config_file or expanded_workspace.get("config")
+
     t = Server(  # create tmux server object
-        socket_name=socket_name,
-        socket_path=socket_path,
-        config_file=tmux_config_file,
+        socket_name=final_socket_name,
+        socket_path=final_socket_path,
+        config_file=final_config_file,
         colors=colors,
     )
 
