@@ -26,4 +26,16 @@ Tracking completed items from the feature parity plan.
 
 **Notes**:
 - This enables configs imported from tmuxinator (which set `socket_name` and `config` keys) to work correctly
-- Remaining dead config keys from Phase 1: `shell_command_after`, `shell_command` (session-level), `clear`, `attach`
+- Remaining dead config keys from Phase 1: `shell_command_after`, `shell_command` (session-level), `clear`
+
+## 2026-02-04: Support attach config key
+
+**What**: Read `attach` key from workspace config to control detached mode. When `attach: false` is set, session loads in detached mode. CLI `-d` flag takes precedence.
+
+**Files**:
+- `src/tmuxp/cli/load.py` - Handle attach config key with CLI precedence
+- `tests/cli/test_load.py` - Add 5 parametrized test cases for attach config
+
+**Notes**:
+- Enables tmuxinator-style `attach: false` configs to work correctly
+- Remaining dead config keys: `shell_command_after`, `shell_command` (session-level), `clear`

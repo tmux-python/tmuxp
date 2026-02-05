@@ -169,7 +169,8 @@ Remaining dead keys to fix:
 - `shell_command_after` — needs `trickle()` update
 - `shell_command` (session-level) — needs builder update
 - `clear` — needs builder update
-- `attach` — needs `load_workspace()` update
+
+**DONE (2026-02-04)**: `attach` config key now read from workspace config.
 
 ### Phase 2: Add missing config keys
 
