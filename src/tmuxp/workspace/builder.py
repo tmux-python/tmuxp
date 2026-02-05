@@ -222,7 +222,12 @@ class WorkspaceBuilder:
             return False
         return True
 
-    def build(self, session: Session | None = None, append: bool = False) -> None:
+    def build(
+        self,
+        session: Session | None = None,
+        append: bool = False,
+        here: bool = False,
+    ) -> None:
         """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
@@ -236,6 +241,8 @@ class WorkspaceBuilder:
             session to build workspace in
         append : bool
             append windows in current active session
+        here : bool
+            use current window as first window in layout
         """
         if not session:
             if not self.server:
@@ -312,7 +319,7 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        for window, window_config in self.iter_create_windows(session, append):
+        for window, window_config in self.iter_create_windows(session, append, here):
             assert isinstance(window, Window)
 
             for plugin in self.plugins:
@@ -347,6 +354,7 @@ class WorkspaceBuilder:
         self,
         session: Session,
         append: bool = False,
+        here: bool = False,
     ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -361,6 +369,8 @@ class WorkspaceBuilder:
             session to create windows in
         append : bool
             append windows in current active session
+        here : bool
+            use current window as first window in layout
 
         Returns
         -------
@@ -379,6 +389,40 @@ class WorkspaceBuilder:
                 session,
                 append,
             )
+
+            # --here: reuse current window for first window
+            if here and window_iterator == 1:
+                window = session.active_window
+                assert isinstance(window, Window)
+
+                # Rename the current window
+                if window_name:
+                    window.rename_window(window_name)
+
+                # Change to start_directory via send_keys (can't change existing
+                # window's start_directory)
+                start_directory = window_config.get("start_directory", None)
+                panes = window_config["panes"]
+                if panes and "start_directory" in panes[0]:
+                    start_directory = panes[0]["start_directory"]
+
+                if start_directory:
+                    active_pane = window.active_pane
+                    if active_pane:
+                        active_pane.send_keys(f'cd "{start_directory}"')
+
+                if "options" in window_config and isinstance(
+                    window_config["options"],
+                    dict,
+                ):
+                    for key, val in window_config["options"].items():
+                        window.set_option(key, val)
+
+                if window_config.get("focus"):
+                    window.select()
+
+                yield window, window_config
+                continue
 
             w1 = None
             if is_first_window_pass:  # if first window, use window 1

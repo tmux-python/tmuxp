@@ -71,9 +71,11 @@ class CLILoadNamespace(argparse.Namespace):
     answer_yes: bool | None
     detached: bool
     append: bool | None
+    here: bool | None
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
+    no_shell_command_before: bool | None
 
 
 def load_plugins(
@@ -238,6 +240,27 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     assert builder.session is not None
 
 
+def _load_here(builder: WorkspaceBuilder) -> None:
+    """
+    Load workspace using current window as first window.
+
+    Parameters
+    ----------
+    builder: :class:`workspace.builder.WorkspaceBuilder`
+
+    Notes
+    -----
+    The --here flag reuses the current tmux window for the first window in the
+    workspace layout. This is useful when you want to transform your current
+    window into a workspace layout without creating a new session.
+
+    Requires running inside tmux (TMUX environment variable must be set).
+    """
+    current_attached_session = builder.find_current_attached_session()
+    builder.build(current_attached_session, append=True, here=True)
+    assert builder.session is not None
+
+
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     """Execute hooks for plugins running after ``before_script``.
 
@@ -262,7 +285,9 @@ def load_workspace(
     detached: bool = False,
     answer_yes: bool = False,
     append: bool = False,
+    here: bool = False,
     cli_colors: Colors | None = None,
+    no_shell_command_before: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -286,8 +311,13 @@ def load_workspace(
     append : bool
        Assume current when given prompt to append windows in same session.
        Default False.
+    here : bool
+        Use the current window as the first window in the layout. Requires
+        running inside tmux. Default False.
     cli_colors : Colors, optional
         Colors instance for CLI output formatting. If None, uses AUTO mode.
+    no_shell_command_before : bool
+        Skip shell_command_before commands. Default False.
 
     Notes
     -----
@@ -364,7 +394,10 @@ def load_workspace(
         expanded_workspace["session_name"] = new_session_name
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
-    expanded_workspace = loader.trickle(expanded_workspace)
+    expanded_workspace = loader.trickle(
+        expanded_workspace,
+        skip_shell_command_before=no_shell_command_before,
+    )
 
     # Merge config values with CLI args (CLI takes precedence)
     final_socket_name = socket_name or expanded_workspace.get("socket_name")
@@ -416,6 +449,16 @@ def load_workspace(
     try:
         if detached:
             _load_detached(builder, cli_colors)
+            return _setup_plugins(builder)
+
+        if here:
+            if "TMUX" not in os.environ:
+                tmuxp_echo(
+                    cli_colors.error("[Error]")
+                    + " --here requires running inside tmux",
+                )
+                return None
+            _load_here(builder)
             return _setup_plugins(builder)
 
         if append:
@@ -530,6 +573,14 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="load workspace, appending windows to the current session",
     )
+
+    parser.add_argument(
+        "--here",
+        dest="here",
+        action="store_true",
+        help="use current window as first window (requires running inside tmux)",
+    )
+
     colorsgroup = parser.add_mutually_exclusive_group()
 
     colorsgroup.add_argument(
@@ -554,6 +605,13 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         metavar="file_path",
         action="store",
         help="file to log errors/output to",
+    )
+
+    parser.add_argument(
+        "--no-shell-command-before",
+        dest="no_shell_command_before",
+        action="store_true",
+        help="skip shell_command_before commands",
     )
 
     try:
@@ -641,5 +699,7 @@ def command_load(
             detached=detached,
             answer_yes=args.answer_yes or False,
             append=args.append or False,
+            here=args.here or False,
             cli_colors=cli_colors,
+            no_shell_command_before=args.no_shell_command_before or False,
         )

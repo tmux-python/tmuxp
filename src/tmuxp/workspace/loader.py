@@ -207,7 +207,10 @@ def expand(
     return workspace_dict
 
 
-def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+def trickle(
+    workspace_dict: dict[str, t.Any],
+    skip_shell_command_before: bool = False,
+) -> dict[str, t.Any]:
     """Return a dict with "trickled down" / inherited workspace values.
 
     This will only work if workspace has been expanded to full form with
@@ -222,6 +225,8 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     ----------
     workspace_dict : dict
         the tmuxp workspace.
+    skip_shell_command_before : bool
+        If True, skip prepending shell_command_before commands. Default False.
 
     Returns
     -------
@@ -274,18 +279,19 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                             commands_before.append(cmd)
 
             # Prepend shell_command_before to commands
-            if "shell_command_before" in workspace_dict:
-                commands_before.extend(
-                    workspace_dict["shell_command_before"]["shell_command"],
-                )
-            if "shell_command_before" in window_dict:
-                commands_before.extend(
-                    window_dict["shell_command_before"]["shell_command"],
-                )
-            if "shell_command_before" in pane_dict:
-                commands_before.extend(
-                    pane_dict["shell_command_before"]["shell_command"],
-                )
+            if not skip_shell_command_before:
+                if "shell_command_before" in workspace_dict:
+                    commands_before.extend(
+                        workspace_dict["shell_command_before"]["shell_command"],
+                    )
+                if "shell_command_before" in window_dict:
+                    commands_before.extend(
+                        window_dict["shell_command_before"]["shell_command"],
+                    )
+                if "shell_command_before" in pane_dict:
+                    commands_before.extend(
+                        pane_dict["shell_command_before"]["shell_command"],
+                    )
 
             # Handle window-level 'clear' option (from teamocil imports)
             # Inserts 'clear' command before pane commands
