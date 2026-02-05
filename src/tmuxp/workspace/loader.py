@@ -28,7 +28,7 @@ def expandshell(value: str) -> str:
     return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
 
 
-def expand_cmd(p: dict[str, t.Any]) -> dict[str, t.Any]:
+def expand_cmd(p: str | list[t.Any] | dict[str, t.Any]) -> dict[str, t.Any]:
     """Resolve shell variables and expand shorthands in a tmuxp config mapping."""
     if isinstance(p, str):
         p = {"shell_command": [p]}
@@ -245,8 +245,19 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             window_dict["panes"] = [{"shell_command": []}]
 
         for pane_idx, pane_dict in enumerate(window_dict["panes"]):
-            commands_before: list[str] = []
-            commands_after: list[str] = []
+            commands_before: list[t.Any] = []
+            commands_after: list[t.Any] = []
+
+            # Prepend session-level shell_command first (runs before everything)
+            # This handles the tmuxinator 'pre' key when both 'pre' and 'pre_window' exist
+            if "shell_command" in workspace_dict:
+                session_cmds = workspace_dict["shell_command"]
+                if isinstance(session_cmds, list):
+                    for cmd in session_cmds:
+                        if isinstance(cmd, str):
+                            commands_before.append({"cmd": cmd})
+                        else:
+                            commands_before.append(cmd)
 
             # Prepend shell_command_before to commands
             if "shell_command_before" in workspace_dict:
