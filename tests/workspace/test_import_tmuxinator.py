@@ -60,3 +60,149 @@ def test_config_to_dict(
     assert importers.import_tmuxinator(tmuxinator_dict) == tmuxp_dict
 
     validation.validate_schema(importers.import_tmuxinator(tmuxinator_dict))
+
+
+class PreWindowFixture(t.NamedTuple):
+    """Test fixture for pre_window handling tests."""
+
+    test_id: str
+    tmuxinator_dict: dict[str, t.Any]
+    expected_shell_command: list[str] | None
+    expected_shell_command_before: list[str] | None
+
+
+TEST_PRE_WINDOW_FIXTURES: list[PreWindowFixture] = [
+    PreWindowFixture(
+        test_id="pre_window_alone",
+        tmuxinator_dict={
+            "name": "test",
+            "pre_window": "source .env",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command=None,
+        expected_shell_command_before=["source .env"],
+    ),
+    PreWindowFixture(
+        test_id="pre_window_list_alone",
+        tmuxinator_dict={
+            "name": "test",
+            "pre_window": ["source .env", "cd project"],
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command=None,
+        expected_shell_command_before=["source .env", "cd project"],
+    ),
+    PreWindowFixture(
+        test_id="pre_tab_alone",
+        tmuxinator_dict={
+            "name": "test",
+            "pre_tab": "source .env",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command=None,
+        expected_shell_command_before=["source .env"],
+    ),
+    PreWindowFixture(
+        test_id="pre_and_pre_window",
+        tmuxinator_dict={
+            "name": "test",
+            "pre": "cd /project",
+            "pre_window": "source .env",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command="cd /project",
+        expected_shell_command_before=["source .env"],
+    ),
+    PreWindowFixture(
+        test_id="pre_alone",
+        tmuxinator_dict={
+            "name": "test",
+            "pre": "source .env",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command=None,
+        expected_shell_command_before=["source .env"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_PRE_WINDOW_FIXTURES,
+    ids=[test.test_id for test in TEST_PRE_WINDOW_FIXTURES],
+)
+def test_pre_window_handling(test: PreWindowFixture) -> None:
+    """Test pre_window/pre_tab handling in tmuxinator import."""
+    result = importers.import_tmuxinator(test.tmuxinator_dict.copy())
+
+    if test.expected_shell_command:
+        assert result.get("shell_command") == test.expected_shell_command
+    else:
+        assert "shell_command" not in result
+
+    if test.expected_shell_command_before:
+        assert result.get("shell_command_before") == test.expected_shell_command_before
+    else:
+        assert "shell_command_before" not in result
+
+
+class VersionManagerFixture(t.NamedTuple):
+    """Test fixture for rbenv/rvm handling tests."""
+
+    test_id: str
+    tmuxinator_dict: dict[str, t.Any]
+    expected_shell_command_before: list[str]
+
+
+TEST_VERSION_MANAGER_FIXTURES: list[VersionManagerFixture] = [
+    VersionManagerFixture(
+        test_id="rbenv_only",
+        tmuxinator_dict={
+            "name": "test",
+            "rbenv": "2.7.0",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command_before=["rbenv shell 2.7.0"],
+    ),
+    VersionManagerFixture(
+        test_id="rvm_only",
+        tmuxinator_dict={
+            "name": "test",
+            "rvm": "2.7.0",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command_before=["rvm use 2.7.0"],
+    ),
+    VersionManagerFixture(
+        test_id="rbenv_with_pre_window",
+        tmuxinator_dict={
+            "name": "test",
+            "pre_window": "source .env",
+            "rbenv": "3.0.0",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command_before=["source .env", "rbenv shell 3.0.0"],
+    ),
+    VersionManagerFixture(
+        test_id="rvm_with_pre_window",
+        tmuxinator_dict={
+            "name": "test",
+            "pre_window": "source .env",
+            "rvm": "3.0.0",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_shell_command_before=["source .env", "rvm use 3.0.0"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_VERSION_MANAGER_FIXTURES,
+    ids=[test.test_id for test in TEST_VERSION_MANAGER_FIXTURES],
+)
+def test_version_manager_handling(test: VersionManagerFixture) -> None:
+    """Test rbenv/rvm handling in tmuxinator import."""
+    result = importers.import_tmuxinator(test.tmuxinator_dict.copy())
+
+    assert result.get("shell_command_before") == test.expected_shell_command_before
