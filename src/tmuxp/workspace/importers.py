@@ -118,7 +118,51 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
             if "layout" in v:
                 window_dict["layout"] = v["layout"]
+
+            # Handle synchronize option -> options_after
+            if "synchronize" in v:
+                sync_val = v["synchronize"]
+                if sync_val in (True, "before"):
+                    window_dict["options"] = {"synchronize-panes": "on"}
+                elif sync_val == "after":
+                    window_dict["options_after"] = {"synchronize-panes": "on"}
+
             tmuxp_workspace["windows"].append(window_dict)
+
+    # Handle startup_window - set focus: true on matching window
+    if "startup_window" in workspace_dict:
+        startup_window = workspace_dict["startup_window"]
+        for w in tmuxp_workspace["windows"]:
+            if w.get("window_name") == startup_window:
+                w["focus"] = True
+                break
+
+    # Handle startup_pane - set focus: true on matching pane in focused window
+    if "startup_pane" in workspace_dict:
+        startup_pane = workspace_dict["startup_pane"]
+        # Find the focused window (or first window if none focused)
+        target_window = None
+        for w in tmuxp_workspace["windows"]:
+            if w.get("focus"):
+                target_window = w
+                break
+        if target_window is None and tmuxp_workspace["windows"]:
+            target_window = tmuxp_workspace["windows"][0]
+
+        if target_window and "panes" in target_window:
+            panes = target_window["panes"]
+            if isinstance(startup_pane, int) and 0 <= startup_pane < len(panes):
+                # Convert simple pane to dict if needed
+                pane = panes[startup_pane]
+                if isinstance(pane, str) or pane is None:
+                    panes[startup_pane] = {"shell_command": [pane] if pane else []}
+                    pane = panes[startup_pane]
+                elif isinstance(pane, list):
+                    panes[startup_pane] = {"shell_command": pane}
+                    pane = panes[startup_pane]
+                if isinstance(pane, dict):
+                    pane["focus"] = True
+
     return tmuxp_workspace
 
 
