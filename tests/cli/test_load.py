@@ -773,3 +773,145 @@ def test_load_masks_home_in_loading_message(monkeypatch: pytest.MonkeyPatch) -> 
 
     assert "~/work/project/.tmuxp.yaml" in output
     assert "/home/testuser" not in output
+
+
+# Config key precedence tests
+
+
+class ConfigKeyPrecedenceFixture(t.NamedTuple):
+    """Test fixture for config key precedence tests."""
+
+    test_id: str
+    config_socket_name: str | None
+    config_socket_path: str | None
+    config_config_file: str | None
+    cli_socket_name: str | None
+    cli_socket_path: str | None
+    cli_config_file: str | None
+    expected_socket_name: str | None
+    expected_socket_path: str | None
+    expected_config_file: str | None
+
+
+TEST_CONFIG_KEY_PRECEDENCE_FIXTURES: list[ConfigKeyPrecedenceFixture] = [
+    ConfigKeyPrecedenceFixture(
+        test_id="config-only-socket-name",
+        config_socket_name="from-config",
+        config_socket_path=None,
+        config_config_file=None,
+        cli_socket_name=None,
+        cli_socket_path=None,
+        cli_config_file=None,
+        expected_socket_name="from-config",
+        expected_socket_path=None,
+        expected_config_file=None,
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="cli-overrides-config-socket-name",
+        config_socket_name="from-config",
+        config_socket_path=None,
+        config_config_file=None,
+        cli_socket_name="from-cli",
+        cli_socket_path=None,
+        cli_config_file=None,
+        expected_socket_name="from-cli",
+        expected_socket_path=None,
+        expected_config_file=None,
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="config-only-all-keys",
+        config_socket_name="sock-name",
+        config_socket_path="/tmp/sock.path",
+        config_config_file="/etc/tmux.conf",
+        cli_socket_name=None,
+        cli_socket_path=None,
+        cli_config_file=None,
+        expected_socket_name="sock-name",
+        expected_socket_path="/tmp/sock.path",
+        expected_config_file="/etc/tmux.conf",
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="cli-overrides-all-keys",
+        config_socket_name="config-sock",
+        config_socket_path="/config/sock.path",
+        config_config_file="/config/tmux.conf",
+        cli_socket_name="cli-sock",
+        cli_socket_path="/cli/sock.path",
+        cli_config_file="/cli/tmux.conf",
+        expected_socket_name="cli-sock",
+        expected_socket_path="/cli/sock.path",
+        expected_config_file="/cli/tmux.conf",
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="no-config-no-cli",
+        config_socket_name=None,
+        config_socket_path=None,
+        config_config_file=None,
+        cli_socket_name=None,
+        cli_socket_path=None,
+        cli_config_file=None,
+        expected_socket_name=None,
+        expected_socket_path=None,
+        expected_config_file=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_CONFIG_KEY_PRECEDENCE_FIXTURES,
+    ids=[test.test_id for test in TEST_CONFIG_KEY_PRECEDENCE_FIXTURES],
+)
+def test_config_key_precedence(
+    test: ConfigKeyPrecedenceFixture,
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that CLI args override config keys for socket_name/path and config_file."""
+    import yaml
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    # Create config with optional keys
+    config: dict[str, t.Any] = {
+        "session_name": "test-precedence",
+        "windows": [{"window_name": "main"}],
+    }
+    if test.config_socket_name:
+        config["socket_name"] = test.config_socket_name
+    if test.config_socket_path:
+        config["socket_path"] = test.config_socket_path
+    if test.config_config_file:
+        config["config"] = test.config_config_file
+
+    # Write config file
+    config_file = tmp_path / "test.yaml"
+    config_file.write_text(yaml.dump(config), encoding="utf-8")
+
+    # Capture Server() instantiation args via monkeypatch
+    captured_server_args: dict[str, t.Any] = {}
+    original_server = Server
+
+    def capture_server(*args: t.Any, **kwargs: t.Any) -> Server:
+        captured_server_args.update(kwargs)
+        # Use existing server's socket to avoid creating new server
+        kwargs["socket_name"] = server.socket_name
+        kwargs.pop("socket_path", None)
+        kwargs.pop("config_file", None)
+        return original_server(*args, **kwargs)
+
+    monkeypatch.setattr("tmuxp.cli.load.Server", capture_server)
+
+    load_workspace(
+        str(config_file),
+        socket_name=test.cli_socket_name,
+        socket_path=test.cli_socket_path,
+        tmux_config_file=test.cli_config_file,
+        detached=True,
+    )
+
+    # Verify expected values were passed to Server()
+    assert captured_server_args.get("socket_name") == test.expected_socket_name
+    assert captured_server_args.get("socket_path") == test.expected_socket_path
+    assert captured_server_args.get("config_file") == test.expected_config_file
