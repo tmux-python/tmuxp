@@ -371,6 +371,11 @@ def load_workspace(
     final_socket_path = socket_path or expanded_workspace.get("socket_path")
     final_config_file = tmux_config_file or expanded_workspace.get("config")
 
+    # Handle attach config key (attach: false in config = detached mode)
+    # CLI -d flag takes precedence over config
+    if not detached and expanded_workspace.get("attach") is False:
+        detached = True
+
     t = Server(  # create tmux server object
         socket_name=final_socket_name,
         socket_path=final_socket_path,
