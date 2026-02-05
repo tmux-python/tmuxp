@@ -52,7 +52,12 @@ All checks must pass before proceeding.
 
 ### Phase 5: Commit Implementation
 
-Commit the implementation changes with a descriptive message following the project's commit conventions (e.g., `feat:`, `fix:`, `refactor:`).
+**Source and tests must be in separate commits.**
+
+1. **Commit source code first**: Implementation changes only (e.g., `fix(cli): Read socket_name/path and config from workspace config`)
+2. **Commit tests second**: Test files only (e.g., `tests(cli): Add config key precedence tests for load_workspace`)
+
+Follow the project's commit conventions (e.g., `feat:`, `fix:`, `refactor:` for source; `tests:` or `tests(<scope>):` for tests).
 
 ### Phase 6: Update Documentation
 
