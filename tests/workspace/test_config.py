@@ -378,6 +378,93 @@ def test_session_shell_command(test: SessionShellCommandFixture) -> None:
     assert first_pane["shell_command"] == test.expected_commands
 
 
+class WindowClearFixture(t.NamedTuple):
+    """Test fixture for window-level clear option tests."""
+
+    test_id: str
+    config_unexpanded: dict[str, t.Any]
+    expected_commands: list[dict[str, str]]  # Final shell_command for first pane
+
+
+TEST_WINDOW_CLEAR_FIXTURES: list[WindowClearFixture] = [
+    WindowClearFixture(
+        test_id="clear-true-inserts-clear-command",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "clear": True,
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "clear"}, {"cmd": "vim"}],
+    ),
+    WindowClearFixture(
+        test_id="clear-false-no-clear-command",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "clear": False,
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "vim"}],
+    ),
+    WindowClearFixture(
+        test_id="clear-not-set-no-clear-command",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "vim"}],
+    ),
+    WindowClearFixture(
+        test_id="clear-with-shell-command-before",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "clear": True,
+                    "shell_command_before": "source .env",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        # Order: shell_command_before, then clear, then pane commands
+        expected_commands=[
+            {"cmd": "source .env"},
+            {"cmd": "clear"},
+            {"cmd": "vim"},
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_WINDOW_CLEAR_FIXTURES,
+    ids=[test.test_id for test in TEST_WINDOW_CLEAR_FIXTURES],
+)
+def test_window_clear_option(test: WindowClearFixture) -> None:
+    """Test window-level clear option inserts clear command before pane commands."""
+    workspace = loader.expand(test.config_unexpanded)
+    workspace = loader.trickle(workspace)
+
+    first_pane = workspace["windows"][0]["panes"][0]
+    assert first_pane["shell_command"] == test.expected_commands
+
+
 def test_trickle_window_with_no_pane_workspace() -> None:
     """Verify tmuxp window config automatically infers a single pane."""
     test_yaml = """
