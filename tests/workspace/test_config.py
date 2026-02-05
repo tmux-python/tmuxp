@@ -279,6 +279,105 @@ def test_shell_command_after(test: ShellCommandAfterFixture) -> None:
     assert first_pane["shell_command"] == test.expected_commands
 
 
+class SessionShellCommandFixture(t.NamedTuple):
+    """Test fixture for session-level shell_command tests."""
+
+    test_id: str
+    config_unexpanded: dict[str, t.Any]
+    expected_commands: list[dict[str, str]]  # Final shell_command for first pane
+
+
+TEST_SESSION_SHELL_COMMAND_FIXTURES: list[SessionShellCommandFixture] = [
+    SessionShellCommandFixture(
+        test_id="session-shell-command-string",
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command": "session_setup.sh",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "session_setup.sh"}, {"cmd": "vim"}],
+    ),
+    SessionShellCommandFixture(
+        test_id="session-shell-command-list",
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command": ["setup1.sh", "setup2.sh"],
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[
+            {"cmd": "setup1.sh"},
+            {"cmd": "setup2.sh"},
+            {"cmd": "vim"},
+        ],
+    ),
+    SessionShellCommandFixture(
+        test_id="session-shell-command-with-before",
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command": "session_first.sh",
+            "shell_command_before": "before_each.sh",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        # Order: session shell_command, then shell_command_before, then pane
+        expected_commands=[
+            {"cmd": "session_first.sh"},
+            {"cmd": "before_each.sh"},
+            {"cmd": "vim"},
+        ],
+    ),
+    SessionShellCommandFixture(
+        test_id="session-shell-command-tmuxinator-pattern",
+        # Mimics tmuxinator: pre -> shell_command, pre_window -> shell_command_before
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command": ["cd /project", "source .env"],  # from 'pre'
+            "shell_command_before": "rbenv shell 2.7",  # from 'pre_window'
+            "windows": [
+                {
+                    "window_name": "editor",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[
+            {"cmd": "cd /project"},
+            {"cmd": "source .env"},
+            {"cmd": "rbenv shell 2.7"},
+            {"cmd": "vim"},
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_SESSION_SHELL_COMMAND_FIXTURES,
+    ids=[test.test_id for test in TEST_SESSION_SHELL_COMMAND_FIXTURES],
+)
+def test_session_shell_command(test: SessionShellCommandFixture) -> None:
+    """Test session-level shell_command is prepended to all pane commands."""
+    workspace = loader.expand(test.config_unexpanded)
+    workspace = loader.trickle(workspace)
+
+    first_pane = workspace["windows"][0]["panes"][0]
+    assert first_pane["shell_command"] == test.expected_commands
+
+
 def test_trickle_window_with_no_pane_workspace() -> None:
     """Verify tmuxp window config automatically infers a single pane."""
     test_yaml = """
