@@ -373,3 +373,18 @@ def test_startup_handling(test: StartupFixture) -> None:
         focused_pane = panes[test.expected_focused_pane_index]
         assert isinstance(focused_pane, dict)
         assert focused_pane.get("focus") is True
+
+
+def test_post_warning(caplog: pytest.LogCaptureFixture) -> None:
+    """Test that 'post' key triggers a warning."""
+    tmuxinator_dict = {
+        "name": "test",
+        "post": "echo 'session started'",
+        "windows": [{"editor": "vim"}],
+    }
+
+    with caplog.at_level("WARNING", logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(tmuxinator_dict.copy())
+
+    assert any("post" in record.message for record in caplog.records)
+    assert any("not supported" in record.message for record in caplog.records)
