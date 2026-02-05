@@ -162,6 +162,123 @@ def test_trickle_relative_start_directory(config_fixture: WorkspaceTestData) -> 
     assert test_workspace == config_fixture.trickle.expected
 
 
+class ShellCommandAfterFixture(t.NamedTuple):
+    """Test fixture for shell_command_after tests."""
+
+    test_id: str
+    config_unexpanded: dict[str, t.Any]
+    expected_commands: list[dict[str, str]]  # Final shell_command for first pane
+
+
+TEST_SHELL_COMMAND_AFTER_FIXTURES: list[ShellCommandAfterFixture] = [
+    ShellCommandAfterFixture(
+        test_id="window-level-after",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "shell_command_after": "cleanup.sh",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "vim"}, {"cmd": "cleanup.sh"}],
+    ),
+    ShellCommandAfterFixture(
+        test_id="session-level-after",
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command_after": "session_cleanup.sh",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "vim"}, {"cmd": "session_cleanup.sh"}],
+    ),
+    ShellCommandAfterFixture(
+        test_id="pane-level-after",
+        config_unexpanded={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [
+                        {
+                            "shell_command": "vim",
+                            "shell_command_after": "pane_cleanup.sh",
+                        },
+                    ],
+                },
+            ],
+        },
+        expected_commands=[{"cmd": "vim"}, {"cmd": "pane_cleanup.sh"}],
+    ),
+    ShellCommandAfterFixture(
+        test_id="all-levels-after-ordering",
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command_after": "session_cleanup.sh",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "shell_command_after": "window_cleanup.sh",
+                    "panes": [
+                        {
+                            "shell_command": "vim",
+                            "shell_command_after": "pane_cleanup.sh",
+                        },
+                    ],
+                },
+            ],
+        },
+        # Order: pane commands, then pane_after, window_after, session_after
+        expected_commands=[
+            {"cmd": "vim"},
+            {"cmd": "pane_cleanup.sh"},
+            {"cmd": "window_cleanup.sh"},
+            {"cmd": "session_cleanup.sh"},
+        ],
+    ),
+    ShellCommandAfterFixture(
+        test_id="before-and-after-combined",
+        config_unexpanded={
+            "session_name": "test",
+            "shell_command_before": "setup.sh",
+            "shell_command_after": "cleanup.sh",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [{"shell_command": "vim"}],
+                },
+            ],
+        },
+        expected_commands=[
+            {"cmd": "setup.sh"},
+            {"cmd": "vim"},
+            {"cmd": "cleanup.sh"},
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_SHELL_COMMAND_AFTER_FIXTURES,
+    ids=[test.test_id for test in TEST_SHELL_COMMAND_AFTER_FIXTURES],
+)
+def test_shell_command_after(test: ShellCommandAfterFixture) -> None:
+    """Test shell_command_after is appended correctly at all levels."""
+    workspace = loader.expand(test.config_unexpanded)
+    workspace = loader.trickle(workspace)
+
+    first_pane = workspace["windows"][0]["panes"][0]
+    assert first_pane["shell_command"] == test.expected_commands
+
+
 def test_trickle_window_with_no_pane_workspace() -> None:
     """Verify tmuxp window config automatically infers a single pane."""
     test_yaml = """
