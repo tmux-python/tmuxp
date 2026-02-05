@@ -2,6 +2,23 @@
 
 API limitations blocking full tmuxinator/teamocil parity.
 
+## Summary
+
+| Category | Count | Status |
+|----------|-------|--------|
+| libtmux blockers | 2 | Requires libtmux changes |
+| libtmux minor issues | 1 | Low priority |
+| libtmux features available | 9 | Not blockers |
+| Dead config keys | 8 | Phase 1 |
+| Missing config keys | 8 | Phase 2 |
+| CLI flag gaps | 4 | Phase 4 |
+| CLI command gaps | 3 | Low priority |
+| tmuxinator importer bugs | 9 | Phase 3 |
+| teamocil importer bugs | 9 | Phase 3 |
+| Features already working | 13 | No changes needed |
+
+---
+
 ## libtmux Limitations
 
 ### 1. No configurable tmux binary path
@@ -205,6 +222,9 @@ config_file = args.tmux_config_file or expanded_workspace.get("config")
 | `suppress_history` | `suppress_history` | Session/window/pane cascade |
 | `window_index` | `window_index` | Explicit window placement |
 | `window_shell` | `window_shell` | tmuxp-only, sets shell for window |
+| `--append` / `-a` | `tmuxp load -a` | tmuxp-only, append windows to current session |
+| `before_script` | `before_script` | Run script before workspace build |
+| `global_options` | `global_options` | Set server-level tmux options |
 
 ---
 
