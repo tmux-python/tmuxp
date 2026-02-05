@@ -62,4 +62,15 @@ Tracking completed items from the feature parity plan.
 
 **Notes**:
 - Session-level shell_command runs before shell_command_before
-- Remaining dead config keys: `clear`
+
+## 2026-02-04: Support window-level clear option
+
+**What**: Handle teamocil's `clear` window option by inserting a `clear` command before pane commands when `clear: true` is set at window level.
+
+**Files**:
+- `src/tmuxp/workspace/loader.py` - Handle clear option in trickle()
+- `tests/workspace/test_config.py` - Add 4 parametrized test cases
+
+**Notes**:
+- This completes Phase 1 (all dead config keys now handled)
+- Clear runs after shell_command_before but before pane commands

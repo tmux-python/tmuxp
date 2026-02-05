@@ -165,14 +165,12 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 
 **DONE (2026-02-04)**: `socket_name`, `socket_path`, `config` now read from workspace config.
 
-Remaining dead keys to fix:
-- `clear` — needs builder update
-
-**DONE (2026-02-04)**: `attach` config key now read from workspace config.
-
-**DONE (2026-02-04)**: `shell_command_after` now handled in expand() and trickle().
-
-**DONE (2026-02-04)**: Session-level `shell_command` now handled in trickle().
+**DONE (2026-02-04)**: All dead config keys now handled:
+- `socket_name`, `socket_path`, `config` - read from workspace config
+- `attach` - read from workspace config
+- `shell_command_after` - handled in expand() and trickle()
+- `shell_command` (session-level) - handled in trickle()
+- `clear` - handled in trickle()
 
 ### Phase 2: Add missing config keys
 
