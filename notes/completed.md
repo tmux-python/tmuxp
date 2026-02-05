@@ -74,3 +74,16 @@ Tracking completed items from the feature parity plan.
 **Notes**:
 - This completes Phase 1 (all dead config keys now handled)
 - Clear runs after shell_command_before but before pane commands
+
+## 2026-02-04: Support synchronize config key as sugar
+
+**What**: Add tmuxinator-compatible `synchronize` key that expands to `options` or `options_after` with `synchronize-panes: on`.
+
+**Files**:
+- `src/tmuxp/workspace/loader.py` - Expand synchronize to options/options_after
+- `tests/workspace/test_config.py` - Add 5 parametrized test cases
+
+**Notes**:
+- `synchronize: true` or `"before"` -> `options: {synchronize-panes: on}`
+- `synchronize: "after"` -> `options_after: {synchronize-panes: on}`
+- This completes Phase 2 (all missing config keys now supported)

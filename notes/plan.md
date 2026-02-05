@@ -174,11 +174,10 @@ Keys that importers set but `WorkspaceBuilder` never reads:
 
 ### Phase 2: Add missing config keys
 
-1. **`attach: false`**: Read in `load_workspace()`, merge with CLI `-d` flag
-2. **`synchronize`**: Sugar in `loader.expand()` that maps to `options_after`
-3. **`shell_command_after`**: Add to `trickle()` alongside `shell_command_before`
-
-**Effort**: Additive changes to loader/builder, existing configs unchanged.
+**DONE (2026-02-04)**: All missing config keys now supported:
+- `attach: false` - handled in Phase 1
+- `synchronize` - expands to options/options_after with synchronize-panes
+- `shell_command_after` - handled in Phase 1
 
 ### Phase 3: Fix importer bugs
 
