@@ -1013,3 +1013,191 @@ def test_attach_config_key(
     )
 
     assert load_mode["detached"] == test.expected_detached
+
+
+def test_no_shell_command_before_flag(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test --no-shell-command-before flag skips shell_command_before."""
+    import yaml
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    # Create config with shell_command_before
+    config = {
+        "session_name": "test-no-before",
+        "shell_command_before": ["echo BEFORE"],
+        "windows": [
+            {"window_name": "main", "panes": [{"shell_command": ["echo MAIN"]}]},
+        ],
+    }
+    config_file = tmp_path / "test.yaml"
+    config_file.write_text(yaml.dump(config), encoding="utf-8")
+
+    # Capture the trickled workspace
+    captured_workspace: dict[str, t.Any] = {}
+    original_trickle = loader.trickle
+
+    def capture_trickle(
+        workspace: dict[str, t.Any],
+        skip_shell_command_before: bool = False,
+    ) -> dict[str, t.Any]:
+        result = original_trickle(workspace, skip_shell_command_before)
+        captured_workspace.update(result)
+        return result
+
+    monkeypatch.setattr("tmuxp.cli.load.loader.trickle", capture_trickle)
+
+    load_workspace(
+        str(config_file),
+        socket_name=server.socket_name,
+        detached=True,
+        no_shell_command_before=True,
+    )
+
+    # Verify shell_command_before was skipped
+    pane = captured_workspace["windows"][0]["panes"][0]
+    commands = [
+        cmd.get("cmd") if isinstance(cmd, dict) else cmd
+        for cmd in pane["shell_command"]
+    ]
+    assert "echo BEFORE" not in commands
+    assert "echo MAIN" in commands
+
+
+def test_no_shell_command_before_flag_false(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test shell_command_before included when flag is not set."""
+    import yaml
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    # Create config with shell_command_before
+    config = {
+        "session_name": "test-with-before",
+        "shell_command_before": ["echo BEFORE"],
+        "windows": [
+            {"window_name": "main", "panes": [{"shell_command": ["echo MAIN"]}]},
+        ],
+    }
+    config_file = tmp_path / "test.yaml"
+    config_file.write_text(yaml.dump(config), encoding="utf-8")
+
+    # Capture the trickled workspace
+    captured_workspace: dict[str, t.Any] = {}
+    original_trickle = loader.trickle
+
+    def capture_trickle(
+        workspace: dict[str, t.Any],
+        skip_shell_command_before: bool = False,
+    ) -> dict[str, t.Any]:
+        result = original_trickle(workspace, skip_shell_command_before)
+        captured_workspace.update(result)
+        return result
+
+    monkeypatch.setattr("tmuxp.cli.load.loader.trickle", capture_trickle)
+
+    load_workspace(
+        str(config_file),
+        socket_name=server.socket_name,
+        detached=True,
+        no_shell_command_before=False,
+    )
+
+    # Verify shell_command_before was included
+    pane = captured_workspace["windows"][0]["panes"][0]
+    commands = [
+        cmd.get("cmd") if isinstance(cmd, dict) else cmd
+        for cmd in pane["shell_command"]
+    ]
+    assert "echo BEFORE" in commands
+    assert "echo MAIN" in commands
+
+
+def test_here_flag_requires_tmux(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Test --here flag fails when not inside tmux."""
+    import yaml
+
+    # Ensure TMUX env var is not set
+    monkeypatch.delenv("TMUX", raising=False)
+
+    config = {
+        "session_name": "test-here",
+        "windows": [
+            {"window_name": "main", "panes": [{"shell_command": ["echo test"]}]},
+        ],
+    }
+    config_file = tmp_path / "test.yaml"
+    config_file.write_text(yaml.dump(config), encoding="utf-8")
+
+    result = load_workspace(
+        str(config_file),
+        socket_name=server.socket_name,
+        here=True,
+    )
+
+    # Should return None when not inside tmux
+    assert result is None
+
+    # Should print error message
+    captured = capsys.readouterr()
+    assert "requires running inside tmux" in captured.out
+
+
+def test_here_flag_reuses_current_window(
+    tmp_path: pathlib.Path,
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test --here flag reuses current window for first window."""
+    from tmuxp.workspace import loader
+    from tmuxp.workspace.builder import WorkspaceBuilder
+
+    # Simulate being inside tmux
+    monkeypatch.setenv("TMUX", "/tmp/tmux-1000/default,12345,0")
+
+    # Get the original window
+    original_window = session.active_window
+    assert original_window is not None
+    original_window_id = original_window.window_id
+
+    config = {
+        "session_name": "test-here-session",
+        "windows": [
+            {"window_name": "renamed-window", "panes": [{"shell_command": ["echo 1"]}]},
+            {"window_name": "second-window", "panes": [{"shell_command": ["echo 2"]}]},
+        ],
+    }
+
+    # Expand and trickle the config like load_workspace does
+    expanded = loader.expand(config)
+    trickled = loader.trickle(expanded)
+
+    # Build directly using the builder with the existing session
+    builder = WorkspaceBuilder(
+        session_config=trickled,
+        server=session.server,
+    )
+    builder.build(session=session, append=True, here=True)
+
+    # First window should be renamed, not recreated
+    session.refresh()
+    windows = session.windows
+
+    # Should have 2 windows now
+    assert len(windows) == 2
+
+    # First window should have been renamed
+    first_window = windows.filter(window_id=original_window_id)
+    assert len(first_window) == 1
+    assert first_window[0].window_name == "renamed-window"

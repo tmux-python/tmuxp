@@ -747,3 +747,102 @@ def test_validate_plugins() -> None:
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
         assert excinfo.match("only supports list type")
+
+
+class SkipShellCommandBeforeFixture(t.NamedTuple):
+    """Test fixture for skip_shell_command_before tests."""
+
+    test_id: str
+    workspace: dict[str, t.Any]
+    skip: bool
+    expected_pane_commands: list[dict[str, str]]
+
+
+TEST_SKIP_SHELL_COMMAND_BEFORE_FIXTURES: list[SkipShellCommandBeforeFixture] = [
+    SkipShellCommandBeforeFixture(
+        test_id="skip-false-includes-before",
+        workspace={
+            "session_name": "test",
+            "shell_command_before": ["source .env"],
+            "windows": [
+                {"window_name": "main", "panes": [{"shell_command": ["vim"]}]},
+            ],
+        },
+        skip=False,
+        expected_pane_commands=[{"cmd": "source .env"}, {"cmd": "vim"}],
+    ),
+    SkipShellCommandBeforeFixture(
+        test_id="skip-true-excludes-before",
+        workspace={
+            "session_name": "test",
+            "shell_command_before": ["source .env"],
+            "windows": [
+                {"window_name": "main", "panes": [{"shell_command": ["vim"]}]},
+            ],
+        },
+        skip=True,
+        expected_pane_commands=[{"cmd": "vim"}],
+    ),
+    SkipShellCommandBeforeFixture(
+        test_id="skip-true-all-levels",
+        workspace={
+            "session_name": "test",
+            "shell_command_before": ["session-pre"],
+            "windows": [
+                {
+                    "window_name": "main",
+                    "shell_command_before": ["window-pre"],
+                    "panes": [{"shell_command": ["vim"]}],
+                },
+            ],
+        },
+        skip=True,
+        expected_pane_commands=[{"cmd": "vim"}],
+    ),
+    SkipShellCommandBeforeFixture(
+        test_id="skip-true-preserves-after",
+        workspace={
+            "session_name": "test",
+            "shell_command_before": ["setup.sh"],
+            "shell_command_after": ["cleanup.sh"],
+            "windows": [
+                {"window_name": "main", "panes": [{"shell_command": ["vim"]}]},
+            ],
+        },
+        skip=True,
+        expected_pane_commands=[{"cmd": "vim"}, {"cmd": "cleanup.sh"}],
+    ),
+    SkipShellCommandBeforeFixture(
+        test_id="skip-true-with-pane-level-before",
+        workspace={
+            "session_name": "test",
+            "windows": [
+                {
+                    "window_name": "main",
+                    "panes": [
+                        {
+                            "shell_command_before": ["pane-pre"],
+                            "shell_command": ["vim"],
+                        },
+                    ],
+                },
+            ],
+        },
+        skip=True,
+        expected_pane_commands=[{"cmd": "vim"}],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "test",
+    TEST_SKIP_SHELL_COMMAND_BEFORE_FIXTURES,
+    ids=[test.test_id for test in TEST_SKIP_SHELL_COMMAND_BEFORE_FIXTURES],
+)
+def test_skip_shell_command_before(test: SkipShellCommandBeforeFixture) -> None:
+    """Test skip_shell_command_before flag in trickle()."""
+    expanded = loader.expand(test.workspace)
+    result = loader.trickle(expanded, skip_shell_command_before=test.skip)
+
+    pane = result["windows"][0]["panes"][0]
+    assert pane["shell_command"] == test.expected_pane_commands
