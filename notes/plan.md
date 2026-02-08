@@ -7,7 +7,7 @@
 
 ### L1. No `Pane.set_title()` Method
 
-- **Blocker**: libtmux has no method wrapping `select-pane -T <title>`. The `pane_title` format variable was removed from the format query list (`formats.py:70`) in tmux 3.1+, but `select-pane -T` still works in tmux 3.2+. libtmux already knows about the display options (`pane_border_status`, `pane_border_format` in `constants.py:163-173`) but has no setter for the title itself.
+- **Blocker**: libtmux has no method wrapping `select-pane -T <title>`. The `pane_title` format variable is excluded from libtmux's bulk format queries (`formats.py:70`, commented out with note "removed in 3.1+"), but this is a libtmux-side exclusion — tmux itself still supports both `#{pane_title}` (in `format.c:205`) and `select-pane -T` (added in tmux 2.6). libtmux already knows about the display options (`pane_border_status`, `pane_border_format` in `constants.py:163-173`) but has no setter for the title itself.
 - **Blocks**: Pane titles (tmuxinator feature: named pane syntax `pane_name: command` → `select-pane -T`). Also blocks `enable_pane_titles`, `pane_title_position`, `pane_title_format` session-level config.
 - **Required**: Add `Pane.set_title(title: str)` method that calls `self.cmd("select-pane", "-T", title)`. This is a simple wrapper — `Pane.cmd()` already exists (`pane.py:177`) and `select-pane` is already used for `Pane.select()` (`pane.py:601`).
 - **Non-breaking**: Pure addition, no existing API changes.
@@ -52,8 +52,8 @@ These libtmux APIs already exist and do NOT need changes:
 
 - **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. The key is silently ignored if present.
 - **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`).
-- **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands in `iter_create_panes()`. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
-- **Insertion point**: `iter_create_windows()` around line 424 (after window options are set) for `before`/`true`. `config_after_window()` around line 560 for `after`.
+- **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands are sent. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
+- **Insertion point**: In `build()` around line 320 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 565 for `after`. Note: setting sync before pane creation works because `synchronize-panes` applies to all panes in the window, including those created later by split.
 - **Non-breaking**: New optional config key. Existing configs are unaffected.
 
 ### T2. No Pane Title Config Key
@@ -68,9 +68,9 @@ These libtmux APIs already exist and do NOT need changes:
 
 ### T3. No `shell_command_after` Config Key
 
-- **Blocker**: The teamocil importer produces `shell_command_after` (from `filters.after`, `importers.py:149`), but `WorkspaceBuilder` never reads it. The `trickle()` function in `loader.py` has no logic for it either.
-- **Blocks**: teamocil v0.x `filters.after` — commands run after pane commands.
-- **Required**: Add handling in `iter_create_panes()` after the `shell_command` loop (around line 534). Read `pane_config.get("shell_command_after", [])` and send each command via `pane.send_keys()`.
+- **Blocker**: The teamocil importer produces `shell_command_after` on the **window** dict (from `filters.after`, `importers.py:149`), but `WorkspaceBuilder` never reads it. The `trickle()` function in `loader.py` has no logic for it either.
+- **Blocks**: teamocil v0.x `filters.after` — commands run after all pane commands in a window.
+- **Required**: Add handling in `config_after_window()` (around line 565) or in `build()` after the `iter_create_panes()` loop (around line 331). Read `window_config.get("shell_command_after", [])` and send each command to every pane via `pane.send_keys()`. Note: this is a **window-level** key set by the teamocil importer, not per-pane.
 - **Non-breaking**: New optional config key.
 
 ### T4. No Session Rename Mode / `--here` CLI Flag
