@@ -1,7 +1,7 @@
 # Tmuxinator Parity Analysis
 
 *Last updated: 2026-02-08*
-*Tmuxinator version analyzed: 3.3.7*
+*Tmuxinator version analyzed: 3.3.7 (supports tmux 1.5–3.6a)*
 *tmuxp version: 1.47.0+*
 
 ## Features tmuxinator has that tmuxp lacks
@@ -56,7 +56,7 @@ startup_window: editor      # Select this window after build
 startup_pane: 1              # Select this pane within the startup window
 ```
 
-**Gap**: tmuxp supports `focus: true` on windows and panes (boolean), which is equivalent but syntactically different. The `startup_window` key allows referencing by name or index (rendered as `"#{name}:#{value}"`). **Partial parity** — tmuxp can achieve this but uses a different mechanism (`focus` key on individual windows/panes rather than a centralized key).
+**Gap**: tmuxp supports `focus: true` on windows and panes (boolean), which is equivalent but syntactically different. The `startup_window` key allows referencing by window name or numeric index (rendered as `"#{name}:#{value}"`, defaults to `base_index` if omitted). The `startup_pane` is relative to the startup window (rendered as `"#{startup_window}.#{value}"`, defaults to `pane_base_index`). **Partial parity** — tmuxp can achieve this but uses a different mechanism (`focus` key on individual windows/panes rather than a centralized key).
 
 ### 5. Pane Synchronization
 
@@ -166,15 +166,11 @@ tmuxinator start myproject --no-pre-window
 
 Skips `pre_window` commands. Useful for debugging.
 
+Note: tmuxinator's `pre_window` method has a fallback chain (`project.rb:175-188`): `rbenv` → `rvm` → `pre_tab` → `pre_window`. The `--no-pre-window` flag disables all of these, not just `pre_window`.
+
 **Gap**: tmuxp has no equivalent flag to skip `shell_command_before`.
 
-### 12. `--here` Equivalent
-
-**Source**: teamocil provides `--here` to reuse the current window. tmuxinator has no `--here` per se but tmuxp also lacks this.
-
-**Gap**: Neither tmuxp nor tmuxinator has this; teamocil does.
-
-### 13. Create Config from Running Session
+### 12. Create Config from Running Session
 
 **Source**: `lib/tmuxinator/cli.rb` (`new <name> <session>`)
 
@@ -182,9 +178,9 @@ Skips `pre_window` commands. Useful for debugging.
 tmuxinator new myproject existing-session-name
 ```
 
-Creates a config file pre-populated from a running tmux session.
+Creates a config file pre-populated from a running tmux session. Note: tmuxinator captures only the window/pane structure and names, not running commands.
 
-**Gap**: tmuxp has `tmuxp freeze` which exports to YAML/JSON. **Different approach, same result** — tmuxp's freeze is arguably more complete.
+**Gap**: tmuxp has `tmuxp freeze` which exports to YAML/JSON with more detail (captures pane working directories and current commands). Different approach, functionally equivalent.
 
 ## Import Behavior Analysis
 
@@ -243,7 +239,7 @@ Creates a config file pre-populated from a running tmux session.
 
 4. **Missing `pre_tab`**: The `pre_tab` deprecated predecessor to `pre_window` is not handled.
 
-5. **Missing `rvm`**: Only `rbenv` is imported; `rvm` (another deprecated but still functional key) is ignored.
+5. **Missing `rvm`**: Only `rbenv` is imported; `rvm` (another deprecated but still functional key) is ignored. In tmuxinator, `rvm` maps to `rvm use #{value}` (`project.rb:181`).
 
 6. **No validation or warnings**: The importer silently drops unsupported keys with no feedback to the user.
 
