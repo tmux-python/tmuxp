@@ -125,7 +125,7 @@ These are config keys/patterns that differ syntactically but can be automaticall
 |---|---|
 | `pre_tab: "source .env"` | `shell_command_before: ["source .env"]` |
 
-**Importer status**: ✗ Not handled. `pre_tab` is a deprecated alias for `pre_window`.
+**Importer status**: ✗ Not handled. `pre_tab` is a deprecated predecessor to `pre_window` (not an alias — it was renamed).
 
 ### 15. `rvm` → `shell_command_before`
 
