@@ -30,7 +30,7 @@ tmuxp uses **libtmux**, an object-relational mapper for tmux. Each tmux entity (
 
 tmuxinator reads YAML (with ERB templating), builds a `Project` object graph, then renders a bash script via ERB templates. The generated script is `exec`'d, replacing the tmuxinator process.
 
-**Advantages**: Debuggable output (`tmuxinator debug`), wide tmux version support (1.5+), ERB allows config templating with variables.
+**Advantages**: Debuggable output (`tmuxinator debug`), wide tmux version support (1.8+), ERB allows config templating with variables.
 
 **Disadvantages**: No mid-build error recovery (script runs or fails), Ruby dependency.
 
@@ -65,7 +65,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Startup pane | (none) | `startup_pane` | (none) |
 | Plugins | `plugins` | (none) | (none) |
 | ERB/variable interpolation | (none) | Yes (`key=value` args) | (none) |
-| YAML anchors | Yes | Yes (`aliases: true`) | Yes |
+| YAML anchors | Yes | Yes (via `YAML.safe_load` `aliases: true`) | Yes |
 | Pane titles enable | (none) | `enable_pane_titles` | (none) |
 | Pane title position | (none) | `pane_title_position` | (none) |
 | Pane title format | (none) | `pane_title_format` | (none) |
@@ -139,7 +139,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Load with name override | `tmuxp load -s <name> <config>` | `tmuxinator start -n <name>` | (none) |
 | Append to session | `tmuxp load -a` | `tmuxinator start --append` | (none) |
 | List configs | `tmuxp ls` | `tmuxinator list` | `teamocil --list` |
-| Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` / `new` | `teamocil --edit <layout>` |
+| Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` (alias of `new`) | `teamocil --edit <layout>` |
 | Show/debug config | (none) | `tmuxinator debug <project>` | `teamocil --show` / `--debug` |
 | Create new config | (none) | `tmuxinator new <project>` | (none) |
 | Copy config | (none) | `tmuxinator copy <src> <dst>` | (none) |
