@@ -8,11 +8,11 @@
 |---|---|---|---|
 | **Version** | 1.47.0+ | 3.3.7 | 1.4.2 |
 | **Language** | Python | Ruby | Ruby |
-| **Min tmux** | 3.2 | 1.8 (recommended; not 2.5) | (not specified) |
+| **Min tmux** | 3.2 | 1.5+ (1.5–3.6a tested) | (not specified) |
 | **Config formats** | YAML, JSON | YAML (with ERB) | YAML |
 | **Architecture** | ORM (libtmux) | Script generation (ERB templates) | Command objects → shell exec |
 | **License** | MIT | MIT | MIT |
-| **Session building** | API calls via libtmux | Generates bash script, then execs it | Generates tmux command string, then `system()` |
+| **Session building** | API calls via libtmux | Generates bash script, then execs it | Generates tmux command list, renames current session, then `system()` |
 | **Plugin system** | Yes (Python classes) | No | No |
 | **Shell completion** | Yes | Yes (zsh/bash/fish) | No |
 
@@ -48,7 +48,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 
 | Key | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| Session name | `session_name` | `name` / `project_name` | `name` |
+| Session name | `session_name` | `name` / `project_name` | `name` (auto-generated if omitted) |
 | Root directory | `start_directory` | `root` / `project_root` | (none, per-window only) |
 | Windows list | `windows` | `windows` / `tabs` | `windows` |
 | Socket name | (CLI `-L`) | `socket_name` | (none) |
@@ -60,7 +60,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Global options | `global_options` | (none) | (none) |
 | Environment vars | `environment` | (none) | (none) |
 | Pre-build script | `before_script` | (none) | (none) |
-| Shell cmd before (all panes) | `shell_command_before` | `pre_window` / `pre_tab` (deprecated) | (none) |
+| Shell cmd before (all panes) | `shell_command_before` | `pre_window` / `pre_tab` / `rbenv` / `rvm` (all deprecated) | (none) |
 | Startup window | (none; use `focus: true` on window) | `startup_window` (name or index) | (none; use `focus: true` on window) |
 | Startup pane | (none; use `focus: true` on pane) | `startup_pane` | (none; use `focus: true` on pane) |
 | Plugins | `plugins` | (none) | (none) |
@@ -82,7 +82,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Before workspace build | Plugin: `before_workspace_builder()` | (none) | (none) |
 | On window create | Plugin: `on_window_create()` | (none) | (none) |
 | After window done | Plugin: `after_window_finished()` | (none) | (none) |
-| Deprecated pre/post | (none) | `pre` / `post` | (none) |
+| Deprecated pre | (none) | `pre` (deprecated → `on_project_start`/`on_project_restart`) | (none) |
+| Deprecated post | (none) | `post` (deprecated → `on_project_stop`/`on_project_exit`) | (none) |
 
 ### Window-Level
 
@@ -99,8 +100,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Shell for window | `window_shell` | (none) | (none) |
 | Environment vars | `environment` | (none) | (none) |
 | Suppress history | `suppress_history` | (none) | (none) |
-| Focus | `focus` | (none) | `focus` |
-| Synchronize panes | (none) | `synchronize` | (none) |
+| Focus | `focus` | (none; use `startup_window`) | `focus` |
+| Synchronize panes | (none) | `synchronize` (`true`/`before`/`after`) | (none) |
 | Filters (before) | (none) | (none) | `filters.before` (v0.x) |
 | Filters (after) | (none) | (none) | `filters.after` (v0.x) |
 
@@ -116,8 +117,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Sleep before | `sleep_before` | (none) | (none) |
 | Sleep after | `sleep_after` | (none) | (none) |
 | Suppress history | `suppress_history` | (none) | (none) |
-| Focus | `focus` | (none) | `focus` |
-| Pane title | (none) | hash key (named pane) | (none) |
+| Focus | `focus` | (none; use `startup_pane`) | `focus` |
+| Pane title | (none) | hash key (named pane → `select-pane -T`) | (none) |
 
 ### Shorthand Syntax
 
@@ -137,9 +138,9 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Load/start session | `tmuxp load <config>` | `tmuxinator start <project>` | `teamocil <layout>` |
 | Load detached | `tmuxp load -d <config>` | `attach: false` / `tmuxinator start --no-attach` | (none) |
 | Load with name override | `tmuxp load -s <name> <config>` | `tmuxinator start -n <name>` | (none) |
-| Append to session | `tmuxp load -a` | `tmuxinator start --append` | (none) |
+| Append to session | `tmuxp load --append` | `tmuxinator start --append` | (none) |
 | List configs | `tmuxp ls` | `tmuxinator list` | `teamocil --list` |
-| Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` (alias of `new`) | `teamocil --edit <layout>` |
+| Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` | `teamocil --edit <layout>` |
 | Show/debug config | (none) | `tmuxinator debug <project>` | `teamocil --show` / `--debug` |
 | Create new config | (none) | `tmuxinator new <project>` | (none) |
 | Copy config | (none) | `tmuxinator copy <src> <dst>` | (none) |
@@ -156,6 +157,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Use here (current window) | (none) | (none) | `teamocil --here` |
 | Skip pre_window | (none) | `--no-pre-window` | (none) |
 | Pass variables | (none) | `key=value` args | (none) |
+| Suppress version warning | (none) | `--suppress-tmux-version-warning` | (none) |
 | Custom config path | `tmuxp load /path/to/file` | `-p /path/to/file` | `--layout /path/to/file` |
 | Local config | `tmuxp load .` | `tmuxinator local` | (none) |
 
