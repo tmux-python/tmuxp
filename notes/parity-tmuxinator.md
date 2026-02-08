@@ -14,13 +14,13 @@ tmuxinator has 5 lifecycle hooks:
 
 | Hook | Description | tmuxp equivalent |
 |---|---|---|
-| `on_project_start` | Runs on every `start` invocation | `before_script` (partial — runs commands, but kills session on failure) |
-| `on_project_first_start` | Runs only when session doesn't exist yet | No equivalent |
+| `on_project_start` | Runs on every `start` invocation | No equivalent |
+| `on_project_first_start` | Runs only when session doesn't exist yet | `before_script` (partial — runs before windows, but kills session on failure) |
 | `on_project_restart` | Runs when attaching to existing session | Plugin `reattach()` (requires writing a plugin) |
 | `on_project_exit` | Runs when detaching from session | No equivalent |
 | `on_project_stop` | Runs on `tmuxinator stop` | No equivalent (tmuxp has no `stop` command) |
 
-**Gap**: tmuxp's `before_script` only covers the "first start" case and kills the session on failure. It has no hooks for detach/exit/stop events, and no distinction between first start vs. restart.
+**Gap**: tmuxp's `before_script` is a partial equivalent of `on_project_first_start` — it runs before windows are created and kills the session on failure. tmuxp has no equivalent for `on_project_start` (runs every time, including reattach), no hooks for detach/exit/stop events, and no distinction between first start vs. restart.
 
 **WorkspaceBuilder requirement**: Add config keys for `on_project_start`, `on_project_first_start`, `on_project_restart`, `on_project_exit`, `on_project_stop`. The exit/stop hooks require shell integration (trap signals, set-hook in tmux).
 
