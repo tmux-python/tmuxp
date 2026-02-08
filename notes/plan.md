@@ -170,6 +170,7 @@ Keys produced by importers but silently ignored by the builder:
 
 - **Bug**: Importer assumes v0.x format. String panes cause incorrect behavior (`"cmd" in "git status"` checks substring, not dict key). `commands` key (v1.x) not mapped.
 - **Fix**: Add format detection. Handle string panes, `commands` key, `focus`, and `options`.
+- **Also**: v0.x pane `width` is silently dropped (`importers.py:161-163`) with a TODO but no user warning. Since libtmux's `Pane.resize()` exists (L4), the importer could preserve `width` and the builder could call `pane.resize(width=value)` after split. Alternatively, warn the user that width is not supported.
 
 ### I5. tmuxinator Missing Keys
 
@@ -211,10 +212,12 @@ These fix existing bugs and add missing translations without touching the builde
 
 ### Phase 2: Builder Additions (tmuxp Only)
 
-These add new config key handling to the builder:
+These add new config key handling to the builder. Each also needs a corresponding importer update:
 
 1. **T1**: `synchronize` config key — straightforward `set_option()` call
+   - Then update tmuxinator importer to import `synchronize` key (pass-through, same name)
 2. **T3**: `shell_command_after` config key — straightforward `send_keys()` loop
+   - teamocil importer already produces this key (I3 fixes the loop); builder just needs to read it
 3. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
 
 ### Phase 3: libtmux Additions
@@ -223,6 +226,7 @@ These require changes to the libtmux package:
 
 1. **L1**: `Pane.set_title()` — simple wrapper, needed for T2
 2. **T2**: Pane title config keys — depends on L1
+   - Then update tmuxinator importer to import `enable_pane_titles`, `pane_title_position`, `pane_title_format`, and named pane syntax (`pane_name: command` → `title` + `shell_command`)
 
 ### Phase 4: New CLI Commands
 
