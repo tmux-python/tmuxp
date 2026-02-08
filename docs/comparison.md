@@ -74,8 +74,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 
 | Hook | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| Before session build | `before_script` | `on_project_start` | (none) |
-| First start only | (none) | `on_project_first_start` | (none) |
+| Every start invocation | (none) | `on_project_start` | (none) |
+| First start only | `before_script` | `on_project_first_start` | (none) |
 | On reattach | Plugin: `reattach()` | `on_project_restart` | (none) |
 | On exit/detach | (none) | `on_project_exit` | (none) |
 | On stop/kill | (none) | `on_project_stop` | (none) |
