@@ -163,21 +163,21 @@ Since teamocil 1.4.2 uses the v1.x format, the importer is outdated for current 
 
 **What tmuxp would need to add**: `clear` key on windows. Builder would send `clear` (or `send-keys C-l`) after pane creation.
 
-### 5. `with_env_var` (v0.x)
+## Import-Only Fixes (No Builder Changes)
+
+### 5. `with_env_var` → `environment` (v0.x)
 
 **What it does in teamocil v0.x**: Sets environment variables for panes.
 
-**Why it can't be imported**: Noted in importer docstring TODO. Not implemented.
+**Why it's not imported**: Noted in importer docstring TODO. Not implemented.
 
-**What tmuxp would need to add**: tmuxp already has `environment` on sessions, windows, and panes. The import just needs to map `with_env_var` → `environment`.
+**Fix**: tmuxp already has `environment` on sessions, windows, and panes. The importer just needs to map `with_env_var` → `environment`. No builder changes required.
 
 ### 6. `cmd_separator` (v0.x)
 
 **What it does in teamocil v0.x**: Custom separator for joining multiple commands (default: `; `).
 
-**Why it can't be imported**: Noted in importer docstring TODO. Not implemented.
-
-**What tmuxp would need to add**: tmuxp sends commands individually (one `send_keys` per command), so this is a non-issue. The behavioral difference is actually better in tmuxp.
+**Note**: tmuxp sends commands individually (one `send_keys` per command), so this is irrelevant. The behavioral difference is actually better in tmuxp — no import needed.
 
 ## Code Issues in Current Importer
 
