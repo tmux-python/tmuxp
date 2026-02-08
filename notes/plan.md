@@ -230,13 +230,14 @@ These require changes to the libtmux package:
 
 ### Phase 4: New CLI Commands
 
-3. **T5**: `tmuxp stop` command
-4. **T10**: `tmuxp new`, `tmuxp copy`, `tmuxp delete` commands
+1. **T5**: `tmuxp stop` command
+2. **T10**: `tmuxp new`, `tmuxp copy`, `tmuxp delete` commands
 
 ### Phase 5: Larger Features (Nice-to-Have)
 
-5. **T6**: Lifecycle hook config keys — complex, needs design
-6. **T7**: `--no-shell-command-before` flag — simple
-7. **T8**: Config templating — significant architectural addition
-8. **T9**: `--debug` / dry-run mode — depends on L3
-9. **L2**: Custom tmux binary — requires libtmux changes
+1. **T6**: Lifecycle hook config keys — complex, needs design
+2. **T7**: `--no-shell-command-before` flag — simple
+3. **T8**: Config templating — significant architectural addition
+4. **L3**: Pre-execution command logging in libtmux — prerequisite for T9
+5. **T9**: `--debug` / dry-run mode — depends on L3
+6. **L2**: Custom tmux binary — requires libtmux changes
