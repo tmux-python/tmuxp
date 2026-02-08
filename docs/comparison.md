@@ -18,29 +18,11 @@
 
 ## Architecture Comparison
 
-### tmuxp — ORM-Based
-
-tmuxp uses **libtmux**, an object-relational mapper for tmux. Each tmux entity (server, session, window, pane) has a Python object with methods that issue tmux commands via `tmux(1)`. Configuration is parsed into Python dicts, then the `WorkspaceBuilder` iterates through them, calling libtmux methods.
-
-**Advantages**: Programmatic control, error recovery mid-build, plugin hooks at each lifecycle stage, Python API for scripting.
-
-**Disadvantages**: Requires Python runtime, tightly coupled to libtmux API.
-
-### tmuxinator — Script Generation
-
-tmuxinator reads YAML (with ERB templating), builds a `Project` object graph, then renders a bash script via ERB templates. The generated script is `exec`'d, replacing the tmuxinator process.
-
-**Advantages**: Debuggable output (`tmuxinator debug`), wide tmux version support (1.5+), ERB allows config templating with variables.
-
-**Disadvantages**: No mid-build error recovery (script runs or fails), Ruby dependency.
-
-### teamocil — Command Objects
-
-teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Command` objects with `to_s()` methods. Commands are joined with `; ` and executed via `Kernel.system()`.
-
-**Advantages**: Simple, predictable, debuggable (`--debug`).
-
-**Disadvantages**: No error recovery, no hooks, no templating, minimal feature set.
+| Tool | Build model | Practical consequence |
+|---|---|---|
+| tmuxp | libtmux API calls (Python ORM over `tmux(1)`) | Mid-build error recovery, plugin hooks, scripting via Python API |
+| tmuxinator | ERB-rendered bash script then `exec`'d | Debuggable script output (`tmuxinator debug`), ERB templating, no mid-build recovery |
+| teamocil | `Command` objects joined with `; ` and run via `Kernel.system()` | Simple and predictable, no hooks/templating/recovery |
 
 ## Configuration Keys
 
@@ -65,7 +47,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Startup pane | (none) | `startup_pane` | (none) |
 | Plugins | `plugins` | (none) | (none) |
 | ERB/variable interpolation | (none) | Yes (`key=value` args) | (none) |
-| YAML anchors | Yes | Yes (`aliases: true`) | Yes |
+| YAML anchors | Yes | Yes (via `YAML.safe_load` `aliases: true`) | Yes |
 | Pane titles enable | (none) | `enable_pane_titles` | (none) |
 | Pane title position | (none) | `pane_title_position` | (none) |
 | Pane title format | (none) | `pane_title_format` | (none) |
@@ -139,7 +121,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Load with name override | `tmuxp load -s <name> <config>` | `tmuxinator start -n <name>` | (none) |
 | Append to session | `tmuxp load -a` | `tmuxinator start --append` | (none) |
 | List configs | `tmuxp ls` | `tmuxinator list` | `teamocil --list` |
-| Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` / `new` | `teamocil --edit <layout>` |
+| Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` (alias of `new`) | `teamocil --edit <layout>` |
 | Show/debug config | (none) | `tmuxinator debug <project>` | `teamocil --show` / `--debug` |
 | Create new config | (none) | `tmuxinator new <project>` | (none) |
 | Copy config | (none) | `tmuxinator copy <src> <dst>` | (none) |
