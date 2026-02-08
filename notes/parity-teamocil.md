@@ -13,9 +13,19 @@ Teamocil has had two distinct config formats:
 
 The current tmuxp importer (`importers.py:import_teamocil`) **targets the v0.x format**. It handles the `session:` wrapper, `splits`, `filters`, and `cmd` keys — all of which are v0.x-only constructs. It does **not** handle the v1.x format natively, though v1.x configs may partially work since the `windows`/`panes` structure is similar.
 
+Note: teamocil v1.x does not create new sessions — it **renames** the current session (`rename-session`) and adds windows to it. This is fundamentally different from tmuxp/tmuxinator which create fresh sessions.
+
 ## Features teamocil has that tmuxp lacks
 
-### 1. `--here` Option (Reuse Current Window)
+### 1. Session Rename (Not Create)
+
+**Source**: `lib/teamocil/tmux/session.rb:18-20`
+
+teamocil does not create a new session. It **renames** the current session via `rename-session` and adds windows to it. If no `name` is provided, it auto-generates one: `"teamocil-session-#{rand(1_000_000)}"`.
+
+**Gap**: tmuxp always creates a new session (unless appending with `--append`). There is no way to rename and populate the current session.
+
+### 2. `--here` Option (Reuse Current Window)
 
 **Source**: `lib/teamocil/tmux/window.rb`, `lib/teamocil/utils/option_parser.rb`
 
@@ -33,7 +43,7 @@ When `--here` is specified:
 
 **WorkspaceBuilder requirement**: Add `--here` CLI flag. For first window, use `rename-window` + `send-keys cd` instead of `new_window()`. Must also adjust window index calculation. This would require special handling in `WorkspaceBuilder.first_window_pass()`.
 
-### 2. `--show` Option (Show Raw Config)
+### 3. `--show` Option (Show Raw Config)
 
 **Source**: `lib/teamocil/layout.rb`
 
@@ -45,7 +55,7 @@ Outputs the raw YAML content of the layout file.
 
 **Gap**: tmuxp has no equivalent. Users can `cat` the file manually.
 
-### 3. `--debug` Option (Show Commands Without Executing)
+### 4. `--debug` Option (Show Commands Without Executing)
 
 **Source**: `lib/teamocil/layout.rb`
 
@@ -57,7 +67,9 @@ Outputs the tmux commands that would be executed, one per line, without running 
 
 **Gap**: tmuxp has no dry-run mode. Since tmuxp uses libtmux API calls rather than generating command strings, implementing this would require a logging/recording mode in the builder.
 
-### 4. Window-Level `focus` Key
+Note: teamocil also has `--list` (lists available layouts in `~/.teamocil/`) and `--edit` (opens layout file in `$EDITOR`). Both are available in tmuxp (`tmuxp ls`, `tmuxp edit`).
+
+### 5. Window-Level `focus` Key
 
 **Source**: `lib/teamocil/tmux/window.rb`
 
@@ -71,7 +83,9 @@ windows:
 
 **Gap**: tmuxp **does** support `focus: true` on windows. **No gap**.
 
-### 5. Pane-Level `focus` Key
+Note: teamocil handles window focus at the session level in `session.rb:24-25` — after all windows are created, it finds the focused window and issues `select-window`. tmuxp handles this the same way.
+
+### 6. Pane-Level `focus` Key
 
 **Source**: `lib/teamocil/tmux/pane.rb`
 
@@ -84,7 +98,7 @@ panes:
 
 **Gap**: tmuxp **does** support `focus: true` on panes. **No gap**.
 
-### 6. Window-Level `options` Key
+### 7. Window-Level `options` Key
 
 **Source**: `lib/teamocil/tmux/window.rb`
 
@@ -99,7 +113,7 @@ Maps to `set-window-option -t <window> <key> <value>`.
 
 **Gap**: tmuxp **does** support `options` on windows. **No gap**.
 
-### 7. Multiple Commands Joined by Semicolon
+### 8. Multiple Commands Joined by Semicolon
 
 **Source**: `lib/teamocil/tmux/pane.rb`
 
@@ -161,12 +175,12 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
 | v1.x `focus` (pane) | Not imported |
 | v1.x `options` (window) | Not imported |
 | Session-level `name` (without `session:` wrapper) | Handled (uses `.get("name")`) |
-| `with_env_var` (v0.x) | Not handled (noted in docstring TODO) |
-| `cmd_separator` (v0.x) | Not handled (noted in docstring TODO) |
+| `with_env_var` (importer TODO) | Not handled — does not exist in current teamocil source |
+| `cmd_separator` (importer TODO) | Not handled — does not exist in current teamocil source |
 
 ### Code Quality Issues in Importer
 
-1. **Lines 145-149**: The `filters.before` and `filters.after` handling has redundant `for _b in` loops that serve no purpose. The inner assignment just reassigns the same value each iteration:
+1. **Lines 144-149**: The `filters.before` and `filters.after` handling has redundant `for _b in` loops that serve no purpose. The inner assignment just reassigns the same value each iteration:
    ```python
    for _b in w["filters"]["before"]:
        window_dict["shell_command_before"] = w["filters"]["before"]
@@ -175,9 +189,9 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
 
 2. **Lines 140-141**: `clear` is preserved in the config but tmuxp has no handling for it. It will be silently ignored during workspace building.
 
-3. **Line 149**: `shell_command_after` is not a tmuxp-supported key. It will be silently ignored.
+3. **Lines 147-149**: `shell_command_after` is set from `filters.after` but is not a tmuxp-supported key. It will be silently ignored during workspace building.
 
-4. **Line 162-163**: `width` is silently dropped with a TODO comment. No warning to the user.
+4. **Lines 161-163**: `width` is silently dropped with a TODO comment. No warning to the user.
 
 5. **v1.x incompatibility**: The importer assumes v0.x format. A v1.x config with `commands` instead of `cmd`, or string panes, will not import correctly:
    - String pane `"git status"` → error (tries to access `p["cmd"]` on a string)
@@ -198,20 +212,22 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
 
 ### Gaps Requiring New Features
 
-1. **`--here` flag** — Reuse current window for first window of layout. Requires `WorkspaceBuilder` to rename instead of create, and send `cd` for root directory.
+1. **Session rename mode** — teamocil renames the current session rather than creating a new one. tmuxp always creates a fresh session.
 
-2. **`--debug` / dry-run mode** — Log commands without executing. Architectural challenge since tmuxp uses libtmux API, not command strings.
+2. **`--here` flag** — Reuse current window for first window of layout. Requires `WorkspaceBuilder` to rename instead of create, and send `cd` for root directory.
 
-3. **`shell_command_after`** — Commands run after pane commands. The importer preserves this from teamocil's `filters.after` but tmuxp has no support for it in the builder.
+3. **`--debug` / dry-run mode** — Log commands without executing. Architectural challenge since tmuxp uses libtmux API, not command strings.
+
+4. **`shell_command_after`** — Commands run after pane commands. The importer preserves this from teamocil's `filters.after` but tmuxp has no support for it in the builder.
 
 ### Import-Only Fixes (No Builder Changes)
 
-4. **v1.x format support** — The importer should handle:
+5. **v1.x format support** — The importer should handle:
    - `commands` key (v1.x) in addition to `cmd` (v0.x)
    - String pane shorthand
    - `focus` on windows and panes
    - `options` on windows
 
-5. **Redundant loop cleanup** — Fix the `filters` handling code.
+6. **Redundant loop cleanup** — Fix the `filters` handling code.
 
-6. **Drop unsupported keys with warnings** — Instead of silently preserving `clear` or dropping `width`, warn the user.
+7. **Drop unsupported keys with warnings** — Instead of silently preserving `clear` or dropping `width`, warn the user.
