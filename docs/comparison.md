@@ -61,8 +61,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Environment vars | `environment` | (none) | (none) |
 | Pre-build script | `before_script` | (none) | (none) |
 | Shell cmd before (all panes) | `shell_command_before` | `pre_window` / `pre_tab` (deprecated) | (none) |
-| Startup window | (none) | `startup_window` (name or index) | (none) |
-| Startup pane | (none) | `startup_pane` | (none) |
+| Startup window | (none; use `focus: true` on window) | `startup_window` (name or index) | (none; use `focus: true` on window) |
+| Startup pane | (none; use `focus: true` on pane) | `startup_pane` | (none; use `focus: true` on pane) |
 | Plugins | `plugins` | (none) | (none) |
 | ERB/variable interpolation | (none) | Yes (`key=value` args) | (none) |
 | YAML anchors | Yes | Yes (via `YAML.safe_load` `aliases: true`) | Yes |
