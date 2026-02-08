@@ -53,7 +53,7 @@ These libtmux APIs already exist and do NOT need changes:
 - **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. The key is silently ignored if present.
 - **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`).
 - **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands are sent. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
-- **Insertion point**: In `build()` around line 320 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 565 for `after`. Note: setting sync before pane creation works because `synchronize-panes` applies to all panes in the window, including those created later by split.
+- **Insertion point**: In `build()` around line 320 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 565 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
 - **Non-breaking**: New optional config key. Existing configs are unaffected.
 
 ### T2. No Pane Title Config Key
@@ -178,7 +178,7 @@ Not imported but translatable:
 - `pre_tab` → `shell_command_before` (deprecated predecessor to `pre_window`)
 - `startup_window` → find matching window, set `focus: true`
 - `startup_pane` → find matching pane, set `focus: true`
-- `on_project_first_start` → `before_script`
+- `on_project_first_start` → `before_script` (only if value is a single command or script path; multi-command strings joined by `;` won't work since `before_script` uses `Popen` without `shell=True`)
 - `socket_path` → warn user to use CLI `-S` flag
 - `attach: false` → warn user to use CLI `-d` flag
 
