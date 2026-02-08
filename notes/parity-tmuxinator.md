@@ -52,7 +52,7 @@ startup_window: editor      # Select this window after build
 startup_pane: 1              # Select this pane within the startup window
 ```
 
-**Gap**: tmuxp supports `focus: true` on windows and panes (boolean), which is equivalent but syntactically different. The `startup_window` key allows referencing by name or index. **Partial parity** — tmuxp can achieve this but uses a different mechanism (`focus` key on individual windows/panes).
+**Gap**: tmuxp supports `focus: true` on windows and panes (boolean), which is equivalent but syntactically different. The `startup_window` key allows referencing by name or index (rendered as `"#{name}:#{value}"`). **Partial parity** — tmuxp can achieve this but uses a different mechanism (`focus` key on individual windows/panes rather than a centralized key).
 
 ### 5. Pane Synchronization
 
@@ -186,23 +186,7 @@ Creates a config file pre-populated from a running tmux session.
 
 ### Current Importer: `importers.py:import_tmuxinator`
 
-**What it handles:**
-
-| tmuxinator key | Mapped to | Status |
-|---|---|---|
-| `project_name` / `name` | `session_name` | ✓ Correct |
-| `project_root` / `root` | `start_directory` | ✓ Correct |
-| `cli_args` / `tmux_options` | `config` (extracts `-f`) | ⚠ Only handles `-f` flag, ignores `-L`, `-S` |
-| `socket_name` | `socket_name` | ✓ Correct |
-| `tabs` → `windows` | `windows` | ✓ Correct |
-| `pre` + `pre_window` | `shell_command` + `shell_command_before` | ⚠ `shell_command` is not a valid tmuxp key |
-| `pre` (alone) | `shell_command_before` | ✓ Correct |
-| `rbenv` | appended to `shell_command_before` | ✓ Correct |
-| Window hash key | `window_name` | ✓ Correct |
-| Window `pre` | `shell_command_before` | ✓ Correct |
-| Window `panes` | `panes` | ✓ Correct |
-| Window `root` | `start_directory` | ✓ Correct |
-| Window `layout` | `layout` | ✓ Correct |
+For the full key-by-key mapping, see `notes/import-tmuxinator.md`.
 
 **What it misses or handles incorrectly:**
 
@@ -213,7 +197,7 @@ Creates a config file pre-populated from a running tmux session.
 | `startup_pane` | Not imported. tmuxp uses `focus: true` on panes. |
 | `tmux_command` | Not imported. tmuxp has no equivalent. |
 | `socket_path` | Not imported. tmuxp takes this via CLI. |
-| `pre_tab` | Not imported (alias for `pre_window`). |
+| `pre_tab` | Not imported (deprecated predecessor to `pre_window`). |
 | `rvm` | Not imported (only `rbenv` is handled). |
 | `post` | Not imported. tmuxp has no equivalent. |
 | `synchronize` | Not imported. tmuxp has no equivalent. |
@@ -237,7 +221,7 @@ Creates a config file pre-populated from a running tmux session.
 
 3. **Line 79-101**: The window iteration uses `for k, v in window_dict.items()` which assumes windows are always dicts with a single key (the window name). This is correct for tmuxinator's format but fragile — if a window dict has multiple keys, only the last one is processed.
 
-4. **Missing `pre_tab`**: The `pre_tab` alias for `pre_window` is not handled.
+4. **Missing `pre_tab`**: The `pre_tab` deprecated predecessor to `pre_window` is not handled.
 
 5. **Missing `rvm`**: Only `rbenv` is imported; `rvm` (another deprecated but still functional key) is ignored.
 
