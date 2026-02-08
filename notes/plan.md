@@ -14,12 +14,12 @@
 
 ### L2. Hardcoded tmux Binary Path
 
-- **Blocker**: `shutil.which("tmux")` is hardcoded in two places:
-  - `common.py:252` (`tmux_cmd.__init__`)
-  - `server.py:223` (`Server.is_alive`)
+- **Blocker**: `shutil.which("tmux")` is hardcoded in two independent code paths:
+  - `common.py:252` — `tmux_cmd.__init__()`, the class through which all libtmux commands flow (called by `Server.cmd()` at `server.py:311`)
+  - `server.py:223` — `Server.raise_if_dead()`, a separate code path that calls `subprocess.check_call()` directly
   There is no way to use a custom tmux binary (wemux, byobu, or custom-built tmux).
 - **Blocks**: Wemux support (tmuxinator `tmux_command: wemux`). Also blocks CI/container use with non-standard tmux locations.
-- **Required**: Add optional `tmux_bin` parameter to `Server.__init__()` that propagates to `tmux_cmd`. Default remains `shutil.which("tmux")`.
+- **Required**: Add optional `tmux_bin` parameter to `Server.__init__()` that propagates to `tmux_cmd`. Both code paths must be updated. Default remains `shutil.which("tmux")`.
 - **Non-breaking**: Optional parameter with backward-compatible default. Existing code is unaffected.
 
 ### L3. No Dry-Run / Command Preview Mode
@@ -40,7 +40,7 @@ These libtmux APIs already exist and do NOT need changes:
 | `Window.rename_window(name)` | `window.py:462` | teamocil `--here` flag |
 | `Pane.resize(height, width)` | `pane.py:217` | teamocil v0.x pane `width` |
 | `Pane.send_keys(cmd, enter)` | `pane.py:423` | All command sending |
-| `Pane.select()` | `pane.py:581` | Pane focus |
+| `Pane.select()` | `pane.py:577` | Pane focus |
 | `Window.set_option(key, val)` | `options.py:578` (OptionsMixin) | `synchronize-panes`, window options |
 | `Session.set_hook(hook, cmd)` | `hooks.py:111` (HooksMixin) | Lifecycle hooks (`client-detached`, etc.) |
 | `Session.set_option(key, val)` | `options.py:578` (OptionsMixin) | `pane-border-status`, `pane-border-format` |
@@ -73,16 +73,17 @@ These libtmux APIs already exist and do NOT need changes:
 - **Required**: Add handling in `iter_create_panes()` after the `shell_command` loop (around line 534). Read `pane_config.get("shell_command_after", [])` and send each command via `pane.send_keys()`.
 - **Non-breaking**: New optional config key.
 
-### T4. No `--here` CLI Flag
+### T4. No Session Rename Mode / `--here` CLI Flag
 
-- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 406).
-- **Blocks**: teamocil `--here` — reuse current window for first window.
+- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 406). Additionally, teamocil's session rename mode (rename current session instead of creating new) is partially covered by tmuxp's `--append` flag, but `--append` does not rename the session.
+- **Blocks**: teamocil `--here` (reuse current window for first window) and teamocil session rename mode.
 - **Required**:
   1. Add `--here` flag to `cli/load.py` (around line 516, near `--append`).
   2. Pass `here=True` through to `WorkspaceBuilder.build()`.
   3. In `iter_create_windows()`, when `here=True` and first window: use `window.rename_window(name)` instead of `session.new_window()`, and send `cd <root>` via `pane.send_keys()` for directory change.
   4. Adjust `first_window_pass()` logic (line 584).
-- **Depends on**: libtmux `Window.rename_window()` (already exists, L4).
+  5. For session rename: when `--here` is used, also call `session.rename_session(name)` (line 262 area in `build()`).
+- **Depends on**: libtmux `Window.rename_window()` and `Session.rename_session()` (both already exist, L4).
 - **Non-breaking**: New optional CLI flag.
 
 ### T5. No `stop` / `kill` CLI Command
@@ -114,7 +115,7 @@ These libtmux APIs already exist and do NOT need changes:
 
 ### T8. No Config Templating
 
-- **Blocker**: tmuxp has no variable interpolation in config values. Environment variable expansion (`$VAR`) works in `start_directory` paths via `os.path.expandvars()` in `loader.py`, but not in arbitrary config values.
+- **Blocker**: tmuxp has no user-defined variable interpolation. Environment variable expansion (`$VAR` via `os.path.expandvars()`) already works in most config values — `session_name`, `window_name`, `start_directory`, `before_script`, `environment`, `options`, `global_options` (see `loader.py:108-160`). But there is no way to pass custom `key=value` variables at load time.
 - **Blocks**: tmuxinator ERB templating (`<%= @settings["key"] %>`).
 - **Required**: Add a Jinja2 or Python `string.Template` pass before YAML parsing. Allow `key=value` CLI args to set template variables. This is a significant architectural addition.
 - **Non-breaking**: Opt-in feature, existing configs are unaffected.
@@ -149,9 +150,11 @@ Keys produced by importers but silently ignored by the builder:
 
 ### I1. tmuxinator `pre` + `pre_window` Mapping Bug
 
-- **Bug**: When both `pre` and `pre_window` exist (`importers.py:59-65`), `pre` maps to `shell_command` (invalid session-level key) and `pre_window` maps to `shell_command_before`. The `pre` commands are silently lost.
+- **Bug**: When both `pre` and `pre_window` exist (`importers.py:59-65`):
+  1. `pre` maps to `shell_command` (line 60) — invalid session-level key, silently ignored by builder. The `pre` commands are lost.
+  2. The `isinstance` check on line 62 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. If `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list.
 - **Correct mapping**: `pre` → `before_script` (session-level, runs once before windows). `pre_window` → `shell_command_before` (per-pane).
-- **Note**: `before_script` expects a file path, not inline commands. This may need a different approach — either write a temp script, or add an `on_project_start` config key (T6).
+- **Note**: `before_script` expects a file path or command (executed via `subprocess.Popen` after `shlex.split()` in `util.py:27-32`), not inline shell commands. For inline commands, either write a temp script, or add an `on_project_start` config key (T6).
 
 ### I2. tmuxinator `cli_args` / `tmux_options` Fragile Parsing
 
