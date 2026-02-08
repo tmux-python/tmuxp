@@ -135,7 +135,15 @@ These are config keys/patterns that differ syntactically but can be automaticall
 
 **Importer status**: ✗ Not handled. Only `rbenv` is mapped; `rvm` is ignored.
 
-### 16. `attach: false` → CLI Flag
+### 16. `socket_path`
+
+| tmuxinator | tmuxp |
+|---|---|
+| `socket_path: /tmp/my.sock` | (CLI `-S /tmp/my.sock`) |
+
+**Importer status**: ✗ Not handled. `socket_path` is a tmuxinator config key (takes precedence over `socket_name`) but the importer ignores it. tmuxp takes socket path via CLI `-S` flag only.
+
+### 17. `attach: false` → CLI Flag
 
 | tmuxinator | tmuxp |
 |---|---|
@@ -212,6 +220,7 @@ These are features that cannot be imported because tmuxp lacks the underlying ca
 | `pre_tab` → `shell_command_before` | ✗ Missing | Difference (needs add) |
 | `startup_window` → `focus` | ✗ Missing | Difference (needs add) |
 | `startup_pane` → `focus` | ✗ Missing | Difference (needs add) |
+| `socket_path` | ✗ Missing | Difference (needs add) |
 | `attach: false` | ✗ Missing | Difference (needs add) |
 | `on_project_*` hooks | ✗ Missing | **Limitation** |
 | `synchronize` | ✗ Missing | **Limitation** |
