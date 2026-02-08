@@ -8,7 +8,7 @@
 |---|---|---|---|
 | **Version** | 1.47.0+ | 3.3.7 | 1.4.2 |
 | **Language** | Python | Ruby | Ruby |
-| **Min tmux** | 3.2 | 1.5 | 3.2 |
+| **Min tmux** | 3.2 | 1.8 (recommended; not 2.5) | (not specified) |
 | **Config formats** | YAML, JSON | YAML (with ERB) | YAML |
 | **Architecture** | ORM (libtmux) | Script generation (ERB templates) | Command objects → shell exec |
 | **License** | MIT | MIT | MIT |
@@ -135,7 +135,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Function | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
 | Load/start session | `tmuxp load <config>` | `tmuxinator start <project>` | `teamocil <layout>` |
-| Load detached | `tmuxp load -d <config>` | `tmuxinator start -d` / `attach: false` | (none) |
+| Load detached | `tmuxp load -d <config>` | `attach: false` / `tmuxinator start --no-attach` | (none) |
 | Load with name override | `tmuxp load -s <name> <config>` | `tmuxinator start -n <name>` | (none) |
 | Append to session | `tmuxp load -a` | `tmuxinator start --append` | (none) |
 | List configs | `tmuxp ls` | `tmuxinator list` | `teamocil --list` |
