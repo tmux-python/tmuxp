@@ -173,7 +173,7 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
    ```
    This iterates N times but sets the same value each time. It should be a direct assignment.
 
-2. **Line 142**: `clear` is preserved in the config but tmuxp has no handling for it. It will be silently ignored during workspace building.
+2. **Lines 140-141**: `clear` is preserved in the config but tmuxp has no handling for it. It will be silently ignored during workspace building.
 
 3. **Line 149**: `shell_command_after` is not a tmuxp-supported key. It will be silently ignored.
 
