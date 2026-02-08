@@ -73,7 +73,9 @@ These are config keys/patterns that differ syntactically but can be automaticall
 | `cli_args: "-f ~/.tmux.special.conf"` | `config: ~/.tmux.special.conf` |
 | `tmux_options: "-f ~/.tmux.special.conf"` | `config: ~/.tmux.special.conf` |
 
-**Importer status**: ⚠ Partially handled (lines 36-49). Only extracts `-f` flag value. Other flags like `-L` (socket name) and `-S` (socket path) in `cli_args`/`tmux_options` are silently included in the `config` value, which is incorrect — `config` should only be a file path.
+**Importer status**: ⚠ Partially handled (lines 36-49). Only extracts `-f` flag value via `str.replace("-f", "").strip()`, which is fragile — it would also match strings containing `-f` as a substring (e.g. a path like `/opt/foobar`). Other flags like `-L` (socket name) and `-S` (socket path) that may appear in `cli_args`/`tmux_options` are silently included in the `config` value, which is incorrect — `config` should only be a file path.
+
+In tmuxinator, `cli_args` is deprecated in favor of `tmux_options` (`project.rb:17-19`). The actual tmux command is built as `"#{tmux_command}#{tmux_options}#{socket}"` (`project.rb:196`), where `socket` handles `-L`/`-S` separately from `socket_name`/`socket_path` config keys.
 
 ### 9. Rbenv
 
@@ -90,9 +92,13 @@ These are config keys/patterns that differ syntactically but can be automaticall
 | `pre: "cmd"` (session-level, alone) | `shell_command_before: ["cmd"]` |
 | `pre_window: "cmd"` + `pre: "cmd"` | `shell_command: "cmd"` + `shell_command_before: ["cmd"]` |
 
-**Importer status**: ⚠ Bug (lines 59-70). When both `pre` and `pre_window` exist, the importer sets `shell_command` (not a valid tmuxp session-level key) for `pre` and `shell_command_before` for `pre_window`. The `pre` commands are lost.
+**Importer status**: ⚠ Bug (lines 59-70). When both `pre` and `pre_window` exist, the importer sets `shell_command` (not a valid tmuxp session-level key) for `pre` and `shell_command_before` for `pre_window`. The `pre` commands are silently lost.
 
-**Correct mapping**: Both should map to `shell_command_before`, with `pre` commands first, then `pre_window` commands.
+In tmuxinator, `pre` is a deprecated session-level command run once before creating windows (in `template.erb:19`, equivalent to `on_project_start`). `pre_window` is a per-pane command run before each pane's commands (in `template.erb:71-73`). These are different scopes.
+
+**Correct mapping**:
+- `pre` → `before_script` (runs once before windows are created)
+- `pre_window` → `shell_command_before` (runs per pane)
 
 ### 11. Window as String/List
 
