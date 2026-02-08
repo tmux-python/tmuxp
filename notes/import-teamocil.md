@@ -165,19 +165,17 @@ Since teamocil 1.4.2 uses the v1.x format, the importer is outdated for current 
 
 ## Import-Only Fixes (No Builder Changes)
 
-### 5. `with_env_var` → `environment` (v0.x)
+### 5. `with_env_var` (listed in importer TODO)
 
-**What it does in teamocil v0.x**: Sets environment variables for panes.
+**Note**: `with_env_var` is listed in the importer's docstring TODOs (`importers.py:121`) but does **not exist** in teamocil's current source (v1.4.2) or in any teamocil file. This may have been a feature from a very old version that was removed, or it may never have existed. The TODO should be removed or verified against historical teamocil releases.
 
-**Why it's not imported**: Noted in importer docstring TODO. Not implemented.
+If it did exist, tmuxp's `environment` key would be the natural mapping.
 
-**Fix**: tmuxp already has `environment` on sessions, windows, and panes. The importer just needs to map `with_env_var` → `environment`. No builder changes required.
+### 6. `cmd_separator` (listed in importer TODO)
 
-### 6. `cmd_separator` (v0.x)
+**Note**: Like `with_env_var`, `cmd_separator` is listed in the importer's docstring TODOs but does **not exist** in teamocil's current source (v1.4.2). Teamocil v1.x hardcodes `commands.join('; ')` in `pane.rb:7`. There is no configurable separator.
 
-**What it does in teamocil v0.x**: Custom separator for joining multiple commands (default: `; `).
-
-**Note**: tmuxp sends commands individually (one `send_keys` per command), so this is irrelevant. The behavioral difference is actually better in tmuxp — no import needed.
+tmuxp sends commands individually (one `send_keys` per command), so even if this existed, it would be irrelevant.
 
 ## Code Issues in Current Importer
 
@@ -216,9 +214,9 @@ if "panes" in w:
 
 If `p` is a string (v1.x shorthand), `"cmd" in p` will check for substring match in the string, not a dict key. This will either silently pass (if the command doesn't contain "cmd") or incorrectly match.
 
-### Missing: `with_env_var` and `cmd_separator`
+### Stale TODOs: `with_env_var` and `cmd_separator`
 
-Noted in the docstring TODOs but never implemented. `with_env_var` could map to tmuxp's `environment` key. `cmd_separator` is irrelevant since tmuxp sends commands individually.
+Listed in the importer's docstring TODOs (`importers.py:121-123`) but neither exists in teamocil's current source (v1.4.2). These TODOs may reference features from a very old teamocil version or may be incorrect. They should be removed or verified against historical releases.
 
 ### Silent Drops
 
@@ -244,9 +242,9 @@ Noted in the docstring TODOs but never implemented. `with_env_var` could map to 
 | Window `focus` (v1.x) | ✗ Missing | Difference (needs add) |
 | Pane `focus` (v1.x) | ✗ Missing | Difference (needs add) |
 | Window `options` (v1.x) | ✗ Missing | Difference (needs add) |
-| `with_env_var` → `environment` (v0.x) | ✗ Missing | Difference (needs add) |
+| `with_env_var` (in importer TODO) | ✗ Missing | Unverified (not in current teamocil source) |
 | `filters.after` → `shell_command_after` | ⚠ Imported but unused | **Limitation** |
 | Pane `width` (v0.x) | ⚠ Dropped silently | **Limitation** |
 | Window `clear` (v0.x) | ⚠ Preserved but unused | **Limitation** |
-| `cmd_separator` (v0.x) | ✗ Missing | N/A (tmuxp is better) |
+| `cmd_separator` (in importer TODO) | ✗ Missing | Unverified (not in current teamocil source) |
 | `--here` flag | N/A (runtime flag) | **Limitation** |
