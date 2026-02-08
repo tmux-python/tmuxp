@@ -61,8 +61,8 @@ These libtmux APIs already exist and do NOT need changes:
 - **Blocker**: `WorkspaceBuilder` has no handling for pane `title` key or session-level `enable_pane_titles` / `pane_title_position` / `pane_title_format`.
 - **Blocks**: Pane titles (tmuxinator named pane syntax).
 - **Required**:
-  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` (around line 311).
-  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after pane creation in `iter_create_panes()` (around line 538). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
+  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` alongside other session options (lines 303-309).
+  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after commands are sent in `iter_create_panes()`, before focus handling (around line 535). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
 - **Config keys**: `enable_pane_titles: true`, `pane_title_position: top`, `pane_title_format: "..."` (session-level). `title: "my-title"` (pane-level).
 - **Non-breaking**: New optional config keys.
 
@@ -193,7 +193,7 @@ Not imported but translatable (same key names in tmuxp):
 
 ### I7. Stale Importer TODOs
 
-`importers.py:121-123` lists `with_env_var` and `cmd_separator` as TODOs, but neither exists in teamocil v1.4.2 source. These are stale references from ~2013 and should be removed.
+`importers.py:121,123` lists `with_env_var` and `cmd_separator` as TODOs (with `clear` at line 122 in between), but neither `with_env_var` nor `cmd_separator` exists in teamocil v1.4.2 source. These are stale references from ~2013 and should be removed.
 
 ## Implementation Priority
 
