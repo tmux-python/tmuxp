@@ -24,7 +24,7 @@
 
 ### L3. No Dry-Run / Command Preview Mode
 
-- **Blocker**: `tmux_cmd` (`common.py:252-296`) always executes commands. Debug logging exists (`logger.debug` at line 291) but only logs stdout after execution, not the command being sent. There is no facility to collect commands without executing them.
+- **Blocker**: `tmux_cmd` (`common.py:252-296`) always executes commands. Debug logging exists (`logger.debug` at line 291) but logs the command and its stdout *after* execution, not before. There is no pre-execution logging or facility to collect commands without executing them.
 - **Blocks**: `--debug` / dry-run mode (both tmuxinator and teamocil have this). tmuxinator generates a bash script that can be previewed; teamocil's `--debug` outputs the tmux command list.
 - **Required**: Either (a) add a `dry_run` flag to `tmux_cmd` that collects commands instead of executing, or (b) add pre-execution logging at DEBUG level that logs the full command before `subprocess.run()`. Option (b) is simpler and doesn't change behavior.
 - **Non-breaking**: Logging change only. tmuxp would implement the user-facing `--debug` flag by capturing log output.
@@ -158,7 +158,7 @@ Keys produced by importers but silently ignored by the builder:
 
 ### I2. tmuxinator `cli_args` / `tmux_options` Fragile Parsing
 
-- **Bug**: `str.replace("-f", "").strip()` (`importers.py:41,48`) matches `-f` as a substring anywhere in the string. A path like `/opt/foobar` would be corrupted. Also ignores `-L` (socket name) and `-S` (socket path) flags.
+- **Bug**: `str.replace("-f", "").strip()` (`importers.py:41,48`) does a global string replacement, not flag-aware parsing. A value like `"-f ~/.tmux.conf -L mysocket"` would produce `"~/.tmux.conf -L mysocket"` as the `config` value (including the `-L` flag in a file path). Also ignores `-L` (socket name) and `-S` (socket path) flags entirely.
 - **Fix**: Use proper argument parsing (e.g., `shlex.split()` + iterate to find `-f` flag and its value).
 
 ### I3. teamocil Redundant Filter Loops
