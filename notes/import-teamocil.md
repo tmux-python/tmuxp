@@ -184,7 +184,7 @@ Since teamocil 1.4.2 uses the v1.x format, the importer is outdated for current 
 ### Bug: Redundant Filter Loop
 
 ```python
-# Lines 144-149 (current)
+# Lines 143-149 (current)
 if "filters" in w:
     if "before" in w["filters"]:
         for _b in w["filters"]["before"]:
