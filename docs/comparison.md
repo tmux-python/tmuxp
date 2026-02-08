@@ -53,15 +53,15 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Windows list | `windows` | `windows` / `tabs` | `windows` |
 | Socket name | (CLI `-L`) | `socket_name` | (none) |
 | Socket path | (CLI `-S`) | `socket_path` | (none) |
+| Attach on create | (CLI `-d` to detach) | `attach` (default: true) | (always attaches) |
 | Tmux config file | (CLI `-f`) | `tmux_options` / `cli_args` | (none) |
 | Tmux command | (none) | `tmux_command` (e.g. `wemux`) | (none) |
 | Session options | `options` | (none) | (none) |
 | Global options | `global_options` | (none) | (none) |
 | Environment vars | `environment` | (none) | (none) |
 | Pre-build script | `before_script` | (none) | (none) |
-| Shell cmd before (all panes) | `shell_command_before` | `pre_window` / `pre_tab` | (none) |
-| Attach on create | (CLI `-d` to detach) | `attach` | (always attaches) |
-| Startup window | (none) | `startup_window` | (none) |
+| Shell cmd before (all panes) | `shell_command_before` | `pre_window` / `pre_tab` (deprecated) | (none) |
+| Startup window | (none) | `startup_window` (name or index) | (none) |
 | Startup pane | (none) | `startup_pane` | (none) |
 | Plugins | `plugins` | (none) | (none) |
 | ERB/variable interpolation | (none) | Yes (`key=value` args) | (none) |
