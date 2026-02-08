@@ -24,13 +24,14 @@ teamocil --here my-layout
 ```
 
 When `--here` is specified:
-- First window: **renames** current window instead of creating a new one
-- First window: sends `cd <root>` if root is specified
-- Subsequent windows: created normally
+- First window: **renames** current window (`rename-window`) instead of creating a new one
+- First window: sends `cd "<root>"` + `Enter` via `send-keys` to change directory (since no `-c` flag is available on an existing window)
+- First window: decrements the window count when calculating base indices for subsequent windows
+- Subsequent windows: created normally with `new-window`
 
 **Gap**: tmuxp always creates new windows. There is no way to populate the current window with a layout.
 
-**WorkspaceBuilder requirement**: Add `--here` CLI flag. For first window, use rename + cd instead of `new_window()`. This would require special handling in `WorkspaceBuilder.first_window_pass()`.
+**WorkspaceBuilder requirement**: Add `--here` CLI flag. For first window, use `rename-window` + `send-keys cd` instead of `new_window()`. Must also adjust window index calculation. This would require special handling in `WorkspaceBuilder.first_window_pass()`.
 
 ### 2. `--show` Option (Show Raw Config)
 
