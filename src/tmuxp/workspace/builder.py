@@ -521,6 +521,11 @@ class WorkspaceBuilder:
             sleep_before = pane_config.get("sleep_before", None)
             sleep_after = pane_config.get("sleep_after", None)
             for cmd in pane_config["shell_command"]:
+                if isinstance(cmd, str):
+                    cmd = {"cmd": cmd}
+                elif not isinstance(cmd, dict):
+                    raise TypeError(f"shell_command entries must be str or dict, got {type(cmd).__name__}")
+
                 enter = cmd.get("enter", enter)
                 sleep_before = cmd.get("sleep_before", sleep_before)
                 sleep_after = cmd.get("sleep_after", sleep_after)
@@ -532,6 +537,7 @@ class WorkspaceBuilder:
 
                 if sleep_after is not None:
                     time.sleep(sleep_after)
+
 
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
