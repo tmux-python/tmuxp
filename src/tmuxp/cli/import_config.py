@@ -42,6 +42,8 @@ if t.TYPE_CHECKING:
 
     CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
+    from tmuxp._internal.types import WorkspaceConfig
+
 
 def get_tmuxinator_dir() -> pathlib.Path:
     """Return tmuxinator configuration directory.
@@ -157,7 +159,7 @@ def create_import_subparser(
 class ImportConfigFn(t.Protocol):
     """Typing for import configuration callback function."""
 
-    def __call__(self, workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+    def __call__(self, workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
         """Execute tmuxp import function."""
         ...
 
@@ -173,7 +175,9 @@ def import_config(
         colors = Colors(ColorMode.AUTO)
 
     existing_workspace_file = ConfigReader._from_file(pathlib.Path(workspace_file))
-    cfg_reader = ConfigReader(importfunc(existing_workspace_file))
+    cfg_reader = ConfigReader(
+        t.cast(dict[t.Any, t.Any], importfunc(existing_workspace_file))
+    )
 
     workspace_file_format = prompt_choices(
         "Convert to",
