@@ -101,6 +101,9 @@
 | Suppress history | `suppress_history` | (none) | (none) |
 | Focus | `focus` | (none; use `startup_pane`) | `focus` |
 | Pane title | (none) | hash key (named pane → `select-pane -T`) | (none) |
+| Width | (none) | (none) | `width` (v0.x, horizontal split %) |
+| Height | (none) | (none) | `height` (v0.x, vertical split %) |
+| Split target | (none) | (none) | `target` (v0.x) |
 
 ### Shorthand Syntax
 
