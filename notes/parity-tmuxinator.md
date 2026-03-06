@@ -1,8 +1,8 @@
 # Tmuxinator Parity Analysis
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-03-06*
 *Tmuxinator version analyzed: 3.3.7 (supports tmux 1.5–3.6a)*
-*tmuxp version: 1.47.0+*
+*tmuxp version: 1.64.0*
 
 ## Features tmuxinator has that tmuxp lacks
 
@@ -21,6 +21,8 @@ tmuxinator has 5 lifecycle hooks:
 | `on_project_stop` | Runs on `tmuxinator stop` | No equivalent (tmuxp has no `stop` command) |
 
 **Gap**: tmuxp's `before_script` is a partial equivalent of `on_project_first_start` — it runs before windows are created and kills the session on failure. tmuxp has no equivalent for `on_project_start` (runs every time, including reattach), no hooks for detach/exit/stop events, and no distinction between first start vs. restart.
+
+**Execution order from `template.erb`**: `cd root` → `on_project_start` → (if new session: `pre` → `on_project_first_start` → `new-session` → create windows → build panes → select startup → attach) OR (if existing: `on_project_restart`) → `post` → `on_project_exit`. Note that `post` and `on_project_exit` run on every invocation (outside the new/existing conditional).
 
 **WorkspaceBuilder requirement**: Add config keys for `on_project_start`, `on_project_first_start`, `on_project_restart`, `on_project_exit`, `on_project_stop`. The exit/stop hooks require shell integration (trap signals, set-hook in tmux).
 
