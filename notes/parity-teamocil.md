@@ -137,8 +137,13 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
 | Pane commands | `cmd` (string or list) | `commands` (list) |
 | Before commands | `filters.before` (list) | (none) |
 | After commands | `filters.after` (list) | (none) |
-| Pane width | `width` (number) | (none) |
+| Pane width | `width` (number, horizontal split %) | (none) |
+| Pane height | `height` (number, vertical split %) | (none) |
+| Pane target | `target` (pane to split from) | (none) |
 | Window clear | `clear` (boolean) | (none) |
+| TEAMOCIL env var | `with_env_var` (default true, exports `TEAMOCIL=1`) | (none) |
+| Command separator | `cmd_separator` (default `"; "`) | Hardcoded `"; "` |
+| ERB templating | Yes (layouts processed as ERB) | No |
 | Pane focus | (none) | `focus` (boolean) |
 | Window focus | (none) | `focus` (boolean) |
 | Window options | (none) | `options` (hash) |
