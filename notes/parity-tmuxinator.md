@@ -197,8 +197,8 @@ Creates a config file pre-populated from a running tmux session. Note: tmuxinato
 | `cli_args` / `tmux_options` | `config` (extracts `-f`) | ⚠ Only handles `-f` flag, ignores `-L`, `-S` |
 | `socket_name` | `socket_name` | ✓ Correct |
 | `tabs` → `windows` | `windows` | ✓ Correct |
-| `pre` + `pre_window` | `shell_command` + `shell_command_before` | ⚠ `shell_command` is not a valid tmuxp key |
-| `pre` (alone) | `shell_command_before` | ✓ Correct |
+| `pre` + `pre_window` | `shell_command` + `shell_command_before` | ⚠ `shell_command` is not a valid tmuxp session key; should be `before_script` + `shell_command_before` |
+| `pre` (alone) | `shell_command_before` | ⚠ Wrong scope: `pre` runs once (like `before_script`), not per-pane |
 | `rbenv` | appended to `shell_command_before` | ✓ Correct |
 | Window hash key | `window_name` | ✓ Correct |
 | Window `pre` | `shell_command_before` | ✓ Correct |
@@ -229,13 +229,15 @@ Creates a config file pre-populated from a running tmux session. Note: tmuxinato
 | `on_project_stop` | Not imported. tmuxp has no equivalent. |
 | Named panes (hash syntax) | Not imported. Pane names/titles are lost. |
 | ERB templating | Not handled. YAML parsing will fail on ERB syntax. |
-| `pre` + `pre_window` combo | Bug: sets `shell_command` which is not a tmuxp session-level key |
+| `pre` mapping | Bug: maps to `shell_command_before` (per-pane) instead of `before_script` (once); combo with `pre_window` uses invalid `shell_command` key |
 
 ### Code Quality Issues in Importer
 
-1. **Line 60**: When both `pre` and `pre_window` exist, the importer sets `tmuxp_workspace["shell_command"]` — but `shell_command` is not a valid session-level tmuxp key. The `pre` commands would be silently ignored.
+1. **Lines 59-70 (`pre` handling)**: Two bugs:
+   - When both `pre` and `pre_window` exist (line 60), the importer sets `tmuxp_workspace["shell_command"]` — but `shell_command` is not a valid session-level tmuxp key. The `pre` commands are silently lost.
+   - When only `pre` exists (line 68), it maps to `shell_command_before` — but tmuxinator's `pre` runs *once* before session creation (`template.erb:19`), not per-pane. The correct mapping is `before_script`.
 
-2. **Line 36-49**: The `cli_args`/`tmux_options` handler only extracts `-f` (config file). It ignores `-L` (socket name) and `-S` (socket path) which could also appear in these fields.
+2. **Lines 36-49**: The `cli_args`/`tmux_options` handler only extracts `-f` (config file). It ignores `-L` (socket name) and `-S` (socket path) which could also appear in these fields.
 
 3. **Line 79-101**: The window iteration uses `for k, v in window_dict.items()` which assumes windows are always dicts with a single key (the window name). This is correct for tmuxinator's format but fragile — if a window dict has multiple keys, only the last one is processed.
 
