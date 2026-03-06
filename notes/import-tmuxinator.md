@@ -1,6 +1,6 @@
 # Tmuxinator Import Behavior
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-03-06*
 *Importer: `src/tmuxp/workspace/importers.py:import_tmuxinator`*
 
 ## Syntax Differences (Translatable)
