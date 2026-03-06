@@ -165,17 +165,19 @@ Since teamocil 1.4.2 uses the v1.x format, the importer is outdated for current 
 
 ## Import-Only Fixes (No Builder Changes)
 
-### 5. `with_env_var` (listed in importer TODO)
+### 5. `with_env_var` (v0.x only)
 
-**Note**: `with_env_var` is listed in the importer's docstring TODOs (`importers.py:121`) but does **not exist** in teamocil's current source (v1.4.2) or in any teamocil file. This may have been a feature from a very old version that was removed, or it may never have existed. The TODO should be removed or verified against historical teamocil releases.
+**Verified**: `with_env_var` exists in teamocil's v0.x (`0.4-stable` branch) at `lib/teamocil/layout/window.rb`. When `true` (the default), it exports `TEAMOCIL=1` environment variable in each pane's command chain. Removed in v1.x rewrite.
 
-If it did exist, tmuxp's `environment` key would be the natural mapping.
+tmuxp's `environment` key would be the natural mapping: `environment: { TEAMOCIL: "1" }`. However, since this was a default behavior in v0.x (auto-exported unless disabled), the importer should either:
+- Always add `environment: { TEAMOCIL: "1" }` unless `with_env_var: false`
+- Or simply drop it, since it's an implementation detail of teamocil
 
-### 6. `cmd_separator` (listed in importer TODO)
+### 6. `cmd_separator` (v0.x only)
 
-**Note**: Like `with_env_var`, `cmd_separator` is listed in the importer's docstring TODOs but does **not exist** in teamocil's current source (v1.4.2). Teamocil v1.x hardcodes `commands.join('; ')` in `pane.rb:7`. There is no configurable separator.
+**Verified**: `cmd_separator` exists in teamocil's v0.x at `lib/teamocil/layout/window.rb`. It's a per-window string (default `"; "`) used to join multiple pane commands before sending via `send-keys`. Removed in v1.x (hardcoded to `"; "`).
 
-tmuxp sends commands individually (one `send_keys` per command), so even if this existed, it would be irrelevant.
+tmuxp sends commands individually (one `send_keys` per command), so this is irrelevant — the importer can safely ignore it.
 
 ## Code Issues in Current Importer
 
@@ -214,9 +216,15 @@ if "panes" in w:
 
 If `p` is a string (v1.x shorthand), `"cmd" in p` will check for substring match in the string, not a dict key. This will either silently pass (if the command doesn't contain "cmd") or incorrectly match.
 
-### Stale TODOs: `with_env_var` and `cmd_separator`
+### Verified TODOs: `with_env_var` and `cmd_separator`
 
-Listed in the importer's docstring TODOs (`importers.py:121-123`) but neither exists in teamocil's current source (v1.4.2). These TODOs may reference features from a very old teamocil version or may be incorrect. They should be removed or verified against historical releases.
+Listed in the importer's docstring TODOs (`importers.py:121-123`). Both verified as v0.x features (present in `0.4-stable` branch, removed in v1.x rewrite). `with_env_var` auto-exports `TEAMOCIL=1`; `cmd_separator` controls command joining. Since the importer targets v0.x, these are valid TODOs — but `cmd_separator` is irrelevant since tmuxp sends commands individually.
+
+### Missing v0.x Features: `height` and `target`
+
+Not mentioned in the importer TODOs but present in v0.x:
+- `height` (pane): Percentage for vertical split (`split-window -p <height>`). Like `width`, silently dropped.
+- `target` (pane): Target pane for split operation (`split-window -t <target>`). Not imported.
 
 ### Silent Drops
 
@@ -242,9 +250,11 @@ Listed in the importer's docstring TODOs (`importers.py:121-123`) but neither ex
 | Window `focus` (v1.x) | ✗ Missing | Difference (needs add) |
 | Pane `focus` (v1.x) | ✗ Missing | Difference (needs add) |
 | Window `options` (v1.x) | ✗ Missing | Difference (needs add) |
-| `with_env_var` (in importer TODO) | ✗ Missing | Unverified (not in current teamocil source) |
+| `with_env_var` (v0.x) | ✗ Missing | Difference (v0.x only, can map to `environment`) |
 | `filters.after` → `shell_command_after` | ⚠ Imported but unused | **Limitation** |
 | Pane `width` (v0.x) | ⚠ Dropped silently | **Limitation** |
 | Window `clear` (v0.x) | ⚠ Preserved but unused | **Limitation** |
-| `cmd_separator` (in importer TODO) | ✗ Missing | Unverified (not in current teamocil source) |
+| `cmd_separator` (v0.x) | ✗ Missing | Difference (v0.x only, irrelevant — tmuxp sends individually) |
+| `height` (v0.x pane) | ✗ Missing | **Limitation** (like `width`, no per-pane sizing) |
+| `target` (v0.x pane) | ✗ Missing | **Limitation** (no split targeting) |
 | `--here` flag | N/A (runtime flag) | **Limitation** |
