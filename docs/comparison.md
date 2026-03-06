@@ -202,6 +202,7 @@ If tmuxp were to auto-detect and transparently load tmuxinator/teamocil configs,
 2. If `session:` wrapper exists → **teamocil v0.x** format
 3. If `project_name`, `project_root`, or `tabs` exists → **tmuxinator** format
 4. If windows use hash-key syntax (`- editor: {panes: ...}`) → **tmuxinator** format
-5. If windows have `name` key and panes use `commands` → **teamocil v1.x** format
-6. If `root` exists at top level and windows use `name` key → **tmuxinator** format (also has `root`)
-7. Ambiguous → ask user or try tmuxp first
+5. If windows have `name` key and panes use `commands` or string shorthand → **teamocil v1.x** format
+6. If `root` exists at top level and windows use hash-key syntax → **tmuxinator** format
+7. If windows have `name` key and panes use `cmd` or `splits` → **teamocil v0.x** format (even without `session:` wrapper)
+8. Ambiguous → ask user or try tmuxp first
