@@ -180,8 +180,10 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
 | v1.x `focus` (pane) | Not imported |
 | v1.x `options` (window) | Not imported |
 | Session-level `name` (without `session:` wrapper) | Handled (uses `.get("name")`) |
-| `with_env_var` (importer TODO) | Not handled — does not exist in current teamocil source |
-| `cmd_separator` (importer TODO) | Not handled — does not exist in current teamocil source |
+| v0.x `focus` (pane) | ✓ Accidentally preserved (in-place dict mutation keeps unhandled keys) |
+| v0.x `target` (pane) | ✓ Accidentally preserved (same reason) |
+| `with_env_var` (v0.x) | Not handled — silently dropped by importer |
+| `cmd_separator` (v0.x) | Not handled — silently dropped by importer |
 
 ### Code Quality Issues in Importer
 
