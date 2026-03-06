@@ -59,7 +59,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Session options | `options` | (none) | (none) |
 | Global options | `global_options` | (none) | (none) |
 | Environment vars | `environment` | (none) | (none) |
-| Pre-build script | `before_script` | (none) | (none) |
+| Pre-build script | `before_script` | `on_project_first_start` / `pre` (deprecated; see Hooks) | (none) |
 | Shell cmd before (all panes) | `shell_command_before` | `pre_window` / `pre_tab` / `rbenv` / `rvm` (all deprecated) | (none) |
 | Startup window | (none; use `focus: true` on window) | `startup_window` (name or index) | (none; use `focus: true` on window) |
 | Startup pane | (none; use `focus: true` on pane) | `startup_pane` | (none; use `focus: true` on pane) |
@@ -82,8 +82,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Before workspace build | Plugin: `before_workspace_builder()` | (none) | (none) |
 | On window create | Plugin: `on_window_create()` | (none) | (none) |
 | After window done | Plugin: `after_window_finished()` | (none) | (none) |
-| Deprecated pre | (none) | `pre` (deprecated; runs once before windows if session is new) | (none) |
-| Deprecated post | (none) | `post` (deprecated; runs after attach/detach on every invocation) | (none) |
+| Deprecated pre | (none) | `pre` (deprecated → `on_project_start`+`on_project_restart`; runs before session create) | (none) |
+| Deprecated post | (none) | `post` (deprecated → `on_project_stop`+`on_project_exit`; runs after attach on every invocation) | (none) |
 
 ### Window-Level
 
