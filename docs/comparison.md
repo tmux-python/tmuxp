@@ -1,12 +1,12 @@
 # Feature Comparison: tmuxp vs tmuxinator vs teamocil
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-03-06*
 
 ## Overview
 
 | | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| **Version** | 1.47.0+ | 3.3.7 | 1.4.2 |
+| **Version** | 1.64.0 | 3.3.7 | 1.4.2 |
 | **Language** | Python | Ruby | Ruby |
 | **Min tmux** | 3.2 | 1.5+ (1.5–3.6a tested) | (not specified) |
 | **Config formats** | YAML, JSON | YAML (with ERB) | YAML |
@@ -82,8 +82,8 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Before workspace build | Plugin: `before_workspace_builder()` | (none) | (none) |
 | On window create | Plugin: `on_window_create()` | (none) | (none) |
 | After window done | Plugin: `after_window_finished()` | (none) | (none) |
-| Deprecated pre | (none) | `pre` (deprecated → `on_project_start`/`on_project_restart`) | (none) |
-| Deprecated post | (none) | `post` (deprecated → `on_project_stop`/`on_project_exit`) | (none) |
+| Deprecated pre | (none) | `pre` (deprecated; runs once before windows if session is new) | (none) |
+| Deprecated post | (none) | `post` (deprecated; runs after attach/detach on every invocation) | (none) |
 
 ### Window-Level
 
@@ -172,3 +172,33 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Extension search | `.yaml`, `.yml`, `.json` | `.yml`, `.yaml` | `.yml` |
 | Recursive search | No | Yes (`Dir.glob("**/*.{yml,yaml}")`) | No |
 | Upward traversal | Yes (cwd → `~`) | No | No |
+
+## Config Format Auto-Detection Heuristics
+
+If tmuxp were to auto-detect and transparently load tmuxinator/teamocil configs, these heuristics would distinguish the formats:
+
+| Indicator | tmuxp | tmuxinator | teamocil v0.x | teamocil v1.x |
+|---|---|---|---|---|
+| `session_name` key | Yes | No | No | No |
+| `name` or `project_name` key | No | Yes | Yes (inside `session:`) | Yes |
+| `session:` wrapper | No | No | Yes | No |
+| `root` / `project_root` key | No | Yes | Yes | No |
+| `start_directory` key | Yes | No | No | No |
+| `windows` contains hash-key syntax | No | Yes (`- editor: ...`) | No | No |
+| `windows` contains `window_name` key | Yes | No | No | No |
+| `windows` contains `name` key | No | No | Yes | Yes |
+| `splits` key in windows | No | No | Yes | No |
+| `panes` with `cmd` key | No | No | Yes | No |
+| `panes` with `commands` key | No | No | No | Yes |
+| `panes` with `shell_command` key | Yes | No | No | No |
+| `tabs` key | No | Yes (deprecated) | No | No |
+
+**Reliable detection algorithm:**
+
+1. If `session_name` exists or any window has `window_name` → **tmuxp** format
+2. If `session:` wrapper exists → **teamocil v0.x** format
+3. If `project_name`, `project_root`, or `tabs` exists → **tmuxinator** format
+4. If windows use hash-key syntax (`- editor: {panes: ...}`) → **tmuxinator** format
+5. If windows have `name` key and panes use `commands` → **teamocil v1.x** format
+6. If `root` exists at top level and windows use `name` key → **tmuxinator** format (also has `root`)
+7. Ambiguous → ask user or try tmuxp first
