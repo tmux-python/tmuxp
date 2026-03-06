@@ -1,8 +1,8 @@
 # Teamocil Parity Analysis
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-03-06*
 *Teamocil version analyzed: 1.4.2*
-*tmuxp version: 1.47.0+*
+*tmuxp version: 1.64.0*
 
 ## Version History Context
 
