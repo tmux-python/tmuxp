@@ -87,14 +87,17 @@ In tmuxinator, `cli_args` is deprecated in favor of `tmux_options` (`project.rb:
 
 ### 10. Pre / Pre-Window Commands
 
-| tmuxinator | tmuxp |
-|---|---|
-| `pre: "cmd"` (session-level, alone) | `shell_command_before: ["cmd"]` |
-| `pre_window: "cmd"` + `pre: "cmd"` | `shell_command: "cmd"` + `shell_command_before: ["cmd"]` |
+| tmuxinator | tmuxp (correct) | tmuxp (current importer) |
+|---|---|---|
+| `pre: "cmd"` (session-level, alone) | `before_script: "cmd"` | `shell_command_before: ["cmd"]` (wrong scope) |
+| `pre_window: "cmd"` | `shell_command_before: ["cmd"]` | ✓ Correct (when alone) |
+| `pre: "cmd"` + `pre_window: "cmd2"` | `before_script: "cmd"` + `shell_command_before: ["cmd2"]` | `shell_command: "cmd"` (invalid key, lost) + `shell_command_before: ["cmd2"]` |
 
-**Importer status**: ⚠ Bug (lines 59-70). When both `pre` and `pre_window` exist, the importer sets `shell_command` (not a valid tmuxp session-level key) for `pre` and `shell_command_before` for `pre_window`. The `pre` commands are silently lost.
+**Importer status**: ⚠ Bug (lines 59-70). Two issues:
+1. When both `pre` and `pre_window` exist, the importer sets `shell_command` (not a valid tmuxp session-level key) for `pre`. The `pre` commands are silently lost.
+2. When only `pre` exists, the importer maps it to `shell_command_before` — but `pre` runs once before session creation (like `before_script`), not per-pane. This changes the semantics from "run once" to "run in every pane."
 
-In tmuxinator, `pre` is a deprecated session-level command run once before creating windows (in `template.erb:19`, equivalent to `on_project_start`). `pre_window` is a per-pane command run before each pane's commands (in `template.erb:71-73`). These are different scopes.
+In tmuxinator, `pre` is a deprecated session-level command run once before creating windows (in `template.erb:19`, inside the new-session conditional). Its deprecation message says it's replaced by `on_project_start` + `on_project_restart`. `pre_window` is a per-pane command run before each pane's commands (in `template.erb:71-73`). These are different scopes.
 
 **Correct mapping**:
 - `pre` → `before_script` (runs once before windows are created)
@@ -219,7 +222,7 @@ These are features that cannot be imported because tmuxp lacks the underlying ca
 | `socket_name` | ✓ Handled | Difference |
 | `cli_args`/`tmux_options` → `config` | ⚠ Partial | Difference (needs fix) |
 | `rbenv` → `shell_command_before` | ✓ Handled | Difference |
-| `pre` → `shell_command_before` | ⚠ Bug when combined with `pre_window` | Difference (needs fix) |
+| `pre` → `before_script` | ⚠ Bug: maps to wrong key (`shell_command_before` alone, `shell_command` with `pre_window`) | Difference (needs fix) |
 | Window hash syntax | ✓ Handled | Difference |
 | Window `root`/`pre`/`layout`/`panes` | ✓ Handled | Difference |
 | `rvm` → `shell_command_before` | ✗ Missing | Difference (needs add) |
