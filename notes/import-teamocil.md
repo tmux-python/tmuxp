@@ -113,13 +113,13 @@ Since teamocil 1.4.2 uses the v1.x format, the importer is outdated for current 
 
 **Importer status**: ✗ Not handled. The key is not imported.
 
-### 13. Pane Focus (v1.x)
+### 13. Pane Focus (v0.x and v1.x)
 
-| teamocil v1.x | tmuxp |
+| teamocil | tmuxp |
 |---|---|
 | `focus: true` (on pane) | `focus: true` |
 
-**Importer status**: ✗ Not handled. The key is not imported.
+**Importer status**: ✓ Accidentally handled in v0.x. The importer modifies pane dicts in-place (only renaming `cmd` → `shell_command` and dropping `width`), so `focus` survives as an unhandled key that passes through. Test fixture `test3.py` and `layouts.py` confirm this. For v1.x format, pane `focus` would also survive if the pane is a dict (but not if it's a string shorthand).
 
 ### 14. Window Options (v1.x)
 
@@ -220,41 +220,19 @@ If `p` is a string (v1.x shorthand), `"cmd" in p` will check for substring match
 
 Listed in the importer's docstring TODOs (`importers.py:121-123`). Both verified as v0.x features (present in `0.4-stable` branch, removed in v1.x rewrite). `with_env_var` auto-exports `TEAMOCIL=1`; `cmd_separator` controls command joining. Since the importer targets v0.x, these are valid TODOs — but `cmd_separator` is irrelevant since tmuxp sends commands individually.
 
-### Missing v0.x Features: `height` and `target`
+### Missing v0.x Features: `height`
 
 Not mentioned in the importer TODOs but present in v0.x:
 - `height` (pane): Percentage for vertical split (`split-window -p <height>`). Like `width`, silently dropped.
-- `target` (pane): Target pane for split operation (`split-window -t <target>`). Not imported.
+
+### Accidentally Preserved: `target` and `focus`
+
+Through in-place dict mutation, these v0.x pane keys survive the import without explicit handling:
+- `target` (pane): Preserved in output (see `layouts.py:106-108`), but tmuxp's WorkspaceBuilder ignores it.
+- `focus` (pane): Preserved in output (see `layouts.py:109`, `test3.py:39`), and tmuxp's WorkspaceBuilder **does** use `focus` — so pane focus actually works correctly through the v0.x importer by accident.
 
 ### Silent Drops
 
 - `clear` is preserved but unused by tmuxp
 - `width` is dropped with no user warning
 - `shell_command_after` is set but unused by tmuxp
-
-## Summary Table
-
-| teamocil Feature | Import Status | Classification |
-|---|---|---|
-| `session:` wrapper (v0.x) | ✓ Handled | Difference |
-| `name` → `session_name` | ✓ Handled | Difference |
-| `root` → `start_directory` | ✓ Handled | Difference |
-| Window `name` → `window_name` | ✓ Handled | Difference |
-| Window `root` → `start_directory` | ✓ Handled | Difference |
-| Window `layout` | ✓ Handled | Difference |
-| `splits` → `panes` (v0.x) | ✓ Handled | Difference |
-| Pane `cmd` → `shell_command` (v0.x) | ✓ Handled | Difference |
-| `filters.before` → `shell_command_before` (v0.x) | ⚠ Bug (redundant loop) | Difference (needs fix) |
-| Pane `commands` → `shell_command` (v1.x) | ✗ Missing | Difference (needs add) |
-| String pane shorthand (v1.x) | ✗ Missing (causes error) | Difference (needs add) |
-| Window `focus` (v1.x) | ✗ Missing | Difference (needs add) |
-| Pane `focus` (v1.x) | ✗ Missing | Difference (needs add) |
-| Window `options` (v1.x) | ✗ Missing | Difference (needs add) |
-| `with_env_var` (v0.x) | ✗ Missing | Difference (v0.x only, can map to `environment`) |
-| `filters.after` → `shell_command_after` | ⚠ Imported but unused | **Limitation** |
-| Pane `width` (v0.x) | ⚠ Dropped silently | **Limitation** |
-| Window `clear` (v0.x) | ⚠ Preserved but unused | **Limitation** |
-| `cmd_separator` (v0.x) | ✗ Missing | Difference (v0.x only, irrelevant — tmuxp sends individually) |
-| `height` (v0.x pane) | ✗ Missing | **Limitation** (like `width`, no per-pane sizing) |
-| `target` (v0.x pane) | ✗ Missing | **Limitation** (no split targeting) |
-| `--here` flag | N/A (runtime flag) | **Limitation** |
