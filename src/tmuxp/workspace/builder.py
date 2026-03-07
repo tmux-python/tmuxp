@@ -277,7 +277,7 @@ class WorkspaceBuilder:
             logger,
             {"tmux_session": self.session_config["session_name"]},
         )
-        _log.info("session created", extra={"tmux_session": session.name or ""})
+        _log.info("session created")
 
         assert session.server is not None
 
@@ -434,7 +434,7 @@ class WorkspaceBuilder:
                     "tmux_window": window_name or "",
                 },
             )
-            window_log.debug("window created", extra={"tmux_window": window_name or ""})
+            window_log.debug("window created")
 
             if is_first_window_pass:  # if first window, use window 1
                 session.active_window.kill()
