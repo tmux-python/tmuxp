@@ -157,8 +157,20 @@ Outputs the generated shell script without executing it.
 | `tmuxinator implode` | Delete ALL configs |
 | `tmuxinator stop <project>` | Stop session + run hooks |
 | `tmuxinator stop-all` | Stop all managed sessions |
+| `tmuxinator doctor` | Check system setup (tmux installed, version) |
+| `tmuxinator completions` | Shell completion helper |
 
-**Gap**: tmuxp has `edit` but not `new`, `copy`, `delete`, `implode`, or `stop` commands.
+**Gap**: tmuxp has `edit` but not `new`, `copy`, `delete`, `implode`, `stop`, or `doctor` commands.
+
+Additional CLI flags on `start`:
+- `--append` — append windows to existing session (tmuxp has `--append`)
+- `--no-pre-window` — skip pre_window commands (tmuxp lacks this)
+- `--project-config` / `-p` — use specific config file (tmuxp uses positional arg)
+- `--suppress-tmux-version-warning` — skip tmux version check
+
+Additional flags on `list`:
+- `--active` / `-a` — filter by active sessions (tmuxp lacks this)
+- `--newline` / `-n` — one entry per line
 
 ### 11. `--no-pre-window` Flag
 
@@ -170,7 +182,7 @@ tmuxinator start myproject --no-pre-window
 
 Skips `pre_window` commands. Useful for debugging.
 
-Note: tmuxinator's `pre_window` method has a fallback chain (`project.rb:175-188`): `rbenv` → `rvm` → `pre_tab` → `pre_window`. The `--no-pre-window` flag disables all of these, not just `pre_window`.
+Note: tmuxinator's `pre_window` method has a fallback chain (`project.rb:175-186`): `pre_window` → `pre_tab` → `rbenv` → `rvm` (highest priority first, using Ruby's `||` operator). The `--no-pre-window` flag disables all of these, not just `pre_window`.
 
 **Gap**: tmuxp has no equivalent flag to skip `shell_command_before`.
 
