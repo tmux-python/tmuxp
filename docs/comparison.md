@@ -1,6 +1,6 @@
 # Feature Comparison: tmuxp vs tmuxinator vs teamocil
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 
 ## Overview
 
@@ -101,7 +101,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Environment vars | `environment` | (none) | (none) |
 | Suppress history | `suppress_history` | (none) | (none) |
 | Focus | `focus` | (none; use `startup_window`) | `focus` |
-| Synchronize panes | (none) | `synchronize` (`true`/`before`/`after`) | (none) |
+| Synchronize panes | (none) | `synchronize` (`true`/`before`/`after`; `true`/`before` deprecated → use `after`) | (none) |
 | Filters (before) | (none) | (none) | `filters.before` (v0.x) |
 | Filters (after) | (none) | (none) | `filters.after` (v0.x) |
 
@@ -118,6 +118,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Sleep after | `sleep_after` | (none) | (none) |
 | Suppress history | `suppress_history` | (none) | (none) |
 | Focus | `focus` | (none; use `startup_pane`) | `focus` |
+| Shell cmd before | `shell_command_before` | (none; inherits from window/session) | (none) |
 | Pane title | (none) | hash key (named pane → `select-pane -T`) | (none) |
 | Width | (none) | (none) | `width` (v0.x, horizontal split %) |
 | Height | (none) | (none) | `height` (v0.x, vertical split %) |
@@ -162,6 +163,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Pass variables | (none) | `key=value` args | (none) |
 | Suppress version warning | (none) | `--suppress-tmux-version-warning` | (none) |
 | Custom config path | `tmuxp load /path/to/file` | `-p /path/to/file` | `--layout /path/to/file` |
+| Load multiple configs | `tmuxp load f1 f2 ...` (all but last detached) | (none) | (none) |
 | Local config | `tmuxp load .` | `tmuxinator local` | (none) |
 
 ## Config File Discovery
