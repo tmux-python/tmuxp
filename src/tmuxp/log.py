@@ -11,6 +11,8 @@ from colorama import Fore, Style
 
 from tmuxp._internal.colors import unstyle
 
+logger = logging.getLogger(__name__)
+
 LEVEL_COLORS = {
     "DEBUG": Fore.BLUE,  # Blue
     "INFO": Fore.GREEN,  # Green
@@ -29,6 +31,24 @@ LOG_LEVELS = {
 }
 
 
+class TmuxpLoggerAdapter(logging.LoggerAdapter[logging.Logger]):
+    """LoggerAdapter that merges extra dictionary on Python < 3.13.
+
+    Follows the portable pattern to avoid repeating the same `extra` on every call
+    while preserving the ability to add per-call `extra` kwargs.
+    """
+
+    def process(
+        self, msg: t.Any, kwargs: t.MutableMapping[str, t.Any]
+    ) -> tuple[t.Any, t.MutableMapping[str, t.Any]]:
+        """Merge extra dictionary on Python < 3.13."""
+        extra = dict(self.extra) if self.extra else {}
+        if "extra" in kwargs:
+            extra.update(kwargs["extra"])
+        kwargs["extra"] = extra
+        return msg, kwargs
+
+
 def setup_logger(
     logger: logging.Logger | None = None,
     level: str = "INFO",
@@ -43,10 +63,17 @@ def setup_logger(
         logger instance for tmuxp
     """
     if not logger:  # if no logger exists, make one
-        logger = logging.getLogger()
+        logger = logging.getLogger("tmuxp")
 
-    if not logger.handlers:  # setup logger handlers
-        logger.setLevel(level)
+    has_handlers = any(not isinstance(h, logging.NullHandler) for h in logger.handlers)
+
+    if not has_handlers:  # setup logger handlers
+        channel = logging.StreamHandler()
+        formatter = DebugLogFormatter() if level == "DEBUG" else LogFormatter()
+        channel.setFormatter(formatter)
+        logger.addHandler(channel)
+
+    logger.setLevel(level)
 
 
 def set_style(
