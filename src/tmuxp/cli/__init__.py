@@ -297,7 +297,7 @@ def cli(_args: list[str] | None = None) -> None:
     parser = create_parser()
     args = parser.parse_args(_args, namespace=ns)
 
-    setup_logger(logger=logger, level=args.log_level.upper())
+    setup_logger(level=args.log_level.upper())
 
     if args.subparser_name is None:
         parser.print_help()
