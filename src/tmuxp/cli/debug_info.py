@@ -18,6 +18,7 @@ from tmuxp.__about__ import __version__
 from tmuxp._internal.private_path import PrivatePath, collapse_home_in_string
 
 from ._colors import Colors, build_description, get_color_mode
+from ._output import OutputFormatter, OutputMode
 from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
@@ -262,7 +263,6 @@ def command_debug_info(
     # Output based on mode
     if output_json:
         # Single object, not wrapped in array
-        sys.stdout.write(json.dumps(data, indent=2) + "\n")
-        sys.stdout.flush()
+        OutputFormatter(OutputMode.JSON).emit_object(data)
     else:
         tmuxp_echo(_format_human_output(data, colors))
