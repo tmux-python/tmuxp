@@ -265,8 +265,8 @@ def tmuxp_echo(
         return
 
     if style_log:
-        _echo_logger.log(LOG_LEVELS[log_level], message)
+        _echo_logger.log(LOG_LEVELS[log_level], message, stacklevel=2)
     else:
-        _echo_logger.log(LOG_LEVELS[log_level], unstyle(message))
+        _echo_logger.log(LOG_LEVELS[log_level], unstyle(message), stacklevel=2)
 
     print(message)
