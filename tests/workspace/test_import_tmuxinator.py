@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 import pytest
@@ -78,3 +79,20 @@ def test_config_to_dict(
     assert importers.import_tmuxinator(tmuxinator_dict) == tmuxp_dict
 
     validation.validate_schema(importers.import_tmuxinator(tmuxinator_dict))
+
+
+def test_logs_info_on_multi_command_pre_list(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that multi-command pre list logs info about before_script mapping."""
+    workspace = {
+        "name": "multi-pre",
+        "root": "~/test",
+        "pre": ["cmd1", "cmd2"],
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.INFO, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+
+    pre_records = [r for r in caplog.records if "multi-command pre list" in r.message]
+    assert len(pre_records) == 1

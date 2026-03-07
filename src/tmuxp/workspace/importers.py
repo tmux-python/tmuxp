@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 import shlex
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
@@ -66,6 +69,11 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         else:
             tmuxp_workspace["shell_command_before"] = pre_window_val
     elif "pre" in workspace_dict:
+        if isinstance(workspace_dict["pre"], list):
+            logger.info(
+                "multi-command pre list mapped to before_script; "
+                "consider splitting into before_script and shell_command_before",
+            )
         tmuxp_workspace["before_script"] = workspace_dict["pre"]
 
     if "rbenv" in workspace_dict:
@@ -133,16 +141,6 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     ----------
     workspace_dict : dict
         python dict for tmuxp workspace
-
-    Notes
-    -----
-    Todos:
-
-    - change  'root' to a cd or start_directory
-    - width in pane -> main-pain-width
-    - with_env_var
-    - clear
-    - cmd_separator
     """
     tmuxp_workspace: dict[str, t.Any] = {}
 
@@ -187,8 +185,18 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                     elif "commands" in p:
                         p["shell_command"] = p.pop("commands")
                     if "width" in p:
+                        logger.warning(
+                            "unsupported pane key %s dropped",
+                            "width",
+                            extra={"tmux_window": w["name"]},
+                        )
                         p.pop("width")
                     if "height" in p:
+                        logger.warning(
+                            "unsupported pane key %s dropped",
+                            "height",
+                            extra={"tmux_window": w["name"]},
+                        )
                         p.pop("height")
                     panes.append(p)
             window_dict["panes"] = panes
@@ -201,6 +209,20 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
         if "options" in w:
             window_dict["options"] = w["options"]
+
+        if "with_env_var" in w:
+            logger.warning(
+                "unsupported window key %s dropped",
+                "with_env_var",
+                extra={"tmux_window": w["name"]},
+            )
+
+        if "cmd_separator" in w:
+            logger.warning(
+                "unsupported window key %s dropped",
+                "cmd_separator",
+                extra={"tmux_window": w["name"]},
+            )
 
         tmuxp_workspace["windows"].append(window_dict)
 
