@@ -115,7 +115,15 @@ Maps to `set-window-option -t <window> <key> <value>`.
 
 **Gap**: tmuxp **does** support `options` on windows. **No gap**.
 
-### 8. Multiple Commands Joined by Semicolon
+### 8. Layout Applied After Each Pane
+
+**Source**: `lib/teamocil/tmux/pane.rb:9`
+
+teamocil applies `select-layout` after EACH pane is created (not once at the end). This means the layout is re-applied after every `split-window`, keeping panes evenly distributed as they're added. tmuxp applies layout once after all panes are created (`builder.py:511`).
+
+**Gap**: This is a behavioral difference. For named layouts (`main-vertical`, `tiled`, etc.) the result is the same. For custom layout strings, the timing matters — tmuxp's approach is correct for custom strings since the string encodes the final geometry. **No action needed** — tmuxp's behavior is actually better for custom layouts.
+
+### 9. Multiple Commands Joined by Semicolon
 
 **Source**: `lib/teamocil/tmux/pane.rb`
 
@@ -127,6 +135,14 @@ Teamocil joins multiple pane commands with `; ` and sends them as a single `send
 ```
 
 **Gap**: tmuxp sends each command separately via individual `pane.send_keys()` calls. This is actually more reliable (each command gets its own Enter press), so this is a **behavioral difference** rather than a gap.
+
+### 10. Root Path Expansion
+
+**Source**: `lib/teamocil/tmux/window.rb:8`
+
+teamocil expands `root` to absolute path via `File.expand_path(root)` at window initialization. This resolves `~` and relative paths before passing to `new-window -c`.
+
+**Gap**: tmuxp also does this via `expandshell()` in `loader.py` (`os.path.expandvars(os.path.expanduser(value))`). **No gap** — both tools expand paths.
 
 ## v0.x vs v1.x Format Differences
 
