@@ -169,3 +169,48 @@ def test_import_teamocil_logs_debug(
     records = [r for r in caplog.records if r.msg == "importing teamocil workspace"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test"
+
+
+def test_warns_on_width_height_drop(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that importing teamocil config with width/height logs warnings."""
+    teamocil_dict = {
+        "windows": [
+            {
+                "name": "win-with-height",
+                "panes": [{"cmd": "vim", "height": 30}],
+            },
+        ],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(teamocil_dict)
+
+    height_records = [
+        r for r in caplog.records if hasattr(r, "tmux_window") and "height" in r.message
+    ]
+    assert len(height_records) == 1
+    assert height_records[0].tmux_window == "win-with-height"
+
+
+def test_warns_on_with_env_var_and_cmd_separator(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that importing teamocil config with unsupported keys logs warnings."""
+    teamocil_dict = {
+        "windows": [
+            {
+                "name": "custom-opts",
+                "with_env_var": True,
+                "cmd_separator": " && ",
+                "panes": [{"cmd": "echo hello"}],
+            },
+        ],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(teamocil_dict)
+
+    env_var_records = [r for r in caplog.records if "with_env_var" in r.message]
+    cmd_sep_records = [r for r in caplog.records if "cmd_separator" in r.message]
+    assert len(env_var_records) == 1
+    assert len(cmd_sep_records) == 1
