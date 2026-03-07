@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 from tmuxp import exc
+
+logger = logging.getLogger(__name__)
 
 
 class SchemaValidationError(exc.WorkspaceError):
@@ -70,6 +73,15 @@ def validate_schema(workspace_dict: t.Any) -> bool:
     -------
     bool
     """
+    logger.debug(
+        "validating workspace schema",
+        extra={
+            "tmux_session": workspace_dict.get("session_name", "")
+            if isinstance(workspace_dict, dict)
+            else "",
+        },
+    )
+
     # verify session_name
     if "session_name" not in workspace_dict:
         raise SessionNameMissingValidationError

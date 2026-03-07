@@ -206,12 +206,24 @@ Assert on `caplog.records` attributes, not string matching on `caplog.text`:
 - Assert on schema: `record.tmux_exit_code == 0` not `"exit code 0" in caplog.text`
 - `caplog.record_tuples` cannot access extra fields — always use `caplog.records`
 
+### Output channels
+
+Two output channels serve different audiences:
+
+1. **Diagnostics** (`logger.*()` with `extra`): System events for log files, `caplog`, and aggregators. Never styled.
+2. **User-facing output**: What the human sees. Styled via `Colors` class.
+   - Commands with output modes (`--json`/`--ndjson`): prefer `OutputFormatter.emit_text()` from `tmuxp.cli._output` — silenced in non-human modes. **Known gap:** `ls --json`/`--ndjson` currently writes directly to stdout via `sys.stdout.write(json.dumps(...))`; migration to `OutputFormatter` is pending.
+   - Human-only commands: use `tmuxp_echo()` from `tmuxp.log` (re-exported via `tmuxp.cli.utils`) for user-facing messages.
+   - **Undefined contracts:** Machine-output behavior for error and empty-result paths (e.g., `search` with no matches) is not yet defined. These paths currently emit styled text through `formatter.emit_text()`, which is a no-op in machine modes.
+
+Raw `print()` is forbidden in command/business logic. The `print()` call lives only inside the presenter layer (`_output.py`) or `tmuxp_echo`.
+
 ### Avoid
 
 - f-strings/`.format()` in log calls
 - Unguarded logging in hot loops (guard with `isEnabledFor()`)
 - Catch-log-reraise without adding new context
-- `print()` for diagnostics
+- `print()` for debugging or internal diagnostics — use `logger.debug()` with structured `extra` instead
 - Logging secret env var values (log key names only)
 - Non-scalar ad-hoc objects in `extra`
 - Requiring custom `extra` fields in format strings without safe defaults (missing keys raise `KeyError`)

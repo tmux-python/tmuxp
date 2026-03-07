@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 import time
 import typing
+
+import pytest
 
 from tests.fixtures import utils as test_utils
 from tmuxp._internal.config_reader import ConfigReader
@@ -106,3 +109,28 @@ def test_export_yaml(
 
     new_workspace_data = ConfigReader._from_file(yaml_workspace_file)
     assert config_fixture.sample_workspace.sample_workspace_dict == new_workspace_data
+
+
+def test_freeze_logs_debug(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """freeze() logs DEBUG with tmux_session extra."""
+    session_config = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/freezer/sample_workspace.yaml"),
+    )
+    builder = WorkspaceBuilder(session_config=session_config, server=session.server)
+    builder.build(session=session)
+
+    time.sleep(0.50)
+
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.freezer"):
+        freezer.freeze(session)
+
+    freeze_records = [r for r in caplog.records if r.msg == "freezing session"]
+    assert len(freeze_records) >= 1
+    assert hasattr(freeze_records[0], "tmux_session")
+
+    window_records = [r for r in caplog.records if r.msg == "frozen window"]
+    assert len(window_records) >= 1
+    assert hasattr(window_records[0], "tmux_window")

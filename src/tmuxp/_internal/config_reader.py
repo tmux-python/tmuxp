@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import typing as t
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias
@@ -106,6 +109,7 @@ class ConfigReader:
         {'session_name': 'my session'}
         """
         assert isinstance(path, pathlib.Path)
+        logger.debug("loading config", extra={"tmux_config_path": str(path)})
         content = path.open(encoding="utf-8").read()
 
         if path.suffix in {".yaml", ".yml"}:

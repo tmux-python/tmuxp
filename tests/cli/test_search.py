@@ -830,6 +830,7 @@ def test_output_search_results_json(capsys: pytest.CaptureFixture[str]) -> None:
     formatter.finalize()
 
     captured = capsys.readouterr()
+    assert "\x1b" not in captured.out, "ANSI escapes must not leak into machine output"
     data = json.loads(captured.out)
     assert len(data) == 1
     assert data[0]["name"] == "dev"
@@ -857,6 +858,7 @@ def test_output_search_results_ndjson(capsys: pytest.CaptureFixture[str]) -> Non
     formatter.finalize()
 
     captured = capsys.readouterr()
+    assert "\x1b" not in captured.out, "ANSI escapes must not leak into machine output"
     lines = captured.out.strip().split("\n")
     # Filter out human-readable lines
     json_lines = [line for line in lines if line.startswith("{")]

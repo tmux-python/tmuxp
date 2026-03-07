@@ -15,6 +15,7 @@ from libtmux.session import Session
 from libtmux.window import Window
 
 from tmuxp import exc
+from tmuxp.log import TmuxpLoggerAdapter
 from tmuxp.util import get_current_pane, run_before_script
 
 if t.TYPE_CHECKING:
@@ -272,6 +273,11 @@ class WorkspaceBuilder:
         assert session.name is not None
 
         self._session = session
+        _log = TmuxpLoggerAdapter(
+            logger,
+            {"tmux_session": self.session_config["session_name"]},
+        )
+        _log.info("session created")
 
         assert session.server is not None
 
@@ -295,8 +301,15 @@ class WorkspaceBuilder:
                 # session start directory, if it exists.
                 if "start_directory" in self.session_config:
                     cwd = self.session_config["start_directory"]
+                _log.debug(
+                    "running before script",
+                )
                 run_before_script(self.session_config["before_script"], cwd=cwd)
             except Exception:
+                _log.debug(
+                    "before script failed",
+                    exc_info=True,
+                )
                 self.session.kill()
                 raise
 
@@ -342,6 +355,8 @@ class WorkspaceBuilder:
 
         if focus:
             focus.select()
+
+        _log.info("workspace built")
 
     def iter_create_windows(
         self,
@@ -412,6 +427,14 @@ class WorkspaceBuilder:
                 environment=environment,
             )
             assert isinstance(window, Window)
+            window_log = TmuxpLoggerAdapter(
+                logger,
+                {
+                    "tmux_session": session.name or "",
+                    "tmux_window": window_name or "",
+                },
+            )
+            window_log.debug("window created")
 
             if is_first_window_pass:  # if first window, use window 1
                 session.active_window.kill()
@@ -506,6 +529,15 @@ class WorkspaceBuilder:
                 )
 
             assert isinstance(pane, Pane)
+            pane_log = TmuxpLoggerAdapter(
+                logger,
+                {
+                    "tmux_session": window.session.name or "",
+                    "tmux_window": window.name or "",
+                    "tmux_pane": pane.pane_id or "",
+                },
+            )
+            pane_log.debug("pane created")
 
             if "layout" in window_config:
                 window.select_layout(window_config["layout"])
@@ -529,6 +561,7 @@ class WorkspaceBuilder:
                     time.sleep(sleep_before)
 
                 pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
+                pane_log.debug("sent command %s", cmd["cmd"])
 
                 if sleep_after is not None:
                     time.sleep(sleep_after)

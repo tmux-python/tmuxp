@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import functools
+import logging
 import os
 import pathlib
 import textwrap
@@ -1513,3 +1514,80 @@ def test_issue_800_default_size_many_windows(
 
     builder.build()
     assert len(server.sessions) == 1
+
+
+def test_builder_logs_session_created(
+    server: Server,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """WorkspaceBuilder.build() logs INFO with tmux_session extra."""
+    workspace = {
+        "session_name": "test_log_session",
+        "windows": [
+            {
+                "window_name": "main",
+                "panes": [
+                    {"shell_command": []},
+                ],
+            },
+        ],
+    }
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.builder"):
+        builder.build()
+
+    session_logs = [
+        r
+        for r in caplog.records
+        if hasattr(r, "tmux_session") and r.msg == "session created"
+    ]
+    assert len(session_logs) >= 1
+    assert session_logs[0].tmux_session == "test_log_session"
+
+    # Verify workspace built log
+    built_logs = [r for r in caplog.records if r.msg == "workspace built"]
+    assert len(built_logs) >= 1
+
+    builder.session.kill()
+
+
+def test_builder_logs_window_and_pane_creation(
+    server: Server,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """WorkspaceBuilder logs DEBUG with tmux_window and tmux_pane extra."""
+    workspace = {
+        "session_name": "test_log_wp",
+        "windows": [
+            {
+                "window_name": "editor",
+                "panes": [
+                    {"shell_command": [{"cmd": "echo hello"}]},
+                    {"shell_command": []},
+                ],
+            },
+        ],
+    }
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.builder"):
+        builder.build()
+
+    window_logs = [
+        r
+        for r in caplog.records
+        if hasattr(r, "tmux_window") and r.msg == "window created"
+    ]
+    assert len(window_logs) >= 1
+    assert window_logs[0].tmux_window == "editor"
+
+    pane_logs = [
+        r for r in caplog.records if hasattr(r, "tmux_pane") and r.msg == "pane created"
+    ]
+    assert len(pane_logs) >= 1
+
+    cmd_logs = [r for r in caplog.records if r.msg == "sent command %s"]
+    assert len(cmd_logs) >= 1
+
+    builder.session.kill()

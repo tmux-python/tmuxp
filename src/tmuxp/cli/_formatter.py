@@ -13,8 +13,11 @@ Examples
 from __future__ import annotations
 
 import argparse
+import logging
 import re
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 # Options that expect a value (set externally or via --option=value)
 OPTIONS_EXPECTING_VALUE = frozenset(

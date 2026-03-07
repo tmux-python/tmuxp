@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import logging
+import os
+import pathlib
 import sys
 import typing as t
 
@@ -9,7 +12,7 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import get_session, run_before_script
+from tmuxp.util import get_pane, get_session, oh_my_zsh_auto_title, run_before_script
 
 from .constants import FIXTURE_PATH
 
@@ -166,3 +169,68 @@ def test_get_session_should_return_first_session_if_no_active_session(
     server.new_session(session_name="mysecondsession")
 
     assert get_session(server) == first_session
+
+
+def test_get_pane_logs_debug_on_failure(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """get_pane() logs DEBUG with tmux_pane extra when pane lookup fails."""
+    session = server.new_session(session_name="test_pane_log")
+    window = session.active_window
+
+    # Make active_pane raise Exception to trigger the logging path
+    monkeypatch.setattr(
+        type(window),
+        "active_pane",
+        property(lambda self: (_ for _ in ()).throw(Exception("mock pane error"))),
+    )
+
+    with (
+        caplog.at_level(logging.DEBUG, logger="tmuxp.util"),
+        pytest.raises(exc.PaneNotFound),
+    ):
+        get_pane(window, current_pane=None)
+
+    debug_records = [
+        r
+        for r in caplog.records
+        if hasattr(r, "tmux_pane") and r.levelno == logging.DEBUG
+    ]
+    assert len(debug_records) >= 1
+    assert debug_records[0].tmux_pane == ""
+
+
+def test_oh_my_zsh_auto_title_logs_warning(
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: t.Any,
+) -> None:
+    """oh_my_zsh_auto_title() logs WARNING when DISABLE_AUTO_TITLE not set."""
+    monkeypatch.setenv("SHELL", "/bin/zsh")
+    monkeypatch.delenv("DISABLE_AUTO_TITLE", raising=False)
+
+    # Create fake ~/.oh-my-zsh directory
+    fake_home = tmp_path / "home"
+    fake_home.mkdir()
+    oh_my_zsh_dir = fake_home / ".oh-my-zsh"
+    oh_my_zsh_dir.mkdir()
+    monkeypatch.setenv("HOME", str(fake_home))
+
+    # Patch os.path.exists to return True for ~/.oh-my-zsh
+    original_exists = os.path.exists
+
+    def patched_exists(path: str) -> bool:
+        if path == str(pathlib.Path("~/.oh-my-zsh").expanduser()):
+            return True
+        return original_exists(path)
+
+    monkeypatch.setattr(os.path, "exists", patched_exists)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.util"):
+        oh_my_zsh_auto_title()
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) >= 1
+    assert "DISABLE_AUTO_TITLE" in warning_records[0].message

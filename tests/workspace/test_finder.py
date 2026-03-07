@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import pathlib
 import typing as t
 
@@ -11,6 +12,7 @@ import pytest
 from tmuxp import cli
 from tmuxp.cli.utils import tmuxp_echo
 from tmuxp.workspace.finders import (
+    find_local_workspace_files,
     find_workspace_file,
     get_workspace_dir,
     get_workspace_dir_candidates,
@@ -514,3 +516,48 @@ def test_get_workspace_dir_candidates_uses_private_path(
         path = candidate["path"]
         assert str(home) not in path, f"Path should be masked: {path}"
         assert path.startswith("~"), f"Path should start with ~: {path}"
+
+
+def test_find_workspace_file_logs_warning_on_multiple(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """find_workspace_file() logs WARNING when multiple workspace files found."""
+    project = tmp_path / "project"
+    project.mkdir()
+
+    # Create multiple .tmuxp files in the same directory
+    (project / ".tmuxp.yaml").write_text("session_name: test")
+    (project / ".tmuxp.json").write_text('{"session_name": "test"}')
+
+    monkeypatch.chdir(project)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.finders"):
+        find_workspace_file(str(project))
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) >= 1
+    assert "multiple workspace files found" in warning_records[0].message
+    assert hasattr(warning_records[0], "tmux_config_path")
+
+
+def test_find_local_workspace_files_logs_debug(
+    tmp_path: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """find_local_workspace_files() logs DEBUG with tmux_config_path extra."""
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / ".tmuxp.yaml").write_text("session_name: test")
+
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.finders"):
+        find_local_workspace_files(project, stop_at_home=False)
+
+    records = [
+        r
+        for r in caplog.records
+        if r.msg == "searching for local workspace files from %s"
+    ]
+    assert len(records) >= 1
+    assert hasattr(records[0], "tmux_config_path")

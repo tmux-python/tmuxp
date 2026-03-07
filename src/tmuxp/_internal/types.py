@@ -12,8 +12,11 @@ bundled with tmuxp. Usage example:
 
 from __future__ import annotations
 
+import logging
 import typing as t
 from typing import TypedDict
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     import sys

@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from . import cli, util
 from .__about__ import (
     __author__,
@@ -17,3 +19,6 @@ from .__about__ import (
     __title__,
     __version__,
 )
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())

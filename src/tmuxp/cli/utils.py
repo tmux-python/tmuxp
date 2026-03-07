@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 from tmuxp._internal.colors import (
@@ -14,6 +15,8 @@ from tmuxp._internal.colors import (
 )
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.log import tmuxp_echo
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -215,7 +218,7 @@ def prompt_choices(
             return None
         if rv in choices_:
             return rv
-        print(
+        tmuxp_echo(
             colors.warning(f"Invalid choice '{rv}'. ")
             + f"Please choose from: {', '.join(choices_)}"
         )

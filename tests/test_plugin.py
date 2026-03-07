@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 import pytest
 
 from tmuxp.exc import TmuxpPluginException
@@ -95,3 +97,15 @@ def test_libtmux_version_fail_incompatible() -> None:
     with pytest.raises(TmuxpPluginException, match=r"Incompatible.*") as exc_info:
         LibtmuxVersionFailIncompatiblePlugin()
     assert "libtmux-incompatible-version-fail" in str(exc_info.value)
+
+
+def test_plugin_version_check_logs_debug(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """_version_check() logs DEBUG with plugin name."""
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.plugin"):
+        AllVersionPassPlugin()
+    records = [
+        r for r in caplog.records if r.msg == "checking version constraints for %s"
+    ]
+    assert len(records) >= 1

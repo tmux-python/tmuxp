@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
+
 from libtmux._internal.query_list import ObjectDoesNotExist
 
 from ._compat import implements_to_string
+
+logger = logging.getLogger(__name__)
 
 
 class TmuxpException(Exception):
