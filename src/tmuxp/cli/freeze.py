@@ -255,6 +255,7 @@ def command_freeze(
             workspace,
             encoding=locale.getpreferredencoding(False),
         )
+        logger.info("workspace saved", extra={"tmux_config_path": str(dest)})
 
         if not args.quiet:
             print(  # NOQA: T201 RUF100

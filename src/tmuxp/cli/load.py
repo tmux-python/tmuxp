@@ -224,7 +224,7 @@ def _load_detached(builder: WorkspaceBuilder, colors: Colors | None = None) -> N
     assert builder.session is not None
 
     msg = "Session created in detached state."
-    print(colors.info(msg) if colors else msg)  # NOQA: T201 RUF100
+    tmuxp_echo(colors.info(msg) if colors else msg)
 
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
