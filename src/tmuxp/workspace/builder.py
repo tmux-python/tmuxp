@@ -303,20 +303,12 @@ class WorkspaceBuilder:
                     cwd = self.session_config["start_directory"]
                 _log.debug(
                     "running before script",
-                    extra={
-                        "tmux_config_path": str(self.session_config["before_script"]),
-                    },
                 )
                 run_before_script(self.session_config["before_script"], cwd=cwd)
             except Exception:
                 _log.debug(
                     "before script failed",
                     exc_info=True,
-                    extra={
-                        "tmux_config_path": str(
-                            self.session_config.get("before_script", ""),
-                        ),
-                    },
                 )
                 self.session.kill()
                 raise
