@@ -309,7 +309,15 @@ class WorkspaceBuilder:
                 )
                 run_before_script(self.session_config["before_script"], cwd=cwd)
             except Exception:
-                _log.debug("before script failed", exc_info=True)
+                _log.debug(
+                    "before script failed",
+                    exc_info=True,
+                    extra={
+                        "tmux_config_path": str(
+                            self.session_config.get("before_script", ""),
+                        ),
+                    },
+                )
                 self.session.kill()
                 raise
 
@@ -560,8 +568,8 @@ class WorkspaceBuilder:
                 if sleep_before is not None:
                     time.sleep(sleep_before)
 
-                pane_log.debug("sending command %s", cmd["cmd"])
                 pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
+                pane_log.debug("sent command %s", cmd["cmd"])
 
                 if sleep_after is not None:
                     time.sleep(sleep_after)

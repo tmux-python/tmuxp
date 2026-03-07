@@ -362,13 +362,9 @@ def find_workspace_file(
 
             if len(candidates) > 1:
                 logger.warning(
-                    "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
-                    + dirname(workspace_file)
-                )
-                logger.warning(
-                    "This is undefined behavior, use only one. "
-                    "Use file names e.g. myproject.json, coolproject.yaml. "
-                    "You can load them by filename."
+                    "multiple workspace files found, use distinct file names"
+                    " to avoid ambiguity",
+                    extra={"tmux_config_path": dirname(workspace_file)},
                 )
             elif not candidates:
                 file_error = "No tmuxp files found in directory"
