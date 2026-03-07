@@ -24,6 +24,8 @@ Note: teamocil v1.x does not create new sessions — it **renames** the current 
 | Window `focus: true` | Same key, same semantics; teamocil applies via `session.rb:24-25` `select-window` after build, tmuxp does the same |
 | Pane `focus: true` | Same key, same semantics |
 | Window `options` | Same key, maps to `set-window-option` |
+| Layout timing (per-pane vs end) | teamocil reapplies `select-layout` after each pane (`pane.rb:9`); tmuxp applies once at end (`builder.py:511`). Same result for named layouts; tmuxp is correct for custom layout strings |
+| Root path expansion | teamocil uses `File.expand_path`; tmuxp uses `expandshell()` in `loader.py` |
 
 ## Features teamocil has that tmuxp lacks
 
