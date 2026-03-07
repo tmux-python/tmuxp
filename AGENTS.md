@@ -212,8 +212,9 @@ Two output channels serve different audiences:
 
 1. **Diagnostics** (`logger.*()` with `extra`): System events for log files, `caplog`, and aggregators. Never styled.
 2. **User-facing output**: What the human sees. Styled via `Colors` class.
-   - Commands with output modes (`--json`/`--ndjson`): use `OutputFormatter.emit_text()` from `tmuxp.cli._output` — silenced in non-human modes.
+   - Commands with output modes (`--json`/`--ndjson`): prefer `OutputFormatter.emit_text()` from `tmuxp.cli._output` — silenced in non-human modes. **Known gap:** `ls --json`/`--ndjson` currently writes directly to stdout via `sys.stdout.write(json.dumps(...))`; migration to `OutputFormatter` is pending.
    - Human-only commands: use `tmuxp_echo()` from `tmuxp.log` (re-exported via `tmuxp.cli.utils`) for user-facing messages.
+   - **Undefined contracts:** Machine-output behavior for error and empty-result paths (e.g., `search` with no matches) is not yet defined. These paths currently emit styled text through `formatter.emit_text()`, which is a no-op in machine modes.
 
 Raw `print()` is forbidden in command/business logic. The `print()` call lives only inside the presenter layer (`_output.py`) or `tmuxp_echo`.
 
