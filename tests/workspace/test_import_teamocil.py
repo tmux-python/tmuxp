@@ -46,6 +46,12 @@ TEAMOCIL_CONFIG_TEST_FIXTURES: list[TeamocilConfigTestFixture] = [
         teamocil_dict=fixtures.test4.teamocil_dict,
         tmuxp_dict=fixtures.test4.expected,
     ),
+    TeamocilConfigTestFixture(
+        test_id="v1x_format",
+        teamocil_yaml=fixtures.test5.teamocil_yaml,
+        teamocil_dict=fixtures.test5.teamocil_dict,
+        tmuxp_dict=fixtures.test5.expected,
+    ),
 ]
 
 
