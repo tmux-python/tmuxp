@@ -1,0 +1,16 @@
+name: sync-test
+root: ~/projects/sync
+windows:
+- synced:
+    synchronize: true
+    panes:
+    - echo 'pane1'
+    - echo 'pane2'
+- synced-after:
+    synchronize: after
+    panes:
+    - echo 'pane1'
+- not-synced:
+    synchronize: false
+    panes:
+    - echo 'pane1'
