@@ -45,6 +45,11 @@ These libtmux APIs already exist and do NOT need changes:
 | `Session.set_hook(hook, cmd)` | `hooks.py:111` (HooksMixin) | Lifecycle hooks (`client-detached`, etc.) |
 | `Session.set_option(key, val)` | `options.py:578` (OptionsMixin) | `pane-border-status`, `pane-border-format` |
 | `HooksMixin` on Session/Window/Pane | `session.py:55`, `window.py:56`, `pane.py:51` | All entities inherit hooks |
+| `HooksMixin.set_hooks()` (bulk) | `hooks.py:430` | Efficient multi-hook setup (dict/list input) |
+| `Session.set_environment(key, val)` | `session.py:53` (EnvironmentMixin) | Session-level env vars (teamocil `with_env_var`) |
+| `Pane.clear()` | `pane.py:818` | Sends `reset` to clear pane (teamocil `clear`) |
+| `Pane.reset()` | `pane.py:823` | `send-keys -R \; clear-history` (full reset) |
+| `Pane.split(target=...)` | `pane.py:625` | Split targeting (teamocil v0.x `target`) |
 
 ## tmuxp Limitations
 
@@ -143,7 +148,8 @@ Keys produced by importers but silently ignored by the builder:
 | `shell_command` (session-level) | tmuxinator importer | `importers.py:60` | Not a valid session key | **Bug** (I1 Bug B): `pre` commands lost when both `pre` and `pre_window` exist |
 | `config` | tmuxinator importer | `importers.py:37,44` | Never read | Dead data — extracted `-f` path goes nowhere |
 | `socket_name` | tmuxinator importer | `importers.py:52` | Never read | Dead data — CLI uses `-L` flag |
-| `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — tmuxp has no clear support |
+| `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
+| `height` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — `width` is popped but `height` passes through silently |
 | `shell_command_after` | teamocil importer | `importers.py:149` | Never read | Dead data — tmuxp has no after-command support |
 
 ## Importer Bugs (No Builder Changes Needed)
@@ -186,7 +192,7 @@ Two bugs in `importers.py:59-70`, covering both code paths for the `pre` key:
 
 - **Bug**: Importer assumes v0.x format. String panes cause incorrect behavior (`"cmd" in "git status"` checks substring, not dict key). `commands` key (v1.x) not mapped.
 - **Fix**: Add format detection. Handle string panes, `commands` key, `focus`, and `options`.
-- **Also**: v0.x pane `width` is silently dropped (`importers.py:161-163`) with a TODO but no user warning. Since libtmux's `Pane.resize()` exists (L4), the importer could preserve `width` and the builder could call `pane.resize(width=value)` after split. Alternatively, warn the user that width is not supported.
+- **Also**: v0.x pane `width` is silently dropped (`importers.py:161-163`) with a TODO but no user warning. `height` is not even popped — it passes through as a dead key. Since libtmux's `Pane.resize()` exists (L4), the importer could preserve both `width` and `height` and the builder could call `pane.resize(width=value)` or `pane.resize(height=value)` after split. Alternatively, warn the user.
 
 ### I5. tmuxinator Missing Keys
 
@@ -199,18 +205,28 @@ Not imported but translatable:
 - `socket_path` → warn user to use CLI `-S` flag
 - `attach: false` → warn user to use CLI `-d` flag
 
-### I6. teamocil Missing Keys (v1.x)
+### I6. teamocil Missing Keys
 
-Not imported but translatable (same key names in tmuxp):
+Not imported but translatable:
+
+**v1.x keys** (same key names in tmuxp):
 - `commands` → `shell_command`
 - `focus` (window) → `focus` (pass-through)
 - `focus` (pane) → `focus` (pass-through)
 - `options` (window) → `options` (pass-through)
 - String pane shorthand → `shell_command: [command]`
 
-### I7. Stale Importer TODOs
+**v0.x keys**:
+- `with_env_var` → `environment: { TEAMOCIL: "1" }` (default `true` in v0.x; maps to session-level `environment` key)
+- `height` (pane) → should be popped like `width` (currently passes through as dead key)
 
-`importers.py:121,123` lists `with_env_var` and `cmd_separator` as TODOs (with `clear` at line 122 in between), but neither `with_env_var` nor `cmd_separator` exists in teamocil v1.4.2 source. These are stale references from ~2013 and should be removed.
+### I7. Importer TODOs Need Triage
+
+`importers.py:121,123` lists `with_env_var` and `cmd_separator` as TODOs (with `clear` at line 122 in between). Both are verified v0.x features (present in teamocil's `0.4-stable` branch at `lib/teamocil/layout/window.rb`), not stale references:
+
+- **`with_env_var`** (line 121): When `true` (the default in v0.x), exports `TEAMOCIL=1` in each pane. Should map to `environment: { TEAMOCIL: "1" }` (tmuxp's `environment` key works at session level via `Session.set_environment()`, L4). Implement, don't remove.
+- **`clear`** (line 122): Already imported at line 141 but builder ignores it. libtmux has `Pane.clear()` (L4), so builder support is feasible.
+- **`cmd_separator`** (line 123): Per-window string (default `"; "`) used to join commands before `send-keys`. Irrelevant for tmuxp since it sends commands individually. Remove TODO.
 
 ## Implementation Priority
 
@@ -224,7 +240,7 @@ These fix existing bugs and add missing translations without touching the builde
 4. **I5**: Import missing tmuxinator keys (`rvm`, `pre_tab`, `startup_window`, `startup_pane`)
 5. **I1**: Fix `pre`/`pre_window` mapping (tmuxinator)
 6. **I2**: Fix `cli_args` parsing (tmuxinator)
-7. **I7**: Remove stale TODOs
+7. **I7**: Triage importer TODOs (implement `with_env_var`, remove `cmd_separator`)
 
 ### Phase 2: Builder Additions (tmuxp Only)
 
