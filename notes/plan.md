@@ -1,6 +1,6 @@
 # Parity Implementation Plan
 
-*Last updated: 2026-02-08*
+*Last updated: 2026-03-06*
 *Based on: parity-tmuxinator.md, parity-teamocil.md, import-tmuxinator.md, import-teamocil.md*
 
 ## libtmux Limitations
@@ -140,7 +140,7 @@ Keys produced by importers but silently ignored by the builder:
 
 | Key | Producer | Importer Line | Builder Handling | Issue |
 |---|---|---|---|---|
-| `shell_command` (session-level) | tmuxinator importer | `importers.py:60` | Not a valid session key | **Bug**: `pre` commands lost when both `pre` and `pre_window` exist |
+| `shell_command` (session-level) | tmuxinator importer | `importers.py:60` | Not a valid session key | **Bug** (I1 Bug B): `pre` commands lost when both `pre` and `pre_window` exist |
 | `config` | tmuxinator importer | `importers.py:37,44` | Never read | Dead data — extracted `-f` path goes nowhere |
 | `socket_name` | tmuxinator importer | `importers.py:52` | Never read | Dead data — CLI uses `-L` flag |
 | `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — tmuxp has no clear support |
@@ -148,13 +148,29 @@ Keys produced by importers but silently ignored by the builder:
 
 ## Importer Bugs (No Builder Changes Needed)
 
-### I1. tmuxinator `pre` + `pre_window` Mapping Bug
+### I1. tmuxinator `pre` / `pre_window` Mapping Bugs
+
+Two bugs in `importers.py:59-70`, covering both code paths for the `pre` key:
+
+#### Bug A: Solo `pre` maps to wrong key (NEW — 2026-03-06)
+
+- **Bug**: When only `pre` exists (no `pre_window`) (`importers.py:66-70`), it maps to `shell_command_before` — a per-pane key that runs before each pane's commands. But tmuxinator's `pre` is a session-level hook that runs **once** before any windows are created. The correct target is `before_script`.
+- **Effect**: Instead of running once at session start, the `pre` commands run N times (once per pane) as pane setup commands. This changes both the semantics (pre-session → per-pane) and the execution count.
+
+#### Bug B: Combo `pre` + `pre_window` loses `pre` commands
 
 - **Bug**: When both `pre` and `pre_window` exist (`importers.py:59-65`):
-  1. `pre` maps to `shell_command` (line 60) — invalid session-level key, silently ignored by builder. The `pre` commands are lost.
+  1. `pre` maps to `shell_command` (line 60) — invalid session-level key, silently ignored by builder. The `pre` commands are lost entirely (see Dead Config Keys table).
   2. The `isinstance` check on line 62 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. If `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list.
-- **Correct mapping**: `pre` → `before_script` (session-level, runs once before windows). `pre_window` → `shell_command_before` (per-pane).
-- **Note**: `before_script` expects a file path or command (executed via `subprocess.Popen` after `shlex.split()` in `util.py:27-32`), not inline shell commands. For inline commands, either write a temp script, or add an `on_project_start` config key (T6).
+
+#### Correct mapping
+
+- `pre` → `before_script` (session-level, runs once before windows)
+- `pre_window` → `shell_command_before` (per-pane, runs before each pane's commands)
+
+#### `before_script` shell limitation
+
+`before_script` is executed via `subprocess.Popen` after `shlex.split()` in `util.py:27-32` — **without `shell=True`**. This means shell constructs (pipes `|`, `&&`, redirects `>`, subshells `$(...)`) won't work in `before_script` values. For inline shell commands, the forward path is the `on_project_start` config key (T6), which would use `shell=True` or write a temp script.
 
 ### I2. tmuxinator `cli_args` / `tmux_options` Fragile Parsing
 
