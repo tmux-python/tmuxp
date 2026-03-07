@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import shlex
 import typing as t
 
 logger = logging.getLogger(__name__)
@@ -44,20 +45,16 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     elif "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
 
-    if "cli_args" in workspace_dict:
-        tmuxp_workspace["config"] = workspace_dict["cli_args"]
-
-        if "-f" in tmuxp_workspace["config"]:
-            tmuxp_workspace["config"] = (
-                tmuxp_workspace["config"].replace("-f", "").strip()
-            )
-    elif "tmux_options" in workspace_dict:
-        tmuxp_workspace["config"] = workspace_dict["tmux_options"]
-
-        if "-f" in tmuxp_workspace["config"]:
-            tmuxp_workspace["config"] = (
-                tmuxp_workspace["config"].replace("-f", "").strip()
-            )
+    raw_args = workspace_dict.get("cli_args") or workspace_dict.get("tmux_options")
+    if raw_args:
+        tokens = shlex.split(raw_args)
+        flag_map = {"-f": "config", "-L": "socket_name", "-S": "socket_path"}
+        it = iter(tokens)
+        for token in it:
+            if token in flag_map:
+                value = next(it, None)
+                if value is not None:
+                    tmuxp_workspace[flag_map[token]] = value
 
     if "socket_name" in workspace_dict:
         tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
@@ -68,17 +65,14 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
     if "pre" in workspace_dict and "pre_window" in workspace_dict:
-        tmuxp_workspace["shell_command"] = workspace_dict["pre"]
+        tmuxp_workspace["before_script"] = workspace_dict["pre"]
 
-        if isinstance(workspace_dict["pre"], str):
+        if isinstance(workspace_dict["pre_window"], str):
             tmuxp_workspace["shell_command_before"] = [workspace_dict["pre_window"]]
         else:
             tmuxp_workspace["shell_command_before"] = workspace_dict["pre_window"]
     elif "pre" in workspace_dict:
-        if isinstance(workspace_dict["pre"], str):
-            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre"]]
-        else:
-            tmuxp_workspace["shell_command_before"] = workspace_dict["pre"]
+        tmuxp_workspace["before_script"] = workspace_dict["pre"]
 
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
