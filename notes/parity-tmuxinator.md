@@ -1,6 +1,6 @@
 # Tmuxinator Parity Analysis
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 *Tmuxinator version analyzed: 3.3.7 (supports tmux 1.5–3.6a)*
 *tmuxp version: 1.64.0*
 
@@ -73,8 +73,10 @@ windows:
         - vim
 ```
 
-- `synchronize: true` / `synchronize: before` — enable pane sync before running pane commands
-- `synchronize: after` — enable pane sync after running pane commands
+- `synchronize: true` / `synchronize: before` — enable pane sync before running pane commands (**deprecated** in tmuxinator `project.rb:21-29`)
+- `synchronize: after` — enable pane sync after running pane commands (recommended)
+
+Note: tmuxinator deprecates `synchronize: true` and `synchronize: before` in favor of `synchronize: after`. The deprecation message says `before` was the original behavior but `after` is the recommended pattern. Import should still honor the original semantics of each value.
 
 **Gap**: tmuxp has no `synchronize` config key. Users would need to set `synchronize-panes on` via `options` manually, but this doesn't support the before/after distinction.
 
@@ -86,8 +88,8 @@ windows:
 
 ```yaml
 enable_pane_titles: true
-pane_title_position: top
-pane_title_format: "#{pane_index}: #{pane_title}"
+pane_title_position: top      # default: "top"
+pane_title_format: "#{pane_index}: #{pane_title}"  # this is the default format
 windows:
   - editor:
       panes:
