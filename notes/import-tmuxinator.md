@@ -160,6 +160,22 @@ In tmuxinator, `pre` is a deprecated session-level command run once before creat
 
 **Importer status**: ✗ Not handled. Could add a comment or warning suggesting `-d` flag.
 
+### 18. YAML Aliases/Anchors
+
+| tmuxinator | tmuxp |
+|---|---|
+| `defaults: &defaults` + `<<: *defaults` | Same (YAML 1.1 feature) |
+
+**Importer status**: ✓ Handled transparently. YAML aliases are resolved by the YAML parser before the importer sees the dict. No special handling needed. However, tmuxp's test fixtures have **no coverage** of this pattern — real tmuxinator configs commonly use anchors to DRY up repeated settings (see `tmuxinator/spec/fixtures/sample_alias.yml`).
+
+### 19. Numeric/Emoji Window Names
+
+| tmuxinator | tmuxp |
+|---|---|
+| `- 222:` or `- true:` or `- 🍩:` | `window_name: "222"` or `window_name: "True"` or `window_name: "🍩"` |
+
+**Importer status**: ⚠ Potentially handled but **untested**. YAML parsers coerce bare `222` to int and `true` to bool. tmuxinator handles this via Ruby's `.to_s` method. The importer iterates `window_dict.items()` (line 80) which will produce `(222, ...)` or `(True, ...)` — the `window_name` will be an int/bool, not a string. tmuxp's builder may or may not handle non-string window names correctly. Needs test coverage.
+
 ## Limitations (tmuxp Needs to Add Support)
 
 These are features that cannot be imported because tmuxp lacks the underlying capability.
@@ -211,29 +227,3 @@ These are features that cannot be imported because tmuxp lacks the underlying ca
 **Why it can't be imported**: This is a runtime behavior, not a config key.
 
 **What tmuxp would need to add**: `--no-shell-command-before` CLI flag on `tmuxp load`.
-
-## Summary Table
-
-| tmuxinator Feature | Import Status | Classification |
-|---|---|---|
-| `name`/`project_name` → `session_name` | ✓ Handled | Difference |
-| `root`/`project_root` → `start_directory` | ✓ Handled | Difference |
-| `tabs` → `windows` | ✓ Handled | Difference |
-| `socket_name` | ✓ Handled | Difference |
-| `cli_args`/`tmux_options` → `config` | ⚠ Partial | Difference (needs fix) |
-| `rbenv` → `shell_command_before` | ✓ Handled | Difference |
-| `pre` → `before_script` | ⚠ Bug: maps to wrong key (`shell_command_before` alone, `shell_command` with `pre_window`) | Difference (needs fix) |
-| Window hash syntax | ✓ Handled | Difference |
-| Window `root`/`pre`/`layout`/`panes` | ✓ Handled | Difference |
-| `rvm` → `shell_command_before` | ✗ Missing | Difference (needs add) |
-| `pre_tab` → `shell_command_before` | ✗ Missing | Difference (needs add) |
-| `startup_window` → `focus` | ✗ Missing | Difference (needs add) |
-| `startup_pane` → `focus` | ✗ Missing | Difference (needs add) |
-| `socket_path` | ✗ Missing | Difference (needs add) |
-| `attach: false` | ✗ Missing | Difference (needs add) |
-| `on_project_*` hooks | ✗ Missing | **Limitation** |
-| `synchronize` | ✗ Missing (`true`/`before` deprecated in tmuxinator → `after` recommended) | **Limitation** |
-| `enable_pane_titles` / titles | ✗ Missing | **Limitation** |
-| ERB templating | ✗ Missing | **Limitation** |
-| `tmux_command` (wemux) | ✗ Missing | **Limitation** |
-| `--no-pre-window` | N/A (runtime flag) | **Limitation** |
