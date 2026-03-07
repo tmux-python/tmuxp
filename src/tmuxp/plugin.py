@@ -199,11 +199,6 @@ class TmuxpPlugin:
                         **constraints,
                     )
                 )
-                logger.warning(
-                    "incompatible %s version for plugin %s",
-                    dep,
-                    self.plugin_name,
-                )
                 raise TmuxpPluginException(
                     msg,
                 ) from e
