@@ -230,6 +230,35 @@ Not imported but translatable:
 - **`clear`** (line 122): Already imported at line 141 but builder ignores it. libtmux has `Pane.clear()` (L4), so builder support is feasible.
 - **`cmd_separator`** (line 123): Per-window string (default `"; "`) used to join commands before `send-keys`. Irrelevant for tmuxp since it sends commands individually. Remove TODO.
 
+## Test Coverage Gaps
+
+Current importer test fixtures cover ~40% of real-world config patterns. Key gaps by severity:
+
+### Tier 1: Will Crash or Silently Lose Data
+
+- **v1.x teamocil string panes**: `panes: ["git status"]` → `TypeError` (importer tries `"cmd" in p` on string)
+- **v1.x teamocil `commands` key**: `commands: [...]` → silently dropped (only `cmd` recognized)
+- **tmuxinator `rvm`**: Completely ignored by importer (only `rbenv` handled)
+- **tmuxinator `pre` scope bug**: Tests pass because fixtures don't verify execution semantics
+
+### Tier 2: Missing Coverage
+
+- **YAML aliases/anchors**: Real tmuxinator configs use `&defaults` / `*defaults` — no test coverage
+- **Numeric/emoji window names**: `222:`, `true:`, `🍩:` — YAML type coercion edge cases untested
+- **Pane title syntax**: `pane_name: command` dict form — no fixtures
+- **`startup_window`/`startup_pane`**: Not tested
+- **`pre_tab`** (deprecated): Not tested
+- **Window-level `root` with relative paths**: Not tested
+- **`tmux_options` with non-`-f` flags**: Not tested (importer bug I2)
+
+### Required New Fixtures
+
+When implementing Phase 1 import fixes, each item needs corresponding test fixtures. See `tests/fixtures/import_tmuxinator/` and `tests/fixtures/import_teamocil/` for existing patterns.
+
+**tmuxinator fixtures needed**: YAML aliases, emoji names, numeric names, `rvm`, `pre_tab`, `startup_window`/`startup_pane`, pane titles, `socket_path`, multi-flag `tmux_options`
+
+**teamocil fixtures needed**: v1.x format (`commands`, string panes, window `focus`/`options`), pane `height`, `with_env_var`, mixed v0.x/v1.x detection
+
 ## Implementation Priority
 
 ### Phase 1: Import Fixes (No Builder/libtmux Changes)
