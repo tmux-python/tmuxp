@@ -192,7 +192,7 @@ def get_pane(window: Window, current_pane: Pane | None = None) -> Pane:
             pane = window.panes.get(pane_id=current_pane.pane_id)
         else:
             pane = window.active_pane
-    except exc.TmuxpException as e:
+    except Exception as e:
         logger.debug(
             "pane lookup failed",
             exc_info=True,

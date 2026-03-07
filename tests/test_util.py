@@ -180,11 +180,11 @@ def test_get_pane_logs_debug_on_failure(
     session = server.new_session(session_name="test_pane_log")
     window = session.active_window
 
-    # Make active_pane raise TmuxpException to trigger the logging path
+    # Make active_pane raise Exception to trigger the logging path
     monkeypatch.setattr(
         type(window),
         "active_pane",
-        property(lambda self: (_ for _ in ()).throw(exc.TmuxpException("mock"))),
+        property(lambda self: (_ for _ in ()).throw(Exception("mock pane error"))),
     )
 
     with (
