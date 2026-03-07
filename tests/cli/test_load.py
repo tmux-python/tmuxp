@@ -488,6 +488,41 @@ session_name: hello
     assert result.out is not None
 
 
+def test_load_log_file_level_filtering(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Log-level filtering: INFO log file should not contain DEBUG messages."""
+    tmuxp_config_path = tmp_path / ".tmuxp.yaml"
+    tmuxp_config_path.write_text(
+        """
+session_name: hello
+  -
+        """,
+        encoding="utf-8",
+    )
+    oh_my_zsh_path = tmp_path / ".oh-my-zsh"
+    oh_my_zsh_path.mkdir()
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.chdir(tmp_path)
+
+    with contextlib.suppress(Exception):
+        cli.cli(["--log-level", "info", "load", ".", "--log-file", "log.txt", "-d"])
+
+    log_file_path = tmp_path / "log.txt"
+    log_contents = log_file_path.read_text()
+
+    # INFO-level messages should appear
+    assert "loading workspace" in log_contents.lower() or len(log_contents) > 0
+
+    # No DEBUG-level markers should appear in an INFO-level log file
+    for line in log_contents.splitlines():
+        assert "(DEBUG)" not in line, (
+            f"DEBUG message leaked into INFO-level log file: {line}"
+        )
+
+
 def test_load_plugins(
     monkeypatch_plugin_test_packages: None,
 ) -> None:
