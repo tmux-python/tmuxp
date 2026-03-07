@@ -1382,7 +1382,6 @@ name = "tmuxp"
 version = "1.64.0"
 source = { editable = "." }
 dependencies = [
-    { name = "colorama" },
     { name = "libtmux" },
     { name = "pyyaml" },
 ]
@@ -1420,7 +1419,6 @@ dev = [
     { name = "sphinx-inline-tabs" },
     { name = "sphinxext-opengraph" },
     { name = "sphinxext-rediraffe" },
-    { name = "types-colorama" },
     { name = "types-docutils" },
     { name = "types-pygments" },
     { name = "types-pyyaml" },
@@ -1447,7 +1445,6 @@ docs = [
 lint = [
     { name = "mypy" },
     { name = "ruff" },
-    { name = "types-colorama" },
     { name = "types-docutils" },
     { name = "types-pygments" },
     { name = "types-pyyaml" },
@@ -1462,7 +1459,6 @@ testing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "colorama", specifier = ">=0.3.9" },
     { name = "libtmux", specifier = "~=0.53.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
@@ -1496,7 +1492,6 @@ dev = [
     { name = "sphinx-inline-tabs" },
     { name = "sphinxext-opengraph" },
     { name = "sphinxext-rediraffe" },
-    { name = "types-colorama" },
     { name = "types-docutils" },
     { name = "types-pygments" },
     { name = "types-pyyaml" },
@@ -1519,7 +1514,6 @@ docs = [
 lint = [
     { name = "mypy" },
     { name = "ruff" },
-    { name = "types-colorama" },
     { name = "types-docutils" },
     { name = "types-pygments" },
     { name = "types-pyyaml" },
@@ -1584,15 +1578,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/de/69/9aa0c6a505c2f80e519b43764f8b4ba93b5a0bbd2d9a9de6e2b24271b9a5/tomli-2.4.0-cp314-cp314t-win_amd64.whl", hash = "sha256:2add28aacc7425117ff6364fe9e06a183bb0251b03f986df0e78e974047571fd", size = 120504, upload-time = "2026-01-11T11:22:35.764Z" },
     { url = "https://files.pythonhosted.org/packages/b3/9f/f1668c281c58cfae01482f7114a4b88d345e4c140386241a1a24dcc9e7bc/tomli-2.4.0-cp314-cp314t-win_arm64.whl", hash = "sha256:2b1e3b80e1d5e52e40e9b924ec43d81570f0e7d09d11081b797bc4692765a3d4", size = 99561, upload-time = "2026-01-11T11:22:36.624Z" },
     { url = "https://files.pythonhosted.org/packages/23/d1/136eb2cb77520a31e1f64cbae9d33ec6df0d78bdf4160398e86eec8a8754/tomli-2.4.0-py3-none-any.whl", hash = "sha256:1f776e7d669ebceb01dee46484485f43a4048746235e683bcdffacdf1fb4785a", size = 14477, upload-time = "2026-01-11T11:22:37.446Z" },
-]
-
-[[package]]
-name = "types-colorama"
-version = "0.4.15.20250801"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/99/37/af713e7d73ca44738c68814cbacf7a655aa40ddd2e8513d431ba78ace7b3/types_colorama-0.4.15.20250801.tar.gz", hash = "sha256:02565d13d68963d12237d3f330f5ecd622a3179f7b5b14ee7f16146270c357f5", size = 10437, upload-time = "2025-08-01T03:48:22.605Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/95/3a/44ccbbfef6235aeea84c74041dc6dfee6c17ff3ddba782a0250e41687ec7/types_colorama-0.4.15.20250801-py3-none-any.whl", hash = "sha256:b6e89bd3b250fdad13a8b6a465c933f4a5afe485ea2e2f104d739be50b13eea9", size = 10743, upload-time = "2025-08-01T03:48:21.774Z" },
 ]
 
 [[package]]
