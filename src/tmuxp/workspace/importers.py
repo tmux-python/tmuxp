@@ -64,13 +64,18 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    if "pre" in workspace_dict and "pre_window" in workspace_dict:
+    pre_window_val = workspace_dict.get(
+        "pre_window",
+        workspace_dict.get("pre_tab"),
+    )
+
+    if "pre" in workspace_dict and pre_window_val is not None:
         tmuxp_workspace["before_script"] = workspace_dict["pre"]
 
-        if isinstance(workspace_dict["pre_window"], str):
-            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre_window"]]
+        if isinstance(pre_window_val, str):
+            tmuxp_workspace["shell_command_before"] = [pre_window_val]
         else:
-            tmuxp_workspace["shell_command_before"] = workspace_dict["pre_window"]
+            tmuxp_workspace["shell_command_before"] = pre_window_val
     elif "pre" in workspace_dict:
         tmuxp_workspace["before_script"] = workspace_dict["pre"]
 
@@ -80,6 +85,19 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         tmuxp_workspace["shell_command_before"].append(
             "rbenv shell {}".format(workspace_dict["rbenv"]),
         )
+
+    if "rvm" in workspace_dict:
+        if "shell_command_before" not in tmuxp_workspace:
+            tmuxp_workspace["shell_command_before"] = []
+        tmuxp_workspace["shell_command_before"].append(
+            "rvm use {}".format(workspace_dict["rvm"]),
+        )
+
+    if "startup_window" in workspace_dict:
+        tmuxp_workspace["start_window"] = workspace_dict["startup_window"]
+
+    if "startup_pane" in workspace_dict:
+        tmuxp_workspace["start_pane"] = workspace_dict["startup_pane"]
 
     for window_dict in workspace_dict["windows"]:
         for k, v in window_dict.items():
@@ -103,6 +121,16 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
             if "layout" in v:
                 window_dict["layout"] = v["layout"]
+
+            if "synchronize" in v:
+                sync = v["synchronize"]
+                if sync is True or sync == "before":
+                    window_dict.setdefault("options", {})["synchronize-panes"] = "on"
+                elif sync == "after":
+                    window_dict.setdefault("options_after", {})["synchronize-panes"] = (
+                        "on"
+                    )
+
             tmuxp_workspace["windows"].append(window_dict)
     return tmuxp_workspace
 
@@ -184,6 +212,13 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
         if "layout" in w:
             window_dict["layout"] = w["layout"]
+
+        if w.get("focus"):
+            window_dict["focus"] = True
+
+        if "options" in w:
+            window_dict["options"] = w["options"]
+
         tmuxp_workspace["windows"].append(window_dict)
 
     return tmuxp_workspace
