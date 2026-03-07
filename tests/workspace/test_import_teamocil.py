@@ -52,6 +52,12 @@ TEAMOCIL_CONFIG_TEST_FIXTURES: list[TeamocilConfigTestFixture] = [
         teamocil_dict=fixtures.test5.teamocil_dict,
         tmuxp_dict=fixtures.test5.expected,
     ),
+    TeamocilConfigTestFixture(
+        test_id="focus_options_height",
+        teamocil_yaml=fixtures.test6.teamocil_yaml,
+        teamocil_dict=fixtures.test6.teamocil_dict,
+        tmuxp_dict=fixtures.test6.expected,
+    ),
 ]
 
 
