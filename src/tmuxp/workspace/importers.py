@@ -152,12 +152,10 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             window_dict["clear"] = w["clear"]
 
         if "filters" in w:
-            if "before" in w["filters"]:
-                for _b in w["filters"]["before"]:
-                    window_dict["shell_command_before"] = w["filters"]["before"]
-            if "after" in w["filters"]:
-                for _b in w["filters"]["after"]:
-                    window_dict["shell_command_after"] = w["filters"]["after"]
+            if w["filters"].get("before"):
+                window_dict["shell_command_before"] = w["filters"]["before"]
+            if w["filters"].get("after"):
+                window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:
             window_dict["start_directory"] = w.pop("root")
@@ -166,13 +164,23 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             w["panes"] = w.pop("splits")
 
         if "panes" in w:
+            panes: list[t.Any] = []
             for p in w["panes"]:
-                if "cmd" in p:
-                    p["shell_command"] = p.pop("cmd")
-                if "width" in p:
-                    # TODO support for height/width
-                    p.pop("width")
-            window_dict["panes"] = w["panes"]
+                if p is None:
+                    panes.append({"shell_command": []})
+                elif isinstance(p, str):
+                    panes.append({"shell_command": [p]})
+                else:
+                    if "cmd" in p:
+                        p["shell_command"] = p.pop("cmd")
+                    elif "commands" in p:
+                        p["shell_command"] = p.pop("commands")
+                    if "width" in p:
+                        p.pop("width")
+                    if "height" in p:
+                        p.pop("height")
+                    panes.append(p)
+            window_dict["panes"] = panes
 
         if "layout" in w:
             window_dict["layout"] = w["layout"]
