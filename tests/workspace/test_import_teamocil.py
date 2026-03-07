@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 import pytest
@@ -139,3 +140,19 @@ def test_multisession_config(
     validation.validate_schema(
         importers.import_teamocil(multisession_config[session_name]),
     )
+
+
+def test_import_teamocil_logs_debug(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """import_teamocil() logs DEBUG record."""
+    workspace = {
+        "session": {
+            "name": "test",
+            "windows": [{"name": "main", "panes": [{"cmd": "echo hi"}]}],
+        },
+    }
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(workspace)
+    records = [r for r in caplog.records if r.msg == "importing teamocil workspace"]
+    assert len(records) >= 1

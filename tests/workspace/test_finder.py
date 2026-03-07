@@ -537,7 +537,5 @@ def test_find_workspace_file_logs_warning_on_multiple(
 
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warning_records) >= 1
-    assert (
-        "Multiple" in warning_records[0].message
-        or "undefined" in warning_records[0].message.lower()
-    )
+    assert "multiple workspace files found" in warning_records[0].message
+    assert hasattr(warning_records[0], "tmux_config_path")

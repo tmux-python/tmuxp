@@ -1587,7 +1587,7 @@ def test_builder_logs_window_and_pane_creation(
     ]
     assert len(pane_logs) >= 1
 
-    cmd_logs = [r for r in caplog.records if r.msg == "sending command %s"]
+    cmd_logs = [r for r in caplog.records if r.msg == "sent command %s"]
     assert len(cmd_logs) >= 1
 
     builder.session.kill()

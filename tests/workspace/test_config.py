@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import pathlib
 import typing as t
 
@@ -330,3 +331,34 @@ def test_validate_plugins() -> None:
     with pytest.raises(exc.WorkspaceError) as excinfo:
         validation.validate_schema(sconfig)
         assert excinfo.match("only supports list type")
+
+
+def test_expand_logs_debug(
+    tmp_path: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """expand() logs DEBUG with tmux_session extra."""
+    workspace = {"session_name": "test_expand", "windows": [{"window_name": "main"}]}
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.loader"):
+        loader.expand(workspace, cwd=str(tmp_path))
+    records = [r for r in caplog.records if r.msg == "expanding workspace config"]
+    assert len(records) >= 1
+    assert getattr(records[0], "tmux_session", None) == "test_expand"
+
+
+def test_trickle_logs_debug(
+    tmp_path: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """trickle() logs DEBUG with tmux_session extra."""
+    workspace = {
+        "session_name": "test_trickle",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.loader"):
+        loader.trickle(workspace)
+    records = [
+        r for r in caplog.records if r.msg == "trickling down workspace defaults"
+    ]
+    assert len(records) >= 1
+    assert getattr(records[0], "tmux_session", None) == "test_trickle"
