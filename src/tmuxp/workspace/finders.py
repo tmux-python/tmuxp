@@ -140,7 +140,11 @@ def find_local_workspace_files(
     if start_dir is None:
         start_dir = os.getcwd()
 
-    logger.debug("searching for local workspace files from %s", start_dir)
+    logger.debug(
+        "searching for local workspace files from %s",
+        start_dir,
+        extra={"tmux_config_path": str(start_dir)},
+    )
 
     current = pathlib.Path(start_dir).resolve()
     home = pathlib.Path.home().resolve()
