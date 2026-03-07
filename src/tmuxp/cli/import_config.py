@@ -223,6 +223,10 @@ def import_config(
             encoding=locale.getpreferredencoding(False),
         )
 
+        logger.info(
+            "workspace saved",
+            extra={"tmux_config_path": str(dest)},
+        )
         tmuxp_echo(
             colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + ".",
         )

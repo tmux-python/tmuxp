@@ -375,7 +375,6 @@ def find_workspace_file(
                     "Multiple .tmuxp.{yaml,yml,json} files found in "
                     + str(workspace_file)
                     + "\nUse distinct names to avoid ambiguity.",
-                    log_level="WARNING",
                 )
             elif not candidates:
                 file_error = "No tmuxp files found in directory"

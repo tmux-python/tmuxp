@@ -9,8 +9,6 @@ import typing as t
 
 from colorama import Fore, Style
 
-from tmuxp._internal.colors import unstyle
-
 logger = logging.getLogger(__name__)
 
 LEVEL_COLORS = {
@@ -19,15 +17,6 @@ LEVEL_COLORS = {
     "WARNING": Fore.YELLOW,
     "ERROR": Fore.RED,
     "CRITICAL": Fore.RED,
-}
-
-LOG_LEVELS = {
-    "CRITICAL": 50,
-    "ERROR": 40,
-    "WARNING": 30,
-    "INFO": 20,
-    "DEBUG": 10,
-    "NOTSET": 0,
 }
 
 
@@ -231,42 +220,22 @@ class DebugLogFormatter(LogFormatter):
     template = debug_log_template
 
 
-# Use tmuxp root logger so messages propagate to CLI handlers
-_echo_logger = logging.getLogger("tmuxp")
-
-
-def tmuxp_echo(
-    message: str | None = None,
-    log_level: str = "INFO",
-    style_log: bool = False,
-) -> None:
-    """Combine logging.log and print for CLI output.
+def tmuxp_echo(message: str | None = None) -> None:
+    """Print user-facing CLI output.
 
     Parameters
     ----------
     message : str | None
-        Message to log and print. If None, does nothing.
-    log_level : str
-        Log level to use (DEBUG, INFO, WARNING, ERROR, CRITICAL).
-        Default is INFO.
-    style_log : bool
-        If True, preserve ANSI styling in log output.
-        If False, strip ANSI codes from log output. Default is False.
+        Message to print. If None, does nothing.
 
     Examples
     --------
-    >>> tmuxp_echo("Session loaded")  # doctest: +ELLIPSIS
+    >>> tmuxp_echo("Session loaded")
     Session loaded
 
-    >>> tmuxp_echo("Warning message", log_level="WARNING")  # doctest: +ELLIPSIS
+    >>> tmuxp_echo("Warning message")
     Warning message
     """
     if message is None:
         return
-
-    if style_log:
-        _echo_logger.log(LOG_LEVELS[log_level], message, stacklevel=2)
-    else:
-        _echo_logger.log(LOG_LEVELS[log_level], unstyle(message), stacklevel=2)
-
     print(message)

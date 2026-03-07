@@ -109,5 +109,3 @@ def test_plugin_version_check_logs_debug(
         r for r in caplog.records if r.msg == "checking version constraints for %s"
     ]
     assert len(records) >= 1
-
-

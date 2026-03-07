@@ -123,6 +123,7 @@ def load_plugins(
                 module_name = ".".join(module_name[:-1])
                 plugin_name = plugin.split(".")[-1]
             except AttributeError as error:
+                logger.exception("plugin load failed")
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -139,12 +140,16 @@ def load_plugins(
                     default=True,
                     color_mode=colors.mode,
                 ):
+                    logger.warning(
+                        "plugin version constraint not met, user declined skip",
+                    )
                     tmuxp_echo(
                         colors.warning("[Not Skipping]")
                         + " Plugin versions constraint not met. Exiting...",
                     )
                     sys.exit(1)
             except (ImportError, AttributeError) as error:
+                logger.exception("plugin import failed")
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -347,6 +352,10 @@ def load_workspace(
     if isinstance(workspace_file, (str, os.PathLike)):
         workspace_file = pathlib.Path(workspace_file)
 
+    logger.info(
+        "loading workspace",
+        extra={"tmux_config_path": str(workspace_file)},
+    )
     tmuxp_echo(
         cli_colors.info("[Loading]")
         + " "
@@ -385,6 +394,10 @@ def load_workspace(
             server=t,
         )
     except exc.EmptyWorkspaceException:
+        logger.warning(
+            "workspace file is empty",
+            extra={"tmux_config_path": str(workspace_file)},
+        )
         tmuxp_echo(
             cli_colors.warning("[Warning]")
             + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
@@ -442,9 +455,7 @@ def load_workspace(
             _load_attached(builder, detached)
 
     except exc.TmuxpException as e:
-        import traceback
-
-        tmuxp_echo(traceback.format_exc())
+        logger.exception("workspace build failed")
         tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
 
         choice = prompt_choices(

@@ -111,6 +111,7 @@ def oh_my_zsh_auto_title() -> None:
             or os.environ.get("DISABLE_AUTO_TITLE") == "false"
         )
     ):
+        logger.warning("oh-my-zsh DISABLE_AUTO_TITLE not set")
         tmuxp_echo(
             "oh-my-zsh DISABLE_AUTO_TITLE not set.\n\n"
             "Please set:\n\n"
@@ -119,7 +120,6 @@ def oh_my_zsh_auto_title() -> None:
             'Remember the "export" at the beginning!\n\n'
             "Then create a new shell or type:\n\n"
             "\t$ source ~/.zshrc",
-            log_level="WARNING",
         )
 
 

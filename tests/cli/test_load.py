@@ -484,7 +484,7 @@ session_name: hello
 
     result = capsys.readouterr()
     log_file_path = tmp_path / "log.txt"
-    assert "Loading" in log_file_path.open().read()
+    assert "loading workspace" in log_file_path.open().read()
     assert result.out is not None
 
 
