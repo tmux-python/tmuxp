@@ -10,6 +10,7 @@ import sys
 import typing as t
 
 from . import exc
+from .log import tmuxp_echo
 
 if t.TYPE_CHECKING:
     import pathlib
@@ -110,16 +111,15 @@ def oh_my_zsh_auto_title() -> None:
             or os.environ.get("DISABLE_AUTO_TITLE") == "false"
         )
     ):
-        logger.warning(
-            "oh-my-zsh DISABLE_AUTO_TITLE not set",
-        )
-        print(  # NOQA: T201 RUF100
+        tmuxp_echo(
+            "oh-my-zsh DISABLE_AUTO_TITLE not set.\n\n"
             "Please set:\n\n"
             "\texport DISABLE_AUTO_TITLE='true'\n\n"
             "in ~/.zshrc or where your zsh profile is stored.\n"
             'Remember the "export" at the beginning!\n\n'
             "Then create a new shell or type:\n\n"
             "\t$ source ~/.zshrc",
+            log_level="WARNING",
         )
 
 
