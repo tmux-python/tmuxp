@@ -1,6 +1,6 @@
 # Tmuxinator Import Behavior
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 *Importer: `src/tmuxp/workspace/importers.py:import_tmuxinator`*
 
 ## Syntax Differences (Translatable)
@@ -232,7 +232,7 @@ These are features that cannot be imported because tmuxp lacks the underlying ca
 | `socket_path` | ✗ Missing | Difference (needs add) |
 | `attach: false` | ✗ Missing | Difference (needs add) |
 | `on_project_*` hooks | ✗ Missing | **Limitation** |
-| `synchronize` | ✗ Missing | **Limitation** |
+| `synchronize` | ✗ Missing (`true`/`before` deprecated in tmuxinator → `after` recommended) | **Limitation** |
 | `enable_pane_titles` / titles | ✗ Missing | **Limitation** |
 | ERB templating | ✗ Missing | **Limitation** |
 | `tmux_command` (wemux) | ✗ Missing | **Limitation** |
