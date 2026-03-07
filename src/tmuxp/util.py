@@ -110,6 +110,9 @@ def oh_my_zsh_auto_title() -> None:
             or os.environ.get("DISABLE_AUTO_TITLE") == "false"
         )
     ):
+        logger.warning(
+            "oh-my-zsh DISABLE_AUTO_TITLE not set",
+        )
         print(  # NOQA: T201 RUF100
             "Please set:\n\n"
             "\texport DISABLE_AUTO_TITLE='true'\n\n"
@@ -190,7 +193,14 @@ def get_pane(window: Window, current_pane: Pane | None = None) -> Pane:
         else:
             pane = window.active_pane
     except exc.TmuxpException as e:
-        print(e)  # NOQA: T201 RUF100
+        logger.debug(
+            "pane lookup failed",
+            exc_info=True,
+            extra={"tmux_pane": str(current_pane) if current_pane else ""},
+        )
+        if current_pane:
+            raise exc.PaneNotFound(str(current_pane)) from e
+        raise exc.PaneNotFound from e
 
     if pane is None:
         if current_pane:
