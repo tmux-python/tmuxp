@@ -120,6 +120,49 @@ class OutputFormatter:
             sys.stdout.write(text + "\n")
             sys.stdout.flush()
 
+    def emit_object(self, data: dict[str, t.Any]) -> None:
+        """Emit a single top-level JSON object (not a list of records).
+
+        For commands that produce one structured object rather than a stream of
+        records. Writes immediately without buffering; does not affect
+        ``_json_buffer``.
+
+        In JSON mode, writes indented JSON followed by a newline.
+        In NDJSON mode, writes compact single-line JSON followed by a newline.
+        In HUMAN mode, does nothing (use ``emit_text`` for human output).
+
+        Parameters
+        ----------
+        data : dict
+            The object to emit.
+
+        Examples
+        --------
+        >>> import io, sys
+        >>> formatter = OutputFormatter(OutputMode.JSON)
+        >>> formatter.emit_object({"status": "ok", "count": 3})
+        {
+          "status": "ok",
+          "count": 3
+        }
+        >>> formatter._json_buffer  # buffer is unaffected
+        []
+
+        >>> formatter2 = OutputFormatter(OutputMode.NDJSON)
+        >>> formatter2.emit_object({"status": "ok", "count": 3})
+        {"status": "ok", "count": 3}
+
+        >>> formatter3 = OutputFormatter(OutputMode.HUMAN)
+        >>> formatter3.emit_object({"status": "ok"})  # no output in HUMAN mode
+        """
+        if self.mode == OutputMode.JSON:
+            sys.stdout.write(json.dumps(data, indent=2) + "\n")
+            sys.stdout.flush()
+        elif self.mode == OutputMode.NDJSON:
+            sys.stdout.write(json.dumps(data) + "\n")
+            sys.stdout.flush()
+        # HUMAN: no-op
+
     def finalize(self) -> None:
         """Finalize output (flush JSON buffer if needed).
 
