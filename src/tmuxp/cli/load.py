@@ -76,6 +76,7 @@ class CLILoadNamespace(argparse.Namespace):
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
+    log_level: str
 
 
 def load_plugins(
