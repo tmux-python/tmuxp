@@ -1,6 +1,6 @@
 # Parity Implementation Plan
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 *Based on: parity-tmuxinator.md, parity-teamocil.md, import-tmuxinator.md, import-teamocil.md*
 
 ## libtmux Limitations
@@ -56,7 +56,7 @@ These libtmux APIs already exist and do NOT need changes:
 ### T1. No `synchronize` Config Key
 
 - **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. The key is silently ignored if present.
-- **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`).
+- **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`). Note: tmuxinator deprecates `true`/`before` in favor of `after` (`project.rb:21-29`), but all three values still function. The import should honor original semantics of each value.
 - **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands are sent. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
 - **Insertion point**: In `build()` around line 320 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 565 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
 - **Non-breaking**: New optional config key. Existing configs are unaffected.
