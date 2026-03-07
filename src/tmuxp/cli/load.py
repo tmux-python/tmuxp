@@ -604,15 +604,7 @@ def command_load(
     cli_colors = Colors(get_color_mode(args.color))
 
     if args.log_file:
-        logfile_handler = logging.FileHandler(args.log_file)
-        # Use DebugLogFormatter if log_level is DEBUG, else LogFormatter
-        if args.log_level.upper() == "DEBUG":
-            logfile_handler.setFormatter(log.DebugLogFormatter())
-        else:
-            logfile_handler.setFormatter(log.LogFormatter())
-        # Add handler to tmuxp root logger to capture all tmuxp log messages
-        tmuxp_logger = logging.getLogger("tmuxp")
-        tmuxp_logger.addHandler(logfile_handler)
+        log.setup_log_file(args.log_file, args.log_level)
 
     if args.workspace_files is None or len(args.workspace_files) == 0:
         tmuxp_echo(cli_colors.error("Enter at least one config"))

@@ -220,6 +220,35 @@ class DebugLogFormatter(LogFormatter):
     template = debug_log_template
 
 
+def setup_log_file(log_file: str, level: str = "INFO") -> None:
+    """Attach a file handler to the tmuxp logger.
+
+    Parameters
+    ----------
+    log_file : str
+        Path to the log file.
+    level : str
+        Log level name (e.g. "DEBUG", "INFO"). Selects formatter.
+
+    Examples
+    --------
+    >>> import tempfile, os, logging
+    >>> f = tempfile.NamedTemporaryFile(suffix=".log", delete=False)
+    >>> f.close()
+    >>> setup_log_file(f.name, level="INFO")
+    >>> tmuxp_logger = logging.getLogger("tmuxp")
+    >>> tmuxp_logger.handlers = [
+    ...     h for h in tmuxp_logger.handlers if not isinstance(h, logging.FileHandler)
+    ... ]
+    >>> os.unlink(f.name)
+    """
+    handler = logging.FileHandler(log_file)
+    formatter = DebugLogFormatter() if level.upper() == "DEBUG" else LogFormatter()
+    handler.setFormatter(formatter)
+    tmuxp_logger = logging.getLogger("tmuxp")
+    tmuxp_logger.addHandler(handler)
+
+
 def tmuxp_echo(message: str | None = None) -> None:
     """Print user-facing CLI output.
 
