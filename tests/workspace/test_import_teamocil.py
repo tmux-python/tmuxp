@@ -156,3 +156,4 @@ def test_import_teamocil_logs_debug(
         importers.import_teamocil(workspace)
     records = [r for r in caplog.records if r.msg == "importing teamocil workspace"]
     assert len(records) >= 1
+    assert getattr(records[0], "tmux_session", None) == "test"

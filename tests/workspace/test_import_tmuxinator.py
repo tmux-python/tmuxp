@@ -75,3 +75,4 @@ def test_import_tmuxinator_logs_debug(
         importers.import_tmuxinator(workspace)
     records = [r for r in caplog.records if r.msg == "importing tmuxinator workspace"]
     assert len(records) >= 1
+    assert getattr(records[0], "tmux_session", None) == "test"

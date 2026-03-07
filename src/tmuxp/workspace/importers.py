@@ -22,7 +22,13 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
-    logger.debug("importing tmuxinator workspace")
+    logger.debug(
+        "importing tmuxinator workspace",
+        extra={
+            "tmux_session": workspace_dict.get("project_name")
+            or workspace_dict.get("name", ""),
+        },
+    )
 
     tmuxp_workspace: dict[str, t.Any] = {}
 
@@ -127,7 +133,11 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     - clear
     - cmd_separator
     """
-    logger.debug("importing teamocil workspace")
+    _inner = workspace_dict.get("session", workspace_dict)
+    logger.debug(
+        "importing teamocil workspace",
+        extra={"tmux_session": _inner.get("name", "")},
+    )
 
     tmuxp_workspace: dict[str, t.Any] = {}
 
