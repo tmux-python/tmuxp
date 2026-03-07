@@ -150,6 +150,7 @@ Keys produced by importers but silently ignored by the builder:
 | `socket_name` | tmuxinator importer | `importers.py:52` | Never read | Dead data — CLI uses `-L` flag |
 | `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
 | `height` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — `width` is popped but `height` passes through silently |
+| `target` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — accidentally preserved via dict mutation, but libtmux has `Pane.split(target=...)` (L4) |
 | `shell_command_after` | teamocil importer | `importers.py:149` | Never read | Dead data — tmuxp has no after-command support |
 
 ## Importer Bugs (No Builder Changes Needed)
@@ -202,6 +203,7 @@ Not imported but translatable:
 - `startup_window` → find matching window, set `focus: true`
 - `startup_pane` → find matching pane, set `focus: true`
 - `on_project_first_start` → `before_script` (only if value is a single command or script path; multi-command strings joined by `;` won't work since `before_script` uses `Popen` without `shell=True`)
+- `post` → deprecated predecessor to `on_project_exit`; runs after windows are built on every invocation. No tmuxp equivalent until T6 lifecycle hooks exist.
 - `socket_path` → warn user to use CLI `-S` flag
 - `attach: false` → warn user to use CLI `-d` flag
 
