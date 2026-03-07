@@ -473,6 +473,33 @@ class Colors:
         """
         return self.muted("-" * length)
 
+    def format_rule(self, width: int = 40, char: str = "─") -> str:
+        """Format a horizontal rule using Unicode box-drawing characters.
+
+        A richer alternative to ``format_separator()`` which uses plain hyphens.
+
+        Parameters
+        ----------
+        width : int
+            Number of characters. Default is 40.
+        char : str
+            Character to repeat. Default is ``"─"`` (U+2500).
+
+        Returns
+        -------
+        str
+            Muted (blue) rule when colors enabled, plain rule otherwise.
+
+        Examples
+        --------
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> colors.format_rule(10)
+        '──────────'
+        >>> colors.format_rule(5, char="=")
+        '====='
+        """
+        return self.muted(char * width)
+
     def format_kv(self, key: str, value: str) -> str:
         """Format key: value pair with syntax highlighting.
 
