@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import pathlib
 import typing as t
 
@@ -514,3 +515,29 @@ def test_get_workspace_dir_candidates_uses_private_path(
         path = candidate["path"]
         assert str(home) not in path, f"Path should be masked: {path}"
         assert path.startswith("~"), f"Path should start with ~: {path}"
+
+
+def test_find_workspace_file_logs_warning_on_multiple(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """find_workspace_file() logs WARNING when multiple workspace files found."""
+    project = tmp_path / "project"
+    project.mkdir()
+
+    # Create multiple .tmuxp files in the same directory
+    (project / ".tmuxp.yaml").write_text("session_name: test")
+    (project / ".tmuxp.json").write_text('{"session_name": "test"}')
+
+    monkeypatch.chdir(project)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.finders"):
+        find_workspace_file(str(project))
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) >= 1
+    assert (
+        "Multiple" in warning_records[0].message
+        or "undefined" in warning_records[0].message.lower()
+    )
