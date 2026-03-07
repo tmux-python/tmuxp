@@ -7,8 +7,8 @@ import os
 import pathlib
 import typing as t
 
+from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.private_path import PrivatePath
-from tmuxp.log import tmuxp_echo
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
@@ -371,10 +371,17 @@ def find_workspace_file(
                     " to avoid ambiguity",
                     extra={"tmux_config_path": workspace_file},
                 )
-                tmuxp_echo(
-                    "Multiple .tmuxp.{yaml,yml,json} files found in "
-                    + str(workspace_file)
-                    + "\nUse distinct names to avoid ambiguity.",
+                colors = Colors(ColorMode.AUTO)
+                print(
+                    colors.error(
+                        "Multiple .tmuxp.{yaml,yml,json} files found in "
+                        + str(workspace_file)
+                    )
+                )
+                print(
+                    "This is undefined behavior, use only one. "
+                    "Use file names e.g. myproject.json, coolproject.yaml. "
+                    "You can load them by filename.",
                 )
             elif not candidates:
                 file_error = "No tmuxp files found in directory"
