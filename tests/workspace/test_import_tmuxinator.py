@@ -39,6 +39,12 @@ TMUXINATOR_CONFIG_TEST_FIXTURES: list[TmuxinatorConfigTestFixture] = [
         tmuxinator_dict=fixtures.test3.tmuxinator_dict,
         tmuxp_dict=fixtures.test3.expected,
     ),
+    TmuxinatorConfigTestFixture(
+        test_id="multi_flag_cli_args",
+        tmuxinator_yaml=fixtures.test4.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test4.tmuxinator_dict,
+        tmuxp_dict=fixtures.test4.expected,
+    ),
 ]
 
 
