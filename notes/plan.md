@@ -80,8 +80,8 @@ These libtmux APIs already exist and do NOT need changes:
 
 ### T4. No Session Rename Mode / `--here` CLI Flag
 
-- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 406). Additionally, teamocil's session rename mode (rename current session instead of creating new) is partially covered by tmuxp's `--append` flag, but `--append` does not rename the session.
-- **Blocks**: teamocil `--here` (reuse current window for first window) and teamocil session rename mode.
+- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 406). Additionally, teamocil always renames the current session (`session.rb:18-20`), regardless of `--here`; the `--here` flag only affects **window** behavior (reuse current window for first window instead of creating new). tmuxp's `--append` flag partially covers session rename mode, but does not rename the session.
+- **Blocks**: teamocil `--here` (reuse current window for first window) and teamocil session rename (always active, not conditional on `--here`).
 - **Required**:
   1. Add `--here` flag to `cli/load.py` (around line 516, near `--append`).
   2. Pass `here=True` through to `WorkspaceBuilder.build()`.
@@ -168,7 +168,7 @@ Two bugs in `importers.py:59-70`, covering both code paths for the `pre` key:
 
 - **Bug**: When both `pre` and `pre_window` exist (`importers.py:59-65`):
   1. `pre` maps to `shell_command` (line 60) — invalid session-level key, silently ignored by builder. The `pre` commands are lost entirely (see Dead Config Keys table).
-  2. The `isinstance` check on line 62 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. If `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list.
+  2. The `isinstance` check on line 62 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. When `pre` is a string but `pre_window` is a list, `pre_window` gets double-wrapped as `[["cmd1", "cmd2"]]` (nested list). When `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list — leaving a bare string where a list is expected.
 
 #### Correct mapping
 
