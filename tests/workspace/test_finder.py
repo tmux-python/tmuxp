@@ -12,6 +12,7 @@ import pytest
 from tmuxp import cli
 from tmuxp.cli.utils import tmuxp_echo
 from tmuxp.workspace.finders import (
+    find_local_workspace_files,
     find_workspace_file,
     get_workspace_dir,
     get_workspace_dir_candidates,
@@ -539,3 +540,24 @@ def test_find_workspace_file_logs_warning_on_multiple(
     assert len(warning_records) >= 1
     assert "multiple workspace files found" in warning_records[0].message
     assert hasattr(warning_records[0], "tmux_config_path")
+
+
+def test_find_local_workspace_files_logs_debug(
+    tmp_path: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """find_local_workspace_files() logs DEBUG with tmux_config_path extra."""
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / ".tmuxp.yaml").write_text("session_name: test")
+
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.finders"):
+        find_local_workspace_files(project, stop_at_home=False)
+
+    records = [
+        r
+        for r in caplog.records
+        if r.msg == "searching for local workspace files from %s"
+    ]
+    assert len(records) >= 1
+    assert hasattr(records[0], "tmux_config_path")

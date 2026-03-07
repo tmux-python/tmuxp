@@ -362,3 +362,18 @@ def test_trickle_logs_debug(
     ]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test_trickle"
+
+
+def test_validate_schema_logs_debug(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """validate_schema() logs DEBUG with tmux_session extra."""
+    workspace = {
+        "session_name": "test_validate",
+        "windows": [{"window_name": "main"}],
+    }
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.validation"):
+        validation.validate_schema(workspace)
+    records = [r for r in caplog.records if r.msg == "validating workspace schema"]
+    assert len(records) >= 1
+    assert getattr(records[0], "tmux_session", None) == "test_validate"
