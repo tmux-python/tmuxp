@@ -615,8 +615,7 @@ def command_ls(
                 "workspaces": [],
                 "global_workspace_dirs": global_dir_candidates,
             }
-            sys.stdout.write(json.dumps(output_data, indent=2) + "\n")
-            sys.stdout.flush()
+            formatter.emit_object(output_data)
         # NDJSON: just output nothing for empty workspaces
         return
 
@@ -626,8 +625,7 @@ def command_ls(
             "workspaces": workspaces,
             "global_workspace_dirs": global_dir_candidates,
         }
-        sys.stdout.write(json.dumps(output_data, indent=2) + "\n")
-        sys.stdout.flush()
+        formatter.emit_object(output_data)
         return
 
     # Human and NDJSON output
