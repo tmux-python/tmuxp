@@ -20,7 +20,7 @@ from tmuxp.workspace import freezer
 from tmuxp.workspace.finders import get_workspace_dir
 
 from ._colors import Colors, build_description, get_color_mode
-from .utils import prompt, prompt_choices, prompt_yes_no
+from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +144,7 @@ def command_freeze(
         if not session:
             raise exc.SessionNotFound
     except TmuxpException as e:
-        print(colors.error(str(e)))  # NOQA: T201 RUF100
+        tmuxp_echo(colors.error(str(e)))
         return
 
     frozen_workspace = freezer.freeze(session)
@@ -152,7 +152,7 @@ def command_freeze(
     configparser = ConfigReader(workspace)
 
     if not args.quiet:
-        print(  # NOQA: T201 RUF100
+        tmuxp_echo(
             colors.format_separator(63)
             + "\n"
             + colors.muted("Freeze does its best to snapshot live tmux sessions.")
@@ -166,7 +166,7 @@ def command_freeze(
         )
     ):
         if not args.quiet:
-            print(  # NOQA: T201 RUF100
+            tmuxp_echo(
                 colors.muted("tmuxp has examples in JSON and YAML format at ")
                 + colors.info("<http://tmuxp.git-pull.com/examples.html>")
                 + "\n"
@@ -193,7 +193,7 @@ def command_freeze(
             color_mode=color_mode,
         )
         if not args.force and os.path.exists(dest_prompt):
-            print(  # NOQA: T201 RUF100
+            tmuxp_echo(
                 colors.warning(f"{PrivatePath(dest_prompt)} exists.")
                 + " "
                 + colors.muted("Pick a new filename."),
@@ -258,6 +258,6 @@ def command_freeze(
         logger.info("workspace saved", extra={"tmux_config_path": str(dest)})
 
         if not args.quiet:
-            print(  # NOQA: T201 RUF100
+            tmuxp_echo(
                 colors.success("Saved to ") + colors.info(str(PrivatePath(dest))) + ".",
             )

@@ -14,6 +14,7 @@ from tmuxp import util
 from tmuxp._compat import PY3, PYMINOR
 
 from ._colors import Colors, build_description, get_color_mode
+from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
 
@@ -225,7 +226,7 @@ def command_shell(
     ):
         from tmuxp._compat import breakpoint as tmuxp_breakpoint
 
-        print(  # NOQA: T201 RUF100
+        tmuxp_echo(
             cli_colors.muted("Launching ")
             + cli_colors.highlight("pdb", bold=False)
             + cli_colors.muted(" shell..."),
@@ -236,7 +237,7 @@ def command_shell(
         from tmuxp.shell import launch
 
         shell_name = args.shell or "best"
-        print(  # NOQA: T201 RUF100
+        tmuxp_echo(
             cli_colors.muted("Launching ")
             + cli_colors.highlight(shell_name, bold=False)
             + cli_colors.muted(" shell for session ")

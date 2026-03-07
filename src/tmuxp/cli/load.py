@@ -183,7 +183,7 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
-            print(colors.info(line) if colors else line)  # NOQA: T201 RUF100
+            tmuxp_echo(colors.info(line) if colors else line)
 
     if "TMUX" in os.environ:
         builder.session.switch_client()

@@ -11,6 +11,7 @@ from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file
 
 from ._colors import Colors, build_description, get_color_mode
+from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ def command_edit(
     workspace_file = find_workspace_file(workspace_file)
 
     sys_editor = os.environ.get("EDITOR", "vim")
-    print(  # NOQA: T201 RUF100
+    tmuxp_echo(
         colors.muted("Opening ")
         + colors.info(str(PrivatePath(workspace_file)))
         + colors.muted(" in ")
