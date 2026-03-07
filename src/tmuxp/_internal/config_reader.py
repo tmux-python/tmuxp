@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import typing as t
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import locale
+import logging
 import os
 import pathlib
 import sys
@@ -15,6 +16,8 @@ from tmuxp.workspace.finders import find_workspace_file
 
 from ._colors import ColorMode, Colors, build_description, get_color_mode
 from .utils import prompt, prompt_choices, prompt_yes_no, tmuxp_echo
+
+logger = logging.getLogger(__name__)
 
 IMPORT_DESCRIPTION = build_description(
     """

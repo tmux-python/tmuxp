@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import subprocess
 import typing as t
@@ -10,6 +11,8 @@ from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file
 
 from ._colors import Colors, build_description, get_color_mode
+
+logger = logging.getLogger(__name__)
 
 EDIT_DESCRIPTION = build_description(
     """

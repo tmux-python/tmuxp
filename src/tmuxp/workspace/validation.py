@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 from tmuxp import exc
+
+logger = logging.getLogger(__name__)
 
 
 class SchemaValidationError(exc.WorkspaceError):

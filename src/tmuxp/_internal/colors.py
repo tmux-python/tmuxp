@@ -43,10 +43,13 @@ FORCE_COLOR enables colors in AUTO mode even without TTY:
 from __future__ import annotations
 
 import enum
+import logging
 import os
 import re
 import sys
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias

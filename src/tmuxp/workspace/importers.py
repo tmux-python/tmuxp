@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:

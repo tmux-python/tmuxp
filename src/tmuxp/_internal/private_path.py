@@ -6,9 +6,12 @@ useful for logging, debugging, and displaying paths without exposing PII.
 
 from __future__ import annotations
 
+import logging
 import os
 import pathlib
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     PrivatePathBase = pathlib.Path

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from libtmux.pane import Pane

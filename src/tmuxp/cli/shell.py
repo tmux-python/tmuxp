@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import os
 import pathlib
 import typing as t
@@ -13,6 +14,8 @@ from tmuxp import util
 from tmuxp._compat import PY3, PYMINOR
 
 from ._colors import Colors, build_description, get_color_mode
+
+logger = logging.getLogger(__name__)
 
 SHELL_DESCRIPTION = build_description(
     """

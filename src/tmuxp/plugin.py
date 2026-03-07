@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 import libtmux
@@ -10,6 +11,8 @@ from libtmux.common import get_version
 
 from .__about__ import __version__
 from .exc import TmuxpPluginException
+
+logger = logging.getLogger(__name__)
 
 #: Minimum version of tmux required to run tmuxp
 TMUX_MIN_VERSION = "3.2"

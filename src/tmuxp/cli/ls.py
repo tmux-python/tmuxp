@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import logging
 import pathlib
 import typing as t
 
@@ -45,6 +46,8 @@ from tmuxp.workspace.finders import (
 
 from ._colors import Colors, build_description, get_color_mode
 from ._output import OutputFormatter, OutputMode, get_output_mode
+
+logger = logging.getLogger(__name__)
 
 LS_DESCRIPTION = build_description(
     """

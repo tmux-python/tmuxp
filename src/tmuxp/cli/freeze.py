@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import locale
+import logging
 import os
 import pathlib
 import sys
@@ -20,6 +21,8 @@ from tmuxp.workspace.finders import get_workspace_dir
 
 from ._colors import Colors, build_description, get_color_mode
 from .utils import prompt, prompt_choices, prompt_yes_no
+
+logger = logging.getLogger(__name__)
 
 FREEZE_DESCRIPTION = build_description(
     """

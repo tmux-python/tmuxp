@@ -25,8 +25,11 @@ from __future__ import annotations
 
 import enum
 import json
+import logging
 import sys
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 
 class OutputMode(enum.Enum):
