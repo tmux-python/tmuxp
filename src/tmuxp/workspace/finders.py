@@ -7,9 +7,7 @@ import os
 import pathlib
 import typing as t
 
-from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.private_path import PrivatePath
-from tmuxp.log import tmuxp_echo
 from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 
 logger = logging.getLogger(__name__)
@@ -141,6 +139,8 @@ def find_local_workspace_files(
     """
     if start_dir is None:
         start_dir = os.getcwd()
+
+    logger.debug("searching for local workspace files from %s", start_dir)
 
     current = pathlib.Path(start_dir).resolve()
     home = pathlib.Path.home().resolve()
@@ -361,17 +361,14 @@ def find_workspace_file(
             ]
 
             if len(candidates) > 1:
-                colors = Colors(ColorMode.AUTO)
-                tmuxp_echo(
-                    colors.error(
-                        "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
-                        + dirname(workspace_file)
-                    ),
+                logger.warning(
+                    "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
+                    + dirname(workspace_file)
                 )
-                tmuxp_echo(
+                logger.warning(
                     "This is undefined behavior, use only one. "
                     "Use file names e.g. myproject.json, coolproject.yaml. "
-                    "You can load them by filename.",
+                    "You can load them by filename."
                 )
             elif not candidates:
                 file_error = "No tmuxp files found in directory"
@@ -383,6 +380,11 @@ def find_workspace_file(
     if file_error:
         raise FileNotFoundError(file_error, workspace_file)
 
+    logger.debug(
+        "resolved workspace file %s",
+        workspace_file,
+        extra={"tmux_config_path": workspace_file},
+    )
     return workspace_file
 
 

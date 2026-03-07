@@ -106,14 +106,17 @@ def has_bpython() -> bool:
 def detect_best_shell() -> CLIShellLiteral:
     """Return the best, most feature-rich shell available."""
     if has_ptipython():
-        return "ptipython"
-    if has_ptpython():
-        return "ptpython"
-    if has_ipython():
-        return "ipython"
-    if has_bpython():
-        return "bpython"
-    return "code"
+        shell: CLIShellLiteral = "ptipython"
+    elif has_ptpython():
+        shell = "ptpython"
+    elif has_ipython():
+        shell = "ipython"
+    elif has_bpython():
+        shell = "bpython"
+    else:
+        shell = "code"
+    logger.debug("detected shell: %s", shell)
+    return shell
 
 
 def get_bpython(
