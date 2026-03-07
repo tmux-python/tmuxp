@@ -1,0 +1,13 @@
+windows:
+- name: v1-string-panes
+  root: ~/Code/legacy
+  layout: even-horizontal
+  panes:
+  - echo 'hello'
+  - echo 'world'
+  -
+- name: v1-commands-key
+  panes:
+  - commands:
+    - pwd
+    - ls -la
