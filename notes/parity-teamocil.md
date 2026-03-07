@@ -1,6 +1,6 @@
 # Teamocil Parity Analysis
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 *Teamocil version analyzed: 1.4.2*
 *tmuxp version: 1.64.0*
 
@@ -14,6 +14,8 @@ Teamocil has had two distinct config formats:
 The current tmuxp importer (`importers.py:import_teamocil`) **targets the v0.x format**. It handles the `session:` wrapper, `splits`, `filters`, and `cmd` keys — all of which are v0.x-only constructs. It does **not** handle the v1.x format natively, though v1.x configs may partially work since the `windows`/`panes` structure is similar.
 
 Note: teamocil v1.x does not create new sessions — it **renames** the current session (`rename-session`) and adds windows to it. This is fundamentally different from tmuxp/tmuxinator which create fresh sessions.
+
+**v1.0 rewrite context** (from teamocil README): Teamocil 1.0 was a complete rewrite that explicitly dropped several v0.x features: no hook system (pre/post execution scripts), no pane-specific environment variables (`with_env_var`), no inline scripting or complex DSL, and no `cmd_separator` customization. The focus narrowed to core declarative window/pane creation.
 
 ## Features teamocil has that tmuxp lacks
 
