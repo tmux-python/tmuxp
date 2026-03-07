@@ -45,6 +45,18 @@ TMUXINATOR_CONFIG_TEST_FIXTURES: list[TmuxinatorConfigTestFixture] = [
         tmuxinator_dict=fixtures.test4.tmuxinator_dict,
         tmuxp_dict=fixtures.test4.expected,
     ),
+    TmuxinatorConfigTestFixture(
+        test_id="rvm_pre_tab_startup",
+        tmuxinator_yaml=fixtures.test5.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test5.tmuxinator_dict,
+        tmuxp_dict=fixtures.test5.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="synchronize",
+        tmuxinator_yaml=fixtures.test6.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test6.tmuxinator_dict,
+        tmuxp_dict=fixtures.test6.expected,
+    ),
 ]
 
 
