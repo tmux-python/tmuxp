@@ -1,6 +1,6 @@
 # Teamocil Import Behavior
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 *Importer: `src/tmuxp/workspace/importers.py:import_teamocil`*
 
 ## Format Detection Problem
