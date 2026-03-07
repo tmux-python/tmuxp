@@ -31,7 +31,7 @@ LOG_LEVELS = {
 }
 
 
-class TmuxpLoggerAdapter(logging.LoggerAdapter[logging.Logger]):
+class TmuxpLoggerAdapter(logging.LoggerAdapter):  # type: ignore[type-arg]
     """LoggerAdapter that merges extra dictionary on Python < 3.13.
 
     Follows the portable pattern to avoid repeating the same `extra` on every call
