@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
-
-# flake8: NOQA
-import sys
 
 PY3 = sys.version_info[0] == 3
 PYMINOR = sys.version_info[1]
