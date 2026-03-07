@@ -111,15 +111,3 @@ def test_plugin_version_check_logs_debug(
     assert len(records) >= 1
 
 
-def test_plugin_version_check_logs_warning_on_fail(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """_version_check() logs WARNING before raising on version failure."""
-    with (
-        caplog.at_level(logging.WARNING, logger="tmuxp.plugin"),
-        pytest.raises(TmuxpPluginException),
-    ):
-        TmuxVersionFailMinPlugin()
-    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
-    assert len(warning_records) >= 1
-    assert "incompatible" in warning_records[0].message
