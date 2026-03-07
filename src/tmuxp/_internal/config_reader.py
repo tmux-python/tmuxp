@@ -109,6 +109,7 @@ class ConfigReader:
         {'session_name': 'my session'}
         """
         assert isinstance(path, pathlib.Path)
+        logger.debug("loading config", extra={"tmux_config_path": str(path)})
         content = path.open(encoding="utf-8").read()
 
         if path.suffix in {".yaml", ".yml"}:

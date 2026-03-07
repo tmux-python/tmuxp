@@ -184,6 +184,7 @@ class TmuxpPlugin:
 
     def _version_check(self) -> None:
         """Check all dependency versions for compatibility."""
+        logger.debug("checking version constraints for %s", self.plugin_name)
         for dep, constraints in self.version_constraints.items():
             assert isinstance(constraints, dict)
             try:
@@ -197,6 +198,11 @@ class TmuxpPlugin:
                         plugin_name=self.plugin_name,
                         **constraints,
                     )
+                )
+                logger.warning(
+                    "incompatible %s version for plugin %s",
+                    dep,
+                    self.plugin_name,
                 )
                 raise TmuxpPluginException(
                     msg,

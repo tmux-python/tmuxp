@@ -22,6 +22,8 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
+    logger.debug("importing tmuxinator workspace")
+
     tmuxp_workspace: dict[str, t.Any] = {}
 
     if "project_name" in workspace_dict:
@@ -125,6 +127,8 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     - clear
     - cmd_separator
     """
+    logger.debug("importing teamocil workspace")
+
     tmuxp_workspace: dict[str, t.Any] = {}
 
     if "session" in workspace_dict:

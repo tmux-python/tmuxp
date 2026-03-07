@@ -73,6 +73,8 @@ def validate_schema(workspace_dict: t.Any) -> bool:
     -------
     bool
     """
+    logger.debug("validating workspace schema")
+
     # verify session_name
     if "session_name" not in workspace_dict:
         raise SessionNameMissingValidationError
