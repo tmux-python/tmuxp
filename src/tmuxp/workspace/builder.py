@@ -564,6 +564,10 @@ class WorkspaceBuilder:
 
             assert isinstance(pane, Pane)
 
+            # Skip readiness wait when a custom shell/command launcher is set.
+            # The shell/window_shell key runs a command (e.g. "top", "sleep 999")
+            # that replaces the default shell — the pane exits when the command
+            # exits, so there is no interactive prompt to wait for.
             pane_shell = pane_config.get("shell", window_config.get("window_shell"))
             if pane_shell is None:
                 _wait_for_pane_ready(pane)
