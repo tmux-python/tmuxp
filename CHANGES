@@ -35,6 +35,12 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+## tmuxp 1.64.2 (2026-03-08)
+
+### Packaging
+
+- Fix `__about__.__version__` not updated in 1.64.1 release
+
 ## tmuxp 1.64.1 (2026-03-08)
 
 ### Bug fixes
