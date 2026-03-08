@@ -152,3 +152,104 @@ $ tmuxp load [filename] --log-file [log_filename]
 ```console
 $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
 ```
+
+## Progress display
+
+When loading a workspace, tmuxp shows an animated spinner with build progress. The spinner updates as windows and panes are created, giving real-time feedback during session builds.
+
+### Presets
+
+Five built-in presets control the spinner format:
+
+| Preset | Format |
+|--------|--------|
+| `default` | `Loading workspace: {session} {bar} {progress} {window}` |
+| `minimal` | `Loading workspace: {session} [{window_progress}]` |
+| `window` | `Loading workspace: {session} {window_bar} {window_progress_rel}` |
+| `pane` | `Loading workspace: {session} {pane_bar} {session_pane_progress}` |
+| `verbose` | `Loading workspace: {session} [window {window_index} of {window_total} · pane {pane_index} of {pane_total}] {window}` |
+
+Select a preset with `--progress-format`:
+
+```console
+$ tmuxp load --progress-format minimal myproject
+```
+
+Or via environment variable:
+
+```console
+$ TMUXP_PROGRESS_FORMAT=verbose tmuxp load myproject
+```
+
+### Custom format tokens
+
+Use a custom format string with any of the available tokens:
+
+| Token | Description |
+|-------|-------------|
+| `{session}` | Session name |
+| `{window}` | Current window name |
+| `{window_index}` | Current window number (1-based) |
+| `{window_total}` | Total number of windows |
+| `{window_progress}` | Window fraction (e.g. `1/3`) |
+| `{window_progress_rel}` | Completed windows fraction (e.g. `1/3`) |
+| `{windows_done}` | Number of completed windows |
+| `{windows_remaining}` | Number of remaining windows |
+| `{pane_index}` | Current pane number in the window |
+| `{pane_total}` | Total panes in the current window |
+| `{pane_progress}` | Pane fraction (e.g. `2/4`) |
+| `{progress}` | Combined progress (e.g. `1/3 win · 2/4 pane`) |
+| `{session_pane_progress}` | Panes completed across the session (e.g. `5/10`) |
+| `{overall_percent}` | Pane-based completion percentage (0–100) |
+| `{bar}` | Composite progress bar |
+| `{pane_bar}` | Pane-based progress bar |
+| `{window_bar}` | Window-based progress bar |
+| `{status_icon}` | Status icon (⏸ during before_script) |
+
+Example:
+
+```console
+$ tmuxp load --progress-format "{session} {bar} {overall_percent}%" myproject
+```
+
+### Panel lines
+
+The spinner shows script output in a panel below the spinner line. Control the panel height with `--progress-lines`:
+
+Hide the panel entirely (script output goes to stdout):
+
+```console
+$ tmuxp load --progress-lines 0 myproject
+```
+
+Show unlimited lines (capped to terminal height):
+
+```console
+$ tmuxp load --progress-lines -1 myproject
+```
+
+Set a custom height (default is 3):
+
+```console
+$ tmuxp load --progress-lines 5 myproject
+```
+
+### Disabling progress
+
+Disable the animated spinner entirely:
+
+```console
+$ tmuxp load --no-progress myproject
+```
+
+Or via environment variable:
+
+```console
+$ TMUXP_PROGRESS=0 tmuxp load myproject
+```
+
+When progress is disabled, logging flows normally to the terminal and no spinner is rendered.
+
+### Before-script behavior
+
+During `before_script` execution, the progress bar shows a marching animation and a ⏸ status icon, indicating that tmuxp is waiting for the script to finish before continuing with pane creation.
