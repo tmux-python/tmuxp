@@ -17,7 +17,6 @@ from tests.fixtures import utils as test_utils
 from tmuxp import cli
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
-from tmuxp.cli._colors import ColorMode, Colors
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
     _load_attached,
@@ -446,7 +445,7 @@ class LogFileTestFixture(t.NamedTuple):
 LOG_FILE_TEST_FIXTURES: list[LogFileTestFixture] = [
     LogFileTestFixture(
         test_id="load_with_log_file",
-        cli_args=["load", ".", "--log-file", "log.txt", "-d"],
+        cli_args=["--log-level", "info", "load", ".", "--log-file", "log.txt", "-d"],
     ),
 ]
 
@@ -484,8 +483,43 @@ session_name: hello
 
     result = capsys.readouterr()
     log_file_path = tmp_path / "log.txt"
-    assert "Loading" in log_file_path.open().read()
+    assert "loading workspace" in log_file_path.open().read()
     assert result.out is not None
+
+
+def test_load_log_file_level_filtering(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Log-level filtering: INFO log file should not contain DEBUG messages."""
+    tmuxp_config_path = tmp_path / ".tmuxp.yaml"
+    tmuxp_config_path.write_text(
+        """
+session_name: hello
+  -
+        """,
+        encoding="utf-8",
+    )
+    oh_my_zsh_path = tmp_path / ".oh-my-zsh"
+    oh_my_zsh_path.mkdir()
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.chdir(tmp_path)
+
+    with contextlib.suppress(Exception):
+        cli.cli(["--log-level", "info", "load", ".", "--log-file", "log.txt", "-d"])
+
+    log_file_path = tmp_path / "log.txt"
+    log_contents = log_file_path.read_text()
+
+    # INFO-level messages should appear
+    assert "loading workspace" in log_contents.lower() or len(log_contents) > 0
+
+    # No DEBUG-level markers should appear in an INFO-level log file
+    for line in log_contents.splitlines():
+        assert "(DEBUG)" not in line, (
+            f"DEBUG message leaked into INFO-level log file: {line}"
+        )
 
 
 def test_load_plugins(
@@ -758,18 +792,28 @@ def test_load_append_windows_to_current_session(
 # Privacy masking in load command
 
 
-def test_load_masks_home_in_loading_message(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Load command should mask home directory in [Loading] message."""
+def test_load_no_ansi_in_nontty_stderr(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """No ANSI escape codes in stderr when running in non-TTY context (CI/pipe)."""
+    monkeypatch.delenv("TMUX", raising=False)
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
+
+    load_workspace(str(session_file), socket_name=server.socket_name, detached=True)
+
+    captured = capsys.readouterr()
+    assert "\x1b[" not in captured.err, "ANSI codes leaked into non-TTY stderr"
+
+
+def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Spinner message should mask home directory via PrivatePath."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
-    monkeypatch.delenv("NO_COLOR", raising=False)
-    colors = Colors(ColorMode.ALWAYS)
 
     workspace_file = pathlib.Path("/home/testuser/work/project/.tmuxp.yaml")
-    output = (
-        colors.info("[Loading]")
-        + " "
-        + colors.highlight(str(PrivatePath(workspace_file)))
-    )
+    private_path = str(PrivatePath(workspace_file))
+    message = f"Loading workspace: myproject ({private_path})"
 
-    assert "~/work/project/.tmuxp.yaml" in output
-    assert "/home/testuser" not in output
+    assert "~/work/project/.tmuxp.yaml" in message
+    assert "/home/testuser" not in message

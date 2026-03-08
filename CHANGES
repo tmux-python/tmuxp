@@ -35,6 +35,26 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Bug fixes
+
+- Fix default CLI log level from INFO to WARNING so normal usage is not noisy (#1017)
+- Suppress raw Python tracebacks on workspace build failure; error details available via `--log-level debug` while the user sees only `[Error] <message>` (#1017)
+- Fix `get_pane()` to match sibling methods: widen catch to `Exception`, preserve exception chain via `from e`, replace bare `print()` with structured debug log (#1017)
+- Route `ls --json` and `debug-info --json` through `OutputFormatter` for consistent machine-readable output (#1017)
+
+### Development
+
+#### Structured logging with `extra` context across all modules (#1017)
+
+All modules now use `logging.getLogger(__name__)` with structured `extra` keys
+(`tmux_session`, `tmux_window`, `tmux_pane`, `tmux_config_path`, etc.) for
+filtering and aggregation. Library `__init__.py` adds `NullHandler` per Python
+best practices. A new `TmuxpLoggerAdapter` provides persistent context for
+objects with stable identity.
+
+- Remove `colorama` runtime and type-stub dependencies; replace with stdlib ANSI constants (#1017)
+- Route all raw `print()` calls through `tmuxp_echo()` for consistent output channels (#1017)
+
 ## tmuxp 1.65.0 (2026-03-08)
 
 ### Breaking Changes

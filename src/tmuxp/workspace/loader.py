@@ -101,6 +101,11 @@ def expand(
     -------
     dict
     """
+    logger.debug(
+        "expanding workspace config",
+        extra={"tmux_session": workspace_dict.get("session_name", "")},
+    )
+
     # Note: cli.py will expand workspaces relative to project's workspace directory
     # for the first cwd argument.
     cwd = pathlib.Path().cwd() if not cwd else pathlib.Path(cwd)
@@ -207,6 +212,11 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
+    logger.debug(
+        "trickling down workspace defaults",
+        extra={"tmux_session": workspace_dict.get("session_name", "")},
+    )
+
     # prepends a pane's ``shell_command`` list with the window and sessions'
     # ``shell_command_before``.
 

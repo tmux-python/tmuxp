@@ -181,9 +181,9 @@ def create_parser() -> argparse.ArgumentParser:
         "--log-level",
         action="store",
         metavar="log-level",
-        default="info",
+        default="warning",
         choices=["debug", "info", "warning", "error", "critical"],
-        help='log level (debug, info, warning, error, critical) (default "info")',
+        help='log level (debug, info, warning, error, critical) (default "warning")',
     )
     parser.add_argument(
         "--color",
@@ -297,7 +297,7 @@ def cli(_args: list[str] | None = None) -> None:
     parser = create_parser()
     args = parser.parse_args(_args, namespace=ns)
 
-    setup_logger(logger=logger, level=args.log_level.upper())
+    setup_logger(level=args.log_level.upper())
 
     if args.subparser_name is None:
         parser.print_help()

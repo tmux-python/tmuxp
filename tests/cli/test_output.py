@@ -221,6 +221,54 @@ def test_ndjson_workflow(capsys: pytest.CaptureFixture[str]) -> None:
     assert captured.out == ""
 
 
+def test_emit_object_json_writes_immediately(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """JSON mode emit_object should write indented JSON immediately."""
+    formatter = OutputFormatter(OutputMode.JSON)
+    formatter.emit_object({"status": "ok", "count": 3})
+
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert data == {"status": "ok", "count": 3}
+    # Indented output (indent=2)
+    assert "\n" in captured.out
+
+
+def test_emit_object_ndjson_writes_compact(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """NDJSON mode emit_object should write compact single-line JSON."""
+    formatter = OutputFormatter(OutputMode.NDJSON)
+    formatter.emit_object({"status": "ok", "count": 3})
+
+    captured = capsys.readouterr()
+    lines = captured.out.strip().split("\n")
+    assert len(lines) == 1
+    assert json.loads(lines[0]) == {"status": "ok", "count": 3}
+
+
+def test_emit_object_human_silent(capsys: pytest.CaptureFixture[str]) -> None:
+    """HUMAN mode emit_object should produce no output."""
+    formatter = OutputFormatter(OutputMode.HUMAN)
+    formatter.emit_object({"status": "ok"})
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+
+
+def test_emit_object_does_not_buffer() -> None:
+    """emit_object must not affect _json_buffer."""
+    formatter = OutputFormatter(OutputMode.JSON)
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        formatter.emit_object({"status": "ok"})
+    finally:
+        sys.stdout = old_stdout
+    assert formatter._json_buffer == []
+
+
 def test_human_workflow(capsys: pytest.CaptureFixture[str]) -> None:
     """Test complete HUMAN output workflow."""
     formatter = OutputFormatter(OutputMode.HUMAN)

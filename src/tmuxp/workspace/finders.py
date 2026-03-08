@@ -142,6 +142,12 @@ def find_local_workspace_files(
     if start_dir is None:
         start_dir = os.getcwd()
 
+    logger.debug(
+        "searching for local workspace files from %s",
+        start_dir,
+        extra={"tmux_config_path": str(start_dir)},
+    )
+
     current = pathlib.Path(start_dir).resolve()
     home = pathlib.Path.home().resolve()
     found: list[pathlib.Path] = []
@@ -361,12 +367,17 @@ def find_workspace_file(
             ]
 
             if len(candidates) > 1:
+                logger.warning(
+                    "multiple workspace files found, use distinct file names"
+                    " to avoid ambiguity",
+                    extra={"tmux_config_path": workspace_file},
+                )
                 colors = Colors(ColorMode.AUTO)
                 tmuxp_echo(
                     colors.error(
-                        "Multiple .tmuxp.{yml,yaml,json} workspace_files in "
-                        + dirname(workspace_file)
-                    ),
+                        "Multiple .tmuxp.{yaml,yml,json} files found in "
+                        + str(workspace_file)
+                    )
                 )
                 tmuxp_echo(
                     "This is undefined behavior, use only one. "
@@ -383,6 +394,11 @@ def find_workspace_file(
     if file_error:
         raise FileNotFoundError(file_error, workspace_file)
 
+    logger.debug(
+        "resolved workspace file %s",
+        workspace_file,
+        extra={"tmux_config_path": workspace_file},
+    )
     return workspace_file
 
 

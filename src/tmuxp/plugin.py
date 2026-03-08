@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 import libtmux
@@ -10,6 +11,8 @@ from libtmux.common import get_version
 
 from .__about__ import __version__
 from .exc import TmuxpPluginException
+
+logger = logging.getLogger(__name__)
 
 #: Minimum version of tmux required to run tmuxp
 TMUX_MIN_VERSION = "3.2"
@@ -181,6 +184,7 @@ class TmuxpPlugin:
 
     def _version_check(self) -> None:
         """Check all dependency versions for compatibility."""
+        logger.debug("checking version constraints for %s", self.plugin_name)
         for dep, constraints in self.version_constraints.items():
             assert isinstance(constraints, dict)
             try:
