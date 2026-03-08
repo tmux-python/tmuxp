@@ -123,6 +123,7 @@ def load_plugins(
                 module_name = ".".join(module_name[:-1])
                 plugin_name = plugin.split(".")[-1]
             except AttributeError as error:
+                logger.exception("plugin load failed")
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -139,12 +140,16 @@ def load_plugins(
                     default=True,
                     color_mode=colors.mode,
                 ):
+                    logger.warning(
+                        "plugin version constraint not met, user declined skip",
+                    )
                     tmuxp_echo(
                         colors.warning("[Not Skipping]")
                         + " Plugin versions constraint not met. Exiting...",
                     )
                     sys.exit(1)
             except (ImportError, AttributeError) as error:
+                logger.exception("plugin import failed")
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -178,7 +183,8 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
         plugin.reattach(builder.session)
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
-            print(colors.info(line) if colors else line)  # NOQA: T201 RUF100
+            tmuxp_echo(colors.info(line) if colors else line)
+            logger.debug("reattach display-message output: %s", line.strip())
 
     if "TMUX" in os.environ:
         builder.session.switch_client()
@@ -225,7 +231,8 @@ def _load_detached(builder: WorkspaceBuilder, colors: Colors | None = None) -> N
     assert builder.session is not None
 
     msg = "Session created in detached state."
-    print(colors.info(msg) if colors else msg)  # NOQA: T201 RUF100
+    tmuxp_echo(colors.info(msg) if colors else msg)
+    logger.info("session created in detached state")
 
 
 def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
@@ -347,10 +354,9 @@ def load_workspace(
     if isinstance(workspace_file, (str, os.PathLike)):
         workspace_file = pathlib.Path(workspace_file)
 
-    tmuxp_echo(
-        cli_colors.info("[Loading]")
-        + " "
-        + cli_colors.highlight(str(PrivatePath(workspace_file))),
+    logger.info(
+        "loading workspace",
+        extra={"tmux_config_path": str(workspace_file)},
     )
 
     # ConfigReader allows us to open a yaml or json file as a dict
@@ -378,13 +384,18 @@ def load_workspace(
 
     shutil.which("tmux")  # raise exception if tmux not found
 
-    try:  # load WorkspaceBuilder object for tmuxp workspace / tmux server
+    # WorkspaceBuilder creation — outside spinner so plugin prompts are safe
+    try:
         builder = WorkspaceBuilder(
             session_config=expanded_workspace,
             plugins=load_plugins(expanded_workspace, colors=cli_colors),
             server=t,
         )
     except exc.EmptyWorkspaceException:
+        logger.warning(
+            "workspace file is empty",
+            extra={"tmux_config_path": str(workspace_file)},
+        )
         tmuxp_echo(
             cli_colors.warning("[Warning]")
             + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
@@ -393,7 +404,7 @@ def load_workspace(
 
     session_name = expanded_workspace["session_name"]
 
-    # if the session already exists, prompt the user to attach
+    # Session-exists check — outside spinner so prompt_yes_no is safe
     if builder.session_exists(session_name) and not append:
         if not detached and (
             answer_yes
@@ -442,9 +453,7 @@ def load_workspace(
             _load_attached(builder, detached)
 
     except exc.TmuxpException as e:
-        import traceback
-
-        tmuxp_echo(traceback.format_exc())
+        logger.exception("workspace build failed")
         tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
 
         choice = prompt_choices(
@@ -459,6 +468,7 @@ def load_workspace(
             if builder.session is not None:
                 builder.session.kill()
                 tmuxp_echo(cli_colors.muted("Session killed."))
+                logger.info("session killed by user after build error")
         elif choice == "a":
             _reattach(builder, cli_colors)
         else:

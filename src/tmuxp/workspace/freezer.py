@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from libtmux.pane import Pane
@@ -64,6 +67,8 @@ def freeze(session: Session) -> dict[str, t.Any]:
     dict
         tmuxp compatible workspace
     """
+    logger.debug("freezing session", extra={"tmux_session": session.session_name})
+
     session_config: dict[str, t.Any] = {
         "session_name": session.session_name,
         "windows": [],
@@ -119,5 +124,12 @@ def freeze(session: Session) -> dict[str, t.Any]:
             window_config["panes"].append(pane_config)
 
         session_config["windows"].append(window_config)
+        logger.debug(
+            "frozen window",
+            extra={
+                "tmux_session": session.session_name,
+                "tmux_window": window.name,
+            },
+        )
 
     return session_config

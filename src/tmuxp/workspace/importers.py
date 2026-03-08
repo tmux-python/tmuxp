@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
+
+logger = logging.getLogger(__name__)
 
 
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
@@ -19,6 +22,14 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
+    logger.debug(
+        "importing tmuxinator workspace",
+        extra={
+            "tmux_session": workspace_dict.get("project_name")
+            or workspace_dict.get("name", ""),
+        },
+    )
+
     tmuxp_workspace: dict[str, t.Any] = {}
 
     if "project_name" in workspace_dict:
@@ -122,6 +133,12 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     - clear
     - cmd_separator
     """
+    _inner = workspace_dict.get("session", workspace_dict)
+    logger.debug(
+        "importing teamocil workspace",
+        extra={"tmux_session": _inner.get("name", "")},
+    )
+
     tmuxp_workspace: dict[str, t.Any] = {}
 
     if "session" in workspace_dict:

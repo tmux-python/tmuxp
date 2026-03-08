@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import locale
+import logging
 import os
 import pathlib
 import typing as t
@@ -13,7 +14,9 @@ from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
 from ._colors import Colors, build_description, get_color_mode
-from .utils import prompt_yes_no
+from .utils import prompt_yes_no, tmuxp_echo
+
+logger = logging.getLogger(__name__)
 
 CONVERT_DESCRIPTION = build_description(
     """
@@ -130,7 +133,7 @@ def command_convert(
             new_workspace,
             encoding=locale.getpreferredencoding(False),
         )
-        print(  # NOQA: T201 RUF100
+        tmuxp_echo(
             colors.success("New workspace file saved to ")
             + colors.info(str(PrivatePath(newfile)))
             + ".",
