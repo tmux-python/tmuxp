@@ -195,7 +195,6 @@ def get_pane(window: Window, current_pane: Pane | None = None) -> Pane:
     except Exception as e:
         logger.debug(
             "pane lookup failed",
-            exc_info=True,
             extra={"tmux_pane": str(current_pane) if current_pane else ""},
         )
         if current_pane:
