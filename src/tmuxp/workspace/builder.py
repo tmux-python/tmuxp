@@ -366,7 +366,14 @@ class WorkspaceBuilder:
                 )
                 run_before_script(self.session_config["before_script"], cwd=cwd)
             except Exception:
-                _log.error("before script failed")
+                _log.error(
+                    "before script failed",
+                    extra={
+                        "tmux_config_path": str(
+                            self.session_config["before_script"],
+                        ),
+                    },
+                )
                 self.session.kill()
                 raise
 
