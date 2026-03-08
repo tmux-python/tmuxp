@@ -63,6 +63,7 @@ def _wait_for_pane_ready(
         except Exception:
             logger.debug(
                 "pane refresh failed during readiness check",
+                exc_info=True,
                 extra={"tmux_pane": str(pane.pane_id)},
             )
             return False
