@@ -22,6 +22,65 @@ if t.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
+def _wait_for_pane_ready(
+    pane: Pane,
+    timeout: float = 2.0,
+    interval: float = 0.05,
+) -> bool:
+    """Wait for pane shell to draw its prompt.
+
+    Polls the pane's cursor position until it moves from origin (0, 0),
+    indicating the shell has finished initializing and drawn its prompt.
+
+    Parameters
+    ----------
+    pane : :class:`libtmux.Pane`
+        pane to wait for
+    timeout : float
+        maximum seconds to wait before giving up
+    interval : float
+        seconds between polling attempts
+
+    Returns
+    -------
+    bool
+        True if pane became ready, False on timeout or error
+
+    Examples
+    --------
+    >>> pane = session.active_window.active_pane
+
+    Wait for the shell to be ready:
+
+    >>> _wait_for_pane_ready(pane, timeout=2.0)
+    True
+    """
+    start = time.monotonic()
+    while time.monotonic() - start < timeout:
+        try:
+            pane.refresh()
+        except Exception:
+            logger.debug(
+                "pane refresh failed during readiness check",
+                extra={"tmux_pane": str(pane.pane_id)},
+            )
+            return False
+        if pane.cursor_x != "0" or pane.cursor_y != "0":
+            logger.debug(
+                "pane ready, cursor moved from origin",
+                extra={"tmux_pane": str(pane.pane_id)},
+            )
+            return True
+        time.sleep(interval)
+    logger.debug(
+        "pane readiness check timed out after %.1f seconds",
+        timeout,
+        extra={"tmux_pane": str(pane.pane_id)},
+    )
+    return False
+
+
 COLUMNS_FALLBACK = 80
 
 
@@ -323,9 +382,6 @@ class WorkspaceBuilder:
                 assert isinstance(pane, Pane)
                 pane = pane
 
-                if "layout" in window_config:
-                    window.select_layout(window_config["layout"])
-
                 if pane_config.get("focus"):
                     focus_pane = pane
 
@@ -506,6 +562,10 @@ class WorkspaceBuilder:
                 )
 
             assert isinstance(pane, Pane)
+
+            pane_shell = pane_config.get("shell", window_config.get("window_shell"))
+            if pane_shell is None:
+                _wait_for_pane_ready(pane)
 
             if "layout" in window_config:
                 window.select_layout(window_config["layout"])

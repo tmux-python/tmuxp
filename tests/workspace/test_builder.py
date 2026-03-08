@@ -24,8 +24,8 @@ from tests.fixtures import utils as test_utils
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
-from tmuxp.workspace import loader
-from tmuxp.workspace.builder import WorkspaceBuilder
+from tmuxp.workspace import builder as builder_module, loader
+from tmuxp.workspace.builder import WorkspaceBuilder, _wait_for_pane_ready
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
@@ -1513,3 +1513,157 @@ def test_issue_800_default_size_many_windows(
 
     builder.build()
     assert len(server.sessions) == 1
+
+
+def test_wait_for_pane_ready_returns_true(session: Session) -> None:
+    """Verify _wait_for_pane_ready detects shell prompt."""
+    pane = session.active_window.active_pane
+    assert pane is not None
+    result = _wait_for_pane_ready(pane, timeout=2.0)
+    assert result is True
+
+
+def test_wait_for_pane_ready_timeout(session: Session) -> None:
+    """Verify _wait_for_pane_ready returns False on timeout for non-shell."""
+    window = session.active_window
+    assert window.active_pane is not None
+    new_pane = window.active_pane.split(shell="sleep 999")
+    assert new_pane is not None
+    result = _wait_for_pane_ready(new_pane, timeout=0.2)
+    assert result is False
+
+
+class PaneReadinessFixture(t.NamedTuple):
+    """Test fixture for pane readiness call count verification."""
+
+    test_id: str
+    yaml: str
+    expected_wait_count: int
+
+
+PANE_READINESS_FIXTURES: list[PaneReadinessFixture] = [
+    PaneReadinessFixture(
+        test_id="waits_for_pane_with_commands",
+        yaml=textwrap.dedent(
+            """\
+session_name: readiness-test
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo hello
+  - shell_command:
+    - cmd: echo world
+""",
+        ),
+        expected_wait_count=2,
+    ),
+    PaneReadinessFixture(
+        test_id="waits_for_pane_without_commands",
+        yaml=textwrap.dedent(
+            """\
+session_name: readiness-test
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo hello
+  - shell_command: []
+""",
+        ),
+        expected_wait_count=2,
+    ),
+    PaneReadinessFixture(
+        test_id="skips_pane_with_custom_shell",
+        yaml=textwrap.dedent(
+            """\
+session_name: readiness-test
+windows:
+- panes:
+  - shell_command:
+    - cmd: echo hello
+  - shell: sleep 999
+    shell_command:
+    - cmd: echo world
+""",
+        ),
+        expected_wait_count=1,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PaneReadinessFixture._fields),
+    PANE_READINESS_FIXTURES,
+    ids=[t.test_id for t in PANE_READINESS_FIXTURES],
+)
+def test_pane_readiness_call_count(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    yaml: str,
+    expected_wait_count: int,
+) -> None:
+    """Verify _wait_for_pane_ready is called only for appropriate panes."""
+    call_count = 0
+    original = builder_module._wait_for_pane_ready
+
+    def counting_wait(
+        pane: Pane,
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> bool:
+        nonlocal call_count
+        call_count += 1
+        return original(pane, timeout=timeout, interval=interval)
+
+    monkeypatch.setattr(builder_module, "_wait_for_pane_ready", counting_wait)
+
+    yaml_workspace = tmp_path / "readiness.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+    assert call_count == expected_wait_count
+
+
+def test_select_layout_not_called_after_yield(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify select_layout is called once per pane, not duplicated in build()."""
+    call_count = 0
+    original_select_layout = Window.select_layout
+
+    def counting_layout(self: Window, layout: str | None = None) -> Window:
+        nonlocal call_count
+        call_count += 1
+        return original_select_layout(self, layout)
+
+    monkeypatch.setattr(Window, "select_layout", counting_layout)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: layout-test
+windows:
+- layout: main-vertical
+  panes:
+  - shell_command: []
+  - shell_command: []
+  - shell_command: []
+""",
+    )
+
+    yaml_workspace = tmp_path / "layout.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+    # 3 panes = 3 layout calls (one per pane in iter_create_panes), not 6
+    assert call_count == 3
