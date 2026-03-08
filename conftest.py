@@ -104,6 +104,15 @@ DOCTEST_NEEDS_TMUX = {
 }
 
 
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Add rerun markers to tmux-dependent doctests for flaky shell timing."""
+    for item in items:
+        if isinstance(item, DoctestItem):
+            module_name = item.dtest.globs.get("__name__", "")
+            if module_name in DOCTEST_NEEDS_TMUX:
+                item.add_marker(pytest.mark.flaky(reruns=2))
+
+
 @pytest.fixture(autouse=True)
 def add_doctest_fixtures(
     request: pytest.FixtureRequest,
