@@ -184,7 +184,10 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
         proc = builder.session.cmd("display-message", "-p", "'#S'")
         for line in proc.stdout:
             tmuxp_echo(colors.info(line) if colors else line)
-            logger.debug("reattach display-message output: %s", line.strip())
+            logger.debug(
+                "reattach display-message output",
+                extra={"tmux_stdout": [line.strip()]},
+            )
 
     if "TMUX" in os.environ:
         builder.session.switch_client()
