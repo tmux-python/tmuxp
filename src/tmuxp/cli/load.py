@@ -358,6 +358,11 @@ def load_workspace(
         "loading workspace",
         extra={"tmux_config_path": str(workspace_file)},
     )
+    tmuxp_echo(
+        cli_colors.info("[Loading]")
+        + " "
+        + cli_colors.highlight(str(PrivatePath(workspace_file))),
+    )
 
     # ConfigReader allows us to open a yaml or json file as a dict
     raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
