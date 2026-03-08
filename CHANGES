@@ -35,6 +35,22 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Animated progress spinner for `tmuxp load` (#1020)
+
+The `load` command now shows an animated spinner with real-time build progress
+as windows and panes are created. Five built-in presets control the display
+format (`default`, `minimal`, `window`, `pane`, `verbose`), and custom format
+strings are supported via `--progress-format` or `TMUXP_PROGRESS_FORMAT`.
+
+- `--progress-lines N` / `TMUXP_PROGRESS_LINES`: Control how many lines of
+  `before_script` output appear in the spinner panel (default: 3). Use `0` to
+  hide the panel, `-1` for unlimited (capped to terminal height).
+- `--no-progress` / `TMUXP_PROGRESS=0`: Disable the spinner entirely.
+- During `before_script` execution, the progress bar shows a marching animation
+  and ⏸ icon.
+
 ## tmuxp 1.66.0 (2026-03-08)
 
 ### Bug fixes
