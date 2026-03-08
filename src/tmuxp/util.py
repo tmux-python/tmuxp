@@ -28,8 +28,12 @@ PY2 = sys.version_info[0] == 2
 def run_before_script(
     script_file: str | pathlib.Path,
     cwd: pathlib.Path | None = None,
+    on_line: t.Callable[[str], None] | None = None,
 ) -> int:
-    """Execute shell script, ``tee``-ing output to both terminal (if TTY) and buffer."""
+    """Execute shell script, streaming output to callback or terminal (if TTY).
+
+    Output is buffered and optionally forwarded via the ``on_line`` callback.
+    """
     script_cmd = shlex.split(str(script_file))
 
     try:
@@ -68,13 +72,17 @@ def run_before_script(
 
         if line_out and line_out.strip():
             out_buffer.append(line_out)
-            if is_out_tty:
+            if on_line is not None:
+                on_line(line_out)
+            elif is_out_tty:
                 sys.stdout.write(line_out)
                 sys.stdout.flush()
 
         if line_err and line_err.strip():
             err_buffer.append(line_err)
-            if is_err_tty:
+            if on_line is not None:
+                on_line(line_err)
+            elif is_err_tty:
                 sys.stderr.write(line_err)
                 sys.stderr.flush()
 
