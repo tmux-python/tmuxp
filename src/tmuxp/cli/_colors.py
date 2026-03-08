@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 
 from tmuxp._internal.colors import (
+    ANSI_SEQ_RE,
     ColorMode,
     Colors,
     UnknownStyleColor,
@@ -25,6 +26,7 @@ from tmuxp._internal.colors import (
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "ANSI_SEQ_RE",
     "ColorMode",
     "Colors",
     "UnknownStyleColor",

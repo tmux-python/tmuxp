@@ -610,6 +610,7 @@ def get_color_mode(color_arg: str | None = None) -> ColorMode:
 # ANSI styling utilities (originally from click, via utils.py)
 
 _ansi_re = re.compile(r"\033\[[;?0-9]*[a-zA-Z]")
+ANSI_SEQ_RE = _ansi_re
 
 
 def strip_ansi(value: str) -> str:
