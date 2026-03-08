@@ -11,7 +11,22 @@ PYPATCH = sys.version_info[2]
 
 
 def _identity(x: object) -> object:
-    """Return *x* unchanged — used as a no-op decorator."""
+    """Return *x* unchanged — used as a no-op decorator.
+
+    Examples
+    --------
+    >>> from tmuxp._compat import _identity
+
+    Strings pass through unchanged:
+
+    >>> _identity("hello")
+    'hello'
+
+    Integers pass through unchanged:
+
+    >>> _identity(42)
+    42
+    """
     return x
 
 
