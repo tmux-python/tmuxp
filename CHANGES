@@ -35,6 +35,14 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Breaking Changes
+
+#### **libtmux** minimum bumped from `~=0.53.0` to `~=0.55.0` (#1019)
+
+  Picks up three releases: 0.53.1 (race condition fix in `new_session()`),
+  0.54.0 (structured lifecycle logging, error propagation fixes), and
+  0.55.0 (`Pane.set_title()`, `Server(tmux_bin=)`, pre-execution DEBUG logging).
+
 ## tmuxp 1.64.1 (2026-03-08)
 
 ### Bug fixes
