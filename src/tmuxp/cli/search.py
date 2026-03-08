@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import pathlib
 import re
 import typing as t
@@ -38,6 +39,8 @@ from tmuxp.workspace.finders import find_local_workspace_files, get_workspace_di
 
 from ._colors import Colors, build_description, get_color_mode
 from ._output import OutputFormatter, get_output_mode
+
+logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from typing import TypeAlias

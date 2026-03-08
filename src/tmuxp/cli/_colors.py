@@ -9,6 +9,8 @@ for backward compatibility with existing imports.
 
 from __future__ import annotations
 
+import logging
+
 from tmuxp._internal.colors import (
     ColorMode,
     Colors,
@@ -19,6 +21,8 @@ from tmuxp._internal.colors import (
     style,
     unstyle,
 )
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "ColorMode",

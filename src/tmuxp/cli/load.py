@@ -23,6 +23,8 @@ from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 from ._colors import ColorMode, Colors, build_description, get_color_mode
 from .utils import prompt_choices, prompt_yes_no, tmuxp_echo
 
+logger = logging.getLogger(__name__)
+
 LOAD_DESCRIPTION = build_description(
     """
     Load tmuxp workspace file(s) and create or attach to a tmux session.
@@ -74,6 +76,7 @@ class CLILoadNamespace(argparse.Namespace):
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
+    log_level: str
 
 
 def load_plugins(
@@ -590,12 +593,7 @@ def command_load(
     cli_colors = Colors(get_color_mode(args.color))
 
     if args.log_file:
-        logfile_handler = logging.FileHandler(args.log_file)
-        logfile_handler.setFormatter(log.LogFormatter())
-        # Add handler to tmuxp root logger to capture all tmuxp log messages
-        tmuxp_logger = logging.getLogger("tmuxp")
-        tmuxp_logger.setLevel(logging.INFO)  # Ensure logger level allows INFO
-        tmuxp_logger.addHandler(logfile_handler)
+        log.setup_log_file(args.log_file, args.log_level)
 
     if args.workspace_files is None or len(args.workspace_files) == 0:
         tmuxp_echo(cli_colors.error("Enter at least one config"))

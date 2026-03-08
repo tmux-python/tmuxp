@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import logging
+import sys
 import time
 import typing as t
 
 from colorama import Fore, Style
 
-from tmuxp._internal.colors import unstyle
+logger = logging.getLogger(__name__)
 
 LEVEL_COLORS = {
     "DEBUG": Fore.BLUE,  # Blue
@@ -19,14 +20,23 @@ LEVEL_COLORS = {
     "CRITICAL": Fore.RED,
 }
 
-LOG_LEVELS = {
-    "CRITICAL": 50,
-    "ERROR": 40,
-    "WARNING": 30,
-    "INFO": 20,
-    "DEBUG": 10,
-    "NOTSET": 0,
-}
+
+class TmuxpLoggerAdapter(logging.LoggerAdapter):  # type: ignore[type-arg]
+    """LoggerAdapter that merges extra dictionary on Python < 3.13.
+
+    Follows the portable pattern to avoid repeating the same `extra` on every call
+    while preserving the ability to add per-call `extra` kwargs.
+    """
+
+    def process(
+        self, msg: t.Any, kwargs: t.MutableMapping[str, t.Any]
+    ) -> tuple[t.Any, t.MutableMapping[str, t.Any]]:
+        """Merge extra dictionary on Python < 3.13."""
+        extra = dict(self.extra) if self.extra else {}
+        if "extra" in kwargs:
+            extra.update(kwargs["extra"])
+        kwargs["extra"] = extra
+        return msg, kwargs
 
 
 def setup_logger(
@@ -43,10 +53,17 @@ def setup_logger(
         logger instance for tmuxp
     """
     if not logger:  # if no logger exists, make one
-        logger = logging.getLogger()
+        logger = logging.getLogger("tmuxp")
 
-    if not logger.handlers:  # setup logger handlers
-        logger.setLevel(level)
+    has_handlers = any(not isinstance(h, logging.NullHandler) for h in logger.handlers)
+
+    if not has_handlers:  # setup logger handlers
+        channel = logging.StreamHandler()
+        formatter = DebugLogFormatter() if level == "DEBUG" else LogFormatter()
+        channel.setFormatter(formatter)
+        logger.addHandler(channel)
+
+    logger.setLevel(level)
 
 
 def set_style(
@@ -126,7 +143,7 @@ class LogFormatter(logging.Formatter):
         except Exception as e:
             record.message = f"Bad message ({e!r}): {record.__dict__!r}"
 
-        date_format = "%H:%m:%S"
+        date_format = "%H:%M:%S"
         formatting = self.converter(record.created)
         record.asctime = time.strftime(date_format, formatting)
 
@@ -204,42 +221,61 @@ class DebugLogFormatter(LogFormatter):
     template = debug_log_template
 
 
-# Use tmuxp root logger so messages propagate to CLI handlers
-_echo_logger = logging.getLogger("tmuxp")
+def setup_log_file(log_file: str, level: str = "INFO") -> None:
+    """Attach a file handler to the tmuxp logger.
+
+    Parameters
+    ----------
+    log_file : str
+        Path to the log file.
+    level : str
+        Log level name (e.g. "DEBUG", "INFO"). Selects formatter and sets
+        handler filtering level.
+
+    Examples
+    --------
+    >>> import tempfile, os, logging
+    >>> f = tempfile.NamedTemporaryFile(suffix=".log", delete=False)
+    >>> f.close()
+    >>> setup_log_file(f.name, level="INFO")
+    >>> tmuxp_logger = logging.getLogger("tmuxp")
+    >>> tmuxp_logger.handlers = [
+    ...     h for h in tmuxp_logger.handlers if not isinstance(h, logging.FileHandler)
+    ... ]
+    >>> os.unlink(f.name)
+    """
+    handler = logging.FileHandler(log_file)
+    formatter = DebugLogFormatter() if level.upper() == "DEBUG" else LogFormatter()
+    handler.setFormatter(formatter)
+    handler_level = getattr(logging, level.upper())
+    handler.setLevel(handler_level)
+    tmuxp_logger = logging.getLogger("tmuxp")
+    tmuxp_logger.addHandler(handler)
+    if tmuxp_logger.level == logging.NOTSET or tmuxp_logger.level > handler_level:
+        tmuxp_logger.setLevel(handler_level)
 
 
 def tmuxp_echo(
     message: str | None = None,
-    log_level: str = "INFO",
-    style_log: bool = False,
+    file: t.TextIO | None = None,
 ) -> None:
-    """Combine logging.log and print for CLI output.
+    """Print user-facing CLI output.
 
     Parameters
     ----------
     message : str | None
-        Message to log and print. If None, does nothing.
-    log_level : str
-        Log level to use (DEBUG, INFO, WARNING, ERROR, CRITICAL).
-        Default is INFO.
-    style_log : bool
-        If True, preserve ANSI styling in log output.
-        If False, strip ANSI codes from log output. Default is False.
+        Message to print. If None, does nothing.
+    file : t.TextIO | None
+        Output stream. Defaults to sys.stdout.
 
     Examples
     --------
-    >>> tmuxp_echo("Session loaded")  # doctest: +ELLIPSIS
+    >>> tmuxp_echo("Session loaded")
     Session loaded
 
-    >>> tmuxp_echo("Warning message", log_level="WARNING")  # doctest: +ELLIPSIS
+    >>> tmuxp_echo("Warning message")
     Warning message
     """
     if message is None:
         return
-
-    if style_log:
-        _echo_logger.log(LOG_LEVELS[log_level], message)
-    else:
-        _echo_logger.log(LOG_LEVELS[log_level], unstyle(message))
-
-    print(message)
+    print(message, file=file or sys.stdout)

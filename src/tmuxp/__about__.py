@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 __title__ = "tmuxp"
 __package_name__ = "tmuxp"
 __version__ = "1.65.0"
