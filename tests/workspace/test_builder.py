@@ -1587,6 +1587,20 @@ windows:
         ),
         expected_wait_count=1,
     ),
+    PaneReadinessFixture(
+        test_id="skips_all_panes_with_window_shell",
+        yaml=textwrap.dedent(
+            """\
+session_name: readiness-test
+windows:
+- window_shell: top
+  panes:
+  - shell_command: []
+  - shell_command: []
+""",
+        ),
+        expected_wait_count=0,
+    ),
 ]
 
 
