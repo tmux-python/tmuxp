@@ -35,6 +35,16 @@ $ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Bug fixes
+
+#### Fix `%` character appearing in panes on workspace load (#1018)
+
+Fixed long-standing issue ([#365]) where zsh panes displayed an inverse `%` marker after
+loading a workspace. WorkspaceBuilder now waits for each pane's shell to be ready before
+applying layout or sending commands.
+
+[#365]: https://github.com/tmux-python/tmuxp/issues/365
+
 ### Documentation
 
 #### Linkable CLI arguments and options (#1010)
