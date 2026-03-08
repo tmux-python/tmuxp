@@ -123,7 +123,7 @@ def load_plugins(
                 module_name = ".".join(module_name[:-1])
                 plugin_name = plugin.split(".")[-1]
             except AttributeError as error:
-                logger.exception("plugin load failed")
+                logger.debug("plugin load failed", exc_info=True)
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -149,7 +149,7 @@ def load_plugins(
                     )
                     sys.exit(1)
             except (ImportError, AttributeError) as error:
-                logger.exception("plugin import failed")
+                logger.debug("plugin import failed", exc_info=True)
                 tmuxp_echo(
                     colors.error("[Plugin Error]")
                     + f" Couldn't load {plugin}\n"
@@ -453,7 +453,7 @@ def load_workspace(
             _load_attached(builder, detached)
 
     except exc.TmuxpException as e:
-        logger.exception("workspace build failed")
+        logger.debug("workspace build failed", exc_info=True)
         tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
 
         choice = prompt_choices(
