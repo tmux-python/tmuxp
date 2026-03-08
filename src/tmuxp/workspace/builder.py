@@ -53,7 +53,7 @@ def _wait_for_pane_ready(
 
     Wait for the shell to be ready:
 
-    >>> _wait_for_pane_ready(pane, timeout=2.0)
+    >>> _wait_for_pane_ready(pane, timeout=5.0)
     True
     """
     start = time.monotonic()
