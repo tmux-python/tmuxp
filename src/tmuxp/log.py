@@ -30,6 +30,20 @@ class TmuxpLoggerAdapter(logging.LoggerAdapter):  # type: ignore[type-arg]
 
     Follows the portable pattern to avoid repeating the same `extra` on every call
     while preserving the ability to add per-call `extra` kwargs.
+
+    Examples
+    --------
+    >>> adapter = TmuxpLoggerAdapter(
+    ...     logging.getLogger("test"),
+    ...     {"tmux_session": "my-session"},
+    ... )
+    >>> msg, kwargs = adapter.process("hello %s", {"extra": {"tmux_window": "editor"}})
+    >>> msg
+    'hello %s'
+    >>> kwargs["extra"]["tmux_session"]
+    'my-session'
+    >>> kwargs["extra"]["tmux_window"]
+    'editor'
     """
 
     def process(
