@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing as t
 
 import pytest
@@ -60,3 +61,18 @@ def test_config_to_dict(
     assert importers.import_tmuxinator(tmuxinator_dict) == tmuxp_dict
 
     validation.validate_schema(importers.import_tmuxinator(tmuxinator_dict))
+
+
+def test_import_tmuxinator_logs_debug(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """import_tmuxinator() logs DEBUG record."""
+    workspace = {
+        "name": "test",
+        "windows": [{"main": ["echo hi"]}],
+    }
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    records = [r for r in caplog.records if r.msg == "importing tmuxinator workspace"]
+    assert len(records) >= 1
+    assert getattr(records[0], "tmux_session", None) == "test"

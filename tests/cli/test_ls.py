@@ -161,6 +161,7 @@ def test_ls_json_output(
         cli.cli(["ls", "--json"])
 
     output = capsys.readouterr().out
+    assert "\x1b" not in output, "ANSI escapes must not leak into machine output"
     data = json.loads(output)
 
     # JSON output is now an object with workspaces and global_workspace_dirs
@@ -200,6 +201,7 @@ def test_ls_ndjson_output(
         cli.cli(["ls", "--ndjson"])
 
     output = capsys.readouterr().out
+    assert "\x1b" not in output, "ANSI escapes must not leak into machine output"
     lines = [line for line in output.strip().split("\n") if line]
 
     assert len(lines) == 2
