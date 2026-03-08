@@ -43,6 +43,12 @@ _Notes on the upcoming release will go here._
   0.54.0 (structured lifecycle logging, error propagation fixes), and
   0.55.0 (`Pane.set_title()`, `Server(tmux_bin=)`, pre-execution DEBUG logging).
 
+## tmuxp 1.64.2 (2026-03-08)
+
+### Packaging
+
+- Fix `__about__.__version__` not updated in 1.64.1 release
+
 ## tmuxp 1.64.1 (2026-03-08)
 
 ### Bug fixes
