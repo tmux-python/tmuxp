@@ -582,7 +582,7 @@ def test_load_plugins_version_fail_skip(
 
     result = capsys.readouterr()
 
-    assert "Loading" in result.out or "Loaded" in result.out
+    assert "[Loading]" in result.out
 
 
 PLUGIN_VERSION_NO_SKIP_TEST_FIXTURES: list[PluginVersionTestFixture] = [
