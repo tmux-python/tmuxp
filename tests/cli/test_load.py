@@ -807,6 +807,86 @@ def test_load_no_ansi_in_nontty_stderr(
     assert "\x1b[" not in captured.err, "ANSI codes leaked into non-TTY stderr"
 
 
+class ProgressDisableFixture(t.NamedTuple):
+    """Test fixture for progress disable logic."""
+
+    test_id: str
+    env_value: str | None
+    no_progress_flag: bool
+    expected_disabled: bool
+
+
+PROGRESS_DISABLE_FIXTURES: list[ProgressDisableFixture] = [
+    ProgressDisableFixture("default_enabled", None, False, False),
+    ProgressDisableFixture("env_disabled", "0", False, True),
+    ProgressDisableFixture("flag_disabled", None, True, True),
+    ProgressDisableFixture("env_enabled_explicit", "1", False, False),
+    ProgressDisableFixture("flag_overrides_env", "1", True, True),
+]
+
+
+@pytest.mark.parametrize(
+    list(ProgressDisableFixture._fields),
+    PROGRESS_DISABLE_FIXTURES,
+    ids=[f.test_id for f in PROGRESS_DISABLE_FIXTURES],
+)
+def test_progress_disable_logic(
+    test_id: str,
+    env_value: str | None,
+    no_progress_flag: bool,
+    expected_disabled: bool,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Progress disable expression matches expected behavior."""
+    if env_value is not None:
+        monkeypatch.setenv("TMUXP_PROGRESS", env_value)
+    else:
+        monkeypatch.delenv("TMUXP_PROGRESS", raising=False)
+
+    import os
+
+    result = no_progress_flag or os.getenv("TMUXP_PROGRESS", "1") == "0"
+    assert result is expected_disabled
+
+
+def test_load_workspace_no_progress(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace with no_progress=True creates session without spinner."""
+    monkeypatch.delenv("TMUX", raising=False)
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
+
+    session = load_workspace(
+        session_file,
+        socket_name=server.socket_name,
+        detached=True,
+        no_progress=True,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "sample workspace"
+
+
+def test_load_workspace_env_progress_disabled(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace with TMUXP_PROGRESS=0 creates session without spinner."""
+    monkeypatch.delenv("TMUX", raising=False)
+    monkeypatch.setenv("TMUXP_PROGRESS", "0")
+    session_file = FIXTURE_PATH / "workspace/builder" / "two_pane.yaml"
+
+    session = load_workspace(
+        session_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "sample workspace"
+
+
 def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:
     """Spinner message should mask home directory via PrivatePath."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))

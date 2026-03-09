@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import importlib
 import logging
 import os
@@ -21,9 +22,40 @@ from tmuxp.workspace.builder import WorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
 from ._colors import ColorMode, Colors, build_description, get_color_mode
+from ._progress import (
+    DEFAULT_OUTPUT_LINES,
+    SUCCESS_TEMPLATE,
+    Spinner,
+    _SafeFormatMap,
+    resolve_progress_format,
+)
 from .utils import prompt_choices, prompt_yes_no, tmuxp_echo
 
 logger = logging.getLogger(__name__)
+
+
+@contextlib.contextmanager
+def _silence_stream_handlers(logger_name: str = "tmuxp") -> t.Iterator[None]:
+    """Temporarily raise StreamHandler level to WARNING while spinner is active.
+
+    INFO/DEBUG log records are diagnostics for aggregators, not user-facing output;
+    the spinner is the user-facing progress channel. Restores original levels on exit.
+    """
+    _log = logging.getLogger(logger_name)
+    saved: list[tuple[logging.StreamHandler[t.Any], int]] = [
+        (h, h.level)
+        for h in _log.handlers
+        if isinstance(h, logging.StreamHandler)
+        and not isinstance(h, logging.FileHandler)
+    ]
+    for h, _ in saved:
+        h.setLevel(logging.WARNING)
+    try:
+        yield
+    finally:
+        for h, level in saved:
+            h.setLevel(level)
+
 
 LOAD_DESCRIPTION = build_description(
     """
@@ -77,6 +109,9 @@ class CLILoadNamespace(argparse.Namespace):
     color: CLIColorModeLiteral
     log_file: str | None
     log_level: str
+    progress_format: str | None
+    panel_lines: int | None
+    no_progress: bool
 
 
 def load_plugins(
@@ -196,7 +231,11 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
         builder.session.attach()
 
 
-def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
+def _load_attached(
+    builder: WorkspaceBuilder,
+    detached: bool,
+    pre_attach_hook: t.Callable[[], None] | None = None,
+) -> None:
     """
     Load workspace in new session.
 
@@ -204,9 +243,15 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
     detached : bool
+    pre_attach_hook : callable, optional
+        called after build, before attach/switch_client; use to stop the spinner
+        so its cleanup sequences don't appear inside the tmux pane.
     """
     builder.build()
     assert builder.session is not None
+
+    if pre_attach_hook is not None:
+        pre_attach_hook()
 
     if "TMUX" in os.environ:  # tmuxp ran from inside tmux
         # unset TMUX, save it, e.g. '/tmp/tmux-1000/default,30668,0'
@@ -219,7 +264,11 @@ def _load_attached(builder: WorkspaceBuilder, detached: bool) -> None:
         builder.session.attach()
 
 
-def _load_detached(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
+def _load_detached(
+    builder: WorkspaceBuilder,
+    colors: Colors | None = None,
+    pre_output_hook: t.Callable[[], None] | None = None,
+) -> None:
     """
     Load workspace in new session but don't attach.
 
@@ -228,10 +277,15 @@ def _load_detached(builder: WorkspaceBuilder, colors: Colors | None = None) -> N
     builder: :class:`workspace.builder.WorkspaceBuilder`
     colors : Colors | None
         Optional Colors instance for styled output.
+    pre_output_hook : Callable | None
+        Called after build but before printing, e.g. to stop a spinner.
     """
     builder.build()
 
     assert builder.session is not None
+
+    if pre_output_hook is not None:
+        pre_output_hook()
 
     msg = "Session created in detached state."
     tmuxp_echo(colors.info(msg) if colors else msg)
@@ -265,6 +319,123 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     return builder.session
 
 
+def _dispatch_build(
+    builder: WorkspaceBuilder,
+    detached: bool,
+    append: bool,
+    answer_yes: bool,
+    cli_colors: Colors,
+    pre_attach_hook: t.Callable[[], None] | None = None,
+    on_error_hook: t.Callable[[], None] | None = None,
+    pre_prompt_hook: t.Callable[[], None] | None = None,
+) -> Session | None:
+    """Dispatch the build to the correct load path and handle errors.
+
+    Handles the detached/attached/append switching logic and the
+    ``TmuxpException`` error-recovery prompt.  Extracted so the
+    spinner-enabled and spinner-disabled paths share one implementation.
+
+    Parameters
+    ----------
+    builder : WorkspaceBuilder
+        Configured workspace builder.
+    detached : bool
+        Load session in detached state.
+    append : bool
+        Append windows to the current session.
+    answer_yes : bool
+        Skip interactive prompts.
+    cli_colors : Colors
+        Colors instance for styled output.
+    pre_attach_hook : callable, optional
+        Called before attach/switch_client (e.g. stop spinner).
+    on_error_hook : callable, optional
+        Called before showing the error-recovery prompt (e.g. stop spinner).
+    pre_prompt_hook : callable, optional
+        Called before any interactive prompt (e.g. stop spinner so ANSI
+        escape sequences don't garble the terminal during user input).
+
+    Returns
+    -------
+    Session | None
+        The built session, or ``None`` if the user killed it on error.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _dispatch_build
+    >>> callable(_dispatch_build)
+    True
+    """
+    try:
+        if detached:
+            _load_detached(builder, cli_colors, pre_output_hook=pre_attach_hook)
+            return _setup_plugins(builder)
+
+        if append:
+            if "TMUX" in os.environ:  # tmuxp ran from inside tmux
+                _load_append_windows_to_current_session(builder)
+            else:
+                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+
+            return _setup_plugins(builder)
+
+        # append and answer_yes have no meaning if specified together
+        if answer_yes:
+            _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+            return _setup_plugins(builder)
+
+        if "TMUX" in os.environ:  # tmuxp ran from inside tmux
+            if pre_prompt_hook is not None:
+                pre_prompt_hook()
+            msg = (
+                "Already inside TMUX, switch to session? yes/no\n"
+                "Or (a)ppend windows in the current active session?\n[y/n/a]"
+            )
+            options = ["y", "n", "a"]
+            choice = prompt_choices(msg, choices=options, color_mode=cli_colors.mode)
+
+            if choice == "y":
+                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+            elif choice == "a":
+                _load_append_windows_to_current_session(builder)
+            else:
+                _load_detached(builder, cli_colors)
+        else:
+            _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+
+    except exc.TmuxpException as e:
+        if on_error_hook is not None:
+            on_error_hook()
+        logger.debug("workspace build failed", exc_info=True)
+        tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
+
+        choice = prompt_choices(
+            cli_colors.error("Error loading workspace.")
+            + " (k)ill, (a)ttach, (d)etach?",
+            choices=["k", "a", "d"],
+            default="k",
+            color_mode=cli_colors.mode,
+        )
+
+        if choice == "k":
+            if builder.session is not None:
+                builder.session.kill()
+                tmuxp_echo(cli_colors.muted("Session killed."))
+                logger.info("session killed by user after build error")
+        elif choice == "a":
+            _reattach(builder, cli_colors)
+        else:
+            sys.exit()
+        return None
+    finally:
+        builder.on_progress = None
+        builder.on_before_script = None
+        builder.on_script_output = None
+        builder.on_build_event = None
+
+    return _setup_plugins(builder)
+
+
 def load_workspace(
     workspace_file: StrPath,
     socket_name: str | None = None,
@@ -276,6 +447,9 @@ def load_workspace(
     answer_yes: bool = False,
     append: bool = False,
     cli_colors: Colors | None = None,
+    progress_format: str | None = None,
+    panel_lines: int | None = None,
+    no_progress: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -301,6 +475,15 @@ def load_workspace(
        Default False.
     cli_colors : Colors, optional
         Colors instance for CLI output formatting. If None, uses AUTO mode.
+    progress_format : str, optional
+        Spinner format preset name or custom format string with tokens.
+    panel_lines : int, optional
+        Number of script-output lines shown in the spinner panel.
+        Defaults to the :class:`~tmuxp.cli._progress.Spinner` default (3).
+        Override via ``TMUXP_PROGRESS_LINES`` environment variable.
+    no_progress : bool
+        Disable the progress spinner entirely. Default False.
+        Also disabled when ``TMUXP_PROGRESS=0``.
 
     Notes
     -----
@@ -361,11 +544,13 @@ def load_workspace(
         "loading workspace",
         extra={"tmux_config_path": str(workspace_file)},
     )
-    tmuxp_echo(
-        cli_colors.info("[Loading]")
-        + " "
-        + cli_colors.highlight(str(PrivatePath(workspace_file))),
-    )
+    _progress_disabled = no_progress or os.getenv("TMUXP_PROGRESS", "1") == "0"
+    if _progress_disabled:
+        tmuxp_echo(
+            cli_colors.info("[Loading]")
+            + " "
+            + cli_colors.highlight(str(PrivatePath(workspace_file))),
+        )
 
     # ConfigReader allows us to open a yaml or json file as a dict
     raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
@@ -425,64 +610,96 @@ def load_workspace(
             _reattach(builder, cli_colors)
         return None
 
-    try:
-        if detached:
-            _load_detached(builder, cli_colors)
-            return _setup_plugins(builder)
-
-        if append:
-            if "TMUX" in os.environ:  # tmuxp ran from inside tmux
-                _load_append_windows_to_current_session(builder)
-            else:
-                _load_attached(builder, detached)
-
-            return _setup_plugins(builder)
-
-        # append and answer_yes have no meaning if specified together
-        if answer_yes:
-            _load_attached(builder, detached)
-            return _setup_plugins(builder)
-
-        if "TMUX" in os.environ:  # tmuxp ran from inside tmux
-            msg = (
-                "Already inside TMUX, switch to session? yes/no\n"
-                "Or (a)ppend windows in the current active session?\n[y/n/a]"
-            )
-            options = ["y", "n", "a"]
-            choice = prompt_choices(msg, choices=options, color_mode=cli_colors.mode)
-
-            if choice == "y":
-                _load_attached(builder, detached)
-            elif choice == "a":
-                _load_append_windows_to_current_session(builder)
-            else:
-                _load_detached(builder, cli_colors)
-        else:
-            _load_attached(builder, detached)
-
-    except exc.TmuxpException as e:
-        logger.debug("workspace build failed", exc_info=True)
-        tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
-
-        choice = prompt_choices(
-            cli_colors.error("Error loading workspace.")
-            + " (k)ill, (a)ttach, (d)etach?",
-            choices=["k", "a", "d"],
-            default="k",
-            color_mode=cli_colors.mode,
+    if _progress_disabled:
+        _private_path = str(PrivatePath(workspace_file))
+        result = _dispatch_build(
+            builder,
+            detached,
+            append,
+            answer_yes,
+            cli_colors,
         )
+        if result is not None:
+            summary = ""
+            try:
+                win_count = len(result.windows)
+                pane_count = sum(len(w.panes) for w in result.windows)
+                summary_parts: list[str] = []
+                if win_count:
+                    summary_parts.append(f"{win_count} win")
+                if pane_count:
+                    summary_parts.append(f"{pane_count} panes")
+                summary = f"[{', '.join(summary_parts)}]" if summary_parts else ""
+            except Exception:
+                logger.debug("session gone before summary", exc_info=True)
+            ctx = {
+                "session": cli_colors.highlight(session_name),
+                "workspace_path": cli_colors.info(_private_path),
+                "summary": cli_colors.muted(summary) if summary else "",
+            }
+            checkmark = cli_colors.success("\u2713")
+            tmuxp_echo(
+                f"{checkmark} {SUCCESS_TEMPLATE.format_map(_SafeFormatMap(ctx))}"
+            )
+        return result
 
-        if choice == "k":
-            if builder.session is not None:
-                builder.session.kill()
-                tmuxp_echo(cli_colors.muted("Session killed."))
-                logger.info("session killed by user after build error")
-        elif choice == "a":
-            _reattach(builder, cli_colors)
-        else:
-            sys.exit()
+    # Spinner wraps only the actual build phase
+    _progress_fmt = resolve_progress_format(
+        progress_format
+        if progress_format is not None
+        else os.getenv("TMUXP_PROGRESS_FORMAT", "default")
+    )
+    _panel_lines_env = os.getenv("TMUXP_PROGRESS_LINES")
+    if _panel_lines_env:
+        try:
+            _panel_lines_env_int: int | None = int(_panel_lines_env)
+        except ValueError:
+            _panel_lines_env_int = None
+    else:
+        _panel_lines_env_int = None
+    _panel_lines = panel_lines if panel_lines is not None else _panel_lines_env_int
+    _private_path = str(PrivatePath(workspace_file))
+    _spinner = Spinner(
+        message=(
+            f"Loading workspace: {cli_colors.highlight(session_name)} ({_private_path})"
+        ),
+        color_mode=cli_colors.mode,
+        progress_format=_progress_fmt,
+        output_lines=_panel_lines if _panel_lines is not None else DEFAULT_OUTPUT_LINES,
+        workspace_path=_private_path,
+    )
+    _success_emitted = False
 
-    return _setup_plugins(builder)
+    def _emit_success() -> None:
+        nonlocal _success_emitted
+        if _success_emitted:
+            return
+        _success_emitted = True
+        _spinner.success()
+
+    with (
+        _silence_stream_handlers(),
+        _spinner as spinner,
+    ):
+        builder.on_build_event = spinner.on_build_event
+        _resolved_panel = (
+            _panel_lines if _panel_lines is not None else DEFAULT_OUTPUT_LINES
+        )
+        if _resolved_panel != 0:
+            builder.on_script_output = spinner.add_output_line
+        result = _dispatch_build(
+            builder,
+            detached,
+            append,
+            answer_yes,
+            cli_colors,
+            pre_attach_hook=_emit_success,
+            on_error_hook=spinner.stop,
+            pre_prompt_hook=spinner.stop,
+        )
+        if result is not None:
+            _emit_success()
+        return result
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -567,6 +784,42 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help="file to log errors/output to",
     )
 
+    parser.add_argument(
+        "--progress-format",
+        metavar="FORMAT",
+        dest="progress_format",
+        default=None,
+        help=(
+            "Spinner line format: preset name "
+            "(default, minimal, window, pane, verbose) "
+            "or a format string with tokens "
+            "{session}, {window}, {progress}, {window_progress}, {pane_progress}, etc. "
+            "Env: TMUXP_PROGRESS_FORMAT"
+        ),
+    )
+
+    parser.add_argument(
+        "--progress-lines",
+        metavar="N",
+        dest="panel_lines",
+        type=int,
+        default=None,
+        help=(
+            "Number of script-output lines shown in the spinner panel (default: 3). "
+            "0 hides the panel entirely (script output goes to stdout). "
+            "-1 shows unlimited lines (capped to terminal height). "
+            "Env: TMUXP_PROGRESS_LINES"
+        ),
+    )
+
+    parser.add_argument(
+        "--no-progress",
+        dest="no_progress",
+        action="store_true",
+        default=False,
+        help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
+    )
+
     try:
         import shtab
 
@@ -648,4 +901,7 @@ def command_load(
             answer_yes=args.answer_yes or False,
             append=args.append or False,
             cli_colors=cli_colors,
+            progress_format=args.progress_format,
+            panel_lines=args.panel_lines,
+            no_progress=args.no_progress,
         )
