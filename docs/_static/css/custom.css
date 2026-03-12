@@ -83,3 +83,33 @@ article h6 {
   font-size: 1em;
   margin-top: 1rem;
 }
+
+/* ── Right-panel TOC refinements ────────────────────────────
+ * Adjust Furo's table-of-contents proportions for better
+ * readability. Inspired by Starlight defaults (Biome docs).
+ * Uses Furo CSS variable overrides where possible.
+ * ────────────────────────────────────────────────────────── */
+
+/* TOC font sizes: items 75% → 81.25% (12→13px),
+   title 62.5% → 87.5% (10→14px) */
+:root {
+  --toc-font-size: var(--font-size--small--2);
+  --toc-title-font-size: var(--font-size--small);
+}
+
+/* More generous line-height for wrapped TOC entries */
+.toc-tree {
+  line-height: 1.4;
+}
+
+/* ── Body typography refinements ────────────────────────────
+ * Improve paragraph readability with wider line-height and
+ * sharper text rendering. Furo already sets font-smoothing.
+ * ────────────────────────────────────────────────────────── */
+body {
+  text-rendering: optimizeLegibility;
+}
+
+article {
+  line-height: 1.6;
+}
