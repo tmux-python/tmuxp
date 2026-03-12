@@ -102,6 +102,44 @@ article h6 {
   line-height: 1.4;
 }
 
+/* ── Flexible right-panel TOC (inner-panel padding) ─────────
+ * Furo hardcodes .toc-drawer to width: 15em (SASS, compiled).
+ * min-width: 18em overrides it; long TOC entries wrap inside
+ * the box instead of blowing past the viewport.
+ *
+ * Padding lives on .toc-sticky (the inner panel), not on
+ * .toc-drawer (the outer aside). This matches Biome/Starlight
+ * where the aside defines dimensions and an inner wrapper
+ * (.right-sidebar-panel) controls content insets. The
+ * scrollbar sits naturally between content and viewport edge.
+ *
+ * Content area gets flex: 1 to absorb extra space on wide
+ * screens. At ≤82em Furo collapses the TOC to position: fixed;
+ * override right offset so the drawer fully hides off-screen.
+ * ────────────────────────────────────────────────────────── */
+.toc-drawer {
+  min-width: 18em;
+  flex-shrink: 0;
+  padding-right: 0;
+}
+
+.toc-sticky {
+  padding-right: 1.5em;
+}
+
+.content {
+  width: auto;
+  max-width: 46em;
+  flex: 1 1 46em;
+  padding: 0 2em;
+}
+
+@media (max-width: 82em) {
+  .toc-drawer {
+    right: -18em;
+  }
+}
+
 /* ── Body typography refinements ────────────────────────────
  * Improve paragraph readability with wider line-height and
  * sharper text rendering. Furo already sets font-smoothing.
