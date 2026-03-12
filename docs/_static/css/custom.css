@@ -90,11 +90,10 @@ article h6 {
  * Uses Furo CSS variable overrides where possible.
  * ────────────────────────────────────────────────────────── */
 
-/* TOC font sizes: items 75% → 81.25% (12→13px),
-   title 62.5% → 87.5% (10→14px) */
-:root {
-  --toc-font-size: var(--font-size--small--2);
-  --toc-title-font-size: var(--font-size--small);
+/* TOC font sizes: override Furo defaults (75% → 87.5%) */
+body {
+  --toc-font-size: var(--font-size--small);         /* 87.5% = 14px */
+  --toc-title-font-size: var(--font-size--small);   /* 87.5% = 14px */
 }
 
 /* More generous line-height for wrapped TOC entries */
