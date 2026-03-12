@@ -19,3 +19,134 @@
 .sidebar-tree .active {
 	font-weight: bold;
 }
+
+/* ── Global heading refinements ─────────────────────────────
+ * Reduce Furo's default heading sizes (~30%) for better
+ * proportions. Furo uses bare h1-h6 selectors, so `article`
+ * prefix provides sufficient specificity to override.
+ * ────────────────────────────────────────────────────────── */
+article h1 {
+  font-size: 1.8em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+article h2 {
+  font-size: 1.4em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+article h3 {
+  font-size: 1.15em;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+article h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+article h5 {
+  font-size: 1em;
+  font-weight: 600;
+}
+
+article h6 {
+  font-size: 0.875em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Changelog heading extras ───────────────────────────────
+ * Vertical spacing separates consecutive version entries.
+ * Category headings (h3) are muted. Item headings (h4) are
+ * subtle. Targets #history section from CHANGES markdown.
+ * ────────────────────────────────────────────────────────── */
+
+/* Spacing between consecutive version entries */
+#history > section + section {
+  margin-top: 2.5rem;
+}
+
+/* Category headings — muted secondary color */
+#history h3 {
+  color: var(--color-foreground-secondary);
+  margin-top: 1.25rem;
+}
+
+/* Item headings — subtle, same size as body */
+#history h4 {
+  font-size: 1em;
+  margin-top: 1rem;
+}
+
+/* ── Right-panel TOC refinements ────────────────────────────
+ * Adjust Furo's table-of-contents proportions for better
+ * readability. Inspired by Starlight defaults (Biome docs).
+ * Uses Furo CSS variable overrides where possible.
+ * ────────────────────────────────────────────────────────── */
+
+/* TOC font sizes: override Furo defaults (75% → 87.5%) */
+body {
+  --toc-font-size: var(--font-size--small);         /* 87.5% = 14px */
+  --toc-title-font-size: var(--font-size--small);   /* 87.5% = 14px */
+}
+
+/* More generous line-height for wrapped TOC entries */
+.toc-tree {
+  line-height: 1.4;
+}
+
+/* ── Flexible right-panel TOC (inner-panel padding) ─────────
+ * Furo hardcodes .toc-drawer to width: 15em (SASS, compiled).
+ * min-width: 18em overrides it; long TOC entries wrap inside
+ * the box instead of blowing past the viewport.
+ *
+ * Padding lives on .toc-sticky (the inner panel), not on
+ * .toc-drawer (the outer aside). This matches Biome/Starlight
+ * where the aside defines dimensions and an inner wrapper
+ * (.right-sidebar-panel) controls content insets. The
+ * scrollbar sits naturally between content and viewport edge.
+ *
+ * Content area gets flex: 1 to absorb extra space on wide
+ * screens. At ≤82em Furo collapses the TOC to position: fixed;
+ * override right offset so the drawer fully hides off-screen.
+ * ────────────────────────────────────────────────────────── */
+.toc-drawer {
+  min-width: 18em;
+  flex-shrink: 0;
+  padding-right: 0;
+}
+
+.toc-sticky {
+  padding-right: 1.5em;
+}
+
+.content {
+  width: auto;
+  max-width: 46em;
+  flex: 1 1 46em;
+  padding: 0 2em;
+}
+
+@media (max-width: 82em) {
+  .toc-drawer {
+    right: -18em;
+  }
+}
+
+/* ── Body typography refinements ────────────────────────────
+ * Improve paragraph readability with wider line-height and
+ * sharper text rendering. Furo already sets font-smoothing.
+ * ────────────────────────────────────────────────────────── */
+body {
+  text-rendering: optimizeLegibility;
+}
+
+article {
+  line-height: 1.6;
+}
