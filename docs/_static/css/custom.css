@@ -19,3 +19,67 @@
 .sidebar-tree .active {
 	font-weight: bold;
 }
+
+/* ── Global heading refinements ─────────────────────────────
+ * Reduce Furo's default heading sizes (~30%) for better
+ * proportions. Furo uses bare h1-h6 selectors, so `article`
+ * prefix provides sufficient specificity to override.
+ * ────────────────────────────────────────────────────────── */
+article h1 {
+  font-size: 1.8em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+article h2 {
+  font-size: 1.4em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+article h3 {
+  font-size: 1.15em;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+article h4 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+article h5 {
+  font-size: 1em;
+  font-weight: 600;
+}
+
+article h6 {
+  font-size: 0.875em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Changelog heading extras ───────────────────────────────
+ * Vertical spacing separates consecutive version entries.
+ * Category headings (h3) are muted. Item headings (h4) are
+ * subtle. Targets #history section from CHANGES markdown.
+ * ────────────────────────────────────────────────────────── */
+
+/* Spacing between consecutive version entries */
+#history > section + section {
+  margin-top: 2.5rem;
+}
+
+/* Category headings — muted secondary color */
+#history h3 {
+  color: var(--color-foreground-secondary);
+  margin-top: 1.25rem;
+}
+
+/* Item headings — subtle, same size as body */
+#history h4 {
+  font-size: 1em;
+  margin-top: 1rem;
+}
