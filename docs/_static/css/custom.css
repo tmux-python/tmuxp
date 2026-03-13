@@ -226,4 +226,7 @@ img[src*="badge.svg"],
 img[src*="codecov.io"] {
   height: 20px;
   width: auto;
+  min-width: 60px;
+  border-radius: 3px;
+  background: var(--color-background-secondary);
 }
