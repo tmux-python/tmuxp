@@ -16,6 +16,10 @@
 	margin-right: calc(var(--sidebar-item-spacing-horizontal) / 2.5);
 }
 
+#sidebar-projects:not(.ready) {
+	visibility: hidden;
+}
+
 .sidebar-tree .active {
 	font-weight: bold;
 }
