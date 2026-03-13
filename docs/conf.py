@@ -36,6 +36,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "aafig",
+    "sphinx_fonts",
     "argparse_exemplar",  # Custom sphinx-argparse replacement
     "sphinx_inline_tabs",
     "sphinx_copybutton",
@@ -145,6 +146,32 @@ rediraffe_branch = "master~1"
 # aafig format, try to get working with pdf
 aafig_format = {"latex": "pdf", "html": "gif"}
 aafig_default_options = {"scale": 0.75, "aspect": 0.5, "proportional": True}
+
+# sphinx_fonts — self-hosted IBM Plex via Fontsource CDN
+sphinx_fonts = [
+    {
+        "family": "IBM Plex Sans",
+        "package": "@fontsource/ibm-plex-sans",
+        "version": "5.2.8",
+        "weights": [400, 500, 600, 700],
+        "styles": ["normal", "italic"],
+        "subset": "latin",
+    },
+    {
+        "family": "IBM Plex Mono",
+        "package": "@fontsource/ibm-plex-mono",
+        "version": "5.2.7",
+        "weights": [400],
+        "styles": ["normal", "italic"],
+        "subset": "latin",
+    },
+]
+
+sphinx_font_css_variables = {
+    "--font-stack": '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif',
+    "--font-stack--monospace": '"IBM Plex Mono", SFMono-Regular, Menlo, Consolas, monospace',
+    "--font-stack--headings": "var(--font-stack)",
+}
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
