@@ -69,6 +69,7 @@ def _download_font(url: str, dest: pathlib.Path) -> bool:
 def _generate_css(
     fonts: list[dict[str, t.Any]],
     variables: dict[str, str],
+    fallbacks: list[dict[str, str]] | None = None,
 ) -> str:
     lines: list[str] = []
     for font in fonts:
@@ -86,6 +87,18 @@ def _generate_css(
                 lines.append(f'  src: url("../fonts/{filename}") format("woff2");')
                 lines.append("}")
                 lines.append("")
+
+    if fallbacks:
+        for fb in fallbacks:
+            lines.append("@font-face {")
+            lines.append(f'  font-family: "{fb["family"]}";')
+            lines.append(f"  src: {fb['src']};")
+            lines.append(f"  size-adjust: {fb['size_adjust']};")
+            lines.append(f"  ascent-override: {fb['ascent_override']};")
+            lines.append(f"  descent-override: {fb['descent_override']};")
+            lines.append(f"  line-gap-override: {fb['line_gap_override']};")
+            lines.append("}")
+            lines.append("")
 
     if variables:
         lines.append("body {")
@@ -126,7 +139,8 @@ def _on_builder_inited(app: Sphinx) -> None:
                 if _download_font(url, cached):
                     shutil.copy2(cached, fonts_dir / filename)
 
-    css_content = _generate_css(fonts, variables)
+    fallbacks: list[dict[str, str]] = app.config.sphinx_font_fallbacks
+    css_content = _generate_css(fonts, variables, fallbacks)
     (css_dir / "fonts.css").write_text(css_content, encoding="utf-8")
     logger.info("generated fonts.css with %d font families", len(fonts))
 
@@ -157,6 +171,7 @@ def _on_html_page_context(
 
 def setup(app: Sphinx) -> SetupDict:
     app.add_config_value("sphinx_fonts", [], "html")
+    app.add_config_value("sphinx_font_fallbacks", [], "html")
     app.add_config_value("sphinx_font_css_variables", {}, "html")
     app.add_config_value("sphinx_font_preload", [], "html")
     app.connect("builder-inited", _on_builder_inited)

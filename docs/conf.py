@@ -173,9 +173,28 @@ sphinx_font_preload = [
     ("IBM Plex Mono", 400, "normal"),  # code blocks
 ]
 
+sphinx_font_fallbacks = [
+    {
+        "family": "IBM Plex Sans Fallback",
+        "src": 'local("Arial"), local("Helvetica Neue"), local("Helvetica")',
+        "size_adjust": "110.6%",
+        "ascent_override": "92.7%",
+        "descent_override": "24.9%",
+        "line_gap_override": "0%",
+    },
+    {
+        "family": "IBM Plex Mono Fallback",
+        "src": 'local("Courier New"), local("Courier")',
+        "size_adjust": "100%",
+        "ascent_override": "102.5%",
+        "descent_override": "27.5%",
+        "line_gap_override": "0%",
+    },
+]
+
 sphinx_font_css_variables = {
-    "--font-stack": '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif',
-    "--font-stack--monospace": '"IBM Plex Mono", SFMono-Regular, Menlo, Consolas, monospace',
+    "--font-stack": '"IBM Plex Sans", "IBM Plex Sans Fallback", -apple-system, BlinkMacSystemFont, sans-serif',
+    "--font-stack--monospace": '"IBM Plex Mono", "IBM Plex Mono Fallback", SFMono-Regular, Menlo, Consolas, monospace',
     "--font-stack--headings": "var(--font-stack)",
 }
 
