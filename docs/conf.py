@@ -265,4 +265,5 @@ def remove_tabs_js(app: Sphinx, exc: Exception) -> None:
 
 def setup(app: Sphinx) -> None:
     """Sphinx setup hook."""
+    app.add_js_file("js/spa-nav.js", loading_method="defer")
     app.connect("build-finished", remove_tabs_js)
