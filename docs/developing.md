@@ -318,8 +318,10 @@ $ make SPHINXBUILD='uv run sphinx-build' watch
 ## tmuxp developer config
 
 ```{image} _static/tmuxp-dev-screenshot.png
+:width: 1030
+:height: 605
 :align: center
-
+:loading: lazy
 ```
 
 After you {ref}`install-dev-env`, when inside the tmuxp checkout:
