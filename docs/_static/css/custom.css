@@ -197,6 +197,16 @@ article {
  * sets max-width: 100%; height: auto on img. We add
  * content-visibility and badge-specific height to prevent CLS.
  * ────────────────────────────────────────────────────────── */
+
+/* ── View Transitions (SPA navigation) ────────────────────
+ * Crossfade between pages during SPA navigation.
+ * Browsers without View Transitions API get instant swap.
+ * ────────────────────────────────────────────────────────── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
+}
+
 img {
   content-visibility: auto;
 }

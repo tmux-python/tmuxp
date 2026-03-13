@@ -160,21 +160,29 @@
       if (!doc.querySelector(".article-container"))
         throw new Error("no article");
 
-      swap(doc);
+      var applySwap = function () {
+        swap(doc);
 
-      if (!isPop) history.pushState({ spa: true }, "", url);
+        if (!isPop) history.pushState({ spa: true }, "", url);
 
-      if (!isPop) {
-        var hash = new URL(url, location.href).hash;
-        if (hash) {
-          var el = document.querySelector(hash);
-          if (el) el.scrollIntoView();
-        } else {
-          window.scrollTo(0, 0);
+        if (!isPop) {
+          var hash = new URL(url, location.href).hash;
+          if (hash) {
+            var el = document.querySelector(hash);
+            if (el) el.scrollIntoView();
+          } else {
+            window.scrollTo(0, 0);
+          }
         }
-      }
 
-      reinit();
+        reinit();
+      };
+
+      if (document.startViewTransition) {
+        document.startViewTransition(applySwap);
+      } else {
+        applySwap();
+      }
     } catch (err) {
       if (err.name === "AbortError") return;
       window.location.href = url;
