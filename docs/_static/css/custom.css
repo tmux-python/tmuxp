@@ -157,9 +157,31 @@ article h6 {
 /* ── Body typography refinements ────────────────────────────
  * Improve paragraph readability with wider line-height and
  * sharper text rendering. Furo already sets font-smoothing.
+ *
+ * IBM Plex tracks slightly wide at default spacing; -0.01em
+ * tightens it to feel more natural (matches tony.sh/tony.nl).
+ * Kerning + ligatures polish AV/To pairs and fi/fl combos.
  * ────────────────────────────────────────────────────────── */
 body {
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  letter-spacing: -0.01em;
+}
+
+/* ── Code block text rendering ────────────────────────────
+ * Monospace needs fixed-width columns: disable kerning,
+ * ligatures, and letter-spacing that body sets for prose.
+ * optimizeSpeed skips heuristics that can shift the grid.
+ * ────────────────────────────────────────────────────────── */
+pre,
+code,
+kbd,
+samp {
+  text-rendering: optimizeSpeed;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
 }
 
 article {
