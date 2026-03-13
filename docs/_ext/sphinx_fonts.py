@@ -88,7 +88,7 @@ def _generate_css(
                 lines.append("")
 
     if variables:
-        lines.append(":root {")
+        lines.append("body {")
         for var, value in variables.items():
             lines.append(f"  {var}: {value};")
         lines.append("}")
