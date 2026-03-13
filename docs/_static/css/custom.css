@@ -21,44 +21,56 @@
 }
 
 /* ── Global heading refinements ─────────────────────────────
- * Reduce Furo's default heading sizes (~30%) for better
- * proportions. Furo uses bare h1-h6 selectors, so `article`
- * prefix provides sufficient specificity to override.
+ * Biome-inspired scale: medium weight (500) throughout — size
+ * and spacing carry hierarchy, not boldness. H4-H6 add eyebrow
+ * treatment (uppercase, muted). `article` prefix overrides
+ * Furo's bare h1-h6 selectors.
  * ────────────────────────────────────────────────────────── */
 article h1 {
   font-size: 1.8em;
+  font-weight: 500;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
 
 article h2 {
-  font-size: 1.4em;
-  margin-top: 1.5rem;
+  font-size: 1.6em;
+  font-weight: 500;
+  margin-top: 2.5rem;
   margin-bottom: 0.5rem;
 }
 
 article h3 {
   font-size: 1.15em;
-  font-weight: 600;
+  font-weight: 500;
+  margin-top: 1.5rem;
   margin-bottom: 0.375rem;
 }
 
 article h4 {
-  font-size: 1.05em;
-  font-weight: 600;
+  font-size: 0.85em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-foreground-secondary);
+  margin-top: 1rem;
   margin-bottom: 0.25rem;
 }
 
 article h5 {
-  font-size: 1em;
-  font-weight: 600;
+  font-size: 0.8em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-foreground-secondary);
 }
 
 article h6 {
-  font-size: 0.875em;
-  font-weight: 600;
+  font-size: 0.75em;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--color-foreground-secondary);
 }
 
 /* ── Changelog heading extras ───────────────────────────────
@@ -82,6 +94,9 @@ article h6 {
 #history h4 {
   font-size: 1em;
   margin-top: 1rem;
+  text-transform: none;
+  letter-spacing: normal;
+  color: inherit;
 }
 
 /* ── Right-panel TOC refinements ────────────────────────────
@@ -91,7 +106,7 @@ article h6 {
  * ────────────────────────────────────────────────────────── */
 
 /* TOC font sizes: override Furo defaults (75% → 87.5%) */
-body {
+:root {
   --toc-font-size: var(--font-size--small);         /* 87.5% = 14px */
   --toc-title-font-size: var(--font-size--small);   /* 87.5% = 14px */
 }
