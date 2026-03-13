@@ -130,13 +130,37 @@ def _on_builder_inited(app: Sphinx) -> None:
     (css_dir / "fonts.css").write_text(css_content, encoding="utf-8")
     logger.info("generated fonts.css with %d font families", len(fonts))
 
+    preload_hrefs: list[str] = []
+    preload_specs: list[tuple[str, int, str]] = app.config.sphinx_font_preload
+    for family_name, weight, style in preload_specs:
+        for font in fonts:
+            if font["family"] == family_name:
+                font_id = font["package"].split("/")[-1]
+                subset = font.get("subset", "latin")
+                filename = f"{font_id}-{subset}-{weight}-{style}.woff2"
+                preload_hrefs.append(filename)
+                break
+    app._font_preload_hrefs = preload_hrefs  # type: ignore[attr-defined]
+
     app.add_css_file("css/fonts.css")
+
+
+def _on_html_page_context(
+    app: Sphinx,
+    pagename: str,
+    templatename: str,
+    context: dict[str, t.Any],
+    doctree: t.Any,
+) -> None:
+    context["font_preload_hrefs"] = getattr(app, "_font_preload_hrefs", [])
 
 
 def setup(app: Sphinx) -> SetupDict:
     app.add_config_value("sphinx_fonts", [], "html")
     app.add_config_value("sphinx_font_css_variables", {}, "html")
+    app.add_config_value("sphinx_font_preload", [], "html")
     app.connect("builder-inited", _on_builder_inited)
+    app.connect("html-page-context", _on_html_page_context)
     return {
         "version": "1.0",
         "parallel_read_safe": True,

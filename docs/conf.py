@@ -167,6 +167,12 @@ sphinx_fonts = [
     },
 ]
 
+sphinx_font_preload = [
+    ("IBM Plex Sans", 400, "normal"),  # body text
+    ("IBM Plex Sans", 700, "normal"),  # headings
+    ("IBM Plex Mono", 400, "normal"),  # code blocks
+]
+
 sphinx_font_css_variables = {
     "--font-stack": '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif',
     "--font-stack--monospace": '"IBM Plex Mono", SFMono-Regular, Menlo, Consolas, monospace',

@@ -1,6 +1,9 @@
-{% extends "!layout.html" %}
+{% extends "!page.html" %}
 {%- block extrahead %}
   {{ super() }}
+  {%- for href in font_preload_hrefs|default([]) %}
+  <link rel="preload" href="{{ pathto('_static/fonts/' + href, 1) }}" as="font" type="font/woff2" crossorigin="">
+  {%- endfor %}
   {%- if theme_show_meta_manifest_tag == true %}
   <link rel="manifest" href="/manifest.json">
   {% endif -%}
