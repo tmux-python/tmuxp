@@ -202,10 +202,8 @@ the CLI docs.
 
 # Pre-load hook
 
-Run custom startup scripts (such as installing project dependencies
+Run custom startup scripts (such as installing project dependencies)
 before loading tmux. See the
-[bootstrap_env.py](https://github.com/tmux-python/tmuxp/blob/master/bootstrap_env.py)
-and
 [before_script](http://tmuxp.git-pull.com/examples.html#bootstrap-project-before-launch)
 example
 
