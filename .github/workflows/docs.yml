@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - docs-fonts
 
 permissions:
   contents: read
