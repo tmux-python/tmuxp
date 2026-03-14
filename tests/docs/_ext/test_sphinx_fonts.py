@@ -183,6 +183,27 @@ def test_download_font_os_error(
     assert any("failed" in r.message for r in warning_records)
 
 
+def test_download_font_partial_file_cleanup(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """_download_font removes partial file on failure."""
+    dest = tmp_path / "cache" / "partial.woff2"
+
+    msg = "disk full"
+
+    def fake_urlretrieve(url: str, filename: t.Any) -> t.NoReturn:
+        pathlib.Path(filename).write_bytes(b"partial")
+        raise OSError(msg)
+
+    monkeypatch.setattr("sphinx_fonts.urllib.request.urlretrieve", fake_urlretrieve)
+
+    result = sphinx_fonts._download_font("https://example.com/font.woff2", dest)
+
+    assert result is False
+    assert not dest.exists()
+
+
 # --- _on_builder_inited tests ---
 
 

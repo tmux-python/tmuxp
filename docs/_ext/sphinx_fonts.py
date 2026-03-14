@@ -63,6 +63,8 @@ def _download_font(url: str, dest: pathlib.Path) -> bool:
         urllib.request.urlretrieve(url, dest)
         logger.info("downloaded font: %s", dest.name)
     except (urllib.error.URLError, OSError):
+        if dest.exists():
+            dest.unlink()
         logger.warning("failed to download font: %s", url)
         return False
     return True
