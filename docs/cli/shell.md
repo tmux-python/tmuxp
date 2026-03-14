@@ -23,7 +23,9 @@ $ tmuxp shell -c 'python code'
 ```
 
 ```{image} ../_static/tmuxp-shell.gif
-:width: 100%
+:width: 878
+:height: 109
+:loading: lazy
 ```
 
 ## Interactive usage

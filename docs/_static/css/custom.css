@@ -16,6 +16,10 @@
 	margin-right: calc(var(--sidebar-item-spacing-horizontal) / 2.5);
 }
 
+#sidebar-projects:not(.ready) {
+	visibility: hidden;
+}
+
 .sidebar-tree .active {
 	font-weight: bold;
 }
@@ -157,11 +161,86 @@ article h6 {
 /* ── Body typography refinements ────────────────────────────
  * Improve paragraph readability with wider line-height and
  * sharper text rendering. Furo already sets font-smoothing.
+ *
+ * IBM Plex tracks slightly wide at default spacing; -0.01em
+ * tightens it to feel more natural (matches tony.sh/tony.nl).
+ * Kerning + ligatures polish AV/To pairs and fi/fl combos.
  * ────────────────────────────────────────────────────────── */
 body {
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  letter-spacing: -0.01em;
+}
+
+/* ── Code block text rendering ────────────────────────────
+ * Monospace needs fixed-width columns: disable kerning,
+ * ligatures, and letter-spacing that body sets for prose.
+ * optimizeSpeed skips heuristics that can shift the grid.
+ * ────────────────────────────────────────────────────────── */
+pre,
+code,
+kbd,
+samp {
+  text-rendering: optimizeSpeed;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
 }
 
 article {
   line-height: 1.6;
+}
+
+/* ── Image layout shift prevention ────────────────────────
+ * Reserve space for images before they load. Furo already
+ * sets max-width: 100%; height: auto on img. We add
+ * content-visibility and badge-specific height to prevent CLS.
+ * ────────────────────────────────────────────────────────── */
+
+img {
+  content-visibility: auto;
+}
+
+/* Docutils emits :width:/:height: as inline CSS (style="width: Xpx;
+ * height: Ypx;") rather than HTML attributes.  When Furo's
+ * max-width: 100% constrains width below the declared value,
+ * the fixed height causes distortion.  height: auto + aspect-ratio
+ * lets the browser compute the correct height from the intrinsic
+ * ratio once loaded; before load, aspect-ratio reserves space
+ * at the intended proportion — preventing both CLS and distortion. */
+article img[loading="lazy"] {
+  height: auto !important;
+}
+
+/* Per-image aspect ratios for CLS reservation before load */
+img[src*="tmuxp-demo"] {
+  aspect-ratio: 888 / 589;
+}
+
+img[src*="tmuxp-shell"] {
+  aspect-ratio: 878 / 109;
+}
+
+img[src*="tmuxp-dev-screenshot"] {
+  aspect-ratio: 1030 / 605;
+}
+
+img[src*="shields.io"],
+img[src*="badge.svg"],
+img[src*="codecov.io"] {
+  height: 20px;
+  width: auto;
+  min-width: 60px;
+  border-radius: 3px;
+  background: var(--color-background-secondary);
+}
+
+/* ── View Transitions (SPA navigation) ────────────────────
+ * Crossfade between pages during SPA navigation.
+ * Browsers without View Transitions API get instant swap.
+ * ────────────────────────────────────────────────────────── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
 }

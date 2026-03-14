@@ -7,24 +7,24 @@
 
   <p class="indented-block">
     <span class="project-name">vcs-python</span>
-    <a class="internal" href="https://vcspull.git-pull.com" class="current">vcspull</a>
+    <a class="internal" href="https://vcspull.git-pull.com">vcspull</a>
     (<a class="internal" href="https://libvcs.git-pull.com">libvcs</a>),
     <a class="internal" href="https://g.git-pull.com">g</a>
   </p>
   <p class="indented-block">
     <span class="project-name">tmux-python</span>
-    <a class="internal" href="https://tmuxp.git-pull.com" class="current">tmuxp</a>
+    <a class="internal" href="https://tmuxp.git-pull.com">tmuxp</a>
     (<a class="internal" href="https://libtmux.git-pull.com">libtmux</a>)
   </p>
 
   <p class="indented-block">
     <span class="project-name">cihai</span>
     <span class="indent">
-      <a class="internal" href="https://unihan-etl.git-pull.com" class="current">unihan-etl</a>
+      <a class="internal" href="https://unihan-etl.git-pull.com">unihan-etl</a>
       (<a class="internal" href="https://unihan-db.git-pull.com">db</a>)
     </span>
     <span class="indent">
-      <a class="internal" href="https://cihai.git-pull.com" class="current">cihai</a>
+      <a class="internal" href="https://cihai.git-pull.com">cihai</a>
       (<a class="internal" href="https://cihai-cli.git-pull.com">cli</a>)
     </span>
   </p>
@@ -32,38 +32,39 @@
   <p class="indented-block">
     <span class="project-name">django</span>
     <span class="indent">
-      <a class="internal" href="https://django-slugify-processor.git-pull.com" class="current">django-slugify-processor</a>
+      <a class="internal" href="https://django-slugify-processor.git-pull.com">django-slugify-processor</a>
     </span>
     <span class="indent">
-      <a class="internal" href="https://django-docutils.git-pull.com" class="current">django-docutils</a>
+      <a class="internal" href="https://django-docutils.git-pull.com">django-docutils</a>
     </span>
   </p>
 
   <p class="indented-block">
     <span class="project-name">docs + tests</span>
     <span class="indent">
-      <a class="internal" href="https://gp-libs.git-pull.com" class="current">gp-libs</a>
+      <a class="internal" href="https://gp-libs.git-pull.com">gp-libs</a>
     </span>
   </p>
 
   <p class="indented-block">
     <span class="project-name">web</span>
     <span class="indent">
-      <a class="internal" href="https://social-embed.org" class="current">social-embed</a>
+      <a class="internal" href="https://social-embed.org">social-embed</a>
     </span>
   </p>
 </div>
 <script type="text/javascript">
 (() => {
-  const sidebar = document.getElementById("sidebar-projects")
+  const sidebar = document.getElementById("sidebar-projects");
   sidebar.querySelectorAll(`a[href*="${window.location.hostname}"]`)
     .forEach((link) => {
       if (!link.classList.contains("active")) {
         const d = document.createElement('span');
-        d.innerHTML = link.innerHTML;
+        d.textContent = link.textContent;
         d.classList.add("active");
         link.parentNode.replaceChild(d, link);
       }
     });
+  sidebar.classList.add('ready');
 })()
 </script>

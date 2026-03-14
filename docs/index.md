@@ -5,8 +5,9 @@
 ```
 
 ```{image} _static/tmuxp-demo.gif
-:width: 100%
-
+:width: 888
+:height: 589
+:loading: lazy
 ```
 
 # Freeze a tmux session

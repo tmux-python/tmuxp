@@ -1,6 +1,37 @@
-{% extends "!layout.html" %}
+{% extends "!page.html" %}
 {%- block extrahead %}
   {{ super() }}
+  {%- for href in font_preload_hrefs|default([]) %}
+  <link rel="preload" href="{{ pathto('_static/fonts/' + href, 1) }}" as="font" type="font/woff2" crossorigin="">
+  {%- endfor %}
+  {%- if font_faces is defined and font_faces %}
+  <style id="sphinx-fonts">
+  {%- for face in font_faces %}
+  @font-face {
+    font-family: "{{ face.family }}";
+    font-style: {{ face.style }};
+    font-weight: {{ face.weight }};
+    font-display: block;
+    src: url("{{ pathto('_static/fonts/' + face.filename, 1) }}") format("woff2");
+  }
+  {%- endfor %}
+  {%- for fb in font_fallbacks|default([]) %}
+  @font-face {
+    font-family: "{{ fb.family }}";
+    src: {{ fb.src }};
+    size-adjust: {{ fb.size_adjust }};
+    ascent-override: {{ fb.ascent_override }};
+    descent-override: {{ fb.descent_override }};
+    line-gap-override: {{ fb.line_gap_override }};
+  }
+  {%- endfor %}
+  body {
+  {%- for var, value in font_css_variables.items() %}
+    {{ var }}: {{ value }};
+  {%- endfor %}
+  }
+  </style>
+  {%- endif %}
   {%- if theme_show_meta_manifest_tag == true %}
   <link rel="manifest" href="/manifest.json">
   {% endif -%}
