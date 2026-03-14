@@ -424,7 +424,11 @@ def test_on_html_page_context_with_attrs() -> None:
     context: dict[str, t.Any] = {}
 
     sphinx_fonts._on_html_page_context(
-        app, "index", "page.html", context, None  # type: ignore[arg-type]
+        app,
+        "index",
+        "page.html",
+        context,
+        None,  # type: ignore[arg-type]
     )
 
     assert context["font_preload_hrefs"] == ["font-400.woff2"]
@@ -439,7 +443,11 @@ def test_on_html_page_context_without_attrs() -> None:
     context: dict[str, t.Any] = {}
 
     sphinx_fonts._on_html_page_context(
-        app, "index", "page.html", context, None  # type: ignore[arg-type]
+        app,
+        "index",
+        "page.html",
+        context,
+        None,  # type: ignore[arg-type]
     )
 
     assert context["font_preload_hrefs"] == []
