@@ -95,14 +95,14 @@ def _on_builder_inited(app: Sphinx) -> None:
                 url = _cdn_url(package, version, font_id, subset, weight, style)
                 if _download_font(url, cached):
                     shutil.copy2(cached, fonts_dir / filename)
-                font_faces.append(
-                    {
-                        "family": font["family"],
-                        "style": style,
-                        "weight": str(weight),
-                        "filename": filename,
-                    }
-                )
+                    font_faces.append(
+                        {
+                            "family": font["family"],
+                            "style": style,
+                            "weight": str(weight),
+                            "filename": filename,
+                        }
+                    )
 
     preload_hrefs: list[str] = []
     preload_specs: list[tuple[str, int, str]] = app.config.sphinx_font_preload

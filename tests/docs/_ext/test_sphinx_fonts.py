@@ -262,7 +262,7 @@ def test_on_builder_inited_download_failure(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """_on_builder_inited still builds font_faces entry on download failure."""
+    """_on_builder_inited skips font_faces entry on download failure."""
     monkeypatch.setattr("sphinx_fonts._cache_dir", lambda: tmp_path / "cache")
 
     msg = "offline"
@@ -285,8 +285,7 @@ def test_on_builder_inited_download_failure(
 
     sphinx_fonts._on_builder_inited(app)
 
-    assert len(app._font_faces) == 1
-    assert app._font_faces[0]["family"] == "Inter"
+    assert len(app._font_faces) == 0
 
 
 def test_on_builder_inited_explicit_subset(
