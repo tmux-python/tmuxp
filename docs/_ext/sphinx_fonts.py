@@ -25,6 +25,8 @@ CDN_TEMPLATE = (
 
 
 class SetupDict(t.TypedDict):
+    """Return type for Sphinx extension setup()."""
+
     version: str
     parallel_read_safe: bool
     parallel_write_safe: bool
@@ -135,6 +137,7 @@ def _on_html_page_context(
 
 
 def setup(app: Sphinx) -> SetupDict:
+    """Register config values, events, and return extension metadata."""
     app.add_config_value("sphinx_fonts", [], "html")
     app.add_config_value("sphinx_font_fallbacks", [], "html")
     app.add_config_value("sphinx_font_css_variables", {}, "html")
