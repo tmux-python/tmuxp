@@ -145,8 +145,10 @@ def test_download_font_url_error(
     """_download_font returns False and warns on URLError."""
     dest = tmp_path / "font.woff2"
 
+    msg = "network error"
+
     def fake_urlretrieve(url: str, filename: t.Any) -> t.NoReturn:
-        raise urllib.error.URLError("network error")
+        raise urllib.error.URLError(msg)
 
     monkeypatch.setattr("sphinx_fonts.urllib.request.urlretrieve", fake_urlretrieve)
 
@@ -166,8 +168,10 @@ def test_download_font_os_error(
     """_download_font returns False and warns on OSError."""
     dest = tmp_path / "font.woff2"
 
+    msg = "disk full"
+
     def fake_urlretrieve(url: str, filename: t.Any) -> t.NoReturn:
-        raise OSError("disk full")
+        raise OSError(msg)
 
     monkeypatch.setattr("sphinx_fonts.urllib.request.urlretrieve", fake_urlretrieve)
 
@@ -261,8 +265,10 @@ def test_on_builder_inited_download_failure(
     """_on_builder_inited still builds font_faces entry on download failure."""
     monkeypatch.setattr("sphinx_fonts._cache_dir", lambda: tmp_path / "cache")
 
+    msg = "offline"
+
     def fake_urlretrieve(url: str, filename: t.Any) -> t.NoReturn:
-        raise urllib.error.URLError("offline")
+        raise urllib.error.URLError(msg)
 
     monkeypatch.setattr("sphinx_fonts.urllib.request.urlretrieve", fake_urlretrieve)
 
@@ -446,7 +452,7 @@ def test_on_html_page_context_without_attrs() -> None:
 
 
 def test_setup_return_value() -> None:
-    """setup returns correct metadata dict."""
+    """Verify setup() returns correct metadata dict."""
     config_values: list[tuple[str, t.Any, str]] = []
     connections: list[tuple[str, t.Any]] = []
 
@@ -467,7 +473,7 @@ def test_setup_return_value() -> None:
 
 
 def test_setup_config_values() -> None:
-    """setup registers all expected config values."""
+    """Verify setup() registers all expected config values."""
     config_values: list[tuple[str, t.Any, str]] = []
     connections: list[tuple[str, t.Any]] = []
 
@@ -489,7 +495,7 @@ def test_setup_config_values() -> None:
 
 
 def test_setup_event_connections() -> None:
-    """setup connects to builder-inited and html-page-context events."""
+    """Verify setup() connects to builder-inited and html-page-context events."""
     config_values: list[tuple[str, t.Any, str]] = []
     connections: list[tuple[str, t.Any]] = []
 
