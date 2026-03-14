@@ -5,6 +5,7 @@
 :::{figure} /\_static/tao-tmux-screenshot.png
 :scale: 60%
 :align: center
+:loading: lazy
 
 ISC-licensed terminal multiplexer.
 
