@@ -25,6 +25,8 @@ CDN_TEMPLATE = (
 
 
 class SetupDict(t.TypedDict):
+    """Return type for Sphinx extension setup()."""
+
     version: str
     parallel_read_safe: bool
     parallel_write_safe: bool
@@ -61,6 +63,8 @@ def _download_font(url: str, dest: pathlib.Path) -> bool:
         urllib.request.urlretrieve(url, dest)
         logger.info("downloaded font: %s", dest.name)
     except (urllib.error.URLError, OSError):
+        if dest.exists():
+            dest.unlink()
         logger.warning("failed to download font: %s", url)
         return False
     return True
@@ -93,14 +97,14 @@ def _on_builder_inited(app: Sphinx) -> None:
                 url = _cdn_url(package, version, font_id, subset, weight, style)
                 if _download_font(url, cached):
                     shutil.copy2(cached, fonts_dir / filename)
-                font_faces.append(
-                    {
-                        "family": font["family"],
-                        "style": style,
-                        "weight": str(weight),
-                        "filename": filename,
-                    }
-                )
+                    font_faces.append(
+                        {
+                            "family": font["family"],
+                            "style": style,
+                            "weight": str(weight),
+                            "filename": filename,
+                        }
+                    )
 
     preload_hrefs: list[str] = []
     preload_specs: list[tuple[str, int, str]] = app.config.sphinx_font_preload
@@ -135,6 +139,7 @@ def _on_html_page_context(
 
 
 def setup(app: Sphinx) -> SetupDict:
+    """Register config values, events, and return extension metadata."""
     app.add_config_value("sphinx_fonts", [], "html")
     app.add_config_value("sphinx_font_fallbacks", [], "html")
     app.add_config_value("sphinx_font_css_variables", {}, "html")
