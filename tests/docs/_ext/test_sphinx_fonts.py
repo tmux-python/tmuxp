@@ -213,14 +213,14 @@ def _make_app(
 def test_on_builder_inited_non_html(tmp_path: pathlib.Path) -> None:
     """_on_builder_inited returns early for non-HTML builders."""
     app = _make_app(tmp_path, builder_format="latex")
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
     assert not hasattr(app, "_font_faces")
 
 
 def test_on_builder_inited_empty_fonts(tmp_path: pathlib.Path) -> None:
     """_on_builder_inited returns early when no fonts configured."""
     app = _make_app(tmp_path, fonts=[])
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
     assert not hasattr(app, "_font_faces")
 
 
@@ -247,7 +247,7 @@ def test_on_builder_inited_with_fonts(
     for weight in [400, 700]:
         (cache / f"open-sans-latin-{weight}-normal.woff2").write_bytes(b"data")
 
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
 
     assert len(app._font_faces) == 2
     assert app._font_faces[0]["family"] == "Open Sans"
@@ -283,7 +283,7 @@ def test_on_builder_inited_download_failure(
     ]
     app = _make_app(tmp_path, fonts=fonts)
 
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
 
     assert len(app._font_faces) == 1
     assert app._font_faces[0]["family"] == "Inter"
@@ -312,7 +312,7 @@ def test_on_builder_inited_explicit_subset(
     cache.mkdir(parents=True)
     (cache / "noto-sans-latin-ext-400-normal.woff2").write_bytes(b"data")
 
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
 
     assert app._font_faces[0]["filename"] == "noto-sans-latin-ext-400-normal.woff2"
 
@@ -340,7 +340,7 @@ def test_on_builder_inited_preload_match(
     cache.mkdir(parents=True)
     (cache / "open-sans-latin-400-normal.woff2").write_bytes(b"data")
 
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
 
     assert app._font_preload_hrefs == ["open-sans-latin-400-normal.woff2"]
 
@@ -368,7 +368,7 @@ def test_on_builder_inited_preload_no_match(
     cache.mkdir(parents=True)
     (cache / "open-sans-latin-400-normal.woff2").write_bytes(b"data")
 
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
 
     assert app._font_preload_hrefs == []
 
@@ -397,7 +397,7 @@ def test_on_builder_inited_fallbacks_and_variables(
     cache.mkdir(parents=True)
     (cache / "inter-latin-400-normal.woff2").write_bytes(b"data")
 
-    sphinx_fonts._on_builder_inited(app)  # type: ignore[arg-type]
+    sphinx_fonts._on_builder_inited(app)
 
     assert app._font_fallbacks == fallbacks
     assert app._font_css_variables == variables
@@ -428,7 +428,7 @@ def test_on_html_page_context_with_attrs() -> None:
         "index",
         "page.html",
         context,
-        None,  # type: ignore[arg-type]
+        None,
     )
 
     assert context["font_preload_hrefs"] == ["font-400.woff2"]
@@ -447,7 +447,7 @@ def test_on_html_page_context_without_attrs() -> None:
         "index",
         "page.html",
         context,
-        None,  # type: ignore[arg-type]
+        None,
     )
 
     assert context["font_preload_hrefs"] == []
@@ -471,7 +471,7 @@ def test_setup_return_value() -> None:
         connect=lambda event, handler: connections.append((event, handler)),
     )
 
-    result = sphinx_fonts.setup(app)  # type: ignore[arg-type]
+    result = sphinx_fonts.setup(app)
 
     assert result == {
         "version": "1.0",
@@ -492,7 +492,7 @@ def test_setup_config_values() -> None:
         connect=lambda event, handler: connections.append((event, handler)),
     )
 
-    sphinx_fonts.setup(app)  # type: ignore[arg-type]
+    sphinx_fonts.setup(app)
 
     config_names = [c[0] for c in config_values]
     assert "sphinx_fonts" in config_names
@@ -514,7 +514,7 @@ def test_setup_event_connections() -> None:
         connect=lambda event, handler: connections.append((event, handler)),
     )
 
-    sphinx_fonts.setup(app)  # type: ignore[arg-type]
+    sphinx_fonts.setup(app)
 
     event_names = [c[0] for c in connections]
     assert "builder-inited" in event_names
