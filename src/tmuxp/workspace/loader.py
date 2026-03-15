@@ -183,6 +183,11 @@ def expand(
 
         workspace_dict["shell_command_before"] = expand_cmd(shell_command_before)
 
+    if "shell_command_after" in workspace_dict:
+        shell_command_after = workspace_dict["shell_command_after"]
+
+        workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
+
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
         workspace_dict["windows"] = [

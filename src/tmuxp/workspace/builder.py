@@ -844,6 +844,14 @@ class WorkspaceBuilder:
             for key, val in window_config["options_after"].items():
                 window.set_option(key, val)
 
+        if "shell_command_after" in window_config and isinstance(
+            window_config["shell_command_after"],
+            dict,
+        ):
+            for cmd in window_config["shell_command_after"].get("shell_command", []):
+                for pane in window.panes:
+                    pane.send_keys(cmd["cmd"])
+
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
         assert self.server is not None
