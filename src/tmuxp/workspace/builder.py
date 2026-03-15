@@ -545,6 +545,32 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
+        # Set lifecycle tmux hooks
+        if "on_project_exit" in self.session_config:
+            exit_cmds = self.session_config["on_project_exit"]
+            if isinstance(exit_cmds, str):
+                exit_cmds = [exit_cmds]
+            _joined = "; ".join(exit_cmds)
+            _escaped = _joined.replace("'", "'\\''")
+            self.session.set_hook("client-detached", f"run-shell '{_escaped}'")
+
+        # Store on_project_stop in session environment for tmuxp stop
+        if "on_project_stop" in self.session_config:
+            stop_cmds = self.session_config["on_project_stop"]
+            if isinstance(stop_cmds, str):
+                stop_cmds = [stop_cmds]
+            self.session.set_environment(
+                "TMUXP_ON_PROJECT_STOP",
+                "; ".join(stop_cmds),
+            )
+
+        # Store start_directory in session environment for hook cwd
+        if "start_directory" in self.session_config:
+            self.session.set_environment(
+                "TMUXP_START_DIRECTORY",
+                self.session_config["start_directory"],
+            )
+
         if here:
             session_name = self.session_config["session_name"]
             if session.name != session_name:
