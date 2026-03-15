@@ -94,12 +94,9 @@ Resolved in `feat(cli[load])` — `--no-shell-command-before` flag added to `tmu
 - **Required**: Add a Jinja2 or Python `string.Template` pass before YAML parsing. Allow `key=value` CLI args to set template variables. This is a significant architectural addition.
 - **Non-breaking**: Opt-in feature, existing configs are unaffected.
 
-### T9. No `--debug` / Dry-Run CLI Flag
+### T9. `--debug` CLI Flag ✅ Resolved
 
-- **Blocker**: `tmuxp load` has no dry-run mode. Since tmuxp uses libtmux API calls rather than generating command strings, there's no natural command list to preview.
-- **Blocks**: tmuxinator `debug` and teamocil `--debug` / `--show`.
-- **Required**: Either (a) add a recording proxy layer around libtmux calls that logs what would be done, or (b) add verbose logging that shows each tmux command before execution (depends on L3).
-- **Non-breaking**: New optional CLI flag.
+Resolved in `feat(cli[load])` — `--debug` flag added to `tmuxp load` that shows tmux commands as they execute. Uses a `_TmuxCommandDebugHandler` that attaches to libtmux's `libtmux.common` logger and intercepts structured `tmux_cmd` extra fields. Implies `--no-progress` (spinner disabled). Handler is properly cleaned up on all return paths. Not a true dry-run (tmux commands still execute — required for API-based building), but provides the debugging visibility that tmuxinator `debug` and teamocil `--debug` offer.
 
 ### T10. Missing Config Management Commands ✅ Resolved
 
@@ -268,6 +265,6 @@ All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=
 ### Phase 5: CLI Flags & Larger Features
 
 1. ~~**T7**: `--no-shell-command-before` flag~~ ✅
-2. **T9**: `--debug` / dry-run mode — **now unblocked** (L3 resolved in libtmux v0.55.0)
+2. ~~**T9**: `--debug` / dry-run mode~~ ✅
 3. **T6**: Lifecycle hook config keys — complex, needs design
 4. **T8**: Config templating — significant architectural addition
