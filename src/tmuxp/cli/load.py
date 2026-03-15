@@ -113,6 +113,7 @@ class CLILoadNamespace(argparse.Namespace):
     progress_format: str | None
     panel_lines: int | None
     no_progress: bool
+    no_shell_command_before: bool
 
 
 def load_plugins(
@@ -475,6 +476,7 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    no_shell_command_before: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -512,6 +514,9 @@ def load_workspace(
     no_progress : bool
         Disable the progress spinner entirely. Default False.
         Also disabled when ``TMUXP_PROGRESS=0``.
+    no_shell_command_before : bool
+        Strip ``shell_command_before`` from all levels (session, window, pane)
+        before building. Default False.
 
     Notes
     -----
@@ -592,6 +597,14 @@ def load_workspace(
     # Overridden session name
     if new_session_name:
         expanded_workspace["session_name"] = new_session_name
+
+    # Strip shell_command_before at all levels when --no-shell-command-before
+    if no_shell_command_before:
+        expanded_workspace.pop("shell_command_before", None)
+        for window in expanded_workspace.get("windows", []):
+            window.pop("shell_command_before", None)
+            for pane in window.get("panes", []):
+                pane.pop("shell_command_before", None)
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
@@ -794,6 +807,13 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="use the current window for the first workspace window",
     )
+    parser.add_argument(
+        "--no-shell-command-before",
+        dest="no_shell_command_before",
+        action="store_true",
+        default=False,
+        help="skip shell_command_before at all levels (session, window, pane)",
+    )
     colorsgroup = parser.add_mutually_exclusive_group()
 
     colorsgroup.add_argument(
@@ -941,4 +961,5 @@ def command_load(
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            no_shell_command_before=args.no_shell_command_before,
         )
