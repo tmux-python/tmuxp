@@ -105,6 +105,7 @@ class CLILoadNamespace(argparse.Namespace):
     answer_yes: bool | None
     detached: bool
     append: bool | None
+    here: bool | None
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
@@ -305,6 +306,18 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     assert builder.session is not None
 
 
+def _load_here_in_current_session(builder: WorkspaceBuilder) -> None:
+    """Load workspace reusing current window for first window.
+
+    Parameters
+    ----------
+    builder: :class:`workspace.builder.WorkspaceBuilder`
+    """
+    current_attached_session = builder.find_current_attached_session()
+    builder.build(current_attached_session, here=True)
+    assert builder.session is not None
+
+
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     """Execute hooks for plugins running after ``before_script``.
 
@@ -325,6 +338,7 @@ def _dispatch_build(
     append: bool,
     answer_yes: bool,
     cli_colors: Colors,
+    here: bool = False,
     pre_attach_hook: t.Callable[[], None] | None = None,
     on_error_hook: t.Callable[[], None] | None = None,
     pre_prompt_hook: t.Callable[[], None] | None = None,
@@ -347,6 +361,8 @@ def _dispatch_build(
         Skip interactive prompts.
     cli_colors : Colors
         Colors instance for styled output.
+    here : bool
+        Use current window for first workspace window.
     pre_attach_hook : callable, optional
         Called before attach/switch_client (e.g. stop spinner).
     on_error_hook : callable, optional
@@ -369,6 +385,14 @@ def _dispatch_build(
     try:
         if detached:
             _load_detached(builder, cli_colors, pre_output_hook=pre_attach_hook)
+            return _setup_plugins(builder)
+
+        if here:
+            if "TMUX" in os.environ:  # tmuxp ran from inside tmux
+                _load_here_in_current_session(builder)
+            else:
+                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+
             return _setup_plugins(builder)
 
         if append:
@@ -446,6 +470,7 @@ def load_workspace(
     detached: bool = False,
     answer_yes: bool = False,
     append: bool = False,
+    here: bool = False,
     cli_colors: Colors | None = None,
     progress_format: str | None = None,
     panel_lines: int | None = None,
@@ -472,6 +497,9 @@ def load_workspace(
         Default False.
     append : bool
        Assume current when given prompt to append windows in same session.
+       Default False.
+    here : bool
+       Use current window for first workspace window and rename session.
        Default False.
     cli_colors : Colors, optional
         Colors instance for CLI output formatting. If None, uses AUTO mode.
@@ -598,7 +626,7 @@ def load_workspace(
     session_name = expanded_workspace["session_name"]
 
     # Session-exists check — outside spinner so prompt_yes_no is safe
-    if builder.session_exists(session_name) and not append:
+    if builder.session_exists(session_name) and not append and not here:
         if not detached and (
             answer_yes
             or prompt_yes_no(
@@ -618,6 +646,7 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            here=here,
         )
         if result is not None:
             summary = ""
@@ -693,6 +722,7 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            here=here,
             pre_attach_hook=_emit_success,
             on_error_hook=spinner.stop,
             pre_prompt_hook=spinner.stop,
@@ -757,6 +787,12 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         dest="append",
         action="store_true",
         help="load workspace, appending windows to the current session",
+    )
+    parser.add_argument(
+        "--here",
+        dest="here",
+        action="store_true",
+        help="use the current window for the first workspace window",
     )
     colorsgroup = parser.add_mutually_exclusive_group()
 
@@ -900,6 +936,7 @@ def command_load(
             detached=detached,
             answer_yes=args.answer_yes or False,
             append=args.append or False,
+            here=args.here or False,
             cli_colors=cli_colors,
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
