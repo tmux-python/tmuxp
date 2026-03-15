@@ -109,10 +109,13 @@ def test_main_help_examples_are_valid_subcommands() -> None:
         "shell",
         "import",
         "convert",
+        "copy",
         "debug-info",
+        "delete",
         "ls",
         "edit",
         "freeze",
+        "new",
         "search",
         "stop",
     }
@@ -133,10 +136,13 @@ def test_main_help_examples_are_valid_subcommands() -> None:
         "shell",
         "import",
         "convert",
+        "copy",
         "debug-info",
+        "delete",
         "ls",
         "edit",
         "freeze",
+        "new",
         "search",
         "stop",
     ],
@@ -236,6 +242,36 @@ def test_stop_subcommand_examples_are_valid() -> None:
     # Verify each example has valid structure
     for example in examples:
         assert example.startswith("tmuxp stop"), f"Bad example format: {example}"
+
+
+def test_new_subcommand_examples_are_valid() -> None:
+    """New subcommand examples should have valid flags."""
+    help_text = _get_help_text("new")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp new"), f"Bad example format: {example}"
+
+
+def test_copy_subcommand_examples_are_valid() -> None:
+    """Copy subcommand examples should have valid flags."""
+    help_text = _get_help_text("copy")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp copy"), f"Bad example format: {example}"
+
+
+def test_delete_subcommand_examples_are_valid() -> None:
+    """Delete subcommand examples should have valid flags."""
+    help_text = _get_help_text("delete")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp delete"), f"Bad example format: {example}"
 
 
 def test_search_subcommand_examples_are_valid() -> None:
