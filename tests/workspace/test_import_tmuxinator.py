@@ -111,3 +111,93 @@ def test_logs_info_on_multi_command_pre_list(
 
     pre_records = [r for r in caplog.records if "multi-command pre list" in r.message]
     assert len(pre_records) == 1
+
+
+def test_startup_window_sets_focus_by_name() -> None:
+    """Startup_window sets focus on the matching window by name."""
+    workspace = {
+        "name": "test",
+        "startup_window": "logs",
+        "windows": [
+            {"editor": "vim"},
+            {"logs": "tail -f log/dev.log"},
+        ],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    assert result["windows"][0].get("focus") is None
+    assert result["windows"][1]["focus"] is True
+
+
+def test_startup_window_sets_focus_by_index() -> None:
+    """Startup_window sets focus by numeric index when name doesn't match."""
+    workspace = {
+        "name": "test",
+        "startup_window": 1,
+        "windows": [
+            {"editor": "vim"},
+            {"server": "rails s"},
+        ],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    assert result["windows"][0].get("focus") is None
+    assert result["windows"][1]["focus"] is True
+
+
+def test_startup_pane_sets_focus_on_pane() -> None:
+    """Startup_pane converts the target pane to a dict with focus."""
+    workspace = {
+        "name": "test",
+        "startup_window": "editor",
+        "startup_pane": 1,
+        "windows": [
+            {
+                "editor": {
+                    "panes": ["vim", "guard", "top"],
+                },
+            },
+        ],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    assert result["windows"][0]["focus"] is True
+    panes = result["windows"][0]["panes"]
+    assert panes[0] == "vim"
+    assert panes[1] == {"shell_command": ["guard"], "focus": True}
+    assert panes[2] == "top"
+
+
+def test_startup_pane_without_startup_window() -> None:
+    """Startup_pane targets the first window when no startup_window is set."""
+    workspace = {
+        "name": "test",
+        "startup_pane": 1,
+        "windows": [
+            {
+                "editor": {
+                    "panes": ["vim", "guard"],
+                },
+            },
+        ],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    panes = result["windows"][0]["panes"]
+    assert panes[1] == {"shell_command": ["guard"], "focus": True}
+
+
+def test_startup_window_warns_on_no_match(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Startup_window logs WARNING when no matching window is found."""
+    workspace = {
+        "name": "test",
+        "startup_window": "nonexistent",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+
+    warn_records = [r for r in caplog.records if "startup_window" in r.message]
+    assert len(warn_records) == 1
