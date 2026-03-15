@@ -105,6 +105,58 @@ def run_before_script(
     return return_code
 
 
+def run_hook_commands(
+    commands: str | list[str],
+    cwd: pathlib.Path | str | None = None,
+) -> None:
+    """Run lifecycle hook shell commands.
+
+    Unlike :func:`run_before_script`, hooks use ``shell=True`` for full
+    shell support (pipes, redirects, etc.) and do NOT raise on failure.
+
+    Parameters
+    ----------
+    commands : str or list of str
+        shell command(s) to run
+    cwd : pathlib.Path or str, optional
+        working directory for the commands
+
+    Examples
+    --------
+    Run a single command:
+
+    >>> run_hook_commands("echo hello")
+
+    Run multiple commands:
+
+    >>> run_hook_commands(["echo a", "echo b"])
+
+    Empty string is a no-op:
+
+    >>> run_hook_commands("")
+    """
+    if isinstance(commands, str):
+        commands = [commands]
+    joined = "; ".join(commands)
+    if not joined.strip():
+        return
+    logger.debug("running hook commands %s", joined)
+    result = subprocess.run(
+        joined,
+        shell=True,
+        cwd=cwd,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        logger.warning(
+            "hook command failed with exit code %d",
+            result.returncode,
+            extra={"tmux_exit_code": result.returncode},
+        )
+
+
 def oh_my_zsh_auto_title() -> None:
     """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 
