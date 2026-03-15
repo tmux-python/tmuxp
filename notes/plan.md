@@ -83,12 +83,9 @@ Resolved in `feat(cli[stop])` — `tmuxp stop <session-name>` command added. Fol
 - **Depends on**: T5 for `on_project_stop`.
 - **Non-breaking**: New optional config keys.
 
-### T7. No `--no-shell-command-before` CLI Flag
+### T7. No `--no-shell-command-before` CLI Flag ✅ Resolved
 
-- **Blocker**: `tmuxp load` has no flag to skip `shell_command_before`. The `trickle()` function (`loader.py:245-256`) always prepends these commands.
-- **Blocks**: tmuxinator `--no-pre-window` — skip per-pane pre-commands for debugging.
-- **Required**: Add `--no-shell-command-before` flag to `cli/load.py`. When set, clear `shell_command_before` from all levels before calling `trickle()`.
-- **Non-breaking**: New optional CLI flag.
+Resolved in `feat(cli[load])` — `--no-shell-command-before` flag added to `tmuxp load`. When set, strips `shell_command_before` from session, window, and pane levels after `expand()` but before `trickle()`. Equivalent to tmuxinator's `--no-pre-window`.
 
 ### T8. No Config Templating
 
@@ -270,7 +267,7 @@ All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=
 
 ### Phase 5: CLI Flags & Larger Features
 
-1. **T7**: `--no-shell-command-before` flag — simple
+1. ~~**T7**: `--no-shell-command-before` flag~~ ✅
 2. **T9**: `--debug` / dry-run mode — **now unblocked** (L3 resolved in libtmux v0.55.0)
 3. **T6**: Lifecycle hook config keys — complex, needs design
 4. **T8**: Config templating — significant architectural addition
