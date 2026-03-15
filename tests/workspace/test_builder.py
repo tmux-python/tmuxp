@@ -383,6 +383,36 @@ def test_synchronize(
     assert not_synced.show_option("synchronize-panes") is not True
 
 
+def test_shell_command_after(
+    session: Session,
+) -> None:
+    """Test shell_command_after sends commands to all panes after window creation."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/shell_command_after.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    windows = session.windows
+    assert len(windows) == 2
+
+    after_window = windows[0]
+    no_after_window = windows[1]
+
+    for pane in after_window.panes:
+
+        def check(p: Pane = pane) -> bool:
+            return "__AFTER__" in "\n".join(p.capture_pane())
+
+        assert retry_until(check), f"Expected __AFTER__ in pane {pane.pane_id}"
+
+    for pane in no_after_window.panes:
+        captured = "\n".join(pane.capture_pane())
+        assert "__AFTER__" not in captured
+
+
 def test_window_shell(
     session: Session,
 ) -> None:

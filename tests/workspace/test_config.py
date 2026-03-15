@@ -372,6 +372,46 @@ def test_expand_synchronize() -> None:
     ][2].get("options", {})
 
 
+def test_expand_shell_command_after() -> None:
+    """Test that expand() normalizes shell_command_after into expanded form."""
+    workspace = {
+        "session_name": "test",
+        "windows": [
+            {
+                "window_name": "with-after",
+                "shell_command_after": ["echo done", "echo bye"],
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "string-after",
+                "shell_command_after": "echo single",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "no-after",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    # List form: normalized to {shell_command: [{cmd: "..."}, ...]}
+    after = result["windows"][0]["shell_command_after"]
+    assert isinstance(after, dict)
+    assert len(after["shell_command"]) == 2
+    assert after["shell_command"][0]["cmd"] == "echo done"
+    assert after["shell_command"][1]["cmd"] == "echo bye"
+
+    # String form: normalized the same way
+    after_str = result["windows"][1]["shell_command_after"]
+    assert isinstance(after_str, dict)
+    assert len(after_str["shell_command"]) == 1
+    assert after_str["shell_command"][0]["cmd"] == "echo single"
+
+    # No shell_command_after: key absent
+    assert "shell_command_after" not in result["windows"][2]
+
+
 def test_expand_logs_debug(
     tmp_path: pathlib.Path,
     caplog: pytest.LogCaptureFixture,
