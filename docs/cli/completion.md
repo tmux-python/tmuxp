@@ -32,8 +32,8 @@ $ uvx shtab --help
 
 :::{tab} bash
 
-```bash
-shtab --shell=bash -u tmuxp.cli.create_parser \
+```console
+$ shtab --shell=bash -u tmuxp.cli.create_parser \
   | sudo tee "$BASH_COMPLETION_COMPAT_DIR"/TMUXP
 ```
 
@@ -41,8 +41,8 @@ shtab --shell=bash -u tmuxp.cli.create_parser \
 
 :::{tab} zsh
 
-```zsh
-shtab --shell=zsh -u tmuxp.cli.create_parser \
+```console
+$ shtab --shell=zsh -u tmuxp.cli.create_parser \
   | sudo tee /usr/local/share/zsh/site-functions/_TMUXP
 ```
 
@@ -50,8 +50,8 @@ shtab --shell=zsh -u tmuxp.cli.create_parser \
 
 :::{tab} tcsh
 
-```zsh
-shtab --shell=tcsh -u tmuxp.cli.create_parser \
+```console
+$ shtab --shell=tcsh -u tmuxp.cli.create_parser \
   | sudo tee /etc/profile.d/TMUXP.completion.csh
 ```
 

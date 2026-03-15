@@ -175,13 +175,15 @@ $ env PYTEST_ADDOPTS="tests/workspace/test_builder.py" uv run make start
 Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py`:
 
 ```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py" uv run make start
+$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py" \
+    uv run make start
 ```
 
 Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py` and stop on first error:
 
 ```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py::test_automatic_rename_option" uv run make start
+$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py::test_automatic_rename_option" \
+    uv run make start
 ```
 
 Drop into `pdb` on first error:
