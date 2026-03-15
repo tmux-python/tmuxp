@@ -1889,3 +1889,90 @@ def test_builder_logs_window_and_pane_creation(
     assert len(cmd_logs) >= 1
 
     builder.session.kill()
+
+
+def test_on_project_exit_sets_hook(
+    server: Server,
+) -> None:
+    """on_project_exit sets tmux client-detached hook on the session."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-test",
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_keys = list(hooks.keys())
+    assert any("client-detached" in k for k in hook_keys)
+
+    builder.session.kill()
+
+
+def test_on_project_exit_sets_hook_list(
+    server: Server,
+) -> None:
+    """on_project_exit joins list commands and sets tmux hook."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-list-test",
+        "on_project_exit": ["echo a", "echo b"],
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_keys = list(hooks.keys())
+    assert any("client-detached" in k for k in hook_keys)
+
+    builder.session.kill()
+
+
+def test_on_project_stop_sets_environment(
+    server: Server,
+) -> None:
+    """on_project_stop stores commands in session environment."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-stop-env-test",
+        "on_project_stop": "docker compose down",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    stop_cmd = builder.session.getenv("TMUXP_ON_PROJECT_STOP")
+    assert stop_cmd == "docker compose down"
+
+    builder.session.kill()
+
+
+def test_on_project_stop_sets_start_directory_env(
+    server: Server,
+    tmp_path: pathlib.Path,
+) -> None:
+    """build() stores start_directory in session environment."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-startdir-env-test",
+        "start_directory": str(tmp_path),
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    start_dir = builder.session.getenv("TMUXP_START_DIRECTORY")
+    assert start_dir == str(tmp_path)
+
+    builder.session.kill()

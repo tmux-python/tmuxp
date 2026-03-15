@@ -1119,3 +1119,78 @@ def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> 
 
     assert "~/work/project/.tmuxp.yaml" in message
     assert "/home/testuser" not in message
+
+
+def test_load_on_project_start_runs_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load runs on_project_start hook before session creation."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "start_hook_ran"
+    workspace_file = tmp_path / "hook_start.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-start-test
+on_project_start: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert marker.exists()
+    assert session is not None
+    session.kill()
+
+
+def test_load_on_project_restart_runs_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load runs on_project_restart hook when session already exists."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "restart_hook_ran"
+    workspace_file = tmp_path / "hook_restart.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-restart-test
+on_project_restart: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    # First load creates the session
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert session is not None
+    assert not marker.exists()
+
+    # Second load triggers on_project_restart (session already exists)
+    load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert marker.exists()
+
+    session.kill()
