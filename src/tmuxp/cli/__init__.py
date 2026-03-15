@@ -19,12 +19,14 @@ from tmuxp.log import setup_logger
 from ._colors import build_description
 from ._formatter import TmuxpHelpFormatter, create_themed_formatter
 from .convert import CONVERT_DESCRIPTION, command_convert, create_convert_subparser
+from .copy import COPY_DESCRIPTION, command_copy, create_copy_subparser
 from .debug_info import (
     DEBUG_INFO_DESCRIPTION,
     CLIDebugInfoNamespace,
     command_debug_info,
     create_debug_info_subparser,
 )
+from .delete import DELETE_DESCRIPTION, command_delete, create_delete_subparser
 from .edit import EDIT_DESCRIPTION, command_edit, create_edit_subparser
 from .freeze import (
     FREEZE_DESCRIPTION,
@@ -45,6 +47,7 @@ from .load import (
     create_load_subparser,
 )
 from .ls import LS_DESCRIPTION, CLILsNamespace, command_ls, create_ls_subparser
+from .new import NEW_DESCRIPTION, command_new, create_new_subparser
 from .search import (
     SEARCH_DESCRIPTION,
     CLISearchNamespace,
@@ -137,6 +140,25 @@ CLI_DESCRIPTION = build_description(
             ],
         ),
         (
+            "new",
+            [
+                "tmuxp new myproject",
+            ],
+        ),
+        (
+            "copy",
+            [
+                "tmuxp copy myproject myproject-backup",
+            ],
+        ),
+        (
+            "delete",
+            [
+                "tmuxp delete myproject",
+                "tmuxp delete -y old-project",
+            ],
+        ),
+        (
             "stop",
             [
                 "tmuxp stop mysession",
@@ -164,7 +186,10 @@ if t.TYPE_CHECKING:
         "load",
         "freeze",
         "convert",
+        "copy",
+        "delete",
         "edit",
+        "new",
         "import",
         "search",
         "shell",
@@ -268,6 +293,30 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_edit_subparser(edit_parser)
 
+    new_parser = subparsers.add_parser(
+        "new",
+        help="create a new workspace config from template",
+        description=NEW_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_new_subparser(new_parser)
+
+    copy_parser = subparsers.add_parser(
+        "copy",
+        help="copy a workspace config to a new name",
+        description=COPY_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_copy_subparser(copy_parser)
+
+    delete_parser = subparsers.add_parser(
+        "delete",
+        help="delete workspace config files",
+        description=DELETE_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_delete_subparser(delete_parser)
+
     freeze_parser = subparsers.add_parser(
         "freeze",
         help="freeze a live tmux session to a tmuxp workspace file",
@@ -367,6 +416,26 @@ def cli(_args: list[str] | None = None) -> None:
     elif args.subparser_name == "edit":
         command_edit(
             workspace_file=args.workspace_file,
+            parser=parser,
+            color=args.color,
+        )
+    elif args.subparser_name == "new":
+        command_new(
+            workspace_name=args.workspace_name,
+            parser=parser,
+            color=args.color,
+        )
+    elif args.subparser_name == "copy":
+        command_copy(
+            source=args.source,
+            destination=args.destination,
+            parser=parser,
+            color=args.color,
+        )
+    elif args.subparser_name == "delete":
+        command_delete(
+            workspace_names=args.workspace_names,
+            answer_yes=args.answer_yes,
             parser=parser,
             color=args.color,
         )
