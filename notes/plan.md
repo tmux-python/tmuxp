@@ -101,161 +101,85 @@ All commands follow existing CLI patterns (`edit.py`, `convert.py`), use `Colors
 
 Keys produced by importers but silently ignored by the builder:
 
-| Key | Producer | Importer Line | Builder Handling | Issue |
-|---|---|---|---|---|
-| `shell_command` (session-level) | tmuxinator importer | `importers.py:60` | Not a valid session key | **Bug** (I1 Bug B): `pre` commands lost when both `pre` and `pre_window` exist |
-| `config` | tmuxinator importer | `importers.py:37,44` | Never read | Dead data — extracted `-f` path goes nowhere |
-| `socket_name` | tmuxinator importer | `importers.py:52` | Never read | Dead data — CLI uses `-L` flag |
-| `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
-| `height` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — `width` is popped but `height` passes through silently |
-| `target` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — accidentally preserved via dict mutation, but libtmux has `Pane.split(target=...)` (L4) |
-| ~~`shell_command_after`~~ | teamocil importer | `importers.py:149` | ✅ `config_after_window()` | Resolved — T3 |
+| Key | Producer | Builder Handling | Status |
+|---|---|---|---|
+| `config` | tmuxinator importer | Never read | Dead data — extracted `-f` path, CLI uses `-f` flag directly |
+| `socket_name` | tmuxinator importer | Never read | Dead data — CLI uses `-L` flag directly |
+| `clear` | teamocil importer | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
+| ~~`shell_command` (session-level)~~ | ~~tmuxinator importer~~ | ~~Not a valid session key~~ | ✅ Resolved — I1: `pre` now maps to `before_script` |
+| ~~`shell_command_after`~~ | ~~teamocil importer~~ | ✅ `config_after_window()` | ✅ Resolved — T3 |
+| ~~`height` (pane)~~ | ~~teamocil importer~~ | ~~Dead data~~ | ✅ Resolved — warned + dropped |
+| ~~`start_window`/`start_pane`~~ | ~~tmuxinator importer~~ | ~~Dead data~~ | ✅ Resolved — converted to `focus: true` in importer |
 
-## Importer Bugs (No Builder Changes Needed)
+## Importer Fixes — All ✅ Resolved
 
-### I1. tmuxinator `pre` / `pre_window` Mapping Bugs
+### I1. tmuxinator `pre` / `pre_window` Mapping ✅ Resolved
 
-Two bugs in `importers.py:59-70`, covering both code paths for the `pre` key:
+Resolved — `pre` now correctly maps to `before_script` (session-level, runs once). `pre_window`/`pre_tab` maps to `shell_command_before`. Type check on `pre_window_val` is correct. Multi-command `pre` lists log an info message suggesting split. Tests: `test3` (combo), `test5` (`pre` + `pre_tab`), `test_logs_info_on_multi_command_pre_list`.
 
-#### Bug A: Solo `pre` maps to wrong key (NEW — 2026-03-06)
+### I2. tmuxinator `cli_args` / `tmux_options` Parsing ✅ Resolved
 
-- **Bug**: When only `pre` exists (no `pre_window`) (`importers.py:66-70`), it maps to `shell_command_before` — a per-pane key that runs before each pane's commands. But tmuxinator's `pre` is a session-level hook that runs **once** before any windows are created. The correct target is `before_script`.
-- **Effect**: Instead of running once at session start, the `pre` commands run N times (once per pane) as pane setup commands. This changes both the semantics (pre-session → per-pane) and the execution count.
+Resolved — Uses `shlex.split()` with proper flag-aware iteration. Supports `-f`, `-L`, `-S` flags. Tests: `test3` (single flag), `test4` (multi-flag).
 
-#### Bug B: Combo `pre` + `pre_window` loses `pre` commands
+### I3. teamocil Redundant Filter Loops ✅ Resolved
 
-- **Bug**: When both `pre` and `pre_window` exist (`importers.py:59-65`):
-  1. `pre` maps to `shell_command` (line 60) — invalid session-level key, silently ignored by builder. The `pre` commands are lost entirely (see Dead Config Keys table).
-  2. The `isinstance` check on line 62 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. When `pre` is a string but `pre_window` is a list, `pre_window` gets double-wrapped as `[["cmd1", "cmd2"]]` (nested list). When `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list — leaving a bare string where a list is expected.
+Resolved — Direct assignment replaces redundant loops. Tests: existing `test2` (filters fixture).
 
-#### Correct mapping
+### I4. teamocil v1.x Format ✅ Resolved
 
-- `pre` → `before_script` (session-level, runs once before windows)
-- `pre_window` → `shell_command_before` (per-pane, runs before each pane's commands)
+Resolved — Handles string panes, `None` panes, `commands` key (v1.x), `cmd` key (v0.x). `width`/`height` warned and dropped. Tests: `test5` (v1.x format), `test6` (focus/options/height).
 
-#### `before_script` shell limitation
+### I5. tmuxinator Missing Keys ✅ Resolved
 
-`before_script` is executed via `subprocess.Popen` after `shlex.split()` in `util.py:27-32` — **without `shell=True`**. This means shell constructs (pipes `|`, `&&`, redirects `>`, subshells `$(...)`) won't work in `before_script` values. For inline shell commands, the forward path is the `on_project_start` config key (T6), which would use `shell=True` or write a temp script.
+Resolved — `rvm` → `shell_command_before`, `pre_tab` → alias for `pre_window`, `startup_window` → `focus: true` on matching window, `startup_pane` → `focus: true` on matching pane. Tests: `test5` (rvm/pre_tab/startup), `test_startup_window_*`, `test_startup_pane_*`.
 
-### I2. tmuxinator `cli_args` / `tmux_options` Fragile Parsing
+### I6. teamocil Missing Keys ✅ Resolved
 
-- **Bug**: `str.replace("-f", "").strip()` (`importers.py:41,48`) does a global string replacement, not flag-aware parsing. A value like `"-f ~/.tmux.conf -L mysocket"` would produce `"~/.tmux.conf -L mysocket"` as the `config` value (including the `-L` flag in a file path). Also ignores `-L` (socket name) and `-S` (socket path) flags entirely.
-- **Fix**: Use proper argument parsing (e.g., `shlex.split()` + iterate to find `-f` flag and its value).
+Resolved — v1.x: `commands` → `shell_command`, string panes handled, window `focus`/`options` pass-through. v0.x: `with_env_var` and `cmd_separator` log warnings. Tests: `test5` (v1.x), `test6` (focus/options), `test_warns_on_with_env_var_and_cmd_separator`.
 
-### I3. teamocil Redundant Filter Loops
+### I7. Importer TODOs ✅ Resolved
 
-- **Bug**: `for _b in w["filters"]["before"]:` loops (`importers.py:145-149`) iterate N times but set the same value each time.
-- **Fix**: Replace with direct assignment.
+Resolved — `with_env_var` logs warning (unsupported), `cmd_separator` logs warning (irrelevant for tmuxp), `width`/`height` warn and drop. Tests: `test_warns_on_width_height_drop`, `test_warns_on_with_env_var_and_cmd_separator`.
 
-### I4. teamocil v1.x Format Not Supported
+## Remaining Test Coverage Gaps
 
-- **Bug**: Importer assumes v0.x format. String panes cause incorrect behavior (`"cmd" in "git status"` checks substring, not dict key). `commands` key (v1.x) not mapped.
-- **Fix**: Add format detection. Handle string panes, `commands` key, `focus`, and `options`.
-- **Also**: v0.x pane `width` is silently dropped (`importers.py:161-163`) with a TODO but no user warning. `height` is not even popped — it passes through as a dead key. Since libtmux's `Pane.resize()` exists (L4), the importer could preserve both `width` and `height` and the builder could call `pane.resize(width=value)` or `pane.resize(height=value)` after split. Alternatively, warn the user.
+### Tier 1: Covered ✅
 
-### I5. tmuxinator Missing Keys
+All previously-identified Tier 1 gaps (v1.x string panes, `commands` key, `rvm`, `pre` scope) are now fixed and tested.
 
-Not imported but translatable:
-- `rvm` → `shell_command_before: ["rvm use {value}"]`
-- `pre_tab` → `shell_command_before` (deprecated predecessor to `pre_window`)
-- `startup_window` → find matching window, set `focus: true`
-- `startup_pane` → find matching pane, set `focus: true`
-- `on_project_first_start` → `before_script` (only if value is a single command or script path; multi-command strings joined by `;` won't work since `before_script` uses `Popen` without `shell=True`)
-- `post` → deprecated predecessor to `on_project_exit`; runs after windows are built on every invocation. No tmuxp equivalent until T6 lifecycle hooks exist.
-- `socket_path` → warn user to use CLI `-S` flag
-- `attach: false` → warn user to use CLI `-d` flag
-
-### I6. teamocil Missing Keys
-
-Not imported but translatable:
-
-**v1.x keys** (same key names in tmuxp):
-- `commands` → `shell_command`
-- `focus` (window) → `focus` (pass-through)
-- `focus` (pane) → `focus` (pass-through)
-- `options` (window) → `options` (pass-through)
-- String pane shorthand → `shell_command: [command]`
-
-**v0.x keys**:
-- `with_env_var` → `environment: { TEAMOCIL: "1" }` (default `true` in v0.x; maps to session-level `environment` key)
-- `height` (pane) → should be popped like `width` (currently passes through as dead key)
-
-### I7. Importer TODOs Need Triage
-
-`importers.py:121,123` lists `with_env_var` and `cmd_separator` as TODOs (with `clear` at line 122 in between). Both are verified v0.x features (present in teamocil's `0.4-stable` branch at `lib/teamocil/layout/window.rb`), not stale references:
-
-- **`with_env_var`** (line 121): When `true` (the default in v0.x), exports `TEAMOCIL=1` in each pane. Should map to `environment: { TEAMOCIL: "1" }` (tmuxp's `environment` key works at session level via `Session.set_environment()`, L4). Implement, don't remove.
-- **`clear`** (line 122): Already imported at line 141 but builder ignores it. libtmux has `Pane.clear()` (L4), so builder support is feasible.
-- **`cmd_separator`** (line 123): Per-window string (default `"; "`) used to join commands before `send-keys`. Irrelevant for tmuxp since it sends commands individually. Remove TODO.
-
-## Test Coverage Gaps
-
-Current importer test fixtures cover ~40% of real-world config patterns. Key gaps by severity:
-
-### Tier 1: Will Crash or Silently Lose Data
-
-- **v1.x teamocil string panes**: `panes: ["git status"]` → `TypeError` (importer tries `"cmd" in p` on string)
-- **v1.x teamocil `commands` key**: `commands: [...]` → silently dropped (only `cmd` recognized)
-- **tmuxinator `rvm`**: Completely ignored by importer (only `rbenv` handled)
-- **tmuxinator `pre` scope bug**: Tests pass because fixtures don't verify execution semantics
-
-### Tier 2: Missing Coverage
+### Tier 2: Edge Cases (Low Priority)
 
 - **YAML aliases/anchors**: Real tmuxinator configs use `&defaults` / `*defaults` — no test coverage
 - **Numeric/emoji window names**: `222:`, `true:`, `🍩:` — YAML type coercion edge cases untested
 - **Pane title syntax**: `pane_name: command` dict form — no fixtures
-- **`startup_window`/`startup_pane`**: Not tested
-- **`pre_tab`** (deprecated): Not tested
-- **Window-level `root` with relative paths**: Not tested
-- **`tmux_options` with non-`-f` flags**: Not tested (importer bug I2)
-
-### Required New Fixtures
-
-When implementing Phase 1 import fixes, each item needs corresponding test fixtures. See `tests/fixtures/import_tmuxinator/` and `tests/fixtures/import_teamocil/` for existing patterns.
-
-**tmuxinator fixtures needed**: YAML aliases, emoji names, numeric names, `rvm`, `pre_tab`, `startup_window`/`startup_pane`, pane titles, `socket_path`, multi-flag `tmux_options`
-
-**teamocil fixtures needed**: v1.x format (`commands`, string panes, window `focus`/`options`), pane `height`, `with_env_var`, mixed v0.x/v1.x detection
 
 ## Implementation Priority
 
-### Phase 1: Import Fixes (No Builder/libtmux Changes)
+### ~~Phase 1: Import Fixes~~ — **COMPLETE**
 
-These fix existing bugs and add missing translations without touching the builder:
+All importer bugs (I1-I7) resolved. Importers handle v1.x format, missing keys, proper `pre`/`pre_window` mapping, flag-aware `cli_args` parsing, `startup_window`/`startup_pane` → `focus: true`, and unsupported key warnings.
 
-1. **I3**: Fix redundant filter loops (teamocil)
-2. **I4**: Add v1.x teamocil format support
-3. **I6**: Import teamocil v1.x keys (`commands`, `focus`, `options`, string panes)
-4. **I5**: Import missing tmuxinator keys (`rvm`, `pre_tab`, `startup_window`, `startup_pane`)
-5. **I1**: Fix `pre`/`pre_window` mapping (tmuxinator)
-6. **I2**: Fix `cli_args` parsing (tmuxinator)
-7. **I7**: Triage importer TODOs (implement `with_env_var`, remove `cmd_separator`)
+### ~~Phase 2: Builder Additions~~ — **COMPLETE**
 
-### Phase 2: Builder Additions (tmuxp Only)
+All builder config keys resolved: T1 (`synchronize`), T2 (pane titles), T3 (`shell_command_after`), T4 (`--here`).
 
-These add new config key handling to the builder. Each also needs a corresponding importer update:
+### ~~Phase 3: libtmux Additions~~ — **COMPLETE** (libtmux v0.55.0)
 
-1. **T1**: ✅ `synchronize` config key — resolved via `expand()` desugaring in `loader.py`
-2. **T3**: ✅ `shell_command_after` config key — resolved via `expand()` + `config_after_window()`
-3. **T2**: ✅ Pane title config keys — resolved via `expand()` desugaring + `pane.set_title()` in builder
-4. **T4**: ✅ `--here` CLI flag — resolved via CLI arg + builder `here` param
+All libtmux API additions shipped in v0.55.0.
 
-### ~~Phase 3: libtmux Additions~~ — **COMPLETE** (libtmux v0.55.0, issue #635 closed)
+### ~~Phase 4: New CLI Commands~~ — **COMPLETE**
 
-All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=0.55.0`.
+T5 (`tmuxp stop`), T10 (`tmuxp new`, `tmuxp copy`, `tmuxp delete`).
 
-- ~~**L1**: `Pane.set_title()`~~ → `pane.py:834-859`
-- ~~**L2**: `Server(tmux_bin=...)`~~ → `server.py:142`
-- ~~**L3**: Pre-execution `logger.debug`~~ → `common.py:263-268`
+### ~~Phase 5: CLI Flags & Features~~ — **MOSTLY COMPLETE**
 
-### Phase 4: New CLI Commands
+- ~~T7: `--no-shell-command-before` flag~~ ✅
+- ~~T9: `--debug` mode~~ ✅
+- ~~T6: Lifecycle hook config keys~~ ✅
 
-1. ~~**T5**: `tmuxp stop` command~~
-2. **T10**: `tmuxp new`, `tmuxp copy`, `tmuxp delete` commands
+### Phase 6: Remaining
 
-### Phase 5: CLI Flags & Larger Features
-
-1. ~~**T7**: `--no-shell-command-before` flag~~ ✅
-2. ~~**T9**: `--debug` / dry-run mode~~ ✅
-3. **T6**: Lifecycle hook config keys — complex, needs design
-4. **T8**: Config templating — significant architectural addition
+1. **T8**: Config templating — significant architectural addition (Jinja2 or `string.Template` pass before YAML parsing, with `key=value` CLI args)
+2. **Dead config keys**: `config`, `socket_name` (from tmuxinator importer) — builder doesn't read them. Low priority since CLI flags serve the same purpose.
+3. **`clear` config key**: teamocil importer preserves it but builder ignores it. libtmux has `Pane.clear()`. Low priority.
+4. **Edge case test coverage**: YAML aliases/anchors, numeric/emoji window names, pane title syntax.
