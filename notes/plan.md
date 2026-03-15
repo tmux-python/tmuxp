@@ -33,20 +33,20 @@ These libtmux APIs already exist and do NOT need changes:
 
 | API | Location | Supports |
 |---|---|---|
-| `Session.rename_session(name)` | `session.py:412` | teamocil session rename mode |
+| `Session.rename_session(name)` | `session.py:422` | teamocil session rename mode |
 | `Window.rename_window(name)` | `window.py:462` | teamocil `--here` flag |
 | `Pane.resize(height, width)` | `pane.py:217` | teamocil v0.x pane `width` |
 | `Pane.send_keys(cmd, enter)` | `pane.py:423` | All command sending |
-| `Pane.select()` | `pane.py:577` | Pane focus |
-| `Window.set_option(key, val)` | `options.py:578` (OptionsMixin) | `synchronize-panes`, window options |
-| `Session.set_hook(hook, cmd)` | `hooks.py:111` (HooksMixin) | Lifecycle hooks (`client-detached`, etc.) |
-| `Session.set_option(key, val)` | `options.py:578` (OptionsMixin) | `pane-border-status`, `pane-border-format` |
+| `Pane.select()` | `pane.py:586` | Pane focus |
+| `Window.set_option(key, val)` | `options.py:593` (OptionsMixin) | `synchronize-panes`, window options |
+| `Session.set_hook(hook, cmd)` | `hooks.py:118` (HooksMixin) | Lifecycle hooks (`client-detached`, etc.) |
+| `Session.set_option(key, val)` | `options.py:593` (OptionsMixin) | `pane-border-status`, `pane-border-format` |
 | `HooksMixin` on Session/Window/Pane | `session.py:55`, `window.py:56`, `pane.py:51` | All entities inherit hooks |
-| `HooksMixin.set_hooks()` (bulk) | `hooks.py:430` | Efficient multi-hook setup (dict/list input) |
-| `Session.set_environment(key, val)` | `session.py:53` (EnvironmentMixin) | Session-level env vars (teamocil `with_env_var`) |
-| `Pane.clear()` | `pane.py:818` | Sends `reset` to clear pane (teamocil `clear`) |
-| `Pane.reset()` | `pane.py:823` | `send-keys -R \; clear-history` (full reset) |
-| `Pane.split(target=...)` | `pane.py:625` | Split targeting (teamocil v0.x `target`) |
+| `HooksMixin.set_hooks()` (bulk) | `hooks.py:437` | Efficient multi-hook setup (dict/list input) |
+| `Session.set_environment(key, val)` | `common.py:63` (EnvironmentMixin) | Session-level env vars (teamocil `with_env_var`) |
+| `Pane.clear()` | `pane.py:869` | Sends `reset` to clear pane (teamocil `clear`) |
+| `Pane.reset()` | `pane.py:874` | `send-keys -R \; clear-history` (full reset) |
+| `Pane.split(target=...)` | `pane.py:634` | Split targeting (teamocil v0.x `target`) |
 
 ## tmuxp Limitations
 
@@ -55,7 +55,7 @@ These libtmux APIs already exist and do NOT need changes:
 - **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. The key is silently ignored if present.
 - **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`). Note: tmuxinator deprecates `true`/`before` in favor of `after` (`project.rb:21-29`), but all three values still function. The import should honor original semantics of each value.
 - **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands are sent. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
-- **Insertion point**: In `build()` around line 320 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 565 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
+- **Insertion point**: In `build()` around line 541 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 822 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
 - **Non-breaking**: New optional config key. Existing configs are unaffected.
 
 ### T2. No Pane Title Config Key
@@ -63,8 +63,8 @@ These libtmux APIs already exist and do NOT need changes:
 - **Blocker**: `WorkspaceBuilder` has no handling for pane `title` key or session-level `enable_pane_titles` / `pane_title_position` / `pane_title_format`.
 - **Blocks**: Pane titles (tmuxinator named pane syntax).
 - **Required**:
-  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` alongside other session options (lines 303-309).
-  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after commands are sent in `iter_create_panes()`, before focus handling (around line 535). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
+  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` alongside other session options (lines 529-539).
+  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after commands are sent in `iter_create_panes()`, before focus handling (around line 816). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
 - **Config keys**: `enable_pane_titles: true`, `pane_title_position: top`, `pane_title_format: "..."` (session-level). `title: "my-title"` (pane-level).
 - **Non-breaking**: New optional config keys.
 
@@ -72,18 +72,18 @@ These libtmux APIs already exist and do NOT need changes:
 
 - **Blocker**: The teamocil importer produces `shell_command_after` on the **window** dict (from `filters.after`, `importers.py:149`), but `WorkspaceBuilder` never reads it. The `trickle()` function in `loader.py` has no logic for it either.
 - **Blocks**: teamocil v0.x `filters.after` — commands run after all pane commands in a window.
-- **Required**: Add handling in `config_after_window()` (around line 565) or in `build()` after the `iter_create_panes()` loop (around line 331). Read `window_config.get("shell_command_after", [])` and send each command to every pane via `pane.send_keys()`. Note: this is a **window-level** key set by the teamocil importer, not per-pane.
+- **Required**: Add handling in `config_after_window()` (around line 822) or in `build()` after the `iter_create_panes()` loop. Read `window_config.get("shell_command_after", [])` and send each command to every pane via `pane.send_keys()`. Note: this is a **window-level** key set by the teamocil importer, not per-pane.
 - **Non-breaking**: New optional config key.
 
 ### T4. No Session Rename Mode / `--here` CLI Flag
 
-- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 406). Additionally, teamocil always renames the current session (`session.rb:18-20`), regardless of `--here`; the `--here` flag only affects **window** behavior (reuse current window for first window instead of creating new). tmuxp's `--append` flag partially covers session rename mode, but does not rename the session.
+- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 649). Additionally, teamocil always renames the current session (`session.rb:18-20`), regardless of `--here`; the `--here` flag only affects **window** behavior (reuse current window for first window instead of creating new). tmuxp's `--append` flag partially covers session rename mode, but does not rename the session.
 - **Blocks**: teamocil `--here` (reuse current window for first window) and teamocil session rename (always active, not conditional on `--here`).
 - **Required**:
   1. Add `--here` flag to `cli/load.py` (around line 516, near `--append`).
   2. Pass `here=True` through to `WorkspaceBuilder.build()`.
   3. In `iter_create_windows()`, when `here=True` and first window: use `window.rename_window(name)` instead of `session.new_window()`, and send `cd <root>` via `pane.send_keys()` for directory change.
-  4. Adjust `first_window_pass()` logic (line 584).
+  4. Adjust `first_window_pass()` logic (line 864).
   5. For session rename: when `--here` is used, also call `session.rename_session(name)` (line 262 area in `build()`).
 - **Depends on**: libtmux `Window.rename_window()` and `Session.rename_session()` (both already exist, L4).
 - **Non-breaking**: New optional CLI flag.
@@ -288,7 +288,7 @@ These add new config key handling to the builder. Each also needs a correspondin
 All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=0.55.0`.
 
 - ~~**L1**: `Pane.set_title()`~~ → `pane.py:834-859`
-- ~~**L2**: `Server(tmux_bin=...)`~~ → `server.py:131-146`
+- ~~**L2**: `Server(tmux_bin=...)`~~ → `server.py:142`
 - ~~**L3**: Pre-execution `logger.debug`~~ → `common.py:263-268`
 
 ### Phase 4: New CLI Commands
