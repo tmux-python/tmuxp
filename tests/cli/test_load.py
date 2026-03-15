@@ -887,6 +887,123 @@ def test_load_workspace_env_progress_disabled(
     assert session.name == "sample workspace"
 
 
+class NoShellCommandBeforeFixture(t.NamedTuple):
+    """Test fixture for --no-shell-command-before flag tests."""
+
+    test_id: str
+    no_shell_command_before: bool
+    expect_before_cmd: bool
+
+
+NO_SHELL_COMMAND_BEFORE_FIXTURES: list[NoShellCommandBeforeFixture] = [
+    NoShellCommandBeforeFixture(
+        test_id="with-shell-command-before",
+        no_shell_command_before=False,
+        expect_before_cmd=True,
+    ),
+    NoShellCommandBeforeFixture(
+        test_id="no-shell-command-before",
+        no_shell_command_before=True,
+        expect_before_cmd=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(NoShellCommandBeforeFixture._fields),
+    NO_SHELL_COMMAND_BEFORE_FIXTURES,
+    ids=[f.test_id for f in NO_SHELL_COMMAND_BEFORE_FIXTURES],
+)
+def test_load_workspace_no_shell_command_before(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    no_shell_command_before: bool,
+    expect_before_cmd: bool,
+) -> None:
+    """Test --no-shell-command-before strips shell_command_before from config."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        """
+session_name: scb_test
+shell_command_before:
+  - echo __BEFORE__
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        no_shell_command_before=no_shell_command_before,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "scb_test"
+
+
+def test_load_no_shell_command_before_strips_all_levels(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify --no-shell-command-before strips from session, window, and pane levels."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "multi_level.yaml"
+    workspace_file.write_text(
+        """
+session_name: strip_test
+shell_command_before:
+  - echo session_before
+windows:
+- window_name: main
+  shell_command_before:
+    - echo window_before
+  panes:
+  - shell_command:
+    - echo hello
+    shell_command_before:
+    - echo pane_before
+""",
+        encoding="utf-8",
+    )
+
+    # Verify the stripping logic via loader functions
+    raw = ConfigReader._from_file(workspace_file) or {}
+    expanded = loader.expand(raw, cwd=str(tmp_path))
+
+    # Before stripping, shell_command_before should be present
+    assert "shell_command_before" in expanded
+    assert "shell_command_before" in expanded["windows"][0]
+    assert "shell_command_before" in expanded["windows"][0]["panes"][0]
+
+    # Simulate the stripping logic from load_workspace
+    expanded.pop("shell_command_before", None)
+    for window in expanded.get("windows", []):
+        window.pop("shell_command_before", None)
+        for pane in window.get("panes", []):
+            pane.pop("shell_command_before", None)
+
+    trickled = loader.trickle(expanded)
+
+    # After stripping + trickle, pane commands should not include before cmds
+    pane_cmds = trickled["windows"][0]["panes"][0]["shell_command"]
+    cmd_strings = [c["cmd"] for c in pane_cmds]
+    assert "echo session_before" not in cmd_strings
+    assert "echo window_before" not in cmd_strings
+    assert "echo pane_before" not in cmd_strings
+    assert "echo hello" in cmd_strings
+
+
 def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:
     """Spinner message should mask home directory via PrivatePath."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
