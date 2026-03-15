@@ -64,12 +64,9 @@ Resolved in `feat(loader[expand])` — `expand()` desugars `synchronize: true/be
 - **Config keys**: `enable_pane_titles: true`, `pane_title_position: top`, `pane_title_format: "..."` (session-level). `title: "my-title"` (pane-level).
 - **Non-breaking**: New optional config keys.
 
-### T3. No `shell_command_after` Config Key
+### T3. `shell_command_after` Config Key ✅ Resolved
 
-- **Blocker**: The teamocil importer produces `shell_command_after` on the **window** dict (from `filters.after`, `importers.py:149`), but `WorkspaceBuilder` never reads it. The `trickle()` function in `loader.py` has no logic for it either.
-- **Blocks**: teamocil v0.x `filters.after` — commands run after all pane commands in a window.
-- **Required**: Add handling in `config_after_window()` (around line 822) or in `build()` after the `iter_create_panes()` loop. Read `window_config.get("shell_command_after", [])` and send each command to every pane via `pane.send_keys()`. Note: this is a **window-level** key set by the teamocil importer, not per-pane.
-- **Non-breaking**: New optional config key.
+Resolved in `feat(builder[config_after_window],loader[expand])` — `expand()` normalizes `shell_command_after` via `expand_cmd()`, then `config_after_window()` sends each command to every pane in the window. Tests: `test_shell_command_after` (builder integration), `test_expand_shell_command_after` (unit).
 
 ### T4. No Session Rename Mode / `--here` CLI Flag
 
@@ -144,7 +141,7 @@ Keys produced by importers but silently ignored by the builder:
 | `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
 | `height` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — `width` is popped but `height` passes through silently |
 | `target` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — accidentally preserved via dict mutation, but libtmux has `Pane.split(target=...)` (L4) |
-| `shell_command_after` | teamocil importer | `importers.py:149` | Never read | Dead data — tmuxp has no after-command support |
+| ~~`shell_command_after`~~ | teamocil importer | `importers.py:149` | ✅ `config_after_window()` | Resolved — T3 |
 
 ## Importer Bugs (No Builder Changes Needed)
 
@@ -271,8 +268,7 @@ These fix existing bugs and add missing translations without touching the builde
 These add new config key handling to the builder. Each also needs a corresponding importer update:
 
 1. **T1**: ✅ `synchronize` config key — resolved via `expand()` desugaring in `loader.py`
-2. **T3**: `shell_command_after` config key — straightforward `send_keys()` loop
-   - teamocil importer already produces this key (I3 fixes the loop); builder just needs to read it
+2. **T3**: ✅ `shell_command_after` config key — resolved via `expand()` + `config_after_window()`
 3. **T2**: Pane title config keys — **now unblocked** (L1 resolved in libtmux v0.55.0)
    - Use `pane.set_title()` in builder. Session-level `enable_pane_titles`, `pane_title_position`, `pane_title_format` via `session.set_option()`.
    - Update tmuxinator importer to import named pane syntax (`pane_name: command` → `title` + `shell_command`)
