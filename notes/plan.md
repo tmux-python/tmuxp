@@ -54,15 +54,9 @@ These libtmux APIs already exist and do NOT need changes:
 
 Resolved in `feat(loader[expand])` — `expand()` desugars `synchronize: true/before/after` into `options`/`options_after` with `synchronize-panes: on`. The builder's existing `options` and `options_after` handling applies the setting. Tests: `test_synchronize` (builder integration), `test_expand_synchronize` (unit).
 
-### T2. No Pane Title Config Key
+### T2. Pane Title Config Key ✅ Resolved
 
-- **Blocker**: `WorkspaceBuilder` has no handling for pane `title` key or session-level `enable_pane_titles` / `pane_title_position` / `pane_title_format`.
-- **Blocks**: Pane titles (tmuxinator named pane syntax).
-- **Required**:
-  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` alongside other session options (lines 529-539).
-  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after commands are sent in `iter_create_panes()`, before focus handling (around line 816). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
-- **Config keys**: `enable_pane_titles: true`, `pane_title_position: top`, `pane_title_format: "..."` (session-level). `title: "my-title"` (pane-level).
-- **Non-breaking**: New optional config keys.
+Resolved in `feat(loader[expand],builder[iter_create_panes])` — Session-level `enable_pane_titles`/`pane_title_position`/`pane_title_format` desugared in `expand()` into per-window `options` (`pane-border-status`, `pane-border-format`). Pane-level `title` handled in `iter_create_panes()` via `pane.set_title()`. Tests: `test_pane_titles` (builder integration), `test_expand_pane_titles`/`_disabled`/`_defaults` (unit).
 
 ### T3. `shell_command_after` Config Key ✅ Resolved
 
@@ -269,9 +263,7 @@ These add new config key handling to the builder. Each also needs a correspondin
 
 1. **T1**: ✅ `synchronize` config key — resolved via `expand()` desugaring in `loader.py`
 2. **T3**: ✅ `shell_command_after` config key — resolved via `expand()` + `config_after_window()`
-3. **T2**: Pane title config keys — **now unblocked** (L1 resolved in libtmux v0.55.0)
-   - Use `pane.set_title()` in builder. Session-level `enable_pane_titles`, `pane_title_position`, `pane_title_format` via `session.set_option()`.
-   - Update tmuxinator importer to import named pane syntax (`pane_name: command` → `title` + `shell_command`)
+3. **T2**: ✅ Pane title config keys — resolved via `expand()` desugaring + `pane.set_title()` in builder
 4. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
 
 ### ~~Phase 3: libtmux Additions~~ — **COMPLETE** (libtmux v0.55.0, issue #635 closed)
