@@ -66,12 +66,9 @@ Resolved in `feat(builder[config_after_window],loader[expand])` — `expand()` n
 
 Resolved in `feat(cli[load],builder)` — `--here` flag added to CLI, passed through `load_workspace` → `_dispatch_build` → `build()` → `iter_create_windows()`. In `build()`, renames session to match config. In `iter_create_windows()`, reuses active window for first window (rename + cd) instead of `first_window_pass` trick. Skips session-exists prompt. Tests: `test_here_mode` (builder integration).
 
-### T5. No `stop` / `kill` CLI Command
+### ~~T5. No `stop` / `kill` CLI Command~~ ✅
 
-- **Blocker**: tmuxp has no `stop` command. The CLI modules (`cli/__init__.py`) only register: `load`, `freeze`, `ls`, `search`, `shell`, `convert`, `import`, `edit`, `debug-info`.
-- **Blocks**: tmuxinator `stop` / `stop-all` — kill session with cleanup hooks.
-- **Required**: Add `tmuxp stop <session>` command. Implementation: find session by name via `server.sessions`, call `session.kill()`. For hook support, run `on_project_stop` hook before kill.
-- **Non-breaking**: New CLI command.
+Resolved in `feat(cli[stop])` — `tmuxp stop <session-name>` command added. Follows `freeze.py` pattern: optional session-name positional arg with current-session fallback via `util.get_session()`, `-L`/`-S` socket pass-through. Kills session via `session.kill()`. Uses `Colors` semantic hierarchy for output (green success + magenta session name). Lifecycle hooks (T6 `on_project_stop`) will layer on top.
 
 ### T6. No Lifecycle Hook Config Keys
 
@@ -267,7 +264,7 @@ All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=
 
 ### Phase 4: New CLI Commands
 
-1. **T5**: `tmuxp stop` command
+1. ~~**T5**: `tmuxp stop` command~~
 2. **T10**: `tmuxp new`, `tmuxp copy`, `tmuxp delete` commands
 
 ### Phase 5: CLI Flags & Larger Features
