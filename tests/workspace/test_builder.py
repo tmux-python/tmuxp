@@ -444,6 +444,42 @@ def test_pane_titles(
     ), f"Expected title 'runner', got '{panes[1].pane_title}'"
 
 
+def test_here_mode(
+    session: Session,
+) -> None:
+    """Test --here mode reuses current window and renames session."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    # Capture original window ID to verify reuse
+    original_window = session.active_window
+    original_window_id = original_window.window_id
+    original_session_name = session.name
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    # Session should be renamed
+    session.refresh()
+    assert session.name == "here-session"
+    assert session.name != original_session_name
+
+    windows = session.windows
+    assert len(windows) == 2
+
+    # First window should be the reused original window (same ID)
+    reused_window = windows[0]
+    assert reused_window.window_id == original_window_id
+    assert reused_window.name == "reused"
+
+    # Second window should be newly created
+    new_window = windows[1]
+    assert new_window.name == "new-win"
+    assert new_window.window_id != original_window_id
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
