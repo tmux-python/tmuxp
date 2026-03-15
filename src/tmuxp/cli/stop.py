@@ -95,6 +95,14 @@ def command_stop(
         return
 
     session_name = session.name
+
+    # Run on_project_stop hook from session environment
+    on_stop_cmd = session.getenv("TMUXP_ON_PROJECT_STOP")
+    if on_stop_cmd and isinstance(on_stop_cmd, str):
+        start_dir = session.getenv("TMUXP_START_DIRECTORY")
+        _stop_cwd = str(start_dir) if isinstance(start_dir, str) else None
+        util.run_hook_commands(on_stop_cmd, cwd=_stop_cwd)
+
     session.kill()
     logger.info("session stopped", extra={"tmux_session": session_name or ""})
     tmuxp_echo(
