@@ -138,6 +138,14 @@ def expand(
                     val = str(cwd / val)
             workspace_dict["options"][key] = val
 
+    # Desugar synchronize shorthand into options / options_after
+    if "synchronize" in workspace_dict:
+        sync = workspace_dict.pop("synchronize")
+        if sync is True or sync == "before":
+            workspace_dict.setdefault("options", {})["synchronize-panes"] = "on"
+        elif sync == "after":
+            workspace_dict.setdefault("options_after", {})["synchronize-panes"] = "on"
+
     # Any workspace section, session, window, pane that can contain the
     # 'shell_command' value
     if "start_directory" in workspace_dict:
