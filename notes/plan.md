@@ -70,18 +70,9 @@ Resolved in `feat(cli[load],builder)` — `--here` flag added to CLI, passed thr
 
 Resolved in `feat(cli[stop])` — `tmuxp stop <session-name>` command added. Follows `freeze.py` pattern: optional session-name positional arg with current-session fallback via `util.get_session()`, `-L`/`-S` socket pass-through. Kills session via `session.kill()`. Uses `Colors` semantic hierarchy for output (green success + magenta session name). Lifecycle hooks (T6 `on_project_stop`) will layer on top.
 
-### T6. No Lifecycle Hook Config Keys
+### T6. Lifecycle Hook Config Keys ✅ Resolved
 
-- **Blocker**: tmuxp's plugin system (`plugin.py:216-292`) has 5 hooks: `before_workspace_builder`, `on_window_create`, `after_window_finished`, `before_script`, `reattach`. These are Python plugin hooks, not config-driven shell command hooks. There are no config keys for `on_project_start`, `on_project_exit`, etc.
-- **Blocks**: tmuxinator lifecycle hooks (`on_project_start`, `on_project_first_start`, `on_project_restart`, `on_project_exit`, `on_project_stop`).
-- **Required**: Add config-level hook keys. Mapping:
-  - `on_project_start` → run shell command at start of `build()`, before `before_script`
-  - `on_project_first_start` → already partially covered by `before_script`
-  - `on_project_restart` → run when reattaching (currently only plugin `reattach()` hook)
-  - `on_project_exit` → use tmux `set-hook client-detached` via `session.set_hook()` (libtmux L4)
-  - `on_project_stop` → run in new `tmuxp stop` command (T5)
-- **Depends on**: T5 for `on_project_stop`.
-- **Non-breaking**: New optional config keys.
+Resolved in `feat(util,builder,cli[load,stop],loader)` — 4 lifecycle hook config keys added: `on_project_start` (runs on every `tmuxp load`, before session creation), `on_project_restart` (runs when reattaching to existing session), `on_project_exit` (fires on detach via tmux `set-hook client-detached`), `on_project_stop` (runs before `session.kill()` in `tmuxp stop`, stored in session env). `run_hook_commands()` helper uses `shell=True` for full shell support. `on_project_first_start` skipped (covered by `before_script`). Hook values expanded via `expandshell()` in `loader.expand()`. Tests: `test_run_hook_commands*` (unit), `test_on_project_exit_sets_hook*` / `test_on_project_stop_sets_environment` / `test_on_project_stop_sets_start_directory_env` (builder integration), `test_load_on_project_start_runs_hook` / `test_load_on_project_restart_runs_hook` (CLI load), `test_stop_runs_on_project_stop_hook` / `test_stop_without_hook` (CLI stop), `test_expand_lifecycle_hooks_*` (loader expand).
 
 ### T7. No `--no-shell-command-before` CLI Flag ✅ Resolved
 
