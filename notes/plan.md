@@ -1,32 +1,35 @@
 # Parity Implementation Plan
 
-*Last updated: 2026-03-07*
+*Last updated: 2026-03-15*
 *Based on: parity-tmuxinator.md, parity-teamocil.md, import-tmuxinator.md, import-teamocil.md*
 
 ## libtmux Limitations
 
-### L1. No `Pane.set_title()` Method
+### L1. No `Pane.set_title()` Method — **RESOLVED in libtmux v0.55.0**
 
-- **Blocker**: libtmux has no method wrapping `select-pane -T <title>`. The `pane_title` format variable is excluded from libtmux's bulk format queries (`formats.py:70`, commented out with note "removed in 3.1+"), but this is a libtmux-side exclusion — tmux itself still supports both `#{pane_title}` (in `format.c:205`) and `select-pane -T` (added in tmux 2.6). libtmux already knows about the display options (`pane_border_status`, `pane_border_format` in `constants.py:163-173`) but has no setter for the title itself.
-- **Blocks**: Pane titles (tmuxinator feature: named pane syntax `pane_name: command` → `select-pane -T`). Also blocks `enable_pane_titles`, `pane_title_position`, `pane_title_format` session-level config.
-- **Required**: Add `Pane.set_title(title: str)` method that calls `self.cmd("select-pane", "-T", title)`. This is a simple wrapper — `Pane.cmd()` already exists (`pane.py:177`) and `select-pane` is already used for `Pane.select()` (`pane.py:601`).
+**Status**: `Pane.set_title(title)` added at `pane.py:834-859`. Unblocks T2.
+
+- ~~**Blocker**: libtmux has no method wrapping `select-pane -T <title>`.~~
+- ~~**Blocks**: Pane titles (tmuxinator feature: named pane syntax `pane_name: command` → `select-pane -T`). Also blocks `enable_pane_titles`, `pane_title_position`, `pane_title_format` session-level config.~~
+- ~~**Required**: Add `Pane.set_title(title: str)` method that calls `self.cmd("select-pane", "-T", title)`.~~
 - **Non-breaking**: Pure addition, no existing API changes.
 
-### L2. Hardcoded tmux Binary Path
+### L2. Hardcoded tmux Binary Path — **RESOLVED in libtmux v0.55.0**
 
-- **Blocker**: `shutil.which("tmux")` is hardcoded in two independent code paths:
-  - `common.py:252` — `tmux_cmd.__init__()`, the class through which all libtmux commands flow (called by `Server.cmd()` at `server.py:311`)
-  - `server.py:223` — `Server.raise_if_dead()`, a separate code path that calls `subprocess.check_call()` directly
-  There is no way to use a custom tmux binary (wemux, byobu, or custom-built tmux).
-- **Blocks**: Wemux support (tmuxinator `tmux_command: wemux`). Also blocks CI/container use with non-standard tmux locations.
-- **Required**: Add optional `tmux_bin` parameter to `Server.__init__()` that propagates to `tmux_cmd`. Both code paths must be updated. Default remains `shutil.which("tmux")`.
+**Status**: `Server(tmux_bin=...)` added at `server.py:142`. Unblocks tmuxinator `tmux_command`.
+
+- ~~**Blocker**: `shutil.which("tmux")` is hardcoded in two independent code paths.~~
+- ~~**Blocks**: Wemux support (tmuxinator `tmux_command: wemux`). Also blocks CI/container use with non-standard tmux locations.~~
+- ~~**Required**: Add optional `tmux_bin` parameter to `Server.__init__()` that propagates to `tmux_cmd`.~~
 - **Non-breaking**: Optional parameter with backward-compatible default. Existing code is unaffected.
 
-### L3. No Dry-Run / Command Preview Mode
+### L3. No Dry-Run / Command Preview Mode — **RESOLVED in libtmux v0.55.0**
 
-- **Blocker**: `tmux_cmd` (`common.py:252-296`) always executes commands. Debug logging exists (`logger.debug` at line 291) but logs the command and its stdout *after* execution, not before. There is no pre-execution logging or facility to collect commands without executing them.
-- **Blocks**: `--debug` / dry-run mode (both tmuxinator and teamocil have this). tmuxinator generates a bash script that can be previewed; teamocil's `--debug` outputs the tmux command list.
-- **Required**: Either (a) add a `dry_run` flag to `tmux_cmd` that collects commands instead of executing, or (b) add pre-execution logging at DEBUG level that logs the full command before `subprocess.run()`. Option (b) is simpler and doesn't change behavior.
+**Status**: Pre-execution `logger.debug` added at `common.py:263-268`. Unblocks T9.
+
+- ~~**Blocker**: `tmux_cmd` always executes commands with no pre-execution logging.~~
+- ~~**Blocks**: `--debug` / dry-run mode (both tmuxinator and teamocil have this).~~
+- ~~**Required**: Add pre-execution logging at DEBUG level that logs the full command before `subprocess.run()`.~~
 - **Non-breaking**: Logging change only. tmuxp would implement the user-facing `--debug` flag by capturing log output.
 - **Note**: Since tmuxp uses libtmux API calls (not command strings), a true dry-run would require a recording layer in `WorkspaceBuilder` that logs each API call. This is architecturally different from tmuxinator/teamocil's approach and may not be worth full parity.
 
@@ -36,20 +39,20 @@ These libtmux APIs already exist and do NOT need changes:
 
 | API | Location | Supports |
 |---|---|---|
-| `Session.rename_session(name)` | `session.py:412` | teamocil session rename mode |
+| `Session.rename_session(name)` | `session.py:422` | teamocil session rename mode |
 | `Window.rename_window(name)` | `window.py:462` | teamocil `--here` flag |
 | `Pane.resize(height, width)` | `pane.py:217` | teamocil v0.x pane `width` |
 | `Pane.send_keys(cmd, enter)` | `pane.py:423` | All command sending |
-| `Pane.select()` | `pane.py:577` | Pane focus |
-| `Window.set_option(key, val)` | `options.py:578` (OptionsMixin) | `synchronize-panes`, window options |
-| `Session.set_hook(hook, cmd)` | `hooks.py:111` (HooksMixin) | Lifecycle hooks (`client-detached`, etc.) |
-| `Session.set_option(key, val)` | `options.py:578` (OptionsMixin) | `pane-border-status`, `pane-border-format` |
+| `Pane.select()` | `pane.py:586` | Pane focus |
+| `Window.set_option(key, val)` | `options.py:593` (OptionsMixin) | `synchronize-panes`, window options |
+| `Session.set_hook(hook, cmd)` | `hooks.py:118` (HooksMixin) | Lifecycle hooks (`client-detached`, etc.) |
+| `Session.set_option(key, val)` | `options.py:593` (OptionsMixin) | `pane-border-status`, `pane-border-format` |
 | `HooksMixin` on Session/Window/Pane | `session.py:55`, `window.py:56`, `pane.py:51` | All entities inherit hooks |
-| `HooksMixin.set_hooks()` (bulk) | `hooks.py:430` | Efficient multi-hook setup (dict/list input) |
-| `Session.set_environment(key, val)` | `session.py:53` (EnvironmentMixin) | Session-level env vars (teamocil `with_env_var`) |
-| `Pane.clear()` | `pane.py:818` | Sends `reset` to clear pane (teamocil `clear`) |
-| `Pane.reset()` | `pane.py:823` | `send-keys -R \; clear-history` (full reset) |
-| `Pane.split(target=...)` | `pane.py:625` | Split targeting (teamocil v0.x `target`) |
+| `HooksMixin.set_hooks()` (bulk) | `hooks.py:437` | Efficient multi-hook setup (dict/list input) |
+| `Session.set_environment(key, val)` | `common.py:63` (EnvironmentMixin) | Session-level env vars (teamocil `with_env_var`) |
+| `Pane.clear()` | `pane.py:869` | Sends `reset` to clear pane (teamocil `clear`) |
+| `Pane.reset()` | `pane.py:874` | `send-keys -R \; clear-history` (full reset) |
+| `Pane.split(target=...)` | `pane.py:634` | Split targeting (teamocil v0.x `target`) |
 
 ## tmuxp Limitations
 
@@ -58,7 +61,7 @@ These libtmux APIs already exist and do NOT need changes:
 - **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. The key is silently ignored if present.
 - **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`). Note: tmuxinator deprecates `true`/`before` in favor of `after` (`project.rb:21-29`), but all three values still function. The import should honor original semantics of each value.
 - **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands are sent. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
-- **Insertion point**: In `build()` around line 320 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 565 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
+- **Insertion point**: In `build()` around line 541 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 822 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
 - **Non-breaking**: New optional config key. Existing configs are unaffected.
 
 ### T2. No Pane Title Config Key
@@ -66,8 +69,8 @@ These libtmux APIs already exist and do NOT need changes:
 - **Blocker**: `WorkspaceBuilder` has no handling for pane `title` key or session-level `enable_pane_titles` / `pane_title_position` / `pane_title_format`.
 - **Blocks**: Pane titles (tmuxinator named pane syntax).
 - **Required**:
-  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` alongside other session options (lines 303-309).
-  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after commands are sent in `iter_create_panes()`, before focus handling (around line 535). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
+  1. Session-level: set `pane-border-status` and `pane-border-format` options via `session.set_option()` in `build()` alongside other session options (lines 529-539).
+  2. Pane-level: call `pane.cmd("select-pane", "-T", title)` after commands are sent in `iter_create_panes()`, before focus handling (around line 816). Requires L1 (libtmux `set_title()`), or can use `pane.cmd()` directly.
 - **Config keys**: `enable_pane_titles: true`, `pane_title_position: top`, `pane_title_format: "..."` (session-level). `title: "my-title"` (pane-level).
 - **Non-breaking**: New optional config keys.
 
@@ -75,18 +78,18 @@ These libtmux APIs already exist and do NOT need changes:
 
 - **Blocker**: The teamocil importer produces `shell_command_after` on the **window** dict (from `filters.after`, `importers.py:149`), but `WorkspaceBuilder` never reads it. The `trickle()` function in `loader.py` has no logic for it either.
 - **Blocks**: teamocil v0.x `filters.after` — commands run after all pane commands in a window.
-- **Required**: Add handling in `config_after_window()` (around line 565) or in `build()` after the `iter_create_panes()` loop (around line 331). Read `window_config.get("shell_command_after", [])` and send each command to every pane via `pane.send_keys()`. Note: this is a **window-level** key set by the teamocil importer, not per-pane.
+- **Required**: Add handling in `config_after_window()` (around line 822) or in `build()` after the `iter_create_panes()` loop. Read `window_config.get("shell_command_after", [])` and send each command to every pane via `pane.send_keys()`. Note: this is a **window-level** key set by the teamocil importer, not per-pane.
 - **Non-breaking**: New optional config key.
 
 ### T4. No Session Rename Mode / `--here` CLI Flag
 
-- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 406). Additionally, teamocil always renames the current session (`session.rb:18-20`), regardless of `--here`; the `--here` flag only affects **window** behavior (reuse current window for first window instead of creating new). tmuxp's `--append` flag partially covers session rename mode, but does not rename the session.
+- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 649). Additionally, teamocil always renames the current session (`session.rb:18-20`), regardless of `--here`; the `--here` flag only affects **window** behavior (reuse current window for first window instead of creating new). tmuxp's `--append` flag partially covers session rename mode, but does not rename the session.
 - **Blocks**: teamocil `--here` (reuse current window for first window) and teamocil session rename (always active, not conditional on `--here`).
 - **Required**:
   1. Add `--here` flag to `cli/load.py` (around line 516, near `--append`).
   2. Pass `here=True` through to `WorkspaceBuilder.build()`.
   3. In `iter_create_windows()`, when `here=True` and first window: use `window.rename_window(name)` instead of `session.new_window()`, and send `cd <root>` via `pane.send_keys()` for directory change.
-  4. Adjust `first_window_pass()` logic (line 584).
+  4. Adjust `first_window_pass()` logic (line 864).
   5. For session rename: when `--here` is used, also call `session.rename_session(name)` (line 262 area in `build()`).
 - **Depends on**: libtmux `Window.rename_window()` and `Session.rename_session()` (both already exist, L4).
 - **Non-breaking**: New optional CLI flag.
@@ -145,30 +148,30 @@ Keys produced by importers but silently ignored by the builder:
 
 | Key | Producer | Importer Line | Builder Handling | Issue |
 |---|---|---|---|---|
-| `shell_command` (session-level) | tmuxinator importer | `importers.py:60` | Not a valid session key | **Bug** (I1 Bug B): `pre` commands lost when both `pre` and `pre_window` exist |
-| `config` | tmuxinator importer | `importers.py:37,44` | Never read | Dead data — extracted `-f` path goes nowhere |
-| `socket_name` | tmuxinator importer | `importers.py:52` | Never read | Dead data — CLI uses `-L` flag |
-| `clear` | teamocil importer | `importers.py:141` | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
+| `shell_command` (session-level) | tmuxinator importer | `importers.py:71` | Not a valid session key | **Bug** (I1 Bug B): `pre` commands lost when both `pre` and `pre_window` exist |
+| `config` | tmuxinator importer | `importers.py:48,55` | Never read | Dead data — extracted `-f` path goes nowhere |
+| `socket_name` | tmuxinator importer | `importers.py:63` | Never read | Dead data — CLI uses `-L` flag |
+| `clear` | teamocil importer | `importers.py:158` | Never read | Dead data — builder doesn't read it, but libtmux has `Pane.clear()` (L4) |
 | `height` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — `width` is popped but `height` passes through silently |
 | `target` (pane) | teamocil importer | passthrough (not popped) | Never read | Dead data — accidentally preserved via dict mutation, but libtmux has `Pane.split(target=...)` (L4) |
-| `shell_command_after` | teamocil importer | `importers.py:149` | Never read | Dead data — tmuxp has no after-command support |
+| `shell_command_after` | teamocil importer | `importers.py:166` | Never read | Dead data — tmuxp has no after-command support |
 
 ## Importer Bugs (No Builder Changes Needed)
 
 ### I1. tmuxinator `pre` / `pre_window` Mapping Bugs
 
-Two bugs in `importers.py:59-70`, covering both code paths for the `pre` key:
+Two bugs in `importers.py:70-81`, covering both code paths for the `pre` key:
 
 #### Bug A: Solo `pre` maps to wrong key (NEW — 2026-03-06)
 
-- **Bug**: When only `pre` exists (no `pre_window`) (`importers.py:66-70`), it maps to `shell_command_before` — a per-pane key that runs before each pane's commands. But tmuxinator's `pre` is a session-level hook that runs **once** before any windows are created. The correct target is `before_script`.
+- **Bug**: When only `pre` exists (no `pre_window`) (`importers.py:77-81`), it maps to `shell_command_before` — a per-pane key that runs before each pane's commands. But tmuxinator's `pre` is a session-level hook that runs **once** before any windows are created. The correct target is `before_script`.
 - **Effect**: Instead of running once at session start, the `pre` commands run N times (once per pane) as pane setup commands. This changes both the semantics (pre-session → per-pane) and the execution count.
 
 #### Bug B: Combo `pre` + `pre_window` loses `pre` commands
 
-- **Bug**: When both `pre` and `pre_window` exist (`importers.py:59-65`):
-  1. `pre` maps to `shell_command` (line 60) — invalid session-level key, silently ignored by builder. The `pre` commands are lost entirely (see Dead Config Keys table).
-  2. The `isinstance` check on line 62 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. When `pre` is a string but `pre_window` is a list, `pre_window` gets double-wrapped as `[["cmd1", "cmd2"]]` (nested list). When `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list — leaving a bare string where a list is expected.
+- **Bug**: When both `pre` and `pre_window` exist (`importers.py:70-76`):
+  1. `pre` maps to `shell_command` (line 71) — invalid session-level key, silently ignored by builder. The `pre` commands are lost entirely (see Dead Config Keys table).
+  2. The `isinstance` check on line 73 tests `workspace_dict["pre"]` type to decide how to wrap `workspace_dict["pre_window"]` — it should check `pre_window`'s type, not `pre`'s. When `pre` is a string but `pre_window` is a list, `pre_window` gets double-wrapped as `[["cmd1", "cmd2"]]` (nested list). When `pre` is a list but `pre_window` is a string, `pre_window` won't be wrapped in a list — leaving a bare string where a list is expected.
 
 #### Correct mapping
 
@@ -181,19 +184,19 @@ Two bugs in `importers.py:59-70`, covering both code paths for the `pre` key:
 
 ### I2. tmuxinator `cli_args` / `tmux_options` Fragile Parsing
 
-- **Bug**: `str.replace("-f", "").strip()` (`importers.py:41,48`) does a global string replacement, not flag-aware parsing. A value like `"-f ~/.tmux.conf -L mysocket"` would produce `"~/.tmux.conf -L mysocket"` as the `config` value (including the `-L` flag in a file path). Also ignores `-L` (socket name) and `-S` (socket path) flags entirely.
+- **Bug**: `str.replace("-f", "").strip()` (`importers.py:50-60`) does a global string replacement, not flag-aware parsing. A value like `"-f ~/.tmux.conf -L mysocket"` would produce `"~/.tmux.conf -L mysocket"` as the `config` value (including the `-L` flag in a file path). Also ignores `-L` (socket name) and `-S` (socket path) flags entirely.
 - **Fix**: Use proper argument parsing (e.g., `shlex.split()` + iterate to find `-f` flag and its value).
 
 ### I3. teamocil Redundant Filter Loops
 
-- **Bug**: `for _b in w["filters"]["before"]:` loops (`importers.py:145-149`) iterate N times but set the same value each time.
+- **Bug**: `for _b in w["filters"]["before"]:` loops (`importers.py:160-166`) iterate N times but set the same value each time.
 - **Fix**: Replace with direct assignment.
 
 ### I4. teamocil v1.x Format Not Supported
 
 - **Bug**: Importer assumes v0.x format. String panes cause incorrect behavior (`"cmd" in "git status"` checks substring, not dict key). `commands` key (v1.x) not mapped.
 - **Fix**: Add format detection. Handle string panes, `commands` key, `focus`, and `options`.
-- **Also**: v0.x pane `width` is silently dropped (`importers.py:161-163`) with a TODO but no user warning. `height` is not even popped — it passes through as a dead key. Since libtmux's `Pane.resize()` exists (L4), the importer could preserve both `width` and `height` and the builder could call `pane.resize(width=value)` or `pane.resize(height=value)` after split. Alternatively, warn the user.
+- **Also**: v0.x pane `width` is silently dropped (`importers.py:178-180`) with a TODO but no user warning. `height` is not even popped — it passes through as a dead key. Since libtmux's `Pane.resize()` exists (L4), the importer could preserve both `width` and `height` and the builder could call `pane.resize(width=value)` or `pane.resize(height=value)` after split. Alternatively, warn the user.
 
 ### I5. tmuxinator Missing Keys
 
@@ -224,11 +227,11 @@ Not imported but translatable:
 
 ### I7. Importer TODOs Need Triage
 
-`importers.py:121,123` lists `with_env_var` and `cmd_separator` as TODOs (with `clear` at line 122 in between). Both are verified v0.x features (present in teamocil's `0.4-stable` branch at `lib/teamocil/layout/window.rb`), not stale references:
+`importers.py:132-134` lists `with_env_var` and `cmd_separator` as TODOs (with `clear` at line 133 in between). Both are verified v0.x features (present in teamocil's `0.4-stable` branch at `lib/teamocil/layout/window.rb`), not stale references:
 
-- **`with_env_var`** (line 121): When `true` (the default in v0.x), exports `TEAMOCIL=1` in each pane. Should map to `environment: { TEAMOCIL: "1" }` (tmuxp's `environment` key works at session level via `Session.set_environment()`, L4). Implement, don't remove.
-- **`clear`** (line 122): Already imported at line 141 but builder ignores it. libtmux has `Pane.clear()` (L4), so builder support is feasible.
-- **`cmd_separator`** (line 123): Per-window string (default `"; "`) used to join commands before `send-keys`. Irrelevant for tmuxp since it sends commands individually. Remove TODO.
+- **`with_env_var`** (line 132): When `true` (the default in v0.x), exports `TEAMOCIL=1` in each pane. Should map to `environment: { TEAMOCIL: "1" }` (tmuxp's `environment` key works at session level via `Session.set_environment()`, L4). Implement, don't remove.
+- **`clear`** (line 133): Already imported at line 158 but builder ignores it. libtmux has `Pane.clear()` (L4), so builder support is feasible.
+- **`cmd_separator`** (line 134): Per-window string (default `"; "`) used to join commands before `send-keys`. Irrelevant for tmuxp since it sends commands individually. Remove TODO.
 
 ## Test Coverage Gaps
 
@@ -281,26 +284,27 @@ These add new config key handling to the builder. Each also needs a correspondin
    - Then update tmuxinator importer to import `synchronize` key (pass-through, same name)
 2. **T3**: `shell_command_after` config key — straightforward `send_keys()` loop
    - teamocil importer already produces this key (I3 fixes the loop); builder just needs to read it
-3. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
+3. **T2**: Pane title config keys — **now unblocked** (L1 resolved in libtmux v0.55.0)
+   - Use `pane.set_title()` in builder. Session-level options via `session.set_option()`.
+   - Update tmuxinator importer for named pane syntax
+4. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
 
-### Phase 3: libtmux Additions
+### ~~Phase 3: libtmux Additions~~ — **COMPLETE** (libtmux v0.55.0, issue #635 closed)
 
-These require changes to the libtmux package:
+All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=0.55.0`.
 
-1. **L1**: `Pane.set_title()` — simple wrapper, needed for T2
-2. **T2**: Pane title config keys — depends on L1
-   - Then update tmuxinator importer to import `enable_pane_titles`, `pane_title_position`, `pane_title_format`, and named pane syntax (`pane_name: command` → `title` + `shell_command`)
+- ~~**L1**: `Pane.set_title()`~~ → `pane.py:834-859`
+- ~~**L2**: `Server(tmux_bin=...)`~~ → `server.py:142`
+- ~~**L3**: Pre-execution `logger.debug`~~ → `common.py:263-268`
 
 ### Phase 4: New CLI Commands
 
 1. **T5**: `tmuxp stop` command
 2. **T10**: `tmuxp new`, `tmuxp copy`, `tmuxp delete` commands
 
-### Phase 5: Larger Features (Nice-to-Have)
+### Phase 5: CLI Flags & Larger Features
 
-1. **T6**: Lifecycle hook config keys — complex, needs design
-2. **T7**: `--no-shell-command-before` flag — simple
-3. **T8**: Config templating — significant architectural addition
-4. **L3**: Pre-execution command logging in libtmux — prerequisite for T9
-5. **T9**: `--debug` / dry-run mode — depends on L3
-6. **L2**: Custom tmux binary — requires libtmux changes
+1. **T7**: `--no-shell-command-before` flag — simple
+2. **T9**: `--debug` / dry-run mode — **now unblocked** (L3 resolved in libtmux v0.55.0)
+3. **T6**: Lifecycle hook config keys — complex, needs design
+4. **T8**: Config templating — significant architectural addition
