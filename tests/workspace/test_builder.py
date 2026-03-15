@@ -359,6 +359,30 @@ def test_window_options_after(
         ), "Synchronized command did not execute properly"
 
 
+def test_synchronize(
+    session: Session,
+) -> None:
+    """Test synchronize config key desugars to synchronize-panes option."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/synchronize.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    windows = session.windows
+    assert len(windows) == 3
+
+    synced_before = windows[0]
+    synced_after = windows[1]
+    not_synced = windows[2]
+
+    assert synced_before.show_option("synchronize-panes") is True
+    assert synced_after.show_option("synchronize-panes") is True
+    assert not_synced.show_option("synchronize-panes") is not True
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
