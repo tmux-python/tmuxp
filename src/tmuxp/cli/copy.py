@@ -1,0 +1,101 @@
+"""CLI for ``tmuxp copy`` subcommand."""
+
+from __future__ import annotations
+
+import logging
+import os
+import shutil
+import typing as t
+
+from tmuxp._internal.private_path import PrivatePath
+from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir, is_pure_name
+
+from ._colors import Colors, build_description, get_color_mode
+from .utils import prompt_yes_no, tmuxp_echo
+
+logger = logging.getLogger(__name__)
+
+COPY_DESCRIPTION = build_description(
+    """
+    Copy an existing workspace config to a new name.
+
+    Source is resolved using the same logic as ``tmuxp load`` (supports
+    names, paths, and extensions). If destination is a plain name, it
+    is placed in the workspace directory as ``<name>.yaml``.
+    """,
+    (
+        (
+            None,
+            [
+                "tmuxp copy myproject myproject-backup",
+                "tmuxp copy dev staging",
+            ],
+        ),
+    ),
+)
+
+if t.TYPE_CHECKING:
+    import argparse
+
+    CLIColorModeLiteral: t.TypeAlias = t.Literal["auto", "always", "never"]
+
+
+def create_copy_subparser(
+    parser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    """Augment :class:`argparse.ArgumentParser` with ``copy`` subcommand."""
+    parser.add_argument(
+        dest="source",
+        metavar="source",
+        type=str,
+        help="source workspace name or file path.",
+    )
+    parser.add_argument(
+        dest="destination",
+        metavar="destination",
+        type=str,
+        help="destination workspace name or file path.",
+    )
+    return parser
+
+
+def command_copy(
+    source: str,
+    destination: str,
+    parser: argparse.ArgumentParser | None = None,
+    color: CLIColorModeLiteral | None = None,
+) -> None:
+    """Entrypoint for ``tmuxp copy``, copy a workspace config to a new name."""
+    color_mode = get_color_mode(color)
+    colors = Colors(color_mode)
+
+    try:
+        source_path = find_workspace_file(source)
+    except FileNotFoundError:
+        tmuxp_echo(colors.error(f"Source not found: {source}"))
+        return
+
+    if is_pure_name(destination):
+        workspace_dir = get_workspace_dir()
+        os.makedirs(workspace_dir, exist_ok=True)
+        dest_path = os.path.join(workspace_dir, f"{destination}.yaml")
+    else:
+        dest_path = os.path.expanduser(destination)
+        if not os.path.isabs(dest_path):
+            dest_path = os.path.normpath(os.path.join(os.getcwd(), dest_path))
+
+    if os.path.exists(dest_path) and not prompt_yes_no(
+        f"Overwrite {colors.info(str(PrivatePath(dest_path)))}?",
+        default=False,
+        color_mode=color_mode,
+    ):
+        tmuxp_echo(colors.muted("Aborted."))
+        return
+
+    shutil.copy2(source_path, dest_path)
+    tmuxp_echo(
+        colors.success("Copied ")
+        + colors.info(str(PrivatePath(source_path)))
+        + colors.muted(" \u2192 ")
+        + colors.info(str(PrivatePath(dest_path))),
+    )
