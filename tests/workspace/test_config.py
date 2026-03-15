@@ -333,6 +333,45 @@ def test_validate_plugins() -> None:
         assert excinfo.match("only supports list type")
 
 
+def test_expand_synchronize() -> None:
+    """Test that expand() desugars synchronize into options/options_after."""
+    workspace = {
+        "session_name": "test",
+        "windows": [
+            {
+                "window_name": "before",
+                "synchronize": True,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "after",
+                "synchronize": "after",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "false",
+                "synchronize": False,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    # synchronize: True → options with synchronize-panes on, key removed
+    assert "synchronize" not in result["windows"][0]
+    assert result["windows"][0]["options"]["synchronize-panes"] == "on"
+
+    # synchronize: "after" → options_after with synchronize-panes on, key removed
+    assert "synchronize" not in result["windows"][1]
+    assert result["windows"][1]["options_after"]["synchronize-panes"] == "on"
+
+    # synchronize: False → no options added, key removed
+    assert "synchronize" not in result["windows"][2]
+    assert "options" not in result["windows"][2] or "synchronize-panes" not in result[
+        "windows"
+    ][2].get("options", {})
+
+
 def test_expand_logs_debug(
     tmp_path: pathlib.Path,
     caplog: pytest.LogCaptureFixture,
