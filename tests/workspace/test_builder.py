@@ -413,6 +413,37 @@ def test_shell_command_after(
         assert "__AFTER__" not in captured
 
 
+def test_pane_titles(
+    session: Session,
+) -> None:
+    """Test pane title config keys set pane-border-status and pane titles."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/pane_titles.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("pane-border-status") == "top"
+    assert window.show_option("pane-border-format") == "#{pane_index}: #{pane_title}"
+
+    panes = window.panes
+    assert len(panes) == 3
+
+    def check_title(p: Pane, expected: str) -> bool:
+        p.refresh()
+        return p.pane_title == expected
+
+    assert retry_until(
+        functools.partial(check_title, panes[0], "editor"),
+    ), f"Expected title 'editor', got '{panes[0].pane_title}'"
+    assert retry_until(
+        functools.partial(check_title, panes[1], "runner"),
+    ), f"Expected title 'runner', got '{panes[1].pane_title}'"
+
+
 def test_window_shell(
     session: Session,
 ) -> None:

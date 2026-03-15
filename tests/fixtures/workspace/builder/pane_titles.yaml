@@ -1,0 +1,15 @@
+session_name: test pane_titles
+enable_pane_titles: true
+pane_title_position: top
+pane_title_format: "#{pane_index}: #{pane_title}"
+windows:
+  - window_name: titled
+    panes:
+      - title: editor
+        shell_command:
+          - echo pane0
+      - title: runner
+        shell_command:
+          - echo pane1
+      - shell_command:
+          - echo pane2

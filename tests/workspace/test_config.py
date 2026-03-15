@@ -412,6 +412,91 @@ def test_expand_shell_command_after() -> None:
     assert "shell_command_after" not in result["windows"][2]
 
 
+def test_expand_pane_titles() -> None:
+    """Test that expand() desugars pane title session keys into window options."""
+    workspace = {
+        "session_name": "test",
+        "enable_pane_titles": True,
+        "pane_title_position": "bottom",
+        "pane_title_format": " #T ",
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [
+                    {"title": "editor", "shell_command": ["echo hi"]},
+                    {"shell_command": ["echo bye"]},
+                ],
+            },
+            {
+                "window_name": "w2",
+                "options": {"pane-border-status": "off"},
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    # Session-level keys removed
+    assert "enable_pane_titles" not in result
+    assert "pane_title_position" not in result
+    assert "pane_title_format" not in result
+
+    # Window 1: options populated from session-level config
+    assert result["windows"][0]["options"]["pane-border-status"] == "bottom"
+    assert result["windows"][0]["options"]["pane-border-format"] == " #T "
+
+    # Window 2: per-window override preserved (setdefault doesn't overwrite)
+    assert result["windows"][1]["options"]["pane-border-status"] == "off"
+    assert result["windows"][1]["options"]["pane-border-format"] == " #T "
+
+    # Pane title key preserved for builder
+    assert result["windows"][0]["panes"][0]["title"] == "editor"
+    assert "title" not in result["windows"][0]["panes"][1]
+
+
+def test_expand_pane_titles_disabled() -> None:
+    """Test that expand() removes pane title keys when disabled."""
+    workspace = {
+        "session_name": "test",
+        "enable_pane_titles": False,
+        "pane_title_position": "top",
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    assert "enable_pane_titles" not in result
+    assert "pane_title_position" not in result
+    assert "options" not in result["windows"][0] or "pane-border-status" not in result[
+        "windows"
+    ][0].get("options", {})
+
+
+def test_expand_pane_titles_defaults() -> None:
+    """Test that expand() uses default position and format when not specified."""
+    workspace = {
+        "session_name": "test",
+        "enable_pane_titles": True,
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    assert result["windows"][0]["options"]["pane-border-status"] == "top"
+    assert (
+        result["windows"][0]["options"]["pane-border-format"]
+        == "#{pane_index}: #{pane_title}"
+    )
+
+
 def test_expand_logs_debug(
     tmp_path: pathlib.Path,
     caplog: pytest.LogCaptureFixture,
