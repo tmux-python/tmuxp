@@ -50,13 +50,9 @@ These libtmux APIs already exist and do NOT need changes:
 
 ## tmuxp Limitations
 
-### T1. No `synchronize` Config Key
+### T1. `synchronize` Config Key ✅ Resolved
 
-- **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. The key is silently ignored if present.
-- **Blocks**: Pane synchronization (tmuxinator `synchronize: true/before/after`). Note: tmuxinator deprecates `true`/`before` in favor of `after` (`project.rb:21-29`), but all three values still function. The import should honor original semantics of each value.
-- **Required**: Add `synchronize` handling in `builder.py`. For `before`/`true`: call `window.set_option("synchronize-panes", "on")` before pane commands are sent. For `after`: call it in `config_after_window()`. For `false`/omitted: no action.
-- **Insertion point**: In `build()` around line 541 (after `on_window_create` plugin hook, before `iter_create_panes()` loop) for `before`/`true`. In `config_after_window()` around line 822 for `after`. Note: in tmux 3.2+ (tmuxp's minimum), `synchronize-panes` is a dual-scope option (window|pane, `options-table.c:1423`). Setting it at window level via `window.set_option()` makes all panes inherit it, including those created later by split.
-- **Non-breaking**: New optional config key. Existing configs are unaffected.
+Resolved in `feat(loader[expand])` — `expand()` desugars `synchronize: true/before/after` into `options`/`options_after` with `synchronize-panes: on`. The builder's existing `options` and `options_after` handling applies the setting. Tests: `test_synchronize` (builder integration), `test_expand_synchronize` (unit).
 
 ### T2. No Pane Title Config Key
 
@@ -274,8 +270,7 @@ These fix existing bugs and add missing translations without touching the builde
 
 These add new config key handling to the builder. Each also needs a corresponding importer update:
 
-1. **T1**: `synchronize` config key — straightforward `set_option()` call
-   - Then update tmuxinator importer to import `synchronize` key (pass-through, same name)
+1. **T1**: ✅ `synchronize` config key — resolved via `expand()` desugaring in `loader.py`
 2. **T3**: `shell_command_after` config key — straightforward `send_keys()` loop
    - teamocil importer already produces this key (I3 fixes the loop); builder just needs to read it
 3. **T2**: Pane title config keys — **now unblocked** (L1 resolved in libtmux v0.55.0)
