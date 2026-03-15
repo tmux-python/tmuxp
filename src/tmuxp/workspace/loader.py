@@ -188,6 +188,23 @@ def expand(
 
         workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
 
+    # Desugar pane title session-level config into per-window options
+    if workspace_dict.get("enable_pane_titles") and "windows" in workspace_dict:
+        position = workspace_dict.pop("pane_title_position", "top")
+        fmt = workspace_dict.pop(
+            "pane_title_format",
+            "#{pane_index}: #{pane_title}",
+        )
+        workspace_dict.pop("enable_pane_titles")
+        for window in workspace_dict["windows"]:
+            window.setdefault("options", {})
+            window["options"].setdefault("pane-border-status", position)
+            window["options"].setdefault("pane-border-format", fmt)
+    elif "enable_pane_titles" in workspace_dict:
+        workspace_dict.pop("enable_pane_titles")
+        workspace_dict.pop("pane_title_position", None)
+        workspace_dict.pop("pane_title_format", None)
+
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
         workspace_dict["windows"] = [
