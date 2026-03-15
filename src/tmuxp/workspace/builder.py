@@ -407,7 +407,12 @@ class WorkspaceBuilder:
             return False
         return True
 
-    def build(self, session: Session | None = None, append: bool = False) -> None:
+    def build(
+        self,
+        session: Session | None = None,
+        append: bool = False,
+        here: bool = False,
+    ) -> None:
         """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
@@ -421,6 +426,8 @@ class WorkspaceBuilder:
             session to build workspace in
         append : bool
             append windows in current active session
+        here : bool
+            reuse current window for first window and rename session
         """
         if not session:
             if not self.server:
@@ -538,7 +545,14 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        for window, window_config in self.iter_create_windows(session, append):
+        if here:
+            session_name = self.session_config["session_name"]
+            if session.name != session_name:
+                session.rename_session(session_name)
+
+        for window, window_config in self.iter_create_windows(
+            session, append, here=here
+        ):
             assert isinstance(window, Window)
 
             for plugin in self.plugins:
@@ -579,6 +593,7 @@ class WorkspaceBuilder:
         self,
         session: Session,
         append: bool = False,
+        here: bool = False,
     ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -593,6 +608,8 @@ class WorkspaceBuilder:
             session to create windows in
         append : bool
             append windows in current active session
+        here : bool
+            reuse current window for first window
 
         Returns
         -------
@@ -617,43 +634,69 @@ class WorkspaceBuilder:
                     }
                 )
 
-            is_first_window_pass = self.first_window_pass(
-                window_iterator,
-                session,
-                append,
-            )
+            if here and window_iterator == 1:
+                # --here: reuse current window for first window
+                window = session.active_window
+                if window_name:
+                    window.rename_window(window_name)
 
-            w1 = None
-            if is_first_window_pass:  # if first window, use window 1
-                w1 = session.active_window
-                w1.move_window("99")
+                start_directory = window_config.get("start_directory", None)
+                panes = window_config["panes"]
+                if panes and "start_directory" in panes[0]:
+                    start_directory = panes[0]["start_directory"]
 
-            start_directory = window_config.get("start_directory", None)
+                if start_directory:
+                    active_pane = window.active_pane
+                    if active_pane is not None:
+                        active_pane.send_keys(
+                            f'cd "{start_directory}"',
+                            enter=True,
+                        )
+            else:
+                is_first_window_pass = self.first_window_pass(
+                    window_iterator,
+                    session,
+                    append,
+                )
 
-            # If the first pane specifies a start_directory, use that instead.
-            panes = window_config["panes"]
-            if panes and "start_directory" in panes[0]:
-                start_directory = panes[0]["start_directory"]
+                w1 = None
+                if is_first_window_pass:  # if first window, use window 1
+                    w1 = session.active_window
+                    w1.move_window("99")
 
-            window_shell = window_config.get("window_shell", None)
+                start_directory = window_config.get("start_directory", None)
 
-            # If the first pane specifies a shell, use that instead.
-            try:
-                if window_config["panes"][0]["shell"] != "":
-                    window_shell = window_config["panes"][0]["shell"]
-            except (KeyError, IndexError):
-                pass
+                # If the first pane specifies a start_directory, use that instead.
+                panes = window_config["panes"]
+                if panes and "start_directory" in panes[0]:
+                    start_directory = panes[0]["start_directory"]
 
-            environment = panes[0].get("environment", window_config.get("environment"))
+                window_shell = window_config.get("window_shell", None)
 
-            window = session.new_window(
-                window_name=window_name,
-                start_directory=start_directory,
-                attach=False,  # do not move to the new window
-                window_index=window_config.get("window_index", ""),
-                window_shell=window_shell,
-                environment=environment,
-            )
+                # If the first pane specifies a shell, use that instead.
+                try:
+                    if window_config["panes"][0]["shell"] != "":
+                        window_shell = window_config["panes"][0]["shell"]
+                except (KeyError, IndexError):
+                    pass
+
+                environment = panes[0].get(
+                    "environment",
+                    window_config.get("environment"),
+                )
+
+                window = session.new_window(
+                    window_name=window_name,
+                    start_directory=start_directory,
+                    attach=False,  # do not move to the new window
+                    window_index=window_config.get("window_index", ""),
+                    window_shell=window_shell,
+                    environment=environment,
+                )
+
+                if is_first_window_pass:  # if first window, use window 1
+                    session.active_window.kill()
+
             assert isinstance(window, Window)
             window_log = TmuxpLoggerAdapter(
                 logger,
@@ -663,9 +706,6 @@ class WorkspaceBuilder:
                 },
             )
             window_log.debug("window created")
-
-            if is_first_window_pass:  # if first window, use window 1
-                session.active_window.kill()
 
             if "options" in window_config and isinstance(
                 window_config["options"],
