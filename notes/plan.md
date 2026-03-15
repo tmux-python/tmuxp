@@ -1,33 +1,30 @@
 # Parity Implementation Plan
 
-*Last updated: 2026-03-07*
+*Last updated: 2026-03-15*
 *Based on: parity-tmuxinator.md, parity-teamocil.md, import-tmuxinator.md, import-teamocil.md*
 
 ## libtmux Limitations
 
-### L1. No `Pane.set_title()` Method
+### L1. No `Pane.set_title()` Method — **RESOLVED in libtmux v0.55.0**
 
-- **Blocker**: libtmux has no method wrapping `select-pane -T <title>`. The `pane_title` format variable is excluded from libtmux's bulk format queries (`formats.py:70`, commented out with note "removed in 3.1+"), but this is a libtmux-side exclusion — tmux itself still supports both `#{pane_title}` (in `format.c:205`) and `select-pane -T` (added in tmux 2.6). libtmux already knows about the display options (`pane_border_status`, `pane_border_format` in `constants.py:163-173`) but has no setter for the title itself.
-- **Blocks**: Pane titles (tmuxinator feature: named pane syntax `pane_name: command` → `select-pane -T`). Also blocks `enable_pane_titles`, `pane_title_position`, `pane_title_format` session-level config.
-- **Required**: Add `Pane.set_title(title: str)` method that calls `self.cmd("select-pane", "-T", title)`. This is a simple wrapper — `Pane.cmd()` already exists (`pane.py:177`) and `select-pane` is already used for `Pane.select()` (`pane.py:601`).
-- **Non-breaking**: Pure addition, no existing API changes.
+- **Status**: `Pane.set_title(title)` added at `pane.py:834-859`. Unblocks T2 (pane titles).
+- ~~**Blocker**: libtmux has no method wrapping `select-pane -T <title>`.~~
+- ~~**Blocks**: Pane titles (tmuxinator feature: named pane syntax `pane_name: command` → `select-pane -T`).~~
+- ~~**Required**: Add `Pane.set_title(title: str)` method.~~
 
-### L2. Hardcoded tmux Binary Path
+### L2. Hardcoded tmux Binary Path — **RESOLVED in libtmux v0.55.0**
 
-- **Blocker**: `shutil.which("tmux")` is hardcoded in two independent code paths:
-  - `common.py:252` — `tmux_cmd.__init__()`, the class through which all libtmux commands flow (called by `Server.cmd()` at `server.py:311`)
-  - `server.py:223` — `Server.raise_if_dead()`, a separate code path that calls `subprocess.check_call()` directly
-  There is no way to use a custom tmux binary (wemux, byobu, or custom-built tmux).
-- **Blocks**: Wemux support (tmuxinator `tmux_command: wemux`). Also blocks CI/container use with non-standard tmux locations.
-- **Required**: Add optional `tmux_bin` parameter to `Server.__init__()` that propagates to `tmux_cmd`. Both code paths must be updated. Default remains `shutil.which("tmux")`.
-- **Non-breaking**: Optional parameter with backward-compatible default. Existing code is unaffected.
+- **Status**: `Server(tmux_bin=...)` added at `server.py:131-146`. Unblocks tmuxinator `tmux_command` support.
+- ~~**Blocker**: `shutil.which("tmux")` is hardcoded in two independent code paths.~~
+- ~~**Blocks**: Wemux support (tmuxinator `tmux_command: wemux`).~~
+- ~~**Required**: Add optional `tmux_bin` parameter to `Server.__init__()`.~~
 
-### L3. No Dry-Run / Command Preview Mode
+### L3. No Dry-Run / Command Preview Mode — **RESOLVED in libtmux v0.55.0**
 
-- **Blocker**: `tmux_cmd` (`common.py:252-296`) always executes commands. Debug logging exists (`logger.debug` at line 291) but logs the command and its stdout *after* execution, not before. There is no pre-execution logging or facility to collect commands without executing them.
-- **Blocks**: `--debug` / dry-run mode (both tmuxinator and teamocil have this). tmuxinator generates a bash script that can be previewed; teamocil's `--debug` outputs the tmux command list.
-- **Required**: Either (a) add a `dry_run` flag to `tmux_cmd` that collects commands instead of executing, or (b) add pre-execution logging at DEBUG level that logs the full command before `subprocess.run()`. Option (b) is simpler and doesn't change behavior.
-- **Non-breaking**: Logging change only. tmuxp would implement the user-facing `--debug` flag by capturing log output.
+- **Status**: Pre-execution `logger.debug` added at `common.py:263-268`. Unblocks T9 (dry-run mode).
+- ~~**Blocker**: `tmux_cmd` always executes commands with no pre-execution logging.~~
+- ~~**Blocks**: `--debug` / dry-run mode (both tmuxinator and teamocil have this).~~
+- ~~**Required**: Add pre-execution logging at DEBUG level.~~
 - **Note**: Since tmuxp uses libtmux API calls (not command strings), a true dry-run would require a recording layer in `WorkspaceBuilder` that logs each API call. This is architecturally different from tmuxinator/teamocil's approach and may not be worth full parity.
 
 ### L4. Available APIs (No Blockers)
@@ -281,26 +278,27 @@ These add new config key handling to the builder. Each also needs a correspondin
    - Then update tmuxinator importer to import `synchronize` key (pass-through, same name)
 2. **T3**: `shell_command_after` config key — straightforward `send_keys()` loop
    - teamocil importer already produces this key (I3 fixes the loop); builder just needs to read it
-3. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
+3. **T2**: Pane title config keys — **now unblocked** (L1 resolved in libtmux v0.55.0)
+   - Use `pane.set_title()` in builder. Session-level `enable_pane_titles`, `pane_title_position`, `pane_title_format` via `session.set_option()`.
+   - Update tmuxinator importer to import named pane syntax (`pane_name: command` → `title` + `shell_command`)
+4. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
 
-### Phase 3: libtmux Additions
+### ~~Phase 3: libtmux Additions~~ — **COMPLETE** (libtmux v0.55.0, issue #635 closed)
 
-These require changes to the libtmux package:
+All libtmux API additions shipped in v0.55.0 (2026-03-07). tmuxp pins `libtmux~=0.55.0`.
 
-1. **L1**: `Pane.set_title()` — simple wrapper, needed for T2
-2. **T2**: Pane title config keys — depends on L1
-   - Then update tmuxinator importer to import `enable_pane_titles`, `pane_title_position`, `pane_title_format`, and named pane syntax (`pane_name: command` → `title` + `shell_command`)
+- ~~**L1**: `Pane.set_title()`~~ → `pane.py:834-859`
+- ~~**L2**: `Server(tmux_bin=...)`~~ → `server.py:131-146`
+- ~~**L3**: Pre-execution `logger.debug`~~ → `common.py:263-268`
 
 ### Phase 4: New CLI Commands
 
 1. **T5**: `tmuxp stop` command
 2. **T10**: `tmuxp new`, `tmuxp copy`, `tmuxp delete` commands
 
-### Phase 5: Larger Features (Nice-to-Have)
+### Phase 5: CLI Flags & Larger Features
 
-1. **T6**: Lifecycle hook config keys — complex, needs design
-2. **T7**: `--no-shell-command-before` flag — simple
-3. **T8**: Config templating — significant architectural addition
-4. **L3**: Pre-execution command logging in libtmux — prerequisite for T9
-5. **T9**: `--debug` / dry-run mode — depends on L3
-6. **L2**: Custom tmux binary — requires libtmux changes
+1. **T7**: `--no-shell-command-before` flag — simple
+2. **T9**: `--debug` / dry-run mode — **now unblocked** (L3 resolved in libtmux v0.55.0)
+3. **T6**: Lifecycle hook config keys — complex, needs design
+4. **T8**: Config templating — significant architectural addition
