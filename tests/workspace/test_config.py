@@ -541,3 +541,50 @@ def test_validate_schema_logs_debug(
     records = [r for r in caplog.records if r.msg == "validating workspace schema"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test_validate"
+
+
+def test_expand_lifecycle_hooks_string(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """expand() expands shell variables in lifecycle hook string values."""
+    monkeypatch.setenv("MY_HOOK_CMD", "docker compose up")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": "test",
+        "on_project_start": "$MY_HOOK_CMD",
+        "on_project_stop": "$MY_HOOK_CMD down",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    result = loader.expand(workspace)
+
+    assert result["on_project_start"] == "docker compose up"
+    assert result["on_project_stop"] == "docker compose up down"
+
+
+def test_expand_lifecycle_hooks_list(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """expand() expands shell variables in lifecycle hook list values."""
+    monkeypatch.setenv("MY_CMD", "echo hello")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": "test",
+        "on_project_start": ["$MY_CMD", "echo world"],
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    result = loader.expand(workspace)
+
+    assert result["on_project_start"] == ["echo hello", "echo world"]
+
+
+def test_expand_lifecycle_hooks_tilde() -> None:
+    """expand() expands ~ in lifecycle hook values."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "test",
+        "on_project_exit": "~/scripts/cleanup.sh",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    result = loader.expand(workspace)
+
+    assert "~" not in result["on_project_exit"]
+    assert result["on_project_exit"].endswith("/scripts/cleanup.sh")

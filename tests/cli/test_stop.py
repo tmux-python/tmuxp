@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import pathlib
 import typing as t
 
 import pytest
 
 from tmuxp import cli
+from tmuxp.cli.load import load_workspace
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
@@ -69,3 +71,60 @@ def test_stop_nonexistent_session(
 
     captured = capsys.readouterr()
     assert "Session not found" in captured.out
+
+
+def test_stop_runs_on_project_stop_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp stop runs on_project_stop hook from session environment."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "stop_hook_ran"
+    workspace_file = tmp_path / "hook_stop.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-stop-test
+on_project_stop: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert session is not None
+
+    # Verify env var was stored
+    stop_cmd = session.getenv("TMUXP_ON_PROJECT_STOP")
+    assert stop_cmd is not None
+
+    # Stop the session via CLI
+    assert server.socket_name is not None
+    cli.cli(["stop", "hook-stop-test", "-L", server.socket_name])
+
+    assert marker.exists()
+    assert not server.has_session("hook-stop-test")
+
+
+def test_stop_without_hook(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp stop works normally when no on_project_stop hook is set."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    server.new_session(session_name="no-hook-session")
+    assert server.has_session("no-hook-session")
+
+    assert server.socket_name is not None
+    cli.cli(["stop", "no-hook-session", "-L", server.socket_name])
+
+    assert not server.has_session("no-hook-session")
