@@ -23,7 +23,11 @@ $ uvx --from 'tmuxp' --prerelease allow tmuxp
 [pipx](https://pypa.github.io/pipx/docs/):
 
 ```console
-$ pipx install --suffix=@next 'tmuxp' --pip-args '\--pre' --force
+$ pipx install \
+    --suffix=@next \
+    --pip-args '\--pre' \
+    --force \
+    'tmuxp'
 // Usage: tmuxp@next load yoursession
 ```
 
