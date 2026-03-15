@@ -1004,6 +1004,111 @@ windows:
     assert "echo hello" in cmd_strings
 
 
+class DebugFlagFixture(t.NamedTuple):
+    """Test fixture for --debug flag tests."""
+
+    test_id: str
+    debug: bool
+    expect_tmux_commands_in_output: bool
+
+
+DEBUG_FLAG_FIXTURES: list[DebugFlagFixture] = [
+    DebugFlagFixture(
+        test_id="debug-off",
+        debug=False,
+        expect_tmux_commands_in_output=False,
+    ),
+    DebugFlagFixture(
+        test_id="debug-on",
+        debug=True,
+        expect_tmux_commands_in_output=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(DebugFlagFixture._fields),
+    DEBUG_FLAG_FIXTURES,
+    ids=[f.test_id for f in DEBUG_FLAG_FIXTURES],
+)
+def test_load_workspace_debug_flag(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    debug: bool,
+    expect_tmux_commands_in_output: bool,
+) -> None:
+    """Test --debug shows tmux commands in output."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        """
+session_name: debug_test
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        debug=debug,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "debug_test"
+
+    captured = capsys.readouterr()
+    if expect_tmux_commands_in_output:
+        assert "$ " in captured.out
+        assert "new-session" in captured.out
+    else:
+        # When debug is off, tmux commands should not appear in stdout
+        assert "new-session" not in captured.out
+
+
+def test_load_debug_cleans_up_handler(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify --debug removes its handler after load completes."""
+    import logging
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        """
+session_name: debug_cleanup
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    libtmux_logger = logging.getLogger("libtmux.common")
+    handler_count_before = len(libtmux_logger.handlers)
+
+    load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        debug=True,
+    )
+
+    assert len(libtmux_logger.handlers) == handler_count_before
+
+
 def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:
     """Spinner message should mask home directory via PrivatePath."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
