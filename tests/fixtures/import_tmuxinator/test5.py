@@ -25,10 +25,12 @@ expected = {
     "start_directory": "~/projects/ruby-app",
     "before_script": "./scripts/bootstrap.sh",
     "shell_command_before": ["source .env", "rvm use 2.1.1"],
-    "start_window": "server",
-    "start_pane": 0,
     "windows": [
         {"window_name": "editor", "panes": ["vim"]},
-        {"window_name": "server", "panes": ["rails s"]},
+        {
+            "window_name": "server",
+            "focus": True,
+            "panes": [{"shell_command": ["rails s"], "focus": True}],
+        },
     ],
 }
