@@ -98,11 +98,8 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             "rvm use {}".format(workspace_dict["rvm"]),
         )
 
-    if "startup_window" in workspace_dict:
-        tmuxp_workspace["start_window"] = workspace_dict["startup_window"]
-
-    if "startup_pane" in workspace_dict:
-        tmuxp_workspace["start_pane"] = workspace_dict["startup_pane"]
+    _startup_window = workspace_dict.get("startup_window")
+    _startup_pane = workspace_dict.get("startup_pane")
 
     for window_dict in workspace_dict["windows"]:
         for k, v in window_dict.items():
@@ -137,6 +134,49 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                     )
 
             tmuxp_workspace["windows"].append(window_dict)
+
+    # Post-process startup_window / startup_pane into focus flags
+    if _startup_window is not None and tmuxp_workspace["windows"]:
+        _matched = False
+        for w in tmuxp_workspace["windows"]:
+            if w.get("window_name") == str(_startup_window):
+                w["focus"] = True
+                _matched = True
+                break
+        if not _matched:
+            try:
+                _idx = int(_startup_window)
+                if 0 <= _idx < len(tmuxp_workspace["windows"]):
+                    tmuxp_workspace["windows"][_idx]["focus"] = True
+            except (ValueError, IndexError):
+                logger.warning(
+                    "startup_window %s not found",
+                    _startup_window,
+                )
+
+    if _startup_pane is not None and tmuxp_workspace["windows"]:
+        _target = next(
+            (w for w in tmuxp_workspace["windows"] if w.get("focus")),
+            tmuxp_workspace["windows"][0],
+        )
+        if "panes" in _target:
+            try:
+                _pidx = int(_startup_pane)
+                if 0 <= _pidx < len(_target["panes"]):
+                    _pane = _target["panes"][_pidx]
+                    if isinstance(_pane, dict):
+                        _pane["focus"] = True
+                    else:
+                        _target["panes"][_pidx] = {
+                            "shell_command": [_pane] if _pane else [],
+                            "focus": True,
+                        }
+            except (ValueError, IndexError):
+                logger.warning(
+                    "startup_pane %s not found",
+                    _startup_pane,
+                )
+
     return tmuxp_workspace
 
 
