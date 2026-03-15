@@ -104,12 +104,13 @@ Resolved in `feat(cli[stop])` — `tmuxp stop <session-name>` command added. Fol
 - **Required**: Either (a) add a recording proxy layer around libtmux calls that logs what would be done, or (b) add verbose logging that shows each tmux command before execution (depends on L3).
 - **Non-breaking**: New optional CLI flag.
 
-### T10. Missing Config Management Commands
+### T10. Missing Config Management Commands ✅ Resolved
 
-- **Blocker**: tmuxp only has `edit`. Missing: `new` (create from template), `copy` (duplicate config), `delete` (remove config with confirmation).
-- **Blocks**: tmuxinator `new`, `copy`, `delete`, `implode` commands.
-- **Required**: Add CLI commands. These are straightforward file operations.
-- **Non-breaking**: New CLI commands.
+Resolved in `feat(cli[new,copy,delete])` — Three config management commands added:
+- `tmuxp new <name>` creates workspace from template + opens in `$EDITOR`
+- `tmuxp copy <source> <dest>` duplicates workspace configs (supports names and paths)
+- `tmuxp delete <name> [-y]` removes workspace configs with confirmation prompt
+All commands follow existing CLI patterns (`edit.py`, `convert.py`), use `Colors` semantic hierarchy, and integrate with `find_workspace_file()`/`get_workspace_dir()`. Skipped `implode` (destructive nuke-all, low value).
 
 ## Dead Config Keys
 
