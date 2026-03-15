@@ -62,18 +62,9 @@ Resolved in `feat(loader[expand],builder[iter_create_panes])` — Session-level 
 
 Resolved in `feat(builder[config_after_window],loader[expand])` — `expand()` normalizes `shell_command_after` via `expand_cmd()`, then `config_after_window()` sends each command to every pane in the window. Tests: `test_shell_command_after` (builder integration), `test_expand_shell_command_after` (unit).
 
-### T4. No Session Rename Mode / `--here` CLI Flag
+### T4. No Session Rename Mode / `--here` CLI Flag ✅ Resolved
 
-- **Blocker**: `tmuxp load` (`cli/load.py`) has no `--here` flag. `WorkspaceBuilder.iter_create_windows()` always creates new windows via `session.new_window()` (line 649). Additionally, teamocil always renames the current session (`session.rb:18-20`), regardless of `--here`; the `--here` flag only affects **window** behavior (reuse current window for first window instead of creating new). tmuxp's `--append` flag partially covers session rename mode, but does not rename the session.
-- **Blocks**: teamocil `--here` (reuse current window for first window) and teamocil session rename (always active, not conditional on `--here`).
-- **Required**:
-  1. Add `--here` flag to `cli/load.py` (around line 516, near `--append`).
-  2. Pass `here=True` through to `WorkspaceBuilder.build()`.
-  3. In `iter_create_windows()`, when `here=True` and first window: use `window.rename_window(name)` instead of `session.new_window()`, and send `cd <root>` via `pane.send_keys()` for directory change.
-  4. Adjust `first_window_pass()` logic (line 864).
-  5. For session rename: when `--here` is used, also call `session.rename_session(name)` (line 262 area in `build()`).
-- **Depends on**: libtmux `Window.rename_window()` and `Session.rename_session()` (both already exist, L4).
-- **Non-breaking**: New optional CLI flag.
+Resolved in `feat(cli[load],builder)` — `--here` flag added to CLI, passed through `load_workspace` → `_dispatch_build` → `build()` → `iter_create_windows()`. In `build()`, renames session to match config. In `iter_create_windows()`, reuses active window for first window (rename + cd) instead of `first_window_pass` trick. Skips session-exists prompt. Tests: `test_here_mode` (builder integration).
 
 ### T5. No `stop` / `kill` CLI Command
 
@@ -264,7 +255,7 @@ These add new config key handling to the builder. Each also needs a correspondin
 1. **T1**: ✅ `synchronize` config key — resolved via `expand()` desugaring in `loader.py`
 2. **T3**: ✅ `shell_command_after` config key — resolved via `expand()` + `config_after_window()`
 3. **T2**: ✅ Pane title config keys — resolved via `expand()` desugaring + `pane.set_title()` in builder
-4. **T4**: `--here` CLI flag — moderate complexity, uses existing libtmux APIs
+4. **T4**: ✅ `--here` CLI flag — resolved via CLI arg + builder `here` param
 
 ### ~~Phase 3: libtmux Additions~~ — **COMPLETE** (libtmux v0.55.0, issue #635 closed)
 
