@@ -57,6 +57,20 @@ def _silence_stream_handlers(logger_name: str = "tmuxp") -> t.Iterator[None]:
             h.setLevel(level)
 
 
+class _TmuxCommandDebugHandler(logging.Handler):
+    """Logging handler that prints tmux commands from libtmux's structured logs."""
+
+    def __init__(self, colors: Colors) -> None:
+        super().__init__()
+        self._colors = colors
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Print tmux command if present in the log record's extra fields."""
+        cmd = getattr(record, "tmux_cmd", None)
+        if cmd is not None:
+            tmuxp_echo(self._colors.muted("$ ") + self._colors.info(str(cmd)))
+
+
 LOAD_DESCRIPTION = build_description(
     """
     Load tmuxp workspace file(s) and create or attach to a tmux session.
@@ -114,6 +128,7 @@ class CLILoadNamespace(argparse.Namespace):
     panel_lines: int | None
     no_progress: bool
     no_shell_command_before: bool
+    debug: bool
 
 
 def load_plugins(
@@ -477,6 +492,7 @@ def load_workspace(
     panel_lines: int | None = None,
     no_progress: bool = False,
     no_shell_command_before: bool = False,
+    debug: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -517,6 +533,8 @@ def load_workspace(
     no_shell_command_before : bool
         Strip ``shell_command_before`` from all levels (session, window, pane)
         before building. Default False.
+    debug : bool
+        Show tmux commands as they execute. Implies no_progress. Default False.
 
     Notes
     -----
@@ -577,7 +595,26 @@ def load_workspace(
         "loading workspace",
         extra={"tmux_config_path": str(workspace_file)},
     )
-    _progress_disabled = no_progress or os.getenv("TMUXP_PROGRESS", "1") == "0"
+    _progress_disabled = no_progress or debug or os.getenv("TMUXP_PROGRESS", "1") == "0"
+
+    # --debug: attach handler to libtmux logger that shows tmux commands
+    _debug_handler: logging.Handler | None = None
+    _debug_prev_level: int | None = None
+    if debug:
+        _debug_handler = _TmuxCommandDebugHandler(cli_colors)
+        _debug_handler.setLevel(logging.DEBUG)
+        _libtmux_logger = logging.getLogger("libtmux.common")
+        _debug_prev_level = _libtmux_logger.level
+        _libtmux_logger.setLevel(logging.DEBUG)
+        _libtmux_logger.addHandler(_debug_handler)
+
+    def _cleanup_debug() -> None:
+        if _debug_handler is not None:
+            _ltlog = logging.getLogger("libtmux.common")
+            _ltlog.removeHandler(_debug_handler)
+            if _debug_prev_level is not None:
+                _ltlog.setLevel(_debug_prev_level)
+
     if _progress_disabled:
         tmuxp_echo(
             cli_colors.info("[Loading]")
@@ -634,6 +671,7 @@ def load_workspace(
             cli_colors.warning("[Warning]")
             + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
         )
+        _cleanup_debug()
         return None
 
     session_name = expanded_workspace["session_name"]
@@ -649,6 +687,7 @@ def load_workspace(
             )
         ):
             _reattach(builder, cli_colors)
+        _cleanup_debug()
         return None
 
     if _progress_disabled:
@@ -683,6 +722,7 @@ def load_workspace(
             tmuxp_echo(
                 f"{checkmark} {SUCCESS_TEMPLATE.format_map(_SafeFormatMap(ctx))}"
             )
+        _cleanup_debug()
         return result
 
     # Spinner wraps only the actual build phase
@@ -876,6 +916,14 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
     )
 
+    parser.add_argument(
+        "--debug",
+        dest="debug",
+        action="store_true",
+        default=False,
+        help="show tmux commands as they execute (implies --no-progress)",
+    )
+
     try:
         import shtab
 
@@ -962,4 +1010,5 @@ def command_load(
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
             no_shell_command_before=args.no_shell_command_before,
+            debug=args.debug,
         )
