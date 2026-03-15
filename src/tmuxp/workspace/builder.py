@@ -813,6 +813,9 @@ class WorkspaceBuilder:
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
+            if pane_config.get("title"):
+                pane.set_title(pane_config["title"])
+
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
                 window.select_pane(pane.pane_id)
