@@ -103,8 +103,8 @@ Keys produced by importers but silently ignored by the builder:
 
 | Key | Producer | Builder Handling | Status |
 |---|---|---|---|
-| `config` | tmuxinator importer | Never read | Dead data — extracted `-f` path, CLI uses `-f` flag directly |
-| `socket_name` | tmuxinator importer | Never read | Dead data — CLI uses `-L` flag directly |
+| ~~`config`~~ | ~~tmuxinator importer~~ | ~~Never read~~ | ✅ Resolved — `load_workspace()` reads as fallback for `-f` CLI flag |
+| ~~`socket_name`~~ | ~~tmuxinator importer~~ | ~~Never read~~ | ✅ Resolved — `load_workspace()` reads as fallback for `-L` CLI flag |
 | ~~`clear`~~ | ~~teamocil importer~~ | ~~Never read~~ | ✅ Resolved — `config_after_window()` sends `clear` to all panes when `clear: true` |
 | ~~`shell_command` (session-level)~~ | ~~tmuxinator importer~~ | ~~Not a valid session key~~ | ✅ Resolved — I1: `pre` now maps to `before_script` |
 | ~~`shell_command_after`~~ | ~~teamocil importer~~ | ✅ `config_after_window()` | ✅ Resolved — T3 |
@@ -180,6 +180,6 @@ T5 (`tmuxp stop`), T10 (`tmuxp new`, `tmuxp copy`, `tmuxp delete`).
 ### Phase 6: Remaining
 
 1. **T8**: Config templating — significant architectural addition (Jinja2 or `string.Template` pass before YAML parsing, with `key=value` CLI args)
-2. **Dead config keys**: `config`, `socket_name` (from tmuxinator importer) — builder doesn't read them. Low priority since CLI flags serve the same purpose.
+2. ~~**Dead config keys**~~: ✅ Resolved — `config`, `socket_name`, `socket_path` now read as fallbacks in `load_workspace()`. CLI flags override.
 3. ~~**`clear` config key**~~: ✅ Resolved — `config_after_window()` sends `clear` to all panes when `clear: true`.
 4. **Edge case test coverage**: YAML aliases/anchors, numeric/emoji window names, pane title syntax.
