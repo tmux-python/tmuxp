@@ -78,12 +78,9 @@ Resolved in `feat(util,builder,cli[load,stop],loader)` — 4 lifecycle hook conf
 
 Resolved in `feat(cli[load])` — `--no-shell-command-before` flag added to `tmuxp load`. When set, strips `shell_command_before` from session, window, and pane levels after `expand()` but before `trickle()`. Equivalent to tmuxinator's `--no-pre-window`.
 
-### T8. No Config Templating
+### T8. Config Templating ✅ Resolved
 
-- **Blocker**: tmuxp has no user-defined variable interpolation. Environment variable expansion (`$VAR` via `os.path.expandvars()`) already works in most config values — `session_name`, `window_name`, `start_directory`, `before_script`, `environment`, `options`, `global_options` (see `loader.py:108-160`). But there is no way to pass custom `key=value` variables at load time.
-- **Blocks**: tmuxinator ERB templating (`<%= @settings["key"] %>`).
-- **Required**: Add a Jinja2 or Python `string.Template` pass before YAML parsing. Allow `key=value` CLI args to set template variables. This is a significant architectural addition.
-- **Non-breaking**: Opt-in feature, existing configs are unaffected.
+Resolved in `feat(loader,cli[load])` — `render_template()` in `loader.py` replaces `{{ variable }}` expressions in raw config content before YAML/JSON parsing. `--set KEY=VALUE` CLI flag (repeatable) passes template context through `load_workspace()` → `ConfigReader._from_file(template_context=...)`. Zero new dependencies (regex-based, no Jinja2). Unknown `{{ var }}` expressions left unchanged. Coexists with existing `$ENV_VAR` expansion (which runs after YAML parsing in `expand()`). Tests: `test_render_template` (9 parametrized unit tests), `test_load_workspace_template_context`/`_no_context` (CLI integration).
 
 ### T9. `--debug` CLI Flag ✅ Resolved
 
@@ -179,7 +176,7 @@ T5 (`tmuxp stop`), T10 (`tmuxp new`, `tmuxp copy`, `tmuxp delete`).
 
 ### Phase 6: Remaining
 
-1. **T8**: Config templating — significant architectural addition (Jinja2 or `string.Template` pass before YAML parsing, with `key=value` CLI args)
+1. ~~**T8**~~: ✅ Resolved — `{{ variable }}` templating with `--set KEY=VALUE` CLI flag.
 2. ~~**Dead config keys**~~: ✅ Resolved — `config`, `socket_name`, `socket_path` now read as fallbacks in `load_workspace()`. CLI flags override.
 3. ~~**`clear` config key**~~: ✅ Resolved — `config_after_window()` sends `clear` to all panes when `clear: true`.
 4. **Edge case test coverage**: YAML aliases/anchors, numeric/emoji window names, pane title syntax.
