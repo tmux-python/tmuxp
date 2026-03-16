@@ -33,11 +33,96 @@ $ pipx install \
 
 ## tmuxp 1.68.0 (Yet to be released)
 
-<!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
+### New commands
 
-<!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
-_Notes on the upcoming release will go here._
-<!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+#### `tmuxp stop` — kill a tmux session (#1025)
+Stop (kill) a running tmux session by name. Runs the `on_project_stop`
+lifecycle hook before killing the session, giving your project a chance
+to clean up.
+
+```console
+$ tmuxp stop mysession
+```
+
+#### `tmuxp new` — create a workspace config (#1025)
+Create a new workspace configuration file from a minimal template and
+open it in `$EDITOR`.
+
+```console
+$ tmuxp new myproject
+```
+
+#### `tmuxp copy` — copy a workspace config (#1025)
+Copy an existing workspace config to a new name. Source is resolved
+using the same logic as `tmuxp load`.
+
+```console
+$ tmuxp copy myproject myproject-backup
+```
+
+#### `tmuxp delete` — delete workspace configs (#1025)
+Delete one or more workspace config files. Prompts for confirmation
+unless `-y` is passed.
+
+```console
+$ tmuxp delete old-project
+```
+
+### Lifecycle hooks (#1025)
+Workspace configs now support four lifecycle hooks, matching tmuxinator's
+hook system:
+
+- `on_project_start` — runs before session build (every invocation)
+- `on_project_restart` — runs when reattaching to an existing session
+- `on_project_exit` — runs on client detach (via tmux `client-detached` hook)
+- `on_project_stop` — runs before `tmuxp stop` kills the session
+
+### Config templating (#1025)
+Workspace configs now support Jinja2-style `{{ variable }}` placeholders.
+Pass values via `--set KEY=VALUE` on the command line:
+
+```console
+$ tmuxp load --set project=myapp mytemplate.yaml
+```
+
+### New config keys (#1025)
+- **`enable_pane_titles`** / **`pane_title_position`** / **`pane_title_format`** —
+  session-level keys that enable tmux pane border titles.
+- **`title`** — pane-level key to set individual pane titles via
+  `select-pane -T`.
+- **`synchronize`** — window-level shorthand (`before` / `after` / `true`)
+  that sets `synchronize-panes` without needing `options_after`.
+- **`shell_command_after`** — window-level key; commands sent to every pane
+  after the window is fully built.
+- **`clear`** — window-level boolean; sends `clear` to every pane after
+  commands complete.
+
+### New `tmuxp load` flags (#1025)
+- `--here` — reuse the current tmux window instead of creating a new session.
+- `--no-shell-command-before` — skip all `shell_command_before` entries.
+- `--debug` — show tmux commands as they execute (disables progress spinner).
+- `--set KEY=VALUE` — pass template variables for config templating.
+
+### Importer improvements (#1025)
+#### tmuxinator
+
+- Map `pre` → `on_project_start`, `pre_window` → `shell_command_before`.
+- Parse `cli_args` (`-f`, `-S`, `-L`) into tmuxp equivalents.
+- Convert `synchronize` window key.
+- Convert `startup_window` / `startup_pane` → `focus: true`.
+- Convert named panes (hash-key syntax) → `title` on the pane.
+
+#### teamocil
+
+- Support v1.x format (`windows` at top level, `commands` key in panes).
+- Convert `focus: true` on windows and panes.
+- Pass through window `options`.
+
+### Bug fixes
+
+- Only fire `on_project_start` hook when load actually proceeds (not on
+  cancellation) (#1025)
+- Only fire `on_project_restart` after the user confirms reattach (#1025)
 
 ### Documentation
 
