@@ -50,7 +50,16 @@ if t.TYPE_CHECKING:
 def create_new_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Augment :class:`argparse.ArgumentParser` with ``new`` subcommand."""
+    """Augment :class:`argparse.ArgumentParser` with ``new`` subcommand.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> parser = create_new_subparser(argparse.ArgumentParser())
+    >>> args = parser.parse_args(["myproject"])
+    >>> args.workspace_name
+    'myproject'
+    """
     parser.add_argument(
         dest="workspace_name",
         metavar="workspace-name",
