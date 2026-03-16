@@ -6,7 +6,7 @@
 
 | | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| **Version** | 1.64.0 | 3.3.7 | 1.4.2 |
+| **Version** | 1.68.0 | 3.3.7 | 1.4.2 |
 | **Language** | Python | Ruby | Ruby |
 | **Min tmux** | 3.2 | 1.5+ (1.5–3.6a tested) | (not specified) |
 | **Config formats** | YAML, JSON | YAML (with ERB) | YAML |
@@ -64,21 +64,21 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Startup window | (none; use `focus: true` on window) | `startup_window` (name or index) | (none; use `focus: true` on window) |
 | Startup pane | (none; use `focus: true` on pane) | `startup_pane` | (none; use `focus: true` on pane) |
 | Plugins | `plugins` | (none) | (none) |
-| ERB/variable interpolation | (none) | Yes (`key=value` args) | (none) |
+| ERB/variable interpolation | `{{ var }}` + `--set KEY=VALUE` | Yes (`key=value` args) | (none) |
 | YAML anchors | Yes | Yes (via `YAML.safe_load` `aliases: true`) | Yes |
-| Pane titles enable | (none) | `enable_pane_titles` | (none) |
-| Pane title position | (none) | `pane_title_position` | (none) |
-| Pane title format | (none) | `pane_title_format` | (none) |
+| Pane titles enable | `enable_pane_titles` | `enable_pane_titles` | (none) |
+| Pane title position | `pane_title_position` | `pane_title_position` | (none) |
+| Pane title format | `pane_title_format` | `pane_title_format` | (none) |
 
 ### Session Hooks
 
 | Hook | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| Every start invocation | (none) | `on_project_start` | (none) |
+| Every start invocation | `on_project_start` | `on_project_start` | (none) |
 | First start only | `before_script` | `on_project_first_start` | (none) |
-| On reattach | Plugin: `reattach()` | `on_project_restart` | (none) |
-| On exit/detach | (none) | `on_project_exit` | (none) |
-| On stop/kill | (none) | `on_project_stop` | (none) |
+| On reattach | `on_project_restart` + Plugin: `reattach()` | `on_project_restart` | (none) |
+| On exit/detach | `on_project_exit` (tmux `client-detached` hook) | `on_project_exit` | (none) |
+| On stop/kill | `on_project_stop` (via `tmuxp stop`) | `on_project_stop` | (none) |
 | Before workspace build | Plugin: `before_workspace_builder()` | (none) | (none) |
 | On window create | Plugin: `on_window_create()` | (none) | (none) |
 | After window done | Plugin: `after_window_finished()` | (none) | (none) |
@@ -101,7 +101,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Environment vars | `environment` | (none) | (none) |
 | Suppress history | `suppress_history` | (none) | (none) |
 | Focus | `focus` | (none; use `startup_window`) | `focus` |
-| Synchronize panes | (none) | `synchronize` (`true`/`before`/`after`; `true`/`before` deprecated → use `after`) | (none) |
+| Synchronize panes | `synchronize` (`before`/`after`/`true`) | `synchronize` (`true`/`before`/`after`; `true`/`before` deprecated → use `after`) | (none) |
 | Filters (before) | (none) | (none) | `filters.before` (v0.x) |
 | Filters (after) | (none) | (none) | `filters.after` (v0.x) |
 
@@ -119,7 +119,7 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Suppress history | `suppress_history` | (none) | (none) |
 | Focus | `focus` | (none; use `startup_pane`) | `focus` |
 | Shell cmd before | `shell_command_before` | (none; inherits from window/session) | (none) |
-| Pane title | (none) | hash key (named pane → `select-pane -T`) | (none) |
+| Pane title | `title` | hash key (named pane → `select-pane -T`) | (none) |
 | Width | (none) | (none) | `width` (v0.x, horizontal split %) |
 | Height | (none) | (none) | `height` (v0.x, vertical split %) |
 | Split target | (none) | (none) | `target` (v0.x) |
@@ -145,12 +145,12 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Append to session | `tmuxp load --append` | `tmuxinator start --append` | (none) |
 | List configs | `tmuxp ls` | `tmuxinator list` | `teamocil --list` |
 | Edit config | `tmuxp edit <config>` | `tmuxinator edit <project>` | `teamocil --edit <layout>` |
-| Show/debug config | (none) | `tmuxinator debug <project>` | `teamocil --show` / `--debug` |
-| Create new config | (none) | `tmuxinator new <project>` | (none) |
-| Copy config | (none) | `tmuxinator copy <src> <dst>` | (none) |
-| Delete config | (none) | `tmuxinator delete <project>` | (none) |
+| Show/debug config | `tmuxp load --debug` | `tmuxinator debug <project>` | `teamocil --show` / `--debug` |
+| Create new config | `tmuxp new <project>` | `tmuxinator new <project>` | (none) |
+| Copy config | `tmuxp copy <src> <dst>` | `tmuxinator copy <src> <dst>` | (none) |
+| Delete config | `tmuxp delete <project>` | `tmuxinator delete <project>` | (none) |
 | Delete all configs | (none) | `tmuxinator implode` | (none) |
-| Stop/kill session | (none) | `tmuxinator stop <project>` | (none) |
+| Stop/kill session | `tmuxp stop <session>` | `tmuxinator stop <project>` | (none) |
 | Stop all sessions | (none) | `tmuxinator stop-all` | (none) |
 | Freeze/export session | `tmuxp freeze <session>` | (none) | (none) |
 | Convert format | `tmuxp convert <file>` | (none) | (none) |
@@ -158,9 +158,9 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Search workspaces | `tmuxp search <pattern>` | (none) | (none) |
 | Python shell | `tmuxp shell` | (none) | (none) |
 | Debug/system info | `tmuxp debug-info` | `tmuxinator doctor` | (none) |
-| Use here (current window) | (none) | (none) | `teamocil --here` |
-| Skip pre_window | (none) | `--no-pre-window` | (none) |
-| Pass variables | (none) | `key=value` args | (none) |
+| Use here (current window) | `tmuxp load --here` | (none) | `teamocil --here` |
+| Skip pre_window | `--no-shell-command-before` | `--no-pre-window` | (none) |
+| Pass variables | `--set KEY=VALUE` | `key=value` args | (none) |
 | Suppress version warning | (none) | `--suppress-tmux-version-warning` | (none) |
 | Custom config path | `tmuxp load /path/to/file` | `-p /path/to/file` | `--layout /path/to/file` |
 | Load multiple configs | `tmuxp load f1 f2 ...` (all but last detached) | (none) | (none) |
