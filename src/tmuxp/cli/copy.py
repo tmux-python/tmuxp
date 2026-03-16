@@ -43,7 +43,16 @@ if t.TYPE_CHECKING:
 def create_copy_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Augment :class:`argparse.ArgumentParser` with ``copy`` subcommand."""
+    """Augment :class:`argparse.ArgumentParser` with ``copy`` subcommand.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> parser = create_copy_subparser(argparse.ArgumentParser())
+    >>> args = parser.parse_args(["src", "dst"])
+    >>> args.source, args.destination
+    ('src', 'dst')
+    """
     parser.add_argument(
         dest="source",
         metavar="source",
