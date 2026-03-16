@@ -676,14 +676,6 @@ def load_workspace(
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
-    # Run on_project_start hook — fires on every tmuxp load invocation
-    if "on_project_start" in expanded_workspace:
-        _hook_cwd = expanded_workspace.get("start_directory")
-        util.run_hook_commands(
-            expanded_workspace["on_project_start"],
-            cwd=_hook_cwd,
-        )
-
     t = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
@@ -716,24 +708,40 @@ def load_workspace(
 
     # Session-exists check — outside spinner so prompt_yes_no is safe
     if builder.session_exists(session_name) and not append and not here:
-        # Run on_project_restart hook — fires when reattaching
-        if "on_project_restart" in expanded_workspace:
-            _hook_cwd = expanded_workspace.get("start_directory")
-            util.run_hook_commands(
-                expanded_workspace["on_project_restart"],
-                cwd=_hook_cwd,
-            )
-        if not detached and (
+        _confirmed = not detached and (
             answer_yes
             or prompt_yes_no(
                 f"{cli_colors.highlight(session_name)} is already running. Attach?",
                 default=True,
                 color_mode=cli_colors.mode,
             )
-        ):
+        )
+        if _confirmed or detached:
+            if "on_project_start" in expanded_workspace:
+                _hook_cwd = expanded_workspace.get("start_directory")
+                util.run_hook_commands(
+                    expanded_workspace["on_project_start"],
+                    cwd=_hook_cwd,
+                )
+            # Run on_project_restart hook — fires when reattaching
+            if "on_project_restart" in expanded_workspace:
+                _hook_cwd = expanded_workspace.get("start_directory")
+                util.run_hook_commands(
+                    expanded_workspace["on_project_restart"],
+                    cwd=_hook_cwd,
+                )
+        if _confirmed:
             _reattach(builder, cli_colors)
         _cleanup_debug()
         return None
+
+    # Run on_project_start hook — fires before new session build
+    if "on_project_start" in expanded_workspace:
+        _hook_cwd = expanded_workspace.get("start_directory")
+        util.run_hook_commands(
+            expanded_workspace["on_project_start"],
+            cwd=_hook_cwd,
+        )
 
     if _progress_disabled:
         _private_path = str(PrivatePath(workspace_file))
