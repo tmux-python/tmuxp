@@ -588,3 +588,86 @@ def test_expand_lifecycle_hooks_tilde() -> None:
 
     assert "~" not in result["on_project_exit"]
     assert result["on_project_exit"].endswith("/scripts/cleanup.sh")
+
+
+class RenderTemplateFixture(t.NamedTuple):
+    """Test fixture for render_template tests."""
+
+    test_id: str
+    content: str
+    context: dict[str, str]
+    expected: str
+
+
+RENDER_TEMPLATE_FIXTURES: list[RenderTemplateFixture] = [
+    RenderTemplateFixture(
+        test_id="simple-replacement",
+        content="root: {{ project }}",
+        context={"project": "myapp"},
+        expected="root: myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="multiple-vars",
+        content="name: {{ name }}\nroot: {{ root }}",
+        context={"name": "dev", "root": "/tmp/dev"},
+        expected="name: dev\nroot: /tmp/dev",
+    ),
+    RenderTemplateFixture(
+        test_id="unknown-var-unchanged",
+        content="root: {{ unknown }}",
+        context={"project": "myapp"},
+        expected="root: {{ unknown }}",
+    ),
+    RenderTemplateFixture(
+        test_id="no-templates",
+        content="root: /tmp/myapp",
+        context={"project": "myapp"},
+        expected="root: /tmp/myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="env-var-not-affected",
+        content="root: $HOME/{{ project }}",
+        context={"project": "myapp"},
+        expected="root: $HOME/myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="whitespace-in-braces",
+        content="root: {{project}}",
+        context={"project": "myapp"},
+        expected="root: myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="extra-whitespace-in-braces",
+        content="root: {{  project  }}",
+        context={"project": "myapp"},
+        expected="root: myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="empty-context",
+        content="root: {{ project }}",
+        context={},
+        expected="root: {{ project }}",
+    ),
+    RenderTemplateFixture(
+        test_id="same-var-multiple-times",
+        content="a: {{ x }}\nb: {{ x }}",
+        context={"x": "val"},
+        expected="a: val\nb: val",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(RenderTemplateFixture._fields),
+    RENDER_TEMPLATE_FIXTURES,
+    ids=[f.test_id for f in RENDER_TEMPLATE_FIXTURES],
+)
+def test_render_template(
+    test_id: str,
+    content: str,
+    context: dict[str, str],
+    expected: str,
+) -> None:
+    """render_template() replaces {{ var }} expressions with context values."""
+    result = loader.render_template(content, context)
+    assert result == expected
