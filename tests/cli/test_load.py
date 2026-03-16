@@ -1196,6 +1196,52 @@ windows:
     session.kill()
 
 
+def test_load_on_project_restart_skipped_on_decline(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load skips on_project_restart when user declines reattach."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "restart_hook_ran"
+    workspace_file = tmp_path / "hook_restart_decline.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-restart-decline
+on_project_restart: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    # First load creates the session
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert session is not None
+    assert not marker.exists()
+
+    # Second load: session exists, user declines reattach
+    monkeypatch.setattr(
+        "tmuxp.cli.load.prompt_yes_no",
+        lambda *a, **kw: False,
+    )
+    load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=False,
+    )
+    assert not marker.exists()
+
+    session.kill()
+
+
 def test_load_on_project_start_skipped_on_decline(
     tmp_path: pathlib.Path,
     server: Server,
