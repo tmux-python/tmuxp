@@ -129,6 +129,7 @@ class CLILoadNamespace(argparse.Namespace):
     no_progress: bool
     no_shell_command_before: bool
     debug: bool
+    set: list[str]
 
 
 def load_plugins(
@@ -493,6 +494,7 @@ def load_workspace(
     no_progress: bool = False,
     no_shell_command_before: bool = False,
     debug: bool = False,
+    template_context: dict[str, str] | None = None,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -535,6 +537,10 @@ def load_workspace(
         before building. Default False.
     debug : bool
         Show tmux commands as they execute. Implies no_progress. Default False.
+    template_context : dict, optional
+        Mapping of variable names to values for ``{{ variable }}`` template
+        rendering. Applied to raw file content before YAML/JSON parsing.
+        Typically populated from ``--set KEY=VALUE`` CLI arguments.
 
     Notes
     -----
@@ -623,7 +629,16 @@ def load_workspace(
         )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
+    if template_context:
+        raw_workspace = (
+            config_reader.ConfigReader._from_file(
+                workspace_file,
+                template_context=template_context,
+            )
+            or {}
+        )
+    else:
+        raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
     # shapes workspaces relative to config / profile file location
     expanded_workspace = loader.expand(
@@ -954,6 +969,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help="show tmux commands as they execute (implies --no-progress)",
     )
 
+    parser.add_argument(
+        "--set",
+        metavar="KEY=VALUE",
+        action="append",
+        default=[],
+        help=(
+            "set template variable for {{ variable }} expressions in workspace config "
+            "(repeatable, e.g. --set project=myapp --set port=8080)"
+        ),
+    )
+
     try:
         import shtab
 
@@ -1007,6 +1033,20 @@ def command_load(
         sys.exit()
         return
 
+    # Parse --set KEY=VALUE args into template context
+    template_context: dict[str, str] | None = None
+    if args.set:
+        template_context = {}
+        for item in args.set:
+            key, _, value = item.partition("=")
+            if not key or not _:
+                tmuxp_echo(
+                    cli_colors.error("[Error]")
+                    + f" Invalid --set format: {item!r} (expected KEY=VALUE)",
+                )
+                sys.exit(1)
+            template_context[key] = value
+
     last_idx = len(args.workspace_files) - 1
     original_detached_option = args.detached
     original_new_session_name = args.new_session_name
@@ -1041,4 +1081,5 @@ def command_load(
             no_progress=args.no_progress,
             no_shell_command_before=args.no_shell_command_before,
             debug=args.debug,
+            template_context=template_context,
         )
