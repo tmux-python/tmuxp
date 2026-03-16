@@ -144,11 +144,11 @@ Resolved — `with_env_var` logs warning (unsupported), `cmd_separator` logs war
 
 All previously-identified Tier 1 gaps (v1.x string panes, `commands` key, `rvm`, `pre` scope) are now fixed and tested.
 
-### Tier 2: Edge Cases (Low Priority)
+### Tier 2: Edge Cases ✅ Resolved
 
-- **YAML aliases/anchors**: Real tmuxinator configs use `&defaults` / `*defaults` — no test coverage
-- **Numeric/emoji window names**: `222:`, `true:`, `🍩:` — YAML type coercion edge cases untested
-- **Pane title syntax**: `pane_name: command` dict form — no fixtures
+- ~~**YAML aliases/anchors**~~: ✅ Tested — aliases resolve transparently via YAML parser before import
+- ~~**Numeric/emoji window names**~~: ✅ Fixed + tested — `str(k)` coercion in importer prevents `TypeError` in `expandshell()`
+- ~~**Pane title syntax**~~: ✅ Fixed + tested — `_convert_named_panes()` converts `{name: commands}` to `{shell_command, title}`
 
 ## Implementation Priority
 
@@ -179,4 +179,4 @@ T5 (`tmuxp stop`), T10 (`tmuxp new`, `tmuxp copy`, `tmuxp delete`).
 1. ~~**T8**~~: ✅ Resolved — `{{ variable }}` templating with `--set KEY=VALUE` CLI flag.
 2. ~~**Dead config keys**~~: ✅ Resolved — `config`, `socket_name`, `socket_path` now read as fallbacks in `load_workspace()`. CLI flags override.
 3. ~~**`clear` config key**~~: ✅ Resolved — `config_after_window()` sends `clear` to all panes when `clear: true`.
-4. **Edge case test coverage**: YAML aliases/anchors, numeric/emoji window names, pane title syntax.
+4. ~~**Edge case test coverage**~~: ✅ Resolved — YAML aliases tested, numeric/emoji window names fixed + tested, pane title syntax fixed + tested.
