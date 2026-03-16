@@ -102,5 +102,6 @@ history
 
 about_tmux
 migration
+Comparison <comparison>
 glossary
 ```
