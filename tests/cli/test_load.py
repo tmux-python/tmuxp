@@ -1303,3 +1303,65 @@ windows:
         assert session.server.config_file == _resolve(expect_config_file)
 
     session.kill()
+
+
+def test_load_workspace_template_context(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace() renders {{ var }} templates before YAML parsing."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "tpl.yaml"
+    workspace_file.write_text(
+        """\
+session_name: {{ project }}-session
+windows:
+- window_name: {{ window }}
+  panes:
+  - echo {{ project }}
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        template_context={"project": "myapp", "window": "editor"},
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "myapp-session"
+    assert session.windows[0].window_name == "editor"
+
+
+def test_load_workspace_template_no_context(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace() without template_context leaves {{ var }} as literals."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "tpl.yaml"
+    workspace_file.write_text(
+        """\
+session_name: plain-session
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "plain-session"
