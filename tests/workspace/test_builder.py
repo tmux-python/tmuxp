@@ -1976,3 +1976,71 @@ def test_on_project_stop_sets_start_directory_env(
     assert start_dir == str(tmp_path)
 
     builder.session.kill()
+
+
+def test_clear_sends_clear_to_panes(
+    session: Session,
+) -> None:
+    """clear: true sends clear command to all panes after window creation."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "clear-test",
+                "clear": True,
+                "panes": [
+                    {"shell_command": ["echo BEFORE_CLEAR"]},
+                    {"shell_command": ["echo BEFORE_CLEAR"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert len(window.panes) == 2
+
+    for pane in window.panes:
+
+        def check(p: Pane = pane) -> bool:
+            captured = "\n".join(p.capture_pane()).strip()
+            return "BEFORE_CLEAR" not in captured
+
+        assert retry_until(check, raises=False), (
+            f"Expected BEFORE_CLEAR to be cleared from pane {pane.pane_id}"
+        )
+
+
+def test_clear_false_does_not_clear(
+    session: Session,
+) -> None:
+    """clear: false does not clear pane content."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "no-clear-test",
+                "clear": False,
+                "panes": [
+                    {"shell_command": ["echo SHOULD_REMAIN"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    pane = window.panes[0]
+
+    def check(p: Pane = pane) -> bool:
+        return "SHOULD_REMAIN" in "\n".join(p.capture_pane())
+
+    assert retry_until(check), (
+        f"Expected SHOULD_REMAIN to remain in pane {pane.pane_id}"
+    )
