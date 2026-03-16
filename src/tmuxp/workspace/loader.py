@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import pathlib
+import re
 import typing as t
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,51 @@ def expandshell(value: str) -> str:
         value with shell variables expanded
     """
     return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
+
+
+_TEMPLATE_RE = re.compile(r"\{\{\s*(\w+)\s*\}\}")
+
+
+def render_template(content: str, context: dict[str, str]) -> str:
+    """Render ``{{ variable }}`` expressions in raw config content.
+
+    Replaces template expressions with values from *context*. Expressions
+    referencing keys not in *context* are left unchanged so that
+    ``$ENV_VAR`` expansion (which runs later, after YAML parsing) is
+    unaffected.
+
+    Parameters
+    ----------
+    content : str
+        Raw file content (YAML or JSON) before parsing.
+    context : dict
+        Mapping of variable names to replacement values, typically
+        from ``--set KEY=VALUE`` CLI arguments.
+
+    Returns
+    -------
+    str
+        Content with matching ``{{ key }}`` expressions replaced.
+
+    Examples
+    --------
+    >>> render_template("root: {{ project }}", {"project": "myapp"})
+    'root: myapp'
+
+    >>> render_template("root: {{ unknown }}", {"project": "myapp"})
+    'root: {{ unknown }}'
+
+    >>> render_template("no templates here", {"key": "val"})
+    'no templates here'
+    """
+
+    def _replace(match: re.Match[str]) -> str:
+        key = match.group(1)
+        if key in context:
+            return context[key]
+        return match.group(0)
+
+    return _TEMPLATE_RE.sub(_replace, content)
 
 
 def expand_cmd(p: dict[str, t.Any]) -> dict[str, t.Any]:
