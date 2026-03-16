@@ -643,6 +643,21 @@ def load_workspace(
             for pane in window.get("panes", []):
                 pane.pop("shell_command_before", None)
 
+    # Use workspace config values as fallbacks for server connection params
+    # (e.g. from tmuxinator cli_args: "-L socket -f tmux.conf")
+    if socket_name is None:
+        socket_name = expanded_workspace.pop("socket_name", None)
+    else:
+        expanded_workspace.pop("socket_name", None)
+    if socket_path is None:
+        socket_path = expanded_workspace.pop("socket_path", None)
+    else:
+        expanded_workspace.pop("socket_path", None)
+    if tmux_config_file is None:
+        tmux_config_file = expanded_workspace.pop("config", None)
+    else:
+        expanded_workspace.pop("config", None)
+
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
