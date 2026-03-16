@@ -921,6 +921,10 @@ class WorkspaceBuilder:
                 for pane in window.panes:
                     pane.send_keys(cmd["cmd"])
 
+        if window_config.get("clear"):
+            for pane in window.panes:
+                pane.send_keys("clear", enter=True)
+
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
         assert self.server is not None
