@@ -1194,3 +1194,112 @@ windows:
     assert marker.exists()
 
     session.kill()
+
+
+class ConfigKeyPrecedenceFixture(t.NamedTuple):
+    """Test fixture for config key precedence tests."""
+
+    test_id: str
+    workspace_extra: dict[str, t.Any]
+    cli_socket_name: str | None
+    cli_tmux_config_file: str | None
+    expect_socket_name: str | None
+    expect_config_file: str | None
+
+
+CONFIG_KEY_PRECEDENCE_FIXTURES: list[ConfigKeyPrecedenceFixture] = [
+    ConfigKeyPrecedenceFixture(
+        test_id="workspace-socket_name-used-as-fallback",
+        workspace_extra={"socket_name": "{server_socket}"},
+        cli_socket_name=None,
+        cli_tmux_config_file=None,
+        expect_socket_name="{server_socket}",
+        expect_config_file=None,
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="workspace-config-used-as-fallback",
+        workspace_extra={"config": "{tmux_conf}"},
+        cli_socket_name="{server_socket}",
+        cli_tmux_config_file=None,
+        expect_socket_name="{server_socket}",
+        expect_config_file="{tmux_conf}",
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="cli-overrides-workspace-socket_name",
+        workspace_extra={"socket_name": "ignored-socket"},
+        cli_socket_name="{server_socket}",
+        cli_tmux_config_file=None,
+        expect_socket_name="{server_socket}",
+        expect_config_file=None,
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="cli-overrides-workspace-config",
+        workspace_extra={"config": "/ignored/tmux.conf"},
+        cli_socket_name="{server_socket}",
+        cli_tmux_config_file="{tmux_conf}",
+        expect_socket_name="{server_socket}",
+        expect_config_file="{tmux_conf}",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ConfigKeyPrecedenceFixture._fields),
+    CONFIG_KEY_PRECEDENCE_FIXTURES,
+    ids=[f.test_id for f in CONFIG_KEY_PRECEDENCE_FIXTURES],
+)
+def test_load_workspace_config_key_precedence(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    workspace_extra: dict[str, t.Any],
+    cli_socket_name: str | None,
+    cli_tmux_config_file: str | None,
+    expect_socket_name: str | None,
+    expect_config_file: str | None,
+) -> None:
+    """Workspace config keys (socket_name, config) used as Server fallbacks."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    tmux_conf = str(FIXTURE_PATH / "tmux" / "tmux.conf")
+    server_socket = server.socket_name
+
+    def _resolve(val: str | None) -> str | None:
+        if val is None:
+            return None
+        return val.format(server_socket=server_socket, tmux_conf=tmux_conf)
+
+    resolved_extra = {
+        k: _resolve(v) if isinstance(v, str) else v for k, v in workspace_extra.items()
+    }
+
+    extra_lines = "\n".join(f"{k}: {v}" for k, v in resolved_extra.items())
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: cfg-key-{test_id}
+{extra_lines}
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=_resolve(cli_socket_name),
+        tmux_config_file=_resolve(cli_tmux_config_file),
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+
+    if _resolve(expect_socket_name) is not None:
+        assert session.server.socket_name == _resolve(expect_socket_name)
+    if _resolve(expect_config_file) is not None:
+        assert session.server.config_file == _resolve(expect_config_file)
+
+    session.kill()
