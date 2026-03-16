@@ -47,7 +47,16 @@ class CLIStopNamespace(argparse.Namespace):
 def create_stop_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Augment :class:`argparse.ArgumentParser` with ``stop`` subcommand."""
+    """Augment :class:`argparse.ArgumentParser` with ``stop`` subcommand.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> parser = create_stop_subparser(argparse.ArgumentParser())
+    >>> args = parser.parse_args(["mysession"])
+    >>> args.session_name
+    'mysession'
+    """
     parser.add_argument(
         dest="session_name",
         metavar="session-name",

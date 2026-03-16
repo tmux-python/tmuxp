@@ -42,7 +42,18 @@ if t.TYPE_CHECKING:
 def create_delete_subparser(
     parser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Augment :class:`argparse.ArgumentParser` with ``delete`` subcommand."""
+    """Augment :class:`argparse.ArgumentParser` with ``delete`` subcommand.
+
+    Examples
+    --------
+    >>> import argparse
+    >>> parser = create_delete_subparser(argparse.ArgumentParser())
+    >>> args = parser.parse_args(["proj1", "proj2", "-y"])
+    >>> args.workspace_names
+    ['proj1', 'proj2']
+    >>> args.answer_yes
+    True
+    """
     parser.add_argument(
         dest="workspace_names",
         metavar="workspace-name",
