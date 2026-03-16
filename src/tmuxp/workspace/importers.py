@@ -9,6 +9,52 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 
+def _convert_named_panes(panes: list[t.Any]) -> list[t.Any]:
+    """Convert tmuxinator named pane dicts to tmuxp format.
+
+    Tmuxinator supports ``{pane_name: commands}`` dicts in pane lists, where the
+    key is the pane title and the value is the command or command list.  Convert
+    these to ``{"shell_command": commands, "title": pane_name}`` so the builder
+    can call ``pane.set_title()``.
+
+    Parameters
+    ----------
+    panes : list
+        Raw pane list from a tmuxinator window config.
+
+    Returns
+    -------
+    list
+        Pane list with named pane dicts converted.
+
+    Examples
+    --------
+    >>> _convert_named_panes(["vim", {"logs": ["tail -f log"]}])
+    ['vim', {'shell_command': ['tail -f log'], 'title': 'logs'}]
+
+    >>> _convert_named_panes(["vim", None, "top"])
+    ['vim', None, 'top']
+    """
+    result: list[t.Any] = []
+    for pane in panes:
+        if isinstance(pane, dict) and len(pane) == 1 and "shell_command" not in pane:
+            pane_name = next(iter(pane))
+            commands = pane[pane_name]
+            if isinstance(commands, str):
+                commands = [commands]
+            elif commands is None:
+                commands = []
+            result.append(
+                {
+                    "shell_command": commands,
+                    "title": str(pane_name),
+                }
+            )
+        else:
+            result.append(pane)
+    return result
+
+
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
 
@@ -103,21 +149,21 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     for window_dict in workspace_dict["windows"]:
         for k, v in window_dict.items():
-            window_dict = {"window_name": k}
+            window_dict = {"window_name": str(k) if k is not None else k}
 
             if isinstance(v, str) or v is None:
                 window_dict["panes"] = [v]
                 tmuxp_workspace["windows"].append(window_dict)
                 continue
             if isinstance(v, list):
-                window_dict["panes"] = v
+                window_dict["panes"] = _convert_named_panes(v)
                 tmuxp_workspace["windows"].append(window_dict)
                 continue
 
             if "pre" in v:
                 window_dict["shell_command_before"] = v["pre"]
             if "panes" in v:
-                window_dict["panes"] = v["panes"]
+                window_dict["panes"] = _convert_named_panes(v["panes"])
             if "root" in v:
                 window_dict["start_directory"] = v["root"]
 
