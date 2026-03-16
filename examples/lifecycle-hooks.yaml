@@ -1,0 +1,7 @@
+session_name: lifecycle hooks
+on_project_start: echo "project starting"
+on_project_exit: echo "project exiting"
+windows:
+  - window_name: main
+    panes:
+      -
