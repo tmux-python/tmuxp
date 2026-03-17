@@ -300,6 +300,18 @@ def test_search_no_args_shows_help() -> None:
     assert result.returncode == 0
 
 
+@pytest.mark.parametrize("subcommand", ["stop", "new", "copy", "delete"])
+def test_new_commands_no_args_shows_help(subcommand: str) -> None:
+    """Running new commands with no args shows help."""
+    result = subprocess.run(
+        ["tmuxp", subcommand],
+        capture_output=True,
+        text=True,
+    )
+    assert f"usage: tmuxp {subcommand}" in result.stdout
+    assert result.returncode == 0
+
+
 def test_main_help_example_sections_have_examples_suffix() -> None:
     """Main --help should have section headings ending with 'examples:'."""
     help_text = _get_help_text()

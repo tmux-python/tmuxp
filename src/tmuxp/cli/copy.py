@@ -52,19 +52,30 @@ def create_copy_subparser(
     >>> args = parser.parse_args(["src", "dst"])
     >>> args.source, args.destination
     ('src', 'dst')
+
+    No arguments yields ``None``:
+
+    >>> args = parser.parse_args([])
+    >>> args.source is None and args.destination is None
+    True
     """
     parser.add_argument(
         dest="source",
         metavar="source",
+        nargs="?",
+        default=None,
         type=str,
         help="source workspace name or file path.",
     )
     parser.add_argument(
         dest="destination",
         metavar="destination",
+        nargs="?",
+        default=None,
         type=str,
         help="destination workspace name or file path.",
     )
+    parser.set_defaults(print_help=parser.print_help)
     return parser
 
 

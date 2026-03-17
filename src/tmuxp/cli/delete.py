@@ -53,11 +53,17 @@ def create_delete_subparser(
     ['proj1', 'proj2']
     >>> args.answer_yes
     True
+
+    No arguments yields an empty list:
+
+    >>> args = parser.parse_args([])
+    >>> args.workspace_names
+    []
     """
     parser.add_argument(
         dest="workspace_names",
         metavar="workspace-name",
-        nargs="+",
+        nargs="*",
         type=str,
         help="workspace name(s) or file path(s) to delete.",
     )
@@ -68,6 +74,7 @@ def create_delete_subparser(
         action="store_true",
         help="skip confirmation prompt.",
     )
+    parser.set_defaults(print_help=parser.print_help)
     return parser
 
 

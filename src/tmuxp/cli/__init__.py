@@ -420,12 +420,18 @@ def cli(_args: list[str] | None = None) -> None:
             color=args.color,
         )
     elif args.subparser_name == "new":
+        if not args.workspace_name:
+            args.print_help()
+            return
         command_new(
             workspace_name=args.workspace_name,
             parser=parser,
             color=args.color,
         )
     elif args.subparser_name == "copy":
+        if not args.source or not args.destination:
+            args.print_help()
+            return
         command_copy(
             source=args.source,
             destination=args.destination,
@@ -433,6 +439,9 @@ def cli(_args: list[str] | None = None) -> None:
             color=args.color,
         )
     elif args.subparser_name == "delete":
+        if not args.workspace_names:
+            args.print_help()
+            return
         command_delete(
             workspace_names=args.workspace_names,
             answer_yes=args.answer_yes,
@@ -445,6 +454,9 @@ def cli(_args: list[str] | None = None) -> None:
             parser=parser,
         )
     elif args.subparser_name == "stop":
+        if not args.session_name:
+            args.print_help()
+            return
         command_stop(
             args=CLIStopNamespace(**vars(args)),
             parser=parser,
