@@ -138,6 +138,7 @@ copybutton_prompt_text = (
 )
 copybutton_prompt_is_regexp = True
 copybutton_remove_prompts = True
+copybutton_line_continuation_character = "\\"
 
 # sphinxext-rediraffe
 rediraffe_redirects = "redirects.txt"
