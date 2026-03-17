@@ -75,6 +75,7 @@ def create_stop_subparser(
         metavar="socket-name",
         help="pass-through for tmux -L",
     )
+    parser.set_defaults(print_help=parser.print_help)
     return parser
 
 
