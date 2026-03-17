@@ -59,13 +59,22 @@ def create_new_subparser(
     >>> args = parser.parse_args(["myproject"])
     >>> args.workspace_name
     'myproject'
+
+    No arguments yields ``None``:
+
+    >>> args = parser.parse_args([])
+    >>> args.workspace_name is None
+    True
     """
     parser.add_argument(
         dest="workspace_name",
         metavar="workspace-name",
+        nargs="?",
+        default=None,
         type=str,
         help="name for the new workspace config.",
     )
+    parser.set_defaults(print_help=parser.print_help)
     return parser
 
 
