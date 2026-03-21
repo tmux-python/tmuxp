@@ -949,6 +949,24 @@ windows:
     assert isinstance(session, Session)
     assert session.name == "scb_test"
 
+    window = session.active_window
+    assert window is not None
+    pane = window.active_pane
+    assert pane is not None
+
+    from libtmux.test.retry import retry_until
+
+    if expect_before_cmd:
+        assert retry_until(
+            lambda: "__BEFORE__" in "\n".join(pane.capture_pane()),
+            seconds=5,
+        )
+    else:
+        import time
+
+        time.sleep(1)
+        assert "__BEFORE__" not in "\n".join(pane.capture_pane())
+
 
 def test_load_no_shell_command_before_strips_all_levels(
     tmp_path: pathlib.Path,
