@@ -123,4 +123,11 @@ def command_new(
         )
 
     sys_editor = os.environ.get("EDITOR", "vim")
-    subprocess.call([*shlex.split(sys_editor), workspace_path])
+    try:
+        subprocess.call([*shlex.split(sys_editor), workspace_path])
+    except FileNotFoundError:
+        tmuxp_echo(
+            colors.error("Editor not found: ")
+            + colors.info(sys_editor)
+            + colors.muted(" (set $EDITOR to a valid editor)"),
+        )
