@@ -329,6 +329,12 @@ def _load_here_in_current_session(builder: WorkspaceBuilder) -> None:
     Parameters
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _load_here_in_current_session
+    >>> callable(_load_here_in_current_session)
+    True
     """
     current_attached_session = builder.find_current_attached_session()
     builder.build(current_attached_session, here=True)
