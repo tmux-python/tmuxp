@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shlex
 import shutil
 import time
 import typing as t
@@ -675,7 +676,7 @@ class WorkspaceBuilder:
                     active_pane = window.active_pane
                     if active_pane is not None:
                         active_pane.send_keys(
-                            f'cd "{start_directory}"',
+                            f"cd {shlex.quote(start_directory)}",
                             enter=True,
                         )
             else:
