@@ -126,19 +126,26 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     )
 
     if "pre" in workspace_dict and pre_window_val is not None:
-        tmuxp_workspace["before_script"] = workspace_dict["pre"]
+        pre_val = workspace_dict["pre"]
+        if isinstance(pre_val, list):
+            tmuxp_workspace["before_script"] = "; ".join(pre_val)
+        else:
+            tmuxp_workspace["before_script"] = pre_val
 
         if isinstance(pre_window_val, str):
             tmuxp_workspace["shell_command_before"] = [pre_window_val]
         else:
             tmuxp_workspace["shell_command_before"] = pre_window_val
     elif "pre" in workspace_dict:
-        if isinstance(workspace_dict["pre"], list):
+        pre_val = workspace_dict["pre"]
+        if isinstance(pre_val, list):
             logger.info(
                 "multi-command pre list mapped to before_script; "
                 "consider splitting into before_script and shell_command_before",
             )
-        tmuxp_workspace["before_script"] = workspace_dict["pre"]
+            tmuxp_workspace["before_script"] = "; ".join(pre_val)
+        else:
+            tmuxp_workspace["before_script"] = pre_val
 
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
