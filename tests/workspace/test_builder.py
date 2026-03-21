@@ -480,6 +480,38 @@ def test_here_mode(
     assert new_window.window_id != original_window_id
 
 
+def test_here_mode_start_directory_special_chars(
+    session: Session,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Test --here mode with special characters in start_directory."""
+    test_dir = tmp_path / "dir with 'quotes' & spaces"
+    test_dir.mkdir()
+
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    workspace["start_directory"] = str(test_dir)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    reused_window = session.windows[0]
+    pane = reused_window.active_pane
+    assert pane is not None
+
+    expected_path = os.path.realpath(str(test_dir))
+
+    def check_path() -> bool:
+        return pane.pane_current_path == expected_path
+
+    assert retry_until(check_path), (
+        f"Expected {expected_path}, got {pane.pane_current_path}"
+    )
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
