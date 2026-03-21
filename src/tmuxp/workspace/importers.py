@@ -137,6 +137,20 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             "on_project_first_start"
         ]
 
+    # Warn on tmuxinator keys that have no tmuxp equivalent
+    _TMUXINATOR_UNMAPPED_KEYS = {
+        "tmux_command": "custom tmux binary is not supported; tmuxp always uses 'tmux'",
+        "attach": "use 'tmuxp load -d' for detached mode instead",
+        "post": "deprecated in tmuxinator; use on_project_exit instead",
+    }
+    for _ukey, _uhint in _TMUXINATOR_UNMAPPED_KEYS.items():
+        if _ukey in workspace_dict:
+            logger.warning(
+                "tmuxinator key %r is not supported by tmuxp: %s",
+                _ukey,
+                _uhint,
+            )
+
     tmuxp_workspace["windows"] = []
 
     if "tabs" in workspace_dict:
