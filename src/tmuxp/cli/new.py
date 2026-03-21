@@ -83,7 +83,17 @@ def command_new(
     parser: argparse.ArgumentParser | None = None,
     color: CLIColorModeLiteral | None = None,
 ) -> None:
-    """Entrypoint for ``tmuxp new``, create a new workspace config from template."""
+    """Entrypoint for ``tmuxp new``, create a new workspace config from template.
+
+    Examples
+    --------
+    >>> monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+    >>> monkeypatch.setenv("EDITOR", "true")
+    >>> command_new("myproject", color="never")  # doctest: +ELLIPSIS
+    Created ...myproject.yaml
+    >>> (tmp_path / "myproject.yaml").exists()
+    True
+    """
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
 
