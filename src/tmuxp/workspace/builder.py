@@ -667,6 +667,12 @@ class WorkspaceBuilder:
                 if window_name:
                     window.rename_window(window_name)
 
+                # Remove extra panes so iter_create_panes starts clean
+                _active_pane = window.active_pane
+                for _p in list(window.panes):
+                    if _p != _active_pane:
+                        _p.kill()
+
                 start_directory = window_config.get("start_directory", None)
                 panes = window_config["panes"]
                 if panes and "start_directory" in panes[0]:

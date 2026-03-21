@@ -512,6 +512,29 @@ def test_here_mode_start_directory_special_chars(
     )
 
 
+def test_here_mode_cleans_existing_panes(
+    session: Session,
+) -> None:
+    """Test --here mode removes extra panes before rebuilding."""
+    # Start with a 2-pane window
+    original_window = session.active_window
+    original_window.split()
+    assert len(original_window.panes) == 2
+
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    session.refresh()
+    reused_window = session.windows[0]
+    # Config has 1 pane in first window — should be exactly 1, not 3
+    assert len(reused_window.panes) == 1
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
