@@ -635,22 +635,26 @@ def load_workspace(
         )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    if template_context:
-        raw_workspace = (
-            config_reader.ConfigReader._from_file(
-                workspace_file,
-                template_context=template_context,
+    try:
+        if template_context:
+            raw_workspace = (
+                config_reader.ConfigReader._from_file(
+                    workspace_file,
+                    template_context=template_context,
+                )
+                or {}
             )
-            or {}
-        )
-    else:
-        raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
+        else:
+            raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
-    # shapes workspaces relative to config / profile file location
-    expanded_workspace = loader.expand(
-        raw_workspace,
-        cwd=os.path.dirname(workspace_file),
-    )
+        # shapes workspaces relative to config / profile file location
+        expanded_workspace = loader.expand(
+            raw_workspace,
+            cwd=os.path.dirname(workspace_file),
+        )
+    except Exception:
+        _cleanup_debug()
+        raise
 
     # Overridden session name
     if new_session_name:
