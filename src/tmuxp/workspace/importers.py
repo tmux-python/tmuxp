@@ -103,7 +103,17 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                     tmuxp_workspace[flag_map[token]] = value
 
     if "socket_name" in workspace_dict:
-        tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
+        explicit_name = workspace_dict["socket_name"]
+        if (
+            "socket_name" in tmuxp_workspace
+            and tmuxp_workspace["socket_name"] != explicit_name
+        ):
+            logger.warning(
+                "explicit socket_name %s overrides -L %s from cli_args",
+                explicit_name,
+                tmuxp_workspace["socket_name"],
+            )
+        tmuxp_workspace["socket_name"] = explicit_name
 
     tmuxp_workspace["windows"] = []
 
