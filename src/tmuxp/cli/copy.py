@@ -85,7 +85,19 @@ def command_copy(
     parser: argparse.ArgumentParser | None = None,
     color: CLIColorModeLiteral | None = None,
 ) -> None:
-    """Entrypoint for ``tmuxp copy``, copy a workspace config to a new name."""
+    r"""Entrypoint for ``tmuxp copy``, copy a workspace config to a new name.
+
+    Examples
+    --------
+    >>> monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+    >>> _ = (tmp_path / "src.yaml").write_text(
+    ...     "session_name: s\nwindows:\n  - window_name: m\n    panes:\n      -\n"
+    ... )
+    >>> command_copy("src", "dst", color="never")  # doctest: +ELLIPSIS
+    Copied ...src.yaml ... ...dst.yaml
+    >>> (tmp_path / "dst.yaml").exists()
+    True
+    """
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
 
