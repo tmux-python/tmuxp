@@ -83,7 +83,21 @@ def command_stop(
     args: CLIStopNamespace,
     parser: argparse.ArgumentParser | None = None,
 ) -> None:
-    """Entrypoint for ``tmuxp stop``, kill a tmux session."""
+    """Entrypoint for ``tmuxp stop``, kill a tmux session.
+
+    Examples
+    --------
+    >>> test_session = server.new_session(session_name="doctest_stop")
+    >>> args = CLIStopNamespace()
+    >>> args.session_name = "doctest_stop"
+    >>> args.color = "never"
+    >>> args.socket_name = server.socket_name
+    >>> args.socket_path = None
+    >>> command_stop(args)  # doctest: +ELLIPSIS
+    Stopped doctest_stop
+    >>> server.sessions.get(session_name="doctest_stop", default=None) is None
+    True
+    """
     color_mode = get_color_mode(args.color)
     colors = Colors(color_mode)
 

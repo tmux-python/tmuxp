@@ -84,7 +84,19 @@ def command_delete(
     parser: argparse.ArgumentParser | None = None,
     color: CLIColorModeLiteral | None = None,
 ) -> None:
-    """Entrypoint for ``tmuxp delete``, remove workspace config files."""
+    r"""Entrypoint for ``tmuxp delete``, remove workspace config files.
+
+    Examples
+    --------
+    >>> monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+    >>> _ = (tmp_path / "doomed.yaml").write_text(
+    ...     "session_name: d\nwindows:\n  - window_name: m\n    panes:\n      -\n"
+    ... )
+    >>> command_delete(["doomed"], answer_yes=True, color="never")  # doctest: +ELLIPSIS
+    Deleted ...doomed.yaml
+    >>> (tmp_path / "doomed.yaml").exists()
+    False
+    """
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
 
