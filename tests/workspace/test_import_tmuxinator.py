@@ -471,3 +471,19 @@ def test_import_tmuxinator_socket_name_same_no_warning(
     assert result["socket_name"] == "same_socket"
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warning_records) == 0
+
+
+def test_import_tmuxinator_pre_list_joined_for_before_script() -> None:
+    """List pre values are joined with '; ' so expand() doesn't crash."""
+    workspace = {
+        "name": "pre-list",
+        "windows": [{"editor": "vim"}],
+        "pre": ["echo one", "echo two"],
+    }
+    result = importers.import_tmuxinator(workspace)
+    assert result["before_script"] == "echo one; echo two"
+
+    # Verify it survives expand() without TypeError
+    from tmuxp.workspace import loader
+
+    loader.expand(result)
