@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shlex
 import subprocess
 import typing as t
 
@@ -122,4 +123,4 @@ def command_new(
         )
 
     sys_editor = os.environ.get("EDITOR", "vim")
-    subprocess.call([sys_editor, workspace_path])
+    subprocess.call([*shlex.split(sys_editor), workspace_path])
