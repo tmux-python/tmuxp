@@ -115,6 +115,28 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             )
         tmuxp_workspace["socket_name"] = explicit_name
 
+    # Passthrough keys supported by both tmuxinator and tmuxp
+    for _pass_key in (
+        "enable_pane_titles",
+        "pane_title_position",
+        "pane_title_format",
+        "on_project_start",
+        "on_project_restart",
+        "on_project_exit",
+        "on_project_stop",
+    ):
+        if _pass_key in workspace_dict:
+            tmuxp_workspace[_pass_key] = workspace_dict[_pass_key]
+
+    if "on_project_first_start" in workspace_dict:
+        logger.warning(
+            "on_project_first_start is not yet supported by tmuxp; "
+            "consider using on_project_start instead",
+        )
+        tmuxp_workspace["on_project_first_start"] = workspace_dict[
+            "on_project_first_start"
+        ]
+
     tmuxp_workspace["windows"] = []
 
     if "tabs" in workspace_dict:

@@ -487,3 +487,44 @@ def test_import_tmuxinator_pre_list_joined_for_before_script() -> None:
     from tmuxp.workspace import loader
 
     loader.expand(result)
+
+
+def test_import_tmuxinator_passthrough_pane_titles_and_hooks() -> None:
+    """Pane title and lifecycle hook keys are copied through to tmuxp config."""
+    workspace = {
+        "name": "passthrough",
+        "enable_pane_titles": True,
+        "pane_title_position": "bottom",
+        "pane_title_format": "#{pane_index}",
+        "on_project_start": "echo starting",
+        "on_project_restart": "echo restarting",
+        "on_project_exit": "echo exiting",
+        "on_project_stop": "echo stopping",
+        "windows": [{"editor": "vim"}],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    assert result["enable_pane_titles"] is True
+    assert result["pane_title_position"] == "bottom"
+    assert result["pane_title_format"] == "#{pane_index}"
+    assert result["on_project_start"] == "echo starting"
+    assert result["on_project_restart"] == "echo restarting"
+    assert result["on_project_exit"] == "echo exiting"
+    assert result["on_project_stop"] == "echo stopping"
+
+
+def test_import_tmuxinator_on_project_first_start_warns(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Warn when on_project_first_start is used (not yet supported by tmuxp)."""
+    workspace = {
+        "name": "first-start",
+        "on_project_first_start": "rake db:create",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        result = importers.import_tmuxinator(workspace)
+
+    assert result["on_project_first_start"] == "rake db:create"
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert any("on_project_first_start" in r.message for r in warning_records)
