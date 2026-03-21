@@ -433,3 +433,41 @@ def test_import_tmuxinator_named_pane_in_list_window() -> None:
     assert panes[0] == "vim"
     assert panes[1] == {"shell_command": ["rails s"], "title": "server"}
     assert panes[2] == "top"
+
+
+def test_import_tmuxinator_socket_name_conflict_warns(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Warn when explicit socket_name overrides -L from cli_args."""
+    workspace = {
+        "name": "conflict",
+        "cli_args": "-L from_cli",
+        "socket_name": "explicit",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        result = importers.import_tmuxinator(workspace)
+
+    assert result["socket_name"] == "explicit"
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) == 1
+    assert "explicit" in warning_records[0].message
+    assert "from_cli" in warning_records[0].message
+
+
+def test_import_tmuxinator_socket_name_same_no_warning(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """No warning when cli_args -L and explicit socket_name match."""
+    workspace = {
+        "name": "same",
+        "cli_args": "-L same_socket",
+        "socket_name": "same_socket",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        result = importers.import_tmuxinator(workspace)
+
+    assert result["socket_name"] == "same_socket"
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) == 0
