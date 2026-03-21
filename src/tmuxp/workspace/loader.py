@@ -248,8 +248,17 @@ def expand(
         workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
 
     # Desugar pane title session-level config into per-window options
+    _VALID_PANE_TITLE_POSITIONS = {"top", "bottom", "off"}
     if workspace_dict.get("enable_pane_titles") and "windows" in workspace_dict:
         position = workspace_dict.pop("pane_title_position", "top")
+        if position not in _VALID_PANE_TITLE_POSITIONS:
+            logger.warning(
+                "invalid pane_title_position %r, expected one of %s; "
+                "defaulting to 'top'",
+                position,
+                _VALID_PANE_TITLE_POSITIONS,
+            )
+            position = "top"
         fmt = workspace_dict.pop(
             "pane_title_format",
             "#{pane_index}: #{pane_title}",

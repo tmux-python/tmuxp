@@ -497,6 +497,74 @@ def test_expand_pane_titles_defaults() -> None:
     )
 
 
+class PaneTitlePositionFixture(t.NamedTuple):
+    """Fixture for pane_title_position validation."""
+
+    test_id: str
+    position: str
+    expected_position: str
+    expect_warning: bool
+
+
+PANE_TITLE_POSITION_FIXTURES: list[PaneTitlePositionFixture] = [
+    PaneTitlePositionFixture(
+        test_id="top",
+        position="top",
+        expected_position="top",
+        expect_warning=False,
+    ),
+    PaneTitlePositionFixture(
+        test_id="bottom",
+        position="bottom",
+        expected_position="bottom",
+        expect_warning=False,
+    ),
+    PaneTitlePositionFixture(
+        test_id="off",
+        position="off",
+        expected_position="off",
+        expect_warning=False,
+    ),
+    PaneTitlePositionFixture(
+        test_id="invalid-falls-back-to-top",
+        position="invalid_value",
+        expected_position="top",
+        expect_warning=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PaneTitlePositionFixture._fields),
+    PANE_TITLE_POSITION_FIXTURES,
+    ids=[f.test_id for f in PANE_TITLE_POSITION_FIXTURES],
+)
+def test_expand_pane_title_position_validation(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    position: str,
+    expected_position: str,
+    expect_warning: bool,
+) -> None:
+    """Invalid pane_title_position values default to 'top' with a warning."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "pos-test",
+        "enable_pane_titles": True,
+        "pane_title_position": position,
+        "windows": [{"window_name": "main", "panes": [{"shell_command": "echo hi"}]}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.loader"):
+        result = loader.expand(workspace)
+
+    assert result["windows"][0]["options"]["pane-border-status"] == expected_position
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    if expect_warning:
+        assert any("pane_title_position" in r.message for r in warning_records)
+    else:
+        assert not any("pane_title_position" in r.message for r in warning_records)
+
+
 def test_expand_logs_debug(
     tmp_path: pathlib.Path,
     caplog: pytest.LogCaptureFixture,
