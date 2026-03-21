@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import typing as t
 
 import pytest
@@ -95,4 +96,18 @@ def test_new_creates_workspace_dir(
 
     assert config_dir.exists()
     workspace_path = config_dir / "myproject.yaml"
+    assert workspace_path.exists()
+
+
+def test_new_editor_with_flags(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that EDITOR with flags (e.g., 'code -w') is split correctly."""
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+    monkeypatch.setenv("EDITOR", "true --ignored-flag")
+
+    cli.cli(["new", "flagtest"])
+
+    workspace_path = tmp_path / "flagtest.yaml"
     assert workspace_path.exists()
