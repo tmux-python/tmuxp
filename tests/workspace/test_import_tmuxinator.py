@@ -528,3 +528,54 @@ def test_import_tmuxinator_on_project_first_start_warns(
     assert result["on_project_first_start"] == "rake db:create"
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert any("on_project_first_start" in r.message for r in warning_records)
+
+
+class UnmappedKeyFixture(t.NamedTuple):
+    """Fixture for tmuxinator keys with no tmuxp equivalent."""
+
+    test_id: str
+    key: str
+    value: t.Any
+
+
+UNMAPPED_KEY_FIXTURES: list[UnmappedKeyFixture] = [
+    UnmappedKeyFixture(
+        test_id="tmux_command",
+        key="tmux_command",
+        value="wemux",
+    ),
+    UnmappedKeyFixture(
+        test_id="attach",
+        key="attach",
+        value=False,
+    ),
+    UnmappedKeyFixture(
+        test_id="post",
+        key="post",
+        value="echo done",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(UnmappedKeyFixture._fields),
+    UNMAPPED_KEY_FIXTURES,
+    ids=[f.test_id for f in UNMAPPED_KEY_FIXTURES],
+)
+def test_import_tmuxinator_warns_on_unmapped_key(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    key: str,
+    value: t.Any,
+) -> None:
+    """Unmapped tmuxinator keys log a warning instead of being silently dropped."""
+    workspace = {
+        "name": "unmapped-test",
+        "windows": [{"editor": "vim"}],
+        key: value,
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert any(key in r.message for r in warning_records)
