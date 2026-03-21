@@ -249,5 +249,5 @@ testpaths = [
 ]
 filterwarnings = [
   "ignore:The frontend.Option(Parser)? class.*:DeprecationWarning::",
-  "ignore:.*invalid escape sequence.*:SyntaxWarning:aafigure:",
+  "ignore:.*invalid escape sequence.*:SyntaxWarning:.*aafigure.*:",
 ]
