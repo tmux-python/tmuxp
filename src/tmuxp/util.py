@@ -141,14 +141,19 @@ def run_hook_commands(
     if not joined.strip():
         return
     logger.debug("running hook commands %s", joined)
-    result = subprocess.run(
-        joined,
-        shell=True,
-        cwd=cwd,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            joined,
+            shell=True,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except subprocess.TimeoutExpired:
+        logger.warning("hook command timed out after 120s: %s", joined)
+        return
     if result.returncode != 0:
         logger.warning(
             "hook command failed with exit code %d",
