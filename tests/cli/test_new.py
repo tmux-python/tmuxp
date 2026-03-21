@@ -99,15 +99,57 @@ def test_new_creates_workspace_dir(
     assert workspace_path.exists()
 
 
-def test_new_editor_with_flags(
+class EditorFixture(t.NamedTuple):
+    """Fixture for EDITOR environment variable handling."""
+
+    test_id: str
+    editor: str
+    expect_error_output: bool
+
+
+EDITOR_FIXTURES: list[EditorFixture] = [
+    EditorFixture(
+        test_id="valid-editor",
+        editor="true",
+        expect_error_output=False,
+    ),
+    EditorFixture(
+        test_id="editor-with-flags",
+        editor="true --ignored-flag",
+        expect_error_output=False,
+    ),
+    EditorFixture(
+        test_id="missing-editor",
+        editor="nonexistent_editor_binary_xyz",
+        expect_error_output=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(EditorFixture._fields),
+    EDITOR_FIXTURES,
+    ids=[f.test_id for f in EDITOR_FIXTURES],
+)
+def test_new_editor_handling(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    editor: str,
+    expect_error_output: bool,
 ) -> None:
-    """Test that EDITOR with flags (e.g., 'code -w') is split correctly."""
+    """Test EDITOR handling: flags, missing binary, valid editor."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
-    monkeypatch.setenv("EDITOR", "true --ignored-flag")
+    monkeypatch.setenv("EDITOR", editor)
 
-    cli.cli(["new", "flagtest"])
+    cli.cli(["new", f"editortest_{test_id}"])
 
-    workspace_path = tmp_path / "flagtest.yaml"
+    workspace_path = tmp_path / f"editortest_{test_id}.yaml"
     assert workspace_path.exists()
+
+    captured = capsys.readouterr()
+    if expect_error_output:
+        assert "Editor not found" in captured.out
+    else:
+        assert "Editor not found" not in captured.out
