@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import typing as t
 
 import pytest
@@ -104,3 +105,54 @@ def test_copy_to_path(
 
     captured = capsys.readouterr()
     assert "Copied" in captured.out
+
+
+class CopyConfigdirFixture(t.NamedTuple):
+    """Fixture for TMUXP_CONFIGDIR handling in copy command."""
+
+    test_id: str
+    configdir_exists_before: bool
+
+
+COPY_CONFIGDIR_FIXTURES: list[CopyConfigdirFixture] = [
+    CopyConfigdirFixture(
+        test_id="configdir-exists",
+        configdir_exists_before=True,
+    ),
+    CopyConfigdirFixture(
+        test_id="configdir-not-exists",
+        configdir_exists_before=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(CopyConfigdirFixture._fields),
+    COPY_CONFIGDIR_FIXTURES,
+    ids=[f.test_id for f in COPY_CONFIGDIR_FIXTURES],
+)
+def test_copy_respects_tmuxp_configdir(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    configdir_exists_before: bool,
+) -> None:
+    """Copy lands in TMUXP_CONFIGDIR even if it doesn't exist yet."""
+    # Source file in a separate directory
+    source_dir = tmp_path / "source_dir"
+    source_dir.mkdir()
+    source_file = source_dir / "orig.yaml"
+    source_file.write_text("session_name: copied\n")
+
+    # Target configdir — may or may not exist
+    config_dir = tmp_path / "custom_config"
+    if configdir_exists_before:
+        config_dir.mkdir()
+
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(config_dir))
+
+    cli.cli(["copy", str(source_file), "myworkspace"])
+
+    expected = config_dir / "myworkspace.yaml"
+    assert expected.exists(), f"expected {expected} to exist"
+    assert expected.read_text() == "session_name: copied\n"
