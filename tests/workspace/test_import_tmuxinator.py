@@ -525,7 +525,7 @@ def test_import_tmuxinator_on_project_first_start_warns(
     with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
         result = importers.import_tmuxinator(workspace)
 
-    assert result["on_project_first_start"] == "rake db:create"
+    assert "on_project_first_start" not in result
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert any("on_project_first_start" in r.message for r in warning_records)
 

@@ -133,9 +133,6 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             "on_project_first_start is not yet supported by tmuxp; "
             "consider using on_project_start instead",
         )
-        tmuxp_workspace["on_project_first_start"] = workspace_dict[
-            "on_project_first_start"
-        ]
 
     # Warn on tmuxinator keys that have no tmuxp equivalent
     _TMUXINATOR_UNMAPPED_KEYS = {
