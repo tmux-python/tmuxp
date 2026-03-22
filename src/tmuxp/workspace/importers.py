@@ -255,6 +255,17 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                 _idx = int(_startup_window)
                 if 0 <= _idx < len(tmuxp_workspace["windows"]):
                     tmuxp_workspace["windows"][_idx]["focus"] = True
+                    logger.info(
+                        "startup_window %r resolved as 0-based list index; "
+                        "use window name for unambiguous matching across tools",
+                        _startup_window,
+                    )
+                else:
+                    logger.warning(
+                        "startup_window index %d out of range (0-%d)",
+                        _idx,
+                        len(tmuxp_workspace["windows"]) - 1,
+                    )
             except (ValueError, IndexError):
                 logger.warning(
                     "startup_window %s not found",
@@ -278,6 +289,17 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                             "shell_command": [_pane] if _pane else [],
                             "focus": True,
                         }
+                    logger.info(
+                        "startup_pane %r resolved as 0-based list index; "
+                        "use window name + pane index for clarity",
+                        _startup_pane,
+                    )
+                else:
+                    logger.warning(
+                        "startup_pane index %d out of range (0-%d)",
+                        _pidx,
+                        len(_target["panes"]) - 1,
+                    )
             except (ValueError, IndexError):
                 logger.warning(
                     "startup_pane %s not found",
