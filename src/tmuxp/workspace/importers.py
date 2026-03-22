@@ -153,56 +153,44 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    pre_window_val = workspace_dict.get(
-        "pre_window",
-        workspace_dict.get("pre_tab"),
-    )
-
-    if "pre" in workspace_dict and pre_window_val is not None:
+    # Handle pre → before_script (independent of pre_window chain)
+    if "pre" in workspace_dict:
         pre_val = workspace_dict["pre"]
         if isinstance(pre_val, list):
+            if (
+                workspace_dict.get("pre_window") is None
+                and workspace_dict.get("pre_tab") is None
+            ):
+                logger.info(
+                    "multi-command pre list mapped to before_script; "
+                    "consider splitting into before_script and shell_command_before",
+                )
             tmuxp_workspace["before_script"] = "; ".join(pre_val)
         else:
             tmuxp_workspace["before_script"] = pre_val
 
-        if isinstance(pre_window_val, list):
-            tmuxp_workspace["shell_command_before"] = ["; ".join(pre_window_val)]
-        elif isinstance(pre_window_val, str):
-            tmuxp_workspace["shell_command_before"] = [pre_window_val]
-        else:
-            tmuxp_workspace["shell_command_before"] = pre_window_val
-    elif "pre" in workspace_dict:
-        pre_val = workspace_dict["pre"]
-        if isinstance(pre_val, list):
-            logger.info(
-                "multi-command pre list mapped to before_script; "
-                "consider splitting into before_script and shell_command_before",
-            )
-            tmuxp_workspace["before_script"] = "; ".join(pre_val)
-        else:
-            tmuxp_workspace["before_script"] = pre_val
-    elif pre_window_val is not None:
-        # pre_window/pre_tab without pre — tmuxinator treats these independently
-        if isinstance(pre_window_val, list):
-            tmuxp_workspace["shell_command_before"] = ["; ".join(pre_window_val)]
-        elif isinstance(pre_window_val, str):
-            tmuxp_workspace["shell_command_before"] = [pre_window_val]
-        else:
-            tmuxp_workspace["shell_command_before"] = pre_window_val
-
+    # Resolve shell_command_before using tmuxinator's exclusive precedence:
+    # rbenv > rvm > pre_tab > pre_window (only ONE is selected)
+    _scb_val: str | None = None
     if "rbenv" in workspace_dict:
-        if "shell_command_before" not in tmuxp_workspace:
-            tmuxp_workspace["shell_command_before"] = []
-        tmuxp_workspace["shell_command_before"].append(
-            "rbenv shell {}".format(workspace_dict["rbenv"]),
-        )
+        _scb_val = "rbenv shell {}".format(workspace_dict["rbenv"])
+    elif "rvm" in workspace_dict:
+        _scb_val = "rvm use {}".format(workspace_dict["rvm"])
+    elif "pre_tab" in workspace_dict:
+        _raw = workspace_dict["pre_tab"]
+        if isinstance(_raw, list):
+            _scb_val = "; ".join(_raw)
+        elif isinstance(_raw, str):
+            _scb_val = _raw
+    elif "pre_window" in workspace_dict:
+        _raw = workspace_dict["pre_window"]
+        if isinstance(_raw, list):
+            _scb_val = "; ".join(_raw)
+        elif isinstance(_raw, str):
+            _scb_val = _raw
 
-    if "rvm" in workspace_dict:
-        if "shell_command_before" not in tmuxp_workspace:
-            tmuxp_workspace["shell_command_before"] = []
-        tmuxp_workspace["shell_command_before"].append(
-            "rvm use {}".format(workspace_dict["rvm"]),
-        )
+    if _scb_val is not None:
+        tmuxp_workspace["shell_command_before"] = [_scb_val]
 
     _startup_window = workspace_dict.get("startup_window")
     _startup_pane = workspace_dict.get("startup_pane")

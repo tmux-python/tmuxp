@@ -660,6 +660,58 @@ def test_import_tmuxinator_pre_window_standalone(
         assert "before_script" not in result
 
 
+class PreWindowPrecedenceFixture(t.NamedTuple):
+    """Fixture for rbenv/rvm/pre_tab/pre_window exclusive precedence."""
+
+    test_id: str
+    config_extra: dict[str, t.Any]
+    expect_shell_command_before: list[str]
+
+
+PRE_WINDOW_PRECEDENCE_FIXTURES: list[PreWindowPrecedenceFixture] = [
+    PreWindowPrecedenceFixture(
+        test_id="rbenv-beats-pre_window",
+        config_extra={"rbenv": "2.7.0", "pre_window": "echo PRE"},
+        expect_shell_command_before=["rbenv shell 2.7.0"],
+    ),
+    PreWindowPrecedenceFixture(
+        test_id="rvm-beats-pre_tab",
+        config_extra={"rvm": "2.1.1", "pre_tab": "source .env"},
+        expect_shell_command_before=["rvm use 2.1.1"],
+    ),
+    PreWindowPrecedenceFixture(
+        test_id="rbenv-beats-rvm",
+        config_extra={"rbenv": "3.2.0", "rvm": "2.1.1"},
+        expect_shell_command_before=["rbenv shell 3.2.0"],
+    ),
+    PreWindowPrecedenceFixture(
+        test_id="pre_tab-beats-pre_window",
+        config_extra={"pre_tab": "nvm use 18", "pre_window": "echo OTHER"},
+        expect_shell_command_before=["nvm use 18"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PreWindowPrecedenceFixture._fields),
+    PRE_WINDOW_PRECEDENCE_FIXTURES,
+    ids=[f.test_id for f in PRE_WINDOW_PRECEDENCE_FIXTURES],
+)
+def test_import_tmuxinator_pre_window_precedence(
+    test_id: str,
+    config_extra: dict[str, t.Any],
+    expect_shell_command_before: list[str],
+) -> None:
+    """Tmuxinator uses exclusive rbenv > rvm > pre_tab > pre_window precedence."""
+    workspace: dict[str, t.Any] = {
+        "name": "precedence-test",
+        "windows": [{"editor": "vim"}],
+        **config_extra,
+    }
+    result = importers.import_tmuxinator(workspace)
+    assert result.get("shell_command_before") == expect_shell_command_before
+
+
 class StartupIndexFixture(t.NamedTuple):
     """Fixture for startup_window/startup_pane numeric index resolution."""
 
