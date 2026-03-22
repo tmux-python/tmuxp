@@ -454,9 +454,6 @@ def cli(_args: list[str] | None = None) -> None:
             parser=parser,
         )
     elif args.subparser_name == "stop":
-        if not args.session_name:
-            args.print_help()
-            return
         command_stop(
             args=CLIStopNamespace(**vars(args)),
             parser=parser,
