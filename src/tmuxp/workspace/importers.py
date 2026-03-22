@@ -182,6 +182,14 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             tmuxp_workspace["before_script"] = "; ".join(pre_val)
         else:
             tmuxp_workspace["before_script"] = pre_val
+    elif pre_window_val is not None:
+        # pre_window/pre_tab without pre — tmuxinator treats these independently
+        if isinstance(pre_window_val, list):
+            tmuxp_workspace["shell_command_before"] = ["; ".join(pre_window_val)]
+        elif isinstance(pre_window_val, str):
+            tmuxp_workspace["shell_command_before"] = [pre_window_val]
+        else:
+            tmuxp_workspace["shell_command_before"] = pre_window_val
 
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
