@@ -2089,6 +2089,30 @@ def test_on_project_exit_sets_hook_list(
     builder.session.kill()
 
 
+def test_on_project_exit_hook_includes_cwd(
+    server: Server,
+) -> None:
+    """on_project_exit hook includes cd to start_directory."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-cwd-test",
+        "start_directory": "/tmp",
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_values = list(hooks.values())
+    matched = [v for v in hook_values if "cd" in str(v) and "/tmp" in str(v)]
+    assert len(matched) >= 1
+
+    builder.session.kill()
+
+
 def test_on_project_stop_sets_environment(
     server: Server,
 ) -> None:
