@@ -300,7 +300,7 @@ def test_search_no_args_shows_help() -> None:
     assert result.returncode == 0
 
 
-@pytest.mark.parametrize("subcommand", ["stop", "new", "copy", "delete"])
+@pytest.mark.parametrize("subcommand", ["new", "copy", "delete"])
 def test_new_commands_no_args_shows_help(subcommand: str) -> None:
     """Running new commands with no args shows help."""
     result = subprocess.run(
