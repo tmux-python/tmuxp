@@ -154,6 +154,12 @@ def run_hook_commands(
     except subprocess.TimeoutExpired:
         logger.warning("hook command timed out after 120s: %s", joined)
         return
+    except OSError:
+        logger.warning(
+            "hook command failed (bad cwd or shell): %s",
+            joined,
+        )
+        return
     if result.returncode != 0:
         logger.warning(
             "hook command failed with exit code %d",
