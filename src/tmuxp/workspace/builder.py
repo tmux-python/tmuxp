@@ -552,6 +552,9 @@ class WorkspaceBuilder:
             if isinstance(exit_cmds, str):
                 exit_cmds = [exit_cmds]
             _joined = "; ".join(exit_cmds)
+            _start_dir = self.session_config.get("start_directory")
+            if _start_dir:
+                _joined = f"cd {shlex.quote(_start_dir)} && {_joined}"
             _escaped = _joined.replace("'", "'\\''")
             self.session.set_hook("client-detached", f"run-shell '{_escaped}'")
 
