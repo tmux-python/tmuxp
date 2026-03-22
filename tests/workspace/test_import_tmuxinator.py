@@ -652,3 +652,110 @@ def test_import_tmuxinator_pre_window_standalone(
         assert result.get("before_script") == expect_before_script
     else:
         assert "before_script" not in result
+
+
+class StartupIndexFixture(t.NamedTuple):
+    """Fixture for startup_window/startup_pane numeric index resolution."""
+
+    test_id: str
+    startup_window: str | int
+    window_names: list[str]
+    expected_focus_index: int | None
+    expect_info_log: bool
+    expect_warning_log: bool
+
+
+STARTUP_INDEX_FIXTURES: list[StartupIndexFixture] = [
+    StartupIndexFixture(
+        test_id="name-match",
+        startup_window="editor",
+        window_names=["editor", "console"],
+        expected_focus_index=0,
+        expect_info_log=False,
+        expect_warning_log=False,
+    ),
+    StartupIndexFixture(
+        test_id="numeric-zero",
+        startup_window=0,
+        window_names=["win1", "win2"],
+        expected_focus_index=0,
+        expect_info_log=True,
+        expect_warning_log=False,
+    ),
+    StartupIndexFixture(
+        test_id="numeric-one",
+        startup_window=1,
+        window_names=["win1", "win2"],
+        expected_focus_index=1,
+        expect_info_log=True,
+        expect_warning_log=False,
+    ),
+    StartupIndexFixture(
+        test_id="out-of-range",
+        startup_window=5,
+        window_names=["win1", "win2"],
+        expected_focus_index=None,
+        expect_info_log=False,
+        expect_warning_log=True,
+    ),
+    StartupIndexFixture(
+        test_id="no-match-string",
+        startup_window="nonexistent",
+        window_names=["win1", "win2"],
+        expected_focus_index=None,
+        expect_info_log=False,
+        expect_warning_log=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(StartupIndexFixture._fields),
+    STARTUP_INDEX_FIXTURES,
+    ids=[f.test_id for f in STARTUP_INDEX_FIXTURES],
+)
+def test_import_tmuxinator_startup_window_index_resolution(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    startup_window: str | int,
+    window_names: list[str],
+    expected_focus_index: int | None,
+    expect_info_log: bool,
+    expect_warning_log: bool,
+) -> None:
+    """startup_window resolves by name first, then 0-based index with logging."""
+    workspace: dict[str, t.Any] = {
+        "name": "startup-test",
+        "startup_window": startup_window,
+        "windows": [{wn: "echo hi"} for wn in window_names],
+    }
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.importers"):
+        result = importers.import_tmuxinator(workspace)
+
+    windows = result["windows"]
+    for i, w in enumerate(windows):
+        if expected_focus_index is not None and i == expected_focus_index:
+            assert w.get("focus") is True, f"window {i} should have focus"
+        else:
+            assert not w.get("focus"), f"window {i} should not have focus"
+
+    info_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.INFO and "startup_window" in r.message
+    ]
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "startup_window" in r.message
+    ]
+
+    if expect_info_log:
+        assert len(info_records) >= 1
+    else:
+        assert len(info_records) == 0
+
+    if expect_warning_log:
+        assert len(warning_records) >= 1
+    else:
+        assert len(warning_records) == 0
