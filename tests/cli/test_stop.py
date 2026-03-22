@@ -114,20 +114,43 @@ windows:
     assert not server.has_session("hook-stop-test")
 
 
-def test_stop_no_args_uses_fallback(
+def test_stop_no_args_inside_tmux_uses_fallback(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Tmuxp stop with no session name falls back to first session."""
-    monkeypatch.delenv("TMUX", raising=False)
-
-    server.new_session(session_name="fallback-target")
+    """Tmuxp stop with no session name inside tmux falls back to current session."""
+    sess = server.new_session(session_name="fallback-target")
     assert server.has_session("fallback-target")
+
+    # Simulate being inside tmux by setting TMUX and TMUX_PANE
+    pane = sess.active_window.active_pane
+    assert pane is not None
+    monkeypatch.setenv("TMUX", f"/tmp/tmux-test,{sess.session_id},0")
+    monkeypatch.setenv("TMUX_PANE", pane.pane_id or "")
 
     assert server.socket_name is not None
     cli.cli(["stop", "-L", server.socket_name])
 
     assert not server.has_session("fallback-target")
+
+
+def test_stop_no_args_outside_tmux_shows_error(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Tmuxp stop with no session name outside tmux shows error."""
+    monkeypatch.delenv("TMUX", raising=False)
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+
+    server.new_session(session_name="should-survive")
+
+    assert server.socket_name is not None
+    cli.cli(["stop", "-L", server.socket_name])
+
+    captured = capsys.readouterr()
+    assert "not inside tmux" in captured.out
+    assert server.has_session("should-survive")
 
 
 def test_stop_without_hook(
