@@ -602,6 +602,38 @@ def test_here_mode_duplicate_session_name(
         builder.build(session=session, here=True)
 
 
+def test_here_mode_provisions_environment(
+    session: Session,
+) -> None:
+    """--here mode exports environment variables into the active pane."""
+    from libtmux.test.retry import retry_until
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "env-test",
+                "environment": {"TMUXP_HERE_TEST": "hello_here"},
+                "panes": [
+                    {"shell_command": ["echo $TMUXP_HERE_TEST"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    pane = session.active_window.active_pane
+    assert pane is not None
+
+    assert retry_until(
+        lambda: "hello_here" in "\n".join(pane.capture_pane()),
+        seconds=5,
+    )
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
