@@ -414,6 +414,13 @@ def _dispatch_build(
             if "TMUX" in os.environ:  # tmuxp ran from inside tmux
                 _load_here_in_current_session(builder)
             else:
+                logger.warning(
+                    "--here ignored: not inside tmux, falling back to normal attach",
+                )
+                tmuxp_echo(
+                    cli_colors.warning("[Warning]")
+                    + " --here requires running inside tmux; loading normally",
+                )
                 _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
 
             return _setup_plugins(builder)
