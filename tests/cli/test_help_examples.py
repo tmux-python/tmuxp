@@ -331,3 +331,75 @@ def test_main_help_examples_are_colorized(monkeypatch: pytest.MonkeyPatch) -> No
 
     # Should contain ANSI escape codes for colorization
     assert "\033[" in help_text, "Example sections should be colorized"
+
+
+# Commands that can mutate tmux state (kill sessions, create sessions, etc.)
+# These must NEVER be called via subprocess without -L <test_socket>.
+_DANGEROUS_SUBCOMMANDS = {"stop", "load"}
+
+
+def test_no_dangerous_subprocess_tmuxp_calls() -> None:
+    """Subprocess calls to tmuxp mutation commands must use -L test socket.
+
+    Catches bugs like the one where ``subprocess.run(["tmuxp", "stop"])``
+    killed the user's real tmux session because it ran on the default server
+    without ``-L``.
+    """
+    import ast
+    import pathlib
+
+    tests_dir = pathlib.Path(__file__).parent.parent
+    violations: list[str] = []
+
+    for py_file in tests_dir.rglob("*.py"):
+        try:
+            tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+        except SyntaxError:
+            continue
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            # Match subprocess.run(...) or subprocess.call(...)
+            func = node.func
+            is_subprocess = False
+            if (
+                isinstance(func, ast.Attribute)
+                and func.attr in ("run", "call")
+                and isinstance(func.value, ast.Name)
+                and func.value.id == "subprocess"
+            ):
+                is_subprocess = True
+            if not is_subprocess:
+                continue
+
+            # Check first arg is a list literal like ["tmuxp", "stop", ...]
+            if not node.args or not isinstance(node.args[0], ast.List):
+                continue
+            elts = node.args[0].elts
+            if len(elts) < 2:
+                continue
+            if not (isinstance(elts[0], ast.Constant) and elts[0].value == "tmuxp"):
+                continue
+            if not isinstance(elts[1], ast.Constant):
+                continue
+
+            subcmd = str(elts[1].value)
+            if subcmd not in _DANGEROUS_SUBCOMMANDS:
+                continue
+
+            # Check if -L appears anywhere in the arg list
+            has_socket = any(
+                isinstance(e, ast.Constant) and e.value == "-L" for e in elts
+            )
+            if not has_socket:
+                rel = py_file.relative_to(tests_dir)
+                violations.append(
+                    f"{rel}:{node.lineno}: subprocess calls "
+                    f"'tmuxp {subcmd}' without -L test socket"
+                )
+
+    assert not violations, (
+        "Dangerous subprocess tmuxp calls found (could kill real sessions):\n"
+        + "\n".join(f"  {v}" for v in violations)
+    )
