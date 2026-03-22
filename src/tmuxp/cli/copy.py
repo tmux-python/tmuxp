@@ -108,7 +108,10 @@ def command_copy(
         return
 
     if is_pure_name(destination):
-        workspace_dir = get_workspace_dir()
+        configdir_env = os.environ.get("TMUXP_CONFIGDIR")
+        workspace_dir = (
+            os.path.expanduser(configdir_env) if configdir_env else get_workspace_dir()
+        )
         os.makedirs(workspace_dir, exist_ok=True)
         dest_path = os.path.join(workspace_dir, f"{destination}.yaml")
     else:
