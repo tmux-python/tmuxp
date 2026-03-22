@@ -535,6 +535,73 @@ def test_here_mode_cleans_existing_panes(
     assert len(reused_window.panes) == 1
 
 
+class HereDuplicateFixture(t.NamedTuple):
+    """Fixture for --here duplicate session name detection."""
+
+    test_id: str
+    config_session_name: str
+    expect_error: bool
+
+
+HERE_DUPLICATE_FIXTURES: list[HereDuplicateFixture] = [
+    HereDuplicateFixture(
+        test_id="same-name-no-rename",
+        config_session_name="__CURRENT__",
+        expect_error=False,
+    ),
+    HereDuplicateFixture(
+        test_id="different-name-no-conflict",
+        config_session_name="unique_target",
+        expect_error=False,
+    ),
+    HereDuplicateFixture(
+        test_id="name-conflict-with-existing",
+        config_session_name="__EXISTING__",
+        expect_error=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereDuplicateFixture._fields),
+    HERE_DUPLICATE_FIXTURES,
+    ids=[f.test_id for f in HERE_DUPLICATE_FIXTURES],
+)
+def test_here_mode_duplicate_session_name(
+    session: Session,
+    test_id: str,
+    config_session_name: str,
+    expect_error: bool,
+) -> None:
+    """--here mode detects duplicate session names before renaming."""
+    server = session.server
+
+    # Create a second session to conflict with
+    existing = server.new_session(session_name="existing_blocker")
+
+    # Resolve sentinel values
+    if config_session_name == "__CURRENT__":
+        target_name = session.name
+    elif config_session_name == "__EXISTING__":
+        target_name = existing.name
+    else:
+        target_name = config_session_name
+
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    workspace["session_name"] = target_name
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    if expect_error:
+        with pytest.raises(exc.TmuxpException, match="session already exists"):
+            builder.build(session=session, here=True)
+    else:
+        builder.build(session=session, here=True)
+
+
 def test_window_shell(
     session: Session,
 ) -> None:

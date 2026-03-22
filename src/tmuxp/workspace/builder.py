@@ -575,6 +575,12 @@ class WorkspaceBuilder:
         if here:
             session_name = self.session_config["session_name"]
             if session.name != session_name:
+                existing = self.server.sessions.get(
+                    session_name=session_name, default=None
+                )
+                if existing is not None:
+                    msg = f"cannot rename to {session_name!r}: session already exists"
+                    raise exc.TmuxpException(msg)
                 session.rename_session(session_name)
 
         for window, window_config in self.iter_create_windows(
