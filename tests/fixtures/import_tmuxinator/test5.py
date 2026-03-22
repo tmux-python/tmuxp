@@ -24,7 +24,7 @@ expected = {
     "session_name": "ruby-app",
     "start_directory": "~/projects/ruby-app",
     "before_script": "./scripts/bootstrap.sh",
-    "shell_command_before": ["source .env", "rvm use 2.1.1"],
+    "shell_command_before": ["rvm use 2.1.1"],
     "windows": [
         {"window_name": "editor", "panes": ["vim"]},
         {
