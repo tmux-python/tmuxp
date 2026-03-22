@@ -691,6 +691,32 @@ class WorkspaceBuilder:
                             f"cd {shlex.quote(start_directory)}",
                             enter=True,
                         )
+
+                # Provision environment — no window.set_environment in tmux,
+                # so export into the active pane's shell
+                environment = window_config.get("environment")
+                if panes and "environment" in panes[0]:
+                    environment = panes[0]["environment"]
+                if environment:
+                    _here_pane = window.active_pane
+                    if _here_pane is not None:
+                        for _ekey, _eval in environment.items():
+                            _here_pane.send_keys(
+                                f"export {_ekey}={shlex.quote(str(_eval))}",
+                                enter=True,
+                            )
+
+                # Provision window_shell — send to active pane
+                window_shell = window_config.get("window_shell")
+                try:
+                    if panes[0]["shell"] != "":
+                        window_shell = panes[0]["shell"]
+                except (KeyError, IndexError):
+                    pass
+                if window_shell:
+                    _here_pane = window.active_pane
+                    if _here_pane is not None:
+                        _here_pane.send_keys(window_shell, enter=True)
             else:
                 is_first_window_pass = self.first_window_pass(
                     window_iterator,
