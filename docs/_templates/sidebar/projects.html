@@ -13,8 +13,14 @@
   </p>
   <p class="indented-block">
     <span class="project-name">tmux-python</span>
-    <a class="internal" href="https://tmuxp.git-pull.com">tmuxp</a>
-    (<a class="internal" href="https://libtmux.git-pull.com">libtmux</a>)
+    <span class="indent">
+      <a class="internal" href="https://tmuxp.git-pull.com">tmuxp</a>
+    </span>
+    <span class="indent">
+      <a class="internal" href="https://libtmux.git-pull.com">libtmux</a>
+      (<a class="internal" href="https://libtmux-mcp.git-pull.com">mcp</a>,
+      <a class="internal" href="https://libtmux.git-pull.com/pytest-plugin/">pytest</a>)
+    </span>
   </p>
 
   <p class="indented-block">
@@ -56,15 +62,23 @@
 <script type="text/javascript">
 (() => {
   const sidebar = document.getElementById("sidebar-projects");
-  sidebar.querySelectorAll(`a[href*="${window.location.hostname}"]`)
-    .forEach((link) => {
-      if (!link.classList.contains("active")) {
-        const d = document.createElement('span');
-        d.textContent = link.textContent;
-        d.classList.add("active");
-        link.parentNode.replaceChild(d, link);
-      }
-    });
+  const loc = window.location;
+  sidebar.querySelectorAll("a[href]").forEach((link) => {
+    const url = new URL(link.href, loc.origin);
+    const sameHost = url.hostname === loc.hostname;
+    const hasPath = url.pathname.replace(/\/+$/, "").length > 0;
+    // Links with a pathname: match origin + path prefix (e.g. /pytest-plugin/)
+    // Links without: match hostname only (e.g. https://libtmux.git-pull.com)
+    const isActive = hasPath
+      ? sameHost && loc.pathname.startsWith(url.pathname.replace(/\/+$/, ""))
+      : sameHost;
+    if (isActive && !link.classList.contains("active")) {
+      const d = document.createElement('span');
+      d.textContent = link.textContent;
+      d.classList.add("active");
+      link.parentNode.replaceChild(d, link);
+    }
+  });
   sidebar.classList.add('ready');
 })()
 </script>
