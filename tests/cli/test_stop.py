@@ -114,6 +114,22 @@ windows:
     assert not server.has_session("hook-stop-test")
 
 
+def test_stop_no_args_uses_fallback(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp stop with no session name falls back to first session."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    server.new_session(session_name="fallback-target")
+    assert server.has_session("fallback-target")
+
+    assert server.socket_name is not None
+    cli.cli(["stop", "-L", server.socket_name])
+
+    assert not server.has_session("fallback-target")
+
+
 def test_stop_without_hook(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
