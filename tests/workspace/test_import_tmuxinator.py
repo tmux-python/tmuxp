@@ -579,3 +579,76 @@ def test_import_tmuxinator_warns_on_unmapped_key(
 
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert any(key in r.message for r in warning_records)
+
+
+class PreWindowStandaloneFixture(t.NamedTuple):
+    """Fixture for pre_window/pre_tab without pre key."""
+
+    test_id: str
+    config_extra: dict[str, t.Any]
+    expect_shell_command_before: list[str] | None
+    expect_before_script: str | None
+
+
+PRE_WINDOW_STANDALONE_FIXTURES: list[PreWindowStandaloneFixture] = [
+    PreWindowStandaloneFixture(
+        test_id="pre_window-only",
+        config_extra={"pre_window": "echo PRE"},
+        expect_shell_command_before=["echo PRE"],
+        expect_before_script=None,
+    ),
+    PreWindowStandaloneFixture(
+        test_id="pre_tab-only",
+        config_extra={"pre_tab": "rbenv shell 3.0"},
+        expect_shell_command_before=["rbenv shell 3.0"],
+        expect_before_script=None,
+    ),
+    PreWindowStandaloneFixture(
+        test_id="pre_window-list",
+        config_extra={"pre_window": ["echo a", "echo b"]},
+        expect_shell_command_before=["echo a; echo b"],
+        expect_before_script=None,
+    ),
+    PreWindowStandaloneFixture(
+        test_id="pre-and-pre_window",
+        config_extra={"pre": "sudo start", "pre_window": "echo PRE"},
+        expect_shell_command_before=["echo PRE"],
+        expect_before_script="sudo start",
+    ),
+    PreWindowStandaloneFixture(
+        test_id="pre-only",
+        config_extra={"pre": "sudo start"},
+        expect_shell_command_before=None,
+        expect_before_script="sudo start",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PreWindowStandaloneFixture._fields),
+    PRE_WINDOW_STANDALONE_FIXTURES,
+    ids=[f.test_id for f in PRE_WINDOW_STANDALONE_FIXTURES],
+)
+def test_import_tmuxinator_pre_window_standalone(
+    test_id: str,
+    config_extra: dict[str, t.Any],
+    expect_shell_command_before: list[str] | None,
+    expect_before_script: str | None,
+) -> None:
+    """pre_window/pre_tab map to shell_command_before independently of pre."""
+    workspace: dict[str, t.Any] = {
+        "name": "pre-window-test",
+        "windows": [{"editor": "vim"}],
+        **config_extra,
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    if expect_shell_command_before is not None:
+        assert result.get("shell_command_before") == expect_shell_command_before
+    else:
+        assert "shell_command_before" not in result
+
+    if expect_before_script is not None:
+        assert result.get("before_script") == expect_before_script
+    else:
+        assert "before_script" not in result
