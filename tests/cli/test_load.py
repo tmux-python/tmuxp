@@ -1476,3 +1476,12 @@ windows:
 
     assert isinstance(session, Session)
     assert session.name == "plain-session"
+
+
+def test_load_here_and_append_mutually_exclusive() -> None:
+    """--here and --append cannot be used together."""
+    from tmuxp.cli import create_parser
+
+    parser = create_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["load", "--here", "--append", "myconfig"])

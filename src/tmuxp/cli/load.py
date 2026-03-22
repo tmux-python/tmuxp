@@ -897,14 +897,15 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="load the session without attaching it",
     )
-    parser.add_argument(
+    load_mode_group = parser.add_mutually_exclusive_group()
+    load_mode_group.add_argument(
         "-a",
         "--append",
         dest="append",
         action="store_true",
         help="load workspace, appending windows to the current session",
     )
-    parser.add_argument(
+    load_mode_group.add_argument(
         "--here",
         dest="here",
         action="store_true",
