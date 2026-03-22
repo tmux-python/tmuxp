@@ -165,7 +165,9 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         else:
             tmuxp_workspace["before_script"] = pre_val
 
-        if isinstance(pre_window_val, str):
+        if isinstance(pre_window_val, list):
+            tmuxp_workspace["shell_command_before"] = ["; ".join(pre_window_val)]
+        elif isinstance(pre_window_val, str):
             tmuxp_workspace["shell_command_before"] = [pre_window_val]
         else:
             tmuxp_workspace["shell_command_before"] = pre_window_val

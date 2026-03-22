@@ -616,6 +616,12 @@ PRE_WINDOW_STANDALONE_FIXTURES: list[PreWindowStandaloneFixture] = [
         expect_before_script="sudo start",
     ),
     PreWindowStandaloneFixture(
+        test_id="pre-and-pre_window-list",
+        config_extra={"pre": "sudo start", "pre_window": ["cd /app", "nvm use 18"]},
+        expect_shell_command_before=["cd /app; nvm use 18"],
+        expect_before_script="sudo start",
+    ),
+    PreWindowStandaloneFixture(
         test_id="pre-only",
         config_extra={"pre": "sudo start"},
         expect_shell_command_before=None,
