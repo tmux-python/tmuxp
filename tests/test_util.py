@@ -316,3 +316,17 @@ def test_run_hook_commands_cwd(
     """run_hook_commands() respects cwd parameter."""
     run_hook_commands("touch marker_file", cwd=tmp_path)
     assert (tmp_path / "marker_file").exists()
+
+
+def test_run_hook_commands_missing_cwd_warns(
+    tmp_path: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs warning on nonexistent cwd instead of raising."""
+    missing_dir = tmp_path / "does_not_exist"
+    with caplog.at_level(logging.WARNING, logger="tmuxp.util"):
+        run_hook_commands("echo hello", cwd=missing_dir)
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) >= 1
+    assert "bad cwd or shell" in warning_records[0].message
