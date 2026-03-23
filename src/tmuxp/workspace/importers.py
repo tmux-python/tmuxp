@@ -153,21 +153,16 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    # Handle pre → before_script (independent of pre_window chain)
+    # Handle pre → on_project_start (independent of pre_window chain)
+    # tmuxinator's pre is a raw shell command emitted as a line in a bash script.
+    # on_project_start uses run_hook_commands(shell=True) which handles raw commands.
+    # before_script requires a file path and would crash on raw commands.
     if "pre" in workspace_dict:
         pre_val = workspace_dict["pre"]
         if isinstance(pre_val, list):
-            if (
-                workspace_dict.get("pre_window") is None
-                and workspace_dict.get("pre_tab") is None
-            ):
-                logger.info(
-                    "multi-command pre list mapped to before_script; "
-                    "consider splitting into before_script and shell_command_before",
-                )
-            tmuxp_workspace["before_script"] = "; ".join(pre_val)
+            tmuxp_workspace["on_project_start"] = "; ".join(pre_val)
         else:
-            tmuxp_workspace["before_script"] = pre_val
+            tmuxp_workspace["on_project_start"] = pre_val
 
     # Resolve shell_command_before using tmuxinator's exclusive precedence:
     # rbenv > rvm > pre_tab > pre_window (only ONE is selected)
