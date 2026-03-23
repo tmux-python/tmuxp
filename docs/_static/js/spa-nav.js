@@ -203,8 +203,8 @@
 
   history.replaceState({ spa: true }, "");
 
-  window.addEventListener("popstate", function (e) {
-    if (e.state && e.state.spa) navigate(location.href, true);
+  window.addEventListener("popstate", function () {
+    navigate(location.href, true);
   });
 
   // --- Hover prefetch ---
