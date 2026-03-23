@@ -84,7 +84,7 @@ $ tmuxp import tmuxinator /path/to/file.json
 
 The tmuxinator importer now supports:
 
-- **Hook mapping** — `pre` maps to `before_script`, `pre_window` maps to `shell_command_before`
+- **Hook mapping** — `pre` maps to `on_project_start`, `pre_window` maps to `shell_command_before`
 - **CLI args** — `cli_args` values (`-f`, `-S`, `-L`) are parsed into tmuxp config equivalents
 - **Synchronize** — `synchronize` window key is converted
 - **Startup focus** — `startup_window` / `startup_pane` convert to `focus: true`
