@@ -898,13 +898,13 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="always answer yes",
     )
-    parser.add_argument(
+    load_mode_group = parser.add_mutually_exclusive_group()
+    load_mode_group.add_argument(
         "-d",
         dest="detached",
         action="store_true",
         help="load the session without attaching it",
     )
-    load_mode_group = parser.add_mutually_exclusive_group()
     load_mode_group.add_argument(
         "-a",
         "--append",

@@ -1485,3 +1485,21 @@ def test_load_here_and_append_mutually_exclusive() -> None:
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["load", "--here", "--append", "myconfig"])
+
+
+def test_load_here_and_detached_mutually_exclusive() -> None:
+    """--here and -d cannot be used together."""
+    from tmuxp.cli import create_parser
+
+    parser = create_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["load", "--here", "-d", "myconfig"])
+
+
+def test_load_append_and_detached_mutually_exclusive() -> None:
+    """--append and -d cannot be used together."""
+    from tmuxp.cli import create_parser
+
+    parser = create_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["load", "--append", "-d", "myconfig"])
