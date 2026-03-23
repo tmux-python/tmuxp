@@ -1,6 +1,6 @@
-(internals)=
+(api-internal)=
 
-# Internals
+# Internal Modules
 
 :::{warning}
 Be careful with these! Internal APIs are **not** covered by version policies. They can break or be removed between minor versions!

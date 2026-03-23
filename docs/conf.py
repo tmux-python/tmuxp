@@ -44,6 +44,7 @@ extensions = [
     "sphinxext.rediraffe",
     "myst_parser",
     "linkify_issues",
+    "sphinx_design",
 ]
 
 myst_enable_extensions = [
@@ -53,6 +54,8 @@ myst_enable_extensions = [
     "strikethrough",
     "linkify",
 ]
+
+myst_heading_anchors = 4
 
 templates_path = ["_templates"]
 
