@@ -62,13 +62,15 @@ def test_stop_nonexistent_session(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """Test stopping a session that doesn't exist shows error."""
+    """Test stopping a session that doesn't exist exits with code 1."""
     monkeypatch.delenv("TMUX", raising=False)
 
     assert server.socket_name is not None
 
-    cli.cli(["stop", "nonexistent", "-L", server.socket_name])
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(["stop", "nonexistent", "-L", server.socket_name])
 
+    assert exc_info.value.code == 1
     captured = capsys.readouterr()
     assert "Session not found" in captured.out
 
@@ -146,8 +148,10 @@ def test_stop_no_args_outside_tmux_shows_error(
     server.new_session(session_name="should-survive")
 
     assert server.socket_name is not None
-    cli.cli(["stop", "-L", server.socket_name])
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(["stop", "-L", server.socket_name])
 
+    assert exc_info.value.code == 1
     captured = capsys.readouterr()
     assert "not inside tmux" in captured.out
     assert server.has_session("should-survive")

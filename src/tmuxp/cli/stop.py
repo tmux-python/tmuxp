@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import sys
 import typing as t
 
 from libtmux.server import Server
@@ -116,13 +117,13 @@ def command_stop(
             tmuxp_echo(
                 colors.error("No session name given and not inside tmux."),
             )
-            return
+            sys.exit(1)
 
         if not session:
             raise exc.SessionNotFound(args.session_name)
     except TmuxpException as e:
         tmuxp_echo(colors.error(str(e)))
-        return
+        sys.exit(1)
 
     session_name = session.name
 
