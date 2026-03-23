@@ -96,23 +96,6 @@ def test_import_tmuxinator_logs_debug(
     assert getattr(records[0], "tmux_session", None) == "test"
 
 
-def test_logs_info_on_multi_command_pre_list(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Test that multi-command pre list logs info about before_script mapping."""
-    workspace = {
-        "name": "multi-pre",
-        "root": "~/test",
-        "pre": ["cmd1", "cmd2"],
-        "windows": [{"editor": "vim"}],
-    }
-    with caplog.at_level(logging.INFO, logger="tmuxp.workspace.importers"):
-        importers.import_tmuxinator(workspace)
-
-    pre_records = [r for r in caplog.records if "multi-command pre list" in r.message]
-    assert len(pre_records) == 1
-
-
 def test_startup_window_sets_focus_by_name() -> None:
     """Startup_window sets focus on the matching window by name."""
     workspace = {
@@ -473,15 +456,15 @@ def test_import_tmuxinator_socket_name_same_no_warning(
     assert len(warning_records) == 0
 
 
-def test_import_tmuxinator_pre_list_joined_for_before_script() -> None:
-    """List pre values are joined with '; ' so expand() doesn't crash."""
+def test_import_tmuxinator_pre_list_joined_for_on_project_start() -> None:
+    """List pre values are joined with '; ' for on_project_start."""
     workspace = {
         "name": "pre-list",
         "windows": [{"editor": "vim"}],
         "pre": ["echo one", "echo two"],
     }
     result = importers.import_tmuxinator(workspace)
-    assert result["before_script"] == "echo one; echo two"
+    assert result["on_project_start"] == "echo one; echo two"
 
     # Verify it survives expand() without TypeError
     from tmuxp.workspace import loader
@@ -587,7 +570,7 @@ class PreWindowStandaloneFixture(t.NamedTuple):
     test_id: str
     config_extra: dict[str, t.Any]
     expect_shell_command_before: list[str] | None
-    expect_before_script: str | None
+    expect_on_project_start: str | None
 
 
 PRE_WINDOW_STANDALONE_FIXTURES: list[PreWindowStandaloneFixture] = [
@@ -595,37 +578,37 @@ PRE_WINDOW_STANDALONE_FIXTURES: list[PreWindowStandaloneFixture] = [
         test_id="pre_window-only",
         config_extra={"pre_window": "echo PRE"},
         expect_shell_command_before=["echo PRE"],
-        expect_before_script=None,
+        expect_on_project_start=None,
     ),
     PreWindowStandaloneFixture(
         test_id="pre_tab-only",
         config_extra={"pre_tab": "rbenv shell 3.0"},
         expect_shell_command_before=["rbenv shell 3.0"],
-        expect_before_script=None,
+        expect_on_project_start=None,
     ),
     PreWindowStandaloneFixture(
         test_id="pre_window-list",
         config_extra={"pre_window": ["echo a", "echo b"]},
         expect_shell_command_before=["echo a; echo b"],
-        expect_before_script=None,
+        expect_on_project_start=None,
     ),
     PreWindowStandaloneFixture(
         test_id="pre-and-pre_window",
         config_extra={"pre": "sudo start", "pre_window": "echo PRE"},
         expect_shell_command_before=["echo PRE"],
-        expect_before_script="sudo start",
+        expect_on_project_start="sudo start",
     ),
     PreWindowStandaloneFixture(
         test_id="pre-and-pre_window-list",
         config_extra={"pre": "sudo start", "pre_window": ["cd /app", "nvm use 18"]},
         expect_shell_command_before=["cd /app; nvm use 18"],
-        expect_before_script="sudo start",
+        expect_on_project_start="sudo start",
     ),
     PreWindowStandaloneFixture(
         test_id="pre-only",
         config_extra={"pre": "sudo start"},
         expect_shell_command_before=None,
-        expect_before_script="sudo start",
+        expect_on_project_start="sudo start",
     ),
 ]
 
@@ -639,7 +622,7 @@ def test_import_tmuxinator_pre_window_standalone(
     test_id: str,
     config_extra: dict[str, t.Any],
     expect_shell_command_before: list[str] | None,
-    expect_before_script: str | None,
+    expect_on_project_start: str | None,
 ) -> None:
     """pre_window/pre_tab map to shell_command_before independently of pre."""
     workspace: dict[str, t.Any] = {
@@ -654,10 +637,10 @@ def test_import_tmuxinator_pre_window_standalone(
     else:
         assert "shell_command_before" not in result
 
-    if expect_before_script is not None:
-        assert result.get("before_script") == expect_before_script
+    if expect_on_project_start is not None:
+        assert result.get("on_project_start") == expect_on_project_start
     else:
-        assert "before_script" not in result
+        assert "on_project_start" not in result
 
 
 class PreWindowPrecedenceFixture(t.NamedTuple):

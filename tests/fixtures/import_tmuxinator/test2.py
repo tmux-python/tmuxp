@@ -49,7 +49,7 @@ expected = {
     "socket_name": "foo",
     "config": "~/.tmux.mac.conf",
     "start_directory": "~/test",
-    "before_script": "sudo /etc/rc.d/mysqld start",
+    "on_project_start": "sudo /etc/rc.d/mysqld start",
     "shell_command_before": ["rbenv shell 2.0.0-p247"],
     "windows": [
         {
