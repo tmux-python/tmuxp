@@ -534,6 +534,18 @@ class WorkspaceBuilder:
                 if self.on_build_event:
                     self.on_build_event({"event": "before_script_done"})
 
+        # Check for rename conflicts early, before any session mutation
+        if here:
+            session_name = self.session_config["session_name"]
+            if session.name != session_name:
+                existing = self.server.sessions.get(
+                    session_name=session_name, default=None
+                )
+                if existing is not None:
+                    msg = f"cannot rename to {session_name!r}: session already exists"
+                    raise exc.TmuxpException(msg)
+                session.rename_session(session_name)
+
         if "options" in self.session_config:
             for option, value in self.session_config["options"].items():
                 self.session.set_option(option, value)
@@ -574,17 +586,6 @@ class WorkspaceBuilder:
                 "TMUXP_START_DIRECTORY",
                 self.session_config["start_directory"],
             )
-
-        if here:
-            session_name = self.session_config["session_name"]
-            if session.name != session_name:
-                existing = self.server.sessions.get(
-                    session_name=session_name, default=None
-                )
-                if existing is not None:
-                    msg = f"cannot rename to {session_name!r}: session already exists"
-                    raise exc.TmuxpException(msg)
-                session.rename_session(session_name)
 
         for window, window_config in self.iter_create_windows(
             session, append, here=here
