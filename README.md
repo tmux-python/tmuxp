@@ -132,9 +132,9 @@ Name a session:
 tmuxp load -s session_name ./mysession.yaml
 ```
 
-[simple](http://tmuxp.git-pull.com/examples.html#short-hand-inline) and
+[simple](https://tmuxp.git-pull.com/configuration/examples.html#short-hand-inline-style) and
 [very
-elaborate](http://tmuxp.git-pull.com/examples.html#super-advanced-dev-environment)
+elaborate](https://tmuxp.git-pull.com/configuration/examples.html#super-advanced-dev-environment)
 config examples
 
 # User-level configurations
@@ -204,7 +204,7 @@ the CLI docs.
 
 Run custom startup scripts (such as installing project dependencies)
 before loading tmux. See the
-[before_script](http://tmuxp.git-pull.com/examples.html#bootstrap-project-before-launch)
+[before_script](https://tmuxp.git-pull.com/configuration/examples.html#bootstrap-project-before-launch)
 example
 
 # Load in detached state
@@ -247,7 +247,7 @@ $ tmuxp convert --yes filename
 # Plugin System
 
 tmuxp has a plugin system to allow for custom behavior. See more about
-the [Plugin System](http://tmuxp.git-pull.com/plugin_system.html).
+the [Plugin System](https://tmuxp.git-pull.com/topics/plugins.html).
 
 # Debugging Helpers
 
@@ -272,13 +272,13 @@ environment:
 
 # Docs / Reading material
 
-See the [Quickstart](http://tmuxp.git-pull.com/quickstart.html).
+See the [Quickstart](https://tmuxp.git-pull.com/quickstart.html).
 
-[Documentation](http://tmuxp.git-pull.com) homepage (also in
+[Documentation](https://tmuxp.git-pull.com) homepage (also in
 [中文](http://tmuxp-zh.rtfd.org/))
 
 Want to learn more about tmux itself? [Read The Tao of Tmux
-online](http://tmuxp.git-pull.com/about_tmux.html).
+online](https://tmuxp.git-pull.com/about_tmux.html).
 
 # Donations
 
@@ -295,7 +295,7 @@ See donation options at <https://tony.sh/support.html>.
 - python support: >= 3.10, pypy, pypy3
 - Source: <https://github.com/tmux-python/tmuxp>
 - Docs: <https://tmuxp.git-pull.com>
-- API: <https://tmuxp.git-pull.com/api.html>
+- API: <https://tmuxp.git-pull.com/internals/api/index.html>
 - Changelog: <https://tmuxp.git-pull.com/history.html>
 - Issues: <https://github.com/tmux-python/tmuxp/issues>
 - Test Coverage: <https://codecov.io/gh/tmux-python/tmuxp>

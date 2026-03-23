@@ -8,7 +8,7 @@ tmux via python API calls.
 :::
 
 ```{toctree}
-internals/index
+_internal/index
 cli/index
 workspace/index
 exc

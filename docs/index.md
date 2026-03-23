@@ -1,7 +1,81 @@
 (index)=
 
-```{include} ../README.md
-:end-before: <img
+# tmuxp
+
+Session manager for tmux. Load, freeze, and convert tmux sessions through
+YAML/JSON configuration files. Powered by [libtmux](https://libtmux.git-pull.com/).
+
+::::{grid} 3
+:gutter: 3
+
+:::{grid-item-card} Quickstart
+:link: quickstart
+:link-type: doc
+Install and run your first command.
+:::
+
+:::{grid-item-card} CLI Reference
+:link: cli/index
+:link-type: doc
+Every command, flag, and option.
+:::
+
+:::{grid-item-card} Configuration
+:link: configuration/index
+:link-type: doc
+Config format, examples, and environment variables.
+:::
+
+::::
+
+::::{grid} 2
+:gutter: 3
+
+:::{grid-item-card} Topics
+:link: topics/index
+:link-type: doc
+Workflows, plugins, and troubleshooting.
+:::
+
+:::{grid-item-card} Contributing
+:link: project/index
+:link-type: doc
+Internals, development setup, and release process.
+:::
+
+::::
+
+## Install
+
+```console
+$ pip install tmuxp
+```
+
+```console
+$ uv tool install tmuxp
+```
+
+```console
+$ brew install tmuxp
+```
+
+See [Quickstart](quickstart.md) for all installation methods and first steps.
+
+## Load a workspace
+
+```yaml
+session_name: my-project
+windows:
+  - window_name: editor
+    panes:
+      - shell_command:
+          - vim
+      - shell_command:
+          - git status
+```
+
+```console
+$ tmuxp load my-project.yaml
 ```
 
 ```{image} _static/tmuxp-demo.gif
@@ -10,33 +84,23 @@
 :loading: lazy
 ```
 
-# Freeze a tmux session
-
-```{include} ../README.md
-:start-after: "# Freeze a tmux session"
-```
-
 ```{toctree}
-:maxdepth: 2
 :hidden:
 
-about
 quickstart
 cli/index
 configuration/index
-plugins/index
-
+topics/index
+internals/index
+project/index
+history
 ```
 
 ```{toctree}
-:caption: Project
 :hidden:
+:caption: More
 
-developing
-api/index
-history
-migration
 about_tmux
+migration
 glossary
-GitHub <https://github.com/tmux-python/tmuxp>
 ```
