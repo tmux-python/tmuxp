@@ -1,4 +1,4 @@
-"cli.md" "commands/index.md"
+# "cli.md" → commands/index.md → cli/index.md: not needed with dirhtml (same output path)
 # "api.md" → api/index.md: not needed with dirhtml (same output path as api/index.md redirect)
 "examples.md" "configuration/examples.md"
 "plugin_system.md" "plugins/index.md"

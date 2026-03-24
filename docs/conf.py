@@ -128,9 +128,6 @@ autodoc_default_options = {
 # (types in TYPE_CHECKING blocks used for circular import avoidance)
 suppress_warnings = [
     "sphinx_autodoc_typehints.forward_reference",
-    # dirhtml builder creates duplicate implicit labels across CLI pages
-    # (each argparse page generates "Usage", "Options", "Examples" headings)
-    "docutils",
 ]
 
 # sphinxext.opengraph
