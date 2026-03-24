@@ -132,9 +132,9 @@ Name a session:
 tmuxp load -s session_name ./mysession.yaml
 ```
 
-[simple](https://tmuxp.git-pull.com/configuration/examples.html#short-hand-inline-style) and
+[simple](https://tmuxp.git-pull.com/configuration/examples/#short-hand-inline-style) and
 [very
-elaborate](https://tmuxp.git-pull.com/configuration/examples.html#super-advanced-dev-environment)
+elaborate](https://tmuxp.git-pull.com/configuration/examples/#super-advanced-dev-environment)
 config examples
 
 # User-level configurations
@@ -197,14 +197,14 @@ $ tmuxp shell -c 'print(window.name.upper())'
 MY_WINDOW
 ```
 
-Read more on [tmuxp shell](https://tmuxp.git-pull.com/cli/shell.html) in
+Read more on [tmuxp shell](https://tmuxp.git-pull.com/cli/shell/) in
 the CLI docs.
 
 # Pre-load hook
 
 Run custom startup scripts (such as installing project dependencies)
 before loading tmux. See the
-[before_script](https://tmuxp.git-pull.com/configuration/examples.html#bootstrap-project-before-launch)
+[before_script](https://tmuxp.git-pull.com/configuration/examples/#bootstrap-project-before-launch)
 example
 
 # Load in detached state
@@ -224,7 +224,7 @@ $ tmuxp freeze session-name
 ```
 
 See more about [freezing
-tmux](https://tmuxp.git-pull.com/cli/freeze.html) sessions.
+tmux](https://tmuxp.git-pull.com/cli/freeze/) sessions.
 
 # Convert a session file
 
@@ -247,7 +247,7 @@ $ tmuxp convert --yes filename
 # Plugin System
 
 tmuxp has a plugin system to allow for custom behavior. See more about
-the [Plugin System](https://tmuxp.git-pull.com/topics/plugins.html).
+the [Plugin System](https://tmuxp.git-pull.com/topics/plugins/).
 
 # Debugging Helpers
 
@@ -272,13 +272,13 @@ environment:
 
 # Docs / Reading material
 
-See the [Quickstart](https://tmuxp.git-pull.com/quickstart.html).
+See the [Quickstart](https://tmuxp.git-pull.com/quickstart/).
 
 [Documentation](https://tmuxp.git-pull.com) homepage (also in
 [中文](http://tmuxp-zh.rtfd.org/))
 
 Want to learn more about tmux itself? [Read The Tao of Tmux
-online](https://tmuxp.git-pull.com/about_tmux.html).
+online](https://tmuxp.git-pull.com/about_tmux/).
 
 # Donations
 
@@ -295,8 +295,8 @@ See donation options at <https://tony.sh/support.html>.
 - python support: >= 3.10, pypy, pypy3
 - Source: <https://github.com/tmux-python/tmuxp>
 - Docs: <https://tmuxp.git-pull.com>
-- API: <https://tmuxp.git-pull.com/internals/api/index.html>
-- Changelog: <https://tmuxp.git-pull.com/history.html>
+- API: <https://tmuxp.git-pull.com/internals/api/>
+- Changelog: <https://tmuxp.git-pull.com/history/>
 - Issues: <https://github.com/tmux-python/tmuxp/issues>
 - Test Coverage: <https://codecov.io/gh/tmux-python/tmuxp>
 - pypi: <https://pypi.python.org/pypi/tmuxp>
