@@ -132,6 +132,24 @@
     );
     var title = doc.querySelector("title");
     if (title) document.title = title.textContent || "";
+
+    // Brand links and logo images live outside swapped regions.
+    // Their relative hrefs/srcs go stale after cross-depth navigation.
+    // Copy the correct values from the fetched document.
+    [".sidebar-brand", ".header-center a"].forEach(function (sel) {
+      var fresh = doc.querySelector(sel);
+      if (!fresh) return;
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.setAttribute("href", fresh.getAttribute("href"));
+      });
+    });
+    var freshLogos = doc.querySelectorAll(".sidebar-logo");
+    var staleLogos = document.querySelectorAll(".sidebar-logo");
+    freshLogos.forEach(function (fresh, i) {
+      if (staleLogos[i]) {
+        staleLogos[i].setAttribute("src", fresh.getAttribute("src"));
+      }
+    });
   }
 
   function reinit() {
