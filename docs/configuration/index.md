@@ -167,8 +167,8 @@ $ tmuxp load /opt/myapp
 
 ## Reference and usage
 
-::::{grid} 3
-:gutter: 3
+::::{grid} 1 2 3 3
+:gutter: 2 2 3 3
 
 :::{grid-item-card} Top-level Options
 :link: top-level

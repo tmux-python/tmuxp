@@ -4,8 +4,8 @@
 
 Conceptual guides and workflow documentation.
 
-::::{grid} 2
-:gutter: 3
+::::{grid} 1 1 2 2
+:gutter: 2 2 3 3
 
 :::{grid-item-card} Workflows
 :link: workflows

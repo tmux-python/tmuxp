@@ -5,8 +5,8 @@
 Session manager for tmux. Load, freeze, and convert tmux sessions through
 YAML/JSON configuration files. Powered by [libtmux](https://libtmux.git-pull.com/).
 
-::::{grid} 3
-:gutter: 3
+::::{grid} 1 2 3 3
+:gutter: 2 2 3 3
 
 :::{grid-item-card} Quickstart
 :link: quickstart
@@ -28,8 +28,8 @@ Config format, examples, and environment variables.
 
 ::::
 
-::::{grid} 2
-:gutter: 3
+::::{grid} 1 1 2 2
+:gutter: 2 2 3 3
 
 :::{grid-item-card} Topics
 :link: topics/index
