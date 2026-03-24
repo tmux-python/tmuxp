@@ -176,7 +176,8 @@ def render_aafigure(
     fname = "{}.{}".format(get_basename(text, options), options["format"])
     if app.builder.format == "html":
         # HTML
-        imgpath = relative_uri(app.builder.env.docname, "_images")
+        target_uri = app.builder.get_target_uri(app.builder.env.docname)
+        imgpath = relative_uri(target_uri, "_images")
         relfn = posixpath.join(imgpath, fname)
         outfn = path.join(app.builder.outdir, "_images", fname)
     else:
