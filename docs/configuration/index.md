@@ -6,6 +6,29 @@
 
 # Workspace files
 
+::::{grid} 1 2 3 3
+:gutter: 2 2 3 3
+
+:::{grid-item-card} Top-level Options
+:link: top-level
+:link-type: doc
+Session and window configuration keys.
+:::
+
+:::{grid-item-card} Environment Variables
+:link: environmental-variables
+:link-type: doc
+TMUXP_CONFIGDIR and other env vars.
+:::
+
+:::{grid-item-card} Examples
+:link: examples
+:link-type: doc
+Sample workspace configurations.
+:::
+
+::::
+
 tmuxp loads your terminal workspace into tmux using workspace files.
 
 The workspace file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and panes.
