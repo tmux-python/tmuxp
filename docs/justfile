@@ -27,7 +27,7 @@ default:
 # Build HTML documentation
 [group: 'build']
 html:
-    {{ sphinxbuild }} -b html {{ allsphinxopts }} {{ builddir }}/html
+    {{ sphinxbuild }} -b dirhtml {{ allsphinxopts }} {{ builddir }}/html
     @echo ""
     @echo "Build finished. The HTML pages are in {{ builddir }}/html."
 
@@ -202,9 +202,9 @@ dev:
 # Start sphinx-autobuild server
 [group: 'dev']
 start:
-    uv run sphinx-autobuild "{{ sourcedir }}" "{{ builddir }}" {{ sphinxopts }} --port {{ http_port }}
+    uv run sphinx-autobuild -b dirhtml "{{ sourcedir }}" "{{ builddir }}" {{ sphinxopts }} --port {{ http_port }}
 
 # Design mode: watch static files and disable incremental builds
 [group: 'dev']
 design:
-    uv run sphinx-autobuild "{{ sourcedir }}" "{{ builddir }}" {{ sphinxopts }} --port {{ http_port }} --watch "." -a
+    uv run sphinx-autobuild -b dirhtml "{{ sourcedir }}" "{{ builddir }}" {{ sphinxopts }} --port {{ http_port }} --watch "." -a
