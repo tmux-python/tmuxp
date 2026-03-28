@@ -23,7 +23,7 @@ Read these files and check each item:
 
 | ID | Item | What to check |
 |----|------|---------------|
-| I1 | `pre`/`pre_window` mapping | `pre` → `before_script` (not `shell_command`/`shell_command_before`). `pre_window` → `shell_command_before` |
+| I1 | `pre`/`pre_window` mapping | `pre` → `on_project_start` (not `before_script`/`shell_command_before`). `pre_window` → `shell_command_before` |
 | I2 | `cli_args`/`tmux_options` parsing | Uses `shlex.split()` token iteration, not `.replace("-f", "")` |
 | I3 | Filter loop fix | Direct assignment with truthiness guard, not `for _b in` loop |
 | I4 | v1.x teamocil format | String panes and `commands` key handled |
