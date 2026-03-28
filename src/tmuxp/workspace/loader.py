@@ -158,7 +158,9 @@ def expand(
 
     if "session_name" in workspace_dict:
         workspace_dict["session_name"] = expandshell(workspace_dict["session_name"])
-    if "window_name" in workspace_dict:
+    if "window_name" in workspace_dict and isinstance(
+        workspace_dict["window_name"], str
+    ):
         workspace_dict["window_name"] = expandshell(workspace_dict["window_name"])
     if "environment" in workspace_dict:
         for key in workspace_dict["environment"]:
