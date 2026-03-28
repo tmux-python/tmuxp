@@ -192,37 +192,39 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     for window_dict in workspace_dict["windows"]:
         for k, v in window_dict.items():
-            window_dict = {"window_name": str(k) if k is not None else k}
+            tmuxp_window: dict[str, t.Any] = {
+                "window_name": str(k) if k is not None else k,
+            }
 
             if isinstance(v, str) or v is None:
-                window_dict["panes"] = [v]
-                tmuxp_workspace["windows"].append(window_dict)
+                tmuxp_window["panes"] = [v]
+                tmuxp_workspace["windows"].append(tmuxp_window)
                 continue
             if isinstance(v, list):
-                window_dict["panes"] = _convert_named_panes(v)
-                tmuxp_workspace["windows"].append(window_dict)
+                tmuxp_window["panes"] = _convert_named_panes(v)
+                tmuxp_workspace["windows"].append(tmuxp_window)
                 continue
 
             if "pre" in v:
-                window_dict["shell_command_before"] = v["pre"]
+                tmuxp_window["shell_command_before"] = v["pre"]
             if "panes" in v:
-                window_dict["panes"] = _convert_named_panes(v["panes"])
+                tmuxp_window["panes"] = _convert_named_panes(v["panes"])
             if "root" in v:
-                window_dict["start_directory"] = v["root"]
+                tmuxp_window["start_directory"] = v["root"]
 
             if "layout" in v:
-                window_dict["layout"] = v["layout"]
+                tmuxp_window["layout"] = v["layout"]
 
             if "synchronize" in v:
                 sync = v["synchronize"]
                 if sync is True or sync == "before":
-                    window_dict.setdefault("options", {})["synchronize-panes"] = "on"
+                    tmuxp_window.setdefault("options", {})["synchronize-panes"] = "on"
                 elif sync == "after":
-                    window_dict.setdefault("options_after", {})["synchronize-panes"] = (
-                        "on"
-                    )
+                    tmuxp_window.setdefault("options_after", {})[
+                        "synchronize-panes"
+                    ] = "on"
 
-            tmuxp_workspace["windows"].append(window_dict)
+            tmuxp_workspace["windows"].append(tmuxp_window)
 
     # Post-process startup_window / startup_pane into focus flags
     if _startup_window is not None and tmuxp_workspace["windows"]:
