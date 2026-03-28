@@ -166,6 +166,10 @@ def run_hook_commands(
             result.returncode,
             extra={"tmux_exit_code": result.returncode},
         )
+        if result.stdout:
+            logger.debug("hook stdout: %s", result.stdout.rstrip())
+        if result.stderr:
+            logger.debug("hook stderr: %s", result.stderr.rstrip())
 
 
 def oh_my_zsh_auto_title() -> None:

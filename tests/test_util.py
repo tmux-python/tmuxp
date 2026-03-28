@@ -330,3 +330,19 @@ def test_run_hook_commands_missing_cwd_warns(
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warning_records) >= 1
     assert "bad cwd or shell" in warning_records[0].message
+
+
+def test_run_hook_commands_failure_logs_output_at_debug(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs stdout/stderr at DEBUG when hook fails."""
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.util"):
+        run_hook_commands("echo HOOK_OUT && echo HOOK_ERR >&2 && exit 1")
+
+    debug_records = [r for r in caplog.records if r.levelno == logging.DEBUG]
+    stdout_records = [r for r in debug_records if "hook stdout" in r.message]
+    stderr_records = [r for r in debug_records if "hook stderr" in r.message]
+    assert len(stdout_records) >= 1
+    assert "HOOK_OUT" in stdout_records[0].message
+    assert len(stderr_records) >= 1
+    assert "HOOK_ERR" in stderr_records[0].message
