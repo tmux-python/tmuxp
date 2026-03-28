@@ -204,3 +204,70 @@ def test_new_error_exits_nonzero(
     if expected_output_fragment:
         captured = capsys.readouterr()
         assert expected_output_fragment in captured.out
+
+
+class NewNameValidationFixture(t.NamedTuple):
+    """Test fixture for workspace name validation."""
+
+    test_id: str
+    workspace_name: str
+    expected_error_fragment: str
+
+
+NEW_NAME_VALIDATION_FIXTURES: list[NewNameValidationFixture] = [
+    NewNameValidationFixture(
+        test_id="path_traversal",
+        workspace_name="../outside",
+        expected_error_fragment="path separators",
+    ),
+    NewNameValidationFixture(
+        test_id="yaml_boolean_yes",
+        workspace_name="yes",
+        expected_error_fragment="YAML reserved word",
+    ),
+    NewNameValidationFixture(
+        test_id="yaml_boolean_true",
+        workspace_name="true",
+        expected_error_fragment="YAML reserved word",
+    ),
+    NewNameValidationFixture(
+        test_id="yaml_comment",
+        workspace_name="#tmp",
+        expected_error_fragment="YAML special character",
+    ),
+    NewNameValidationFixture(
+        test_id="yaml_alias",
+        workspace_name="*alias",
+        expected_error_fragment="YAML special character",
+    ),
+    NewNameValidationFixture(
+        test_id="path_separator",
+        workspace_name="a/b",
+        expected_error_fragment="path separators",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(NewNameValidationFixture._fields),
+    NEW_NAME_VALIDATION_FIXTURES,
+    ids=[f.test_id for f in NEW_NAME_VALIDATION_FIXTURES],
+)
+def test_new_rejects_invalid_workspace_name(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    workspace_name: str,
+    expected_error_fragment: str,
+) -> None:
+    """Tmuxp new rejects path traversal and YAML-hostile workspace names."""
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+    monkeypatch.setenv("EDITOR", "true")
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(["new", workspace_name])
+
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert expected_error_fragment in captured.out

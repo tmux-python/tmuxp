@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -18,12 +19,42 @@ from .utils import tmuxp_echo
 logger = logging.getLogger(__name__)
 
 WORKSPACE_TEMPLATE = """\
-session_name: {name}
+session_name: '{name}'
 windows:
   - window_name: main
     panes:
       -
 """
+
+_YAML_RESERVED_RE = re.compile(
+    r"^(true|false|yes|no|on|off|null|~)$",
+    re.IGNORECASE,
+)
+
+
+def _validate_workspace_name(name: str) -> str | None:
+    """Return error message if name is invalid for a workspace, None if OK.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.new import _validate_workspace_name
+    >>> _validate_workspace_name("myproject") is None
+    True
+    >>> _validate_workspace_name("../escape") is not None
+    True
+    >>> _validate_workspace_name("yes") is not None
+    True
+    """
+    if os.sep in name or (os.altsep and os.altsep in name):
+        return f"workspace name must not contain path separators: {name!r}"
+    if ".." in name:
+        return f"workspace name must not contain '..': {name!r}"
+    if _YAML_RESERVED_RE.match(name):
+        return f"workspace name is a YAML reserved word: {name!r}"
+    if name.startswith(("#", "*", "&", "!", "|", ">", "'", '"', "%", "@", "`")):
+        return f"workspace name starts with YAML special character: {name!r}"
+    return None
+
 
 NEW_DESCRIPTION = build_description(
     """
@@ -98,6 +129,11 @@ def command_new(
     """
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
+
+    err = _validate_workspace_name(workspace_name)
+    if err:
+        tmuxp_echo(colors.error(err))
+        sys.exit(1)
 
     # Use TMUXP_CONFIGDIR directly if set, since get_workspace_dir()
     # only returns it when the directory already exists. The new command
