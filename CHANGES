@@ -78,7 +78,7 @@ hook system:
 - `on_project_stop` — runs before `tmuxp stop` kills the session
 
 ### Config templating (#1025)
-Workspace configs now support Jinja2-style `{{ variable }}` placeholders.
+Workspace configs now support simple `{{ variable }}` placeholders for variable substitution.
 Pass values via `--set KEY=VALUE` on the command line:
 
 ```console
