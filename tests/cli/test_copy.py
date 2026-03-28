@@ -67,17 +67,20 @@ def test_copy(
         source_path = config_dir / f"{source_name}.yaml"
         source_path.write_text(source_content)
 
-    cli.cli(cli_args)
-
-    captured = capsys.readouterr()
-    dest_path = config_dir / f"{dest_name}.yaml"
-
     if expect_copied:
+        cli.cli(cli_args)
+
+        captured = capsys.readouterr()
+        dest_path = config_dir / f"{dest_name}.yaml"
         assert dest_path.exists()
         assert dest_path.read_text() == source_content
         assert "Copied" in captured.out
     else:
-        assert not dest_path.exists()
+        with pytest.raises(SystemExit) as exc_info:
+            cli.cli(cli_args)
+
+        assert exc_info.value.code == 1
+        captured = capsys.readouterr()
         assert "not found" in captured.out.lower()
 
 
@@ -156,3 +159,60 @@ def test_copy_respects_tmuxp_configdir(
     expected = config_dir / "myworkspace.yaml"
     assert expected.exists(), f"expected {expected} to exist"
     assert expected.read_text() == "session_name: copied\n"
+
+
+class CopyExitCodeFixture(t.NamedTuple):
+    """Test fixture for tmuxp copy error exit codes."""
+
+    test_id: str
+    cli_args: list[str]
+    expected_exit_code: int
+    expected_output_fragment: str
+
+
+COPY_EXIT_CODE_FIXTURES: list[CopyExitCodeFixture] = [
+    CopyExitCodeFixture(
+        test_id="missing_source",
+        cli_args=["copy", "nonexistent", "dst"],
+        expected_exit_code=1,
+        expected_output_fragment="Source not found",
+    ),
+    CopyExitCodeFixture(
+        test_id="no_args",
+        cli_args=["copy"],
+        expected_exit_code=1,
+        expected_output_fragment="",
+    ),
+    CopyExitCodeFixture(
+        test_id="missing_destination",
+        cli_args=["copy", "src"],
+        expected_exit_code=1,
+        expected_output_fragment="",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(CopyExitCodeFixture._fields),
+    COPY_EXIT_CODE_FIXTURES,
+    ids=[f.test_id for f in COPY_EXIT_CODE_FIXTURES],
+)
+def test_copy_error_exits_nonzero(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    cli_args: list[str],
+    expected_exit_code: int,
+    expected_output_fragment: str,
+) -> None:
+    """Tmuxp copy exits with code 1 on error conditions."""
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(cli_args)
+
+    assert exc_info.value.code == expected_exit_code
+    if expected_output_fragment:
+        captured = capsys.readouterr()
+        assert expected_output_fragment in captured.out
