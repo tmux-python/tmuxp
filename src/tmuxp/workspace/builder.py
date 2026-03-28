@@ -567,8 +567,10 @@ class WorkspaceBuilder:
             _start_dir = self.session_config.get("start_directory")
             if _start_dir:
                 _joined = f"cd {shlex.quote(_start_dir)} && {_joined}"
-            _escaped = _joined.replace("'", "'\\''")
-            self.session.set_hook("client-detached", f"run-shell '{_escaped}'")
+            self.session.set_hook(
+                "client-detached",
+                f"run-shell {shlex.quote(_joined)}",
+            )
 
         # Store on_project_stop in session environment for tmuxp stop
         if "on_project_stop" in self.session_config:

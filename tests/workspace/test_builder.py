@@ -2113,6 +2113,65 @@ def test_on_project_exit_hook_includes_cwd(
     builder.session.kill()
 
 
+class OnProjectExitCwdSpecialFixture(t.NamedTuple):
+    """Test fixture for on_project_exit hook with special cwd characters."""
+
+    test_id: str
+    dir_name: str
+    expected_substring: str
+
+
+ON_PROJECT_EXIT_CWD_SPECIAL_FIXTURES: list[OnProjectExitCwdSpecialFixture] = [
+    OnProjectExitCwdSpecialFixture(
+        test_id="spaces_in_path",
+        dir_name="my project dir",
+        expected_substring="my project dir",
+    ),
+    OnProjectExitCwdSpecialFixture(
+        test_id="single_quote_in_path",
+        dir_name="it's a project",
+        expected_substring="a project",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(OnProjectExitCwdSpecialFixture._fields),
+    ON_PROJECT_EXIT_CWD_SPECIAL_FIXTURES,
+    ids=[f.test_id for f in ON_PROJECT_EXIT_CWD_SPECIAL_FIXTURES],
+)
+def test_on_project_exit_hook_cwd_special_chars(
+    server: Server,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    dir_name: str,
+    expected_substring: str,
+) -> None:
+    """on_project_exit hook correctly quotes start_directory with special chars."""
+    special_dir = tmp_path / dir_name
+    special_dir.mkdir()
+    workspace: dict[str, t.Any] = {
+        "session_name": f"hook-exit-{test_id}",
+        "start_directory": str(special_dir),
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_values = [str(v) for v in hooks.values()]
+    matched = [v for v in hook_values if expected_substring in v]
+    assert len(matched) >= 1, (
+        f"Expected {expected_substring!r} in hook values, got {hook_values}"
+    )
+
+    builder.session.kill()
+
+
 def test_on_project_stop_sets_environment(
     server: Server,
 ) -> None:
