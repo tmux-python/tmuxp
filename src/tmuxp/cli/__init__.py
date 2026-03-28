@@ -422,7 +422,7 @@ def cli(_args: list[str] | None = None) -> None:
     elif args.subparser_name == "new":
         if not args.workspace_name:
             args.print_help()
-            return
+            sys.exit(1)
         command_new(
             workspace_name=args.workspace_name,
             parser=parser,
@@ -431,7 +431,7 @@ def cli(_args: list[str] | None = None) -> None:
     elif args.subparser_name == "copy":
         if not args.source or not args.destination:
             args.print_help()
-            return
+            sys.exit(1)
         command_copy(
             source=args.source,
             destination=args.destination,
@@ -441,7 +441,7 @@ def cli(_args: list[str] | None = None) -> None:
     elif args.subparser_name == "delete":
         if not args.workspace_names:
             args.print_help()
-            return
+            sys.exit(1)
         command_delete(
             workspace_names=args.workspace_names,
             answer_yes=args.answer_yes,

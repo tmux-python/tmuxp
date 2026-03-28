@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 import typing as t
 
 from tmuxp._internal.private_path import PrivatePath
@@ -100,11 +101,13 @@ def command_delete(
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
 
+    _had_error = False
     for name in workspace_names:
         try:
             workspace_path = find_workspace_file(name)
         except FileNotFoundError:
             tmuxp_echo(colors.warning(f"Workspace not found: {name}"))
+            _had_error = True
             continue
 
         if not answer_yes and not prompt_yes_no(
@@ -119,3 +122,6 @@ def command_delete(
         tmuxp_echo(
             colors.success("Deleted ") + colors.info(str(PrivatePath(workspace_path))),
         )
+
+    if _had_error:
+        sys.exit(1)

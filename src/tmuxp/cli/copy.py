@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import shutil
+import sys
 import typing as t
 
 from tmuxp._internal.private_path import PrivatePath
@@ -105,7 +106,7 @@ def command_copy(
         source_path = find_workspace_file(source)
     except FileNotFoundError:
         tmuxp_echo(colors.error(f"Source not found: {source}"))
-        return
+        sys.exit(1)
 
     if is_pure_name(destination):
         configdir_env = os.environ.get("TMUXP_CONFIGDIR")
@@ -125,7 +126,7 @@ def command_copy(
         color_mode=color_mode,
     ):
         tmuxp_echo(colors.muted("Aborted."))
-        return
+        sys.exit(1)
 
     shutil.copy2(source_path, dest_path)
     tmuxp_echo(
