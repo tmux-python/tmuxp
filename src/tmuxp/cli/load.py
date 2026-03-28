@@ -751,7 +751,7 @@ def load_workspace(
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
-    t = Server(  # create tmux server object
+    srv = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
         config_file=tmux_config_file,
@@ -765,7 +765,7 @@ def load_workspace(
         builder = WorkspaceBuilder(
             session_config=expanded_workspace,
             plugins=load_plugins(expanded_workspace, colors=cli_colors),
-            server=t,
+            server=srv,
         )
     except exc.EmptyWorkspaceException:
         logger.warning(
