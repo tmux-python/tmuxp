@@ -76,6 +76,10 @@ on_project_start:
 These hooks correspond to tmuxinator's `on_project_start`, `on_project_restart`, `on_project_exit`, and `on_project_stop` keys.
 ```
 
+```{note}
+`on_project_exit` uses tmux's `client-detached` hook, which fires on **any** client detach — including terminal close, SSH disconnect, or manual `tmux detach`. This matches tmuxinator's behavior.
+```
+
 ## Pane titles
 
 Enable pane border titles to display labels on each pane:
