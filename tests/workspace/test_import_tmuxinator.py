@@ -472,6 +472,52 @@ def test_import_tmuxinator_pre_list_joined_for_on_project_start() -> None:
     loader.expand(result)
 
 
+class PreVsPassthroughFixture(t.NamedTuple):
+    """Test fixture for pre vs on_project_start passthrough precedence."""
+
+    test_id: str
+    workspace: dict[str, t.Any]
+    expected_on_project_start: str
+
+
+PRE_VS_PASSTHROUGH_FIXTURES: list[PreVsPassthroughFixture] = [
+    PreVsPassthroughFixture(
+        test_id="passthrough_wins_over_pre",
+        workspace={
+            "name": "both-keys",
+            "on_project_start": "echo native-start",
+            "pre": "echo legacy-pre",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_on_project_start="echo native-start",
+    ),
+    PreVsPassthroughFixture(
+        test_id="pre_maps_when_no_passthrough",
+        workspace={
+            "name": "pre-only",
+            "pre": "echo starting",
+            "windows": [{"editor": "vim"}],
+        },
+        expected_on_project_start="echo starting",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PreVsPassthroughFixture._fields),
+    PRE_VS_PASSTHROUGH_FIXTURES,
+    ids=[f.test_id for f in PRE_VS_PASSTHROUGH_FIXTURES],
+)
+def test_import_tmuxinator_pre_vs_passthrough_on_project_start(
+    test_id: str,
+    workspace: dict[str, t.Any],
+    expected_on_project_start: str,
+) -> None:
+    """Passthrough on_project_start takes precedence over legacy pre key."""
+    result = importers.import_tmuxinator(workspace)
+    assert result["on_project_start"] == expected_on_project_start
+
+
 def test_import_tmuxinator_passthrough_pane_titles_and_hooks() -> None:
     """Pane title and lifecycle hook keys are copied through to tmuxp config."""
     workspace = {
