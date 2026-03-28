@@ -846,3 +846,21 @@ def test_import_tmuxinator_startup_window_index_resolution(
         assert len(warning_records) >= 1
     else:
         assert len(warning_records) == 0
+
+
+def test_import_tmuxinator_none_window_name_no_crash() -> None:
+    """Tmuxinator config with None (null) window key imports without crashing."""
+    workspace = {
+        "name": "null-window",
+        "windows": [{None: "vim"}],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    assert result["windows"][0]["window_name"] is None
+    assert result["windows"][0]["panes"] == ["vim"]
+
+    # Verify expand + trickle don't crash on None window_name
+    from tmuxp.workspace import loader
+
+    expanded = loader.expand(result)
+    loader.trickle(expanded)
