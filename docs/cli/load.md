@@ -282,7 +282,7 @@ $ tmuxp load --debug myproject
 
 ## Config templating
 
-Workspace configs support Jinja2-style `{{ variable }}` placeholders. Pass values via `--set KEY=VALUE`:
+Workspace configs support simple `{{ variable }}` placeholders for variable substitution. Pass values via `--set KEY=VALUE`:
 
 ```console
 $ tmuxp load --set project=myapp mytemplate.yaml
