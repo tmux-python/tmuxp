@@ -65,7 +65,33 @@ class _TmuxCommandDebugHandler(logging.Handler):
         self._colors = colors
 
     def emit(self, record: logging.LogRecord) -> None:
-        """Print tmux command if present in the log record's extra fields."""
+        """Print tmux command if present in the log record's extra fields.
+
+        Examples
+        --------
+        Handler prints the tmux command when present:
+
+        >>> import logging
+        >>> from tmuxp.cli.load import _TmuxCommandDebugHandler
+        >>> from tmuxp.cli._colors import ColorMode, Colors
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> handler = _TmuxCommandDebugHandler(colors)
+        >>> record = logging.LogRecord(
+        ...     name="test", level=logging.DEBUG,
+        ...     pathname="", lineno=0, msg="", args=(), exc_info=None,
+        ... )
+        >>> record.tmux_cmd = "list-sessions"
+        >>> handler.emit(record)
+        $ list-sessions
+
+        No output when tmux_cmd is absent:
+
+        >>> record2 = logging.LogRecord(
+        ...     name="test", level=logging.DEBUG,
+        ...     pathname="", lineno=0, msg="", args=(), exc_info=None,
+        ... )
+        >>> handler.emit(record2)
+        """
         cmd = getattr(record, "tmux_cmd", None)
         if cmd is not None:
             tmuxp_echo(self._colors.muted("$ ") + self._colors.info(str(cmd)))
