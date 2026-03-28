@@ -6,6 +6,7 @@ import logging
 import os
 import shlex
 import subprocess
+import sys
 import typing as t
 
 from tmuxp._internal.private_path import PrivatePath
@@ -131,3 +132,4 @@ def command_new(
             + colors.info(sys_editor)
             + colors.muted(" (set $EDITOR to a valid editor)"),
         )
+        sys.exit(1)

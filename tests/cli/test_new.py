@@ -109,19 +109,14 @@ class EditorFixture(t.NamedTuple):
 
 EDITOR_FIXTURES: list[EditorFixture] = [
     EditorFixture(
-        test_id="valid-editor",
+        test_id="valid_editor",
         editor="true",
         expect_error_output=False,
     ),
     EditorFixture(
-        test_id="editor-with-flags",
+        test_id="editor_with_flags",
         editor="true --ignored-flag",
         expect_error_output=False,
-    ),
-    EditorFixture(
-        test_id="missing-editor",
-        editor="nonexistent_editor_binary_xyz",
-        expect_error_output=True,
     ),
 ]
 
@@ -139,7 +134,7 @@ def test_new_editor_handling(
     editor: str,
     expect_error_output: bool,
 ) -> None:
-    """Test EDITOR handling: flags, missing binary, valid editor."""
+    """Test EDITOR handling: flags and valid editor."""
     monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
     monkeypatch.setenv("EDITOR", editor)
 
@@ -153,3 +148,59 @@ def test_new_editor_handling(
         assert "Editor not found" in captured.out
     else:
         assert "Editor not found" not in captured.out
+
+
+class NewExitCodeFixture(t.NamedTuple):
+    """Test fixture for tmuxp new error exit codes."""
+
+    test_id: str
+    cli_args: list[str]
+    editor: str
+    expected_exit_code: int
+    expected_output_fragment: str
+
+
+NEW_EXIT_CODE_FIXTURES: list[NewExitCodeFixture] = [
+    NewExitCodeFixture(
+        test_id="no_args",
+        cli_args=["new"],
+        editor="true",
+        expected_exit_code=1,
+        expected_output_fragment="",
+    ),
+    NewExitCodeFixture(
+        test_id="missing_editor",
+        cli_args=["new", "editortest_missing"],
+        editor="nonexistent_editor_binary_xyz",
+        expected_exit_code=1,
+        expected_output_fragment="Editor not found",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(NewExitCodeFixture._fields),
+    NEW_EXIT_CODE_FIXTURES,
+    ids=[f.test_id for f in NEW_EXIT_CODE_FIXTURES],
+)
+def test_new_error_exits_nonzero(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    cli_args: list[str],
+    editor: str,
+    expected_exit_code: int,
+    expected_output_fragment: str,
+) -> None:
+    """Tmuxp new exits with code 1 on error conditions."""
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+    monkeypatch.setenv("EDITOR", editor)
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(cli_args)
+
+    assert exc_info.value.code == expected_exit_code
+    if expected_output_fragment:
+        captured = capsys.readouterr()
+        assert expected_output_fragment in captured.out

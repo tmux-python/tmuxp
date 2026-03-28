@@ -302,14 +302,14 @@ def test_search_no_args_shows_help() -> None:
 
 @pytest.mark.parametrize("subcommand", ["new", "copy", "delete"])
 def test_new_commands_no_args_shows_help(subcommand: str) -> None:
-    """Running new commands with no args shows help."""
+    """Running new commands with no args shows help and exits 1."""
     result = subprocess.run(
         ["tmuxp", subcommand],
         capture_output=True,
         text=True,
     )
     assert f"usage: tmuxp {subcommand}" in result.stdout
-    assert result.returncode == 0
+    assert result.returncode == 1
 
 
 def test_main_help_example_sections_have_examples_suffix() -> None:
