@@ -6,7 +6,7 @@
 
 | | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| **Version** | 1.68.0 | 3.3.7 | 1.4.2 |
+| **Version** | Next | 3.3.7 | 1.4.2 |
 | **Language** | Python | Ruby | Ruby |
 | **Min tmux** | 3.2 | 1.5+ (1.5–3.6a tested) | (not specified) |
 | **Config formats** | YAML, JSON | YAML (with ERB) | YAML |
@@ -165,6 +165,10 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 | Custom config path | `tmuxp load /path/to/file` | `-p /path/to/file` | `--layout /path/to/file` |
 | Load multiple configs | `tmuxp load f1 f2 ...` (all but last detached) | (none) | (none) |
 | Local config | `tmuxp load .` | `tmuxinator local` | (none) |
+
+```{note}
+**`--debug` semantics differ**: `tmuxp load --debug` *executes* the workspace and shows each tmux command on stdout. `tmuxinator debug <project>` performs a *dry run* and prints the generated bash script without executing it.
+```
 
 ## Config File Discovery
 

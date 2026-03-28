@@ -264,6 +264,10 @@ $ tmuxp load --here .
 
 When used, tmuxp builds the workspace panes inside the current window rather than spawning a new session.
 
+```{note}
+`--here` sends shell commands (such as `cd` and `export` for environment variables) directly to the active pane via `send-keys`. The pane must be running a POSIX-compatible shell (bash, zsh, etc.). If the active pane is running a non-shell program (e.g., `vim`, `python`), those commands will be interpreted as input to that program.
+```
+
 ## Skipping shell_command_before
 
 The `--no-shell-command-before` flag skips all `shell_command_before` entries at every level (session, window, pane). This is useful for quick reloads when the setup commands (virtualenv activation, etc.) are already active.
