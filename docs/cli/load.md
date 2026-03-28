@@ -274,7 +274,7 @@ $ tmuxp load --no-shell-command-before myproject
 
 ## Debug mode
 
-The `--debug` flag shows tmux commands as they execute. This disables the progress spinner and attaches a debug handler to libtmux's logger, printing each tmux command to stderr.
+The `--debug` flag shows tmux commands as they execute. This disables the progress spinner and attaches a debug handler to libtmux's logger, printing each tmux command to stdout.
 
 ```console
 $ tmuxp load --debug myproject
