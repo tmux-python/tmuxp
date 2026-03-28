@@ -358,9 +358,21 @@ def _load_here_in_current_session(builder: WorkspaceBuilder) -> None:
 
     Examples
     --------
+    Raises when no attached tmux session is available:
+
+    >>> from tmuxp.workspace.builder import WorkspaceBuilder
     >>> from tmuxp.cli.load import _load_here_in_current_session
-    >>> callable(_load_here_in_current_session)
-    True
+    >>> from tmuxp import exc
+    >>> config = {
+    ...     'session_name': 'here-doctest',
+    ...     'windows': [{'window_name': 'main'}],
+    ... }
+    >>> builder = WorkspaceBuilder(session_config=config, server=server)
+    >>> try:
+    ...     _load_here_in_current_session(builder)
+    ... except exc.ActiveSessionMissingWorkspaceException:
+    ...     print("raised")
+    raised
     """
     current_attached_session = builder.find_current_attached_session()
     builder.build(current_attached_session, here=True)
@@ -427,9 +439,29 @@ def _dispatch_build(
 
     Examples
     --------
+    Build a minimal workspace in detached mode:
+
+    >>> from tmuxp.workspace.builder import WorkspaceBuilder
+    >>> from tmuxp.workspace import loader
     >>> from tmuxp.cli.load import _dispatch_build
-    >>> callable(_dispatch_build)
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> config = loader.trickle(loader.expand({
+    ...     'session_name': 'dispatch-doctest',
+    ...     'windows': [{'window_name': 'main'}],
+    ... }))
+    >>> builder = WorkspaceBuilder(session_config=config, server=server)
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> result = _dispatch_build(
+    ...     builder,
+    ...     detached=True,
+    ...     append=False,
+    ...     answer_yes=False,
+    ...     cli_colors=colors,
+    ... )
+    Session created in detached state.
+    >>> result is not None
     True
+    >>> result.kill()
     """
     try:
         if detached:
