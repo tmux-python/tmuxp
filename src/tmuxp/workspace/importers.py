@@ -157,7 +157,7 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     # tmuxinator's pre is a raw shell command emitted as a line in a bash script.
     # on_project_start uses run_hook_commands(shell=True) which handles raw commands.
     # before_script requires a file path and would crash on raw commands.
-    if "pre" in workspace_dict:
+    if "pre" in workspace_dict and "on_project_start" not in tmuxp_workspace:
         pre_val = workspace_dict["pre"]
         if isinstance(pre_val, list):
             tmuxp_workspace["on_project_start"] = "; ".join(pre_val)
