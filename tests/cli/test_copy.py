@@ -161,6 +161,61 @@ def test_copy_respects_tmuxp_configdir(
     assert expected.read_text() == "session_name: copied\n"
 
 
+class CopyExtensionFixture(t.NamedTuple):
+    """Test fixture for source extension preservation in copy."""
+
+    test_id: str
+    source_ext: str
+    expected_dest_ext: str
+
+
+COPY_EXTENSION_FIXTURES: list[CopyExtensionFixture] = [
+    CopyExtensionFixture(
+        test_id="yaml_source",
+        source_ext=".yaml",
+        expected_dest_ext=".yaml",
+    ),
+    CopyExtensionFixture(
+        test_id="json_source",
+        source_ext=".json",
+        expected_dest_ext=".json",
+    ),
+    CopyExtensionFixture(
+        test_id="yml_source",
+        source_ext=".yml",
+        expected_dest_ext=".yml",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(CopyExtensionFixture._fields),
+    COPY_EXTENSION_FIXTURES,
+    ids=[f.test_id for f in COPY_EXTENSION_FIXTURES],
+)
+def test_copy_preserves_source_extension(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    source_ext: str,
+    expected_dest_ext: str,
+) -> None:
+    """Copy uses the source file extension when destination is a pure name."""
+    config_dir = tmp_path / "tmuxp"
+    config_dir.mkdir()
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(config_dir))
+
+    source_content = '{"session_name": "test"}\n'
+    source_path = config_dir / f"src{source_ext}"
+    source_path.write_text(source_content)
+
+    cli.cli(["copy", str(source_path), "dst"])
+
+    expected = config_dir / f"dst{expected_dest_ext}"
+    assert expected.exists(), f"expected {expected} to exist"
+    assert expected.read_text() == source_content
+
+
 class CopyExitCodeFixture(t.NamedTuple):
     """Test fixture for tmuxp copy error exit codes."""
 

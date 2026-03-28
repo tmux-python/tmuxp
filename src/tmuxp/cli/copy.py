@@ -114,7 +114,8 @@ def command_copy(
             os.path.expanduser(configdir_env) if configdir_env else get_workspace_dir()
         )
         os.makedirs(workspace_dir, exist_ok=True)
-        dest_path = os.path.join(workspace_dir, f"{destination}.yaml")
+        _, src_ext = os.path.splitext(source_path)
+        dest_path = os.path.join(workspace_dir, f"{destination}{src_ext or '.yaml'}")
     else:
         dest_path = os.path.expanduser(destination)
         if not os.path.isabs(dest_path):
