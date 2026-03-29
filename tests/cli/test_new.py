@@ -245,6 +245,16 @@ NEW_NAME_VALIDATION_FIXTURES: list[NewNameValidationFixture] = [
         workspace_name="a/b",
         expected_error_fragment="path separators",
     ),
+    NewNameValidationFixture(
+        test_id="single_quote",
+        workspace_name="foo'bar",
+        expected_error_fragment="quotes",
+    ),
+    NewNameValidationFixture(
+        test_id="double_quote",
+        workspace_name='foo"bar',
+        expected_error_fragment="quotes",
+    ),
 ]
 
 
