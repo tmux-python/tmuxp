@@ -567,9 +567,11 @@ class WorkspaceBuilder:
             _start_dir = self.session_config.get("start_directory")
             if _start_dir:
                 _joined = f"cd {shlex.quote(_start_dir)} && {_joined}"
+            # Guard: only run when last client detaches (safe for multi-client)
+            _guarded = f"if [ #{{session_attached}} -eq 0 ]; then {_joined}; fi"
             self.session.set_hook(
                 "client-detached",
-                f"run-shell {shlex.quote(_joined)}",
+                f"run-shell {shlex.quote(_guarded)}",
             )
 
         # Store on_project_stop in session environment for tmuxp stop
