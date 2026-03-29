@@ -116,6 +116,55 @@ windows:
 - **Type imports**: Use `import typing as t` and access via namespace (e.g., `t.Optional`)
 - **Development workflow**: Format → Test → Commit → Lint/Type Check → Test → Final Commit
 
+## Git Commit Standards
+
+Format commit messages as:
+```
+Scope(type[detail]): concise description
+
+why: Explanation of necessity or impact.
+what:
+- Specific technical changes made
+- Focused on a single topic
+```
+
+Common commit types:
+- **feat**: New features or enhancements
+- **fix**: Bug fixes
+- **refactor**: Code restructuring without functional change
+- **docs**: Documentation updates
+- **chore**: Maintenance (dependencies, tooling, config)
+- **test**: Test-related updates
+- **style**: Code style and formatting
+- **py(deps)**: Dependencies
+- **py(deps[dev])**: Dev Dependencies
+- **ai(rules[AGENTS])**: AI rule updates
+- **ai(claude[rules])**: Claude Code rules (CLAUDE.md)
+- **ai(claude[command])**: Claude Code command changes
+
+Example:
+```
+Pane(feat[send_keys]): Add support for literal flag
+
+why: Enable sending literal characters without tmux interpretation
+what:
+- Add literal parameter to send_keys method
+- Update send_keys to pass -l flag when literal=True
+- Add tests for literal key sending
+```
+For multi-line commits, use heredoc to preserve formatting:
+```bash
+git commit -m "$(cat <<'EOF'
+feat(Component[method]) add feature description
+
+why: Explanation of the change.
+what:
+- First change
+- Second change
+EOF
+)"
+```
+
 ## Logging Standards
 
 These rules guide future logging changes; existing code may not yet conform.
