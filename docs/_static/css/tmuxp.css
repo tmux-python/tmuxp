@@ -1,0 +1,12 @@
+/* Per-image aspect ratios for CLS reservation before load */
+img[src*="tmuxp-demo"] {
+  aspect-ratio: 888 / 589;
+}
+
+img[src*="tmuxp-shell"] {
+  aspect-ratio: 878 / 109;
+}
+
+img[src*="tmuxp-dev-screenshot"] {
+  aspect-ratio: 1030 / 605;
+}

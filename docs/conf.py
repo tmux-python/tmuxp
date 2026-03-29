@@ -38,7 +38,8 @@ conf = merge_sphinx_config(
     },
     linkcode_resolve=make_linkcode_resolve(tmuxp, about["__github__"]),
     # tmuxp-specific overrides
-    html_css_files=["css/custom.css"],
+    theme_options={"mask_icon": "/_static/img/tmuxp.svg"},
+    html_css_files=["css/tmuxp.css"],
     html_extra_path=["manifest.json"],
     html_favicon="_static/favicon.ico",
     aafig_format={"latex": "pdf", "html": "gif"},
