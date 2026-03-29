@@ -61,7 +61,56 @@ def _convert_named_panes(panes: list[t.Any]) -> list[t.Any]:
     return result
 
 
-def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+def _resolve_tmux_list_position(
+    target: str | int,
+    *,
+    base_index: int,
+    item_count: int,
+) -> int | None:
+    """Resolve a tmux index into a Python list position.
+
+    Parameters
+    ----------
+    target : str or int
+        tmux index from tmuxinator configuration
+    base_index : int
+        tmux base index for the list being resolved
+    item_count : int
+        number of items in the generated tmuxp list
+
+    Returns
+    -------
+    int or None
+        Python list position if the target resolves within bounds
+
+    Examples
+    --------
+    >>> _resolve_tmux_list_position(1, base_index=1, item_count=2)
+    0
+
+    >>> _resolve_tmux_list_position("2", base_index=1, item_count=2)
+    1
+
+    >>> _resolve_tmux_list_position(3, base_index=1, item_count=2) is None
+    True
+    """
+    try:
+        list_position = int(target) - base_index
+    except ValueError:
+        return None
+
+    if 0 <= list_position < item_count:
+        return list_position
+
+    return None
+
+
+def import_tmuxinator(
+    workspace_dict: dict[str, t.Any],
+    *,
+    base_index: int = 0,
+    pane_base_index: int = 0,
+) -> dict[str, t.Any]:
     """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
@@ -243,26 +292,18 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                 _matched = True
                 break
         if not _matched:
-            try:
-                _idx = int(_startup_window)
-                if 0 <= _idx < len(tmuxp_workspace["windows"]):
-                    tmuxp_workspace["windows"][_idx]["focus"] = True
-                    logger.warning(
-                        "startup_window %r resolved as 0-based list index, "
-                        "which may differ from tmuxinator's tmux base-index "
-                        "semantics; use window name for reliable matching",
-                        _startup_window,
-                    )
-                else:
-                    logger.warning(
-                        "startup_window index %d out of range (0-%d)",
-                        _idx,
-                        len(tmuxp_workspace["windows"]) - 1,
-                    )
-            except (ValueError, IndexError):
+            _idx = _resolve_tmux_list_position(
+                _startup_window,
+                base_index=base_index,
+                item_count=len(tmuxp_workspace["windows"]),
+            )
+            if _idx is not None:
+                tmuxp_workspace["windows"][_idx]["focus"] = True
+            else:
                 logger.warning(
-                    "startup_window %s not found",
+                    "startup_window %r not found for tmux base-index %d",
                     _startup_window,
+                    base_index,
                 )
 
     if _startup_pane is not None and tmuxp_workspace["windows"]:
@@ -271,33 +312,25 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             tmuxp_workspace["windows"][0],
         )
         if "panes" in _target:
-            try:
-                _pidx = int(_startup_pane)
-                if 0 <= _pidx < len(_target["panes"]):
-                    _pane = _target["panes"][_pidx]
-                    if isinstance(_pane, dict):
-                        _pane["focus"] = True
-                    else:
-                        _target["panes"][_pidx] = {
-                            "shell_command": [_pane] if _pane else [],
-                            "focus": True,
-                        }
-                    logger.warning(
-                        "startup_pane %r resolved as 0-based list index, "
-                        "which may differ from tmuxinator's tmux "
-                        "pane-base-index semantics",
-                        _startup_pane,
-                    )
+            _pidx = _resolve_tmux_list_position(
+                _startup_pane,
+                base_index=pane_base_index,
+                item_count=len(_target["panes"]),
+            )
+            if _pidx is not None:
+                _pane = _target["panes"][_pidx]
+                if isinstance(_pane, dict):
+                    _pane["focus"] = True
                 else:
-                    logger.warning(
-                        "startup_pane index %d out of range (0-%d)",
-                        _pidx,
-                        len(_target["panes"]) - 1,
-                    )
-            except (ValueError, IndexError):
+                    _target["panes"][_pidx] = {
+                        "shell_command": [_pane] if _pane else [],
+                        "focus": True,
+                    }
+            else:
                 logger.warning(
-                    "startup_pane %s not found",
+                    "startup_pane %r not found for tmux pane-base-index %d",
                     _startup_pane,
+                    pane_base_index,
                 )
 
     return tmuxp_workspace
