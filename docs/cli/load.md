@@ -265,7 +265,7 @@ $ tmuxp load --here .
 When used, tmuxp builds the workspace panes inside the current window rather than spawning a new session.
 
 ```{note}
-`--here` sends shell commands (such as `cd` and `export` for environment variables) directly to the active pane via `send-keys`. The pane must be running a POSIX-compatible shell (bash, zsh, etc.). If the active pane is running a non-shell program (e.g., `vim`, `python`), those commands will be interpreted as input to that program.
+When `--here` needs to provision a directory, environment, or shell, tmuxp uses tmux primitives (`set-environment` and `respawn-pane`) instead of typing `cd` / `export` into the pane. If provisioning is needed, tmux will replace the active pane process before the workspace commands run, so long-running child processes in that pane can be terminated.
 ```
 
 ## Skipping shell_command_before

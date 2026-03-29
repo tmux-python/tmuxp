@@ -74,16 +74,19 @@ teamocil parses YAML into `Session`/`Window`/`Pane` objects, each producing `Com
 
 | Hook | tmuxp | tmuxinator | teamocil |
 |---|---|---|---|
-| Every start invocation | `on_project_start` | `on_project_start` | (none) |
-| First start only | `before_script` | `on_project_first_start` | (none) |
+| Every start invocation | (none) | `on_project_start` | (none) |
+| New session creation only | `on_project_start` | `on_project_first_start` | (none) |
+| Before first script | `before_script` | (none) | (none) |
 | On reattach | `on_project_restart` + Plugin: `reattach()` | `on_project_restart` | (none) |
-| On exit/detach | `on_project_exit` (tmux `client-detached` hook) | `on_project_exit` | (none) |
+| On last client detach | `on_project_exit` (guarded `client-detached` hook) | `on_project_exit` | (none) |
 | On stop/kill | `on_project_stop` (via `tmuxp stop`) | `on_project_stop` | (none) |
 | Before workspace build | Plugin: `before_workspace_builder()` | (none) | (none) |
 | On window create | Plugin: `on_window_create()` | (none) | (none) |
 | After window done | Plugin: `after_window_finished()` | (none) | (none) |
 | Deprecated pre | (none) | `pre` (deprecated → `on_project_start`+`on_project_restart`; runs before session create) | (none) |
 | Deprecated post | (none) | `post` (deprecated → `on_project_stop`+`on_project_exit`; runs after attach on every invocation) | (none) |
+
+tmuxp's lifecycle hook names are intentionally close to tmuxinator's, but `on_project_start` is limited to new-session creation and `on_project_exit` is guarded so teardown only runs when the last client detaches.
 
 ### Window-Level
 
