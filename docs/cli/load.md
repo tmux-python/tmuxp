@@ -264,6 +264,8 @@ $ tmuxp load --here .
 
 When used, tmuxp builds the workspace panes inside the current window rather than spawning a new session.
 
+`--here` only supports a single workspace file per invocation.
+
 ```{note}
 When `--here` needs to provision a directory, environment, or shell, tmuxp uses tmux primitives (`set-environment` and `respawn-pane`) instead of typing `cd` / `export` into the pane. If provisioning is needed, tmux will replace the active pane process before the workspace commands run, so long-running child processes in that pane can be terminated.
 ```
