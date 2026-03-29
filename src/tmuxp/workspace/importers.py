@@ -8,6 +8,12 @@ import typing as t
 
 logger = logging.getLogger(__name__)
 
+_TMUXINATOR_UNMAPPED_KEYS: dict[str, str] = {
+    "tmux_command": "custom tmux binary is not supported; tmuxp always uses 'tmux'",
+    "attach": "use 'tmuxp load -d' for detached mode instead",
+    "post": "deprecated in tmuxinator; use on_project_exit instead",
+}
+
 
 def _convert_named_panes(panes: list[t.Any]) -> list[t.Any]:
     """Convert tmuxinator named pane dicts to tmuxp format.
@@ -142,11 +148,6 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         )
 
     # Warn on tmuxinator keys that have no tmuxp equivalent
-    _TMUXINATOR_UNMAPPED_KEYS = {
-        "tmux_command": "custom tmux binary is not supported; tmuxp always uses 'tmux'",
-        "attach": "use 'tmuxp load -d' for detached mode instead",
-        "post": "deprecated in tmuxinator; use on_project_exit instead",
-    }
     for _ukey, _uhint in _TMUXINATOR_UNMAPPED_KEYS.items():
         if _ukey in workspace_dict:
             logger.warning(
