@@ -1027,7 +1027,10 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         "--here",
         dest="here",
         action="store_true",
-        help="use the current window for the first workspace window",
+        help=(
+            "use the current window for the first workspace window "
+            "(single workspace only)"
+        ),
     )
     parser.add_argument(
         "--no-shell-command-before",
@@ -1169,6 +1172,13 @@ def command_load(
             parser.print_help()
         sys.exit()
         return
+
+    if args.here and len(args.workspace_files) > 1:
+        msg = "--here only supports one workspace file"
+        if parser is not None:
+            parser.error(msg)
+        tmuxp_echo(cli_colors.error("[Error]") + f" {msg}")
+        sys.exit(2)
 
     # Parse --set KEY=VALUE args into template context
     template_context: dict[str, str] | None = None

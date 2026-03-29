@@ -19,9 +19,11 @@ from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli.load import (
+    CLILoadNamespace,
     _dispatch_build,
     _load_append_windows_to_current_session,
     _load_attached,
+    command_load,
     load_plugins,
     load_workspace,
 )
@@ -1686,6 +1688,61 @@ def test_load_here_and_detached_mutually_exclusive() -> None:
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["load", "--here", "-d", "myconfig"])
+
+
+class MultiWorkspaceHereFixture(t.NamedTuple):
+    """Fixture for invalid multi-workspace --here invocations."""
+
+    test_id: str
+    cli_args: list[str]
+    expected_exit_code: int
+    expected_error: str
+
+
+MULTI_WORKSPACE_HERE_FIXTURES: list[MultiWorkspaceHereFixture] = [
+    MultiWorkspaceHereFixture(
+        test_id="rejects-two-workspaces",
+        cli_args=["load", "--here", "first", "second"],
+        expected_exit_code=2,
+        expected_error="--here only supports one workspace file",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(MultiWorkspaceHereFixture._fields),
+    MULTI_WORKSPACE_HERE_FIXTURES,
+    ids=[fixture.test_id for fixture in MULTI_WORKSPACE_HERE_FIXTURES],
+)
+def test_load_here_rejects_multiple_workspace_files(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    cli_args: list[str],
+    expected_exit_code: int,
+    expected_error: str,
+) -> None:
+    """--here exits before load_workspace when multiple files are provided."""
+    parser = cli.create_parser()
+    args = t.cast(CLILoadNamespace, parser.parse_args(cli_args))
+    load_calls: list[str] = []
+
+    monkeypatch.setattr(
+        "tmuxp.cli.load.util.oh_my_zsh_auto_title",
+        lambda: None,
+    )
+    monkeypatch.setattr(
+        "tmuxp.cli.load.load_workspace",
+        lambda *args, **kwargs: load_calls.append(test_id),
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        command_load(args, parser=parser)
+
+    result = capsys.readouterr()
+    assert excinfo.value.code == expected_exit_code
+    assert expected_error in result.err
+    assert load_calls == []
 
 
 def test_load_append_and_detached_mutually_exclusive() -> None:
