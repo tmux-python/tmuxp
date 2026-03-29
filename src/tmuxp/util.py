@@ -212,28 +212,57 @@ def get_session(
     server: Server,
     session_name: str | None = None,
     current_pane: Pane | None = None,
+    require_pane_resolution: bool = False,
 ) -> Session:
-    """Get tmux session for server by session name, respects current pane, if passed."""
-    session: Session | None = None
+    """Get tmux session for server by session name, respects current pane, if passed.
+
+    Parameters
+    ----------
+    server : Server
+        tmux server to search.
+    session_name : str, optional
+        Explicit session name to look up.
+    current_pane : Pane, optional
+        Pane to infer session from.
+    require_pane_resolution : bool
+        If True, raise SessionNotFound when TMUX_PANE cannot be resolved
+        instead of falling back to server.sessions[0]. Use for destructive
+        operations like ``tmuxp stop``.
+
+    Examples
+    --------
+    >>> from tmuxp.util import get_session
+    >>> get_session(server, session_name=session.name) == session
+    True
+    """
+    session_result: Session | None = None
     try:
         if session_name:
-            session = server.sessions.get(session_name=session_name)
+            session_result = server.sessions.get(session_name=session_name)
         elif current_pane is not None:
-            session = server.sessions.get(session_id=current_pane.session_id)
+            session_result = server.sessions.get(
+                session_id=current_pane.session_id,
+            )
         else:
             current_pane = get_current_pane(server)
             if current_pane:
-                session = server.sessions.get(session_id=current_pane.session_id)
+                session_result = server.sessions.get(
+                    session_id=current_pane.session_id,
+                )
+            elif require_pane_resolution:
+                pass  # session_result stays None → raises below
+            elif server.sessions:
+                session_result = server.sessions[0]
     except Exception as e:
         if session_name:
             raise exc.SessionNotFound(session_name) from e
         raise exc.SessionNotFound from e
 
-    if session is None:
+    if session_result is None:
         if session_name:
             raise exc.SessionNotFound(session_name)
         raise exc.SessionNotFound
-    return session
+    return session_result
 
 
 def get_window(
