@@ -639,6 +639,236 @@ def test_here_mode_provisions_environment(
     )
 
 
+# --- respawn-pane provisioning tests (f5f490a8, 0504d1b4) ---
+
+
+class HereRespawnFixture(t.NamedTuple):
+    """Fixture for --here respawn-pane provisioning scenarios."""
+
+    test_id: str
+    start_directory: bool
+    environment: dict[str, str] | None
+    window_shell: str | None
+    expect_respawn: bool
+
+
+HERE_RESPAWN_FIXTURES: list[HereRespawnFixture] = [
+    HereRespawnFixture(
+        test_id="dir-only",
+        start_directory=True,
+        environment=None,
+        window_shell=None,
+        expect_respawn=True,
+    ),
+    HereRespawnFixture(
+        test_id="env-only",
+        start_directory=False,
+        environment={"TMUXP_TEST_VAR": "respawn_val"},
+        window_shell=None,
+        expect_respawn=True,
+    ),
+    HereRespawnFixture(
+        test_id="dir-and-env",
+        start_directory=True,
+        environment={"TMUXP_DIR_ENV": "combined"},
+        window_shell=None,
+        expect_respawn=True,
+    ),
+    HereRespawnFixture(
+        test_id="nothing-to-provision",
+        start_directory=False,
+        environment=None,
+        window_shell=None,
+        expect_respawn=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereRespawnFixture._fields),
+    HERE_RESPAWN_FIXTURES,
+    ids=[f.test_id for f in HERE_RESPAWN_FIXTURES],
+)
+def test_here_mode_respawn_provisioning(
+    session: Session,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    start_directory: bool,
+    environment: dict[str, str] | None,
+    window_shell: str | None,
+    expect_respawn: bool,
+) -> None:
+    """--here mode uses respawn-pane for provisioning, not send_keys."""
+    test_dir = tmp_path / "here_respawn"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "respawn-test",
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    if start_directory:
+        workspace["windows"][0]["start_directory"] = str(test_dir)
+    if environment:
+        workspace["windows"][0]["environment"] = environment
+
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    original_pane = session.active_window.active_pane
+    assert original_pane is not None
+    original_pid = original_pane.pane_pid
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    pane = session.active_window.active_pane
+    assert pane is not None
+
+    if expect_respawn:
+        # respawn-pane -k replaces the shell process, so PID changes
+        assert pane.pane_pid != original_pid, (
+            f"Expected new PID after respawn, got same: {pane.pane_pid}"
+        )
+    else:
+        # No provisioning needed — pane process should be unchanged
+        assert pane.pane_pid == original_pid
+
+    if start_directory:
+        expected_path = os.path.realpath(str(test_dir))
+        assert retry_until(
+            lambda: pane.pane_current_path == expected_path,
+            seconds=5,
+        ), f"Expected {expected_path}, got {pane.pane_current_path}"
+
+    if environment:
+        env = session.show_environment()
+        for key, val in environment.items():
+            assert env.get(key) == val
+
+
+def test_here_mode_respawn_multiple_env_vars(
+    session: Session,
+) -> None:
+    """--here mode sets multiple environment variables via set_environment."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "multi-env",
+                "environment": {
+                    "TMUXP_A": "alpha",
+                    "TMUXP_B": "bravo",
+                    "TMUXP_C": "charlie",
+                },
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    env = session.show_environment()
+    assert env.get("TMUXP_A") == "alpha"
+    assert env.get("TMUXP_B") == "bravo"
+    assert env.get("TMUXP_C") == "charlie"
+
+
+def test_here_mode_respawn_warns_on_running_processes(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: pathlib.Path,
+) -> None:
+    """--here mode warns when respawn-pane will kill child processes."""
+    # Start a background process in the active pane so pgrep finds children
+    pane = session.active_window.active_pane
+    assert pane is not None
+    pane.send_keys("sleep 300 &", enter=True)
+
+    # Give the shell time to fork the background job
+    assert (
+        retry_until(
+            lambda: (
+                "sleep" in (pane.pane_current_command or "")
+                or retry_until(
+                    lambda: len(pane.capture_pane()) > 1,
+                    seconds=2,
+                )
+            ),
+            seconds=3,
+        )
+        or True
+    )  # Best-effort; pgrep check below is the real assertion
+
+    test_dir = tmp_path / "warn_test"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "warn-test",
+                "start_directory": str(test_dir),
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session, here=True)
+
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "kill running processes" in r.message
+    ]
+    # pgrep should find the sleep background job and emit a warning
+    assert len(warning_records) >= 1
+
+
+def test_here_mode_no_warning_when_pane_idle(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: pathlib.Path,
+) -> None:
+    """--here mode does not warn when pane has no child processes."""
+    test_dir = tmp_path / "idle_test"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "idle-test",
+                "start_directory": str(test_dir),
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session, here=True)
+
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "kill running processes" in r.message
+    ]
+    assert len(warning_records) == 0
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
