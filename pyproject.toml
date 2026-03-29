@@ -108,10 +108,10 @@ lint = [
 ]
 
 [tool.uv.sources]
-gp-sphinx = { path = "../gp-sphinx/packages/gp-sphinx", editable = true }
-sphinx-fonts = { path = "../gp-sphinx/packages/sphinx-fonts", editable = true }
-sphinx-gptheme = { path = "../gp-sphinx/packages/sphinx-gptheme", editable = true }
-sphinx-argparse-neo = { path = "../gp-sphinx/packages/sphinx-argparse-neo", editable = true }
+gp-sphinx = { git = "https://github.com/git-pull/gp-sphinx", branch = "init-2", subdirectory = "packages/gp-sphinx" }
+sphinx-fonts = { git = "https://github.com/git-pull/gp-sphinx", branch = "init-2", subdirectory = "packages/sphinx-fonts" }
+sphinx-gptheme = { git = "https://github.com/git-pull/gp-sphinx", branch = "init-2", subdirectory = "packages/sphinx-gptheme" }
+sphinx-argparse-neo = { git = "https://github.com/git-pull/gp-sphinx", branch = "init-2", subdirectory = "packages/sphinx-argparse-neo" }
 
 [build-system]
 requires = ["hatchling"]
