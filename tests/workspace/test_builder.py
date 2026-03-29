@@ -2302,6 +2302,29 @@ def test_on_project_exit_sets_hook(
     builder.session.kill()
 
 
+def test_on_project_exit_hook_guards_last_client_detach(
+    server: Server,
+) -> None:
+    """on_project_exit hook only runs when the last client detaches."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-guard-test",
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_values = [str(v) for v in hooks.values()]
+    matched = [v for v in hook_values if "#{session_attached}" in v]
+    assert len(matched) >= 1
+
+    builder.session.kill()
+
+
 def test_on_project_exit_sets_hook_list(
     server: Server,
 ) -> None:

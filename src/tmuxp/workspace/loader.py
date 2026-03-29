@@ -41,7 +41,7 @@ def _validate_template_values(context: dict[str, str]) -> None:
     --------
     >>> _validate_template_values({"key": "simple"})
 
-    >>> _validate_template_values({"key": "foo: bar"})
+    >>> _validate_template_values({"key": "foo: bar"})  # doctest: +ELLIPSIS
     Traceback (most recent call last):
         ...
     ValueError: --set value for 'key' contains YAML-unsafe characters ...
