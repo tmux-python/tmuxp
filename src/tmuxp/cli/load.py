@@ -799,21 +799,14 @@ def load_workspace(
                 color_mode=cli_colors.mode,
             )
         )
-        if _confirmed or detached:
-            if "on_project_start" in expanded_workspace:
-                _hook_cwd = expanded_workspace.get("start_directory")
-                util.run_hook_commands(
-                    expanded_workspace["on_project_start"],
-                    cwd=_hook_cwd,
-                )
-            # Run on_project_restart hook — fires when reattaching
+        # Run on_project_restart hook — only when actually reattaching
+        if _confirmed:
             if "on_project_restart" in expanded_workspace:
                 _hook_cwd = expanded_workspace.get("start_directory")
                 util.run_hook_commands(
                     expanded_workspace["on_project_restart"],
                     cwd=_hook_cwd,
                 )
-        if _confirmed:
             _reattach(builder, cli_colors)
         _cleanup_debug()
         return None

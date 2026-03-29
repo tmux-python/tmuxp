@@ -1203,13 +1203,14 @@ windows:
     assert session is not None
     assert not marker.exists()
 
-    # Second load triggers on_project_restart (session already exists)
+    # Second detached load does NOT trigger on_project_restart
+    # (restart hook only fires on confirmed interactive reattach)
     load_workspace(
         workspace_file,
         socket_name=server.socket_name,
         detached=True,
     )
-    assert marker.exists()
+    assert not marker.exists()
 
     session.kill()
 
