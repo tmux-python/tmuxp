@@ -44,6 +44,8 @@ def _validate_workspace_name(name: str) -> str | None:
     True
     >>> _validate_workspace_name("yes") is not None
     True
+    >>> _validate_workspace_name("foo'bar") is not None
+    True
     """
     if os.sep in name or (os.altsep and os.altsep in name):
         return f"workspace name must not contain path separators: {name!r}"
@@ -53,6 +55,8 @@ def _validate_workspace_name(name: str) -> str | None:
         return f"workspace name is a YAML reserved word: {name!r}"
     if name.startswith(("#", "*", "&", "!", "|", ">", "'", '"', "%", "@", "`")):
         return f"workspace name starts with YAML special character: {name!r}"
+    if "'" in name or '"' in name:
+        return f"workspace name must not contain quotes: {name!r}"
     return None
 
 
