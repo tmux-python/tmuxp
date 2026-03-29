@@ -69,12 +69,11 @@ $ tmuxp delete old-project
 ```
 
 ### Lifecycle hooks (#1025)
-Workspace configs now support four lifecycle hooks, matching tmuxinator's
-hook system:
+Workspace configs now support four lifecycle hooks inspired by tmuxinator:
 
-- `on_project_start` — runs before session build (every invocation)
-- `on_project_restart` — runs when reattaching to an existing session
-- `on_project_exit` — runs on client detach (via tmux `client-detached` hook)
+- `on_project_start` — runs before session build (new session creation only)
+- `on_project_restart` — runs when reattaching to an existing session (confirmed attach only)
+- `on_project_exit` — runs on client detach (via tmux `client-detached` hook; fires on every detach event)
 - `on_project_stop` — runs before `tmuxp stop` kills the session
 
 ### Config templating (#1025)
