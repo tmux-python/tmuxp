@@ -12,7 +12,13 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import get_pane, get_session, oh_my_zsh_auto_title, run_before_script
+from tmuxp.util import (
+    get_pane,
+    get_session,
+    oh_my_zsh_auto_title,
+    run_before_script,
+    run_hook_commands,
+)
 
 from .constants import FIXTURE_PATH
 
@@ -156,12 +162,11 @@ def test_get_session_should_default_to_local_attached_session(
     assert get_session(server) == second_session
 
 
-def test_get_session_should_return_first_session_if_no_active_session(
+def test_get_session_falls_back_to_first_when_no_pane(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """get_session() should return first session if no active session."""
-    # Clear outer tmux environment to ensure no active pane interferes
+    """get_session() falls back to first session when TMUX_PANE is unset."""
     monkeypatch.delenv("TMUX_PANE", raising=False)
     monkeypatch.delenv("TMUX", raising=False)
 
@@ -169,6 +174,21 @@ def test_get_session_should_return_first_session_if_no_active_session(
     server.new_session(session_name="mysecondsession")
 
     assert get_session(server) == first_session
+
+
+def test_get_session_strict_raises_when_no_active_pane(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """get_session(require_pane_resolution=True) raises when TMUX_PANE unset."""
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+    monkeypatch.delenv("TMUX", raising=False)
+
+    server.new_session(session_name="myfirstsession")
+    server.new_session(session_name="mysecondsession")
+
+    with pytest.raises(exc.SessionNotFound):
+        get_session(server, require_pane_resolution=True)
 
 
 def test_get_pane_logs_debug_on_failure(
@@ -234,3 +254,109 @@ def test_oh_my_zsh_auto_title_logs_warning(
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warning_records) >= 1
     assert "DISABLE_AUTO_TITLE" in warning_records[0].message
+
+
+class HookCommandFixture(t.NamedTuple):
+    """Test fixture for run_hook_commands."""
+
+    test_id: str
+    commands: str | list[str]
+    expect_runs: bool
+
+
+HOOK_COMMAND_FIXTURES: list[HookCommandFixture] = [
+    HookCommandFixture(
+        test_id="string-cmd",
+        commands="echo hello",
+        expect_runs=True,
+    ),
+    HookCommandFixture(
+        test_id="list-cmd",
+        commands=["echo a", "echo b"],
+        expect_runs=True,
+    ),
+    HookCommandFixture(
+        test_id="empty-string",
+        commands="",
+        expect_runs=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HookCommandFixture._fields),
+    HOOK_COMMAND_FIXTURES,
+    ids=[f.test_id for f in HOOK_COMMAND_FIXTURES],
+)
+def test_run_hook_commands(
+    tmp_path: pathlib.Path,
+    test_id: str,
+    commands: str | list[str],
+    expect_runs: bool,
+) -> None:
+    """run_hook_commands() executes shell commands without raising."""
+    if expect_runs:
+        marker = tmp_path / "hook_ran"
+        if isinstance(commands, str):
+            commands = f"touch {marker}"
+        else:
+            commands = [f"touch {marker}"]
+        run_hook_commands(commands)
+        assert marker.exists()
+    else:
+        # Should not raise
+        run_hook_commands(commands)
+
+
+def test_run_hook_commands_failure_warns(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs WARNING on non-zero exit, does not raise."""
+    with caplog.at_level(logging.WARNING, logger="tmuxp.util"):
+        run_hook_commands("exit 1")
+
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and hasattr(r, "tmux_exit_code")
+    ]
+    assert len(warning_records) >= 1
+    assert warning_records[0].tmux_exit_code == 1
+
+
+def test_run_hook_commands_cwd(
+    tmp_path: pathlib.Path,
+) -> None:
+    """run_hook_commands() respects cwd parameter."""
+    run_hook_commands("touch marker_file", cwd=tmp_path)
+    assert (tmp_path / "marker_file").exists()
+
+
+def test_run_hook_commands_missing_cwd_warns(
+    tmp_path: pathlib.Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs warning on nonexistent cwd instead of raising."""
+    missing_dir = tmp_path / "does_not_exist"
+    with caplog.at_level(logging.WARNING, logger="tmuxp.util"):
+        run_hook_commands("echo hello", cwd=missing_dir)
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warning_records) >= 1
+    assert "bad cwd or shell" in warning_records[0].message
+
+
+def test_run_hook_commands_failure_logs_output_at_debug(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs stdout/stderr at DEBUG when hook fails."""
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.util"):
+        run_hook_commands("echo HOOK_OUT && echo HOOK_ERR >&2 && exit 1")
+
+    debug_records = [r for r in caplog.records if r.levelno == logging.DEBUG]
+    stdout_records = [r for r in debug_records if "hook stdout" in r.message]
+    stderr_records = [r for r in debug_records if "hook stderr" in r.message]
+    assert len(stdout_records) >= 1
+    assert "HOOK_OUT" in stdout_records[0].message
+    assert len(stderr_records) >= 1
+    assert "HOOK_ERR" in stderr_records[0].message

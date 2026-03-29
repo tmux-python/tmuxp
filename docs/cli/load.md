@@ -253,3 +253,67 @@ When progress is disabled, logging flows normally to the terminal and no spinner
 ### Before-script behavior
 
 During `before_script` execution, the progress bar shows a marching animation and a ⏸ status icon, indicating that tmuxp is waiting for the script to finish before continuing with pane creation.
+
+## Here mode
+
+The `--here` flag reuses the current tmux window instead of creating a new session. This is similar to teamocil's `--here` flag.
+
+```console
+$ tmuxp load --here .
+```
+
+When used, tmuxp builds the workspace panes inside the current window rather than spawning a new session.
+
+`--here` only supports a single workspace file per invocation.
+
+```{note}
+When `--here` needs to provision a directory, environment, or shell, tmuxp uses tmux primitives (`set-environment` and `respawn-pane`) instead of typing `cd` / `export` into the pane. If provisioning is needed, tmux will replace the active pane process before the workspace commands run, so long-running child processes in that pane can be terminated.
+```
+
+## Skipping shell_command_before
+
+The `--no-shell-command-before` flag skips all `shell_command_before` entries at every level (session, window, pane). This is useful for quick reloads when the setup commands (virtualenv activation, etc.) are already active.
+
+```console
+$ tmuxp load --no-shell-command-before myproject
+```
+
+```{note}
+This flag is intentionally broader than tmuxinator's `--no-pre-window`, which only disables the window-level `pre_window` chain. tmuxp's flag strips `shell_command_before` at all levels for a clean reload experience.
+```
+
+## Debug mode
+
+The `--debug` flag shows tmux commands as they execute. This disables the progress spinner and attaches a debug handler to libtmux's logger, printing each tmux command to stdout.
+
+```console
+$ tmuxp load --debug myproject
+```
+
+## Config templating
+
+Workspace configs support simple `{{ variable }}` placeholders for variable substitution. Pass values via `--set KEY=VALUE`:
+
+```console
+$ tmuxp load --set project=myapp mytemplate.yaml
+```
+
+Multiple variables can be passed:
+
+```console
+$ tmuxp load --set project=myapp --set env=staging mytemplate.yaml
+```
+
+In the config file, use double-brace syntax:
+
+```yaml
+session_name: "{{ project }}"
+windows:
+  - window_name: "{{ project }}-main"
+    panes:
+      - echo "Working on {{ project }}"
+```
+
+```{note}
+Values containing `{{ }}` must be quoted in YAML to avoid parse errors.
+```

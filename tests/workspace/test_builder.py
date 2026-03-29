@@ -359,6 +359,613 @@ def test_window_options_after(
         ), "Synchronized command did not execute properly"
 
 
+def test_synchronize(
+    session: Session,
+) -> None:
+    """Test synchronize config key desugars to synchronize-panes option."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/synchronize.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    windows = session.windows
+    assert len(windows) == 3
+
+    synced_before = windows[0]
+    synced_after = windows[1]
+    not_synced = windows[2]
+
+    assert synced_before.show_option("synchronize-panes") is True
+    assert synced_after.show_option("synchronize-panes") is True
+    assert not_synced.show_option("synchronize-panes") is not True
+
+
+def test_shell_command_after(
+    session: Session,
+) -> None:
+    """Test shell_command_after sends commands to all panes after window creation."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/shell_command_after.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    windows = session.windows
+    assert len(windows) == 2
+
+    after_window = windows[0]
+    no_after_window = windows[1]
+
+    for pane in after_window.panes:
+
+        def check(p: Pane = pane) -> bool:
+            return "__AFTER__" in "\n".join(p.capture_pane())
+
+        assert retry_until(check), f"Expected __AFTER__ in pane {pane.pane_id}"
+
+    for pane in no_after_window.panes:
+        captured = "\n".join(pane.capture_pane())
+        assert "__AFTER__" not in captured
+
+
+def test_pane_titles(
+    session: Session,
+) -> None:
+    """Test pane title config keys set pane-border-status and pane titles."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/pane_titles.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("pane-border-status") == "top"
+    assert window.show_option("pane-border-format") == "#{pane_index}: #{pane_title}"
+
+    panes = window.panes
+    assert len(panes) == 3
+
+    def check_title(p: Pane, expected: str) -> bool:
+        p.refresh()
+        return p.pane_title == expected
+
+    assert retry_until(
+        functools.partial(check_title, panes[0], "editor"),
+    ), f"Expected title 'editor', got '{panes[0].pane_title}'"
+    assert retry_until(
+        functools.partial(check_title, panes[1], "runner"),
+    ), f"Expected title 'runner', got '{panes[1].pane_title}'"
+
+
+def test_here_mode(
+    session: Session,
+) -> None:
+    """Test --here mode reuses current window and renames session."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    # Capture original window ID to verify reuse
+    original_window = session.active_window
+    original_window_id = original_window.window_id
+    original_session_name = session.name
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    # Session should be renamed
+    session.refresh()
+    assert session.name == "here-session"
+    assert session.name != original_session_name
+
+    windows = session.windows
+    assert len(windows) == 2
+
+    # First window should be the reused original window (same ID)
+    reused_window = windows[0]
+    assert reused_window.window_id == original_window_id
+    assert reused_window.name == "reused"
+
+    # Second window should be newly created
+    new_window = windows[1]
+    assert new_window.name == "new-win"
+    assert new_window.window_id != original_window_id
+
+
+def test_here_mode_start_directory_special_chars(
+    session: Session,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Test --here mode with special characters in start_directory."""
+    test_dir = tmp_path / "dir with 'quotes' & spaces"
+    test_dir.mkdir()
+
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    workspace["start_directory"] = str(test_dir)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    reused_window = session.windows[0]
+    pane = reused_window.active_pane
+    assert pane is not None
+
+    expected_path = os.path.realpath(str(test_dir))
+
+    def check_path() -> bool:
+        return pane.pane_current_path == expected_path
+
+    assert retry_until(check_path), (
+        f"Expected {expected_path}, got {pane.pane_current_path}"
+    )
+
+
+def test_here_mode_cleans_existing_panes(
+    session: Session,
+) -> None:
+    """Test --here mode removes extra panes before rebuilding."""
+    # Start with a 2-pane window
+    original_window = session.active_window
+    original_window.split()
+    assert len(original_window.panes) == 2
+
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    session.refresh()
+    reused_window = session.windows[0]
+    # Config has 1 pane in first window — should be exactly 1, not 3
+    assert len(reused_window.panes) == 1
+
+
+class HereDuplicateFixture(t.NamedTuple):
+    """Fixture for --here duplicate session name detection."""
+
+    test_id: str
+    config_session_name: str
+    expect_error: bool
+
+
+HERE_DUPLICATE_FIXTURES: list[HereDuplicateFixture] = [
+    HereDuplicateFixture(
+        test_id="same-name-no-rename",
+        config_session_name="__CURRENT__",
+        expect_error=False,
+    ),
+    HereDuplicateFixture(
+        test_id="different-name-no-conflict",
+        config_session_name="unique_target",
+        expect_error=False,
+    ),
+    HereDuplicateFixture(
+        test_id="name-conflict-with-existing",
+        config_session_name="__EXISTING__",
+        expect_error=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereDuplicateFixture._fields),
+    HERE_DUPLICATE_FIXTURES,
+    ids=[f.test_id for f in HERE_DUPLICATE_FIXTURES],
+)
+def test_here_mode_duplicate_session_name(
+    session: Session,
+    test_id: str,
+    config_session_name: str,
+    expect_error: bool,
+) -> None:
+    """--here mode detects duplicate session names before renaming."""
+    server = session.server
+
+    # Create a second session to conflict with
+    existing = server.new_session(session_name="existing_blocker")
+
+    # Resolve sentinel values
+    if config_session_name == "__CURRENT__":
+        target_name = session.name
+    elif config_session_name == "__EXISTING__":
+        target_name = existing.name
+    else:
+        target_name = config_session_name
+
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/here_mode.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    workspace["session_name"] = target_name
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    if expect_error:
+        with pytest.raises(exc.TmuxpException, match="session already exists"):
+            builder.build(session=session, here=True)
+    else:
+        builder.build(session=session, here=True)
+
+
+def test_here_mode_provisions_environment(
+    session: Session,
+) -> None:
+    """--here mode provisions the reused pane without mutating session env."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "env-test",
+                "environment": {"TMUXP_HERE_TEST": "hello_here"},
+                "panes": [
+                    {
+                        "shell_command": [
+                            "printf '%s' \"${TMUXP_HERE_TEST-unset}\"",
+                        ],
+                    },
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    env = session.show_environment()
+    assert env.get("TMUXP_HERE_TEST") is None
+
+    pane = session.active_window.active_pane
+    assert pane is not None
+
+    assert retry_until(
+        lambda: "hello_here" in "\n".join(pane.capture_pane()),
+        seconds=5,
+    )
+
+
+# --- respawn-pane provisioning tests (f5f490a8, 0504d1b4) ---
+
+
+class HereRespawnFixture(t.NamedTuple):
+    """Fixture for --here respawn-pane provisioning scenarios."""
+
+    test_id: str
+    start_directory: bool
+    environment: dict[str, str] | None
+    window_shell: str | None
+    expect_respawn: bool
+
+
+HERE_RESPAWN_FIXTURES: list[HereRespawnFixture] = [
+    HereRespawnFixture(
+        test_id="dir-only",
+        start_directory=True,
+        environment=None,
+        window_shell=None,
+        expect_respawn=True,
+    ),
+    HereRespawnFixture(
+        test_id="env-only",
+        start_directory=False,
+        environment={"TMUXP_TEST_VAR": "respawn_val"},
+        window_shell=None,
+        expect_respawn=True,
+    ),
+    HereRespawnFixture(
+        test_id="dir-and-env",
+        start_directory=True,
+        environment={"TMUXP_DIR_ENV": "combined"},
+        window_shell=None,
+        expect_respawn=True,
+    ),
+    HereRespawnFixture(
+        test_id="nothing-to-provision",
+        start_directory=False,
+        environment=None,
+        window_shell=None,
+        expect_respawn=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereRespawnFixture._fields),
+    HERE_RESPAWN_FIXTURES,
+    ids=[f.test_id for f in HERE_RESPAWN_FIXTURES],
+)
+def test_here_mode_respawn_provisioning(
+    session: Session,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    start_directory: bool,
+    environment: dict[str, str] | None,
+    window_shell: str | None,
+    expect_respawn: bool,
+) -> None:
+    """--here mode uses respawn-pane for provisioning, not send_keys."""
+    test_dir = tmp_path / "here_respawn"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "respawn-test",
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    if start_directory:
+        workspace["windows"][0]["start_directory"] = str(test_dir)
+    if environment:
+        workspace["windows"][0]["environment"] = environment
+
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    original_pane = session.active_window.active_pane
+    assert original_pane is not None
+    original_pid = original_pane.pane_pid
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    pane = session.active_window.active_pane
+    assert pane is not None
+
+    if expect_respawn:
+        # respawn-pane -k replaces the shell process, so PID changes
+        assert pane.pane_pid != original_pid, (
+            f"Expected new PID after respawn, got same: {pane.pane_pid}"
+        )
+    else:
+        # No provisioning needed — pane process should be unchanged
+        assert pane.pane_pid == original_pid
+
+    if start_directory:
+        expected_path = os.path.realpath(str(test_dir))
+        assert retry_until(
+            lambda: pane.pane_current_path == expected_path,
+            seconds=5,
+        ), f"Expected {expected_path}, got {pane.pane_current_path}"
+
+    if environment:
+        env = session.show_environment()
+        for key in environment:
+            assert env.get(key) is None
+
+
+def test_here_mode_does_not_leak_first_pane_environment(
+    session: Session,
+) -> None:
+    """--here mode keeps first-pane environment out of later windows."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "first-window",
+                "environment": {
+                    "TMUXP_HERE_ALPHA": "alpha",
+                    "TMUXP_HERE_BRAVO": "bravo",
+                    "TMUXP_HERE_CHARLIE": "charlie",
+                },
+                "panes": [
+                    {
+                        "shell_command": [
+                            "printf '%s:%s:%s' "
+                            '"$TMUXP_HERE_ALPHA" '
+                            '"$TMUXP_HERE_BRAVO" '
+                            '"$TMUXP_HERE_CHARLIE"',
+                        ],
+                    },
+                ],
+            },
+            {
+                "window_name": "later-window",
+                "panes": [
+                    {
+                        "shell_command": [
+                            "printf '%s' \"${TMUXP_HERE_ALPHA-unset}\"",
+                        ],
+                    },
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, here=True)
+
+    env = session.show_environment()
+    assert env.get("TMUXP_HERE_ALPHA") is None
+    assert env.get("TMUXP_HERE_BRAVO") is None
+    assert env.get("TMUXP_HERE_CHARLIE") is None
+
+    first_window = next(
+        window for window in session.windows if window.name == "first-window"
+    )
+    later_window = next(
+        window for window in session.windows if window.name == "later-window"
+    )
+    first_pane = first_window.active_pane
+    later_pane = later_window.active_pane
+    assert first_pane is not None
+    assert later_pane is not None
+
+    assert retry_until(
+        lambda: "alpha:bravo:charlie" in "\n".join(first_pane.capture_pane()),
+        seconds=5,
+    )
+    assert retry_until(
+        lambda: "unset" in "\n".join(later_pane.capture_pane()),
+        seconds=5,
+    )
+
+
+class ReusedSessionMetadataFixture(t.NamedTuple):
+    """Fixture for reused-session lifecycle metadata scenarios."""
+
+    test_id: str
+    build_kwargs: dict[str, bool]
+
+
+REUSED_SESSION_METADATA_FIXTURES: list[ReusedSessionMetadataFixture] = [
+    ReusedSessionMetadataFixture(
+        test_id="append",
+        build_kwargs={"append": True},
+    ),
+    ReusedSessionMetadataFixture(
+        test_id="here",
+        build_kwargs={"here": True},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ReusedSessionMetadataFixture._fields),
+    REUSED_SESSION_METADATA_FIXTURES,
+    ids=[fixture.test_id for fixture in REUSED_SESSION_METADATA_FIXTURES],
+)
+def test_reused_session_keeps_existing_lifecycle_metadata(
+    session: Session,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    build_kwargs: dict[str, bool],
+) -> None:
+    """Append and --here preserve pre-existing session hook and env metadata."""
+    original_hook = "run-shell 'printf %s original-exit >/dev/null'"
+    session.set_hook("client-detached", original_hook)
+    session.set_environment("TMUXP_ON_PROJECT_STOP", "original stop")
+    session.set_environment("TMUXP_START_DIRECTORY", "/original/start")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "start_directory": str(tmp_path),
+        "on_project_exit": "printf '%s' new-exit >/dev/null",
+        "on_project_stop": "printf '%s' new-stop >/dev/null",
+        "windows": [
+            {"window_name": f"{test_id}-window", "panes": [{"shell_command": []}]}
+        ],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, **build_kwargs)
+
+    hooks = [str(value) for value in session.show_hooks().values()]
+    assert any("original-exit" in value for value in hooks)
+    assert all("new-exit" not in value for value in hooks)
+    assert session.getenv("TMUXP_ON_PROJECT_STOP") == "original stop"
+    assert session.getenv("TMUXP_START_DIRECTORY") == "/original/start"
+
+
+def test_here_mode_respawn_warns_on_running_processes(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: pathlib.Path,
+) -> None:
+    """--here mode warns when respawn-pane will kill child processes."""
+    # Start a background process in the active pane so pgrep finds children
+    pane = session.active_window.active_pane
+    assert pane is not None
+    pane.send_keys("sleep 300 &", enter=True)
+
+    # Give the shell time to fork the background job
+    assert (
+        retry_until(
+            lambda: (
+                "sleep" in (pane.pane_current_command or "")
+                or retry_until(
+                    lambda: len(pane.capture_pane()) > 1,
+                    seconds=2,
+                )
+            ),
+            seconds=3,
+        )
+        or True
+    )  # Best-effort; pgrep check below is the real assertion
+
+    test_dir = tmp_path / "warn_test"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "warn-test",
+                "start_directory": str(test_dir),
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session, here=True)
+
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "kill running processes" in r.message
+    ]
+    # pgrep should find the sleep background job and emit a warning
+    assert len(warning_records) >= 1
+
+
+def test_here_mode_no_warning_when_pane_idle(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: pathlib.Path,
+) -> None:
+    """--here mode does not warn when pane has no child processes."""
+    test_dir = tmp_path / "idle_test"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "idle-test",
+                "start_directory": str(test_dir),
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session, here=True)
+
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "kill running processes" in r.message
+    ]
+    assert len(warning_records) == 0
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
@@ -714,18 +1321,17 @@ def test_before_script_throw_error_if_retcode_error(
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
 
-    with temp_session(server) as sess:
-        session_name = sess.name
-        assert session_name is not None
+    session_name = workspace["session_name"]
+    assert isinstance(session_name, str)
 
-        with (
-            caplog.at_level(logging.ERROR, logger="tmuxp.workspace.builder"),
-            pytest.raises(exc.BeforeLoadScriptError),
-        ):
-            builder.build(session=sess)
+    with (
+        caplog.at_level(logging.ERROR, logger="tmuxp.workspace.builder"),
+        pytest.raises(exc.BeforeLoadScriptError),
+    ):
+        builder.build()
 
-        result = server.has_session(session_name)
-        assert not result, "Kills session if before_script exits with errcode"
+    result = server.has_session(session_name)
+    assert not result, "Kills created session if before_script exits with errcode"
 
     error_records = [r for r in caplog.records if r.levelno == logging.ERROR]
     assert len(error_records) >= 1
@@ -749,17 +1355,124 @@ def test_before_script_throw_error_if_file_not_exists(
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
 
-    with temp_session(server) as session:
-        session_name = session.name
+    session_name = workspace["session_name"]
+    assert isinstance(session_name, str)
 
+    with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)):
+        builder.build()
+    result = server.has_session(session_name)
+    assert not result, "Kills created session if before_script doesn't exist"
+
+
+class ReusedSessionBeforeScriptFailureFixture(t.NamedTuple):
+    """Fixture for before_script failures on reused sessions."""
+
+    test_id: str
+    fixture_name: str
+    build_kwargs: dict[str, bool]
+    expected_exception: type[BaseException] | tuple[type[BaseException], ...]
+
+
+REUSED_SESSION_BEFORE_SCRIPT_FAILURE_FIXTURES: list[
+    ReusedSessionBeforeScriptFailureFixture
+] = [
+    ReusedSessionBeforeScriptFailureFixture(
+        test_id="append-retcode-error-keeps-session",
+        fixture_name="workspace/builder/config_script_fails.yaml",
+        build_kwargs={"append": True},
+        expected_exception=exc.BeforeLoadScriptError,
+    ),
+    ReusedSessionBeforeScriptFailureFixture(
+        test_id="here-retcode-error-keeps-session",
+        fixture_name="workspace/builder/config_script_fails.yaml",
+        build_kwargs={"here": True},
+        expected_exception=exc.BeforeLoadScriptError,
+    ),
+    ReusedSessionBeforeScriptFailureFixture(
+        test_id="here-missing-script-keeps-session",
+        fixture_name="workspace/builder/config_script_not_exists.yaml",
+        build_kwargs={"here": True},
+        expected_exception=(exc.BeforeLoadScriptNotExists, OSError),
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ReusedSessionBeforeScriptFailureFixture._fields),
+    REUSED_SESSION_BEFORE_SCRIPT_FAILURE_FIXTURES,
+    ids=[f.test_id for f in REUSED_SESSION_BEFORE_SCRIPT_FAILURE_FIXTURES],
+)
+def test_before_script_failure_on_reused_session_keeps_session(
+    server: Server,
+    test_id: str,
+    fixture_name: str,
+    build_kwargs: dict[str, bool],
+    expected_exception: type[BaseException] | tuple[type[BaseException], ...],
+) -> None:
+    """before_script failures do not kill reused sessions for append or here."""
+    fixture_template = test_utils.read_workspace_file(fixture_name)
+    workspace_yaml = fixture_template.format(
+        script_failed=FIXTURE_PATH / "script_failed.sh",
+        script_not_exists=FIXTURE_PATH / "script_not_exists.sh",
+    )
+    workspace = ConfigReader._load(fmt="yaml", content=workspace_yaml)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    with temp_session(server) as current_session:
+        session_name = current_session.name
         assert session_name is not None
-        temp_session_exists = server.has_session(session_name)
-        assert temp_session_exists
-        with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)) as excinfo:
-            builder.build(session=session)
-            excinfo.match(r"No such file or directory")
-        result = server.has_session(session_name)
-        assert not result, "Kills session if before_script doesn't exist"
+        workspace["session_name"] = session_name
+        builder.session_config = workspace
+
+        with pytest.raises(expected_exception):
+            builder.build(session=current_session, **build_kwargs)
+
+        assert server.has_session(session_name), test_id
+
+
+def test_here_mode_duplicate_session_name_fails_before_startup_hooks(
+    server: Server,
+    tmp_path: pathlib.Path,
+) -> None:
+    """--here rename conflicts abort before plugins or before_script run."""
+    before_script_marker = tmp_path / "before-script-ran"
+    plugin_marker = tmp_path / "plugin-ran"
+
+    workspace: dict[str, t.Any] = {
+        "session_name": "existing-blocker",
+        "before_script": f"touch {before_script_marker}",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    class PluginProbe:
+        """Minimal plugin stub for startup-hook ordering tests."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            plugin_marker.touch()
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        server=server,
+        plugins=[PluginProbe()],
+    )
+
+    with (
+        temp_session(server) as current_session,
+        temp_session(server) as existing_session,
+    ):
+        existing_session.rename_session("existing-blocker")
+        with pytest.raises(exc.TmuxpException, match="session already exists"):
+            builder.build(session=current_session, here=True)
+
+        assert current_session.name is not None
+        assert not before_script_marker.exists()
+        assert not plugin_marker.exists()
+        assert server.has_session(current_session.name)
 
 
 def test_before_script_true_if_test_passes(
@@ -1768,3 +2481,264 @@ def test_builder_logs_window_and_pane_creation(
     assert len(cmd_logs) >= 1
 
     builder.session.kill()
+
+
+def test_on_project_exit_sets_hook(
+    server: Server,
+) -> None:
+    """on_project_exit sets tmux client-detached hook on the session."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-test",
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_keys = list(hooks.keys())
+    assert any("client-detached" in k for k in hook_keys)
+
+    builder.session.kill()
+
+
+def test_on_project_exit_hook_guards_last_client_detach(
+    server: Server,
+) -> None:
+    """on_project_exit hook only runs when the last client detaches."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-guard-test",
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_values = [str(v) for v in hooks.values()]
+    matched = [v for v in hook_values if "#{session_attached}" in v]
+    assert len(matched) >= 1
+
+    builder.session.kill()
+
+
+def test_on_project_exit_sets_hook_list(
+    server: Server,
+) -> None:
+    """on_project_exit joins list commands and sets tmux hook."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-list-test",
+        "on_project_exit": ["echo a", "echo b"],
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_keys = list(hooks.keys())
+    assert any("client-detached" in k for k in hook_keys)
+
+    builder.session.kill()
+
+
+def test_on_project_exit_hook_includes_cwd(
+    server: Server,
+) -> None:
+    """on_project_exit hook includes cd to start_directory."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-exit-cwd-test",
+        "start_directory": "/tmp",
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_values = list(hooks.values())
+    matched = [v for v in hook_values if "cd" in str(v) and "/tmp" in str(v)]
+    assert len(matched) >= 1
+
+    builder.session.kill()
+
+
+class OnProjectExitCwdSpecialFixture(t.NamedTuple):
+    """Test fixture for on_project_exit hook with special cwd characters."""
+
+    test_id: str
+    dir_name: str
+    expected_substring: str
+
+
+ON_PROJECT_EXIT_CWD_SPECIAL_FIXTURES: list[OnProjectExitCwdSpecialFixture] = [
+    OnProjectExitCwdSpecialFixture(
+        test_id="spaces_in_path",
+        dir_name="my project dir",
+        expected_substring="my project dir",
+    ),
+    OnProjectExitCwdSpecialFixture(
+        test_id="single_quote_in_path",
+        dir_name="it's a project",
+        expected_substring="a project",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(OnProjectExitCwdSpecialFixture._fields),
+    ON_PROJECT_EXIT_CWD_SPECIAL_FIXTURES,
+    ids=[f.test_id for f in ON_PROJECT_EXIT_CWD_SPECIAL_FIXTURES],
+)
+def test_on_project_exit_hook_cwd_special_chars(
+    server: Server,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    dir_name: str,
+    expected_substring: str,
+) -> None:
+    """on_project_exit hook correctly quotes start_directory with special chars."""
+    special_dir = tmp_path / dir_name
+    special_dir.mkdir()
+    workspace: dict[str, t.Any] = {
+        "session_name": f"hook-exit-{test_id}",
+        "start_directory": str(special_dir),
+        "on_project_exit": "echo goodbye",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    hooks = builder.session.show_hooks()
+    hook_values = [str(v) for v in hooks.values()]
+    matched = [v for v in hook_values if expected_substring in v]
+    assert len(matched) >= 1, (
+        f"Expected {expected_substring!r} in hook values, got {hook_values}"
+    )
+
+    builder.session.kill()
+
+
+def test_on_project_stop_sets_environment(
+    server: Server,
+) -> None:
+    """on_project_stop stores commands in session environment."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-stop-env-test",
+        "on_project_stop": "docker compose down",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    stop_cmd = builder.session.getenv("TMUXP_ON_PROJECT_STOP")
+    assert stop_cmd == "docker compose down"
+
+    builder.session.kill()
+
+
+def test_on_project_stop_sets_start_directory_env(
+    server: Server,
+    tmp_path: pathlib.Path,
+) -> None:
+    """build() stores start_directory in session environment."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-startdir-env-test",
+        "start_directory": str(tmp_path),
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    start_dir = builder.session.getenv("TMUXP_START_DIRECTORY")
+    assert start_dir == str(tmp_path)
+
+    builder.session.kill()
+
+
+def test_clear_sends_clear_to_panes(
+    session: Session,
+) -> None:
+    """clear: true sends clear command to all panes after window creation."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "clear-test",
+                "clear": True,
+                "panes": [
+                    {"shell_command": ["echo BEFORE_CLEAR"]},
+                    {"shell_command": ["echo BEFORE_CLEAR"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert len(window.panes) == 2
+
+    for pane in window.panes:
+
+        def check(p: Pane = pane) -> bool:
+            captured = "\n".join(p.capture_pane()).strip()
+            return "BEFORE_CLEAR" not in captured
+
+        assert retry_until(check, raises=False), (
+            f"Expected BEFORE_CLEAR to be cleared from pane {pane.pane_id}"
+        )
+
+
+def test_clear_false_does_not_clear(
+    session: Session,
+) -> None:
+    """clear: false does not clear pane content."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "no-clear-test",
+                "clear": False,
+                "panes": [
+                    {"shell_command": ["echo SHOULD_REMAIN"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    pane = window.panes[0]
+
+    def check(p: Pane = pane) -> bool:
+        return "SHOULD_REMAIN" in "\n".join(p.capture_pane())
+
+    assert retry_until(check), (
+        f"Expected SHOULD_REMAIN to remain in pane {pane.pane_id}"
+    )

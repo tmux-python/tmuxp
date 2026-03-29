@@ -57,6 +57,46 @@ def _silence_stream_handlers(logger_name: str = "tmuxp") -> t.Iterator[None]:
             h.setLevel(level)
 
 
+class _TmuxCommandDebugHandler(logging.Handler):
+    """Logging handler that prints tmux commands from libtmux's structured logs."""
+
+    def __init__(self, colors: Colors) -> None:
+        super().__init__()
+        self._colors = colors
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Print tmux command if present in the log record's extra fields.
+
+        Examples
+        --------
+        Handler prints the tmux command when present:
+
+        >>> import logging
+        >>> from tmuxp.cli.load import _TmuxCommandDebugHandler
+        >>> from tmuxp.cli._colors import ColorMode, Colors
+        >>> colors = Colors(ColorMode.NEVER)
+        >>> handler = _TmuxCommandDebugHandler(colors)
+        >>> record = logging.LogRecord(
+        ...     name="test", level=logging.DEBUG,
+        ...     pathname="", lineno=0, msg="", args=(), exc_info=None,
+        ... )
+        >>> record.tmux_cmd = "list-sessions"
+        >>> handler.emit(record)
+        $ list-sessions
+
+        No output when tmux_cmd is absent:
+
+        >>> record2 = logging.LogRecord(
+        ...     name="test", level=logging.DEBUG,
+        ...     pathname="", lineno=0, msg="", args=(), exc_info=None,
+        ... )
+        >>> handler.emit(record2)
+        """
+        cmd = getattr(record, "tmux_cmd", None)
+        if cmd is not None:
+            tmuxp_echo(self._colors.muted("$ ") + self._colors.info(str(cmd)))
+
+
 LOAD_DESCRIPTION = build_description(
     """
     Load tmuxp workspace file(s) and create or attach to a tmux session.
@@ -105,6 +145,7 @@ class CLILoadNamespace(argparse.Namespace):
     answer_yes: bool | None
     detached: bool
     append: bool | None
+    here: bool | None
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
@@ -112,6 +153,9 @@ class CLILoadNamespace(argparse.Namespace):
     progress_format: str | None
     panel_lines: int | None
     no_progress: bool
+    no_shell_command_before: bool
+    debug: bool
+    set: list[str]
 
 
 def load_plugins(
@@ -234,6 +278,7 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
 def _load_attached(
     builder: WorkspaceBuilder,
     detached: bool,
+    pre_build_hook: t.Callable[[], None] | None = None,
     pre_attach_hook: t.Callable[[], None] | None = None,
 ) -> None:
     """
@@ -243,10 +288,15 @@ def _load_attached(
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
     detached : bool
+    pre_build_hook : callable, optional
+        called immediately before ``builder.build()`` for new-session load paths.
     pre_attach_hook : callable, optional
         called after build, before attach/switch_client; use to stop the spinner
         so its cleanup sequences don't appear inside the tmux pane.
     """
+    if pre_build_hook is not None:
+        pre_build_hook()
+
     builder.build()
     assert builder.session is not None
 
@@ -267,6 +317,7 @@ def _load_attached(
 def _load_detached(
     builder: WorkspaceBuilder,
     colors: Colors | None = None,
+    pre_build_hook: t.Callable[[], None] | None = None,
     pre_output_hook: t.Callable[[], None] | None = None,
 ) -> None:
     """
@@ -277,9 +328,14 @@ def _load_detached(
     builder: :class:`workspace.builder.WorkspaceBuilder`
     colors : Colors | None
         Optional Colors instance for styled output.
+    pre_build_hook : Callable | None
+        Called immediately before ``builder.build()`` for new-session load paths.
     pre_output_hook : Callable | None
         Called after build but before printing, e.g. to stop a spinner.
     """
+    if pre_build_hook is not None:
+        pre_build_hook()
+
     builder.build()
 
     assert builder.session is not None
@@ -305,6 +361,36 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     assert builder.session is not None
 
 
+def _load_here_in_current_session(builder: WorkspaceBuilder) -> None:
+    """Load workspace reusing current window for first window.
+
+    Parameters
+    ----------
+    builder: :class:`workspace.builder.WorkspaceBuilder`
+
+    Examples
+    --------
+    Raises when no attached tmux session is available:
+
+    >>> from tmuxp.workspace.builder import WorkspaceBuilder
+    >>> from tmuxp.cli.load import _load_here_in_current_session
+    >>> from tmuxp import exc
+    >>> config = {
+    ...     'session_name': 'here-doctest',
+    ...     'windows': [{'window_name': 'main'}],
+    ... }
+    >>> builder = WorkspaceBuilder(session_config=config, server=server)
+    >>> try:
+    ...     _load_here_in_current_session(builder)
+    ... except exc.ActiveSessionMissingWorkspaceException:
+    ...     print("raised")
+    raised
+    """
+    current_attached_session = builder.find_current_attached_session()
+    builder.build(current_attached_session, here=True)
+    assert builder.session is not None
+
+
 def _setup_plugins(builder: WorkspaceBuilder) -> Session:
     """Execute hooks for plugins running after ``before_script``.
 
@@ -325,6 +411,8 @@ def _dispatch_build(
     append: bool,
     answer_yes: bool,
     cli_colors: Colors,
+    here: bool = False,
+    pre_build_hook: t.Callable[[], None] | None = None,
     pre_attach_hook: t.Callable[[], None] | None = None,
     on_error_hook: t.Callable[[], None] | None = None,
     pre_prompt_hook: t.Callable[[], None] | None = None,
@@ -347,6 +435,10 @@ def _dispatch_build(
         Skip interactive prompts.
     cli_colors : Colors
         Colors instance for styled output.
+    here : bool
+        Use current window for first workspace window.
+    pre_build_hook : callable, optional
+        Called before the build only for code paths that create a new session.
     pre_attach_hook : callable, optional
         Called before attach/switch_client (e.g. stop spinner).
     on_error_hook : callable, optional
@@ -362,26 +454,81 @@ def _dispatch_build(
 
     Examples
     --------
+    Build a minimal workspace in detached mode:
+
+    >>> from tmuxp.workspace.builder import WorkspaceBuilder
+    >>> from tmuxp.workspace import loader
     >>> from tmuxp.cli.load import _dispatch_build
-    >>> callable(_dispatch_build)
+    >>> from tmuxp.cli._colors import ColorMode, Colors
+    >>> config = loader.trickle(loader.expand({
+    ...     'session_name': 'dispatch-doctest',
+    ...     'windows': [{'window_name': 'main'}],
+    ... }))
+    >>> builder = WorkspaceBuilder(session_config=config, server=server)
+    >>> colors = Colors(ColorMode.NEVER)
+    >>> result = _dispatch_build(
+    ...     builder,
+    ...     detached=True,
+    ...     append=False,
+    ...     answer_yes=False,
+    ...     cli_colors=colors,
+    ... )
+    Session created in detached state.
+    >>> result is not None
     True
+    >>> result.kill()
     """
     try:
         if detached:
-            _load_detached(builder, cli_colors, pre_output_hook=pre_attach_hook)
+            _load_detached(
+                builder,
+                cli_colors,
+                pre_build_hook=pre_build_hook,
+                pre_output_hook=pre_attach_hook,
+            )
+            return _setup_plugins(builder)
+
+        if here:
+            if "TMUX" in os.environ:  # tmuxp ran from inside tmux
+                _load_here_in_current_session(builder)
+            else:
+                logger.warning(
+                    "--here ignored: not inside tmux, falling back to normal attach",
+                )
+                tmuxp_echo(
+                    cli_colors.warning("[Warning]")
+                    + " --here requires running inside tmux; loading normally",
+                )
+                _load_attached(
+                    builder,
+                    detached,
+                    pre_build_hook=pre_build_hook,
+                    pre_attach_hook=pre_attach_hook,
+                )
+
             return _setup_plugins(builder)
 
         if append:
             if "TMUX" in os.environ:  # tmuxp ran from inside tmux
                 _load_append_windows_to_current_session(builder)
             else:
-                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+                _load_attached(
+                    builder,
+                    detached,
+                    pre_build_hook=pre_build_hook,
+                    pre_attach_hook=pre_attach_hook,
+                )
 
             return _setup_plugins(builder)
 
         # append and answer_yes have no meaning if specified together
         if answer_yes:
-            _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+            _load_attached(
+                builder,
+                detached,
+                pre_build_hook=pre_build_hook,
+                pre_attach_hook=pre_attach_hook,
+            )
             return _setup_plugins(builder)
 
         if "TMUX" in os.environ:  # tmuxp ran from inside tmux
@@ -395,13 +542,27 @@ def _dispatch_build(
             choice = prompt_choices(msg, choices=options, color_mode=cli_colors.mode)
 
             if choice == "y":
-                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+                _load_attached(
+                    builder,
+                    detached,
+                    pre_build_hook=pre_build_hook,
+                    pre_attach_hook=pre_attach_hook,
+                )
             elif choice == "a":
                 _load_append_windows_to_current_session(builder)
             else:
-                _load_detached(builder, cli_colors)
+                _load_detached(
+                    builder,
+                    cli_colors,
+                    pre_build_hook=pre_build_hook,
+                )
         else:
-            _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+            _load_attached(
+                builder,
+                detached,
+                pre_build_hook=pre_build_hook,
+                pre_attach_hook=pre_attach_hook,
+            )
 
     except exc.TmuxpException as e:
         if on_error_hook is not None:
@@ -409,13 +570,21 @@ def _dispatch_build(
         logger.debug("workspace build failed", exc_info=True)
         tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
 
-        choice = prompt_choices(
-            cli_colors.error("Error loading workspace.")
-            + " (k)ill, (a)ttach, (d)etach?",
-            choices=["k", "a", "d"],
-            default="k",
-            color_mode=cli_colors.mode,
-        )
+        if here:
+            choice = prompt_choices(
+                cli_colors.error("Error loading workspace.") + " (a)ttach, (d)etach?",
+                choices=["a", "d"],
+                default="d",
+                color_mode=cli_colors.mode,
+            )
+        else:
+            choice = prompt_choices(
+                cli_colors.error("Error loading workspace.")
+                + " (k)ill, (a)ttach, (d)etach?",
+                choices=["k", "a", "d"],
+                default="k",
+                color_mode=cli_colors.mode,
+            )
 
         if choice == "k":
             if builder.session is not None:
@@ -446,10 +615,14 @@ def load_workspace(
     detached: bool = False,
     answer_yes: bool = False,
     append: bool = False,
+    here: bool = False,
     cli_colors: Colors | None = None,
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    no_shell_command_before: bool = False,
+    debug: bool = False,
+    template_context: dict[str, str] | None = None,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -473,6 +646,9 @@ def load_workspace(
     append : bool
        Assume current when given prompt to append windows in same session.
        Default False.
+    here : bool
+       Use current window for first workspace window and rename session.
+       Default False.
     cli_colors : Colors, optional
         Colors instance for CLI output formatting. If None, uses AUTO mode.
     progress_format : str, optional
@@ -484,6 +660,15 @@ def load_workspace(
     no_progress : bool
         Disable the progress spinner entirely. Default False.
         Also disabled when ``TMUXP_PROGRESS=0``.
+    no_shell_command_before : bool
+        Strip ``shell_command_before`` from all levels (session, window, pane)
+        before building. Default False.
+    debug : bool
+        Show tmux commands as they execute. Implies no_progress. Default False.
+    template_context : dict, optional
+        Mapping of variable names to values for ``{{ variable }}`` template
+        rendering. Applied to raw file content before YAML/JSON parsing.
+        Typically populated from ``--set KEY=VALUE`` CLI arguments.
 
     Notes
     -----
@@ -544,7 +729,26 @@ def load_workspace(
         "loading workspace",
         extra={"tmux_config_path": str(workspace_file)},
     )
-    _progress_disabled = no_progress or os.getenv("TMUXP_PROGRESS", "1") == "0"
+    _progress_disabled = no_progress or debug or os.getenv("TMUXP_PROGRESS", "1") == "0"
+
+    # --debug: attach handler to libtmux logger that shows tmux commands
+    _debug_handler: logging.Handler | None = None
+    _debug_prev_level: int | None = None
+    if debug:
+        _debug_handler = _TmuxCommandDebugHandler(cli_colors)
+        _debug_handler.setLevel(logging.DEBUG)
+        _libtmux_logger = logging.getLogger("libtmux.common")
+        _debug_prev_level = _libtmux_logger.level
+        _libtmux_logger.setLevel(logging.DEBUG)
+        _libtmux_logger.addHandler(_debug_handler)
+
+    def _cleanup_debug() -> None:
+        if _debug_handler is not None:
+            _ltlog = logging.getLogger("libtmux.common")
+            _ltlog.removeHandler(_debug_handler)
+            if _debug_prev_level is not None:
+                _ltlog.setLevel(_debug_prev_level)
+
     if _progress_disabled:
         tmuxp_echo(
             cli_colors.info("[Loading]")
@@ -553,22 +757,58 @@ def load_workspace(
         )
 
     # ConfigReader allows us to open a yaml or json file as a dict
-    raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
+    try:
+        if template_context:
+            raw_workspace = (
+                config_reader.ConfigReader._from_file(
+                    workspace_file,
+                    template_context=template_context,
+                )
+                or {}
+            )
+        else:
+            raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
-    # shapes workspaces relative to config / profile file location
-    expanded_workspace = loader.expand(
-        raw_workspace,
-        cwd=os.path.dirname(workspace_file),
-    )
+        # shapes workspaces relative to config / profile file location
+        expanded_workspace = loader.expand(
+            raw_workspace,
+            cwd=os.path.dirname(workspace_file),
+        )
+    except Exception:
+        _cleanup_debug()
+        raise
 
     # Overridden session name
     if new_session_name:
         expanded_workspace["session_name"] = new_session_name
 
+    # Strip shell_command_before at all levels when --no-shell-command-before
+    if no_shell_command_before:
+        expanded_workspace.pop("shell_command_before", None)
+        for window in expanded_workspace.get("windows", []):
+            window.pop("shell_command_before", None)
+            for pane in window.get("panes", []):
+                pane.pop("shell_command_before", None)
+
+    # Use workspace config values as fallbacks for server connection params
+    # (e.g. from tmuxinator cli_args: "-L socket -f tmux.conf")
+    if socket_name is None:
+        socket_name = expanded_workspace.pop("socket_name", None)
+    else:
+        expanded_workspace.pop("socket_name", None)
+    if socket_path is None:
+        socket_path = expanded_workspace.pop("socket_path", None)
+    else:
+        expanded_workspace.pop("socket_path", None)
+    if tmux_config_file is None:
+        tmux_config_file = expanded_workspace.pop("config", None)
+    else:
+        expanded_workspace.pop("config", None)
+
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
-    t = Server(  # create tmux server object
+    srv = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
         config_file=tmux_config_file,
@@ -582,7 +822,7 @@ def load_workspace(
         builder = WorkspaceBuilder(
             session_config=expanded_workspace,
             plugins=load_plugins(expanded_workspace, colors=cli_colors),
-            server=t,
+            server=srv,
         )
     except exc.EmptyWorkspaceException:
         logger.warning(
@@ -593,22 +833,41 @@ def load_workspace(
             cli_colors.warning("[Warning]")
             + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
         )
+        _cleanup_debug()
         return None
 
     session_name = expanded_workspace["session_name"]
 
     # Session-exists check — outside spinner so prompt_yes_no is safe
-    if builder.session_exists(session_name) and not append:
-        if not detached and (
+    if builder.session_exists(session_name) and not append and not here:
+        _confirmed = not detached and (
             answer_yes
             or prompt_yes_no(
                 f"{cli_colors.highlight(session_name)} is already running. Attach?",
                 default=True,
                 color_mode=cli_colors.mode,
             )
-        ):
+        )
+        # Run on_project_restart hook — only when actually reattaching
+        if _confirmed:
+            if "on_project_restart" in expanded_workspace:
+                _hook_cwd = expanded_workspace.get("start_directory")
+                util.run_hook_commands(
+                    expanded_workspace["on_project_restart"],
+                    cwd=_hook_cwd,
+                )
             _reattach(builder, cli_colors)
+        _cleanup_debug()
         return None
+
+    def _run_on_project_start() -> None:
+        if "on_project_start" not in expanded_workspace:
+            return
+        _hook_cwd = expanded_workspace.get("start_directory")
+        util.run_hook_commands(
+            expanded_workspace["on_project_start"],
+            cwd=_hook_cwd,
+        )
 
     if _progress_disabled:
         _private_path = str(PrivatePath(workspace_file))
@@ -618,6 +877,8 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            here=here,
+            pre_build_hook=_run_on_project_start,
         )
         if result is not None:
             summary = ""
@@ -641,6 +902,7 @@ def load_workspace(
             tmuxp_echo(
                 f"{checkmark} {SUCCESS_TEMPLATE.format_map(_SafeFormatMap(ctx))}"
             )
+        _cleanup_debug()
         return result
 
     # Spinner wraps only the actual build phase
@@ -693,6 +955,8 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            here=here,
+            pre_build_hook=_run_on_project_start,
             pre_attach_hook=_emit_success,
             on_error_hook=spinner.stop,
             pre_prompt_hook=spinner.stop,
@@ -745,18 +1009,35 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="always answer yes",
     )
-    parser.add_argument(
+    load_mode_group = parser.add_mutually_exclusive_group()
+    load_mode_group.add_argument(
         "-d",
         dest="detached",
         action="store_true",
         help="load the session without attaching it",
     )
-    parser.add_argument(
+    load_mode_group.add_argument(
         "-a",
         "--append",
         dest="append",
         action="store_true",
         help="load workspace, appending windows to the current session",
+    )
+    load_mode_group.add_argument(
+        "--here",
+        dest="here",
+        action="store_true",
+        help=(
+            "use the current window for the first workspace window "
+            "(single workspace only)"
+        ),
+    )
+    parser.add_argument(
+        "--no-shell-command-before",
+        dest="no_shell_command_before",
+        action="store_true",
+        default=False,
+        help="skip shell_command_before at all levels (session, window, pane)",
     )
     colorsgroup = parser.add_mutually_exclusive_group()
 
@@ -820,6 +1101,25 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
     )
 
+    parser.add_argument(
+        "--debug",
+        dest="debug",
+        action="store_true",
+        default=False,
+        help="show tmux commands as they execute (implies --no-progress)",
+    )
+
+    parser.add_argument(
+        "--set",
+        metavar="KEY=VALUE",
+        action="append",
+        default=[],
+        help=(
+            "set template variable for {{ variable }} expressions in workspace config "
+            "(repeatable, e.g. --set project=myapp --set port=8080)"
+        ),
+    )
+
     try:
         import shtab
 
@@ -873,6 +1173,27 @@ def command_load(
         sys.exit()
         return
 
+    if args.here and len(args.workspace_files) > 1:
+        msg = "--here only supports one workspace file"
+        if parser is not None:
+            parser.error(msg)
+        tmuxp_echo(cli_colors.error("[Error]") + f" {msg}")
+        sys.exit(2)
+
+    # Parse --set KEY=VALUE args into template context
+    template_context: dict[str, str] | None = None
+    if args.set:
+        template_context = {}
+        for item in args.set:
+            key, _, value = item.partition("=")
+            if not key or not _:
+                tmuxp_echo(
+                    cli_colors.error("[Error]")
+                    + f" Invalid --set format: {item!r} (expected KEY=VALUE)",
+                )
+                sys.exit(1)
+            template_context[key] = value
+
     last_idx = len(args.workspace_files) - 1
     original_detached_option = args.detached
     original_new_session_name = args.new_session_name
@@ -900,8 +1221,12 @@ def command_load(
             detached=detached,
             answer_yes=args.answer_yes or False,
             append=args.append or False,
+            here=args.here or False,
             cli_colors=cli_colors,
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            no_shell_command_before=args.no_shell_command_before,
+            debug=args.debug,
+            template_context=template_context,
         )

@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import logging
 import os
+import shlex
 import shutil
+import subprocess
 import time
 import typing as t
 
@@ -407,7 +409,12 @@ class WorkspaceBuilder:
             return False
         return True
 
-    def build(self, session: Session | None = None, append: bool = False) -> None:
+    def build(
+        self,
+        session: Session | None = None,
+        append: bool = False,
+        here: bool = False,
+    ) -> None:
         """Build tmux workspace in session.
 
         Optionally accepts ``session`` to build with only session object.
@@ -421,7 +428,11 @@ class WorkspaceBuilder:
             session to build workspace in
         append : bool
             append windows in current active session
+        here : bool
+            reuse current window for first window and rename session
         """
+        session_created = session is None
+
         if not session:
             if not self.server:
                 msg = (
@@ -486,6 +497,19 @@ class WorkspaceBuilder:
 
         assert isinstance(session, Session)
 
+        # Check --here rename conflicts before plugin hooks, before_script,
+        # or any session/window mutation with user-visible side effects.
+        if here:
+            session_name = self.session_config["session_name"]
+            if session.name != session_name:
+                existing = self.server.sessions.get(
+                    session_name=session_name,
+                    default=None,
+                )
+                if existing is not None:
+                    msg = f"cannot rename to {session_name!r}: session already exists"
+                    raise exc.TmuxpException(msg)
+
         for plugin in self.plugins:
             plugin.before_workspace_builder(self.session)
 
@@ -520,11 +544,17 @@ class WorkspaceBuilder:
                         ),
                     },
                 )
-                self.session.kill()
+                if session_created:
+                    self.session.kill()
                 raise
             finally:
                 if self.on_build_event:
                     self.on_build_event({"event": "before_script_done"})
+
+        if here:
+            session_name = self.session_config["session_name"]
+            if session.name != session_name:
+                session.rename_session(session_name)
 
         if "options" in self.session_config:
             for option, value in self.session_config["options"].items():
@@ -538,7 +568,44 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        for window, window_config in self.iter_create_windows(session, append):
+        # Session-scoped lifecycle hooks and metadata belong only to sessions
+        # created by this build. Reused sessions may already carry unrelated
+        # hooks or tmuxp metadata from other windows/workspaces.
+        if session_created and "on_project_exit" in self.session_config:
+            exit_cmds = self.session_config["on_project_exit"]
+            if isinstance(exit_cmds, str):
+                exit_cmds = [exit_cmds]
+            _joined = "; ".join(exit_cmds)
+            _start_dir = self.session_config.get("start_directory")
+            if _start_dir:
+                _joined = f"cd {shlex.quote(_start_dir)} && {_joined}"
+            # Guard: only run when last client detaches (safe for multi-client)
+            _guarded = f"if [ #{{session_attached}} -eq 0 ]; then {_joined}; fi"
+            self.session.set_hook(
+                "client-detached",
+                f"run-shell {shlex.quote(_guarded)}",
+            )
+
+        # Store on_project_stop in session environment for tmuxp stop
+        if session_created and "on_project_stop" in self.session_config:
+            stop_cmds = self.session_config["on_project_stop"]
+            if isinstance(stop_cmds, str):
+                stop_cmds = [stop_cmds]
+            self.session.set_environment(
+                "TMUXP_ON_PROJECT_STOP",
+                "; ".join(stop_cmds),
+            )
+
+        # Store start_directory in session environment for hook cwd
+        if session_created and "start_directory" in self.session_config:
+            self.session.set_environment(
+                "TMUXP_START_DIRECTORY",
+                self.session_config["start_directory"],
+            )
+
+        for window, window_config in self.iter_create_windows(
+            session, append, here=here
+        ):
             assert isinstance(window, Window)
 
             for plugin in self.plugins:
@@ -579,6 +646,7 @@ class WorkspaceBuilder:
         self,
         session: Session,
         append: bool = False,
+        here: bool = False,
     ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -593,6 +661,8 @@ class WorkspaceBuilder:
             session to create windows in
         append : bool
             append windows in current active session
+        here : bool
+            reuse current window for first window
 
         Returns
         -------
@@ -617,43 +687,120 @@ class WorkspaceBuilder:
                     }
                 )
 
-            is_first_window_pass = self.first_window_pass(
-                window_iterator,
-                session,
-                append,
-            )
+            if here and window_iterator == 1:
+                # --here: reuse current window for first window
+                window = session.active_window
+                if window_name:
+                    window.rename_window(window_name)
 
-            w1 = None
-            if is_first_window_pass:  # if first window, use window 1
-                w1 = session.active_window
-                w1.move_window("99")
+                # Remove extra panes so iter_create_panes starts clean
+                _active_pane = window.active_pane
+                for _p in list(window.panes):
+                    if _p != _active_pane:
+                        _p.kill()
 
-            start_directory = window_config.get("start_directory", None)
+                start_directory = window_config.get("start_directory", None)
+                panes = window_config["panes"]
+                if panes and "start_directory" in panes[0]:
+                    start_directory = panes[0]["start_directory"]
 
-            # If the first pane specifies a start_directory, use that instead.
-            panes = window_config["panes"]
-            if panes and "start_directory" in panes[0]:
-                start_directory = panes[0]["start_directory"]
+                environment = window_config.get("environment")
+                if panes and "environment" in panes[0]:
+                    environment = panes[0]["environment"]
 
-            window_shell = window_config.get("window_shell", None)
+                # Resolve window_shell
+                window_shell = window_config.get("window_shell")
+                try:
+                    if panes[0]["shell"] != "":
+                        window_shell = panes[0]["shell"]
+                except (KeyError, IndexError):
+                    pass
 
-            # If the first pane specifies a shell, use that instead.
-            try:
-                if window_config["panes"][0]["shell"] != "":
-                    window_shell = window_config["panes"][0]["shell"]
-            except (KeyError, IndexError):
-                pass
+                # Use respawn-pane to provision the reused pane with the
+                # correct directory, environment, and shell.  This avoids
+                # send_keys entirely — no POSIX shell assumption, no
+                # typing into foreground programs, no history pollution.
+                # Matches teamocil's approach of using tmux primitives
+                # over send_keys for infrastructure setup.
+                if start_directory or environment or window_shell:
+                    _here_pane = window.active_pane
+                    if _here_pane is not None:
+                        # Warn if the pane has running child processes
+                        # that would be killed by respawn-pane -k
+                        _pane_pid = _here_pane.pane_pid
+                        if _pane_pid:
+                            try:
+                                _children = subprocess.run(
+                                    ["pgrep", "-P", _pane_pid],
+                                    capture_output=True,
+                                    text=True,
+                                )
+                                if _children.returncode == 0:
+                                    logger.warning(
+                                        "--here will kill running processes "
+                                        "in the active pane (pid %s) to "
+                                        "provision directory/environment",
+                                        _pane_pid,
+                                    )
+                            except FileNotFoundError:
+                                pass  # pgrep not available
 
-            environment = panes[0].get("environment", window_config.get("environment"))
+                        _respawn_args: list[str] = ["respawn-pane", "-k"]
+                        if start_directory:
+                            _respawn_args.extend(["-c", start_directory])
+                        if environment:
+                            for _ekey, _eval in environment.items():
+                                _respawn_args.extend(
+                                    ["-e", f"{_ekey}={_eval}"],
+                                )
+                        if window_shell:
+                            _respawn_args.append(window_shell)
+                        _here_pane.cmd(*_respawn_args)
+            else:
+                is_first_window_pass = self.first_window_pass(
+                    window_iterator,
+                    session,
+                    append,
+                )
 
-            window = session.new_window(
-                window_name=window_name,
-                start_directory=start_directory,
-                attach=False,  # do not move to the new window
-                window_index=window_config.get("window_index", ""),
-                window_shell=window_shell,
-                environment=environment,
-            )
+                w1 = None
+                if is_first_window_pass:  # if first window, use window 1
+                    w1 = session.active_window
+                    w1.move_window("99")
+
+                start_directory = window_config.get("start_directory", None)
+
+                # If the first pane specifies a start_directory, use that instead.
+                panes = window_config["panes"]
+                if panes and "start_directory" in panes[0]:
+                    start_directory = panes[0]["start_directory"]
+
+                window_shell = window_config.get("window_shell", None)
+
+                # If the first pane specifies a shell, use that instead.
+                try:
+                    if window_config["panes"][0]["shell"] != "":
+                        window_shell = window_config["panes"][0]["shell"]
+                except (KeyError, IndexError):
+                    pass
+
+                environment = panes[0].get(
+                    "environment",
+                    window_config.get("environment"),
+                )
+
+                window = session.new_window(
+                    window_name=window_name,
+                    start_directory=start_directory,
+                    attach=False,  # do not move to the new window
+                    window_index=window_config.get("window_index", ""),
+                    window_shell=window_shell,
+                    environment=environment,
+                )
+
+                if is_first_window_pass:  # if first window, use window 1
+                    session.active_window.kill()
+
             assert isinstance(window, Window)
             window_log = TmuxpLoggerAdapter(
                 logger,
@@ -663,9 +810,6 @@ class WorkspaceBuilder:
                 },
             )
             window_log.debug("window created")
-
-            if is_first_window_pass:  # if first window, use window 1
-                session.active_window.kill()
 
             if "options" in window_config and isinstance(
                 window_config["options"],
@@ -813,6 +957,9 @@ class WorkspaceBuilder:
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
+            if pane_config.get("title"):
+                pane.set_title(pane_config["title"])
+
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
                 window.select_pane(pane.pane_id)
@@ -843,6 +990,18 @@ class WorkspaceBuilder:
         ):
             for key, val in window_config["options_after"].items():
                 window.set_option(key, val)
+
+        if "shell_command_after" in window_config and isinstance(
+            window_config["shell_command_after"],
+            dict,
+        ):
+            for cmd in window_config["shell_command_after"].get("shell_command", []):
+                for pane in window.panes:
+                    pane.send_keys(cmd["cmd"])
+
+        if window_config.get("clear"):
+            for pane in window.panes:
+                pane.send_keys("clear", enter=True)
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""

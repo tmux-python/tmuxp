@@ -105,6 +105,73 @@ def run_before_script(
     return return_code
 
 
+def run_hook_commands(
+    commands: str | list[str],
+    cwd: pathlib.Path | str | None = None,
+) -> None:
+    """Run lifecycle hook shell commands.
+
+    Unlike :func:`run_before_script`, hooks use ``shell=True`` for full
+    shell support (pipes, redirects, etc.) and do NOT raise on failure.
+
+    Parameters
+    ----------
+    commands : str or list of str
+        shell command(s) to run
+    cwd : pathlib.Path or str, optional
+        working directory for the commands
+
+    Examples
+    --------
+    Run a single command:
+
+    >>> run_hook_commands("echo hello")
+
+    Run multiple commands:
+
+    >>> run_hook_commands(["echo a", "echo b"])
+
+    Empty string is a no-op:
+
+    >>> run_hook_commands("")
+    """
+    if isinstance(commands, str):
+        commands = [commands]
+    joined = "; ".join(commands)
+    if not joined.strip():
+        return
+    logger.debug("running hook commands %s", joined)
+    try:
+        result = subprocess.run(
+            joined,
+            shell=True,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except subprocess.TimeoutExpired:
+        logger.warning("hook command timed out after 120s: %s", joined)
+        return
+    except OSError:
+        logger.warning(
+            "hook command failed (bad cwd or shell): %s",
+            joined,
+        )
+        return
+    if result.returncode != 0:
+        logger.warning(
+            "hook command failed with exit code %d",
+            result.returncode,
+            extra={"tmux_exit_code": result.returncode},
+        )
+        if result.stdout:
+            logger.debug("hook stdout: %s", result.stdout.rstrip())
+        if result.stderr:
+            logger.debug("hook stderr: %s", result.stderr.rstrip())
+
+
 def oh_my_zsh_auto_title() -> None:
     """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 
@@ -145,27 +212,57 @@ def get_session(
     server: Server,
     session_name: str | None = None,
     current_pane: Pane | None = None,
+    require_pane_resolution: bool = False,
 ) -> Session:
-    """Get tmux session for server by session name, respects current pane, if passed."""
+    """Get tmux session for server by session name, respects current pane, if passed.
+
+    Parameters
+    ----------
+    server : Server
+        tmux server to search.
+    session_name : str, optional
+        Explicit session name to look up.
+    current_pane : Pane, optional
+        Pane to infer session from.
+    require_pane_resolution : bool
+        If True, raise SessionNotFound when TMUX_PANE cannot be resolved
+        instead of falling back to server.sessions[0]. Use for destructive
+        operations like ``tmuxp stop``.
+
+    Examples
+    --------
+    >>> from tmuxp.util import get_session
+    >>> get_session(server, session_name=session.name) == session
+    True
+    """
+    session_result: Session | None = None
     try:
         if session_name:
-            session = server.sessions.get(session_name=session_name)
+            session_result = server.sessions.get(session_name=session_name)
         elif current_pane is not None:
-            session = server.sessions.get(session_id=current_pane.session_id)
+            session_result = server.sessions.get(
+                session_id=current_pane.session_id,
+            )
         else:
             current_pane = get_current_pane(server)
             if current_pane:
-                session = server.sessions.get(session_id=current_pane.session_id)
-            else:
-                session = server.sessions[0]
-
+                session_result = server.sessions.get(
+                    session_id=current_pane.session_id,
+                )
+            elif require_pane_resolution:
+                pass  # session_result stays None → raises below
+            elif server.sessions:
+                session_result = server.sessions[0]
     except Exception as e:
         if session_name:
             raise exc.SessionNotFound(session_name) from e
         raise exc.SessionNotFound from e
 
-    assert session is not None
-    return session
+    if session_result is None:
+        if session_name:
+            raise exc.SessionNotFound(session_name)
+        raise exc.SessionNotFound
+    return session_result
 
 
 def get_window(

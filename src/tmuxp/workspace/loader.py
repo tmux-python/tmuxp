@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import pathlib
+import re
 import typing as t
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,78 @@ def expandshell(value: str) -> str:
         value with shell variables expanded
     """
     return os.path.expandvars(os.path.expanduser(value))  # NOQA: PTH111
+
+
+_TEMPLATE_RE = re.compile(r"\{\{\s*(\w+)\s*\}\}")
+
+_YAML_UNSAFE_RE = re.compile(r"[\n\r:{}\[\]]")
+
+
+def _validate_template_values(context: dict[str, str]) -> None:
+    """Raise ValueError if any template value could break YAML structure.
+
+    Examples
+    --------
+    >>> _validate_template_values({"key": "simple"})
+
+    >>> _validate_template_values({"key": "foo: bar"})  # doctest: +ELLIPSIS
+    Traceback (most recent call last):
+        ...
+    ValueError: --set value for 'key' contains YAML-unsafe characters ...
+    """
+    for key, value in context.items():
+        if _YAML_UNSAFE_RE.search(value):
+            msg = (
+                f"--set value for {key!r} contains YAML-unsafe characters "
+                f"(colons, braces, brackets, or newlines): {value!r}"
+            )
+            raise ValueError(msg)
+
+
+def render_template(content: str, context: dict[str, str]) -> str:
+    """Render ``{{ variable }}`` expressions in raw config content.
+
+    Replaces template expressions with values from *context*. Expressions
+    referencing keys not in *context* are left unchanged so that
+    ``$ENV_VAR`` expansion (which runs later, after YAML parsing) is
+    unaffected.
+
+    Raises :class:`ValueError` if any value contains characters that could
+    corrupt YAML structure (colons, braces, brackets, newlines).
+
+    Parameters
+    ----------
+    content : str
+        Raw file content (YAML or JSON) before parsing.
+    context : dict
+        Mapping of variable names to replacement values, typically
+        from ``--set KEY=VALUE`` CLI arguments.
+
+    Returns
+    -------
+    str
+        Content with matching ``{{ key }}`` expressions replaced.
+
+    Examples
+    --------
+    >>> render_template("root: {{ project }}", {"project": "myapp"})
+    'root: myapp'
+
+    >>> render_template("root: {{ unknown }}", {"project": "myapp"})
+    'root: {{ unknown }}'
+
+    >>> render_template("no templates here", {"key": "val"})
+    'no templates here'
+    """
+    _validate_template_values(context)
+
+    def _replace(match: re.Match[str]) -> str:
+        key = match.group(1)
+        if key in context:
+            return context[key]
+        return match.group(0)
+
+    return _TEMPLATE_RE.sub(_replace, content)
 
 
 def expand_cmd(p: dict[str, t.Any]) -> dict[str, t.Any]:
@@ -112,7 +185,9 @@ def expand(
 
     if "session_name" in workspace_dict:
         workspace_dict["session_name"] = expandshell(workspace_dict["session_name"])
-    if "window_name" in workspace_dict:
+    if "window_name" in workspace_dict and isinstance(
+        workspace_dict["window_name"], str
+    ):
         workspace_dict["window_name"] = expandshell(workspace_dict["window_name"])
     if "environment" in workspace_dict:
         for key in workspace_dict["environment"]:
@@ -137,6 +212,14 @@ def expand(
                 if any(val.startswith(a) for a in [".", "./"]):
                     val = str(cwd / val)
             workspace_dict["options"][key] = val
+
+    # Desugar synchronize shorthand into options / options_after
+    if "synchronize" in workspace_dict:
+        sync = workspace_dict.pop("synchronize")
+        if sync is True or sync == "before":
+            workspace_dict.setdefault("options", {})["synchronize-panes"] = "on"
+        elif sync == "after":
+            workspace_dict.setdefault("options_after", {})["synchronize-panes"] = "on"
 
     # Any workspace section, session, window, pane that can contain the
     # 'shell_command' value
@@ -164,6 +247,19 @@ def expand(
         if any(workspace_dict["before_script"].startswith(a) for a in [".", "./"]):
             workspace_dict["before_script"] = str(cwd / workspace_dict["before_script"])
 
+    for _hook_key in (
+        "on_project_start",
+        "on_project_restart",
+        "on_project_exit",
+        "on_project_stop",
+    ):
+        if _hook_key in workspace_dict:
+            _hook_val = workspace_dict[_hook_key]
+            if isinstance(_hook_val, str):
+                workspace_dict[_hook_key] = expandshell(_hook_val)
+            elif isinstance(_hook_val, list):
+                workspace_dict[_hook_key] = [expandshell(v) for v in _hook_val]
+
     if "shell_command" in workspace_dict and isinstance(
         workspace_dict["shell_command"],
         str,
@@ -174,6 +270,37 @@ def expand(
         shell_command_before = workspace_dict["shell_command_before"]
 
         workspace_dict["shell_command_before"] = expand_cmd(shell_command_before)
+
+    if "shell_command_after" in workspace_dict:
+        shell_command_after = workspace_dict["shell_command_after"]
+
+        workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
+
+    # Desugar pane title session-level config into per-window options
+    _VALID_PANE_TITLE_POSITIONS = {"top", "bottom", "off"}
+    if workspace_dict.get("enable_pane_titles") and "windows" in workspace_dict:
+        position = workspace_dict.pop("pane_title_position", "top")
+        if position not in _VALID_PANE_TITLE_POSITIONS:
+            logger.warning(
+                "invalid pane_title_position %r, expected one of %s; "
+                "defaulting to 'top'",
+                position,
+                _VALID_PANE_TITLE_POSITIONS,
+            )
+            position = "top"
+        fmt = workspace_dict.pop(
+            "pane_title_format",
+            "#{pane_index}: #{pane_title}",
+        )
+        workspace_dict.pop("enable_pane_titles")
+        for window in workspace_dict["windows"]:
+            window.setdefault("options", {})
+            window["options"].setdefault("pane-border-status", position)
+            window["options"].setdefault("pane-border-format", fmt)
+    elif "enable_pane_titles" in workspace_dict:
+        workspace_dict.pop("enable_pane_titles")
+        workspace_dict.pop("pane_title_position", None)
+        workspace_dict.pop("pane_title_format", None)
 
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
