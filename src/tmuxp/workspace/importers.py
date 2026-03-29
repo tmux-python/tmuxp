@@ -239,9 +239,10 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                 _idx = int(_startup_window)
                 if 0 <= _idx < len(tmuxp_workspace["windows"]):
                     tmuxp_workspace["windows"][_idx]["focus"] = True
-                    logger.info(
-                        "startup_window %r resolved as 0-based list index; "
-                        "use window name for unambiguous matching across tools",
+                    logger.warning(
+                        "startup_window %r resolved as 0-based list index, "
+                        "which may differ from tmuxinator's tmux base-index "
+                        "semantics; use window name for reliable matching",
                         _startup_window,
                     )
                 else:
@@ -273,9 +274,10 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                             "shell_command": [_pane] if _pane else [],
                             "focus": True,
                         }
-                    logger.info(
-                        "startup_pane %r resolved as 0-based list index; "
-                        "use window name + pane index for clarity",
+                    logger.warning(
+                        "startup_pane %r resolved as 0-based list index, "
+                        "which may differ from tmuxinator's tmux "
+                        "pane-base-index semantics",
                         _startup_pane,
                     )
                 else:
