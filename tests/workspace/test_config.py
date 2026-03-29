@@ -739,3 +739,16 @@ def test_render_template(
     """render_template() replaces {{ var }} expressions with context values."""
     result = loader.render_template(content, context)
     assert result == expected
+
+
+def test_render_template_rejects_yaml_unsafe_values() -> None:
+    """render_template() raises ValueError for YAML-unsafe --set values."""
+    with pytest.raises(ValueError, match="YAML-unsafe"):
+        loader.render_template("cmd: {{ val }}", {"val": "foo: bar"})
+
+    with pytest.raises(ValueError, match="YAML-unsafe"):
+        loader.render_template("cmd: {{ val }}", {"val": "line1\nline2"})
+
+    # Safe values should work fine
+    result = loader.render_template("cmd: {{ val }}", {"val": "hello-world"})
+    assert result == "cmd: hello-world"

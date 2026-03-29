@@ -31,6 +31,29 @@ def expandshell(value: str) -> str:
 
 _TEMPLATE_RE = re.compile(r"\{\{\s*(\w+)\s*\}\}")
 
+_YAML_UNSAFE_RE = re.compile(r"[\n\r:{}\[\]]")
+
+
+def _validate_template_values(context: dict[str, str]) -> None:
+    """Raise ValueError if any template value could break YAML structure.
+
+    Examples
+    --------
+    >>> _validate_template_values({"key": "simple"})
+
+    >>> _validate_template_values({"key": "foo: bar"})
+    Traceback (most recent call last):
+        ...
+    ValueError: --set value for 'key' contains YAML-unsafe characters ...
+    """
+    for key, value in context.items():
+        if _YAML_UNSAFE_RE.search(value):
+            msg = (
+                f"--set value for {key!r} contains YAML-unsafe characters "
+                f"(colons, braces, brackets, or newlines): {value!r}"
+            )
+            raise ValueError(msg)
+
 
 def render_template(content: str, context: dict[str, str]) -> str:
     """Render ``{{ variable }}`` expressions in raw config content.
@@ -39,6 +62,9 @@ def render_template(content: str, context: dict[str, str]) -> str:
     referencing keys not in *context* are left unchanged so that
     ``$ENV_VAR`` expansion (which runs later, after YAML parsing) is
     unaffected.
+
+    Raises :class:`ValueError` if any value contains characters that could
+    corrupt YAML structure (colons, braces, brackets, newlines).
 
     Parameters
     ----------
@@ -64,6 +90,7 @@ def render_template(content: str, context: dict[str, str]) -> str:
     >>> render_template("no templates here", {"key": "val"})
     'no templates here'
     """
+    _validate_template_values(context)
 
     def _replace(match: re.Match[str]) -> str:
         key = match.group(1)
