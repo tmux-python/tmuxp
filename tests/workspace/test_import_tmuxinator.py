@@ -848,6 +848,20 @@ def test_import_tmuxinator_startup_window_index_resolution(
         assert len(warning_records) == 0
 
 
+def test_import_tmuxinator_cli_args_attached_flags() -> None:
+    """Tmuxinator cli_args with attached POSIX flags like -Lmysocket."""
+    workspace = {
+        "name": "attached-flags",
+        "root": "~/app",
+        "cli_args": "-f~/.tmux.mac.conf -Lmysocket",
+        "windows": [{"editor": "vim"}],
+    }
+    result = importers.import_tmuxinator(workspace)
+
+    assert result["config"] == "~/.tmux.mac.conf"
+    assert result["socket_name"] == "mysocket"
+
+
 def test_import_tmuxinator_none_window_name_no_crash() -> None:
     """Tmuxinator config with None (null) window key imports without crashing."""
     workspace = {
