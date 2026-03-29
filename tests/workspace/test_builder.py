@@ -1224,18 +1224,17 @@ def test_before_script_throw_error_if_retcode_error(
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
 
-    with temp_session(server) as sess:
-        session_name = sess.name
-        assert session_name is not None
+    session_name = workspace["session_name"]
+    assert isinstance(session_name, str)
 
-        with (
-            caplog.at_level(logging.ERROR, logger="tmuxp.workspace.builder"),
-            pytest.raises(exc.BeforeLoadScriptError),
-        ):
-            builder.build(session=sess)
+    with (
+        caplog.at_level(logging.ERROR, logger="tmuxp.workspace.builder"),
+        pytest.raises(exc.BeforeLoadScriptError),
+    ):
+        builder.build()
 
-        result = server.has_session(session_name)
-        assert not result, "Kills session if before_script exits with errcode"
+    result = server.has_session(session_name)
+    assert not result, "Kills created session if before_script exits with errcode"
 
     error_records = [r for r in caplog.records if r.levelno == logging.ERROR]
     assert len(error_records) >= 1
@@ -1259,17 +1258,124 @@ def test_before_script_throw_error_if_file_not_exists(
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
 
-    with temp_session(server) as session:
-        session_name = session.name
+    session_name = workspace["session_name"]
+    assert isinstance(session_name, str)
 
+    with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)):
+        builder.build()
+    result = server.has_session(session_name)
+    assert not result, "Kills created session if before_script doesn't exist"
+
+
+class ReusedSessionBeforeScriptFailureFixture(t.NamedTuple):
+    """Fixture for before_script failures on reused sessions."""
+
+    test_id: str
+    fixture_name: str
+    build_kwargs: dict[str, bool]
+    expected_exception: type[BaseException] | tuple[type[BaseException], ...]
+
+
+REUSED_SESSION_BEFORE_SCRIPT_FAILURE_FIXTURES: list[
+    ReusedSessionBeforeScriptFailureFixture
+] = [
+    ReusedSessionBeforeScriptFailureFixture(
+        test_id="append-retcode-error-keeps-session",
+        fixture_name="workspace/builder/config_script_fails.yaml",
+        build_kwargs={"append": True},
+        expected_exception=exc.BeforeLoadScriptError,
+    ),
+    ReusedSessionBeforeScriptFailureFixture(
+        test_id="here-retcode-error-keeps-session",
+        fixture_name="workspace/builder/config_script_fails.yaml",
+        build_kwargs={"here": True},
+        expected_exception=exc.BeforeLoadScriptError,
+    ),
+    ReusedSessionBeforeScriptFailureFixture(
+        test_id="here-missing-script-keeps-session",
+        fixture_name="workspace/builder/config_script_not_exists.yaml",
+        build_kwargs={"here": True},
+        expected_exception=(exc.BeforeLoadScriptNotExists, OSError),
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ReusedSessionBeforeScriptFailureFixture._fields),
+    REUSED_SESSION_BEFORE_SCRIPT_FAILURE_FIXTURES,
+    ids=[f.test_id for f in REUSED_SESSION_BEFORE_SCRIPT_FAILURE_FIXTURES],
+)
+def test_before_script_failure_on_reused_session_keeps_session(
+    server: Server,
+    test_id: str,
+    fixture_name: str,
+    build_kwargs: dict[str, bool],
+    expected_exception: type[BaseException] | tuple[type[BaseException], ...],
+) -> None:
+    """before_script failures do not kill reused sessions for append or here."""
+    fixture_template = test_utils.read_workspace_file(fixture_name)
+    workspace_yaml = fixture_template.format(
+        script_failed=FIXTURE_PATH / "script_failed.sh",
+        script_not_exists=FIXTURE_PATH / "script_not_exists.sh",
+    )
+    workspace = ConfigReader._load(fmt="yaml", content=workspace_yaml)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+
+    with temp_session(server) as current_session:
+        session_name = current_session.name
         assert session_name is not None
-        temp_session_exists = server.has_session(session_name)
-        assert temp_session_exists
-        with pytest.raises((exc.BeforeLoadScriptNotExists, OSError)) as excinfo:
-            builder.build(session=session)
-            excinfo.match(r"No such file or directory")
-        result = server.has_session(session_name)
-        assert not result, "Kills session if before_script doesn't exist"
+        workspace["session_name"] = session_name
+        builder.session_config = workspace
+
+        with pytest.raises(expected_exception):
+            builder.build(session=current_session, **build_kwargs)
+
+        assert server.has_session(session_name), test_id
+
+
+def test_here_mode_duplicate_session_name_fails_before_startup_hooks(
+    server: Server,
+    tmp_path: pathlib.Path,
+) -> None:
+    """--here rename conflicts abort before plugins or before_script run."""
+    before_script_marker = tmp_path / "before-script-ran"
+    plugin_marker = tmp_path / "plugin-ran"
+
+    workspace: dict[str, t.Any] = {
+        "session_name": "existing-blocker",
+        "before_script": f"touch {before_script_marker}",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    class PluginProbe:
+        """Minimal plugin stub for startup-hook ordering tests."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            plugin_marker.touch()
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        server=server,
+        plugins=[PluginProbe()],
+    )
+
+    with (
+        temp_session(server) as current_session,
+        temp_session(server) as existing_session,
+    ):
+        existing_session.rename_session("existing-blocker")
+        with pytest.raises(exc.TmuxpException, match="session already exists"):
+            builder.build(session=current_session, here=True)
+
+        assert current_session.name is not None
+        assert not before_script_marker.exists()
+        assert not plugin_marker.exists()
+        assert server.has_session(current_session.name)
 
 
 def test_before_script_true_if_test_passes(

@@ -431,6 +431,8 @@ class WorkspaceBuilder:
         here : bool
             reuse current window for first window and rename session
         """
+        session_created = session is None
+
         if not session:
             if not self.server:
                 msg = (
@@ -495,6 +497,19 @@ class WorkspaceBuilder:
 
         assert isinstance(session, Session)
 
+        # Check --here rename conflicts before plugin hooks, before_script,
+        # or any session/window mutation with user-visible side effects.
+        if here:
+            session_name = self.session_config["session_name"]
+            if session.name != session_name:
+                existing = self.server.sessions.get(
+                    session_name=session_name,
+                    default=None,
+                )
+                if existing is not None:
+                    msg = f"cannot rename to {session_name!r}: session already exists"
+                    raise exc.TmuxpException(msg)
+
         for plugin in self.plugins:
             plugin.before_workspace_builder(self.session)
 
@@ -529,22 +544,16 @@ class WorkspaceBuilder:
                         ),
                     },
                 )
-                self.session.kill()
+                if session_created:
+                    self.session.kill()
                 raise
             finally:
                 if self.on_build_event:
                     self.on_build_event({"event": "before_script_done"})
 
-        # Check for rename conflicts early, before any session mutation
         if here:
             session_name = self.session_config["session_name"]
             if session.name != session_name:
-                existing = self.server.sessions.get(
-                    session_name=session_name, default=None
-                )
-                if existing is not None:
-                    msg = f"cannot rename to {session_name!r}: session already exists"
-                    raise exc.TmuxpException(msg)
                 session.rename_session(session_name)
 
         if "options" in self.session_config:
