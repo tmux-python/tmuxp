@@ -605,7 +605,7 @@ def test_here_mode_duplicate_session_name(
 def test_here_mode_provisions_environment(
     session: Session,
 ) -> None:
-    """--here mode exports environment variables into the active pane."""
+    """--here mode sets environment via session and respawn-pane, not send_keys."""
     from libtmux.test.retry import retry_until
 
     workspace: dict[str, t.Any] = {
@@ -625,6 +625,11 @@ def test_here_mode_provisions_environment(
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session, here=True)
 
+    # Verify env var is set at session level (tmux primitive)
+    env = session.show_environment()
+    assert env.get("TMUXP_HERE_TEST") == "hello_here"
+
+    # Verify the respawned pane also sees the var
     pane = session.active_window.active_pane
     assert pane is not None
 
