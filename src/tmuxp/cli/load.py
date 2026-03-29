@@ -521,13 +521,21 @@ def _dispatch_build(
         logger.debug("workspace build failed", exc_info=True)
         tmuxp_echo(cli_colors.error("[Error]") + f" {e}")
 
-        choice = prompt_choices(
-            cli_colors.error("Error loading workspace.")
-            + " (k)ill, (a)ttach, (d)etach?",
-            choices=["k", "a", "d"],
-            default="k",
-            color_mode=cli_colors.mode,
-        )
+        if here:
+            choice = prompt_choices(
+                cli_colors.error("Error loading workspace.") + " (a)ttach, (d)etach?",
+                choices=["a", "d"],
+                default="d",
+                color_mode=cli_colors.mode,
+            )
+        else:
+            choice = prompt_choices(
+                cli_colors.error("Error loading workspace.")
+                + " (k)ill, (a)ttach, (d)etach?",
+                choices=["k", "a", "d"],
+                default="k",
+                color_mode=cli_colors.mode,
+            )
 
         if choice == "k":
             if builder.session is not None:
