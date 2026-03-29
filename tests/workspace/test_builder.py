@@ -605,9 +605,7 @@ def test_here_mode_duplicate_session_name(
 def test_here_mode_provisions_environment(
     session: Session,
 ) -> None:
-    """--here mode sets environment via session and respawn-pane, not send_keys."""
-    from libtmux.test.retry import retry_until
-
+    """--here mode provisions the reused pane without mutating session env."""
     workspace: dict[str, t.Any] = {
         "session_name": session.name,
         "windows": [
@@ -615,7 +613,11 @@ def test_here_mode_provisions_environment(
                 "window_name": "env-test",
                 "environment": {"TMUXP_HERE_TEST": "hello_here"},
                 "panes": [
-                    {"shell_command": ["echo $TMUXP_HERE_TEST"]},
+                    {
+                        "shell_command": [
+                            "printf '%s' \"${TMUXP_HERE_TEST-unset}\"",
+                        ],
+                    },
                 ],
             },
         ],
@@ -625,11 +627,9 @@ def test_here_mode_provisions_environment(
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
     builder.build(session=session, here=True)
 
-    # Verify env var is set at session level (tmux primitive)
     env = session.show_environment()
-    assert env.get("TMUXP_HERE_TEST") == "hello_here"
+    assert env.get("TMUXP_HERE_TEST") is None
 
-    # Verify the respawned pane also sees the var
     pane = session.active_window.active_pane
     assert pane is not None
 
@@ -747,25 +747,44 @@ def test_here_mode_respawn_provisioning(
 
     if environment:
         env = session.show_environment()
-        for key, val in environment.items():
-            assert env.get(key) == val
+        for key in environment:
+            assert env.get(key) is None
 
 
-def test_here_mode_respawn_multiple_env_vars(
+def test_here_mode_does_not_leak_first_pane_environment(
     session: Session,
 ) -> None:
-    """--here mode sets multiple environment variables via set_environment."""
+    """--here mode keeps first-pane environment out of later windows."""
     workspace: dict[str, t.Any] = {
         "session_name": session.name,
         "windows": [
             {
-                "window_name": "multi-env",
+                "window_name": "first-window",
                 "environment": {
-                    "TMUXP_A": "alpha",
-                    "TMUXP_B": "bravo",
-                    "TMUXP_C": "charlie",
+                    "TMUXP_HERE_ALPHA": "alpha",
+                    "TMUXP_HERE_BRAVO": "bravo",
+                    "TMUXP_HERE_CHARLIE": "charlie",
                 },
-                "panes": [{"shell_command": []}],
+                "panes": [
+                    {
+                        "shell_command": [
+                            "printf '%s:%s:%s' "
+                            '"$TMUXP_HERE_ALPHA" '
+                            '"$TMUXP_HERE_BRAVO" '
+                            '"$TMUXP_HERE_CHARLIE"',
+                        ],
+                    },
+                ],
+            },
+            {
+                "window_name": "later-window",
+                "panes": [
+                    {
+                        "shell_command": [
+                            "printf '%s' \"${TMUXP_HERE_ALPHA-unset}\"",
+                        ],
+                    },
+                ],
             },
         ],
     }
@@ -775,9 +794,87 @@ def test_here_mode_respawn_multiple_env_vars(
     builder.build(session=session, here=True)
 
     env = session.show_environment()
-    assert env.get("TMUXP_A") == "alpha"
-    assert env.get("TMUXP_B") == "bravo"
-    assert env.get("TMUXP_C") == "charlie"
+    assert env.get("TMUXP_HERE_ALPHA") is None
+    assert env.get("TMUXP_HERE_BRAVO") is None
+    assert env.get("TMUXP_HERE_CHARLIE") is None
+
+    first_window = next(
+        window for window in session.windows if window.name == "first-window"
+    )
+    later_window = next(
+        window for window in session.windows if window.name == "later-window"
+    )
+    first_pane = first_window.active_pane
+    later_pane = later_window.active_pane
+    assert first_pane is not None
+    assert later_pane is not None
+
+    assert retry_until(
+        lambda: "alpha:bravo:charlie" in "\n".join(first_pane.capture_pane()),
+        seconds=5,
+    )
+    assert retry_until(
+        lambda: "unset" in "\n".join(later_pane.capture_pane()),
+        seconds=5,
+    )
+
+
+class ReusedSessionMetadataFixture(t.NamedTuple):
+    """Fixture for reused-session lifecycle metadata scenarios."""
+
+    test_id: str
+    build_kwargs: dict[str, bool]
+
+
+REUSED_SESSION_METADATA_FIXTURES: list[ReusedSessionMetadataFixture] = [
+    ReusedSessionMetadataFixture(
+        test_id="append",
+        build_kwargs={"append": True},
+    ),
+    ReusedSessionMetadataFixture(
+        test_id="here",
+        build_kwargs={"here": True},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ReusedSessionMetadataFixture._fields),
+    REUSED_SESSION_METADATA_FIXTURES,
+    ids=[fixture.test_id for fixture in REUSED_SESSION_METADATA_FIXTURES],
+)
+def test_reused_session_keeps_existing_lifecycle_metadata(
+    session: Session,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    build_kwargs: dict[str, bool],
+) -> None:
+    """Append and --here preserve pre-existing session hook and env metadata."""
+    original_hook = "run-shell 'printf %s original-exit >/dev/null'"
+    session.set_hook("client-detached", original_hook)
+    session.set_environment("TMUXP_ON_PROJECT_STOP", "original stop")
+    session.set_environment("TMUXP_START_DIRECTORY", "/original/start")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "start_directory": str(tmp_path),
+        "on_project_exit": "printf '%s' new-exit >/dev/null",
+        "on_project_stop": "printf '%s' new-stop >/dev/null",
+        "windows": [
+            {"window_name": f"{test_id}-window", "panes": [{"shell_command": []}]}
+        ],
+    }
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, **build_kwargs)
+
+    hooks = [str(value) for value in session.show_hooks().values()]
+    assert any("original-exit" in value for value in hooks)
+    assert all("new-exit" not in value for value in hooks)
+    assert session.getenv("TMUXP_ON_PROJECT_STOP") == "original stop"
+    assert session.getenv("TMUXP_START_DIRECTORY") == "/original/start"
 
 
 def test_here_mode_respawn_warns_on_running_processes(
