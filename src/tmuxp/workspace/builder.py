@@ -568,8 +568,10 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        # Set lifecycle tmux hooks
-        if "on_project_exit" in self.session_config:
+        # Session-scoped lifecycle hooks and metadata belong only to sessions
+        # created by this build. Reused sessions may already carry unrelated
+        # hooks or tmuxp metadata from other windows/workspaces.
+        if session_created and "on_project_exit" in self.session_config:
             exit_cmds = self.session_config["on_project_exit"]
             if isinstance(exit_cmds, str):
                 exit_cmds = [exit_cmds]
@@ -585,7 +587,7 @@ class WorkspaceBuilder:
             )
 
         # Store on_project_stop in session environment for tmuxp stop
-        if "on_project_stop" in self.session_config:
+        if session_created and "on_project_stop" in self.session_config:
             stop_cmds = self.session_config["on_project_stop"]
             if isinstance(stop_cmds, str):
                 stop_cmds = [stop_cmds]
@@ -595,7 +597,7 @@ class WorkspaceBuilder:
             )
 
         # Store start_directory in session environment for hook cwd
-        if "start_directory" in self.session_config:
+        if session_created and "start_directory" in self.session_config:
             self.session.set_environment(
                 "TMUXP_START_DIRECTORY",
                 self.session_config["start_directory"],
@@ -702,15 +704,9 @@ class WorkspaceBuilder:
                 if panes and "start_directory" in panes[0]:
                     start_directory = panes[0]["start_directory"]
 
-                # Provision environment via tmux session env (inherited
-                # by new panes).  Matches teamocil, which does not inject
-                # env vars via send_keys at all.
                 environment = window_config.get("environment")
                 if panes and "environment" in panes[0]:
                     environment = panes[0]["environment"]
-                if environment:
-                    for _ekey, _eval in environment.items():
-                        session.set_environment(_ekey, str(_eval))
 
                 # Resolve window_shell
                 window_shell = window_config.get("window_shell")
