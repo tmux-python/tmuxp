@@ -9,6 +9,8 @@ import pathlib
 import sys
 import typing as t
 
+from libtmux.common import tmux_cmd
+
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import importers
@@ -87,6 +89,59 @@ def _resolve_path_no_overwrite(workspace_file: str) -> str:
         msg = f"{path} exists. Pick a new filename."
         raise ValueError(msg)
     return str(path)
+
+
+def _read_tmux_index_option(*args: str) -> int | None:
+    """Return tmux index option value, or ``None`` when unavailable.
+
+    Examples
+    --------
+    >>> from collections import namedtuple
+    >>> import tmuxp.cli.import_config as import_config
+    >>> FakeResponse = namedtuple("FakeResponse", "returncode stdout")
+    >>> monkeypatch.setattr(
+    ...     import_config,
+    ...     "tmux_cmd",
+    ...     lambda *args: FakeResponse(returncode=0, stdout=["1"]),
+    ... )
+    >>> import_config._read_tmux_index_option("show-options", "-gv", "base-index")
+    1
+    """
+    try:
+        response = tmux_cmd(*args)
+    except Exception:
+        return None
+
+    if response.returncode != 0 or not response.stdout:
+        return None
+
+    try:
+        return int(response.stdout[0])
+    except ValueError:
+        return None
+
+
+def _get_tmuxinator_base_indices() -> tuple[int, int]:
+    """Return tmux base-index and pane-base-index for tmuxinator import.
+
+    Examples
+    --------
+    >>> import tmuxp.cli.import_config as import_config
+    >>> monkeypatch.setattr(
+    ...     import_config,
+    ...     "_read_tmux_index_option",
+    ...     lambda *args: 1 if args[-1] == "base-index" else 2,
+    ... )
+    >>> import_config._get_tmuxinator_base_indices()
+    (1, 2)
+    """
+    base_index = _read_tmux_index_option("show-options", "-gv", "base-index")
+    pane_base_index = _read_tmux_index_option(
+        "show-window-options",
+        "-gv",
+        "pane-base-index",
+    )
+    return (base_index or 0, pane_base_index or 0)
 
 
 def command_import(
@@ -253,12 +308,21 @@ def command_import_tmuxinator(
     """
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
+    base_index, pane_base_index = _get_tmuxinator_base_indices()
 
     workspace_file = find_workspace_file(
         workspace_file,
         workspace_dir=get_tmuxinator_dir(),
     )
-    import_config(workspace_file, importers.import_tmuxinator, colors=colors)
+
+    def tmuxinator_importer(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+        return importers.import_tmuxinator(
+            workspace_dict,
+            base_index=base_index,
+            pane_base_index=pane_base_index,
+        )
+
+    import_config(workspace_file, tmuxinator_importer, colors=colors)
 
 
 def command_import_teamocil(

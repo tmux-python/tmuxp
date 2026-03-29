@@ -113,7 +113,7 @@ def test_startup_window_sets_focus_by_name() -> None:
 
 
 def test_startup_window_sets_focus_by_index() -> None:
-    """Startup_window sets focus by numeric index when name doesn't match."""
+    """Startup_window resolves numeric values with tmux base-index semantics."""
     workspace = {
         "name": "test",
         "startup_window": 1,
@@ -122,14 +122,14 @@ def test_startup_window_sets_focus_by_index() -> None:
             {"server": "rails s"},
         ],
     }
-    result = importers.import_tmuxinator(workspace)
+    result = importers.import_tmuxinator(workspace, base_index=1)
 
-    assert result["windows"][0].get("focus") is None
-    assert result["windows"][1]["focus"] is True
+    assert result["windows"][0]["focus"] is True
+    assert result["windows"][1].get("focus") is None
 
 
 def test_startup_pane_sets_focus_on_pane() -> None:
-    """Startup_pane converts the target pane to a dict with focus."""
+    """Startup_pane resolves numeric values with tmux pane-base-index."""
     workspace = {
         "name": "test",
         "startup_window": "editor",
@@ -142,12 +142,12 @@ def test_startup_pane_sets_focus_on_pane() -> None:
             },
         ],
     }
-    result = importers.import_tmuxinator(workspace)
+    result = importers.import_tmuxinator(workspace, pane_base_index=1)
 
     assert result["windows"][0]["focus"] is True
     panes = result["windows"][0]["panes"]
-    assert panes[0] == "vim"
-    assert panes[1] == {"shell_command": ["guard"], "focus": True}
+    assert panes[0] == {"shell_command": ["vim"], "focus": True}
+    assert panes[1] == "guard"
     assert panes[2] == "top"
 
 
@@ -164,10 +164,11 @@ def test_startup_pane_without_startup_window() -> None:
             },
         ],
     }
-    result = importers.import_tmuxinator(workspace)
+    result = importers.import_tmuxinator(workspace, pane_base_index=1)
 
     panes = result["windows"][0]["panes"]
-    assert panes[1] == {"shell_command": ["guard"], "focus": True}
+    assert panes[0] == {"shell_command": ["vim"], "focus": True}
+    assert panes[1] == "guard"
 
 
 def test_startup_window_warns_on_no_match(
@@ -746,9 +747,9 @@ class StartupIndexFixture(t.NamedTuple):
 
     test_id: str
     startup_window: str | int
+    base_index: int
     window_names: list[str]
     expected_focus_index: int | None
-    expect_info_log: bool
     expect_warning_log: bool
 
 
@@ -756,41 +757,57 @@ STARTUP_INDEX_FIXTURES: list[StartupIndexFixture] = [
     StartupIndexFixture(
         test_id="name-match",
         startup_window="editor",
+        base_index=0,
         window_names=["editor", "console"],
         expected_focus_index=0,
-        expect_info_log=False,
         expect_warning_log=False,
     ),
     StartupIndexFixture(
-        test_id="numeric-zero",
+        test_id="numeric-zero-base-zero",
         startup_window=0,
+        base_index=0,
         window_names=["win1", "win2"],
         expected_focus_index=0,
-        expect_info_log=False,
-        expect_warning_log=True,
+        expect_warning_log=False,
     ),
     StartupIndexFixture(
-        test_id="numeric-one",
+        test_id="numeric-one-base-zero",
         startup_window=1,
+        base_index=0,
         window_names=["win1", "win2"],
         expected_focus_index=1,
-        expect_info_log=False,
-        expect_warning_log=True,
+        expect_warning_log=False,
+    ),
+    StartupIndexFixture(
+        test_id="numeric-one-base-one",
+        startup_window=1,
+        base_index=1,
+        window_names=["win1", "win2"],
+        expected_focus_index=0,
+        expect_warning_log=False,
+    ),
+    StartupIndexFixture(
+        test_id="numeric-two-base-one",
+        startup_window=2,
+        base_index=1,
+        window_names=["win1", "win2"],
+        expected_focus_index=1,
+        expect_warning_log=False,
     ),
     StartupIndexFixture(
         test_id="out-of-range",
         startup_window=5,
+        base_index=1,
         window_names=["win1", "win2"],
         expected_focus_index=None,
-        expect_info_log=False,
         expect_warning_log=True,
     ),
     StartupIndexFixture(
         test_id="no-match-string",
         startup_window="nonexistent",
+        base_index=0,
         window_names=["win1", "win2"],
         expected_focus_index=None,
-        expect_info_log=False,
         expect_warning_log=True,
     ),
 ]
@@ -805,19 +822,19 @@ def test_import_tmuxinator_startup_window_index_resolution(
     caplog: pytest.LogCaptureFixture,
     test_id: str,
     startup_window: str | int,
+    base_index: int,
     window_names: list[str],
     expected_focus_index: int | None,
-    expect_info_log: bool,
     expect_warning_log: bool,
 ) -> None:
-    """startup_window resolves by name first, then 0-based index with logging."""
+    """startup_window resolves by name first, then tmux base-index."""
     workspace: dict[str, t.Any] = {
         "name": "startup-test",
         "startup_window": startup_window,
         "windows": [{wn: "echo hi"} for wn in window_names],
     }
     with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.importers"):
-        result = importers.import_tmuxinator(workspace)
+        result = importers.import_tmuxinator(workspace, base_index=base_index)
 
     windows = result["windows"]
     for i, w in enumerate(windows):
@@ -826,21 +843,11 @@ def test_import_tmuxinator_startup_window_index_resolution(
         else:
             assert not w.get("focus"), f"window {i} should not have focus"
 
-    info_records = [
-        r
-        for r in caplog.records
-        if r.levelno == logging.INFO and "startup_window" in r.message
-    ]
     warning_records = [
         r
         for r in caplog.records
         if r.levelno == logging.WARNING and "startup_window" in r.message
     ]
-
-    if expect_info_log:
-        assert len(info_records) >= 1
-    else:
-        assert len(info_records) == 0
 
     if expect_warning_log:
         assert len(warning_records) >= 1
