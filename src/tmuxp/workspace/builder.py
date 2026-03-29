@@ -6,6 +6,7 @@ import logging
 import os
 import shlex
 import shutil
+import subprocess
 import time
 import typing as t
 
@@ -719,6 +720,26 @@ class WorkspaceBuilder:
                 if start_directory or environment or window_shell:
                     _here_pane = window.active_pane
                     if _here_pane is not None:
+                        # Warn if the pane has running child processes
+                        # that would be killed by respawn-pane -k
+                        _pane_pid = _here_pane.pane_pid
+                        if _pane_pid:
+                            try:
+                                _children = subprocess.run(
+                                    ["pgrep", "-P", _pane_pid],
+                                    capture_output=True,
+                                    text=True,
+                                )
+                                if _children.returncode == 0:
+                                    logger.warning(
+                                        "--here will kill running processes "
+                                        "in the active pane (pid %s) to "
+                                        "provision directory/environment",
+                                        _pane_pid,
+                                    )
+                            except FileNotFoundError:
+                                pass  # pgrep not available
+
                         _respawn_args: list[str] = ["respawn-pane", "-k"]
                         if start_directory:
                             _respawn_args.extend(["-c", start_directory])
