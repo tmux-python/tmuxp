@@ -5,7 +5,7 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from argparse_lexer import (
+from sphinx_argparse_neo.lexer import (
     ArgparseHelpLexer,
     ArgparseLexer,
     ArgparseUsageLexer,

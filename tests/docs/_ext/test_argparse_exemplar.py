@@ -13,7 +13,8 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from argparse_exemplar import (  # type: ignore[import-not-found]
+from docutils import nodes
+from sphinx_argparse_neo.exemplar import (
     ExemplarConfig,
     _extract_sections_from_container,
     _is_examples_section,
@@ -26,7 +27,6 @@ from argparse_exemplar import (  # type: ignore[import-not-found]
     process_node,
     transform_definition_list,
 )
-from docutils import nodes
 
 # --- is_examples_term tests ---
 
