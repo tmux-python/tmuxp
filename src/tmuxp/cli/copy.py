@@ -121,6 +121,13 @@ def command_copy(
         if not os.path.isabs(dest_path):
             dest_path = os.path.normpath(os.path.join(os.getcwd(), dest_path))
 
+    if os.path.realpath(source_path) == os.path.realpath(dest_path):
+        tmuxp_echo(
+            colors.error("Source and destination are the same file: ")
+            + colors.info(str(PrivatePath(source_path))),
+        )
+        sys.exit(1)
+
     if os.path.exists(dest_path) and not prompt_yes_no(
         f"Overwrite {colors.info(str(PrivatePath(dest_path)))}?",
         default=False,
