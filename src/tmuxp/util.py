@@ -214,6 +214,7 @@ def get_session(
     current_pane: Pane | None = None,
 ) -> Session:
     """Get tmux session for server by session name, respects current pane, if passed."""
+    session: Session | None = None
     try:
         if session_name:
             session = server.sessions.get(session_name=session_name)
@@ -223,15 +224,15 @@ def get_session(
             current_pane = get_current_pane(server)
             if current_pane:
                 session = server.sessions.get(session_id=current_pane.session_id)
-            else:
-                session = server.sessions[0]
-
     except Exception as e:
         if session_name:
             raise exc.SessionNotFound(session_name) from e
         raise exc.SessionNotFound from e
 
-    assert session is not None
+    if session is None:
+        if session_name:
+            raise exc.SessionNotFound(session_name)
+        raise exc.SessionNotFound
     return session
 
 

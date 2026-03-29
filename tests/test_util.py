@@ -162,19 +162,20 @@ def test_get_session_should_default_to_local_attached_session(
     assert get_session(server) == second_session
 
 
-def test_get_session_should_return_first_session_if_no_active_session(
+def test_get_session_raises_when_no_active_pane(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """get_session() should return first session if no active session."""
+    """get_session() should raise SessionNotFound when TMUX_PANE is unset."""
     # Clear outer tmux environment to ensure no active pane interferes
     monkeypatch.delenv("TMUX_PANE", raising=False)
     monkeypatch.delenv("TMUX", raising=False)
 
-    first_session = server.new_session(session_name="myfirstsession")
+    server.new_session(session_name="myfirstsession")
     server.new_session(session_name="mysecondsession")
 
-    assert get_session(server) == first_session
+    with pytest.raises(exc.SessionNotFound):
+        get_session(server)
 
 
 def test_get_pane_logs_debug_on_failure(
