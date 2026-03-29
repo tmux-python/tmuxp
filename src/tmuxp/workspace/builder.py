@@ -692,39 +692,44 @@ class WorkspaceBuilder:
                 if panes and "start_directory" in panes[0]:
                     start_directory = panes[0]["start_directory"]
 
-                if start_directory:
-                    active_pane = window.active_pane
-                    if active_pane is not None:
-                        active_pane.send_keys(
-                            f"cd {shlex.quote(start_directory)}",
-                            enter=True,
-                        )
-
-                # Provision environment — no window.set_environment in tmux,
-                # so export into the active pane's shell
+                # Provision environment via tmux session env (inherited
+                # by new panes).  Matches teamocil, which does not inject
+                # env vars via send_keys at all.
                 environment = window_config.get("environment")
                 if panes and "environment" in panes[0]:
                     environment = panes[0]["environment"]
                 if environment:
-                    _here_pane = window.active_pane
-                    if _here_pane is not None:
-                        for _ekey, _eval in environment.items():
-                            _here_pane.send_keys(
-                                f"export {_ekey}={shlex.quote(str(_eval))}",
-                                enter=True,
-                            )
+                    for _ekey, _eval in environment.items():
+                        session.set_environment(_ekey, str(_eval))
 
-                # Provision window_shell — send to active pane
+                # Resolve window_shell
                 window_shell = window_config.get("window_shell")
                 try:
                     if panes[0]["shell"] != "":
                         window_shell = panes[0]["shell"]
                 except (KeyError, IndexError):
                     pass
-                if window_shell:
+
+                # Use respawn-pane to provision the reused pane with the
+                # correct directory, environment, and shell.  This avoids
+                # send_keys entirely — no POSIX shell assumption, no
+                # typing into foreground programs, no history pollution.
+                # Matches teamocil's approach of using tmux primitives
+                # over send_keys for infrastructure setup.
+                if start_directory or environment or window_shell:
                     _here_pane = window.active_pane
                     if _here_pane is not None:
-                        _here_pane.send_keys(window_shell, enter=True)
+                        _respawn_args: list[str] = ["respawn-pane", "-k"]
+                        if start_directory:
+                            _respawn_args.extend(["-c", start_directory])
+                        if environment:
+                            for _ekey, _eval in environment.items():
+                                _respawn_args.extend(
+                                    ["-e", f"{_ekey}={_eval}"],
+                                )
+                        if window_shell:
+                            _respawn_args.append(window_shell)
+                        _here_pane.cmd(*_respawn_args)
             else:
                 is_first_window_pass = self.first_window_pass(
                     window_iterator,
