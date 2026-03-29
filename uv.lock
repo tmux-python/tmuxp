@@ -394,7 +394,7 @@ wheels = [
 [[package]]
 name = "gp-sphinx"
 version = "0.0.1a0"
-source = { editable = "../gp-sphinx/packages/gp-sphinx" }
+source = { git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fgp-sphinx&branch=init-2#c2fe249c8910e333da5c755f193fdb310224dd43" }
 dependencies = [
     { name = "docutils" },
     { name = "gp-libs" },
@@ -414,25 +414,6 @@ dependencies = [
     { name = "sphinxext-opengraph" },
     { name = "sphinxext-rediraffe" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "docutils" },
-    { name = "gp-libs" },
-    { name = "linkify-it-py" },
-    { name = "myst-parser" },
-    { name = "sphinx", specifier = "<9" },
-    { name = "sphinx-argparse-neo", marker = "extra == 'argparse'", editable = "../gp-sphinx/packages/sphinx-argparse-neo" },
-    { name = "sphinx-autodoc-typehints" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-design" },
-    { name = "sphinx-fonts", editable = "../gp-sphinx/packages/sphinx-fonts" },
-    { name = "sphinx-gptheme", editable = "../gp-sphinx/packages/sphinx-gptheme" },
-    { name = "sphinx-inline-tabs" },
-    { name = "sphinxext-opengraph" },
-    { name = "sphinxext-rediraffe" },
-]
-provides-extras = ["argparse"]
 
 [[package]]
 name = "h11"
@@ -1235,19 +1216,12 @@ wheels = [
 [[package]]
 name = "sphinx-argparse-neo"
 version = "0.0.1a0"
-source = { editable = "../gp-sphinx/packages/sphinx-argparse-neo" }
+source = { git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fsphinx-argparse-neo&branch=init-2#c2fe249c8910e333da5c755f193fdb310224dd43" }
 dependencies = [
     { name = "docutils" },
     { name = "pygments" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "docutils" },
-    { name = "pygments" },
-    { name = "sphinx" },
 ]
 
 [[package]]
@@ -1382,25 +1356,19 @@ wheels = [
 [[package]]
 name = "sphinx-fonts"
 version = "0.0.1a0"
-source = { editable = "../gp-sphinx/packages/sphinx-fonts" }
+source = { git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fsphinx-fonts&branch=init-2#c2fe249c8910e333da5c755f193fdb310224dd43" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
 
-[package.metadata]
-requires-dist = [{ name = "sphinx" }]
-
 [[package]]
 name = "sphinx-gptheme"
 version = "0.0.1a0"
-source = { editable = "../gp-sphinx/packages/sphinx-gptheme" }
+source = { git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fsphinx-gptheme&branch=init-2#c2fe249c8910e333da5c755f193fdb310224dd43" }
 dependencies = [
     { name = "furo" },
 ]
-
-[package.metadata]
-requires-dist = [{ name = "furo" }]
 
 [[package]]
 name = "sphinx-inline-tabs"
@@ -1585,7 +1553,7 @@ dev = [
     { name = "codecov" },
     { name = "coverage" },
     { name = "gp-libs" },
-    { name = "gp-sphinx", editable = "../gp-sphinx/packages/gp-sphinx" },
+    { name = "gp-sphinx", git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fgp-sphinx&branch=init-2" },
     { name = "mypy" },
     { name = "pillow" },
     { name = "pytest" },
@@ -1594,7 +1562,7 @@ dev = [
     { name = "pytest-rerunfailures" },
     { name = "pytest-watcher" },
     { name = "ruff" },
-    { name = "sphinx-argparse-neo", editable = "../gp-sphinx/packages/sphinx-argparse-neo" },
+    { name = "sphinx-argparse-neo", git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fsphinx-argparse-neo&branch=init-2" },
     { name = "sphinx-autobuild" },
     { name = "types-docutils" },
     { name = "types-pygments" },
@@ -1603,9 +1571,9 @@ dev = [
 docs = [
     { name = "aafigure" },
     { name = "gp-libs" },
-    { name = "gp-sphinx", editable = "../gp-sphinx/packages/gp-sphinx" },
+    { name = "gp-sphinx", git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fgp-sphinx&branch=init-2" },
     { name = "pillow" },
-    { name = "sphinx-argparse-neo", editable = "../gp-sphinx/packages/sphinx-argparse-neo" },
+    { name = "sphinx-argparse-neo", git = "https://github.com/git-pull/gp-sphinx?subdirectory=packages%2Fsphinx-argparse-neo&branch=init-2" },
     { name = "sphinx-autobuild" },
 ]
 lint = [
