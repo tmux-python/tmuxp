@@ -15,9 +15,11 @@ from libtmux.session import Session
 from tests.constants import FIXTURE_PATH
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
+from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli.load import (
+    _dispatch_build,
     _load_append_windows_to_current_session,
     _load_attached,
     load_plugins,
@@ -1170,6 +1172,195 @@ windows:
     assert marker.exists()
     assert session is not None
     session.kill()
+
+
+class DispatchBuildHookFixture(t.NamedTuple):
+    """Fixture for on_project_start dispatch behavior."""
+
+    test_id: str
+    detached: bool
+    append: bool
+    answer_yes: bool
+    here: bool
+    inside_tmux: bool
+    prompt_choice: str | None
+    expected_loader: str
+    expect_pre_build_hook: bool
+
+
+DISPATCH_BUILD_HOOK_FIXTURES: list[DispatchBuildHookFixture] = [
+    DispatchBuildHookFixture(
+        test_id="detached-new-session-runs-hook",
+        detached=True,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=False,
+        prompt_choice=None,
+        expected_loader="detached",
+        expect_pre_build_hook=True,
+    ),
+    DispatchBuildHookFixture(
+        test_id="interactive-append-skips-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=True,
+        prompt_choice="a",
+        expected_loader="append",
+        expect_pre_build_hook=False,
+    ),
+    DispatchBuildHookFixture(
+        test_id="interactive-detach-runs-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=True,
+        prompt_choice="n",
+        expected_loader="detached",
+        expect_pre_build_hook=True,
+    ),
+    DispatchBuildHookFixture(
+        test_id="interactive-attach-runs-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=True,
+        prompt_choice="y",
+        expected_loader="attached",
+        expect_pre_build_hook=True,
+    ),
+    DispatchBuildHookFixture(
+        test_id="here-inside-tmux-skips-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=True,
+        inside_tmux=True,
+        prompt_choice=None,
+        expected_loader="here",
+        expect_pre_build_hook=False,
+    ),
+    DispatchBuildHookFixture(
+        test_id="here-outside-tmux-fallback-runs-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=True,
+        inside_tmux=False,
+        prompt_choice=None,
+        expected_loader="attached",
+        expect_pre_build_hook=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(DispatchBuildHookFixture._fields),
+    DISPATCH_BUILD_HOOK_FIXTURES,
+    ids=[f.test_id for f in DISPATCH_BUILD_HOOK_FIXTURES],
+)
+def test_dispatch_build_on_project_start_only_for_new_session_paths(
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    detached: bool,
+    append: bool,
+    answer_yes: bool,
+    here: bool,
+    inside_tmux: bool,
+    prompt_choice: str | None,
+    expected_loader: str,
+    expect_pre_build_hook: bool,
+) -> None:
+    """_dispatch_build only runs on_project_start on new-session load paths."""
+
+    class DummyBuilder:
+        """Minimal builder stub for dispatch tests."""
+
+        def __init__(self) -> None:
+            self.session = object()
+            self.plugins: list[t.Any] = []
+            self.on_progress: t.Any = "sentinel"
+            self.on_before_script: t.Any = "sentinel"
+            self.on_script_output: t.Any = "sentinel"
+            self.on_build_event: t.Any = "sentinel"
+
+    builder = t.cast(WorkspaceBuilder, DummyBuilder())
+    loader_calls: list[str] = []
+    hook_calls: list[str] = []
+
+    def _pre_build_hook() -> None:
+        hook_calls.append("hook")
+
+    def _attached_stub(
+        builder: DummyBuilder,
+        detached: bool,
+        pre_build_hook: t.Callable[[], None] | None = None,
+        pre_attach_hook: t.Callable[[], None] | None = None,
+    ) -> None:
+        if pre_build_hook is not None:
+            pre_build_hook()
+        loader_calls.append("attached")
+
+    def _detached_stub(
+        builder: DummyBuilder,
+        colors: Colors | None = None,
+        pre_build_hook: t.Callable[[], None] | None = None,
+        pre_output_hook: t.Callable[[], None] | None = None,
+    ) -> None:
+        if pre_build_hook is not None:
+            pre_build_hook()
+        loader_calls.append("detached")
+
+    def _append_stub(builder: DummyBuilder) -> None:
+        loader_calls.append("append")
+
+    def _here_stub(builder: DummyBuilder) -> None:
+        loader_calls.append("here")
+
+    monkeypatch.setattr("tmuxp.cli.load._load_attached", _attached_stub)
+    monkeypatch.setattr("tmuxp.cli.load._load_detached", _detached_stub)
+    monkeypatch.setattr(
+        "tmuxp.cli.load._load_append_windows_to_current_session",
+        _append_stub,
+    )
+    monkeypatch.setattr("tmuxp.cli.load._load_here_in_current_session", _here_stub)
+    monkeypatch.setattr(
+        "tmuxp.cli.load._setup_plugins",
+        lambda builder: builder.session,
+    )
+
+    if prompt_choice is not None:
+        monkeypatch.setattr(
+            "tmuxp.cli.load.prompt_choices",
+            lambda *a, **kw: prompt_choice,
+        )
+
+    if inside_tmux:
+        monkeypatch.setenv("TMUX", "/tmp/tmux-test/default,12345,0")
+    else:
+        monkeypatch.delenv("TMUX", raising=False)
+
+    result = _dispatch_build(
+        builder=builder,
+        detached=detached,
+        append=append,
+        answer_yes=answer_yes,
+        cli_colors=Colors(ColorMode.NEVER),
+        here=here,
+        pre_build_hook=_pre_build_hook,
+    )
+
+    assert result is builder.session
+    assert loader_calls == [expected_loader], test_id
+    assert hook_calls == (["hook"] if expect_pre_build_hook else []), test_id
+    assert builder.on_progress is None
+    assert builder.on_before_script is None
+    assert builder.on_script_output is None
+    assert builder.on_build_event is None
 
 
 def test_load_on_project_restart_runs_hook(

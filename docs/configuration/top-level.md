@@ -61,7 +61,7 @@ windows:
 |------|-------------|
 | `on_project_start` | Before session build (new session creation only) |
 | `on_project_restart` | When reattaching to an existing session (confirmed attach only) |
-| `on_project_exit` | On client detach (tmux `client-detached` hook) |
+| `on_project_exit` | When the last client detaches (tmux `client-detached` hook) |
 | `on_project_stop` | Before `tmuxp stop` kills the session |
 
 Each hook accepts a string (single command) or a list of strings (multiple commands run sequentially).
@@ -74,12 +74,12 @@ on_project_start:
 
 ```{note}
 These hooks are inspired by tmuxinator's lifecycle hooks but have tmuxp-specific semantics.
-`on_project_start` only fires on new session creation (not on reattach).
+`on_project_start` only fires on new session creation (not on reattach, append, or `--here`).
 `on_project_restart` only fires when you confirm reattaching to an existing session.
 ```
 
 ```{note}
-`on_project_exit` uses tmux's `client-detached` hook, which fires on **any** client detach — including terminal close, SSH disconnect, or manual `tmux detach`. Note: unlike tmuxinator (which fires `on_project_exit` once when the wrapper script exits), tmuxp's hook fires on every detach event for the lifetime of the session.
+`on_project_exit` uses tmux's `client-detached` hook, but tmuxp guards it with `#{session_attached} == 0` so the command only runs when the **last** client detaches. This avoids repeated teardown in multi-client sessions. Unlike tmuxinator's wrapper-process hook, tmuxp keeps the hook on the session itself for the session lifetime.
 ```
 
 ## Pane titles
