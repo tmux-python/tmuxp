@@ -1504,3 +1504,102 @@ def test_load_append_and_detached_mutually_exclusive() -> None:
     parser = create_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["load", "--append", "-d", "myconfig"])
+
+
+# --- --here error recovery tests (535ca944) ---
+
+
+class HereErrorRecoveryFixture(t.NamedTuple):
+    """Fixture for --here error recovery prompt behavior."""
+
+    test_id: str
+    here: bool
+    expected_choices: list[str]
+    expected_default: str
+    kill_option_present: bool
+
+
+HERE_ERROR_RECOVERY_FIXTURES: list[HereErrorRecoveryFixture] = [
+    HereErrorRecoveryFixture(
+        test_id="here-mode-no-kill",
+        here=True,
+        expected_choices=["a", "d"],
+        expected_default="d",
+        kill_option_present=False,
+    ),
+    HereErrorRecoveryFixture(
+        test_id="normal-mode-has-kill",
+        here=False,
+        expected_choices=["k", "a", "d"],
+        expected_default="k",
+        kill_option_present=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereErrorRecoveryFixture._fields),
+    HERE_ERROR_RECOVERY_FIXTURES,
+    ids=[f.test_id for f in HERE_ERROR_RECOVERY_FIXTURES],
+)
+def test_here_error_recovery_prompt(
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    here: bool,
+    expected_choices: list[str],
+    expected_default: str,
+    kill_option_present: bool,
+) -> None:
+    """--here error recovery skips (k)ill to protect user's live session."""
+    from unittest.mock import MagicMock
+
+    from tmuxp._internal.colors import ColorMode, Colors
+    from tmuxp.cli.load import _dispatch_build
+
+    captured_kwargs: dict[str, t.Any] = {}
+
+    def _capture_prompt_choices(*args: t.Any, **kwargs: t.Any) -> str:
+        captured_kwargs.update(kwargs)
+        captured_kwargs["choices"] = kwargs.get("choices", [])
+        return "d"  # Always detach to exit cleanly
+
+    monkeypatch.setattr(
+        "tmuxp.cli.load.prompt_choices",
+        _capture_prompt_choices,
+    )
+
+    # Create a mock builder that raises TmuxpException when built
+    from tmuxp import exc
+
+    mock_builder = MagicMock()
+    mock_builder.session = None
+
+    # Simulate the here path raising an error
+    if here:
+        monkeypatch.setattr(
+            "tmuxp.cli.load._load_here_in_current_session",
+            MagicMock(side_effect=exc.TmuxpException("test error")),
+        )
+        monkeypatch.setenv("TMUX", "/tmp/tmux-test/default,12345,0")
+    else:
+        monkeypatch.setattr(
+            "tmuxp.cli.load._load_attached",
+            MagicMock(side_effect=exc.TmuxpException("test error")),
+        )
+        monkeypatch.delenv("TMUX", raising=False)
+
+    cli_colors = Colors(ColorMode.NEVER)
+
+    with pytest.raises(SystemExit):
+        _dispatch_build(
+            builder=mock_builder,
+            detached=False,
+            append=False,
+            answer_yes=not here,  # answer_yes triggers _load_attached path
+            cli_colors=cli_colors,
+            here=here,
+        )
+
+    assert captured_kwargs["choices"] == expected_choices
+    assert captured_kwargs.get("default") == expected_default
+    assert ("k" in captured_kwargs["choices"]) == kill_option_present
