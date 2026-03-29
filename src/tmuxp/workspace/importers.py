@@ -98,9 +98,16 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         it = iter(tokens)
         for token in it:
             if token in flag_map:
+                # Space-separated: -L mysocket
                 value = next(it, None)
                 if value is not None:
                     tmuxp_workspace[flag_map[token]] = value
+            else:
+                # Attached form: -Lmysocket
+                for prefix, key in flag_map.items():
+                    if token.startswith(prefix) and len(token) > len(prefix):
+                        tmuxp_workspace[key] = token[len(prefix) :]
+                        break
 
     if "socket_name" in workspace_dict:
         explicit_name = workspace_dict["socket_name"]
