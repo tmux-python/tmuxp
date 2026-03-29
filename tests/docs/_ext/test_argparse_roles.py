@@ -5,7 +5,8 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from argparse_roles import (
+from docutils import nodes
+from sphinx_argparse_neo.roles import (
     cli_choice_role,
     cli_command_role,
     cli_default_role,
@@ -14,7 +15,6 @@ from argparse_roles import (
     normalize_options,
     register_roles,
 )
-from docutils import nodes
 
 # --- normalize_options tests ---
 
