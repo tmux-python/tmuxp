@@ -271,3 +271,22 @@ def test_copy_error_exits_nonzero(
     if expected_output_fragment:
         captured = capsys.readouterr()
         assert expected_output_fragment in captured.out
+
+
+def test_copy_self_copy_rejected(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Tmuxp copy rejects copying a workspace to itself."""
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(tmp_path))
+
+    workspace_file = tmp_path / "self.yaml"
+    workspace_file.write_text("session_name: self\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(["copy", str(workspace_file), str(workspace_file)])
+
+    assert exc_info.value.code == 1
+    captured = capsys.readouterr()
+    assert "same file" in captured.out
