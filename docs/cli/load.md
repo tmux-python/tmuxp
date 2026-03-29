@@ -276,6 +276,10 @@ The `--no-shell-command-before` flag skips all `shell_command_before` entries at
 $ tmuxp load --no-shell-command-before myproject
 ```
 
+```{note}
+This flag is intentionally broader than tmuxinator's `--no-pre-window`, which only disables the window-level `pre_window` chain. tmuxp's flag strips `shell_command_before` at all levels for a clean reload experience.
+```
+
 ## Debug mode
 
 The `--debug` flag shows tmux commands as they execute. This disables the progress spinner and attaches a debug handler to libtmux's logger, printing each tmux command to stdout.
