@@ -112,7 +112,7 @@ def command_stop(
                 default=None,
             )
         elif os.environ.get("TMUX"):
-            session = util.get_session(server)
+            session = util.get_session(server, require_pane_resolution=True)
         else:
             tmuxp_echo(
                 colors.error("No session name given and not inside tmux."),
