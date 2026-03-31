@@ -13,6 +13,9 @@
     font-weight: {{ face.weight }};
     font-display: block;
     src: url("{{ pathto('_static/fonts/' + face.filename, 1) }}") format("woff2");
+    {%- if face.unicode_range %}
+    unicode-range: {{ face.unicode_range }};
+    {%- endif %}
   }
   {%- endfor %}
   {%- for fb in font_fallbacks|default([]) %}
