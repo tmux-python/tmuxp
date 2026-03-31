@@ -96,6 +96,36 @@ def test_cdn_url_matches_template() -> None:
     assert url.endswith(".woff2")
 
 
+# --- _unicode_range tests ---
+
+
+def test_unicode_range_latin() -> None:
+    """_unicode_range returns a non-empty range for 'latin'."""
+    result = sphinx_fonts._unicode_range("latin")
+    assert result.startswith("U+")
+    assert "U+0000" in result
+
+
+def test_unicode_range_latin_ext() -> None:
+    """_unicode_range returns a non-empty range for 'latin-ext'."""
+    result = sphinx_fonts._unicode_range("latin-ext")
+    assert result.startswith("U+")
+    assert result != sphinx_fonts._unicode_range("latin")
+
+
+def test_unicode_range_unknown_subset() -> None:
+    """_unicode_range returns empty string for unknown subsets."""
+    result = sphinx_fonts._unicode_range("klingon")
+    assert result == ""
+
+
+def test_unicode_range_all_known_subsets_non_empty() -> None:
+    """Every subset in _UNICODE_RANGES produces a non-empty range."""
+    for subset, urange in sphinx_fonts._UNICODE_RANGES.items():
+        assert urange.startswith("U+"), f"subset {subset!r} has invalid range"
+        assert sphinx_fonts._unicode_range(subset) == urange
+
+
 # --- _download_font tests ---
 
 
@@ -335,6 +365,105 @@ def test_on_builder_inited_explicit_subset(
     sphinx_fonts._on_builder_inited(app)
 
     assert app._font_faces[0]["filename"] == "noto-sans-latin-ext-400-normal.woff2"
+
+
+def test_on_builder_inited_multiple_subsets(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """_on_builder_inited downloads files for each subset and includes unicode_range."""
+    monkeypatch.setattr("sphinx_fonts._cache_dir", lambda: tmp_path / "cache")
+
+    fonts = [
+        {
+            "package": "@fontsource/ibm-plex-sans",
+            "version": "5.2.8",
+            "family": "IBM Plex Sans",
+            "subsets": ["latin", "latin-ext"],
+            "weights": [400],
+            "styles": ["normal"],
+        },
+    ]
+    app = _make_app(tmp_path, fonts=fonts)
+
+    cache = tmp_path / "cache"
+    cache.mkdir(parents=True)
+    (cache / "ibm-plex-sans-latin-400-normal.woff2").write_bytes(b"data")
+    (cache / "ibm-plex-sans-latin-ext-400-normal.woff2").write_bytes(b"data")
+
+    sphinx_fonts._on_builder_inited(app)
+
+    assert len(app._font_faces) == 2
+    filenames = [f["filename"] for f in app._font_faces]
+    assert "ibm-plex-sans-latin-400-normal.woff2" in filenames
+    assert "ibm-plex-sans-latin-ext-400-normal.woff2" in filenames
+
+    # unicode_range should be populated for known subsets
+    latin_face = next(f for f in app._font_faces if "latin-400" in f["filename"])
+    assert latin_face["unicode_range"].startswith("U+")
+    latin_ext_face = next(f for f in app._font_faces if "latin-ext" in f["filename"])
+    assert latin_ext_face["unicode_range"].startswith("U+")
+    assert latin_face["unicode_range"] != latin_ext_face["unicode_range"]
+
+
+def test_on_builder_inited_legacy_subset_gets_unicode_range(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legacy single 'subset' config still produces unicode_range in font_faces."""
+    monkeypatch.setattr("sphinx_fonts._cache_dir", lambda: tmp_path / "cache")
+
+    fonts = [
+        {
+            "package": "@fontsource/noto-sans",
+            "version": "5.0.0",
+            "family": "Noto Sans",
+            "subset": "latin",
+            "weights": [400],
+            "styles": ["normal"],
+        },
+    ]
+    app = _make_app(tmp_path, fonts=fonts)
+
+    cache = tmp_path / "cache"
+    cache.mkdir(parents=True)
+    (cache / "noto-sans-latin-400-normal.woff2").write_bytes(b"data")
+
+    sphinx_fonts._on_builder_inited(app)
+
+    assert len(app._font_faces) == 1
+    assert app._font_faces[0]["unicode_range"].startswith("U+")
+
+
+def test_on_builder_inited_preload_uses_primary_subset(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Preload uses the first (primary) subset when multiple are configured."""
+    monkeypatch.setattr("sphinx_fonts._cache_dir", lambda: tmp_path / "cache")
+
+    fonts = [
+        {
+            "package": "@fontsource/ibm-plex-sans",
+            "version": "5.2.8",
+            "family": "IBM Plex Sans",
+            "subsets": ["latin", "latin-ext"],
+            "weights": [400],
+            "styles": ["normal"],
+        },
+    ]
+    preload = [("IBM Plex Sans", 400, "normal")]
+    app = _make_app(tmp_path, fonts=fonts, preload=preload)
+
+    cache = tmp_path / "cache"
+    cache.mkdir(parents=True)
+    (cache / "ibm-plex-sans-latin-400-normal.woff2").write_bytes(b"data")
+    (cache / "ibm-plex-sans-latin-ext-400-normal.woff2").write_bytes(b"data")
+
+    sphinx_fonts._on_builder_inited(app)
+
+    # Preload should only include the primary (first) subset
+    assert app._font_preload_hrefs == ["ibm-plex-sans-latin-400-normal.woff2"]
 
 
 def test_on_builder_inited_preload_match(
