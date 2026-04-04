@@ -152,18 +152,10 @@ enable_incomplete_feature = []
 [[tool.mypy.overrides]]
 module = [
   "shtab",
-  "aafigure",
   "IPython.*",
   "ptpython.*",
   "prompt_toolkit.*",
   "bpython",
-  "sphinx_argparse_neo",
-  "sphinx_argparse_neo.*",
-  "sphinx_fonts",
-  "docutils",
-  "docutils.*",
-  "pygments",
-  "pygments.*",
 ]
 ignore_missing_imports = true
 
