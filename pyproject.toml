@@ -144,9 +144,6 @@ files = [
   "src/",
   "tests/",
 ]
-exclude = [
-  "tests/docs/",
-]
 enable_incomplete_feature = []
 
 [[tool.mypy.overrides]]
