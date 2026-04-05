@@ -156,6 +156,7 @@ module = [
   "ptpython.*",
   "prompt_toolkit.*",
   "bpython",
+  "aafigure",
 ]
 ignore_missing_imports = true
 
