@@ -5,7 +5,7 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from cli_usage_lexer import (
+from sphinx_argparse_neo.cli_usage_lexer import (
     CLIUsageLexer,
     tokenize_usage,
 )

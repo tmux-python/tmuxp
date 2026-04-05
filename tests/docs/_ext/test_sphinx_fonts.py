@@ -623,7 +623,7 @@ def test_setup_return_value() -> None:
     result = sphinx_fonts.setup(app)
 
     assert result == {
-        "version": "1.0",
+        "version": sphinx_fonts.__version__,
         "parallel_read_safe": True,
         "parallel_write_safe": True,
     }
