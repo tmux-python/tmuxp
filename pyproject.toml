@@ -57,18 +57,10 @@ dev = [
   # Docs
   "aafigure",  # https://launchpad.net/aafigure
   "pillow",  # https://pillow.readthedocs.io/
-  "sphinx<9",  # https://www.sphinx-doc.org/
-  "furo",  # https://pradyunsg.me/furo/
+  "gp-sphinx==0.0.1a0",  # https://gp-sphinx.git-pull.com/
+  "sphinx-argparse-neo==0.0.1a0",  # https://gp-sphinx.git-pull.com/
   "gp-libs",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
-  "sphinx-autodoc-typehints",  # https://sphinx-autodoc-typehints.readthedocs.io/
-  "sphinx-inline-tabs",  # https://sphinx-inline-tabs.readthedocs.io/
-  "sphinxext-opengraph",  # https://sphinxext-opengraph.readthedocs.io/
-  "sphinx-copybutton",  # https://sphinx-copybutton.readthedocs.io/
-  "sphinxext-rediraffe",  # https://sphinxext-rediraffe.readthedocs.io/
-  "sphinx-design",  # https://sphinx-design.readthedocs.io/
-  "myst-parser",  # https://myst-parser.readthedocs.io/
-  "linkify-it-py",  # https://github.com/tsutsu3/linkify-it-py
   # Testing
   "gp-libs",
   "pytest",
@@ -90,18 +82,10 @@ dev = [
 docs = [
   "aafigure",  # https://launchpad.net/aafigure
   "pillow",  # https://pillow.readthedocs.io/
-  "sphinx<9",  # https://www.sphinx-doc.org/
-  "furo",  # https://pradyunsg.me/furo/
+  "gp-sphinx==0.0.1a0",  # https://gp-sphinx.git-pull.com/
+  "sphinx-argparse-neo==0.0.1a0",  # https://gp-sphinx.git-pull.com/
   "gp-libs",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
-  "sphinx-autodoc-typehints",  # https://sphinx-autodoc-typehints.readthedocs.io/
-  "sphinx-inline-tabs",  # https://sphinx-inline-tabs.readthedocs.io/
-  "sphinxext-opengraph",  # https://sphinxext-opengraph.readthedocs.io/
-  "sphinx-copybutton",  # https://sphinx-copybutton.readthedocs.io/
-  "sphinxext-rediraffe",  # https://sphinxext-rediraffe.readthedocs.io/
-  "sphinx-design",  # https://sphinx-design.readthedocs.io/
-  "myst-parser",  # https://myst-parser.readthedocs.io/
-  "linkify-it-py",  # https://github.com/tsutsu3/linkify-it-py
 ]
 testing = [
   "gp-libs",
@@ -160,29 +144,16 @@ files = [
   "src/",
   "tests/",
 ]
-exclude = [
-  "tests/docs/",
-]
 enable_incomplete_feature = []
 
 [[tool.mypy.overrides]]
 module = [
   "shtab",
-  "aafigure",
   "IPython.*",
   "ptpython.*",
   "prompt_toolkit.*",
   "bpython",
-  "sphinx_argparse_neo",
-  "sphinx_argparse_neo.*",
-  "sphinx_fonts",
-  "cli_usage_lexer",
-  "argparse_lexer",
-  "argparse_roles",
-  "docutils",
-  "docutils.*",
-  "pygments",
-  "pygments.*",
+  "aafigure",
 ]
 ignore_missing_imports = true
 
