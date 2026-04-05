@@ -1656,14 +1656,14 @@ wheels = [
 
 [[package]]
 name = "types-pygments"
-version = "2.19.0.20260402"
+version = "2.20.0.20260405"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "types-docutils" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/a8/5834c55d900ce31b31367eedb82e664347dfa551a957b74a0ce0cd9f4f9a/types_pygments-2.19.0.20260402.tar.gz", hash = "sha256:bd26e1f662c9a3b8ea56668ddc099b809ffd54931bee97b15853bc4a8e5d4250", size = 18808, upload-time = "2026-04-02T04:21:13.058Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/28/7a11c06b290e370eca368dd59d9738a79657a7518f5a4021b1e187c1a16d/types_pygments-2.20.0.20260405.tar.gz", hash = "sha256:f06fe34d6457044ce7587a5a6cf73e6bc5c769c933cd9edf033379bcd7ed2897", size = 19342, upload-time = "2026-04-05T04:27:06.184Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/f2/b23659df4219fc4f39a45ede527cc209d961c7ff957678536a7a9d9ac9c5/types_pygments-2.19.0.20260402-py3-none-any.whl", hash = "sha256:5b0d863cec1c43ba38c946fb6e89d389c1cf287806f72360336fba4482f8daeb", size = 25672, upload-time = "2026-04-02T04:21:11.916Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/51/dabb479c2cda4fbed99a0f2045aee2bb91487c50c654a7ad6dfa327c5b82/types_pygments-2.20.0.20260405-py3-none-any.whl", hash = "sha256:79dc975f7a9c6cbfdcc32f3d31b7eb507d39a41031c3b2124f16fc2e42326954", size = 26688, upload-time = "2026-04-05T04:27:05.215Z" },
 ]
 
 [[package]]
