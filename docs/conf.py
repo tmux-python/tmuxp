@@ -31,7 +31,11 @@ conf = merge_sphinx_config(
     source_branch="master",
     light_logo="img/tmuxp.svg",
     dark_logo="img/tmuxp.svg",
-    extra_extensions=["aafig", "sphinx_argparse_neo.exemplar"],
+    extra_extensions=[
+        "sphinx_autodoc_api_style",
+        "aafig",
+        "sphinx_argparse_neo.exemplar",
+    ],
     intersphinx_mapping={
         "python": ("https://docs.python.org/", None),
         "libtmux": ("https://libtmux.git-pull.com/", None),
