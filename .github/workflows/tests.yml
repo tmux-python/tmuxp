@@ -83,7 +83,7 @@ jobs:
           tmux -V
           uv run py.test --cov=./ --cov-report=xml --verbose
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
