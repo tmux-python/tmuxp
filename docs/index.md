@@ -103,4 +103,6 @@ history
 about_tmux
 migration
 glossary
+MCP <https://tmuxp-mcp.git-pull.com>
+GitHub <https://github.com/tmux-python/tmuxp>
 ```
