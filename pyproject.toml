@@ -113,6 +113,29 @@ lint = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv.exclude-newer-package]
+# git-pull packages release in lockstep with their workspaces, so a
+# fresh release blocking on the 3-day cooldown blocks every
+# contributor's `uv sync` until it clears. `false` exempts each
+# from any `exclude-newer` constraint (global or per-user) without
+# committing a date that would age into the lockfile. Mirrors the
+# pattern at vcspull/pyproject.toml for libvcs.
+gp-libs = false
+gp-sphinx = false
+sphinx-autodoc-api-style = false
+sphinx-autodoc-argparse = false
+sphinx-autodoc-docutils = false
+sphinx-autodoc-fastmcp = false
+sphinx-autodoc-pytest-fixtures = false
+sphinx-autodoc-sphinx = false
+sphinx-autodoc-typehints-gp = false
+sphinx-fonts = false
+sphinx-gp-opengraph = false
+sphinx-gp-sitemap = false
+sphinx-gp-theme = false
+sphinx-ux-autodoc-layout = false
+sphinx-ux-badges = false
+
 [tool.coverage.run]
 branch = true
 source = [
