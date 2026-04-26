@@ -57,9 +57,9 @@ dev = [
   # Docs
   "aafigure",  # https://launchpad.net/aafigure
   "pillow",  # https://pillow.readthedocs.io/
-  "gp-sphinx==0.0.1a9",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-argparse==0.0.1a9",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-api-style==0.0.1a9",
+  "gp-sphinx==0.0.1a10",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-argparse==0.0.1a10",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-api-style==0.0.1a10",
   "gp-libs",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
   # Testing
@@ -83,9 +83,9 @@ dev = [
 docs = [
   "aafigure",  # https://launchpad.net/aafigure
   "pillow",  # https://pillow.readthedocs.io/
-  "gp-sphinx==0.0.1a9",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-argparse==0.0.1a9",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-api-style==0.0.1a9",
+  "gp-sphinx==0.0.1a10",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-argparse==0.0.1a10",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-api-style==0.0.1a10",
   "gp-libs",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
 ]
