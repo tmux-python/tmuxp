@@ -471,3 +471,60 @@ def test_shell_interactive(
 
     result = capsys.readouterr()
     assert message.format(**template_ctx) in result.err
+
+
+def test_shell_yes_creates_missing_session(
+    server: Server,
+    session: Session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """``tmuxp shell --yes`` creates a missing session instead of raising."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+    monkeypatch.delenv("TMUX", raising=False)
+
+    assert server.socket_name is not None
+    new_session_name = "shell_prompt_yes_creates"
+    assert not server.has_session(new_session_name)
+
+    cli_args = [
+        "shell",
+        f"-L{server.socket_name}",
+        new_session_name,
+        "--yes",
+        "-c",
+        "print(session.name)",
+    ]
+
+    monkeypatch.chdir(tmp_path)
+    cli.cli(cli_args)
+
+    result = capsys.readouterr()
+    assert new_session_name in result.out
+    assert server.has_session(new_session_name)
+
+
+def test_shell_no_yes_non_interactive_raises_for_missing_session(
+    server: Server,
+    session: Session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Without ``--yes`` and no TTY, a missing session still raises."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+    monkeypatch.delenv("TMUX", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    assert server.socket_name is not None
+    cli_args = [
+        "shell",
+        f"-L{server.socket_name}",
+        "definitely_not_a_session",
+        "-c",
+        "print(session.name)",
+    ]
+    with pytest.raises(exc.TmuxpException, match="Session not found"):
+        cli.cli(cli_args)
