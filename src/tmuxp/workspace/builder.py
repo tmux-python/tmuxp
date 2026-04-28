@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 def _wait_for_pane_ready(
     pane: Pane,
     timeout: float = 2.0,
-    interval: float = 0.05,
+    interval: float = 0.01,
 ) -> bool:
     """Wait for pane shell to draw its prompt.
 
