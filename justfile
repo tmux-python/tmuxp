@@ -35,6 +35,69 @@ watch-test:
         just _entr-warn
     fi
 
+# Run the test suite with the libtmux subprocess engine (default behavior)
+[group: 'engines']
+test-subprocess *args:
+    LIBTMUX_ENGINE=subprocess uv run py.test --engine=subprocess {{ args }}
+
+# Run the test suite with the libtmux imsg (binary protocol) engine
+[group: 'engines']
+test-imsg *args:
+    LIBTMUX_ENGINE=imsg uv run py.test --engine=imsg {{ args }}
+
+# Run the full suite under both engines sequentially and stop on first failure
+[group: 'engines']
+test-engines *args:
+    @echo "===> subprocess engine"
+    just test-subprocess {{ args }}
+    @echo "===> imsg engine"
+    just test-imsg {{ args }}
+
+# Benchmark the test suite under both engines and print a side-by-side summary
+[group: 'engines']
+bench-engines *args:
+    #!/usr/bin/env bash
+    set -uo pipefail
+    set -- {{ args }}
+
+    report=$(mktemp)
+    trap 'rm -f "$report"' EXIT
+
+    bench_engine() {
+        local engine="$1"; shift
+        local log start end elapsed summary status
+        log=$(mktemp)
+        echo "===> running with $engine engine"
+        start=$(date +%s.%N)
+        LIBTMUX_ENGINE="$engine" uv run py.test \
+            --engine="$engine" \
+            --no-header --tb=no -q --no-cov \
+            "$@" 2>&1 | tee "$log"
+        status=${PIPESTATUS[0]}
+        end=$(date +%s.%N)
+        elapsed=$(awk "BEGIN { printf \"%.2f\", $end - $start }")
+        summary=$(grep -E "passed|failed|error" "$log" | tail -1 | sed 's/^=*//;s/=*$//;s/^ *//;s/ *$//')
+        rm -f "$log"
+        printf "%s\t%s\t%s\t%s\n" "$engine" "$elapsed" "$status" "$summary" >> "$report"
+    }
+
+    bench_engine subprocess "$@"
+    bench_engine imsg "$@"
+
+    echo
+    echo "============================== engine benchmark =============================="
+    printf "  %-12s %10s  %-7s  %s\n" "engine" "wall (s)" "exit" "summary"
+    printf "  %-12s %10s  %-7s  %s\n" "------" "--------" "----" "-------"
+    while IFS=$'\t' read -r engine elapsed status summary; do
+        if [ "$status" = "0" ]; then
+            label=ok
+        else
+            label="FAIL"
+        fi
+        printf "  %-12s %10s  %-7s  %s\n" "$engine" "$elapsed" "$label" "$summary"
+    done < "$report"
+    echo "=============================================================================="
+
 # Build documentation
 [group: 'docs']
 build-docs:

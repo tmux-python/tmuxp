@@ -113,6 +113,11 @@ lint = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv.sources]
+# Editable pin to the local libtmux-protocol worktree so we can
+# benchmark and validate the imsg engine against tmuxp's full test suite.
+libtmux = { path = "../libtmux-protocol", editable = true }
+
 [tool.uv.exclude-newer-package]
 # git-pull packages release in lockstep with their workspaces, so a
 # fresh release blocking on the 3-day cooldown blocks every

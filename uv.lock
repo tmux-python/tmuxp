@@ -576,10 +576,53 @@ wheels = [
 [[package]]
 name = "libtmux"
 version = "0.55.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/86/01/fa4f839045d32576d4c193d85ba37e47908fea8227f18800847f589e2476/libtmux-0.55.1.tar.gz", hash = "sha256:dcee950537b8bda4337267bc2cb62b434c4c8da3a75c1546151674238ef14e20", size = 439372, upload-time = "2026-04-19T18:25:39.358Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/2e/819d7414b96f19ec4cafda95555246bdb9766dd7c0519b5b1bf4495789f7/libtmux-0.55.1-py3-none-any.whl", hash = "sha256:4382667d508610bdf71a7cc07d7a561d402fa2d5621cce299e7ae97b0cdcb93b", size = 80679, upload-time = "2026-04-19T18:25:37.61Z" },
+source = { editable = "../libtmux-protocol" }
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+coverage = [
+    { name = "codecov" },
+    { name = "coverage" },
+    { name = "pytest-cov" },
+]
+dev = [
+    { name = "codecov" },
+    { name = "coverage" },
+    { name = "gp-libs" },
+    { name = "gp-sphinx", specifier = "==0.0.1a12" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "pytest-mock" },
+    { name = "pytest-rerunfailures" },
+    { name = "pytest-watcher" },
+    { name = "pytest-xdist" },
+    { name = "ruff" },
+    { name = "sphinx-autobuild" },
+    { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a12" },
+    { name = "sphinx-autodoc-pytest-fixtures", specifier = "==0.0.1a12" },
+    { name = "types-docutils" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+docs = [
+    { name = "gp-sphinx", specifier = "==0.0.1a12" },
+    { name = "sphinx-autobuild" },
+    { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a12" },
+    { name = "sphinx-autodoc-pytest-fixtures", specifier = "==0.0.1a12" },
+]
+lint = [
+    { name = "mypy" },
+    { name = "ruff" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
+]
+testing = [
+    { name = "gp-libs" },
+    { name = "pytest" },
+    { name = "pytest-mock" },
+    { name = "pytest-rerunfailures" },
+    { name = "pytest-watcher" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 
 [[package]]
@@ -1627,7 +1670,7 @@ testing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "libtmux", specifier = "~=0.55.0" },
+    { name = "libtmux", editable = "../libtmux-protocol" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
