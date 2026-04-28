@@ -11,7 +11,6 @@ https://docs.pytest.org/en/stable/deprecations.html
 from __future__ import annotations
 
 import logging
-import os
 import pathlib
 import shutil
 import typing as t
@@ -27,20 +26,6 @@ if t.TYPE_CHECKING:
     from libtmux.session import Session
 
 logger = logging.getLogger(__name__)
-USING_ZSH = "zsh" in os.getenv("SHELL", "")
-
-
-@pytest.fixture(autouse=USING_ZSH, scope="session")
-def zshrc(user_path: pathlib.Path) -> pathlib.Path | None:
-    """Quiets ZSH default message.
-
-    Needs a startup file .zshenv, .zprofile, .zshrc, .zlogin.
-    """
-    if not USING_ZSH:
-        return None
-    p = user_path / ".zshrc"
-    p.touch()
-    return p
 
 
 @pytest.fixture(autouse=True)
