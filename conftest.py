@@ -100,6 +100,9 @@ def socket_name(request: pytest.FixtureRequest) -> str:
 
 # Modules that actually need tmux fixtures in their doctests
 DOCTEST_NEEDS_TMUX = {
+    "tmuxp.cli.load",
+    "tmuxp.cli.stop",
+    "tmuxp.util",
     "tmuxp.workspace.builder",
 }
 

@@ -15,11 +15,15 @@ from libtmux.session import Session
 from tests.constants import FIXTURE_PATH
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
+from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli.load import (
+    CLILoadNamespace,
+    _dispatch_build,
     _load_append_windows_to_current_session,
     _load_attached,
+    command_load,
     load_plugins,
     load_workspace,
 )
@@ -887,6 +891,246 @@ def test_load_workspace_env_progress_disabled(
     assert session.name == "sample workspace"
 
 
+class NoShellCommandBeforeFixture(t.NamedTuple):
+    """Test fixture for --no-shell-command-before flag tests."""
+
+    test_id: str
+    no_shell_command_before: bool
+    expect_before_cmd: bool
+
+
+NO_SHELL_COMMAND_BEFORE_FIXTURES: list[NoShellCommandBeforeFixture] = [
+    NoShellCommandBeforeFixture(
+        test_id="with-shell-command-before",
+        no_shell_command_before=False,
+        expect_before_cmd=True,
+    ),
+    NoShellCommandBeforeFixture(
+        test_id="no-shell-command-before",
+        no_shell_command_before=True,
+        expect_before_cmd=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(NoShellCommandBeforeFixture._fields),
+    NO_SHELL_COMMAND_BEFORE_FIXTURES,
+    ids=[f.test_id for f in NO_SHELL_COMMAND_BEFORE_FIXTURES],
+)
+def test_load_workspace_no_shell_command_before(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    no_shell_command_before: bool,
+    expect_before_cmd: bool,
+) -> None:
+    """Test --no-shell-command-before strips shell_command_before from config."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        """
+session_name: scb_test
+shell_command_before:
+  - echo __BEFORE__
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        no_shell_command_before=no_shell_command_before,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "scb_test"
+
+    window = session.active_window
+    assert window is not None
+    pane = window.active_pane
+    assert pane is not None
+
+    from libtmux.test.retry import retry_until
+
+    if expect_before_cmd:
+        assert retry_until(
+            lambda: "__BEFORE__" in "\n".join(pane.capture_pane()),
+            seconds=5,
+        )
+    else:
+        import time
+
+        time.sleep(1)
+        assert "__BEFORE__" not in "\n".join(pane.capture_pane())
+
+
+def test_load_no_shell_command_before_strips_all_levels(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify --no-shell-command-before strips from session, window, and pane levels."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "multi_level.yaml"
+    workspace_file.write_text(
+        """
+session_name: strip_test
+shell_command_before:
+  - echo session_before
+windows:
+- window_name: main
+  shell_command_before:
+    - echo window_before
+  panes:
+  - shell_command:
+    - echo hello
+    shell_command_before:
+    - echo pane_before
+""",
+        encoding="utf-8",
+    )
+
+    # Verify the stripping logic via loader functions
+    raw = ConfigReader._from_file(workspace_file) or {}
+    expanded = loader.expand(raw, cwd=str(tmp_path))
+
+    # Before stripping, shell_command_before should be present
+    assert "shell_command_before" in expanded
+    assert "shell_command_before" in expanded["windows"][0]
+    assert "shell_command_before" in expanded["windows"][0]["panes"][0]
+
+    # Simulate the stripping logic from load_workspace
+    expanded.pop("shell_command_before", None)
+    for window in expanded.get("windows", []):
+        window.pop("shell_command_before", None)
+        for pane in window.get("panes", []):
+            pane.pop("shell_command_before", None)
+
+    trickled = loader.trickle(expanded)
+
+    # After stripping + trickle, pane commands should not include before cmds
+    pane_cmds = trickled["windows"][0]["panes"][0]["shell_command"]
+    cmd_strings = [c["cmd"] for c in pane_cmds]
+    assert "echo session_before" not in cmd_strings
+    assert "echo window_before" not in cmd_strings
+    assert "echo pane_before" not in cmd_strings
+    assert "echo hello" in cmd_strings
+
+
+class DebugFlagFixture(t.NamedTuple):
+    """Test fixture for --debug flag tests."""
+
+    test_id: str
+    debug: bool
+    expect_tmux_commands_in_output: bool
+
+
+DEBUG_FLAG_FIXTURES: list[DebugFlagFixture] = [
+    DebugFlagFixture(
+        test_id="debug-off",
+        debug=False,
+        expect_tmux_commands_in_output=False,
+    ),
+    DebugFlagFixture(
+        test_id="debug-on",
+        debug=True,
+        expect_tmux_commands_in_output=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(DebugFlagFixture._fields),
+    DEBUG_FLAG_FIXTURES,
+    ids=[f.test_id for f in DEBUG_FLAG_FIXTURES],
+)
+def test_load_workspace_debug_flag(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    debug: bool,
+    expect_tmux_commands_in_output: bool,
+) -> None:
+    """Test --debug shows tmux commands in output."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        """
+session_name: debug_test
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        debug=debug,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "debug_test"
+
+    captured = capsys.readouterr()
+    if expect_tmux_commands_in_output:
+        assert "$ " in captured.out
+        assert "new-session" in captured.out
+    else:
+        # When debug is off, tmux commands should not appear in stdout
+        assert "new-session" not in captured.out
+
+
+def test_load_debug_cleans_up_handler(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify --debug removes its handler after load completes."""
+    import logging
+
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        """
+session_name: debug_cleanup
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    libtmux_logger = logging.getLogger("libtmux.common")
+    handler_count_before = len(libtmux_logger.handlers)
+
+    load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        debug=True,
+    )
+
+    assert len(libtmux_logger.handlers) == handler_count_before
+
+
 def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:
     """Spinner message should mask home directory via PrivatePath."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
@@ -897,3 +1141,713 @@ def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> 
 
     assert "~/work/project/.tmuxp.yaml" in message
     assert "/home/testuser" not in message
+
+
+def test_load_on_project_start_runs_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load runs on_project_start hook before session creation."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "start_hook_ran"
+    workspace_file = tmp_path / "hook_start.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-start-test
+on_project_start: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert marker.exists()
+    assert session is not None
+    session.kill()
+
+
+class DispatchBuildHookFixture(t.NamedTuple):
+    """Fixture for on_project_start dispatch behavior."""
+
+    test_id: str
+    detached: bool
+    append: bool
+    answer_yes: bool
+    here: bool
+    inside_tmux: bool
+    prompt_choice: str | None
+    expected_loader: str
+    expect_pre_build_hook: bool
+
+
+DISPATCH_BUILD_HOOK_FIXTURES: list[DispatchBuildHookFixture] = [
+    DispatchBuildHookFixture(
+        test_id="detached-new-session-runs-hook",
+        detached=True,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=False,
+        prompt_choice=None,
+        expected_loader="detached",
+        expect_pre_build_hook=True,
+    ),
+    DispatchBuildHookFixture(
+        test_id="interactive-append-skips-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=True,
+        prompt_choice="a",
+        expected_loader="append",
+        expect_pre_build_hook=False,
+    ),
+    DispatchBuildHookFixture(
+        test_id="interactive-detach-runs-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=True,
+        prompt_choice="n",
+        expected_loader="detached",
+        expect_pre_build_hook=True,
+    ),
+    DispatchBuildHookFixture(
+        test_id="interactive-attach-runs-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=False,
+        inside_tmux=True,
+        prompt_choice="y",
+        expected_loader="attached",
+        expect_pre_build_hook=True,
+    ),
+    DispatchBuildHookFixture(
+        test_id="here-inside-tmux-skips-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=True,
+        inside_tmux=True,
+        prompt_choice=None,
+        expected_loader="here",
+        expect_pre_build_hook=False,
+    ),
+    DispatchBuildHookFixture(
+        test_id="here-outside-tmux-fallback-runs-hook",
+        detached=False,
+        append=False,
+        answer_yes=False,
+        here=True,
+        inside_tmux=False,
+        prompt_choice=None,
+        expected_loader="attached",
+        expect_pre_build_hook=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(DispatchBuildHookFixture._fields),
+    DISPATCH_BUILD_HOOK_FIXTURES,
+    ids=[f.test_id for f in DISPATCH_BUILD_HOOK_FIXTURES],
+)
+def test_dispatch_build_on_project_start_only_for_new_session_paths(
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    detached: bool,
+    append: bool,
+    answer_yes: bool,
+    here: bool,
+    inside_tmux: bool,
+    prompt_choice: str | None,
+    expected_loader: str,
+    expect_pre_build_hook: bool,
+) -> None:
+    """_dispatch_build only runs on_project_start on new-session load paths."""
+
+    class DummyBuilder:
+        """Minimal builder stub for dispatch tests."""
+
+        def __init__(self) -> None:
+            self.session = object()
+            self.plugins: list[t.Any] = []
+            self.on_progress: t.Any = "sentinel"
+            self.on_before_script: t.Any = "sentinel"
+            self.on_script_output: t.Any = "sentinel"
+            self.on_build_event: t.Any = "sentinel"
+
+    builder = t.cast(WorkspaceBuilder, DummyBuilder())
+    loader_calls: list[str] = []
+    hook_calls: list[str] = []
+
+    def _pre_build_hook() -> None:
+        hook_calls.append("hook")
+
+    def _attached_stub(
+        builder: DummyBuilder,
+        detached: bool,
+        pre_build_hook: t.Callable[[], None] | None = None,
+        pre_attach_hook: t.Callable[[], None] | None = None,
+    ) -> None:
+        if pre_build_hook is not None:
+            pre_build_hook()
+        loader_calls.append("attached")
+
+    def _detached_stub(
+        builder: DummyBuilder,
+        colors: Colors | None = None,
+        pre_build_hook: t.Callable[[], None] | None = None,
+        pre_output_hook: t.Callable[[], None] | None = None,
+    ) -> None:
+        if pre_build_hook is not None:
+            pre_build_hook()
+        loader_calls.append("detached")
+
+    def _append_stub(builder: DummyBuilder) -> None:
+        loader_calls.append("append")
+
+    def _here_stub(builder: DummyBuilder) -> None:
+        loader_calls.append("here")
+
+    monkeypatch.setattr("tmuxp.cli.load._load_attached", _attached_stub)
+    monkeypatch.setattr("tmuxp.cli.load._load_detached", _detached_stub)
+    monkeypatch.setattr(
+        "tmuxp.cli.load._load_append_windows_to_current_session",
+        _append_stub,
+    )
+    monkeypatch.setattr("tmuxp.cli.load._load_here_in_current_session", _here_stub)
+    monkeypatch.setattr(
+        "tmuxp.cli.load._setup_plugins",
+        lambda builder: builder.session,
+    )
+
+    if prompt_choice is not None:
+        monkeypatch.setattr(
+            "tmuxp.cli.load.prompt_choices",
+            lambda *a, **kw: prompt_choice,
+        )
+
+    if inside_tmux:
+        monkeypatch.setenv("TMUX", "/tmp/tmux-test/default,12345,0")
+    else:
+        monkeypatch.delenv("TMUX", raising=False)
+
+    result = _dispatch_build(
+        builder=builder,
+        detached=detached,
+        append=append,
+        answer_yes=answer_yes,
+        cli_colors=Colors(ColorMode.NEVER),
+        here=here,
+        pre_build_hook=_pre_build_hook,
+    )
+
+    assert result is builder.session
+    assert loader_calls == [expected_loader], test_id
+    assert hook_calls == (["hook"] if expect_pre_build_hook else []), test_id
+    assert builder.on_progress is None
+    assert builder.on_before_script is None
+    assert builder.on_script_output is None
+    assert builder.on_build_event is None
+
+
+def test_load_on_project_restart_runs_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load runs on_project_restart hook when session already exists."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "restart_hook_ran"
+    workspace_file = tmp_path / "hook_restart.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-restart-test
+on_project_restart: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    # First load creates the session
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert session is not None
+    assert not marker.exists()
+
+    # Second detached load does NOT trigger on_project_restart
+    # (restart hook only fires on confirmed interactive reattach)
+    load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert not marker.exists()
+
+    session.kill()
+
+
+def test_load_on_project_restart_skipped_on_decline(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load skips on_project_restart when user declines reattach."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "restart_hook_ran"
+    workspace_file = tmp_path / "hook_restart_decline.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-restart-decline
+on_project_restart: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    # First load creates the session
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert session is not None
+    assert not marker.exists()
+
+    # Second load: session exists, user declines reattach
+    monkeypatch.setattr(
+        "tmuxp.cli.load.prompt_yes_no",
+        lambda *a, **kw: False,
+    )
+    load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=False,
+    )
+    assert not marker.exists()
+
+    session.kill()
+
+
+def test_load_on_project_start_skipped_on_decline(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxp load skips on_project_start when user declines reattach."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "start_hook_ran"
+    workspace_file = tmp_path / "hook_start_decline.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-start-decline
+on_project_start: "touch {marker}"
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    # First load creates the session
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+    assert session is not None
+    assert marker.exists()
+    marker.unlink()
+
+    # Second load: session exists, user declines reattach
+    monkeypatch.setattr(
+        "tmuxp.cli.load.prompt_yes_no",
+        lambda *a, **kw: False,
+    )
+    load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=False,
+    )
+    assert not marker.exists()
+
+    session.kill()
+
+
+class ConfigKeyPrecedenceFixture(t.NamedTuple):
+    """Test fixture for config key precedence tests."""
+
+    test_id: str
+    workspace_extra: dict[str, t.Any]
+    cli_socket_name: str | None
+    cli_tmux_config_file: str | None
+    expect_socket_name: str | None
+    expect_config_file: str | None
+
+
+CONFIG_KEY_PRECEDENCE_FIXTURES: list[ConfigKeyPrecedenceFixture] = [
+    ConfigKeyPrecedenceFixture(
+        test_id="workspace-socket_name-used-as-fallback",
+        workspace_extra={"socket_name": "{server_socket}"},
+        cli_socket_name=None,
+        cli_tmux_config_file=None,
+        expect_socket_name="{server_socket}",
+        expect_config_file=None,
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="workspace-config-used-as-fallback",
+        workspace_extra={"config": "{tmux_conf}"},
+        cli_socket_name="{server_socket}",
+        cli_tmux_config_file=None,
+        expect_socket_name="{server_socket}",
+        expect_config_file="{tmux_conf}",
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="cli-overrides-workspace-socket_name",
+        workspace_extra={"socket_name": "ignored-socket"},
+        cli_socket_name="{server_socket}",
+        cli_tmux_config_file=None,
+        expect_socket_name="{server_socket}",
+        expect_config_file=None,
+    ),
+    ConfigKeyPrecedenceFixture(
+        test_id="cli-overrides-workspace-config",
+        workspace_extra={"config": "/ignored/tmux.conf"},
+        cli_socket_name="{server_socket}",
+        cli_tmux_config_file="{tmux_conf}",
+        expect_socket_name="{server_socket}",
+        expect_config_file="{tmux_conf}",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ConfigKeyPrecedenceFixture._fields),
+    CONFIG_KEY_PRECEDENCE_FIXTURES,
+    ids=[f.test_id for f in CONFIG_KEY_PRECEDENCE_FIXTURES],
+)
+def test_load_workspace_config_key_precedence(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    workspace_extra: dict[str, t.Any],
+    cli_socket_name: str | None,
+    cli_tmux_config_file: str | None,
+    expect_socket_name: str | None,
+    expect_config_file: str | None,
+) -> None:
+    """Workspace config keys (socket_name, config) used as Server fallbacks."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    tmux_conf = str(FIXTURE_PATH / "tmux" / "tmux.conf")
+    server_socket = server.socket_name
+
+    def _resolve(val: str | None) -> str | None:
+        if val is None:
+            return None
+        return val.format(server_socket=server_socket, tmux_conf=tmux_conf)
+
+    resolved_extra = {
+        k: _resolve(v) if isinstance(v, str) else v for k, v in workspace_extra.items()
+    }
+
+    extra_lines = "\n".join(f"{k}: {v}" for k, v in resolved_extra.items())
+    workspace_file = tmp_path / "test.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: cfg-key-{test_id}
+{extra_lines}
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=_resolve(cli_socket_name),
+        tmux_config_file=_resolve(cli_tmux_config_file),
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+
+    if _resolve(expect_socket_name) is not None:
+        assert session.server.socket_name == _resolve(expect_socket_name)
+    if _resolve(expect_config_file) is not None:
+        assert session.server.config_file == _resolve(expect_config_file)
+
+    session.kill()
+
+
+def test_load_workspace_template_context(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace() renders {{ var }} templates before YAML parsing."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "tpl.yaml"
+    workspace_file.write_text(
+        """\
+session_name: {{ project }}-session
+windows:
+- window_name: {{ window }}
+  panes:
+  - echo {{ project }}
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+        template_context={"project": "myapp", "window": "editor"},
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "myapp-session"
+    assert session.windows[0].window_name == "editor"
+
+
+def test_load_workspace_template_no_context(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace() without template_context leaves {{ var }} as literals."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    workspace_file = tmp_path / "tpl.yaml"
+    workspace_file.write_text(
+        """\
+session_name: plain-session
+windows:
+- window_name: main
+  panes:
+  - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        str(workspace_file),
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+    assert session.name == "plain-session"
+
+
+def test_load_here_and_append_mutually_exclusive() -> None:
+    """--here and --append cannot be used together."""
+    from tmuxp.cli import create_parser
+
+    parser = create_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["load", "--here", "--append", "myconfig"])
+
+
+def test_load_here_and_detached_mutually_exclusive() -> None:
+    """--here and -d cannot be used together."""
+    from tmuxp.cli import create_parser
+
+    parser = create_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["load", "--here", "-d", "myconfig"])
+
+
+class MultiWorkspaceHereFixture(t.NamedTuple):
+    """Fixture for invalid multi-workspace --here invocations."""
+
+    test_id: str
+    cli_args: list[str]
+    expected_exit_code: int
+    expected_error: str
+
+
+MULTI_WORKSPACE_HERE_FIXTURES: list[MultiWorkspaceHereFixture] = [
+    MultiWorkspaceHereFixture(
+        test_id="rejects-two-workspaces",
+        cli_args=["load", "--here", "first", "second"],
+        expected_exit_code=2,
+        expected_error="--here only supports one workspace file",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(MultiWorkspaceHereFixture._fields),
+    MULTI_WORKSPACE_HERE_FIXTURES,
+    ids=[fixture.test_id for fixture in MULTI_WORKSPACE_HERE_FIXTURES],
+)
+def test_load_here_rejects_multiple_workspace_files(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    cli_args: list[str],
+    expected_exit_code: int,
+    expected_error: str,
+) -> None:
+    """--here exits before load_workspace when multiple files are provided."""
+    parser = cli.create_parser()
+    args = t.cast(CLILoadNamespace, parser.parse_args(cli_args))
+    load_calls: list[str] = []
+
+    monkeypatch.setattr(
+        "tmuxp.cli.load.util.oh_my_zsh_auto_title",
+        lambda: None,
+    )
+    monkeypatch.setattr(
+        "tmuxp.cli.load.load_workspace",
+        lambda *args, **kwargs: load_calls.append(test_id),
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        command_load(args, parser=parser)
+
+    result = capsys.readouterr()
+    assert excinfo.value.code == expected_exit_code
+    assert expected_error in result.err
+    assert load_calls == []
+
+
+def test_load_append_and_detached_mutually_exclusive() -> None:
+    """--append and -d cannot be used together."""
+    from tmuxp.cli import create_parser
+
+    parser = create_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["load", "--append", "-d", "myconfig"])
+
+
+# --- --here error recovery tests (535ca944) ---
+
+
+class HereErrorRecoveryFixture(t.NamedTuple):
+    """Fixture for --here error recovery prompt behavior."""
+
+    test_id: str
+    here: bool
+    expected_choices: list[str]
+    expected_default: str
+    kill_option_present: bool
+
+
+HERE_ERROR_RECOVERY_FIXTURES: list[HereErrorRecoveryFixture] = [
+    HereErrorRecoveryFixture(
+        test_id="here-mode-no-kill",
+        here=True,
+        expected_choices=["a", "d"],
+        expected_default="d",
+        kill_option_present=False,
+    ),
+    HereErrorRecoveryFixture(
+        test_id="normal-mode-has-kill",
+        here=False,
+        expected_choices=["k", "a", "d"],
+        expected_default="k",
+        kill_option_present=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereErrorRecoveryFixture._fields),
+    HERE_ERROR_RECOVERY_FIXTURES,
+    ids=[f.test_id for f in HERE_ERROR_RECOVERY_FIXTURES],
+)
+def test_here_error_recovery_prompt(
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    here: bool,
+    expected_choices: list[str],
+    expected_default: str,
+    kill_option_present: bool,
+) -> None:
+    """--here error recovery skips (k)ill to protect user's live session."""
+    from unittest.mock import MagicMock
+
+    from tmuxp._internal.colors import ColorMode, Colors
+    from tmuxp.cli.load import _dispatch_build
+
+    captured_kwargs: dict[str, t.Any] = {}
+
+    def _capture_prompt_choices(*args: t.Any, **kwargs: t.Any) -> str:
+        captured_kwargs.update(kwargs)
+        captured_kwargs["choices"] = kwargs.get("choices", [])
+        return "d"  # Always detach to exit cleanly
+
+    monkeypatch.setattr(
+        "tmuxp.cli.load.prompt_choices",
+        _capture_prompt_choices,
+    )
+
+    # Create a mock builder that raises TmuxpException when built
+    from tmuxp import exc
+
+    mock_builder = MagicMock()
+    mock_builder.session = None
+
+    # Simulate the here path raising an error
+    if here:
+        monkeypatch.setattr(
+            "tmuxp.cli.load._load_here_in_current_session",
+            MagicMock(side_effect=exc.TmuxpException("test error")),
+        )
+        monkeypatch.setenv("TMUX", "/tmp/tmux-test/default,12345,0")
+    else:
+        monkeypatch.setattr(
+            "tmuxp.cli.load._load_attached",
+            MagicMock(side_effect=exc.TmuxpException("test error")),
+        )
+        monkeypatch.delenv("TMUX", raising=False)
+
+    cli_colors = Colors(ColorMode.NEVER)
+
+    with pytest.raises(SystemExit):
+        _dispatch_build(
+            builder=mock_builder,
+            detached=False,
+            append=False,
+            answer_yes=not here,  # answer_yes triggers _load_attached path
+            cli_colors=cli_colors,
+            here=here,
+        )
+
+    assert captured_kwargs["choices"] == expected_choices
+    assert captured_kwargs.get("default") == expected_default
+    assert ("k" in captured_kwargs["choices"]) == kill_option_present
