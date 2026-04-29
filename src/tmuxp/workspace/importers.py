@@ -7,8 +7,11 @@ import typing as t
 
 logger = logging.getLogger(__name__)
 
+if t.TYPE_CHECKING:
+    from tmuxp._internal.types import WindowConfig, WorkspaceConfig
 
-def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+
+def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
 
     .. _tmuxinator: https://github.com/aziz/tmuxinator
@@ -21,6 +24,7 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     Returns
     -------
     dict
+        A dictionary conforming to WorkspaceConfig structure.
     """
     logger.debug(
         "importing tmuxinator workspace",
@@ -30,7 +34,7 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         },
     )
 
-    tmuxp_workspace: dict[str, t.Any] = {}
+    tmuxp_workspace: WorkspaceConfig = {"session_name": None, "windows": []}
 
     if "project_name" in workspace_dict:
         tmuxp_workspace["session_name"] = workspace_dict.pop("project_name")
@@ -62,8 +66,6 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "socket_name" in workspace_dict:
         tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
 
-    tmuxp_workspace["windows"] = []
-
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
@@ -83,37 +85,44 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
             tmuxp_workspace["shell_command_before"] = []
+        else:
+            # Ensure shell_command_before is a list
+            current = tmuxp_workspace["shell_command_before"]
+            if isinstance(current, (str, dict)):
+                tmuxp_workspace["shell_command_before"] = [current]
+        # Now we can safely append
+        assert isinstance(tmuxp_workspace["shell_command_before"], list)
         tmuxp_workspace["shell_command_before"].append(
             "rbenv shell {}".format(workspace_dict["rbenv"]),
         )
 
-    for window_dict in workspace_dict["windows"]:
-        for k, v in window_dict.items():
-            window_dict = {"window_name": k}
+    for window_item in workspace_dict["windows"]:
+        for k, v in window_item.items():
+            new_window: WindowConfig = {"window_name": k}
 
             if isinstance(v, str) or v is None:
-                window_dict["panes"] = [v]
-                tmuxp_workspace["windows"].append(window_dict)
+                new_window["panes"] = [v]
+                tmuxp_workspace["windows"].append(new_window)
                 continue
             if isinstance(v, list):
-                window_dict["panes"] = v
-                tmuxp_workspace["windows"].append(window_dict)
+                new_window["panes"] = v
+                tmuxp_workspace["windows"].append(new_window)
                 continue
 
             if "pre" in v:
-                window_dict["shell_command_before"] = v["pre"]
+                new_window["shell_command_before"] = v["pre"]
             if "panes" in v:
-                window_dict["panes"] = v["panes"]
+                new_window["panes"] = v["panes"]
             if "root" in v:
-                window_dict["start_directory"] = v["root"]
+                new_window["start_directory"] = v["root"]
 
             if "layout" in v:
-                window_dict["layout"] = v["layout"]
-            tmuxp_workspace["windows"].append(window_dict)
+                new_window["layout"] = v["layout"]
+            tmuxp_workspace["windows"].append(new_window)
     return tmuxp_workspace
 
 
-def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+def import_teamocil(workspace_dict: dict[str, t.Any]) -> WorkspaceConfig:
     """Return tmuxp workspace from a `teamocil`_ yaml workspace.
 
     .. _teamocil: https://github.com/remiprev/teamocil
@@ -122,6 +131,11 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     ----------
     workspace_dict : dict
         python dict for tmuxp workspace
+
+    Returns
+    -------
+    dict
+        A dictionary conforming to WorkspaceConfig structure.
 
     Notes
     -----
@@ -139,7 +153,7 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         extra={"tmux_session": _inner.get("name", "")},
     )
 
-    tmuxp_workspace: dict[str, t.Any] = {}
+    tmuxp_workspace: WorkspaceConfig = {"session_name": None, "windows": []}
 
     if "session" in workspace_dict:
         workspace_dict = workspace_dict["session"]
@@ -149,21 +163,17 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
 
-    tmuxp_workspace["windows"] = []
-
     for w in workspace_dict["windows"]:
-        window_dict = {"window_name": w["name"]}
+        window_dict: WindowConfig = {"window_name": w["name"]}
 
         if "clear" in w:
             window_dict["clear"] = w["clear"]
 
         if "filters" in w:
             if "before" in w["filters"]:
-                for _b in w["filters"]["before"]:
-                    window_dict["shell_command_before"] = w["filters"]["before"]
+                window_dict["shell_command_before"] = w["filters"]["before"]
             if "after" in w["filters"]:
-                for _b in w["filters"]["after"]:
-                    window_dict["shell_command_after"] = w["filters"]["after"]
+                window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:
             window_dict["start_directory"] = w.pop("root")
