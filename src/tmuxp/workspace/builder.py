@@ -577,12 +577,18 @@ class WorkspaceBuilder:
                     self.on_build_event({"event": "before_script_done"})
 
         if "options" in self.session_config:
-            for option, value in self.session_config["options"].items():
-                self.session.set_option(option, value)
+            self._bulk_set_options(
+                self.session_config["options"],
+                target=self.session.session_id,
+                scope_flag="-s",
+            )
 
         if "global_options" in self.session_config:
-            for option, value in self.session_config["global_options"].items():
-                self.session.set_option(option, value, global_=True)
+            self._bulk_set_options(
+                self.session_config["global_options"],
+                target=None,
+                scope_flag="-g",
+            )
 
         if "environment" in self.session_config:
             for option, value in self.session_config["environment"].items():
@@ -721,8 +727,11 @@ class WorkspaceBuilder:
                 window_config["options"],
                 dict,
             ):
-                for key, val in window_config["options"].items():
-                    window.set_option(key, val)
+                self._bulk_set_options(
+                    window_config["options"],
+                    target=window.window_id,
+                    scope_flag="-w",
+                )
 
             if window_config.get("focus"):
                 window.select()
@@ -891,8 +900,11 @@ class WorkspaceBuilder:
             window_config["options_after"],
             dict,
         ):
-            for key, val in window_config["options_after"].items():
-                window.set_option(key, val)
+            self._bulk_set_options(
+                window_config["options_after"],
+                target=window.window_id,
+                scope_flag="-w",
+            )
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
