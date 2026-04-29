@@ -576,7 +576,7 @@ wheels = [
 [[package]]
 name = "libtmux"
 version = "0.55.1"
-source = { editable = "../libtmux-protocol" }
+source = { editable = "../libtmux-protocol-engines" }
 
 [package.metadata]
 
@@ -1670,7 +1670,7 @@ testing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "libtmux", editable = "../libtmux-protocol" },
+    { name = "libtmux", editable = "../libtmux-protocol-engines" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
