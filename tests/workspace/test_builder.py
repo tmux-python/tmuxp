@@ -359,6 +359,51 @@ def test_window_options_after(
         ), "Synchronized command did not execute properly"
 
 
+def test_bulk_set_options_propagates_unknown_option_error(
+    session: Session,
+) -> None:
+    """Bad options surface as ``OptionError`` after the batch flushes."""
+    workspace = {
+        "session_name": "bulk-set-options-bad",
+        "options": {"this-option-does-not-exist": "value"},
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    with pytest.raises(libtmux.exc.OptionError):
+        builder.build(session=session)
+
+
+def test_bulk_set_options_applies_session_window_and_options_after(
+    session: Session,
+) -> None:
+    """Session, window, and options_after loops all land via batched dispatch."""
+    workspace = {
+        "session_name": "bulk-set-options-good",
+        "options": {"default-shell": "/bin/sh"},
+        "global_options": {"repeat-time": 491},
+        "windows": [
+            {
+                "window_name": "main",
+                "options": {"main-pane-height": 7},
+                "options_after": {"synchronize-panes": "on"},
+                "panes": [{"shell_command": []}, {"shell_command": []}],
+            },
+        ],
+    }
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    sess = builder.session
+    win = sess.active_window
+    default_shell = sess.show_option("default-shell")
+    assert isinstance(default_shell, str)
+    assert "/bin/sh" in default_shell
+    assert sess.show_option("repeat-time", global_=True) == 491
+    assert win.show_option("main-pane-height") == 7
+    sync = win.cmd("show-option", "-v", "synchronize-panes").stdout
+    assert sync == ["on"]
+
+
 def test_window_shell(
     session: Session,
 ) -> None:

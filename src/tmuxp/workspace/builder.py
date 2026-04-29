@@ -9,6 +9,7 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.options import handle_option_error
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -19,7 +20,7 @@ from tmuxp.log import TmuxpLoggerAdapter
 from tmuxp.util import get_current_pane, run_before_script
 
 if t.TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Mapping
 
 logger = logging.getLogger(__name__)
 
@@ -406,6 +407,55 @@ class WorkspaceBuilder:
         except ObjectDoesNotExist:
             return False
         return True
+
+    def _bulk_set_options(
+        self,
+        items: Mapping[str, int | str | bool],
+        *,
+        target: str | None,
+        scope_flag: str,
+    ) -> None:
+        """Apply ``set-option`` for each (key, value) pair in one batch.
+
+        Mirrors :meth:`libtmux.options.OptionsMixin.set_option`'s
+        ``True/False -> "on"/"off"`` convention so behaviour matches a
+        plain loop of ``set_option`` calls. Errors propagate as the
+        same ``OptionError`` subclasses ``handle_option_error``
+        produces — just after the batch flushes rather than mid-loop;
+        tmuxp's loops don't read intermediate state, so observable
+        behaviour is identical.
+
+        Parameters
+        ----------
+        items : mapping
+            Option name -> value pairs.
+        target : str, optional
+            Target identifier (session_id / window_id) for ``-t``;
+            pass ``None`` for global options where ``-g`` already
+            names the scope.
+        scope_flag : str
+            ``"-s"``, ``"-g"``, or ``"-w"``. Selects the option scope.
+        """
+        if not items:
+            return
+        server = self.server
+        assert server is not None
+        with server.batch() as b:
+            for key, raw_val in items.items():
+                if raw_val is True:
+                    val: int | str = "on"
+                elif raw_val is False:
+                    val = "off"
+                else:
+                    val = raw_val
+                if target is not None:
+                    b.cmd("set-option", scope_flag, "-t", target, key, val)
+                else:
+                    b.cmd("set-option", scope_flag, key, val)
+            results = b.results()
+        for r in results:
+            if r.returncode != 0 and r.stderr:
+                handle_option_error(r.stderr[0])
 
     def build(self, session: Session | None = None, append: bool = False) -> None:
         """Build tmux workspace in session.
