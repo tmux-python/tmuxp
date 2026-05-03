@@ -43,6 +43,9 @@ _Notes on the upcoming release will go here._
 
 - Visual improvements to API docs from [gp-sphinx](https://gp-sphinx.git-pull.com)-based Sphinx packages (#1035)
 - Bump gp-sphinx docs stack to v0.0.1a8 (#1036)
+- Bump gp-sphinx docs stack to v0.0.1a16 — docs site now renders
+  via `gp-furo-theme`, a Tailwind v4 respin of Furo, with
+  `sphinx-vite-builder` handling theme-asset builds (#1037)
 
 
 ## tmuxp 1.67.0 (2026-03-08)
