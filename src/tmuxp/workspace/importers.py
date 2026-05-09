@@ -322,6 +322,15 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     .. _teamocil: https://github.com/remiprev/teamocil
 
+    Detects the teamocil format and dispatches:
+
+    - **v0.x** (pre-1.0): ``session:`` wrapper present. Handles
+      ``splits``/``cmd``/``filters``/``clear``/``with_env_var``/
+      ``cmd_separator``.
+    - **v1.x** (1.0-1.4.2): top-level ``windows``. Handles ``commands``,
+      string pane shorthand, per-window/pane ``focus``, window
+      ``options``.
+
     Parameters
     ----------
     workspace_dict : dict
@@ -337,22 +346,48 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
       yet act on it; a warning is emitted.
     - ``cmd_separator`` is irrelevant since tmuxp sends commands
       individually; a warning is emitted.
-    - ``width`` is currently dropped from panes; geometry support is a
-      separate builder change.
+    - ``width``/``height``/``target`` (per-pane geometry) are dropped
+      with a warning; builder support is a separate change.
     """
-    is_v0x = "session" in workspace_dict
-    _inner = workspace_dict.get("session", workspace_dict)
+    has_session_wrapper = "session" in workspace_dict
+    inner = workspace_dict["session"] if has_session_wrapper else workspace_dict
+    is_v0x = has_session_wrapper or _has_v0x_window_markers(inner)
     logger.debug(
         "importing teamocil workspace",
-        extra={"tmux_session": _inner.get("name", "")},
+        extra={
+            "tmux_session": inner.get("name", ""),
+            "tmux_importer_version": "v0.x" if is_v0x else "v1.x",
+        },
     )
-
-    tmuxp_workspace: dict[str, t.Any] = {}
-
     if is_v0x:
-        workspace_dict = workspace_dict["session"]
+        return _import_teamocil_v0x(inner)
+    return _import_teamocil_v1x(workspace_dict)
 
-    tmuxp_workspace["session_name"] = workspace_dict.get("name", None)
+
+def _has_v0x_window_markers(inner: dict[str, t.Any]) -> bool:
+    """Return True if any window/pane uses a v0.x-only key.
+
+    Some v0.x configs in the wild omit the ``session:`` wrapper but still
+    use ``splits`` (v0.x pane key), ``cmd`` (v0.x command key), or
+    ``filters`` (v0.x before/after hooks). Detect those so they route to
+    the v0.x importer instead of being misclassified as v1.x.
+    """
+    for w in inner.get("windows", []) or []:
+        if not isinstance(w, dict):
+            continue
+        if "splits" in w or "filters" in w:
+            return True
+        for pane in w.get("panes", []) or []:
+            if isinstance(pane, dict) and "cmd" in pane:
+                return True
+    return False
+
+
+def _import_teamocil_v0x(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+    """Convert a teamocil v0.x workspace (``session:`` wrapped) to tmuxp."""
+    tmuxp_workspace: dict[str, t.Any] = {
+        "session_name": workspace_dict.get("name"),
+    }
 
     if "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
@@ -360,8 +395,8 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     # v0.x default: TEAMOCIL=1 is exported in every pane (with_env_var=true
     # by default per teamocil 0.4-stable). _is_falsy_yaml handles quoted
     # YAML strings like with_env_var: "false" that survive to Python as
-    # truthy strings.
-    if is_v0x and not _is_falsy_yaml(workspace_dict.get("with_env_var", True)):
+    # truthy strings. We're already in the v0.x helper so no is_v0x check.
+    if not _is_falsy_yaml(workspace_dict.get("with_env_var", True)):
         tmuxp_workspace.setdefault("environment", {})["TEAMOCIL"] = "1"
 
     if "cmd_separator" in workspace_dict:
@@ -376,7 +411,7 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     tmuxp_workspace["windows"] = []
 
     for w in workspace_dict["windows"]:
-        window_dict = {"window_name": w["name"]}
+        window_dict: dict[str, t.Any] = {"window_name": w["name"]}
 
         if "clear" in w:
             window_dict["clear"] = w["clear"]
@@ -415,3 +450,59 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         tmuxp_workspace["windows"].append(window_dict)
 
     return tmuxp_workspace
+
+
+def _import_teamocil_v1x(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+    """Convert a teamocil v1.x workspace (top-level ``windows``) to tmuxp.
+
+    v1.x dropped the ``session:`` wrapper, ``filters``, ``with_env_var``,
+    and ``cmd_separator``. A bare string pane is shorthand for
+    ``{commands: [<string>]}`` (window.rb:12-14 in upstream teamocil).
+    """
+    tmuxp_workspace: dict[str, t.Any] = {
+        "session_name": workspace_dict.get("name"),
+    }
+
+    if "root" in workspace_dict:
+        tmuxp_workspace["start_directory"] = workspace_dict["root"]
+
+    tmuxp_workspace["windows"] = []
+    for w in workspace_dict.get("windows", []):
+        window_dict: dict[str, t.Any] = {"window_name": w["name"]}
+        if "root" in w:
+            window_dict["start_directory"] = w["root"]
+        if "layout" in w:
+            window_dict["layout"] = w["layout"]
+        if "focus" in w:
+            window_dict["focus"] = w["focus"]
+        if "options" in w:
+            window_dict["options"] = w["options"]
+        window_dict["panes"] = [_normalize_v1x_pane(p) for p in w.get("panes", [])]
+        tmuxp_workspace["windows"].append(window_dict)
+
+    return tmuxp_workspace
+
+
+def _normalize_v1x_pane(pane: t.Any) -> dict[str, t.Any]:
+    """Normalize a teamocil v1.x pane (string or dict) to tmuxp pane dict.
+
+    >>> _normalize_v1x_pane("vim")
+    {'shell_command': ['vim']}
+    >>> _normalize_v1x_pane({"commands": ["a", "b"], "focus": True})
+    {'shell_command': ['a', 'b'], 'focus': True}
+    """
+    if isinstance(pane, str):
+        return {"shell_command": [pane]}
+    out: dict[str, t.Any] = {}
+    if "commands" in pane:
+        out["shell_command"] = pane["commands"]
+    if "focus" in pane:
+        out["focus"] = pane["focus"]
+    if not out and isinstance(pane, dict) and pane:
+        # Dict had keys, but none we recognized — surface to user instead
+        # of silently producing a no-command pane.
+        logger.warning(
+            "v1.x pane dict has no recognizable keys; produced empty pane",
+            extra={"tmux_key": ",".join(sorted(pane.keys()))},
+        )
+    return out
