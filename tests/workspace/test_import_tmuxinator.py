@@ -58,6 +58,18 @@ TMUXINATOR_CONFIG_TEST_FIXTURES: list[TmuxinatorConfigTestFixture] = [
         tmuxinator_dict=fixtures.test_pre_shell.tmuxinator_dict,
         tmuxp_dict=fixtures.test_pre_shell.expected,
     ),
+    TmuxinatorConfigTestFixture(
+        test_id="cli_args_multi_flags",  # -f/-L/-S all extracted
+        tmuxinator_yaml=fixtures.test_cli_args_multi.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_cli_args_multi.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_cli_args_multi.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="cli_args_dash_in_path",  # regression: -f in path doesn't corrupt
+        tmuxinator_yaml=fixtures.test_cli_args_dash_path.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_cli_args_dash_path.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_cli_args_dash_path.expected,
+    ),
 ]
 
 
@@ -133,3 +145,23 @@ def test_import_tmuxinator_no_warning_when_pre_is_plain(
         if r.levelno == logging.WARNING and getattr(r, "tmux_key", None) == "pre"
     ]
     assert warnings == []
+
+
+def test_import_tmuxinator_warns_on_unknown_cli_args_flag(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Unrecognized tmux flag in cli_args emits a WARNING."""
+    workspace = {
+        "name": "weird",
+        "cli_args": "-f ~/.tmux.conf -X bogus",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and getattr(r, "tmux_key", None) == "-X"
+    ]
+    assert len(warnings) == 1
+    assert getattr(warnings[0], "tmux_session", None) == "weird"
