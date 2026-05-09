@@ -134,13 +134,13 @@ For full bug analysis with file:line refs, see `notes/import-tmuxinator.md` and 
 
 | ID | Importer | Bug | Fix scope |
 |---|---|---|---|
-| I1 | tmuxinator | `pre` (alone) maps to `shell_command_before` (per-pane) instead of `before_script` (once); combo `pre` + `pre_window` writes `pre` to invalid `shell_command` key and `isinstance` checks the wrong var (lines 70-81) | Map `pre` → `before_script`; check `pre_window`'s type, not `pre`'s. **Caveat**: `before_script` runs `Popen` without `shell=True`, so pipes/redirects in `pre` won't work — long-term fix needs T6 lifecycle hooks |
-| I2 | tmuxinator | `cli_args`/`tmux_options` use `str.replace("-f", "")` (lines 50-60); breaks on `-L`/`-S` flags or paths containing `-f` | Use `shlex.split()` + iterate flags |
-| I3 | teamocil | Redundant `for _b in w["filters"]["before"]` loops set same value N times (lines 160-166) | Replace with direct assignment |
-| I4 | teamocil | v1.x format not detected: string panes cause `"cmd" in str` substring check; `commands` key dropped; pane `width` silently dropped, `height` passes through | Add format detection; handle v1.x keys; preserve `width`/`height` (libtmux `Pane.resize` exists, L4) or warn |
-| I5 | tmuxinator | Missing translations: `rvm`, `pre_tab`, `startup_window`, `startup_pane`, `on_project_first_start`, `post`, `socket_path`, `attach: false` | Add explicit mappings (see `import-tmuxinator.md` for per-key target) |
-| I6 | teamocil | Missing v1.x mappings (`commands`, window/pane `focus`, window `options`, string pane shorthand) and v0.x `with_env_var`/`height` | Add explicit mappings |
-| I7 | teamocil | TODOs at `importers.py:132-134` (`with_env_var`, `clear`, `cmd_separator`) — first two are real v0.x features, third is irrelevant | Implement `with_env_var` → `environment: { TEAMOCIL: "1" }`; wire `clear` to `Pane.clear()` (L4); remove `cmd_separator` TODO |
+| I1 | tmuxinator | `pre` (alone) maps to `shell_command_before` (per-pane) instead of `before_script` (once); combo `pre` + `pre_window` writes `pre` to invalid `shell_command` key and `isinstance` checks the wrong var (lines 70-81) | **Resolved**: maps `pre` → `before_script`; warns on shell metacharacters (Popen runs without `shell=True`). Long-term shell fix waits on T6. |
+| I2 | tmuxinator | `cli_args`/`tmux_options` use `str.replace("-f", "")` (lines 50-60); breaks on `-L`/`-S` flags or paths containing `-f` | **Resolved**: shlex-based parsing extracts `-f`/`-L`/`-S`; warns on unknown flags. |
+| I3 | teamocil | Redundant `for _b in w["filters"]["before"]` loops set same value N times (lines 160-166) | **Resolved**: direct assignment. |
+| I4 | teamocil | v1.x format not detected: string panes cause `"cmd" in str` substring check; `commands` key dropped; pane `width` silently dropped, `height` passes through | **Resolved**: dispatch to `_import_teamocil_v0x` / `_import_teamocil_v1x`; v0.x detected by `session:` wrapper OR window `splits`/`filters`/pane `cmd`. v1.x handles string panes, `commands`, per-window/pane `focus`, window `options`. |
+| I5 | tmuxinator | Missing translations: `rvm`, `pre_tab`, `startup_window`, `startup_pane`, `on_project_first_start`, `post`, `socket_path`, `attach: false` | **Resolved**: rbenv → rvm → pre_tab → pre_window OR-fallback chain implemented; `startup_window`/`startup_pane` resolved by name or int → `focus: true`; `on_project_first_start` → `before_script`; `socket_path` pass-through; `attach: false` warns. `post` deferred (needs T6). |
+| I6 | teamocil | Missing v1.x mappings (`commands`, window/pane `focus`, window `options`, string pane shorthand) and v0.x `with_env_var`/`height` | **Resolved** by I4 (v1.x mappings) + I7 (`with_env_var`); v0.x `height`/`target` now popped with WARNING. |
+| I7 | teamocil | TODOs at `importers.py:132-134` (`with_env_var`, `clear`, `cmd_separator`) — first two are real v0.x features, third is irrelevant | **Resolved**: `with_env_var` → session-level `environment: {TEAMOCIL: "1"}` for v0.x configs; `cmd_separator` warns; `clear` preserved with WARNING (builder support deferred). |
 
 ## Test Coverage Gaps
 
