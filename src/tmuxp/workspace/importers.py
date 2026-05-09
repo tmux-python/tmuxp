@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import shlex
 import typing as t
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,40 @@ def _has_shell_metachars(value: t.Any) -> bool:
     if isinstance(value, list):
         return any(_has_shell_metachars(item) for item in value)
     return False
+
+
+def _parse_tmuxinator_tmux_args(
+    args_str: str,
+    target: dict[str, t.Any],
+    session_name: str | None,
+) -> None:
+    """Parse tmuxinator `cli_args`/`tmux_options` into individual tmux flags.
+
+    Splits via `shlex` and walks tokens to extract `-f` (config), `-L`
+    (socket name), and `-S` (socket path). Unknown flags are warned.
+    Mutates ``target`` in place.
+    """
+    mapping = {"-f": "config", "-L": "socket_name", "-S": "socket_path"}
+    tokens = shlex.split(args_str)
+    i = 0
+    while i < len(tokens):
+        flag = tokens[i]
+        if flag in mapping:
+            if i + 1 < len(tokens):
+                target[mapping[flag]] = tokens[i + 1]
+                i += 2
+            else:
+                logger.warning(
+                    "tmux flag requires a value but none was provided",
+                    extra={"tmux_key": flag, "tmux_session": session_name},
+                )
+                i += 1
+        else:
+            logger.warning(
+                "unrecognized tmux flag in cli_args/tmux_options",
+                extra={"tmux_key": flag, "tmux_session": session_name},
+            )
+            i += 1
 
 
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
@@ -73,20 +108,13 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     elif "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
 
-    if "cli_args" in workspace_dict:
-        tmuxp_workspace["config"] = workspace_dict["cli_args"]
-
-        if "-f" in tmuxp_workspace["config"]:
-            tmuxp_workspace["config"] = (
-                tmuxp_workspace["config"].replace("-f", "").strip()
-            )
-    elif "tmux_options" in workspace_dict:
-        tmuxp_workspace["config"] = workspace_dict["tmux_options"]
-
-        if "-f" in tmuxp_workspace["config"]:
-            tmuxp_workspace["config"] = (
-                tmuxp_workspace["config"].replace("-f", "").strip()
-            )
+    args_str = workspace_dict.get("cli_args") or workspace_dict.get("tmux_options")
+    if args_str:
+        _parse_tmuxinator_tmux_args(
+            args_str,
+            tmuxp_workspace,
+            tmuxp_workspace.get("session_name"),
+        )
 
     if "socket_name" in workspace_dict:
         tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
