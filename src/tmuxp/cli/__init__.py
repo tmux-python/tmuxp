@@ -75,6 +75,12 @@ from .shell import (
     command_shell,
     create_shell_subparser,
 )
+from .stop import (
+    STOP_DESCRIPTION,
+    CLIStopNamespace,
+    command_stop,
+    create_stop_subparser,
+)
 from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
@@ -178,6 +184,7 @@ if t.TYPE_CHECKING:
         "copy",
         "delete",
         "implode",
+        "stop",
     ]
     CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
 
@@ -316,6 +323,14 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_implode_subparser(implode_parser)
 
+    stop_parser = subparsers.add_parser(
+        "stop",
+        help="stop a tmuxp-managed tmux session (fires on_project_stop)",
+        description=STOP_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_stop_subparser(stop_parser)
+
     return parser
 
 
@@ -415,6 +430,8 @@ def cli(_args: list[str] | None = None) -> None:
         command_delete(args=CLIDeleteNamespace(**vars(args)), parser=parser)
     elif args.subparser_name == "implode":
         command_implode(args=CLIImplodeNamespace(**vars(args)), parser=parser)
+    elif args.subparser_name == "stop":
+        command_stop(args=CLIStopNamespace(**vars(args)), parser=parser)
     elif args.subparser_name == "ls":
         command_ls(
             args=CLILsNamespace(**vars(args)),
