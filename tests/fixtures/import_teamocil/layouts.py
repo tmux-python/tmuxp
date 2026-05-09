@@ -87,6 +87,7 @@ teamocil_dict = {
 
 two_windows = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "foo",
@@ -114,6 +115,7 @@ two_windows = {
 
 two_windows_with_filters = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "foo",
@@ -136,6 +138,7 @@ two_windows_with_filters = {
 
 two_windows_with_custom_command_options = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "foo",
