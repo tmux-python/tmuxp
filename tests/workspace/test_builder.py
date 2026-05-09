@@ -1840,6 +1840,72 @@ def test_synchronize_panes_true_treated_as_before(
     builder.session.kill()
 
 
+def test_pane_titles_session_options_set(
+    session: Session,
+) -> None:
+    """enable_pane_titles applies pane-border-status and -format."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/pane_titles.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    # pane-border-* are window-scope options applied via global_=True
+    assert builder.session.show_option("pane-border-status", global_=True) == "bottom"
+    assert (
+        builder.session.show_option("pane-border-format", global_=True)
+        == "#{pane_index}: #{pane_title}"
+    )
+    builder.session.kill()
+
+
+def test_pane_titles_per_pane_title_applied(
+    session: Session,
+) -> None:
+    """Per-pane `title` is stored on the pane via set_title()."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/pane_titles.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = builder.session.windows[-1]
+    titles = [
+        p.cmd("display-message", "-p", "#{pane_title}").stdout[0] for p in window.panes
+    ]
+    assert "editor" in titles
+    assert "server" in titles
+    builder.session.kill()
+
+
+def test_pane_titles_defaults_when_only_enable(
+    session: Session,
+) -> None:
+    """enable_pane_titles=true with no other keys uses defaults."""
+    workspace = {
+        "session_name": "titles-defaults",
+        "enable_pane_titles": True,
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [{"shell_command": ["echo a"]}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    assert builder.session.show_option("pane-border-status", global_=True) == "top"
+    assert (
+        builder.session.show_option("pane-border-format", global_=True)
+        == "#{pane_index}: #{pane_title}"
+    )
+    builder.session.kill()
+
+
 @pytest.mark.flaky(reruns=5)
 def test_shell_command_after_runs_in_each_pane(
     session: Session,

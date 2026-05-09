@@ -542,14 +542,16 @@ class WorkspaceBuilder:
         # toggles `pane-border-status`; pane_title_position picks where the
         # status bar lives; pane_title_format defines what tmux renders.
         # Per-pane `title` is set later in iter_create_panes via set_title().
+        # Both pane-border-* are window-scope options; use global_=True so
+        # the values cover every window in the session.
         if self.session_config.get("enable_pane_titles"):
             position = self.session_config.get("pane_title_position", "top")
             fmt = self.session_config.get(
                 "pane_title_format",
                 "#{pane_index}: #{pane_title}",
             )
-            self.session.set_option("pane-border-status", position)
-            self.session.set_option("pane-border-format", fmt)
+            self.session.set_option("pane-border-status", position, global_=True)
+            self.session.set_option("pane-border-format", fmt, global_=True)
 
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
