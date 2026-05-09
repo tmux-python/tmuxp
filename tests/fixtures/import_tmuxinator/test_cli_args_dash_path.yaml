@@ -1,0 +1,4 @@
+name: dash-path
+tmux_options: -f /home/me/-f-config.conf
+windows:
+- editor: vim
