@@ -103,10 +103,7 @@ two_windows = {
             "window_name": "bar",
             "start_directory": "/bar",
             "panes": [
-                {
-                    "shell_command": ["echo 'bar'", "echo 'bar in an array'"],
-                    "target": "bottom-right",
-                },
+                {"shell_command": ["echo 'bar'", "echo 'bar in an array'"]},
                 {"shell_command": "echo 'bar again'", "focus": True},
             ],
         },
@@ -154,10 +151,7 @@ two_windows_with_custom_command_options = {
             "window_name": "bar",
             "start_directory": "/bar",
             "panes": [
-                {
-                    "shell_command": ["echo 'bar'", "echo 'bar in an array'"],
-                    "target": "bottom-right",
-                },
+                {"shell_command": ["echo 'bar'", "echo 'bar in an array'"]},
                 {"shell_command": "echo 'bar again'", "focus": True},
             ],
         },

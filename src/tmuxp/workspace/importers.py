@@ -349,6 +349,10 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     - ``width``/``height``/``target`` (per-pane geometry) are dropped
       with a warning; builder support is a separate change.
     """
+    # Top-level shallow copy so the dispatch helpers' .pop()s don't mutate
+    # the caller's dict. Nested window/pane dicts are still mutated in place
+    # by the v0.x window loop; deepcopy upstream if you share nested values.
+    workspace_dict = {**workspace_dict}
     has_session_wrapper = "session" in workspace_dict
     inner = workspace_dict["session"] if has_session_wrapper else workspace_dict
     is_v0x = has_session_wrapper or _has_v0x_window_markers(inner)
@@ -440,9 +444,22 @@ def _import_teamocil_v0x(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             for p in w["panes"]:
                 if "cmd" in p:
                     p["shell_command"] = p.pop("cmd")
-                if "width" in p:
-                    # TODO: builder support for per-pane geometry
-                    p.pop("width")
+                for geom_key in ("width", "height", "target"):
+                    if geom_key in p:
+                        # No builder support for per-pane geometry yet
+                        # (libtmux Pane.split(target=...) and Pane.resize()
+                        # exist but the builder doesn't wire them up).
+                        p.pop(geom_key)
+                        logger.warning(
+                            "v0.x pane key dropped (no per-pane geometry "
+                            "support in tmuxp)",
+                            extra={
+                                "tmux_key": geom_key,
+                                "tmux_session": tmuxp_workspace.get(
+                                    "session_name",
+                                ),
+                            },
+                        )
             window_dict["panes"] = w["panes"]
 
         if "layout" in w:
