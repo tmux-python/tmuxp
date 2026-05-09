@@ -86,6 +86,11 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     -------
     dict
     """
+    # Top-level shallow copy so .pop()s below don't mutate the caller's dict.
+    # Nested window/pane dicts are still mutated in place by the per-window
+    # loop; if you pass a dict whose nested values are shared elsewhere,
+    # deepcopy upstream.
+    workspace_dict = {**workspace_dict}
     logger.debug(
         "importing tmuxinator workspace",
         extra={
@@ -119,14 +124,32 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "socket_name" in workspace_dict:
         tmuxp_workspace["socket_name"] = workspace_dict["socket_name"]
 
+    if "socket_path" in workspace_dict:
+        tmuxp_workspace["socket_path"] = workspace_dict["socket_path"]
+
+    if workspace_dict.get("attach") is False:
+        logger.warning(
+            "attach: false has no tmuxp config equivalent; pass `-d` to "
+            "`tmuxp load` instead",
+            extra={
+                "tmux_key": "attach",
+                "tmux_session": tmuxp_workspace.get("session_name"),
+            },
+        )
+
     tmuxp_workspace["windows"] = []
 
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    if "pre" in workspace_dict:
-        pre_value = workspace_dict["pre"]
-        if _has_shell_metachars(pre_value):
+    # `pre` runs once before the session is created (template.erb:18-19).
+    # `on_project_first_start` is the equivalent in the modern hook system
+    # (project.rb:165-168) — fall back to it when `pre` is not set.
+    pre_source = workspace_dict.get("pre")
+    if pre_source is None and "on_project_first_start" in workspace_dict:
+        pre_source = workspace_dict["on_project_first_start"]
+    if pre_source is not None:
+        if _has_shell_metachars(pre_source):
             logger.warning(
                 "pre contains shell constructs that will not work in "
                 "before_script (runs without shell=True)",
@@ -135,20 +158,26 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                     "tmux_session": tmuxp_workspace.get("session_name"),
                 },
             )
-        tmuxp_workspace["before_script"] = pre_value
+        tmuxp_workspace["before_script"] = pre_source
 
-    if "pre_window" in workspace_dict:
-        pre_window = workspace_dict["pre_window"]
-        tmuxp_workspace["shell_command_before"] = (
-            [pre_window] if isinstance(pre_window, str) else pre_window
-        )
-
+    # tmuxinator computes pre_window from an OR-fallback chain
+    # (project.rb:175-188): rbenv -> rvm -> pre_tab -> pre_window. First
+    # non-nil wins. `rbenv` and `rvm` are wrapped as shell commands.
+    pre_window_chain: list[str] = []
     if "rbenv" in workspace_dict:
-        if "shell_command_before" not in tmuxp_workspace:
-            tmuxp_workspace["shell_command_before"] = []
-        tmuxp_workspace["shell_command_before"].append(
-            "rbenv shell {}".format(workspace_dict["rbenv"]),
-        )
+        pre_window_chain.append(f"rbenv shell {workspace_dict['rbenv']}")
+    elif "rvm" in workspace_dict:
+        pre_window_chain.append(f"rvm use {workspace_dict['rvm']}")
+    elif "pre_tab" in workspace_dict:
+        pre_window_chain.append(workspace_dict["pre_tab"])
+    elif "pre_window" in workspace_dict:
+        pre_tab_or_window = workspace_dict["pre_window"]
+        if isinstance(pre_tab_or_window, list):
+            pre_window_chain.extend(pre_tab_or_window)
+        else:
+            pre_window_chain.append(pre_tab_or_window)
+    if pre_window_chain:
+        tmuxp_workspace["shell_command_before"] = pre_window_chain
 
     for window_dict in workspace_dict["windows"]:
         for k, v in window_dict.items():
@@ -173,7 +202,102 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             if "layout" in v:
                 window_dict["layout"] = v["layout"]
             tmuxp_workspace["windows"].append(window_dict)
+
+    _apply_tmuxinator_startup_focus(workspace_dict, tmuxp_workspace)
     return tmuxp_workspace
+
+
+def _apply_tmuxinator_startup_focus(
+    workspace_dict: dict[str, t.Any],
+    tmuxp_workspace: dict[str, t.Any],
+) -> None:
+    """Map tmuxinator `startup_window`/`startup_pane` to tmuxp `focus: true`.
+
+    tmuxinator passes these values directly to tmux as targets
+    (`project.rb:261-267`); a string is a window name, an integer is an
+    index. tmuxp uses a per-window/per-pane `focus` flag instead. We
+    resolve the value (try int first, fall back to name) and set `focus:
+    true` on the matching window (and pane). Unresolved values warn.
+    """
+    windows = tmuxp_workspace.get("windows", [])
+
+    target_window_idx: int | None = None
+    if "startup_window" in workspace_dict:
+        target_window_idx = _resolve_startup_index(
+            workspace_dict["startup_window"],
+            windows,
+            "window_name",
+            "startup_window",
+            tmuxp_workspace.get("session_name"),
+        )
+        if target_window_idx is not None:
+            windows[target_window_idx]["focus"] = True
+
+    if "startup_pane" in workspace_dict and target_window_idx is not None:
+        panes = windows[target_window_idx].get("panes") or []
+        # Pane lists in this importer are positional strings; we can't add
+        # a `focus` flag without converting. Skip unless panes are dicts.
+        normalized_panes: list[t.Any] = []
+        pane_target = _resolve_startup_index(
+            workspace_dict["startup_pane"],
+            panes,
+            None,
+            "startup_pane",
+            tmuxp_workspace.get("session_name"),
+        )
+        for idx, pane in enumerate(panes):
+            if idx == pane_target:
+                if isinstance(pane, dict):
+                    normalized_panes.append({**pane, "focus": True})
+                else:
+                    normalized_panes.append(
+                        {"shell_command": [pane] if pane else [], "focus": True},
+                    )
+            else:
+                normalized_panes.append(pane)
+        windows[target_window_idx]["panes"] = normalized_panes
+
+
+def _resolve_startup_index(
+    value: t.Any,
+    items: list[t.Any],
+    name_key: str | None,
+    field: str,
+    session_name: str | None,
+) -> int | None:
+    """Resolve a tmuxinator startup_window/startup_pane value to a list index.
+
+    Tries integer first (treated as 0-based index into ``items``), then
+    falls back to matching by ``name_key`` if provided. Returns None and
+    warns if no match.
+
+    >>> windows = [{"window_name": "shell"}, {"window_name": "editor"}]
+    >>> _resolve_startup_index(0, windows, "window_name", "f", None)
+    0
+    >>> _resolve_startup_index("editor", windows, "window_name", "f", None)
+    1
+    >>> _resolve_startup_index("missing", windows, "window_name", "f", None) is None
+    True
+    """
+    try:
+        idx = int(value)
+    except (TypeError, ValueError):
+        idx = None
+    if idx is not None and 0 <= idx < len(items):
+        return idx
+    if name_key is not None:
+        for i, item in enumerate(items):
+            if isinstance(item, dict) and item.get(name_key) == value:
+                return i
+    logger.warning(
+        "%s value did not match any window/pane",
+        field,
+        extra={
+            "tmux_key": field,
+            "tmux_session": session_name,
+        },
+    )
+    return None
 
 
 def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
