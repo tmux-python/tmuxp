@@ -41,6 +41,11 @@ These libtmux APIs already exist and do NOT need changes:
 
 ## tmuxp Limitations
 
+> **Status (2026-05-09):** Every gap below has shipped on the
+> `tmuxinator-parity` branch. tmuxp now has feature parity with
+> tmuxinator and teamocil. Sections below remain as historical design
+> references; see `CHANGES` for the user-visible feature summary.
+
 ### T1. No `synchronize` Config Key
 
 - **Blocker**: `WorkspaceBuilder` (`builder.py`) does not check for a `synchronize` key on window configs. Silently ignored if present.
