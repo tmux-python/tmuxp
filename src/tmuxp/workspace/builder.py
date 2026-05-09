@@ -674,6 +674,13 @@ class WorkspaceBuilder:
                 for key, val in window_config["options"].items():
                     window.set_option(key, val)
 
+            # synchronize-panes: before/true fires here, after fires in
+            # config_after_window. tmuxinator deprecates true/before in favor
+            # of after (project.rb:21-29) but accepts all three for compat.
+            sync = window_config.get("synchronize")
+            if sync is True or sync == "before":
+                window.set_option("synchronize-panes", "on")
+
             if window_config.get("focus"):
                 window.select()
 
@@ -843,6 +850,11 @@ class WorkspaceBuilder:
         ):
             for key, val in window_config["options_after"].items():
                 window.set_option(key, val)
+
+        # synchronize-panes value "after" fires here (post-pane-build) so
+        # the option is enabled only after pane commands have been sent.
+        if window_config.get("synchronize") == "after":
+            window.set_option("synchronize-panes", "on")
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
