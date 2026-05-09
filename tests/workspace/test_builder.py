@@ -1838,3 +1838,30 @@ def test_synchronize_panes_true_treated_as_before(
     window = builder.session.windows[-1]
     assert bool(window.show_option("synchronize-panes")) is True
     builder.session.kill()
+
+
+@pytest.mark.flaky(reruns=5)
+def test_shell_command_after_runs_in_each_pane(
+    session: Session,
+) -> None:
+    """Window-level `shell_command_after` runs in every pane post-build."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/shell_command_after.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    def saw_marker(p: Pane) -> bool:
+        def f() -> bool:
+            captured = p.cmd("capture-pane", "-p", "-J").stdout
+            return any("TMUXP_T3_MARKER" in line for line in captured)
+
+        return retry_until(f, raises=False)
+
+    window = builder.session.windows[-1]
+    for pane in window.panes:
+        assert saw_marker(pane), (
+            f"shell_command_after did not run in pane {pane.pane_id}"
+        )
+    builder.session.kill()
