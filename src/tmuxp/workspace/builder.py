@@ -538,6 +538,19 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
+        # Pane title display options: tmuxinator's enable_pane_titles
+        # toggles `pane-border-status`; pane_title_position picks where the
+        # status bar lives; pane_title_format defines what tmux renders.
+        # Per-pane `title` is set later in iter_create_panes via set_title().
+        if self.session_config.get("enable_pane_titles"):
+            position = self.session_config.get("pane_title_position", "top")
+            fmt = self.session_config.get(
+                "pane_title_format",
+                "#{pane_index}: #{pane_title}",
+            )
+            self.session.set_option("pane-border-status", position)
+            self.session.set_option("pane-border-format", fmt)
+
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
 
@@ -819,6 +832,12 @@ class WorkspaceBuilder:
 
                 if sleep_after is not None:
                     time.sleep(sleep_after)
+
+            # Per-pane title via libtmux Pane.set_title; works regardless of
+            # pane-border-status (title is stored on the pane, display is
+            # independent — see tmux cmd-select-pane.c:215-221).
+            if "title" in pane_config:
+                pane.set_title(pane_config["title"])
 
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
