@@ -1,0 +1,7 @@
+session:
+  name: env-off
+  with_env_var: false
+  windows:
+  - name: main
+    panes:
+    - cmd: echo hi
