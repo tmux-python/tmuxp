@@ -212,7 +212,12 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
             if "pre" in v:
                 window_dict["shell_command_before"] = v["pre"]
             if "panes" in v:
-                window_dict["panes"] = v["panes"]
+                # Named-pane shorthand: tmuxinator's {title: command} maps to
+                # tmuxp {title: ..., shell_command: [...]} so the builder
+                # can apply the title via Pane.set_title().
+                window_dict["panes"] = [
+                    _normalize_tmuxinator_pane(p) for p in v["panes"]
+                ]
             if "root" in v:
                 window_dict["start_directory"] = v["root"]
 
@@ -276,6 +281,33 @@ def _apply_tmuxinator_startup_focus(
             else:
                 normalized_panes.append(pane)
         windows[target_window_idx]["panes"] = normalized_panes
+
+
+def _normalize_tmuxinator_pane(pane: t.Any) -> t.Any:
+    """Normalize a tmuxinator pane shorthand to tmuxp pane form.
+
+    tmuxinator panes can be:
+
+    - bare string ``"cmd"`` (passed through unchanged; loader.expand wraps it)
+    - list ``["cmd1", "cmd2"]`` (passed through unchanged)
+    - hash ``{name: "cmd"}`` (a single-key dict — name becomes the pane
+      title). Returns ``{"title": name, "shell_command": [cmd]}``.
+
+    Anything else (e.g., already-tmuxp pane dicts, ``None``) passes
+    through unchanged.
+
+    >>> _normalize_tmuxinator_pane("vim")
+    'vim'
+    >>> _normalize_tmuxinator_pane({"editor": "vim"})
+    {'title': 'editor', 'shell_command': ['vim']}
+    """
+    if isinstance(pane, dict) and len(pane) == 1:
+        ((name, cmd),) = pane.items()
+        if isinstance(cmd, str):
+            return {"title": name, "shell_command": [cmd]}
+        if isinstance(cmd, list):
+            return {"title": name, "shell_command": cmd}
+    return pane
 
 
 def _resolve_startup_index(
