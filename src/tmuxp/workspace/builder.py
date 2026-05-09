@@ -16,7 +16,7 @@ from libtmux.window import Window
 
 from tmuxp import exc
 from tmuxp.log import TmuxpLoggerAdapter
-from tmuxp.util import get_current_pane, run_before_script
+from tmuxp.util import get_current_pane, run_before_script, run_lifecycle_hook
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterator
@@ -490,6 +490,33 @@ class WorkspaceBuilder:
             plugin.before_workspace_builder(self.session)
 
         focus = None
+
+        # Lifecycle hooks: on_project_start fires every load (matches
+        # tmuxinator template.erb:14). first_start fires only on a NEW
+        # session; restart fires only when appending to an existing one.
+        # All execute via run_lifecycle_hook which reuses run_before_script
+        # (no shell=True; pipes need a script file).
+        hook_cwd = self.session_config.get("start_directory")
+        run_lifecycle_hook(
+            "on_project_start",
+            self.session_config.get("on_project_start"),
+            cwd=hook_cwd,
+            on_line=self.on_script_output,
+        )
+        if append:
+            run_lifecycle_hook(
+                "on_project_restart",
+                self.session_config.get("on_project_restart"),
+                cwd=hook_cwd,
+                on_line=self.on_script_output,
+            )
+        else:
+            run_lifecycle_hook(
+                "on_project_first_start",
+                self.session_config.get("on_project_first_start"),
+                cwd=hook_cwd,
+                on_line=self.on_script_output,
+            )
 
         if "before_script" in self.session_config:
             if self.on_before_script:
