@@ -218,6 +218,9 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
             if "layout" in v:
                 window_dict["layout"] = v["layout"]
+            # pass synchronize through (true/before/after) — same key name.
+            if "synchronize" in v:
+                window_dict["synchronize"] = v["synchronize"]
             tmuxp_workspace["windows"].append(window_dict)
 
     _apply_tmuxinator_startup_focus(workspace_dict, tmuxp_workspace)
