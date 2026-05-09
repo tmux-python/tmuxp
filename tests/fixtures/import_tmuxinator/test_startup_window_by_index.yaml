@@ -1,0 +1,6 @@
+name: focus-by-idx
+startup_window: 2
+windows:
+- shell: bash
+- editor: vim
+- logs: tail -f log
