@@ -163,6 +163,7 @@ two_windows_with_custom_command_options = {
 
 three_windows_within_a_session = {
     "session_name": "my awesome session",
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {"window_name": "first window", "panes": [{"shell_command": "echo 'foo'"}]},
         {"window_name": "second window", "panes": [{"shell_command": "echo 'foo'"}]},
