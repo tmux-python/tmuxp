@@ -1,0 +1,4 @@
+name: sock-project
+socket_path: /tmp/my-tmux.sock
+windows:
+- editor: vim

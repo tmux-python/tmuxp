@@ -1,0 +1,6 @@
+name: focus-by-name
+startup_window: editor
+windows:
+- shell: bash
+- editor: vim
+- logs: tail -f log
