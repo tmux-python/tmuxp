@@ -106,6 +106,7 @@ class CLILoadNamespace(argparse.Namespace):
     detached: bool
     append: bool | None
     no_shell_command_before: bool
+    here: bool
     template_vars: list[str]
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
@@ -454,6 +455,7 @@ def load_workspace(
     no_progress: bool = False,
     no_shell_command_before: bool = False,
     template_vars: t.Mapping[str, str] | None = None,
+    here: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -536,6 +538,17 @@ def load_workspace(
     behalf. An exception raised during this process means it's not easy to
     predict how broken the session is.
     """
+    # --here precondition checks. Forces append=True so the existing
+    # append codepath layers windows onto the user's current session.
+    if here and append:
+        msg = "--here is mutually exclusive with --append"
+        raise exc.TmuxpException(msg)
+    if here and not os.environ.get("TMUX"):
+        msg = "--here requires being inside an existing tmux session"
+        raise exc.TmuxpException(msg)
+    if here:
+        append = True
+
     # Initialize CLI colors if not provided
     if cli_colors is None:
         cli_colors = Colors(ColorMode.AUTO)
@@ -789,6 +802,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         ),
     )
     parser.add_argument(
+        "--here",
+        dest="here",
+        action="store_true",
+        default=False,
+        help=(
+            "load workspace into the current tmux session (rename it + add "
+            "windows here). Mirrors teamocil --here. Requires being inside "
+            "tmux. Mutually exclusive with -a/--append."
+        ),
+    )
+    parser.add_argument(
         "-D",
         "--var",
         dest="template_vars",
@@ -950,4 +974,5 @@ def command_load(
             no_progress=args.no_progress,
             no_shell_command_before=args.no_shell_command_before,
             template_vars=_template.parse_cli_vars(args.template_vars or []),
+            here=getattr(args, "here", False),
         )
