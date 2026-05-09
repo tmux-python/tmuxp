@@ -44,6 +44,68 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### New features — tmuxinator/teamocil parity (#1014)
+
+These additions close the remaining feature gaps with tmuxinator and
+teamocil, so configs from either tool now have a tmuxp-native equivalent.
+
+**New config keys**
+
+- **`synchronize`** (window-level) — sync keystrokes across the panes of a
+  window. Accepts `before` / `true` (turn `synchronize-panes` on before
+  pane commands run) or `after` (turn it on once each pane has finished
+  setup). Mirrors tmuxinator.
+- **`enable_pane_titles`**, **`pane_title_position`** (default `top`),
+  **`pane_title_format`** (default `"#{pane_index}: #{pane_title}"`)
+  (session-level) plus per-pane **`title`**. Renders pane titles in the
+  border bar. tmuxinator's named-pane shorthand (`{name: command}`) is
+  imported as both a title and the pane command.
+- **`shell_command_after`** (window-level) — list of commands sent to
+  every pane after each pane's main `shell_command` has run. Mirrors
+  teamocil's `filters.after`.
+- **`on_project_start`**, **`on_project_first_start`**,
+  **`on_project_restart`**, **`on_project_exit`**, **`on_project_stop`**
+  (session-level) — lifecycle hooks. Each accepts a string or list. Hooks
+  reuse tmuxp's existing script executor: no `shell=True`, so pipes and
+  redirects need a real script file. `start` fires on every load,
+  `first_start` only on a brand-new session, `restart` only when
+  attaching to an existing one, `exit` after attach, and `stop` runs from
+  `tmuxp stop`.
+
+**New CLI flags on `tmuxp load`**
+
+- **`--here`** — load the workspace into the current tmux session
+  instead of creating a new one. Mutually exclusive with `--append`;
+  refuses to run outside a tmux session.
+- **`--no-shell-command-before`** — skip every `shell_command_before`
+  (session, window, and pane). Slightly broader than tmuxinator's
+  `--no-pre-window`, which only suppresses `pre_window`.
+- **`--dry-run`** — execute the build on an isolated tmux socket so your
+  main tmux server is untouched. tmuxp surfaces libtmux's
+  `tmux command dispatched` log at INFO so you can see the exact tmux
+  call sequence; the temporary server is killed when the run finishes.
+- **`-D KEY=VALUE` / `--var KEY=VALUE`** (repeatable) — substitute
+  `${var}` and `${var:-default}` placeholders in the workspace YAML
+  before parsing, matching tmuxinator's ERB-before-YAML order. Bare
+  `$name` is intentionally not handled here so `loader.expandshell` can
+  keep handling environment-variable expansion on specific config keys
+  after parsing. Stdlib-only — no Jinja2 dependency.
+
+**New CLI commands**
+
+- **`tmuxp stop <name>`** — fire `on_project_stop` and kill the matching
+  session. Idempotent: a no-op if the session isn't running. Mirrors
+  tmuxinator's `stop` command.
+- **`tmuxp new <name>`** — create a starter workspace YAML in your
+  tmuxp config directory and open it in `$EDITOR`.
+- **`tmuxp copy <src> <dst>`** — copy an existing workspace and open the
+  copy in `$EDITOR`. Prompts before overwriting.
+- **`tmuxp delete <name>...`** — delete one or more workspaces, with a
+  per-name confirmation unless `-y` is supplied.
+- **`tmuxp implode`** — delete every workspace in every tmuxp config
+  directory (legacy `~/.tmuxp/` and XDG `~/.config/tmuxp/`). Single
+  confirmation; `-y` skips it.
+
 ### Behavior changes — tmuxinator/teamocil import (#1014)
 
 - **tmuxinator**: `pre` now correctly maps to `before_script` (was: per-pane
