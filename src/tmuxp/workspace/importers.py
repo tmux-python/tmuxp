@@ -11,6 +11,23 @@ logger = logging.getLogger(__name__)
 
 _SHELL_METACHAR_TOKENS = ("|", "&&", "||", ">", "<", "$(", "`", ";")
 
+_FALSY_YAML_STRINGS = frozenset({"false", "no", "off"})
+
+
+def _is_falsy_yaml(value: t.Any) -> bool:
+    """Treat False, None, and YAML-style falsy strings as falsy.
+
+    PyYAML usually decodes ``false`` to Python ``False``, but if a user
+    quotes the value (``with_env_var: "false"``), it arrives as a
+    truthy non-empty string. Coerce manually so the importer respects
+    intent rather than Python's bool semantics.
+    """
+    if value is False or value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in _FALSY_YAML_STRINGS
+    return False
+
 
 def _has_shell_metachars(value: t.Any) -> bool:
     """Return True if value contains shell metacharacters that need a real shell.
@@ -312,14 +329,18 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     Notes
     -----
-    Todos:
+    Behavior of v0.x-only keys:
 
-    - change  'root' to a cd or start_directory
-    - width in pane -> main-pain-width
-    - with_env_var
-    - clear
-    - cmd_separator
+    - ``with_env_var`` (default ``true`` in v0.x) maps to a session-level
+      ``environment: {TEAMOCIL: "1"}`` to mirror teamocil 0.4-stable.
+    - ``clear`` is preserved on the window dict but the builder does not
+      yet act on it; a warning is emitted.
+    - ``cmd_separator`` is irrelevant since tmuxp sends commands
+      individually; a warning is emitted.
+    - ``width`` is currently dropped from panes; geometry support is a
+      separate builder change.
     """
+    is_v0x = "session" in workspace_dict
     _inner = workspace_dict.get("session", workspace_dict)
     logger.debug(
         "importing teamocil workspace",
@@ -328,13 +349,29 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
     tmuxp_workspace: dict[str, t.Any] = {}
 
-    if "session" in workspace_dict:
+    if is_v0x:
         workspace_dict = workspace_dict["session"]
 
     tmuxp_workspace["session_name"] = workspace_dict.get("name", None)
 
     if "root" in workspace_dict:
         tmuxp_workspace["start_directory"] = workspace_dict.pop("root")
+
+    # v0.x default: TEAMOCIL=1 is exported in every pane (with_env_var=true
+    # by default per teamocil 0.4-stable). _is_falsy_yaml handles quoted
+    # YAML strings like with_env_var: "false" that survive to Python as
+    # truthy strings.
+    if is_v0x and not _is_falsy_yaml(workspace_dict.get("with_env_var", True)):
+        tmuxp_workspace.setdefault("environment", {})["TEAMOCIL"] = "1"
+
+    if "cmd_separator" in workspace_dict:
+        logger.warning(
+            "cmd_separator has no effect in tmuxp; commands are sent individually",
+            extra={
+                "tmux_key": "cmd_separator",
+                "tmux_session": tmuxp_workspace.get("session_name"),
+            },
+        )
 
     tmuxp_workspace["windows"] = []
 
@@ -343,6 +380,14 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
         if "clear" in w:
             window_dict["clear"] = w["clear"]
+            logger.warning(
+                "clear is preserved on the window but the builder does not "
+                "yet act on it",
+                extra={
+                    "tmux_key": "clear",
+                    "tmux_session": tmuxp_workspace.get("session_name"),
+                },
+            )
 
         if "filters" in w:
             if "before" in w["filters"]:
@@ -361,7 +406,7 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
                 if "cmd" in p:
                     p["shell_command"] = p.pop("cmd")
                 if "width" in p:
-                    # TODO support for height/width
+                    # TODO: builder support for per-pane geometry
                     p.pop("width")
             window_dict["panes"] = w["panes"]
 
