@@ -106,6 +106,7 @@ class CLILoadNamespace(argparse.Namespace):
     detached: bool
     append: bool | None
     no_shell_command_before: bool
+    template_vars: list[str]
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
@@ -452,6 +453,7 @@ def load_workspace(
     panel_lines: int | None = None,
     no_progress: bool = False,
     no_shell_command_before: bool = False,
+    template_vars: t.Mapping[str, str] | None = None,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -554,8 +556,20 @@ def load_workspace(
             + cli_colors.highlight(str(PrivatePath(workspace_file))),
         )
 
-    # ConfigReader allows us to open a yaml or json file as a dict
-    raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
+    # Render ${var} / ${var:-default} placeholders against the raw YAML
+    # text BEFORE parsing (matches tmuxinator's ERB-before-YAML ordering).
+    # JSON files skip this step. strict=False leaves unresolved placeholders
+    # in place so loader.expandshell handles $ENV_VAR forms.
+    workspace_path = pathlib.Path(workspace_file)
+    if template_vars and workspace_path.suffix.lower() in {".yaml", ".yml"}:
+        from tmuxp._internal import template as _template
+
+        raw_text = workspace_path.read_text(encoding="utf-8")
+        rendered = _template.render(raw_text, template_vars, strict=False)
+        raw_workspace = config_reader.ConfigReader._load("yaml", rendered) or {}
+    else:
+        # ConfigReader allows us to open a yaml or json file as a dict
+        raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
     # shapes workspaces relative to config / profile file location
     expanded_workspace = loader.expand(
@@ -774,6 +788,18 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
             "pre_window)"
         ),
     )
+    parser.add_argument(
+        "-D",
+        "--var",
+        dest="template_vars",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help=(
+            "template variable for ${var} / ${var:-default} substitution "
+            "in YAML workspace files; repeatable"
+        ),
+    )
     colorsgroup = parser.add_mutually_exclusive_group()
 
     colorsgroup.add_argument(
@@ -906,6 +932,8 @@ def command_load(
             detached = True
             new_session_name = None
 
+        from tmuxp._internal import template as _template
+
         load_workspace(
             workspace_file,
             socket_name=args.socket_name,
@@ -921,4 +949,5 @@ def command_load(
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
             no_shell_command_before=args.no_shell_command_before,
+            template_vars=_template.parse_cli_vars(args.template_vars or []),
         )
