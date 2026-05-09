@@ -272,7 +272,6 @@ def test_import_teamocil_v1x_unknown_pane_keys_warns(
     assert getattr(warnings[0], "tmux_key", None) == "width"
 
 
-
 def test_import_teamocil_warns_on_v0x_pane_geometry(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
