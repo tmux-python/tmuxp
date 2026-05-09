@@ -1,0 +1,13 @@
+session_name: pane-titles
+enable_pane_titles: true
+pane_title_position: bottom
+pane_title_format: "#{pane_index}: #{pane_title}"
+windows:
+- window_name: w1
+  panes:
+  - shell_command:
+    - echo first
+    title: editor
+  - shell_command:
+    - echo second
+    title: server
