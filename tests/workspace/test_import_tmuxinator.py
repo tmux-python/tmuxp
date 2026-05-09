@@ -40,6 +40,24 @@ TMUXINATOR_CONFIG_TEST_FIXTURES: list[TmuxinatorConfigTestFixture] = [
         tmuxinator_dict=fixtures.test3.tmuxinator_dict,
         tmuxp_dict=fixtures.test3.expected,
     ),
+    TmuxinatorConfigTestFixture(
+        test_id="pre_alone",  # solo pre -> before_script
+        tmuxinator_yaml=fixtures.test_pre_alone.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_pre_alone.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_pre_alone.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="pre_combo",  # pre + pre_window map independently
+        tmuxinator_yaml=fixtures.test_pre_combo.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_pre_combo.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_pre_combo.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="pre_shell_metachars",  # warning when pre has shell constructs
+        tmuxinator_yaml=fixtures.test_pre_shell.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_pre_shell.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_pre_shell.expected,
+    ),
 ]
 
 
@@ -76,3 +94,42 @@ def test_import_tmuxinator_logs_debug(
     records = [r for r in caplog.records if r.msg == "importing tmuxinator workspace"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test"
+
+
+def test_import_tmuxinator_warns_on_shell_metachars_in_pre(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`pre` containing shell constructs emits WARNING with tmux_key=pre."""
+    workspace = {
+        "name": "shell-pre",
+        "pre": "echo a | grep b && echo done",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and getattr(r, "tmux_key", None) == "pre"
+    ]
+    assert len(warnings) == 1
+    assert getattr(warnings[0], "tmux_session", None) == "shell-pre"
+
+
+def test_import_tmuxinator_no_warning_when_pre_is_plain(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A `pre` value without shell metacharacters emits no warning."""
+    workspace = {
+        "name": "plain-pre",
+        "pre": "sudo /etc/rc.d/mysqld start",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and getattr(r, "tmux_key", None) == "pre"
+    ]
+    assert warnings == []
