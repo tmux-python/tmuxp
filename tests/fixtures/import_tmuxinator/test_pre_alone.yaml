@@ -1,0 +1,5 @@
+name: alone
+root: ~/test
+pre: sudo /etc/rc.d/mysqld start
+windows:
+- editor: vim

@@ -1,0 +1,7 @@
+name: combo
+pre: sudo /etc/rc.d/mysqld start
+pre_window:
+- echo first
+- echo second
+windows:
+- editor: vim

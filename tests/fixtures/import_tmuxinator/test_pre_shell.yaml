@@ -1,0 +1,4 @@
+name: shell-pre
+pre: echo a | grep b && echo done
+windows:
+- editor: vim
