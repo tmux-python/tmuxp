@@ -58,6 +58,18 @@ TEAMOCIL_CONFIG_TEST_FIXTURES: list[TeamocilConfigTestFixture] = [
         teamocil_dict=fixtures.test_with_env_var_false.teamocil_dict,
         tmuxp_dict=fixtures.test_with_env_var_false.expected,
     ),
+    TeamocilConfigTestFixture(
+        test_id="v1x_string_pane",  # bare string pane -> shell_command list
+        teamocil_yaml=fixtures.test_v1x_string_pane.teamocil_yaml,
+        teamocil_dict=fixtures.test_v1x_string_pane.teamocil_dict,
+        tmuxp_dict=fixtures.test_v1x_string_pane.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="v1x_full",  # commands, focus, options, mixed panes
+        teamocil_yaml=fixtures.test_v1x_full.teamocil_yaml,
+        teamocil_dict=fixtures.test_v1x_full.teamocil_dict,
+        tmuxp_dict=fixtures.test_v1x_full.expected,
+    ),
 ]
 
 
@@ -238,3 +250,23 @@ def test_import_teamocil_v1x_skips_env_var(
     }
     result = importers.import_teamocil(workspace)
     assert "environment" not in result
+
+
+def test_import_teamocil_v1x_unknown_pane_keys_warns(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A v1.x pane dict with no recognizable keys warns and produces {}."""
+    workspace = {
+        "name": "v1x",
+        "windows": [{"name": "w", "panes": [{"width": 50}]}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        result = importers.import_teamocil(workspace)
+    assert result["windows"][0]["panes"][0] == {}
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "no recognizable keys" in r.msg
+    ]
+    assert len(warnings) == 1
+    assert getattr(warnings[0], "tmux_key", None) == "width"
