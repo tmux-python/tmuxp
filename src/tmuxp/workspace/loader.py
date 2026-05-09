@@ -261,19 +261,22 @@ def trickle(
         for pane_idx, pane_dict in enumerate(window_dict["panes"]):
             commands_before = []
 
-            # Prepend shell_command_before to commands
-            if "shell_command_before" in workspace_dict:
-                commands_before.extend(
-                    workspace_dict["shell_command_before"]["shell_command"],
-                )
-            if "shell_command_before" in window_dict:
-                commands_before.extend(
-                    window_dict["shell_command_before"]["shell_command"],
-                )
-            if "shell_command_before" in pane_dict:
-                commands_before.extend(
-                    pane_dict["shell_command_before"]["shell_command"],
-                )
+            # Prepend shell_command_before to commands. Skipped entirely when
+            # no_shell_command_before is True (mirrors tmuxinator's
+            # --no-pre-window, but broader — we skip all three levels).
+            if not no_shell_command_before:
+                if "shell_command_before" in workspace_dict:
+                    commands_before.extend(
+                        workspace_dict["shell_command_before"]["shell_command"],
+                    )
+                if "shell_command_before" in window_dict:
+                    commands_before.extend(
+                        window_dict["shell_command_before"]["shell_command"],
+                    )
+                if "shell_command_before" in pane_dict:
+                    commands_before.extend(
+                        pane_dict["shell_command_before"]["shell_command"],
+                    )
 
             if "shell_command" in pane_dict:
                 commands_before.extend(pane_dict["shell_command"])
