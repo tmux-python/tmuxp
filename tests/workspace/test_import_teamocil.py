@@ -231,10 +231,10 @@ def test_import_teamocil_warns_on_clear(
 def test_import_teamocil_v1x_skips_env_var(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """A v1.x config (no `session:` wrapper) does not get TEAMOCIL=1 (I7)."""
+    """A v1.x config (no `session:` wrapper, no `cmd`/`splits`) skips env."""
     workspace = {
         "name": "v1x",
-        "windows": [{"name": "main", "panes": [{"cmd": "echo hi"}]}],
+        "windows": [{"name": "main", "panes": [{"commands": ["echo hi"]}]}],
     }
     result = importers.import_teamocil(workspace)
     assert "environment" not in result

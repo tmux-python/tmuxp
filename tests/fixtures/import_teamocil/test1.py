@@ -18,6 +18,7 @@ teamocil_conf = {
 
 expected = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "sample-two-panes",
