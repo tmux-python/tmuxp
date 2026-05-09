@@ -107,6 +107,7 @@ class CLILoadNamespace(argparse.Namespace):
     append: bool | None
     no_shell_command_before: bool
     here: bool
+    dry_run: bool
     template_vars: list[str]
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
@@ -813,6 +814,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         ),
     )
     parser.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=False,
+        help=(
+            "execute the build on an isolated tmux socket (won't touch your "
+            "main tmux server) and surface the libtmux command log at INFO. "
+            "The temp server is killed when done."
+        ),
+    )
+    parser.add_argument(
         "-D",
         "--var",
         dest="template_vars",
@@ -943,6 +955,25 @@ def command_load(
     original_detached_option = args.detached
     original_new_session_name = args.new_session_name
 
+    # --dry-run isolates the build on a temp socket so the user's main tmux
+    # server is untouched. Force socket_name to a unique value, force
+    # detached=True (no attaching to a sandbox session), bump tmuxp's logger
+    # to DEBUG so libtmux's `tmux command dispatched` messages surface, and
+    # kill the temp server in finally.
+    dry_run = getattr(args, "dry_run", False)
+    dry_run_socket: str | None = None
+    if dry_run:
+        import secrets as _secrets
+
+        dry_run_socket = f"tmuxp-dryrun-{os.getpid()}-{_secrets.token_hex(2)}"
+        args.socket_name = dry_run_socket
+        original_detached_option = True
+        logging.getLogger("libtmux").setLevel(logging.DEBUG)
+        logging.getLogger("tmuxp").setLevel(logging.DEBUG)
+        tmuxp_echo(
+            cli_colors.info(f"[dry-run] using isolated socket: {dry_run_socket}"),
+        )
+
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
             workspace_file,
@@ -958,21 +989,39 @@ def command_load(
 
         from tmuxp._internal import template as _template
 
-        load_workspace(
-            workspace_file,
-            socket_name=args.socket_name,
-            socket_path=args.socket_path,
-            tmux_config_file=args.tmux_config_file,
-            new_session_name=new_session_name,
-            colors=args.colors,
-            detached=detached,
-            answer_yes=args.answer_yes or False,
-            append=args.append or False,
-            cli_colors=cli_colors,
-            progress_format=args.progress_format,
-            panel_lines=args.panel_lines,
-            no_progress=args.no_progress,
-            no_shell_command_before=args.no_shell_command_before,
-            template_vars=_template.parse_cli_vars(args.template_vars or []),
-            here=getattr(args, "here", False),
-        )
+        try:
+            load_workspace(
+                workspace_file,
+                socket_name=args.socket_name,
+                socket_path=args.socket_path,
+                tmux_config_file=args.tmux_config_file,
+                new_session_name=new_session_name,
+                colors=args.colors,
+                detached=dry_run or detached,
+                answer_yes=args.answer_yes or False,
+                append=args.append or False,
+                cli_colors=cli_colors,
+                progress_format=args.progress_format,
+                panel_lines=args.panel_lines,
+                no_progress=args.no_progress,
+                no_shell_command_before=args.no_shell_command_before,
+                template_vars=_template.parse_cli_vars(args.template_vars or []),
+                here=getattr(args, "here", False),
+            )
+        finally:
+            if dry_run and dry_run_socket:
+                # Kill the temp tmux server we spun up. Best-effort: if the
+                # build raised before any session was created, the server
+                # may not exist yet.
+                try:
+                    Server(socket_name=dry_run_socket).kill_server()
+                    tmuxp_echo(
+                        cli_colors.muted(
+                            f"[dry-run] cleaned up isolated socket: {dry_run_socket}",
+                        ),
+                    )
+                except Exception:
+                    logger.debug(
+                        "dry-run cleanup skipped",
+                        extra={"tmux_session": dry_run_socket},
+                    )
