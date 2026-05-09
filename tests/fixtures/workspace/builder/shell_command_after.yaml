@@ -1,0 +1,10 @@
+session_name: shell-command-after
+windows:
+- window_name: w1
+  shell_command_after:
+  - echo TMUXP_T3_MARKER
+  panes:
+  - shell_command:
+    - echo first
+  - shell_command:
+    - echo second
