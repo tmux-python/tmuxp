@@ -105,6 +105,7 @@ class CLILoadNamespace(argparse.Namespace):
     answer_yes: bool | None
     detached: bool
     append: bool | None
+    no_shell_command_before: bool
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
@@ -450,6 +451,7 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    no_shell_command_before: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -566,7 +568,10 @@ def load_workspace(
         expanded_workspace["session_name"] = new_session_name
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
-    expanded_workspace = loader.trickle(expanded_workspace)
+    expanded_workspace = loader.trickle(
+        expanded_workspace,
+        no_shell_command_before=no_shell_command_before,
+    )
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
@@ -758,6 +763,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="load workspace, appending windows to the current session",
     )
+    parser.add_argument(
+        "--no-shell-command-before",
+        dest="no_shell_command_before",
+        action="store_true",
+        default=False,
+        help=(
+            "skip session/window/pane shell_command_before propagation "
+            "(broader than tmuxinator's --no-pre-window, which only skips "
+            "pre_window)"
+        ),
+    )
     colorsgroup = parser.add_mutually_exclusive_group()
 
     colorsgroup.add_argument(
@@ -904,4 +920,5 @@ def command_load(
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            no_shell_command_before=args.no_shell_command_before,
         )
