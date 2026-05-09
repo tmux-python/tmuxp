@@ -856,6 +856,13 @@ class WorkspaceBuilder:
         if window_config.get("synchronize") == "after":
             window.set_option("synchronize-panes", "on")
 
+        # Window-level shell_command_after: send each command to every pane
+        # after the main shell_command for that pane has run. The teamocil
+        # importer produces this on the window dict from `filters.after`.
+        for after_cmd in window_config.get("shell_command_after", []) or []:
+            for pane in window.panes:
+                pane.send_keys(after_cmd, suppress_history=False)
+
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
         assert self.server is not None
