@@ -12,7 +12,13 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import get_pane, get_session, oh_my_zsh_auto_title, run_before_script
+from tmuxp.util import (
+    get_pane,
+    get_session,
+    oh_my_zsh_auto_title,
+    run_before_script,
+    run_lifecycle_hook,
+)
 
 from .constants import FIXTURE_PATH
 
@@ -234,3 +240,52 @@ def test_oh_my_zsh_auto_title_logs_warning(
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warning_records) >= 1
     assert "DISABLE_AUTO_TITLE" in warning_records[0].message
+
+
+def test_run_lifecycle_hook_none_is_noop() -> None:
+    """Passing None to run_lifecycle_hook returns 0 without invoking shell."""
+    assert run_lifecycle_hook("on_project_start", None) == 0
+
+
+def test_run_lifecycle_hook_string(tmp_path: pathlib.Path) -> None:
+    """String value runs once via run_before_script."""
+    script = tmp_path / "h.sh"
+    script.write_text("#!/bin/sh\necho ok\n")
+    script.chmod(0o755)
+    assert run_lifecycle_hook("on_project_start", str(script)) == 0
+
+
+def test_run_lifecycle_hook_list_runs_each(tmp_path: pathlib.Path) -> None:
+    """List value runs each item sequentially."""
+    log_file = tmp_path / "out.log"
+    a = tmp_path / "a.sh"
+    a.write_text(f"#!/bin/sh\necho A >> {log_file}\n")
+    a.chmod(0o755)
+    b = tmp_path / "b.sh"
+    b.write_text(f"#!/bin/sh\necho B >> {log_file}\n")
+    b.chmod(0o755)
+    assert run_lifecycle_hook("on_project_start", [str(a), str(b)]) == 0
+    assert log_file.read_text().splitlines() == ["A", "B"]
+
+
+def test_run_lifecycle_hook_aborts_on_first_failure(
+    tmp_path: pathlib.Path,
+) -> None:
+    """List iteration aborts when any item exits non-zero."""
+    a = tmp_path / "ok.sh"
+    a.write_text("#!/bin/sh\nexit 0\n")
+    a.chmod(0o755)
+    b = tmp_path / "fail.sh"
+    b.write_text("#!/bin/sh\nexit 7\n")
+    b.chmod(0o755)
+    c = tmp_path / "never.sh"
+    c.write_text("#!/bin/sh\nexit 0\n")
+    c.chmod(0o755)
+    with pytest.raises(BeforeLoadScriptError):
+        run_lifecycle_hook("on_project_start", [str(a), str(b), str(c)])
+
+
+def test_run_lifecycle_hook_propagates_not_found(tmp_path: pathlib.Path) -> None:
+    """Missing script raises BeforeLoadScriptNotExists like before_script."""
+    with pytest.raises(BeforeLoadScriptNotExists):
+        run_lifecycle_hook("on_project_start", str(tmp_path / "nope.sh"))
