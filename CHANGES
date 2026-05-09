@@ -44,6 +44,36 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Behavior changes — tmuxinator/teamocil import (#1014)
+
+- **tmuxinator**: `pre` now correctly maps to `before_script` (was: per-pane
+  `shell_command_before`). Importer warns when `pre` contains shell
+  constructs like pipes/redirects since `before_script` runs without
+  `shell=True`. Combo `pre` + `pre_window` previously dropped `pre`
+  entirely; both keys now map independently.
+- **tmuxinator**: `cli_args`/`tmux_options` now use `shlex` parsing.
+  `-L` (socket name) and `-S` (socket path) are extracted (were silently
+  dropped). Paths containing `-f` no longer corrupt the config value.
+  Unknown flags and missing-value flags warn.
+- **tmuxinator**: new key translations — `rvm`, `pre_tab`,
+  `startup_window`, `startup_pane`, `on_project_first_start`,
+  `socket_path`. `attach: false` warns and directs to `tmuxp load -d`.
+  `startup_window`/`startup_pane` resolve by name OR integer index to
+  set `focus: true` on the matching window/pane.
+- **teamocil**: v1.x format now supported. Importer auto-dispatches to
+  v0.x or v1.x based on `session:` wrapper, `splits`/`filters`/`cmd`
+  markers. v1.x handles bare-string panes, `commands`, per-window/pane
+  `focus`, window `options`. v1.x pane dicts with no recognizable keys
+  produce empty panes and warn.
+- **teamocil**: v0.x configs now emit `environment: {TEAMOCIL: "1"}` by
+  default (matches `with_env_var: true` from teamocil 0.4-stable).
+  Suppress with `with_env_var: false` (also accepts the YAML-quoted
+  string `"false"`).
+- **teamocil**: v0.x pane `width`/`height`/`target` keys now drop with a
+  WARNING (were silently dropped or passed through as dead data).
+
+### Documentation
+
 ## tmuxp 1.70.0 (2026-05-23)
 
 tmuxp 1.70.0 bumps libtmux to 0.58.0, fixing session and window listing on systems whose locale is not UTF-8.
