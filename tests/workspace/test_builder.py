@@ -1768,3 +1768,73 @@ def test_builder_logs_window_and_pane_creation(
     assert len(cmd_logs) >= 1
 
     builder.session.kill()
+
+
+class SynchronizeFixture(t.NamedTuple):
+    """Synchronize-panes fixture."""
+
+    test_id: str
+    workspace_file: str
+    expected_enabled: bool  # True if synchronize-panes is "on" after build
+
+
+SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
+    SynchronizeFixture(
+        test_id="before",
+        workspace_file="workspace/builder/synchronize_before.yaml",
+        expected_enabled=True,
+    ),
+    SynchronizeFixture(
+        test_id="after",
+        workspace_file="workspace/builder/synchronize_after.yaml",
+        expected_enabled=True,
+    ),
+    SynchronizeFixture(
+        test_id="omitted",
+        workspace_file="workspace/builder/synchronize_omitted.yaml",
+        expected_enabled=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizeFixture._fields),
+    SYNCHRONIZE_FIXTURES,
+    ids=[f.test_id for f in SYNCHRONIZE_FIXTURES],
+)
+def test_synchronize_panes(
+    test_id: str,
+    workspace_file: str,
+    expected_enabled: bool,
+    session: Session,
+) -> None:
+    """`synchronize` config key turns synchronize-panes on at the right phase."""
+    workspace = ConfigReader._from_file(test_utils.get_workspace_file(workspace_file))
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+    window = builder.session.windows[-1]
+    assert bool(window.show_option("synchronize-panes")) is expected_enabled
+    builder.session.kill()
+
+
+def test_synchronize_panes_true_treated_as_before(
+    session: Session,
+) -> None:
+    """`synchronize: true` is equivalent to `synchronize: before`."""
+    workspace = {
+        "session_name": "sync-true",
+        "windows": [
+            {
+                "window_name": "w1",
+                "synchronize": True,
+                "panes": [{"shell_command": ["echo a"]}, {"shell_command": ["echo b"]}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+    window = builder.session.windows[-1]
+    assert bool(window.show_option("synchronize-panes")) is True
+    builder.session.kill()
