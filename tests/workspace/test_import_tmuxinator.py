@@ -70,6 +70,30 @@ TMUXINATOR_CONFIG_TEST_FIXTURES: list[TmuxinatorConfigTestFixture] = [
         tmuxinator_dict=fixtures.test_cli_args_dash_path.tmuxinator_dict,
         tmuxp_dict=fixtures.test_cli_args_dash_path.expected,
     ),
+    TmuxinatorConfigTestFixture(
+        test_id="rvm",  # rvm wrapped as `rvm use <ver>`
+        tmuxinator_yaml=fixtures.test_rvm.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_rvm.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_rvm.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="startup_window_by_name",  # name -> focus
+        tmuxinator_yaml=fixtures.test_startup_window_by_name.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_startup_window_by_name.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_startup_window_by_name.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="startup_window_by_index",  # int -> focus
+        tmuxinator_yaml=fixtures.test_startup_window_by_index.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_startup_window_by_index.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_startup_window_by_index.expected,
+    ),
+    TmuxinatorConfigTestFixture(
+        test_id="socket_path",  # socket_path passes through
+        tmuxinator_yaml=fixtures.test_socket_path.tmuxinator_yaml,
+        tmuxinator_dict=fixtures.test_socket_path.tmuxinator_dict,
+        tmuxp_dict=fixtures.test_socket_path.expected,
+    ),
 ]
 
 
@@ -165,3 +189,91 @@ def test_import_tmuxinator_warns_on_unknown_cli_args_flag(
     ]
     assert len(warnings) == 1
     assert getattr(warnings[0], "tmux_session", None) == "weird"
+
+
+def test_import_tmuxinator_warns_on_attach_false(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`attach: false` emits WARNING directing user to CLI `-d` flag."""
+    workspace = {
+        "name": "no-attach",
+        "attach": False,
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and getattr(r, "tmux_key", None) == "attach"
+    ]
+    assert len(warnings) == 1
+
+
+def test_import_tmuxinator_on_project_first_start_falls_back_to_pre(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`on_project_first_start` maps to before_script when `pre` absent."""
+    workspace = {
+        "name": "fallback",
+        "on_project_first_start": "echo first",
+        "windows": [{"editor": "vim"}],
+    }
+    result = importers.import_tmuxinator(workspace)
+    assert result["before_script"] == "echo first"
+
+
+def test_import_tmuxinator_pre_window_chain_first_match_wins(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Rbenv wins over rvm/pre_tab/pre_window per project.rb:175-188."""
+    workspace = {
+        "name": "chain",
+        "rbenv": "2.7.0",
+        "rvm": "3.2.0",
+        "pre_tab": "echo pre_tab",
+        "pre_window": "echo pre_window",
+        "windows": [{"editor": "vim"}],
+    }
+    result = importers.import_tmuxinator(workspace)
+    assert result["shell_command_before"] == ["rbenv shell 2.7.0"]
+
+
+def test_import_tmuxinator_warns_on_unresolved_startup_window(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Unresolvable `startup_window` value emits WARNING."""
+    workspace = {
+        "name": "miss",
+        "startup_window": "nonexistent",
+        "windows": [{"editor": "vim"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING
+        and getattr(r, "tmux_key", None) == "startup_window"
+    ]
+    assert len(warnings) == 1
+
+
+def test_import_tmuxinator_warns_on_out_of_range_startup_window_int(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An integer `startup_window` past the window count emits WARNING."""
+    workspace = {
+        "name": "oor",
+        "startup_window": 99,
+        "windows": [{"editor": "vim"}, {"shell": "bash"}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_tmuxinator(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING
+        and getattr(r, "tmux_key", None) == "startup_window"
+    ]
+    assert len(warnings) == 1

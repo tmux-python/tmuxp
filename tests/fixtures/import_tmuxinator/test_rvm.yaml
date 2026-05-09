@@ -1,0 +1,4 @@
+name: rvm-project
+rvm: 3.2.0
+windows:
+- editor: vim
