@@ -270,3 +270,34 @@ def test_import_teamocil_v1x_unknown_pane_keys_warns(
     ]
     assert len(warnings) == 1
     assert getattr(warnings[0], "tmux_key", None) == "width"
+
+
+
+def test_import_teamocil_warns_on_v0x_pane_geometry(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """v0.x pane width/height/target each emit WARNING."""
+    workspace = {
+        "session": {
+            "name": "geom",
+            "windows": [
+                {
+                    "name": "w",
+                    "splits": [
+                        {"cmd": "echo a", "width": 50},
+                        {"cmd": "echo b", "height": 30},
+                        {"cmd": "echo c", "target": "bottom-right"},
+                    ],
+                },
+            ],
+        },
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(workspace)
+    keys: list[str] = sorted(
+        t.cast(str, getattr(r, "tmux_key", ""))
+        for r in caplog.records
+        if r.levelno == logging.WARNING
+        and getattr(r, "tmux_key", None) in {"width", "height", "target"}
+    )
+    assert keys == ["height", "target", "width"]
