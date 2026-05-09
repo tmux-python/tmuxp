@@ -1,0 +1,4 @@
+name: multi-flags
+cli_args: -f ~/.tmux.conf -L mysock -S /tmp/tmux.sock
+windows:
+- editor: vim
