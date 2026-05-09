@@ -159,11 +159,9 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
         if "filters" in w:
             if "before" in w["filters"]:
-                for _b in w["filters"]["before"]:
-                    window_dict["shell_command_before"] = w["filters"]["before"]
+                window_dict["shell_command_before"] = w["filters"]["before"]
             if "after" in w["filters"]:
-                for _b in w["filters"]["after"]:
-                    window_dict["shell_command_after"] = w["filters"]["after"]
+                window_dict["shell_command_after"] = w["filters"]["after"]
 
         if "root" in w:
             window_dict["start_directory"] = w.pop("root")
