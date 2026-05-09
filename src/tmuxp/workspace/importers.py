@@ -8,6 +8,35 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 
+_SHELL_METACHAR_TOKENS = ("|", "&&", "||", ">", "<", "$(", "`", ";")
+
+
+def _has_shell_metachars(value: t.Any) -> bool:
+    """Return True if value contains shell metacharacters that need a real shell.
+
+    tmuxp's `before_script` runs via `subprocess.Popen` after `shlex.split()` —
+    no shell process. Pipes, redirects, command substitution, and `&&` chains
+    don't work. This helper flags such values so the caller can warn the user.
+
+    Strings, lists of strings, and dicts containing strings are scanned. Any
+    other type returns False (nothing to scan).
+
+    >>> _has_shell_metachars("plain command")
+    False
+    >>> _has_shell_metachars("echo a | grep b")
+    True
+    >>> _has_shell_metachars(["safe", "echo $(date)"])
+    True
+    >>> _has_shell_metachars(None)
+    False
+    """
+    if isinstance(value, str):
+        return any(token in value for token in _SHELL_METACHAR_TOKENS)
+    if isinstance(value, list):
+        return any(_has_shell_metachars(item) for item in value)
+    return False
+
+
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
 
@@ -67,18 +96,24 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     if "tabs" in workspace_dict:
         workspace_dict["windows"] = workspace_dict.pop("tabs")
 
-    if "pre" in workspace_dict and "pre_window" in workspace_dict:
-        tmuxp_workspace["shell_command"] = workspace_dict["pre"]
+    if "pre" in workspace_dict:
+        pre_value = workspace_dict["pre"]
+        if _has_shell_metachars(pre_value):
+            logger.warning(
+                "pre contains shell constructs that will not work in "
+                "before_script (runs without shell=True)",
+                extra={
+                    "tmux_key": "pre",
+                    "tmux_session": tmuxp_workspace.get("session_name"),
+                },
+            )
+        tmuxp_workspace["before_script"] = pre_value
 
-        if isinstance(workspace_dict["pre"], str):
-            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre_window"]]
-        else:
-            tmuxp_workspace["shell_command_before"] = workspace_dict["pre_window"]
-    elif "pre" in workspace_dict:
-        if isinstance(workspace_dict["pre"], str):
-            tmuxp_workspace["shell_command_before"] = [workspace_dict["pre"]]
-        else:
-            tmuxp_workspace["shell_command_before"] = workspace_dict["pre"]
+    if "pre_window" in workspace_dict:
+        pre_window = workspace_dict["pre_window"]
+        tmuxp_workspace["shell_command_before"] = (
+            [pre_window] if isinstance(pre_window, str) else pre_window
+        )
 
     if "rbenv" in workspace_dict:
         if "shell_command_before" not in tmuxp_workspace:
