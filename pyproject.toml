@@ -123,6 +123,7 @@ build-backend = "hatchling.build"
 gp-libs = false
 gp-furo-theme = false
 gp-sphinx = false
+libtmux = false
 sphinx-autodoc-api-style = false
 sphinx-autodoc-argparse = false
 sphinx-autodoc-docutils = false
