@@ -39,6 +39,15 @@ $ pipx install \
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Breaking changes
+
+#### **libtmux** minimum bumped from `~=0.55.0` to `~=0.56.0` (#1038)
+
+  Picks up two releases: 0.55.1 (test-fixture socket cleanup) and
+  0.56.0 (broader tmux command coverage — interactive commands,
+  buffer I/O, key bindings, and window/pane manipulation, all
+  available to scripts run via `tmuxp shell`).
+
 ### Documentation
 
 - Visual improvements to API docs from [gp-sphinx](https://gp-sphinx.git-pull.com)-based Sphinx packages (#1035)

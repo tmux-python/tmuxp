@@ -12,6 +12,7 @@ exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for 
 exclude-newer-span = "P3D"
 
 [options.exclude-newer-package]
+libtmux = false
 gp-sphinx = false
 sphinx-autodoc-sphinx = false
 sphinx-autodoc-api-style = false
@@ -413,7 +414,7 @@ name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
@@ -614,11 +615,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.55.1"
+version = "0.56.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/86/01/fa4f839045d32576d4c193d85ba37e47908fea8227f18800847f589e2476/libtmux-0.55.1.tar.gz", hash = "sha256:dcee950537b8bda4337267bc2cb62b434c4c8da3a75c1546151674238ef14e20", size = 439372, upload-time = "2026-04-19T18:25:39.358Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/62/896e1e0412dd76c88926604d5a231feb9b116d6f32abe19054e244504dbc/libtmux-0.56.0.tar.gz", hash = "sha256:bddf52214405e4f64850826d44cbc958d4a01c53432983cee0e2856bdbbaaedb", size = 476168, upload-time = "2026-05-10T13:40:23.774Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/2e/819d7414b96f19ec4cafda95555246bdb9766dd7c0519b5b1bf4495789f7/libtmux-0.55.1-py3-none-any.whl", hash = "sha256:4382667d508610bdf71a7cc07d7a561d402fa2d5621cce299e7ae97b0cdcb93b", size = 80679, upload-time = "2026-04-19T18:25:37.61Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/ce/4319c912164fa142956c73ba50ed6f2aac2ca7cced2e96c8320114f1c937/libtmux-0.56.0-py3-none-any.whl", hash = "sha256:ddf70de0f287666fb0f02082732f28eed46450de1828c995da3de2b12042ab60", size = 97768, upload-time = "2026-05-10T13:40:22.189Z" },
 ]
 
 [[package]]
@@ -1667,7 +1668,7 @@ testing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "libtmux", specifier = "~=0.55.0" },
+    { name = "libtmux", specifier = "~=0.56.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
