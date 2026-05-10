@@ -36,13 +36,15 @@ Run the developmental install with:
 $ tmuxp@next load yoursession
 ```
 
-## tmuxp 1.68.0 (Yet to be released)
+## tmuxp 1.69.0 (Yet to be released)
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
 <!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+## tmuxp 1.68.0 (2026-05-10)
 
 tmuxp 1.68.0 refreshes the documentation stack and developer workflow for the next release train. The docs now sit on the shared [gp-sphinx](https://gp-sphinx.git-pull.com/) platform, the API pages pick up the newer gp-furo visual language, and the test suite avoids paying for each contributor's interactive shell startup. The release also raises the libtmux floor so {ref}`tmuxp-shell` users can script against the expanded tmux command wrapper surface.
 
