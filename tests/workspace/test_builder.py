@@ -824,8 +824,10 @@ def test_plugin_system_before_workspace_builder(
 
     builder.build(session=session)
 
-    proc = session.cmd("display-message", "-p", "'#S'")
-    assert proc.stdout[0] == "'plugin_test_bwb'"
+    active_pane = session.active_pane
+    assert active_pane is not None
+    lines = active_pane.display_message("'#S'", get_text=True)
+    assert lines[0] == "'plugin_test_bwb'"
 
 
 def test_plugin_system_on_window_create(
@@ -847,8 +849,10 @@ def test_plugin_system_on_window_create(
 
     builder.build(session=session)
 
-    proc = session.cmd("display-message", "-p", "'#W'")
-    assert proc.stdout[0] == "'plugin_test_owc'"
+    active_pane = session.active_pane
+    assert active_pane is not None
+    lines = active_pane.display_message("'#W'", get_text=True)
+    assert lines[0] == "'plugin_test_owc'"
 
 
 def test_plugin_system_after_window_finished(
@@ -870,8 +874,10 @@ def test_plugin_system_after_window_finished(
 
     builder.build(session=session)
 
-    proc = session.cmd("display-message", "-p", "'#W'")
-    assert proc.stdout[0] == "'plugin_test_awf'"
+    active_pane = session.active_pane
+    assert active_pane is not None
+    lines = active_pane.display_message("'#W'", get_text=True)
+    assert lines[0] == "'plugin_test_awf'"
 
 
 def test_plugin_system_on_window_create_multiple_windows(
@@ -946,15 +952,18 @@ def test_plugin_system_multiple_plugins(
 
     builder.build(session=session)
 
+    active_pane = session.active_pane
+    assert active_pane is not None
+
     # Drop through to the before_script plugin hook
-    proc = session.cmd("display-message", "-p", "'#S'")
-    assert proc.stdout[0] == "'plugin_test_bwb'"
+    lines = active_pane.display_message("'#S'", get_text=True)
+    assert lines[0] == "'plugin_test_bwb'"
 
     # Drop through to the after_window_finished. This won't succeed
     # unless on_window_create succeeds because of how the test plugin
     # override methods are currently written
-    proc = session.cmd("display-message", "-p", "'#W'")
-    assert proc.stdout[0] == "'mp_test_awf'"
+    lines = active_pane.display_message("'#W'", get_text=True)
+    assert lines[0] == "'mp_test_awf'"
 
 
 def test_load_configs_same_session(
