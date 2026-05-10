@@ -30,6 +30,20 @@ logger = logging.getLogger(__name__)
 USING_ZSH = "zsh" in os.getenv("SHELL", "")
 
 
+@pytest.fixture(autouse=True)
+def _pin_test_shell_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin ``$SHELL`` to ``/bin/sh`` for every test.
+
+    tmux falls back to ``$SHELL`` for new panes when ``default-shell`` is
+    unset, so pinning the env var here forces every test pane to spawn
+    ``/bin/sh`` instead of the contributor's interactive shell. Eliminates
+    rcfile init cost (zsh / oh-my-zsh / bash profile chains) and yields
+    deterministic prompt output that doesn't flake capture-pane assertions.
+    ``monkeypatch`` restores the prior value at teardown.
+    """
+    monkeypatch.setenv("SHELL", "/bin/sh")
+
+
 @pytest.fixture(autouse=USING_ZSH, scope="session")
 def zshrc(user_path: pathlib.Path) -> pathlib.Path | None:
     """Quiets ZSH default message.

@@ -56,6 +56,16 @@ _Notes on the upcoming release will go here._
   via `gp-furo-theme`, a Tailwind v4 respin of Furo, with
   `sphinx-vite-builder` handling theme-asset builds (#1037)
 
+### Development
+
+#### Test panes spawn `/bin/sh` instead of the developer's `$SHELL` (#1041)
+
+An autouse pytest fixture pins `$SHELL=/bin/sh` so test panes skip
+the contributor's interactive shell init. On systems with slow shell
+startup (zsh + oh-my-zsh, heavy bash profiles) this can roughly halve
+`uv run py.test` wall time; smaller gain on stripped-down shells. No
+effect on tmuxp's runtime behavior.
+
 
 ## tmuxp 1.67.0 (2026-03-08)
 
