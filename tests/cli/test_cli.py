@@ -170,6 +170,8 @@ def test_reattach_plugins(
         _reattach(builder)
 
     assert builder.session is not None
-    proc = builder.session.cmd("display-message", "-p", "'#S'")
+    active_pane = builder.session.active_pane
+    assert active_pane is not None
+    lines = active_pane.display_message("'#S'", get_text=True)
 
-    assert proc.stdout[0] == "'plugin_test_r'"
+    assert lines[0] == "'plugin_test_r'"
