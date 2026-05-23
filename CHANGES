@@ -44,6 +44,16 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.58.0` (was `~=0.57.1`) (#1045)
+
+### Fixes
+
+#### Non-UTF-8 locale decoding (#1045)
+
+Session and window listing could silently return empty results when the system locale was not UTF-8. Fixed by the libtmux 0.58.0 floor bump.
+
 ## tmuxp 1.69.0 (2026-05-23)
 
 tmuxp 1.69.0 is a libtmux that expands functionality of `tmuxp shell` under the hood.
