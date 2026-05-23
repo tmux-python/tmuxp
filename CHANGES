@@ -36,13 +36,17 @@ Run the developmental install with:
 $ tmuxp@next load yoursession
 ```
 
-## tmuxp 1.69.0 (Yet to be released)
+## tmuxp 1.70.0 (Yet to be released)
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
 <!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+## tmuxp 1.69.0 (2026-05-23)
+
+tmuxp 1.69.0 is a libtmux that expands functionality of `tmuxp shell` under the hood.
 
 ### Dependencies
 
