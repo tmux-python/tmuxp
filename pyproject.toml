@@ -133,6 +133,7 @@ sphinx-autodoc-sphinx = false
 sphinx-autodoc-typehints-gp = false
 sphinx-fonts = false
 sphinx-gp-opengraph = false
+sphinx-gp-llms = false
 sphinx-gp-sitemap = false
 sphinx-gp-theme = false
 sphinx-ux-autodoc-layout = false
