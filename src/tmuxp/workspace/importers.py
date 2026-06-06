@@ -119,10 +119,36 @@ def import_tmuxinator(
     ----------
     workspace_dict : dict
         python dict for tmuxp workspace.
+    base_index : int
+        tmux ``base-index``, used to resolve ``startup_window`` targets.
+    pane_base_index : int
+        tmux ``pane-base-index``, used to resolve ``startup_pane`` targets.
 
     Returns
     -------
     dict
+
+    Examples
+    --------
+    >>> result = import_tmuxinator(
+    ...     {"name": "demo", "windows": [{"editor": {"panes": ["vim"]}}]}
+    ... )
+    >>> result["session_name"]
+    'demo'
+
+    >>> result["windows"][0]["window_name"]
+    'editor'
+
+    >>> result["windows"][0]["panes"]
+    ['vim']
+
+    tmuxinator lifecycle keys map to tmuxp hooks:
+
+    >>> result = import_tmuxinator(
+    ...     {"name": "hooked", "pre": "docker compose up -d", "windows": []}
+    ... )
+    >>> result["on_project_start"]
+    'docker compose up -d'
     """
     logger.debug(
         "importing tmuxinator workspace",
@@ -345,6 +371,20 @@ def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     ----------
     workspace_dict : dict
         python dict for tmuxp workspace
+
+    Examples
+    --------
+    >>> result = import_teamocil(
+    ...     {"windows": [{"name": "dev", "root": "~/code", "panes": [{"cmd": "ls"}]}]}
+    ... )
+    >>> result["windows"][0]["window_name"]
+    'dev'
+
+    >>> result["windows"][0]["start_directory"]
+    '~/code'
+
+    >>> result["windows"][0]["panes"]
+    [{'shell_command': 'ls'}]
     """
     _inner = workspace_dict.get("session", workspace_dict)
     logger.debug(
