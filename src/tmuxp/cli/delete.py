@@ -126,7 +126,7 @@ def command_delete(
         # The finder resolves any existing direct path; deletion is
         # destructive, so require a workspace extension before unlinking.
         if (
-            os.path.splitext(workspace_path)[1]
+            os.path.splitext(workspace_path)[1].lower()
             not in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
         ):
             tmuxp_echo(

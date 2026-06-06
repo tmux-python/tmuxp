@@ -190,3 +190,44 @@ def test_delete_refuses_non_workspace_file(
     assert target.exists(), "non-workspace file was deleted"
     captured = capsys.readouterr()
     assert "Not a workspace file" in captured.out
+
+
+class DeleteCaseInsensitiveFixture(t.NamedTuple):
+    """Test fixture for case-insensitive workspace extension matching."""
+
+    test_id: str
+    filename: str
+
+
+DELETE_CASE_INSENSITIVE_FIXTURES: list[DeleteCaseInsensitiveFixture] = [
+    DeleteCaseInsensitiveFixture(test_id="uppercase_yaml", filename="proj.YAML"),
+    DeleteCaseInsensitiveFixture(test_id="uppercase_json", filename="proj.JSON"),
+]
+
+
+@pytest.mark.parametrize(
+    list(DeleteCaseInsensitiveFixture._fields),
+    DELETE_CASE_INSENSITIVE_FIXTURES,
+    ids=[f.test_id for f in DELETE_CASE_INSENSITIVE_FIXTURES],
+)
+def test_delete_matches_extensions_case_insensitively(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    filename: str,
+) -> None:
+    """Workspace files with uppercase extensions are deletable.
+
+    finders, search, and ls all match extensions case-insensitively;
+    the delete guard must not be stricter than discovery.
+    """
+    configdir = tmp_path / "configdir"
+    configdir.mkdir()
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(configdir))
+    monkeypatch.chdir(tmp_path)
+    target = tmp_path / filename
+    target.write_text("session_name: x\n", encoding="utf-8")
+
+    cli.cli(["delete", "-y", f"./{filename}"])
+
+    assert not target.exists(), "uppercase-extension workspace was not deleted"
