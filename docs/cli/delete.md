@@ -35,3 +35,7 @@ Delete multiple workspaces:
 ```console
 $ tmuxp delete proj1 proj2
 ```
+
+```{note}
+Only workspace files are deletable: the resolved path must end in `.yaml`, `.yml`, or `.json`. Any other file is refused and the command exits with code 1.
+```

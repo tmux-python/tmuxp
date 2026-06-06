@@ -8,6 +8,7 @@ import sys
 import typing as t
 
 from tmuxp._internal.private_path import PrivatePath
+from tmuxp.workspace.constants import VALID_WORKSPACE_DIR_FILE_EXTENSIONS
 from tmuxp.workspace.finders import find_workspace_file
 
 from ._colors import Colors, build_description, get_color_mode
@@ -97,6 +98,18 @@ def command_delete(
     Deleted ...doomed.yaml
     >>> (tmp_path / "doomed.yaml").exists()
     False
+
+    Non-workspace files are refused:
+
+    >>> _ = (tmp_path / "notes.md").write_text("hi")
+    >>> import contextlib
+    >>> with contextlib.suppress(SystemExit):
+    ...     command_delete(
+    ...         [str(tmp_path / "notes.md")], answer_yes=True, color="never"
+    ...     )  # doctest: +ELLIPSIS
+    Not a workspace file (expected .yaml/.yml/.json): ...notes.md
+    >>> (tmp_path / "notes.md").exists()
+    True
     """
     color_mode = get_color_mode(color)
     colors = Colors(color_mode)
@@ -107,6 +120,19 @@ def command_delete(
             workspace_path = find_workspace_file(name)
         except FileNotFoundError:
             tmuxp_echo(colors.warning(f"Workspace not found: {name}"))
+            _had_error = True
+            continue
+
+        # The finder resolves any existing direct path; deletion is
+        # destructive, so require a workspace extension before unlinking.
+        if (
+            os.path.splitext(workspace_path)[1]
+            not in VALID_WORKSPACE_DIR_FILE_EXTENSIONS
+        ):
+            tmuxp_echo(
+                colors.warning("Not a workspace file (expected .yaml/.yml/.json): ")
+                + colors.info(str(PrivatePath(workspace_path))),
+            )
             _had_error = True
             continue
 

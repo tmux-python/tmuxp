@@ -148,3 +148,45 @@ def test_delete_error_exits_nonzero(
     if expected_output_fragment:
         captured = capsys.readouterr()
         assert expected_output_fragment in captured.out
+
+
+class DeleteNonWorkspaceFixture(t.NamedTuple):
+    """Test fixture for tmuxp delete refusing non-workspace files."""
+
+    test_id: str
+    filename: str
+
+
+DELETE_NON_WORKSPACE_FIXTURES: list[DeleteNonWorkspaceFixture] = [
+    DeleteNonWorkspaceFixture(test_id="markdown_file", filename="README.md"),
+    DeleteNonWorkspaceFixture(test_id="text_file", filename="notes.txt"),
+]
+
+
+@pytest.mark.parametrize(
+    list(DeleteNonWorkspaceFixture._fields),
+    DELETE_NON_WORKSPACE_FIXTURES,
+    ids=[f.test_id for f in DELETE_NON_WORKSPACE_FIXTURES],
+)
+def test_delete_refuses_non_workspace_file(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    filename: str,
+) -> None:
+    """Tmuxp delete must not unlink files without a workspace extension."""
+    configdir = tmp_path / "configdir"
+    configdir.mkdir()
+    monkeypatch.setenv("TMUXP_CONFIGDIR", str(configdir))
+    monkeypatch.chdir(tmp_path)
+    target = tmp_path / filename
+    target.write_text("not a workspace", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli.cli(["delete", "-y", filename])
+
+    assert exc_info.value.code == 1
+    assert target.exists(), "non-workspace file was deleted"
+    captured = capsys.readouterr()
+    assert "Not a workspace file" in captured.out
