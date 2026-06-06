@@ -14,7 +14,7 @@ from libtmux.session import Session
 
 from tests.constants import FIXTURE_PATH
 from tests.fixtures import utils as test_utils
-from tmuxp import cli
+from tmuxp import cli, exc
 from tmuxp._internal.colors import ColorMode, Colors
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp._internal.private_path import PrivatePath
@@ -1799,10 +1799,14 @@ def test_here_error_recovery_prompt(
     kill_option_present: bool,
 ) -> None:
     """--here error recovery skips (k)ill to protect user's live session."""
-    from unittest.mock import MagicMock
 
-    from tmuxp._internal.colors import ColorMode, Colors
-    from tmuxp.cli.load import _dispatch_build
+    class DummyBuilder:
+        """Minimal builder stub for the error-recovery prompt path."""
+
+        def __init__(self) -> None:
+            self.session = None
+
+    builder = t.cast(WorkspaceBuilder, DummyBuilder())
 
     captured_kwargs: dict[str, t.Any] = {}
 
@@ -1816,23 +1820,30 @@ def test_here_error_recovery_prompt(
         _capture_prompt_choices,
     )
 
-    # Create a mock builder that raises TmuxpException when built
-    from tmuxp import exc
+    def _raise_here(builder: WorkspaceBuilder) -> None:
+        msg = "test error"
+        raise exc.TmuxpException(msg)
 
-    mock_builder = MagicMock()
-    mock_builder.session = None
+    def _raise_attached(
+        builder: WorkspaceBuilder,
+        detached: bool,
+        pre_build_hook: t.Callable[[], None] | None = None,
+        pre_attach_hook: t.Callable[[], None] | None = None,
+    ) -> None:
+        msg = "test error"
+        raise exc.TmuxpException(msg)
 
-    # Simulate the here path raising an error
+    # Make the exercised load path fail so the recovery prompt runs
     if here:
         monkeypatch.setattr(
             "tmuxp.cli.load._load_here_in_current_session",
-            MagicMock(side_effect=exc.TmuxpException("test error")),
+            _raise_here,
         )
         monkeypatch.setenv("TMUX", "/tmp/tmux-test/default,12345,0")
     else:
         monkeypatch.setattr(
             "tmuxp.cli.load._load_attached",
-            MagicMock(side_effect=exc.TmuxpException("test error")),
+            _raise_attached,
         )
         monkeypatch.delenv("TMUX", raising=False)
 
@@ -1840,7 +1851,7 @@ def test_here_error_recovery_prompt(
 
     with pytest.raises(SystemExit):
         _dispatch_build(
-            builder=mock_builder,
+            builder=builder,
             detached=False,
             append=False,
             answer_yes=not here,  # answer_yes triggers _load_attached path
