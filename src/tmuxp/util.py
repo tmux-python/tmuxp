@@ -113,6 +113,8 @@ def run_hook_commands(
 
     Unlike :func:`run_before_script`, hooks use ``shell=True`` for full
     shell support (pipes, redirects, etc.) and do NOT raise on failure.
+    Hooks block until they complete — no time limit is imposed, matching
+    tmuxinator's behavior and the documented lifecycle contract.
 
     Parameters
     ----------
@@ -140,7 +142,7 @@ def run_hook_commands(
     joined = "; ".join(commands)
     if not joined.strip():
         return
-    logger.debug("running hook commands %s", joined)
+    logger.info("running hook commands", extra={"tmux_cmd": joined})
     try:
         result = subprocess.run(
             joined,
@@ -149,11 +151,7 @@ def run_hook_commands(
             check=False,
             capture_output=True,
             text=True,
-            timeout=120,
         )
-    except subprocess.TimeoutExpired:
-        logger.warning("hook command timed out after 120s: %s", joined)
-        return
     except OSError:
         logger.warning(
             "hook command failed (bad cwd or shell): %s",

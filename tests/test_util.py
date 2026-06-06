@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import pathlib
+import subprocess
 import sys
 import typing as t
 
@@ -360,3 +361,23 @@ def test_run_hook_commands_failure_logs_output_at_debug(
     assert "HOOK_OUT" in stdout_records[0].message
     assert len(stderr_records) >= 1
     assert "HOOK_ERR" in stderr_records[0].message
+
+
+def test_run_hook_commands_no_time_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """run_hook_commands() imposes no time limit on hook subprocesses."""
+    captured_kwargs: dict[str, t.Any] = {}
+    real_run = subprocess.run
+
+    def _capture_run(
+        *args: t.Any,
+        **kwargs: t.Any,
+    ) -> subprocess.CompletedProcess[str]:
+        captured_kwargs.update(kwargs)
+        return real_run(*args, **kwargs)
+
+    monkeypatch.setattr("tmuxp.util.subprocess.run", _capture_run)
+    run_hook_commands("true")
+
+    assert "timeout" not in captured_kwargs

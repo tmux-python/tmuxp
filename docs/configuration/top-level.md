@@ -79,6 +79,12 @@ These hooks are inspired by tmuxinator's lifecycle hooks but have tmuxp-specific
 ```
 
 ```{note}
+Hooks block tmuxp until they complete — there is no time limit. Hook output is
+captured rather than shown (failures log the output at debug level), so a
+long-running hook looks quiet; `Ctrl-C` interrupts both the hook and tmuxp.
+```
+
+```{note}
 `on_project_exit` uses tmux's `client-detached` hook, but tmuxp guards it with `#{session_attached} == 0` so the command only runs when the **last** client detaches. This avoids repeated teardown in multi-client sessions. Unlike tmuxinator's wrapper-process hook, tmuxp keeps the hook on the session itself for the session lifetime.
 ```
 
