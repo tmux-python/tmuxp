@@ -85,6 +85,72 @@ def _wait_for_pane_ready(
     return False
 
 
+def _running_inside_pane(
+    pane_id: str | None,
+    *,
+    socket_path: str | None,
+    environ: t.Mapping[str, str],
+) -> bool:
+    """Whether the current process is running inside the given tmux pane.
+
+    Guards ``--here`` provisioning: ``respawn-pane -k`` on the pane
+    that is running tmuxp would kill the build mid-flight.
+
+    Parameters
+    ----------
+    pane_id : str or None
+        target pane id (e.g. ``%5``)
+    socket_path : str or None
+        socket path of the server being built against, when known
+    environ : mapping
+        process environment supplying ``TMUX`` and ``TMUX_PANE``
+
+    Returns
+    -------
+    bool
+
+    Examples
+    --------
+    >>> _running_inside_pane(
+    ...     "%5",
+    ...     socket_path="/tmp/tmux-1000/default",
+    ...     environ={"TMUX": "/tmp/tmux-1000/default,123,0", "TMUX_PANE": "%5"},
+    ... )
+    True
+
+    A different pane is not self:
+
+    >>> _running_inside_pane(
+    ...     "%7",
+    ...     socket_path="/tmp/tmux-1000/default",
+    ...     environ={"TMUX": "/tmp/tmux-1000/default,123,0", "TMUX_PANE": "%5"},
+    ... )
+    False
+
+    A coinciding pane id on a different server is not self:
+
+    >>> _running_inside_pane(
+    ...     "%5",
+    ...     socket_path="/tmp/tmux-1000/isolated",
+    ...     environ={"TMUX": "/tmp/tmux-1000/default,123,0", "TMUX_PANE": "%5"},
+    ... )
+    False
+
+    Outside tmux there is no self pane:
+
+    >>> _running_inside_pane("%5", socket_path=None, environ={})
+    False
+    """
+    tmux = environ.get("TMUX")
+    tmux_pane = environ.get("TMUX_PANE")
+    if not tmux or not tmux_pane or pane_id is None:
+        return False
+    env_socket = tmux.split(",")[0]
+    if socket_path is not None and env_socket != socket_path:
+        return False
+    return tmux_pane == pane_id
+
+
 COLUMNS_FALLBACK = 80
 
 
@@ -723,7 +789,31 @@ class WorkspaceBuilder:
                 # primitives for infrastructure setup.
                 if start_directory or environment or window_shell:
                     _here_pane = window.active_pane
-                    if _here_pane is not None:
+                    if _here_pane is not None and _running_inside_pane(
+                        _here_pane.pane_id,
+                        socket_path=getattr(self.server, "socket_path", None),
+                        environ=os.environ,
+                    ):
+                        # respawn-pane -k here would kill the tmuxp
+                        # process driving this build; provision with
+                        # primitives that leave the foreground process
+                        # alive instead.
+                        if environment:
+                            for _ekey, _eval in environment.items():
+                                session.set_environment(_ekey, str(_eval))
+                        if start_directory:
+                            _here_pane.send_keys(
+                                f"cd {shlex.quote(start_directory)}",
+                                enter=True,
+                            )
+                        if window_shell:
+                            logger.warning(
+                                "--here cannot replace the shell of the "
+                                "pane running tmuxp; window_shell %s "
+                                "skipped",
+                                window_shell,
+                            )
+                    elif _here_pane is not None:
                         # Warn if the pane has running child processes
                         # that would be killed by respawn-pane -k
                         _pane_pid = _here_pane.pane_pid

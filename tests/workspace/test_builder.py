@@ -39,6 +39,17 @@ if t.TYPE_CHECKING:
             ...
 
 
+@pytest.fixture(autouse=True)
+def _scrub_ambient_tmux_pane(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Isolate tests from the developer's surrounding tmux pane.
+
+    An inherited TMUX_PANE id (e.g. %0) can coincide with pane ids on
+    the freshly started test servers and trip --here's running-inside-
+    pane detection. Tests that need TMUX_PANE set it explicitly.
+    """
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+
+
 def test_split_windows(session: Session) -> None:
     """Test workspace builder splits windows in a tmux session."""
     workspace = ConfigReader._from_file(
@@ -797,6 +808,117 @@ def test_here_mode_respawn_provisioning(
         env = session.show_environment()
         for key in environment:
             assert env.get(key) is None
+
+
+class HereSelfPaneFixture(t.NamedTuple):
+    """Fixture for --here provisioning when tmuxp runs in the reused pane."""
+
+    test_id: str
+    start_directory: bool
+    environment: dict[str, str] | None
+    window_shell: str | None
+    expect_shell_warning: bool
+
+
+HERE_SELF_PANE_FIXTURES: list[HereSelfPaneFixture] = [
+    HereSelfPaneFixture(
+        test_id="dir-and-env-without-respawn",
+        start_directory=True,
+        environment={"TMUXP_SELF_ENV": "kept"},
+        window_shell=None,
+        expect_shell_warning=False,
+    ),
+    HereSelfPaneFixture(
+        test_id="window-shell-warns-and-skips",
+        start_directory=False,
+        environment=None,
+        window_shell="sh",
+        expect_shell_warning=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereSelfPaneFixture._fields),
+    HERE_SELF_PANE_FIXTURES,
+    ids=[f.test_id for f in HERE_SELF_PANE_FIXTURES],
+)
+def test_here_mode_keeps_pane_running_tmuxp_alive(
+    session: Session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    start_directory: bool,
+    environment: dict[str, str] | None,
+    window_shell: str | None,
+    expect_shell_warning: bool,
+) -> None:
+    """--here must not respawn-pane -k the pane tmuxp itself runs in.
+
+    respawn-pane -k on the invoking pane kills the foreground tmuxp
+    process mid-build, so provisioning falls back to session
+    set-environment and a cd send-keys; window_shell cannot be
+    replaced under a live foreground process and is skipped with a
+    warning.
+    """
+    test_dir = tmp_path / "here_self"
+    test_dir.mkdir()
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "self-pane",
+                "panes": [{"shell_command": []}],
+            },
+        ],
+    }
+    if start_directory:
+        workspace["windows"][0]["start_directory"] = str(test_dir)
+    if environment:
+        workspace["windows"][0]["environment"] = environment
+    if window_shell:
+        workspace["windows"][0]["window_shell"] = window_shell
+
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    original_pane = session.active_window.active_pane
+    assert original_pane is not None
+    assert original_pane.pane_id is not None
+    original_pid = original_pane.pane_pid
+
+    # Simulate tmuxp running inside the pane --here is about to reuse
+    monkeypatch.setenv("TMUX", "/tmp/tmux-test/default,1234,0")
+    monkeypatch.setenv("TMUX_PANE", original_pane.pane_id)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder.build(session=session, here=True)
+
+    pane = session.active_window.active_pane
+    assert pane is not None
+    assert pane.pane_pid == original_pid, "--here respawned the pane running tmuxp"
+
+    if start_directory:
+        expected_path = os.path.realpath(str(test_dir))
+        assert retry_until(
+            lambda: pane.pane_current_path == expected_path,
+            seconds=5,
+        ), f"Expected {expected_path}, got {pane.pane_current_path}"
+
+    if environment:
+        env = session.show_environment()
+        for key, value in environment.items():
+            assert env.get(key) == value
+
+    shell_warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "window_shell" in r.getMessage()
+    ]
+    assert bool(shell_warnings) == expect_shell_warning
 
 
 def test_here_mode_does_not_leak_first_pane_environment(

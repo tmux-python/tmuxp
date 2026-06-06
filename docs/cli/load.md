@@ -267,7 +267,7 @@ When used, tmuxp builds the workspace panes inside the current window rather tha
 `--here` only supports a single workspace file per invocation.
 
 ```{note}
-When `--here` needs to provision a directory, environment, or shell, tmuxp uses tmux primitives (`set-environment` and `respawn-pane`) instead of typing `cd` / `export` into the pane. If provisioning is needed, tmux will replace the active pane process before the workspace commands run, so long-running child processes in that pane can be terminated.
+When `--here` needs to provision a directory, environment, or shell, tmuxp uses tmux primitives instead of typing `cd` / `export` into the pane. The pane tmuxp itself runs in is never respawned (that would kill the build mid-flight): there the directory is provisioned with a quoted `cd`, environment variables land in the tmux session environment (inherited by the panes the build creates, not the already-running shell), and `window_shell` is skipped with a warning. Any other reused pane is provisioned with `respawn-pane`, which replaces the pane's process before the workspace commands run — long-running child processes in that pane will be terminated.
 ```
 
 ## Skipping shell_command_before
