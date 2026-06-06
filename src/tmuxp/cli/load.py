@@ -436,7 +436,9 @@ def _dispatch_build(
     cli_colors : Colors
         Colors instance for styled output.
     here : bool
-        Use current window for first workspace window.
+        Use current window for first workspace window. Requires running
+        inside tmux; :func:`load_workspace` normalizes ``here=False``
+        when no tmux client is present.
     pre_build_hook : callable, optional
         Called before the build only for code paths that create a new session.
     pre_attach_hook : callable, optional
@@ -489,23 +491,7 @@ def _dispatch_build(
             return _setup_plugins(builder)
 
         if here:
-            if "TMUX" in os.environ:  # tmuxp ran from inside tmux
-                _load_here_in_current_session(builder)
-            else:
-                logger.warning(
-                    "--here ignored: not inside tmux, falling back to normal attach",
-                )
-                tmuxp_echo(
-                    cli_colors.warning("[Warning]")
-                    + " --here requires running inside tmux; loading normally",
-                )
-                _load_attached(
-                    builder,
-                    detached,
-                    pre_build_hook=pre_build_hook,
-                    pre_attach_hook=pre_attach_hook,
-                )
-
+            _load_here_in_current_session(builder)
             return _setup_plugins(builder)
 
         if append:
@@ -720,6 +706,19 @@ def load_workspace(
     # Initialize CLI colors if not provided
     if cli_colors is None:
         cli_colors = Colors(ColorMode.AUTO)
+
+    # --here requires a tmux client; normalize before any session
+    # handling so the existing-session prompt and hooks behave like a
+    # normal load instead of crashing on Server.new_session().
+    if here and "TMUX" not in os.environ:
+        logger.warning(
+            "--here ignored: not inside tmux, falling back to normal attach",
+        )
+        tmuxp_echo(
+            cli_colors.warning("[Warning]")
+            + " --here requires running inside tmux; loading normally",
+        )
+        here = False
 
     # get the canonical path, eliminating any symlinks
     if isinstance(workspace_file, (str, os.PathLike)):

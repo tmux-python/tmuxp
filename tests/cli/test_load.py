@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import logging
 import pathlib
 import typing as t
 
@@ -1246,17 +1247,6 @@ DISPATCH_BUILD_HOOK_FIXTURES: list[DispatchBuildHookFixture] = [
         expected_loader="here",
         expect_pre_build_hook=False,
     ),
-    DispatchBuildHookFixture(
-        test_id="here-outside-tmux-fallback-runs-hook",
-        detached=False,
-        append=False,
-        answer_yes=False,
-        here=True,
-        inside_tmux=False,
-        prompt_choice=None,
-        expected_loader="attached",
-        expect_pre_build_hook=True,
-    ),
 ]
 
 
@@ -1862,3 +1852,86 @@ def test_here_error_recovery_prompt(
     assert captured_kwargs["choices"] == expected_choices
     assert captured_kwargs.get("default") == expected_default
     assert ("k" in captured_kwargs["choices"]) == kill_option_present
+
+
+class HereOutsideTmuxFixture(t.NamedTuple):
+    """Fixture for --here normalization when run outside tmux."""
+
+    test_id: str
+    here: bool
+    expect_warning: bool
+
+
+HERE_OUTSIDE_TMUX_FIXTURES: list[HereOutsideTmuxFixture] = [
+    HereOutsideTmuxFixture(
+        test_id="here-normalized-to-normal-load",
+        here=True,
+        expect_warning=True,
+    ),
+    HereOutsideTmuxFixture(
+        test_id="normal-load-control",
+        here=False,
+        expect_warning=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HereOutsideTmuxFixture._fields),
+    HERE_OUTSIDE_TMUX_FIXTURES,
+    ids=[f.test_id for f in HERE_OUTSIDE_TMUX_FIXTURES],
+)
+def test_load_here_outside_tmux_uses_existing_session_flow(
+    server: Server,
+    session: Session,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    here: bool,
+    expect_warning: bool,
+) -> None:
+    """--here outside tmux must fall back to the existing-session flow.
+
+    Without normalization, the session-exists guard is skipped for
+    here=True and the build crashes with TmuxSessionExists instead of
+    offering to attach.
+    """
+    monkeypatch.delenv("TMUX", raising=False)
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+
+    workspace_file = tmp_path / "exists.yaml"
+    workspace_file.write_text(
+        f"session_name: {session.name}\n"
+        "windows:\n"
+        "  - window_name: w\n"
+        "    panes:\n"
+        "      - echo hi\n",
+        encoding="utf-8",
+    )
+
+    prompts: list[str] = []
+
+    def _decline(prompt: str, *args: t.Any, **kwargs: t.Any) -> bool:
+        prompts.append(prompt)
+        return False
+
+    monkeypatch.setattr("tmuxp.cli.load.prompt_yes_no", _decline)
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.cli.load"):
+        result = load_workspace(
+            str(workspace_file),
+            socket_name=server.socket_name,
+            here=here,
+        )
+
+    assert result is None
+    assert len(prompts) == 1
+    assert "is already running" in prompts[0]
+
+    warning_records = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "--here ignored" in r.message
+    ]
+    assert bool(warning_records) == expect_warning
