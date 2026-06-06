@@ -785,6 +785,58 @@ windows:
 [poetry]: https://python-poetry.org/
 [uv]: https://github.com/astral-sh/uv
 
+## Synchronize panes (shorthand)
+
+The `synchronize` window-level key provides a shorthand for enabling
+`synchronize-panes` without needing `options_after`:
+
+````{tab} YAML
+```{literalinclude} ../../examples/synchronize-shorthand.yaml
+:language: yaml
+
+```
+````
+
+## Lifecycle hooks
+
+Run shell commands at different stages of the session lifecycle:
+
+````{tab} YAML
+```{literalinclude} ../../examples/lifecycle-hooks.yaml
+:language: yaml
+
+```
+````
+
+See {ref}`top-level` for full hook documentation.
+
+## Config templating
+
+Use `{{ variable }}` placeholders in workspace configs. Pass values via
+`--set KEY=VALUE`:
+
+```console
+$ tmuxp load --set project=myapp config-templating.yaml
+```
+
+````{tab} YAML
+```{literalinclude} ../../examples/config-templating.yaml
+:language: yaml
+
+```
+````
+
+## Pane titles
+
+Enable pane border titles to label individual panes:
+
+````{tab} YAML
+```{literalinclude} ../../examples/pane-titles.yaml
+:language: yaml
+
+```
+````
+
 ## Kung fu
 
 :::{note}

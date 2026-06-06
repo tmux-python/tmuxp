@@ -53,6 +53,7 @@ load
 shell
 ls
 search
+stop
 ```
 
 ```{toctree}
@@ -63,6 +64,9 @@ edit
 import
 convert
 freeze
+new
+copy
+delete
 ```
 
 ```{toctree}
