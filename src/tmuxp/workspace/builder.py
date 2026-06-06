@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pathlib
 import shlex
 import shutil
 import subprocess
@@ -88,7 +89,7 @@ def _wait_for_pane_ready(
 def _running_inside_pane(
     pane_id: str | None,
     *,
-    socket_path: str | None,
+    socket_path: str | pathlib.Path | None,
     environ: t.Mapping[str, str],
 ) -> bool:
     """Whether the current process is running inside the given tmux pane.
@@ -100,8 +101,10 @@ def _running_inside_pane(
     ----------
     pane_id : str or None
         target pane id (e.g. ``%5``)
-    socket_path : str or None
-        socket path of the server being built against, when known
+    socket_path : str, :class:`pathlib.Path`, or None
+        socket path of the server being built against, when known.
+        ``None`` skips the cross-server check and matches on pane id
+        alone, erring toward the kill-free provisioning path.
     environ : mapping
         process environment supplying ``TMUX`` and ``TMUX_PANE``
 
@@ -114,6 +117,16 @@ def _running_inside_pane(
     >>> _running_inside_pane(
     ...     "%5",
     ...     socket_path="/tmp/tmux-1000/default",
+    ...     environ={"TMUX": "/tmp/tmux-1000/default,123,0", "TMUX_PANE": "%5"},
+    ... )
+    True
+
+    :class:`pathlib.Path` socket paths match their string form:
+
+    >>> import pathlib
+    >>> _running_inside_pane(
+    ...     "%5",
+    ...     socket_path=pathlib.Path("/tmp/tmux-1000/default"),
     ...     environ={"TMUX": "/tmp/tmux-1000/default,123,0", "TMUX_PANE": "%5"},
     ... )
     True
@@ -136,7 +149,7 @@ def _running_inside_pane(
     ... )
     False
 
-    Outside tmux there is no self pane:
+    Without ``TMUX`` in the environment there is no self pane:
 
     >>> _running_inside_pane("%5", socket_path=None, environ={})
     False
@@ -146,7 +159,7 @@ def _running_inside_pane(
     if not tmux or not tmux_pane or pane_id is None:
         return False
     env_socket = tmux.split(",")[0]
-    if socket_path is not None and env_socket != socket_path:
+    if socket_path is not None and env_socket != str(socket_path):
         return False
     return tmux_pane == pane_id
 
@@ -782,11 +795,8 @@ class WorkspaceBuilder:
                 except (KeyError, IndexError):
                     pass
 
-                # respawn-pane -k provisions the reused pane with the
-                # correct directory, environment, and shell — no POSIX
-                # shell assumption, no typing into foreground programs,
-                # no history pollution.  Matches teamocil's use of tmux
-                # primitives for infrastructure setup.
+                # Provision the reused pane with the correct directory,
+                # environment, and shell.
                 if start_directory or environment or window_shell:
                     _here_pane = window.active_pane
                     if _here_pane is not None and _running_inside_pane(
@@ -797,7 +807,8 @@ class WorkspaceBuilder:
                         # respawn-pane -k here would kill the tmuxp
                         # process driving this build; provision with
                         # primitives that leave the foreground process
-                        # alive instead.
+                        # alive instead: cd lands in the pane's tty
+                        # buffer, env vars go to the session environment.
                         if environment:
                             for _ekey, _eval in environment.items():
                                 session.set_environment(_ekey, str(_eval))
@@ -814,6 +825,11 @@ class WorkspaceBuilder:
                                 window_shell,
                             )
                     elif _here_pane is not None:
+                        # respawn-pane -k provisions the pane with no
+                        # POSIX shell assumption, no typing into
+                        # foreground programs, no history pollution.
+                        # Matches teamocil's use of tmux primitives for
+                        # infrastructure setup.
                         # Warn if the pane has running child processes
                         # that would be killed by respawn-pane -k
                         _pane_pid = _here_pane.pane_pid
