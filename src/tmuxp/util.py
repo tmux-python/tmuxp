@@ -142,7 +142,7 @@ def run_hook_commands(
     joined = "; ".join(commands)
     if not joined.strip():
         return
-    logger.info("running hook commands", extra={"tmux_cmd": joined})
+    logger.info("hook commands started", extra={"tmux_hook_cmd": joined})
     try:
         result = subprocess.run(
             joined,

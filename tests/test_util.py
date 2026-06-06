@@ -381,3 +381,20 @@ def test_run_hook_commands_no_time_limit(
     run_hook_commands("true")
 
     assert "timeout" not in captured_kwargs
+
+
+def test_run_hook_commands_logs_start_at_info(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs a structured INFO record when hooks start."""
+    with caplog.at_level(logging.INFO, logger="tmuxp.util"):
+        run_hook_commands("true")
+
+    start_records = [r for r in caplog.records if hasattr(r, "tmux_hook_cmd")]
+    assert len(start_records) == 1
+    assert start_records[0].levelno == logging.INFO
+    assert start_records[0].tmux_hook_cmd == "true"
+    assert start_records[0].message == "hook commands started"
+
+    # Hook strings are user shell commands, not tmux command lines
+    assert not any(hasattr(r, "tmux_cmd") for r in caplog.records)
