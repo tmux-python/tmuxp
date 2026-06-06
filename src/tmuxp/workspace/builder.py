@@ -983,13 +983,6 @@ class WorkspaceBuilder:
         window_config : dict
             config section for window
         """
-        if "options_after" in window_config and isinstance(
-            window_config["options_after"],
-            dict,
-        ):
-            for key, val in window_config["options_after"].items():
-                window.set_option(key, val)
-
         if "shell_command_after" in window_config and isinstance(
             window_config["shell_command_after"],
             dict,
@@ -1001,6 +994,17 @@ class WorkspaceBuilder:
         if window_config.get("clear"):
             for pane in window.panes:
                 pane.send_keys("clear", enter=True)
+
+        # options_after must land last: synchronize-panes (the
+        # `synchronize: after` desugaring) mirrors send-keys input to
+        # every pane, so enabling it before the fan-out above would run
+        # each after-command once per pane per send.
+        if "options_after" in window_config and isinstance(
+            window_config["options_after"],
+            dict,
+        ):
+            for key, val in window_config["options_after"].items():
+                window.set_option(key, val)
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""

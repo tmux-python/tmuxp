@@ -413,6 +413,54 @@ def test_shell_command_after(
         assert "__AFTER__" not in captured
 
 
+def test_synchronize_after_runs_shell_command_after_once_per_pane(
+    session: Session,
+) -> None:
+    """synchronize: after must not mirror shell_command_after across panes.
+
+    tmux duplicates send-keys input to every pane while
+    synchronize-panes is on, so the option must be applied only after
+    the shell_command_after fan-out has been delivered.
+    """
+    # Quote-split so the typed command line never matches its output
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "sync-after-cmds",
+                "synchronize": "after",
+                "shell_command_after": [
+                    "echo __SYNC_AF''TER__",
+                    "echo __SYNC_DO''NE__",
+                ],
+                "panes": ["echo pane0", "echo pane1"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("synchronize-panes") is True
+
+    def output_lines(pane: Pane, marker: str) -> int:
+        return sum(1 for line in pane.capture_pane() if line.strip() == marker)
+
+    for pane in window.panes:
+
+        def done(p: Pane = pane) -> bool:
+            return output_lines(p, "__SYNC_DONE__") >= 1
+
+        assert retry_until(done), f"Expected __SYNC_DONE__ in pane {pane.pane_id}"
+        count = output_lines(pane, "__SYNC_AFTER__")
+        assert count == 1, (
+            f"Pane {pane.pane_id} ran shell_command_after {count} times; "
+            "synchronize-panes was enabled before the fan-out"
+        )
+
+
 def test_pane_titles(
     session: Session,
 ) -> None:
