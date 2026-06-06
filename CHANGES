@@ -38,89 +38,88 @@ $ tmuxp@next load yoursession
 
 ## tmuxp 1.71.0 (Yet to be released)
 
-### New commands
+<!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
-#### `tmuxp stop` — kill a tmux session (#1025)
-Stop (kill) a running tmux session by name. Runs the `on_project_stop`
-lifecycle hook before killing the session, giving your project a chance
-to clean up.
+<!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
+_Notes on the upcoming release will go here._
+<!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+tmuxp 1.71.0 brings tmuxp to feature parity with tmuxinator and
+teamocil. Sessions can be managed end to end from the CLI (`stop`,
+`new`, `copy`, `delete`), workspace configs gain lifecycle hooks,
+`{{ variable }}` templating, and pane titles, and `tmuxp load` learns
+`--here` and friends. Imports from tmuxinator and teamocil now convert
+much more of an existing config. See {doc}`comparison` for a
+side-by-side of all three tools.
+
+### What's new
+
+#### `tmuxp stop` — kill a session with cleanup (#1025)
+
+Stop a running session by name. The `on_project_stop` lifecycle hook
+runs before the session is killed, giving your project a chance to
+clean up. See {ref}`cli-stop`.
 
 ```console
 $ tmuxp stop mysession
 ```
 
-#### `tmuxp new` — create a workspace config (#1025)
-Create a new workspace configuration file from a minimal template and
-open it in `$EDITOR`.
+#### `tmuxp new`, `tmuxp copy`, `tmuxp delete` — manage workspace configs (#1025)
+
+Create a workspace config from a starter template and open it in
+`$EDITOR`, duplicate an existing config under a new name, or delete
+configs (with a confirmation prompt unless `-y` is passed).
 
 ```console
 $ tmuxp new myproject
 ```
 
-#### `tmuxp copy` — copy a workspace config (#1025)
-Copy an existing workspace config to a new name. Source is resolved
-using the same logic as `tmuxp load`.
+#### Lifecycle hooks (#1025)
 
-```console
-$ tmuxp copy myproject myproject-backup
-```
+Workspace configs support four hooks, modeled on tmuxinator's:
 
-#### `tmuxp delete` — delete workspace configs (#1025)
-Delete one or more workspace config files. Prompts for confirmation
-unless `-y` is passed.
+- `on_project_start` — before a new session is built
+- `on_project_restart` — after you confirm reattaching to an existing session
+- `on_project_exit` — when the last client detaches
+- `on_project_stop` — before `tmuxp stop` kills the session
 
-```console
-$ tmuxp delete old-project
-```
+See {ref}`top-level` for examples.
 
-### Lifecycle hooks (#1025)
-Workspace configs now support four lifecycle hooks inspired by tmuxinator:
+#### Config templating with `--set` (#1025)
 
-- `on_project_start` — runs before session build (new session creation only)
-- `on_project_restart` — runs when reattaching to an existing session (confirmed attach only)
-- `on_project_exit` — runs when the last client detaches (via tmux `client-detached` hook)
-- `on_project_stop` — runs before `tmuxp stop` kills the session
-
-### Config templating (#1025)
-Workspace configs now support simple `{{ variable }}` placeholders for variable substitution.
-Pass values via `--set KEY=VALUE` on the command line:
+Workspace configs may contain `{{ variable }}` placeholders, filled at
+load time:
 
 ```console
 $ tmuxp load --set project=myapp mytemplate.yaml
 ```
 
-### New config keys (#1025)
-- **`enable_pane_titles`** / **`pane_title_position`** / **`pane_title_format`** —
-  session-level keys that enable tmux pane border titles.
-- **`title`** — pane-level key to set individual pane titles via
-  `select-pane -T`.
-- **`synchronize`** — window-level shorthand (`before` / `after` / `true`)
-  that sets `synchronize-panes` without needing `options_after`.
-- **`shell_command_after`** — window-level key; commands sent to every pane
-  after the window is fully built.
-- **`clear`** — window-level boolean; sends `clear` to every pane after
-  commands complete.
+#### Pane titles (#1025)
 
-### New `tmuxp load` flags (#1025)
-- `--here` — reuse the current tmux window instead of creating a new session.
-- `--no-shell-command-before` — skip all `shell_command_before` entries.
-- `--debug` — show tmux commands as they execute (disables progress spinner).
-- `--set KEY=VALUE` — pass template variables for config templating.
+Session-level `enable_pane_titles`, `pane_title_position`, and
+`pane_title_format` keys turn on tmux pane border titles; a pane-level
+`title` key names individual panes.
 
-### Importer improvements (#1025)
-#### tmuxinator
+#### New window keys: `synchronize`, `shell_command_after`, `clear` (#1025)
 
-- Map `pre` → `on_project_start`, `pre_window` → `shell_command_before`.
-- Parse `cli_args` (`-f`, `-S`, `-L`) into tmuxp equivalents.
-- Convert `synchronize` window key.
-- Convert `startup_window` / `startup_pane` → `focus: true`.
-- Convert named panes (hash-key syntax) → `title` on the pane.
+`synchronize: before/after/true` mirrors keystrokes across a window's
+panes; `shell_command_after` runs commands in every pane after the
+window is built; `clear: true` clears each pane once its commands
+complete.
 
-#### teamocil
+#### New `tmuxp load` flags (#1025)
 
-- Support v1.x format (`windows` at top level, `commands` key in panes).
-- Convert `focus: true` on windows and panes.
-- Pass through window `options`.
+- `--here` — build the workspace in your current tmux window instead of a new session
+- `--no-shell-command-before` — skip all `shell_command_before` entries
+- `--debug` — show each tmux command as it executes
+- `--set KEY=VALUE` — fill config template variables
+
+#### Broader tmuxinator and teamocil imports (#1025)
+
+`tmuxp import` now converts lifecycle hooks, named panes, startup
+window/pane focus, synchronized windows, and tmux CLI arguments from
+tmuxinator configs, and recognizes teamocil's v1.x format. See
+{ref}`cli-import` for the full key mappings.
 
 ## tmuxp 1.70.0 (2026-05-23)
 
