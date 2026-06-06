@@ -1,7 +1,5 @@
 # Feature Comparison: tmuxp vs tmuxinator vs teamocil
 
-*Last updated: 2026-03-07*
-
 ## Overview
 
 | | tmuxp | tmuxinator | teamocil |
