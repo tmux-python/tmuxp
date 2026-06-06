@@ -21,6 +21,7 @@ DELETE_DESCRIPTION = build_description(
     Delete workspace config files.
 
     Resolves workspace names using the same logic as ``tmuxp load``.
+    Only workspace files (.yaml/.yml/.json) are deleted.
     Prompts for confirmation unless ``-y`` is passed.
     """,
     (
