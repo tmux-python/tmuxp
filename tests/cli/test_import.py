@@ -10,6 +10,7 @@ import pytest
 
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
+from tmuxp.cli import import_config as import_config_module
 
 if t.TYPE_CHECKING:
     import pathlib
@@ -173,3 +174,95 @@ def test_import_tmuxinator(
 
     new_config_yaml = tmp_path / "la.yaml"
     assert new_config_yaml.exists()
+
+
+def test_get_tmuxinator_base_indices_reads_live_tmux_options(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxinator import reads tmux base indices from live tmux options."""
+
+    class FakeTmuxResponse(t.NamedTuple):
+        """Fake tmux command response."""
+
+        returncode: int
+        stdout: list[str]
+
+    def fake_tmux_cmd(*args: str) -> FakeTmuxResponse:
+        if args == ("show-options", "-gv", "base-index"):
+            return FakeTmuxResponse(returncode=0, stdout=["1"])
+        if args == ("show-window-options", "-gv", "pane-base-index"):
+            return FakeTmuxResponse(returncode=0, stdout=["2"])
+        msg = f"unexpected tmux args: {args!r}"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(import_config_module, "tmux_cmd", fake_tmux_cmd)
+
+    assert import_config_module._get_tmuxinator_base_indices() == (1, 2)
+
+
+def test_get_tmuxinator_base_indices_falls_back_when_tmux_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxinator import falls back to tmux defaults when lookup fails."""
+
+    def raise_tmux_error(*args: str) -> t.NoReturn:
+        msg = f"tmux unavailable for {args!r}"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr(import_config_module, "tmux_cmd", raise_tmux_error)
+
+    assert import_config_module._get_tmuxinator_base_indices() == (0, 0)
+
+
+def test_command_import_tmuxinator_passes_resolved_base_indices(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Tmuxinator import command passes resolved tmux indices to the importer."""
+    captured: dict[str, t.Any] = {}
+
+    def fake_find_workspace_file(
+        workspace_file: str,
+        workspace_dir: t.Any,
+    ) -> str:
+        captured["workspace_file"] = workspace_file
+        captured["workspace_dir"] = workspace_dir
+        return workspace_file
+
+    def fake_import_config(
+        workspace_file: str,
+        importfunc: t.Callable[[dict[str, t.Any]], dict[str, t.Any]],
+        parser: t.Any = None,
+        colors: t.Any = None,
+    ) -> None:
+        captured["workspace_file"] = workspace_file
+        captured["parser"] = parser
+        captured["colors"] = colors
+        captured["imported"] = importfunc(
+            {
+                "name": "sample",
+                "startup_window": 1,
+                "startup_pane": 2,
+                "windows": [{"editor": ["vim", "logs"]}],
+            }
+        )
+
+    monkeypatch.setattr(
+        import_config_module,
+        "find_workspace_file",
+        fake_find_workspace_file,
+    )
+    monkeypatch.setattr(import_config_module, "import_config", fake_import_config)
+    monkeypatch.setattr(
+        import_config_module,
+        "_get_tmuxinator_base_indices",
+        lambda: (1, 2),
+    )
+
+    import_config_module.command_import_tmuxinator("sample.yml")
+
+    imported = captured["imported"]
+    assert imported["windows"][0]["focus"] is True
+    assert imported["windows"][0]["panes"][0] == {
+        "shell_command": ["vim"],
+        "focus": True,
+    }

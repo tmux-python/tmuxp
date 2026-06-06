@@ -1,0 +1,14 @@
+windows:
+- name: focused-window
+  root: ~/Code/app
+  layout: main-vertical
+  focus: true
+  options:
+    synchronize-panes: 'on'
+  panes:
+  - cmd: vim
+  - cmd: rails s
+    height: 30
+- name: background-window
+  panes:
+  - cmd: tail -f log/development.log
