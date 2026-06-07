@@ -77,8 +77,10 @@ default label. Use a single space (`title: " "`) to visually blank one.
 
 ## synchronize
 
-Window-level shorthand for setting `synchronize-panes`. It accepts
-`before`, `after`, or `true`:
+Window-level shorthand for the final `synchronize-panes` state. tmuxp keeps
+pane synchronization disabled while it builds panes and sends configured
+commands, then restores the requested synchronized state after the window is
+ready.
 
 ```yaml
 session_name: sync-demo
@@ -96,9 +98,10 @@ windows:
 
 | Value | Behavior |
 |-------|----------|
-| `before` | Enable `synchronize-panes` before sending pane commands. |
-| `after` | Enable `synchronize-panes` after sending pane commands. |
-| `true` | Same as `before`. |
+| `after` | Synchronize panes after tmuxp finishes building the window. |
+| `before` | Compatibility alias for the same final synchronized state. |
+| `true` | Compatibility alias for the same final synchronized state. |
+| `false` | Force the final window state to unsynchronized. |
 
 ## shell_command_after
 
@@ -116,8 +119,9 @@ windows:
       - ./start-worker.sh
 ```
 
-`shell_command_after` runs before `options_after`, so `synchronize: after` does
-not duplicate the commands across synchronized panes.
+tmuxp keeps `synchronize-panes` disabled while `shell_command_after` runs, then
+restores the final synchronized state afterward. This prevents tmux from
+duplicating post-build commands across panes.
 
 Entries accept the same command mappings as `shell_command` — `enter`,
 `sleep_before`, and `sleep_after` apply per command (sleeps run once per

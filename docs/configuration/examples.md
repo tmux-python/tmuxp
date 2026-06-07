@@ -533,9 +533,10 @@ Including `automatic-rename`, `default-shell`,
 
 ## Set window options after pane creation
 
-Apply window options after panes have been created. Useful for
-`synchronize-panes` option after executing individual commands in each
-pane during creation.
+Apply window options after panes have been created. When
+`synchronize-panes` appears in `options` or `options_after`, tmuxp keeps it
+disabled while sending configured commands and restores the requested final
+state after the window is ready.
 
 ````{tab} YAML
 ```{literalinclude} ../../examples/2-pane-synchronized.yaml
@@ -787,8 +788,8 @@ windows:
 
 ## Synchronize Panes Shorthand
 
-The `synchronize` window key provides a shorthand for enabling
-`synchronize-panes` without spelling out tmux options directly:
+The `synchronize` window key provides a shorthand for the final
+`synchronize-panes` state without spelling out tmux options directly:
 
 ````{tab} YAML
 ```{literalinclude} ../../examples/synchronize-shorthand.yaml

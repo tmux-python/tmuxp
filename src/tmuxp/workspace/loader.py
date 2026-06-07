@@ -9,6 +9,8 @@ import typing as t
 
 logger = logging.getLogger(__name__)
 
+SYNCHRONIZE_PANES_FINAL_OPTION = "_synchronize_panes"
+
 
 def expandshell(value: str) -> str:
     """Resolve shell variables based on user's ``$HOME`` and ``env``.
@@ -140,10 +142,23 @@ def expand(
 
     if "synchronize" in workspace_dict:
         sync = workspace_dict.pop("synchronize")
-        if sync is True or sync == "before":
-            workspace_dict.setdefault("options", {})["synchronize-panes"] = "on"
-        elif sync == "after":
-            workspace_dict.setdefault("options_after", {})["synchronize-panes"] = "on"
+        if sync is True or sync in ["before", "after"]:
+            workspace_dict[SYNCHRONIZE_PANES_FINAL_OPTION] = True
+        elif sync is False:
+            workspace_dict[SYNCHRONIZE_PANES_FINAL_OPTION] = False
+        else:
+            session_name = workspace_dict.get("session_name")
+            if session_name is None and isinstance(parent, dict):
+                session_name = parent.get("session_name")
+            logger.warning(
+                "invalid synchronize value %r, expected true, false, "
+                "'before', or 'after'",
+                sync,
+                extra={
+                    "tmux_session": str(session_name or ""),
+                    "tmux_window": str(workspace_dict.get("window_name") or ""),
+                },
+            )
 
     # Any workspace section, session, window, pane that can contain the
     # 'shell_command' value

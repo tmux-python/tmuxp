@@ -56,10 +56,10 @@ required. See {ref}`top-level` for examples.
 
 #### New window keys: `synchronize`, `shell_command_after`, `clear` (#1047)
 
-`synchronize: before/after/true` mirrors keystrokes across a window's
-panes; `shell_command_after` runs commands in every pane after the
-window is built; `clear: true` clears each pane once its commands
-complete. See {ref}`top-level`.
+`synchronize` sets the final pane synchronization state while tmuxp keeps
+setup and post-build commands isolated per pane; `shell_command_after` runs
+commands in every pane after the window is built; `clear: true` clears each
+pane once its commands complete. See {ref}`top-level`.
 
 ## tmuxp 1.70.0 (2026-05-23)
 

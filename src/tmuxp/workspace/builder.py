@@ -23,6 +23,12 @@ if t.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+SYNCHRONIZE_PANES_OPTION = "synchronize-panes"
+SYNCHRONIZE_PANES_FINAL_OPTION = "_synchronize_panes"
+SYNCHRONIZE_PANES_FORCED_OFF_OPTION = "_synchronize_panes_forced_off"
+SYNCHRONIZE_PANES_RESTORE_OPTION = "_synchronize_panes_restore"
+_MISSING = object()
+
 
 def _wait_for_pane_ready(
     pane: Pane,
@@ -81,6 +87,62 @@ def _wait_for_pane_ready(
         extra={"tmux_pane": str(pane.pane_id)},
     )
     return False
+
+
+def _get_window_option_value(
+    window_config: dict[str, t.Any],
+    section: str,
+    option: str,
+) -> t.Any:
+    """Return a window option value or ``_MISSING``.
+
+    Examples
+    --------
+    >>> cfg = {"options": {"synchronize-panes": "on"}}
+    >>> _get_window_option_value(cfg, "options", "synchronize-panes")
+    'on'
+    >>> _get_window_option_value(cfg, "options_after", "synchronize-panes") is _MISSING
+    True
+    """
+    options = window_config.get(section)
+    if isinstance(options, dict) and option in options:
+        return options[option]
+    return _MISSING
+
+
+def _get_final_synchronize_panes(window_config: dict[str, t.Any]) -> t.Any:
+    """Return the final configured ``synchronize-panes`` value.
+
+    ``options_after`` wins because it is the final tmux option bucket.
+
+    Examples
+    --------
+    >>> cfg = {
+    ...     "options": {"synchronize-panes": "off"},
+    ...     "_synchronize_panes": True,
+    ...     "options_after": {"synchronize-panes": "on"},
+    ... }
+    >>> _get_final_synchronize_panes(cfg)
+    'on'
+    >>> _get_final_synchronize_panes({}) is _MISSING
+    True
+    """
+    final_sync = _get_window_option_value(
+        window_config,
+        "options",
+        SYNCHRONIZE_PANES_OPTION,
+    )
+    if SYNCHRONIZE_PANES_FINAL_OPTION in window_config:
+        final_sync = window_config[SYNCHRONIZE_PANES_FINAL_OPTION]
+
+    after_sync = _get_window_option_value(
+        window_config,
+        "options_after",
+        SYNCHRONIZE_PANES_OPTION,
+    )
+    if after_sync is not _MISSING:
+        final_sync = after_sync
+    return final_sync
 
 
 COLUMNS_FALLBACK = 80
@@ -544,6 +606,8 @@ class WorkspaceBuilder:
             for plugin in self.plugins:
                 plugin.on_window_create(window)
 
+            self.prepare_window_synchronize_panes(window, window_config)
+
             focus_pane = None
             for pane, pane_config in self.iter_create_panes(window, window_config):
                 assert isinstance(pane, Pane)
@@ -672,12 +736,85 @@ class WorkspaceBuilder:
                 dict,
             ):
                 for key, val in window_config["options"].items():
+                    if key == SYNCHRONIZE_PANES_OPTION:
+                        continue
                     window.set_option(key, val)
 
             if window_config.get("focus"):
                 window.select()
 
             yield window, window_config
+
+    def prepare_window_synchronize_panes(
+        self,
+        window: Window,
+        window_config: dict[str, t.Any],
+    ) -> None:
+        """Disable tmux pane synchronization while tmuxp sends setup keys.
+
+        Examples
+        --------
+        >>> cfg = {"_synchronize_panes": True}
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={"session_name": session.name, "windows": []},
+        ...     server=session.server,
+        ... )
+        >>> scratch = session.new_window(window_name="sync-prepare")
+        >>> builder.prepare_window_synchronize_panes(scratch, cfg)
+        >>> scratch.show_option("synchronize-panes")
+        False
+        >>> builder.restore_window_synchronize_panes(scratch, cfg)
+        >>> scratch.show_option("synchronize-panes")
+        True
+        >>> _ = scratch.kill()
+        """
+        final_sync = _get_final_synchronize_panes(window_config)
+        local_sync = window.show_option(SYNCHRONIZE_PANES_OPTION)
+        effective_sync = window.show_option(
+            SYNCHRONIZE_PANES_OPTION,
+            include_inherited=True,
+        )
+
+        if final_sync is not _MISSING or effective_sync is True:
+            if final_sync is _MISSING:
+                window_config[SYNCHRONIZE_PANES_RESTORE_OPTION] = local_sync
+            window.set_option(SYNCHRONIZE_PANES_OPTION, False)
+            window_config[SYNCHRONIZE_PANES_FORCED_OFF_OPTION] = True
+
+    def restore_window_synchronize_panes(
+        self,
+        window: Window,
+        window_config: dict[str, t.Any],
+    ) -> None:
+        """Restore the configured final tmux pane synchronization state.
+
+        Examples
+        --------
+        >>> cfg = {"_synchronize_panes": False}
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={"session_name": session.name, "windows": []},
+        ...     server=session.server,
+        ... )
+        >>> scratch = session.new_window(window_name="sync-restore")
+        >>> builder.restore_window_synchronize_panes(scratch, cfg)
+        >>> scratch.show_option("synchronize-panes")
+        False
+        >>> _ = scratch.kill()
+        """
+        final_sync = _get_final_synchronize_panes(window_config)
+        if final_sync is _MISSING:
+            if window_config.get(SYNCHRONIZE_PANES_FORCED_OFF_OPTION):
+                restore_sync = window_config.get(
+                    SYNCHRONIZE_PANES_RESTORE_OPTION,
+                    _MISSING,
+                )
+                if restore_sync is _MISSING or restore_sync is None:
+                    window.unset_option(SYNCHRONIZE_PANES_OPTION, ignore_errors=True)
+                else:
+                    window.set_option(SYNCHRONIZE_PANES_OPTION, restore_sync)
+            return
+
+        window.set_option(SYNCHRONIZE_PANES_OPTION, final_sync)
 
     def iter_create_panes(
         self,
@@ -850,43 +987,44 @@ class WorkspaceBuilder:
         """
         suppress = window_config.get("suppress_history", True)
 
-        # With synchronize-panes already on (synchronize: before/true or an
-        # explicit option), tmux mirrors each send to every pane — send to
-        # one pane and let tmux broadcast.
-        fanout_panes = (
-            window.panes[:1]
-            if window.show_option("synchronize-panes") is True
-            else window.panes
-        )
+        try:
+            if "shell_command_after" in window_config and isinstance(
+                window_config["shell_command_after"],
+                dict,
+            ):
+                for cmd in window_config["shell_command_after"].get(
+                    "shell_command",
+                    [],
+                ):
+                    enter = cmd.get("enter", True)
+                    sleep_before = cmd.get("sleep_before")
+                    sleep_after = cmd.get("sleep_after")
+                    # Sleeps apply once per command wave, not once per pane.
+                    if sleep_before is not None:
+                        time.sleep(sleep_before)
+                    for pane in window.panes:
+                        pane.send_keys(
+                            cmd["cmd"],
+                            suppress_history=suppress,
+                            enter=enter,
+                        )
+                    if sleep_after is not None:
+                        time.sleep(sleep_after)
 
-        if "shell_command_after" in window_config and isinstance(
-            window_config["shell_command_after"],
-            dict,
-        ):
-            for cmd in window_config["shell_command_after"].get("shell_command", []):
-                enter = cmd.get("enter", True)
-                sleep_before = cmd.get("sleep_before")
-                sleep_after = cmd.get("sleep_after")
-                # Sleeps apply once per command wave, not once per pane.
-                if sleep_before is not None:
-                    time.sleep(sleep_before)
-                for pane in fanout_panes:
-                    pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
-                if sleep_after is not None:
-                    time.sleep(sleep_after)
+            if window_config.get("clear"):
+                for pane in window.panes:
+                    pane.send_keys("clear", enter=True, suppress_history=suppress)
 
-        if window_config.get("clear"):
-            for pane in fanout_panes:
-                pane.send_keys("clear", enter=True, suppress_history=suppress)
-
-        # Keep options_after last. synchronize-panes mirrors send-keys to every
-        # pane, so enabling it before the fan-out above duplicates commands.
-        if "options_after" in window_config and isinstance(
-            window_config["options_after"],
-            dict,
-        ):
-            for key, val in window_config["options_after"].items():
-                window.set_option(key, val)
+            if "options_after" in window_config and isinstance(
+                window_config["options_after"],
+                dict,
+            ):
+                for key, val in window_config["options_after"].items():
+                    if key == SYNCHRONIZE_PANES_OPTION:
+                        continue
+                    window.set_option(key, val)
+        finally:
+            self.restore_window_synchronize_panes(window, window_config)
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
