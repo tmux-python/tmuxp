@@ -346,3 +346,59 @@ def test_oh_my_zsh_auto_title_logs_warning(
     warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warning_records) >= 1
     assert "DISABLE_AUTO_TITLE" in warning_records[0].message
+
+
+class HookOutputLeakFixture(t.NamedTuple):
+    """Fixture for hook output suppression in failure logs."""
+
+    test_id: str
+    command: str
+    expect_stdout: bool
+
+
+HOOK_OUTPUT_LEAK_FIXTURES: list[HookOutputLeakFixture] = [
+    HookOutputLeakFixture(
+        test_id="stdout_leak",
+        command="echo {secret}; exit 1",
+        expect_stdout=True,
+    ),
+    HookOutputLeakFixture(
+        test_id="stderr_leak",
+        command="echo {secret} >&2; exit 1",
+        expect_stdout=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(HookOutputLeakFixture._fields),
+    HOOK_OUTPUT_LEAK_FIXTURES,
+    ids=[f.test_id for f in HOOK_OUTPUT_LEAK_FIXTURES],
+)
+def test_run_hook_commands_suppresses_failure_output(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    command: str,
+    expect_stdout: bool,
+) -> None:
+    """run_hook_commands() keeps hook output out of failure logs.
+
+    Hook commands may expand credentials; redacting the command text
+    while logging its raw output would leak the same secrets.
+    """
+    secret = "hook-output-secret-marker"
+
+    with caplog.at_level(logging.DEBUG, logger="tmuxp.util"):
+        run_hook_commands(command.format(secret=secret))
+
+    for record in caplog.records:
+        assert secret not in record.getMessage()
+        assert secret not in str(record.__dict__)
+
+    suppressed = [r for r in caplog.records if hasattr(r, "tmux_stdout_len")]
+    assert len(suppressed) == 1
+    assert hasattr(suppressed[0], "tmux_stderr_len")
+    if expect_stdout:
+        assert suppressed[0].tmux_stdout_len > 0
+    else:
+        assert suppressed[0].tmux_stderr_len > 0
