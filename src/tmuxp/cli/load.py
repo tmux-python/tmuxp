@@ -195,6 +195,29 @@ def load_plugins(
     return plugins
 
 
+def _resolve_workspace_config_file(
+    config_file: str,
+    workspace_file: pathlib.Path,
+) -> str:
+    """Resolve a workspace-level tmux config path.
+
+    Relative paths are interpreted from the workspace file directory.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _resolve_workspace_config_file
+    >>> _resolve_workspace_config_file(
+    ...     "./tmux.conf",
+    ...     pathlib.Path("/tmp/project/session.yaml"),
+    ... )
+    '/tmp/project/tmux.conf'
+    """
+    config_path = pathlib.Path(config_file).expanduser()
+    if not config_path.is_absolute():
+        config_path = workspace_file.parent / config_path
+    return str(config_path.resolve(strict=False))
+
+
 def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
     """
     Reattach session (depending on env being inside tmux already or not).
@@ -608,6 +631,23 @@ def load_workspace(
     # Overridden session name
     if new_session_name:
         expanded_workspace["session_name"] = new_session_name
+
+    if socket_name is None:
+        socket_name = expanded_workspace.pop("socket_name", None)
+    else:
+        expanded_workspace.pop("socket_name", None)
+
+    if socket_path is None:
+        socket_path = expanded_workspace.pop("socket_path", None)
+    else:
+        expanded_workspace.pop("socket_path", None)
+
+    workspace_config_file = expanded_workspace.pop("config", None)
+    if tmux_config_file is None and workspace_config_file is not None:
+        tmux_config_file = _resolve_workspace_config_file(
+            str(workspace_config_file),
+            workspace_file,
+        )
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
