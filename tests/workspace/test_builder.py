@@ -570,6 +570,98 @@ def test_clear_window(
         assert retry_until(marker_cleared, raises=False)
 
 
+class PostBuildSuppressHistoryFixture(t.NamedTuple):
+    """Fixture for post-build suppress_history behavior."""
+
+    test_id: str
+    suppress_history: bool | None
+    expected_suppress_history: bool
+
+
+POST_BUILD_SUPPRESS_HISTORY_FIXTURES: list[PostBuildSuppressHistoryFixture] = [
+    PostBuildSuppressHistoryFixture(
+        test_id="default",
+        suppress_history=None,
+        expected_suppress_history=True,
+    ),
+    PostBuildSuppressHistoryFixture(
+        test_id="explicit-false",
+        suppress_history=False,
+        expected_suppress_history=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PostBuildSuppressHistoryFixture._fields),
+    POST_BUILD_SUPPRESS_HISTORY_FIXTURES,
+    ids=[fixture.test_id for fixture in POST_BUILD_SUPPRESS_HISTORY_FIXTURES],
+)
+def test_post_build_commands_honor_suppress_history(
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    suppress_history: bool | None,
+    expected_suppress_history: bool,
+) -> None:
+    """Post-build commands use the window suppress_history setting."""
+    sent: list[tuple[str | None, bool | None]] = []
+    original_send_keys = Pane.send_keys
+
+    def spy_send_keys(
+        self: Pane,
+        cmd: str | None = None,
+        enter: bool | None = True,
+        suppress_history: bool | None = False,
+        literal: bool | None = False,
+        reset: bool | None = None,
+        copy_mode_cmd: str | None = None,
+        repeat: int | None = None,
+        expand_formats: bool | None = None,
+        hex_keys: bool | None = None,
+        target_client: str | None = None,
+        key_name: bool | None = None,
+    ) -> None:
+        sent.append((cmd, suppress_history))
+        original_send_keys(
+            self,
+            cmd=cmd,
+            enter=enter,
+            suppress_history=suppress_history,
+            literal=literal,
+            reset=reset,
+            copy_mode_cmd=copy_mode_cmd,
+            repeat=repeat,
+            expand_formats=expand_formats,
+            hex_keys=hex_keys,
+            target_client=target_client,
+            key_name=key_name,
+        )
+
+    monkeypatch.setattr(Pane, "send_keys", spy_send_keys)
+
+    window_config: dict[str, t.Any] = {
+        "window_name": f"post-build-history-{test_id}",
+        "shell_command_after": ["echo __POST_BUILD_AFTER__"],
+        "clear": True,
+        "panes": ["echo pane"],
+    }
+    if suppress_history is not None:
+        window_config["suppress_history"] = suppress_history
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    assert ("echo __POST_BUILD_AFTER__", expected_suppress_history) in sent
+    assert ("clear", expected_suppress_history) in sent
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
