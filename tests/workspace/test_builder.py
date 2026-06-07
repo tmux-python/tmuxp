@@ -13,6 +13,7 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.constants import OptionScope
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -564,6 +565,9 @@ def test_synchronize_keeps_setup_commands_isolated(
     window_config.update(window_extra)
     workspace: dict[str, t.Any] = {
         "session_name": session.name,
+        # Force the readiness wait; AUTO only waits for zsh, which the test
+        # tmux server's default-shell isn't, making capture assertions racy.
+        "workspace_builder_options": {"pane_readiness": "always"},
         "windows": [window_config],
     }
     workspace = loader.expand(workspace)
@@ -591,6 +595,249 @@ def test_synchronize_keeps_setup_commands_isolated(
         window.show_option("synchronize-panes", include_inherited=True)
         is expected_effective_sync
     )
+
+
+class SyncSetupAbortFixture(t.NamedTuple):
+    """Fixture for synchronize-panes cleanup after pane setup aborts."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    global_synchronize: bool
+    plugin_synchronize: bool | None
+    expected_local_sync: bool | None
+    expected_effective_sync: bool
+
+
+SYNC_SETUP_ABORT_FIXTURES: list[SyncSetupAbortFixture] = [
+    SyncSetupAbortFixture(
+        test_id="sync_true",
+        window_extra={"synchronize": True},
+        global_synchronize=False,
+        plugin_synchronize=None,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="raw_option_on",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        global_synchronize=False,
+        plugin_synchronize=None,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="inherits_global_on",
+        window_extra={},
+        global_synchronize=True,
+        plugin_synchronize=None,
+        expected_local_sync=None,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="options_after_off_keeps_inherited_global_on",
+        window_extra={"options_after": {"synchronize-panes": "off"}},
+        global_synchronize=True,
+        plugin_synchronize=None,
+        expected_local_sync=None,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="options_after_on_does_not_run_on_setup_abort",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        global_synchronize=False,
+        plugin_synchronize=None,
+        expected_local_sync=None,
+        expected_effective_sync=False,
+    ),
+    SyncSetupAbortFixture(
+        test_id="plugin_on",
+        window_extra={},
+        global_synchronize=False,
+        plugin_synchronize=True,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncSetupAbortFixture._fields),
+    SYNC_SETUP_ABORT_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_SETUP_ABORT_FIXTURES],
+)
+def test_synchronize_restores_state_when_pane_setup_aborts(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    global_synchronize: bool,
+    plugin_synchronize: bool | None,
+    expected_local_sync: bool | None,
+    expected_effective_sync: bool,
+) -> None:
+    """Pane setup failures restore temporarily disabled synchronize-panes state."""
+
+    class SyncOnWindowCreatePlugin:
+        """Plugin that optionally sets the sync state before pane setup."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Set the synchronized state before pane setup starts."""
+            if plugin_synchronize is not None:
+                window.set_option("synchronize-panes", plugin_synchronize)
+
+        def after_window_finished(self, window: Window) -> None:
+            """No-op window hook."""
+
+    try:
+        if global_synchronize:
+            session.server.cmd("set-window-option", "-g", "synchronize-panes", "on")
+
+        window_config: dict[str, t.Any] = {
+            "window_name": f"sync-abort-{test_id}",
+            # Invalid layout used to force a build abort. The "0000," hex
+            # prefix matters: a bare invalid name (no "hex," prefix) makes
+            # tmux 3.3/3.3a free an uninitialized `cause` pointer and crash
+            # the server (fixed upstream in 3.4); the prefix routes every
+            # tmux >= 3.2 to the clean "invalid layout" error instead.
+            "layout": "0000,not-a-layout",
+            "panes": [
+                "printf '__PANE0__\\n'",
+                "printf '__PANE1__\\n'",
+            ],
+        }
+        window_config.update(window_extra)
+        workspace: dict[str, t.Any] = {
+            "session_name": session.name,
+            "windows": [window_config],
+        }
+        workspace = loader.expand(workspace)
+
+        plugins: list[t.Any] = []
+        if plugin_synchronize is not None:
+            plugins.append(SyncOnWindowCreatePlugin())
+        builder = WorkspaceBuilder(
+            session_config=workspace,
+            server=session.server,
+            plugins=plugins,
+        )
+
+        # tmux 3.2/3.2a report "can't set layout"; 3.3+ report "invalid
+        # layout" for the same rejected layout — accept either.
+        with pytest.raises(LibTmuxException, match=r"invalid layout|can't set layout"):
+            builder.build(session=session)
+
+        window = session.windows[0]
+        assert window.show_option("synchronize-panes") is expected_local_sync
+        assert (
+            window.show_option("synchronize-panes", include_inherited=True)
+            is expected_effective_sync
+        )
+    finally:
+        session.server.cmd("set-window-option", "-gu", "synchronize-panes")
+
+
+class SyncPaneLocalPluginFixture(t.NamedTuple):
+    """Fixture for plugin-created pane-local synchronize-panes state."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    expected_window_sync: bool | None
+
+
+SYNC_PANE_LOCAL_PLUGIN_FIXTURES: list[SyncPaneLocalPluginFixture] = [
+    SyncPaneLocalPluginFixture(
+        test_id="window_option_on",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        expected_window_sync=True,
+    ),
+    SyncPaneLocalPluginFixture(
+        test_id="synchronize_false",
+        window_extra={"synchronize": False},
+        expected_window_sync=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncPaneLocalPluginFixture._fields),
+    SYNC_PANE_LOCAL_PLUGIN_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_PANE_LOCAL_PLUGIN_FIXTURES],
+)
+def test_synchronize_disables_plugin_pane_local_state_during_setup(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    expected_window_sync: bool | None,
+) -> None:
+    """Pane-local plugin sync state does not broadcast tmuxp setup commands."""
+
+    class PaneLocalSyncPlugin:
+        """Plugin that creates panes with pane-local sync before tmuxp setup."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Create pane-local sync state before tmuxp sends setup keys."""
+            first = window.active_pane
+            assert isinstance(first, Pane)
+            second = first.split(attach=True)
+            assert isinstance(second, Pane)
+            first.set_option(
+                "synchronize-panes",
+                True,
+                scope=OptionScope.Pane,
+            )
+            second.set_option(
+                "synchronize-panes",
+                True,
+                scope=OptionScope.Pane,
+            )
+
+        def after_window_finished(self, window: Window) -> None:
+            """No-op window hook."""
+
+    window_config: dict[str, t.Any] = {
+        "window_name": f"sync-pane-local-{test_id}",
+        "panes": [
+            "printf '__PANE0__\\n'",
+            "printf '__PANE1__\\n'",
+        ],
+    }
+    window_config.update(window_extra)
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        # Force the readiness wait; AUTO only waits for zsh, which the test
+        # tmux server's default-shell isn't, making capture assertions racy.
+        "workspace_builder_options": {"pane_readiness": "always"},
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        server=session.server,
+        plugins=[PaneLocalSyncPlugin()],
+    )
+    builder.build(session=session)
+
+    window = session.windows[0]
+    panes = window.panes
+
+    def output_lines(pane: Pane, marker: str) -> int:
+        return sum(1 for line in pane.capture_pane() if line.strip() == marker)
+
+    def setup_complete() -> bool:
+        return sum(output_lines(pane, "__PANE1__") for pane in panes) == 1
+
+    assert retry_until(setup_complete), "Expected plugin-pane setup to finish"
+    assert sum(output_lines(pane, "__PANE0__") for pane in panes) == 1
+    assert sum(output_lines(pane, "__PANE1__") for pane in panes) == 1
+    assert panes[0].show_option("synchronize-panes") is True
+    assert panes[1].show_option("synchronize-panes") is True
+    assert window.show_option("synchronize-panes") is expected_window_sync
 
 
 class SyncPluginOverrideFixture(t.NamedTuple):
@@ -671,6 +918,10 @@ def _build_synchronize_plugin_workspace(
     window_config.update(window_extra)
     workspace: dict[str, t.Any] = {
         "session_name": session.name,
+        # Force the pane-readiness wait so setup send-keys lands after the
+        # prompt is drawn. AUTO only waits for zsh, which the test tmux
+        # server's default-shell isn't, making the capture assertions racy.
+        "workspace_builder_options": {"pane_readiness": "always"},
         "windows": [window_config],
     }
     workspace = loader.expand(workspace)
@@ -2737,7 +2988,7 @@ def test_shell_command_after_honors_command_options(
         slept.append(seconds)
         original_sleep(0)
 
-    monkeypatch.setattr("tmuxp.workspace.builder.time.sleep", spy_sleep)
+    monkeypatch.setattr("tmuxp.workspace.builder.classic.time.sleep", spy_sleep)
 
     workspace: dict[str, t.Any] = {
         "session_name": session.name,
