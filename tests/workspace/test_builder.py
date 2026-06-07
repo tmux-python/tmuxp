@@ -359,6 +359,217 @@ def test_window_options_after(
         ), "Synchronized command did not execute properly"
 
 
+class SynchronizeBuilderFixture(t.NamedTuple):
+    """Fixture for synchronize shorthand builder behavior."""
+
+    test_id: str
+    synchronize: bool | str
+    expected_synchronized: bool | None
+
+
+SYNCHRONIZE_BUILDER_FIXTURES: list[SynchronizeBuilderFixture] = [
+    SynchronizeBuilderFixture(
+        test_id="true",
+        synchronize=True,
+        expected_synchronized=True,
+    ),
+    SynchronizeBuilderFixture(
+        test_id="before",
+        synchronize="before",
+        expected_synchronized=True,
+    ),
+    SynchronizeBuilderFixture(
+        test_id="after",
+        synchronize="after",
+        expected_synchronized=True,
+    ),
+    SynchronizeBuilderFixture(
+        test_id="false",
+        synchronize=False,
+        expected_synchronized=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizeBuilderFixture._fields),
+    SYNCHRONIZE_BUILDER_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNCHRONIZE_BUILDER_FIXTURES],
+)
+def test_synchronize_builder_options(
+    session: Session,
+    test_id: str,
+    synchronize: bool | str,
+    expected_synchronized: bool,
+) -> None:
+    """Synchronize shorthand sets synchronize-panes on the built window."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"sync-builder-{test_id}",
+        "windows": [
+            {
+                "window_name": "main",
+                "synchronize": synchronize,
+                "panes": ["echo pane0", "echo pane1"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    assert session.windows[0].show_option("synchronize-panes") is expected_synchronized
+
+
+def test_synchronize_after_runs_shell_command_after_once_per_pane(
+    session: Session,
+) -> None:
+    """synchronize: after does not mirror shell_command_after across panes."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "sync-after-cmds",
+                "synchronize": "after",
+                "shell_command_after": [
+                    "echo __SYNC_AF''TER__",
+                    "echo __SYNC_DO''NE__",
+                ],
+                "panes": ["echo pane0", "echo pane1"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("synchronize-panes") is True
+
+    def output_lines(pane: Pane, marker: str) -> int:
+        return sum(1 for line in pane.capture_pane() if line.strip() == marker)
+
+    for pane in window.panes:
+
+        def done(p: Pane = pane) -> bool:
+            return output_lines(p, "__SYNC_DONE__") >= 1
+
+        assert retry_until(done), f"Expected __SYNC_DONE__ in pane {pane.pane_id}"
+        count = output_lines(pane, "__SYNC_AFTER__")
+        assert count == 1, (
+            f"Pane {pane.pane_id} ran shell_command_after {count} times; "
+            "synchronize-panes was enabled before the fan-out"
+        )
+
+
+def test_pane_titles(
+    session: Session,
+) -> None:
+    """Pane title config sets pane-border options and pane titles."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "enable_pane_titles": True,
+        "windows": [
+            {
+                "window_name": "titled",
+                "panes": [
+                    {"title": "editor", "shell_command": ["echo pane0"]},
+                    {"title": "runner", "shell_command": ["echo pane1"]},
+                    {"shell_command": ["echo pane2"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("pane-border-status") == "top"
+    assert window.show_option("pane-border-format") == "#{pane_index}: #{pane_title}"
+
+    panes = window.panes
+    assert len(panes) == 3
+
+    def check_title(pane: Pane, expected: str) -> bool:
+        pane.refresh()
+        return pane.pane_title == expected
+
+    assert retry_until(functools.partial(check_title, panes[0], "editor")), (
+        f"Expected title 'editor', got {panes[0].pane_title!r}"
+    )
+    assert retry_until(functools.partial(check_title, panes[1], "runner")), (
+        f"Expected title 'runner', got {panes[1].pane_title!r}"
+    )
+
+
+class ClearBuilderFixture(t.NamedTuple):
+    """Fixture for clear window behavior."""
+
+    test_id: str
+    clear: bool
+    marker_should_remain: bool
+
+
+CLEAR_BUILDER_FIXTURES: list[ClearBuilderFixture] = [
+    ClearBuilderFixture(
+        test_id="clear-true",
+        clear=True,
+        marker_should_remain=False,
+    ),
+    ClearBuilderFixture(
+        test_id="clear-false",
+        clear=False,
+        marker_should_remain=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ClearBuilderFixture._fields),
+    CLEAR_BUILDER_FIXTURES,
+    ids=[fixture.test_id for fixture in CLEAR_BUILDER_FIXTURES],
+)
+def test_clear_window(
+    session: Session,
+    test_id: str,
+    clear: bool,
+    marker_should_remain: bool,
+) -> None:
+    """Clear sends clear to panes only when enabled."""
+    marker = f"__{test_id.upper().replace('-', '_')}__"
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "clear-test",
+                "clear": clear,
+                "panes": [{"shell_command": [f"echo {marker}"]}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    pane = session.windows[0].panes[0]
+
+    def marker_visible() -> bool:
+        return marker in "\n".join(pane.capture_pane())
+
+    if marker_should_remain:
+        assert retry_until(marker_visible)
+    else:
+
+        def marker_cleared() -> bool:
+            return not marker_visible()
+
+        assert retry_until(marker_cleared, raises=False)
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
