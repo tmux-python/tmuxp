@@ -72,8 +72,10 @@ on_project_start:
   - ./setup.sh
 ```
 
-Hooks run through the shell and block tmuxp until they finish. Hook failures are
-logged and do not stop the tmuxp command.
+`on_project_start`, `on_project_restart`, and `on_project_stop` run through the
+shell and block tmuxp until they finish. `on_project_exit` is different: it runs
+via tmux's `client-detached` hook after tmuxp has already returned, so it never
+blocks the command. Hook failures are logged and do not stop the tmuxp command.
 
 ## Pane Titles
 
