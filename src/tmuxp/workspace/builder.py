@@ -840,17 +840,19 @@ class WorkspaceBuilder:
         window_config : dict
             config section for window
         """
+        suppress = window_config.get("suppress_history", True)
+
         if "shell_command_after" in window_config and isinstance(
             window_config["shell_command_after"],
             dict,
         ):
             for cmd in window_config["shell_command_after"].get("shell_command", []):
                 for pane in window.panes:
-                    pane.send_keys(cmd["cmd"])
+                    pane.send_keys(cmd["cmd"], suppress_history=suppress)
 
         if window_config.get("clear"):
             for pane in window.panes:
-                pane.send_keys("clear", enter=True)
+                pane.send_keys("clear", enter=True, suppress_history=suppress)
 
         # Keep options_after last. synchronize-panes mirrors send-keys to every
         # pane, so enabling it before the fan-out above duplicates commands.
