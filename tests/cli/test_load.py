@@ -12,6 +12,7 @@ import pytest
 from libtmux.server import Server
 from libtmux.session import Session
 
+import tmuxp.cli.load as load_module
 from tests.constants import FIXTURE_PATH
 from tests.fixtures import utils as test_utils
 from tmuxp import cli
@@ -885,6 +886,119 @@ def test_load_workspace_env_progress_disabled(
 
     assert isinstance(session, Session)
     assert session.name == "sample workspace"
+
+
+def test_load_on_project_start_runs_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """load_workspace() runs on_project_start before creating a new session."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    marker = tmp_path / "start-hook-ran"
+    workspace_file = tmp_path / "hook-start.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-start-test
+on_project_start: "touch {marker}"
+windows:
+  - window_name: main
+    panes:
+      - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        detached=True,
+    )
+
+    assert marker.exists()
+    assert session is not None
+    session.kill()
+
+
+class ExistingSessionRestartFixture(t.NamedTuple):
+    """Fixture for existing-session restart hook behavior."""
+
+    test_id: str
+    detached: bool
+    expect_restart_hook: bool
+    expect_reattach: bool
+
+
+EXISTING_SESSION_RESTART_FIXTURES: list[ExistingSessionRestartFixture] = [
+    ExistingSessionRestartFixture(
+        test_id="confirmed-attach-runs-hook",
+        detached=False,
+        expect_restart_hook=True,
+        expect_reattach=True,
+    ),
+    ExistingSessionRestartFixture(
+        test_id="detached-existing-session-skips-hook",
+        detached=True,
+        expect_restart_hook=False,
+        expect_reattach=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ExistingSessionRestartFixture._fields),
+    EXISTING_SESSION_RESTART_FIXTURES,
+    ids=[fixture.test_id for fixture in EXISTING_SESSION_RESTART_FIXTURES],
+)
+def test_load_existing_session_restart_hook(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    detached: bool,
+    expect_restart_hook: bool,
+    expect_reattach: bool,
+) -> None:
+    """on_project_restart runs only when attaching to an existing session."""
+    monkeypatch.delenv("TMUX", raising=False)
+    server.new_session(session_name="hook-restart-test")
+
+    marker = tmp_path / f"{test_id}.marker"
+    workspace_file = tmp_path / "hook-restart.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: hook-restart-test
+on_project_restart: "touch {marker}"
+windows:
+  - window_name: main
+    panes:
+      -
+""",
+        encoding="utf-8",
+    )
+
+    reattach_called = False
+
+    def fake_reattach(
+        _builder: WorkspaceBuilder,
+        _colors: object | None = None,
+    ) -> None:
+        nonlocal reattach_called
+        reattach_called = True
+
+    monkeypatch.setattr(load_module, "_reattach", fake_reattach)
+
+    result = load_module.load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        answer_yes=True,
+        detached=detached,
+    )
+
+    assert result is None
+    assert marker.exists() is expect_restart_hook
+    assert reattach_called is expect_reattach
 
 
 def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:

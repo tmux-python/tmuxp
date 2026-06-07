@@ -2228,3 +2228,110 @@ def test_shell_command_after_honors_command_options(
 
     option_sleeps = [s for s in slept if s in (0.21, 0.31)]
     assert sorted(option_sleeps) == sorted(expected_sleeps)
+
+
+class ProjectExitHookFixture(t.NamedTuple):
+    """Fixture for on_project_exit hook metadata."""
+
+    test_id: str
+    hook_value: str | list[str]
+    expected_fragment: str
+
+
+PROJECT_EXIT_HOOK_FIXTURES: list[ProjectExitHookFixture] = [
+    ProjectExitHookFixture(
+        test_id="string-command",
+        hook_value="echo goodbye",
+        expected_fragment="echo goodbye",
+    ),
+    ProjectExitHookFixture(
+        test_id="list-command",
+        hook_value=["echo first", "echo second"],
+        expected_fragment="echo first; echo second",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ProjectExitHookFixture._fields),
+    PROJECT_EXIT_HOOK_FIXTURES,
+    ids=[fixture.test_id for fixture in PROJECT_EXIT_HOOK_FIXTURES],
+)
+def test_on_project_exit_sets_guarded_hook(
+    server: Server,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    hook_value: str | list[str],
+    expected_fragment: str,
+) -> None:
+    """on_project_exit stores a guarded client-detached hook on new sessions."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"hook-exit-{test_id}",
+        "start_directory": str(tmp_path),
+        "on_project_exit": hook_value,
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.trickle(loader.expand(workspace))
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+    assert builder.session is not None
+
+    hook_values = [str(value) for value in builder.session.show_hooks().values()]
+    assert any("#{session_attached}" in value for value in hook_values)
+    assert any(str(tmp_path) in value for value in hook_values)
+    assert any(expected_fragment in value for value in hook_values)
+
+    builder.session.kill()
+
+
+def test_on_project_stop_sets_environment(
+    server: Server,
+    tmp_path: pathlib.Path,
+) -> None:
+    """on_project_stop stores commands and cwd metadata on new sessions."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "hook-stop-env-test",
+        "start_directory": str(tmp_path),
+        "on_project_stop": ["echo stop", "echo done"],
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.trickle(loader.expand(workspace))
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+    assert builder.session is not None
+
+    assert builder.session.getenv("TMUXP_ON_PROJECT_STOP") == "echo stop; echo done"
+    assert builder.session.getenv("TMUXP_START_DIRECTORY") == str(tmp_path)
+
+    builder.session.kill()
+
+
+def test_lifecycle_metadata_not_overwritten_on_reused_session(
+    session: Session,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Lifecycle hooks do not overwrite metadata on appended/reused sessions."""
+    original_hook = "run-shell 'printf %s original-exit >/dev/null'"
+    session.set_hook("client-detached", original_hook)
+    session.set_environment("TMUXP_ON_PROJECT_STOP", "original stop")
+    session.set_environment("TMUXP_START_DIRECTORY", "/original/start")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "start_directory": str(tmp_path),
+        "on_project_exit": "printf '%s' new-exit >/dev/null",
+        "on_project_stop": "printf '%s' new-stop >/dev/null",
+        "windows": [{"window_name": "reused-window", "panes": [{"shell_command": []}]}],
+    }
+    workspace = loader.trickle(loader.expand(workspace))
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session, append=True)
+
+    hook_values = [str(value) for value in session.show_hooks().values()]
+    assert any("original-exit" in value for value in hook_values)
+    assert all("new-exit" not in value for value in hook_values)
+    assert session.getenv("TMUXP_ON_PROJECT_STOP") == "original stop"
+    assert session.getenv("TMUXP_START_DIRECTORY") == "/original/start"

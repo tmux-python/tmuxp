@@ -12,7 +12,13 @@ import pytest
 
 from tmuxp import exc
 from tmuxp.exc import BeforeLoadScriptError, BeforeLoadScriptNotExists
-from tmuxp.util import get_pane, get_session, oh_my_zsh_auto_title, run_before_script
+from tmuxp.util import (
+    get_pane,
+    get_session,
+    oh_my_zsh_auto_title,
+    run_before_script,
+    run_hook_commands,
+)
 
 from .constants import FIXTURE_PATH
 
@@ -140,6 +146,73 @@ def test_beforeload_returns_stderr_messages() -> None:
         assert excinfo.match(r"failed with returncode")
 
 
+class RunHookCommandsFixture(t.NamedTuple):
+    """Fixture for lifecycle hook command execution."""
+
+    test_id: str
+    command_templates: tuple[str, ...]
+    expected_text: str
+
+
+RUN_HOOK_COMMANDS_FIXTURES: list[RunHookCommandsFixture] = [
+    RunHookCommandsFixture(
+        test_id="single-command",
+        command_templates=("printf single > {marker}",),
+        expected_text="single",
+    ),
+    RunHookCommandsFixture(
+        test_id="command-list",
+        command_templates=(
+            "printf first > {marker}",
+            "printf second >> {marker}",
+        ),
+        expected_text="firstsecond",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(RunHookCommandsFixture._fields),
+    RUN_HOOK_COMMANDS_FIXTURES,
+    ids=[fixture.test_id for fixture in RUN_HOOK_COMMANDS_FIXTURES],
+)
+def test_run_hook_commands(
+    tmp_path: pathlib.Path,
+    test_id: str,
+    command_templates: tuple[str, ...],
+    expected_text: str,
+) -> None:
+    """run_hook_commands() executes string and list hooks."""
+    marker = tmp_path / f"{test_id}.txt"
+    commands = [template.format(marker=marker) for template in command_templates]
+    hook_commands: str | list[str] = commands[0] if len(commands) == 1 else commands
+
+    run_hook_commands(hook_commands)
+
+    assert marker.read_text(encoding="utf-8") == expected_text
+
+
+def test_run_hook_commands_empty_is_noop() -> None:
+    """run_hook_commands() ignores empty command strings."""
+    run_hook_commands("")
+
+
+def test_run_hook_commands_logs_failure(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() logs non-zero hook exits without raising."""
+    with caplog.at_level(logging.WARNING, logger="tmuxp.util"):
+        run_hook_commands("exit 7")
+
+    records = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_exit_code")
+    ]
+    assert len(records) == 1
+    assert records[0].tmux_exit_code == 7
+
+
 def test_get_session_should_default_to_local_attached_session(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
@@ -169,6 +242,19 @@ def test_get_session_should_return_first_session_if_no_active_session(
     server.new_session(session_name="mysecondsession")
 
     assert get_session(server) == first_session
+
+
+def test_get_session_require_pane_resolution_raises_without_current_pane(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """get_session() can require TMUX_PANE resolution for destructive commands."""
+    monkeypatch.delenv("TMUX_PANE", raising=False)
+    monkeypatch.delenv("TMUX", raising=False)
+    server.new_session(session_name="myfirstsession")
+
+    with pytest.raises(exc.SessionNotFound):
+        get_session(server, require_pane_resolution=True)
 
 
 def test_get_pane_logs_debug_on_failure(
