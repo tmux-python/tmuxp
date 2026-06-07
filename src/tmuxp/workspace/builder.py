@@ -813,6 +813,9 @@ class WorkspaceBuilder:
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
+            if pane_config.get("title"):
+                pane.set_title(pane_config["title"])
+
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
                 window.select_pane(pane.pane_id)
@@ -837,6 +840,20 @@ class WorkspaceBuilder:
         window_config : dict
             config section for window
         """
+        if "shell_command_after" in window_config and isinstance(
+            window_config["shell_command_after"],
+            dict,
+        ):
+            for cmd in window_config["shell_command_after"].get("shell_command", []):
+                for pane in window.panes:
+                    pane.send_keys(cmd["cmd"])
+
+        if window_config.get("clear"):
+            for pane in window.panes:
+                pane.send_keys("clear", enter=True)
+
+        # Keep options_after last. synchronize-panes mirrors send-keys to every
+        # pane, so enabling it before the fan-out above duplicates commands.
         if "options_after" in window_config and isinstance(
             window_config["options_after"],
             dict,

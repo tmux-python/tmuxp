@@ -138,6 +138,13 @@ def expand(
                     val = str(cwd / val)
             workspace_dict["options"][key] = val
 
+    if "synchronize" in workspace_dict:
+        sync = workspace_dict.pop("synchronize")
+        if sync is True or sync == "before":
+            workspace_dict.setdefault("options", {})["synchronize-panes"] = "on"
+        elif sync == "after":
+            workspace_dict.setdefault("options_after", {})["synchronize-panes"] = "on"
+
     # Any workspace section, session, window, pane that can contain the
     # 'shell_command' value
     if "start_directory" in workspace_dict:
@@ -174,6 +181,36 @@ def expand(
         shell_command_before = workspace_dict["shell_command_before"]
 
         workspace_dict["shell_command_before"] = expand_cmd(shell_command_before)
+
+    if "shell_command_after" in workspace_dict:
+        shell_command_after = workspace_dict["shell_command_after"]
+
+        workspace_dict["shell_command_after"] = expand_cmd(shell_command_after)
+
+    if workspace_dict.get("enable_pane_titles") and "windows" in workspace_dict:
+        valid_positions = {"top", "bottom", "off"}
+        position = workspace_dict.pop("pane_title_position", "top")
+        if position not in valid_positions:
+            logger.warning(
+                "invalid pane_title_position %r, expected one of %s; "
+                "defaulting to 'top'",
+                position,
+                valid_positions,
+            )
+            position = "top"
+        pane_title_format = workspace_dict.pop(
+            "pane_title_format",
+            "#{pane_index}: #{pane_title}",
+        )
+        workspace_dict.pop("enable_pane_titles")
+        for window in workspace_dict["windows"]:
+            window.setdefault("options", {})
+            window["options"].setdefault("pane-border-status", position)
+            window["options"].setdefault("pane-border-format", pane_title_format)
+    elif "enable_pane_titles" in workspace_dict:
+        workspace_dict.pop("enable_pane_titles")
+        workspace_dict.pop("pane_title_position", None)
+        workspace_dict.pop("pane_title_format", None)
 
     # recurse into window and pane workspace items
     if "windows" in workspace_dict:
