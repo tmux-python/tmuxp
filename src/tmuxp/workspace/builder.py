@@ -9,6 +9,7 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.constants import OptionScope
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 SYNCHRONIZE_PANES_OPTION = "synchronize-panes"
 SYNCHRONIZE_PANES_FINAL_OPTION = "_synchronize_panes"
 SYNCHRONIZE_PANES_FORCED_OFF_OPTION = "_synchronize_panes_forced_off"
+SYNCHRONIZE_PANES_PANE_RESTORE_OPTION = "_synchronize_panes_pane_restore"
 SYNCHRONIZE_PANES_RESTORE_OPTION = "_synchronize_panes_restore"
 _MISSING = object()
 
@@ -580,17 +582,24 @@ class WorkspaceBuilder:
             self.prepare_window_synchronize_panes(window, window_config)
 
             focus_pane = None
-            for pane, pane_config in self.iter_create_panes(window, window_config):
-                assert isinstance(pane, Pane)
-                pane = pane
+            try:
+                for pane, pane_config in self.iter_create_panes(window, window_config):
+                    assert isinstance(pane, Pane)
+                    pane = pane
 
-                if pane_config.get("focus"):
-                    focus_pane = pane
+                    if pane_config.get("focus"):
+                        focus_pane = pane
 
-            if window_config.get("focus"):
-                focus = window
+                if window_config.get("focus"):
+                    focus = window
 
-            self.config_after_window(window, window_config)
+                self.config_after_window(window, window_config)
+            finally:
+                self.restore_window_synchronize_panes(
+                    window,
+                    window_config,
+                    apply_options_after=False,
+                )
 
             for plugin in self.plugins:
                 plugin.after_window_finished(window)
@@ -749,10 +758,31 @@ class WorkspaceBuilder:
             window.set_option(SYNCHRONIZE_PANES_OPTION, False)
             window_config[SYNCHRONIZE_PANES_FORCED_OFF_OPTION] = True
 
+        pane_restores = []
+        for pane in window.panes:
+            local_pane_sync = pane.show_option(
+                SYNCHRONIZE_PANES_OPTION,
+                scope=OptionScope.Pane,
+            )
+            if local_pane_sync is True:
+                pane_restores.append((pane, local_pane_sync))
+                pane.set_option(
+                    SYNCHRONIZE_PANES_OPTION,
+                    False,
+                    scope=OptionScope.Pane,
+                    ignore_errors=True,
+                )
+
+        if pane_restores:
+            window_config[SYNCHRONIZE_PANES_PANE_RESTORE_OPTION] = pane_restores
+            window_config[SYNCHRONIZE_PANES_FORCED_OFF_OPTION] = True
+
     def restore_window_synchronize_panes(
         self,
         window: Window,
         window_config: dict[str, t.Any],
+        *,
+        apply_options_after: bool = True,
     ) -> None:
         """Restore the configured final tmux pane synchronization state.
 
@@ -770,26 +800,49 @@ class WorkspaceBuilder:
         False
         >>> _ = scratch.kill()
         """
-        after_sync = _get_window_option_value(
-            window_config,
-            "options_after",
-            SYNCHRONIZE_PANES_OPTION,
+        after_sync = _MISSING
+        if apply_options_after:
+            after_sync = _get_window_option_value(
+                window_config,
+                "options_after",
+                SYNCHRONIZE_PANES_OPTION,
+            )
+
+        pane_restores = window_config.pop(
+            SYNCHRONIZE_PANES_PANE_RESTORE_OPTION,
+            [],
         )
-        if after_sync is not _MISSING:
-            window.set_option(SYNCHRONIZE_PANES_OPTION, after_sync)
-            return
-
-        if not window_config.get(SYNCHRONIZE_PANES_FORCED_OFF_OPTION):
-            return
-
-        restore_sync = window_config.get(
+        forced_off = window_config.pop(SYNCHRONIZE_PANES_FORCED_OFF_OPTION, False)
+        restore_sync = window_config.pop(
             SYNCHRONIZE_PANES_RESTORE_OPTION,
             _MISSING,
         )
-        if restore_sync is _MISSING or restore_sync is None:
-            window.unset_option(SYNCHRONIZE_PANES_OPTION, ignore_errors=True)
-        else:
-            window.set_option(SYNCHRONIZE_PANES_OPTION, restore_sync)
+
+        if after_sync is not _MISSING:
+            window.set_option(SYNCHRONIZE_PANES_OPTION, t.cast(int | str, after_sync))
+        elif forced_off and restore_sync is not _MISSING:
+            if restore_sync is None:
+                window.unset_option(SYNCHRONIZE_PANES_OPTION, ignore_errors=True)
+            else:
+                window.set_option(
+                    SYNCHRONIZE_PANES_OPTION,
+                    t.cast(int | str, restore_sync),
+                )
+
+        for pane, restore_pane_sync in pane_restores:
+            if restore_pane_sync is _MISSING or restore_pane_sync is None:
+                pane.unset_option(
+                    SYNCHRONIZE_PANES_OPTION,
+                    scope=OptionScope.Pane,
+                    ignore_errors=True,
+                )
+            else:
+                pane.set_option(
+                    SYNCHRONIZE_PANES_OPTION,
+                    t.cast(int | str, restore_pane_sync),
+                    scope=OptionScope.Pane,
+                    ignore_errors=True,
+                )
 
     def iter_create_panes(
         self,
