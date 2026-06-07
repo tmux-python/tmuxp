@@ -114,6 +114,18 @@ windows:
 `shell_command_after` runs before `options_after`, so `synchronize: after` does
 not duplicate the commands across synchronized panes.
 
+Entries accept the same command mappings as `shell_command` — `enter`,
+`sleep_before`, and `sleep_after` apply per command (sleeps run once per
+command, before and after it is sent to every pane):
+
+```yaml
+shell_command_after:
+  - cmd: ./healthcheck.sh
+    sleep_before: 2
+  - cmd: tail -f app.log
+    enter: false
+```
+
 ## clear
 
 Window-level boolean. When `true`, sends `clear` to every pane after all

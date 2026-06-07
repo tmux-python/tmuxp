@@ -847,8 +847,16 @@ class WorkspaceBuilder:
             dict,
         ):
             for cmd in window_config["shell_command_after"].get("shell_command", []):
+                enter = cmd.get("enter", True)
+                sleep_before = cmd.get("sleep_before")
+                sleep_after = cmd.get("sleep_after")
+                # Sleeps apply once per command wave, not once per pane.
+                if sleep_before is not None:
+                    time.sleep(sleep_before)
                 for pane in window.panes:
-                    pane.send_keys(cmd["cmd"], suppress_history=suppress)
+                    pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
+                if sleep_after is not None:
+                    time.sleep(sleep_after)
 
         if window_config.get("clear"):
             for pane in window.panes:

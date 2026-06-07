@@ -2071,3 +2071,119 @@ def test_builder_logs_window_and_pane_creation(
     assert len(cmd_logs) >= 1
 
     builder.session.kill()
+
+
+class AfterCommandOptionsFixture(t.NamedTuple):
+    """Fixture for per-command options in shell_command_after mappings."""
+
+    test_id: str
+    command: dict[str, t.Any]
+    expected_enter: bool
+    expected_sleeps: list[float]
+
+
+AFTER_COMMAND_OPTIONS_FIXTURES: list[AfterCommandOptionsFixture] = [
+    AfterCommandOptionsFixture(
+        test_id="enter_false_respected",
+        command={"cmd": "echo __AFTER_OPT__", "enter": False},
+        expected_enter=False,
+        expected_sleeps=[],
+    ),
+    AfterCommandOptionsFixture(
+        test_id="sleeps_once_per_wave",
+        command={
+            "cmd": "echo __AFTER_OPT__",
+            "sleep_before": 0.21,
+            "sleep_after": 0.31,
+        },
+        expected_enter=True,
+        expected_sleeps=[0.21, 0.31],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(AfterCommandOptionsFixture._fields),
+    AFTER_COMMAND_OPTIONS_FIXTURES,
+    ids=[fixture.test_id for fixture in AFTER_COMMAND_OPTIONS_FIXTURES],
+)
+def test_shell_command_after_honors_command_options(
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    command: dict[str, t.Any],
+    expected_enter: bool,
+    expected_sleeps: list[float],
+) -> None:
+    """shell_command_after mappings keep their enter and sleep options.
+
+    The pane command loop honors per-command enter/sleep_before/
+    sleep_after; the post-build fan-out accepts the same mapping syntax
+    and must behave the same. Sleeps apply once per command wave, not
+    once per pane.
+    """
+    sent: list[tuple[str | None, bool | None]] = []
+    original_send_keys = Pane.send_keys
+
+    def spy_send_keys(
+        self: Pane,
+        cmd: str | None = None,
+        enter: bool | None = True,
+        suppress_history: bool | None = False,
+        literal: bool | None = False,
+        reset: bool | None = None,
+        copy_mode_cmd: str | None = None,
+        repeat: int | None = None,
+        expand_formats: bool | None = None,
+        hex_keys: bool | None = None,
+        target_client: str | None = None,
+        key_name: bool | None = None,
+    ) -> None:
+        sent.append((cmd, enter))
+        original_send_keys(
+            self,
+            cmd=cmd,
+            enter=enter,
+            suppress_history=suppress_history,
+            literal=literal,
+            reset=reset,
+            copy_mode_cmd=copy_mode_cmd,
+            repeat=repeat,
+            expand_formats=expand_formats,
+            hex_keys=hex_keys,
+            target_client=target_client,
+            key_name=key_name,
+        )
+
+    monkeypatch.setattr(Pane, "send_keys", spy_send_keys)
+
+    slept: list[float] = []
+    original_sleep = time.sleep
+
+    def spy_sleep(seconds: float) -> None:
+        slept.append(seconds)
+        original_sleep(0)
+
+    monkeypatch.setattr("tmuxp.workspace.builder.time.sleep", spy_sleep)
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": f"after-options-{test_id}",
+                "shell_command_after": [command],
+                "panes": ["echo pane0", "echo pane1"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    after_sends = [entry for entry in sent if entry[0] == "echo __AFTER_OPT__"]
+    assert len(after_sends) == 2, "after-command should reach both panes"
+    assert all(enter is expected_enter for _, enter in after_sends)
+
+    option_sleeps = [s for s in slept if s in (0.21, 0.31)]
+    assert sorted(option_sleeps) == sorted(expected_sleeps)
