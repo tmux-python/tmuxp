@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import shlex
 import shutil
 import time
 import typing as t
@@ -422,6 +423,8 @@ class WorkspaceBuilder:
         append : bool
             append windows in current active session
         """
+        session_created = session is None
+
         if not session:
             if not self.server:
                 msg = (
@@ -537,6 +540,35 @@ class WorkspaceBuilder:
         if "environment" in self.session_config:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
+
+        if session_created and "on_project_exit" in self.session_config:
+            exit_cmds = self.session_config["on_project_exit"]
+            if isinstance(exit_cmds, str):
+                exit_cmds = [exit_cmds]
+            joined = "; ".join(exit_cmds)
+            start_dir = self.session_config.get("start_directory")
+            if start_dir:
+                joined = f"cd {shlex.quote(start_dir)} && {joined}"
+            guarded = f"if [ #{{session_attached}} -eq 0 ]; then {joined}; fi"
+            self.session.set_hook(
+                "client-detached",
+                f"run-shell {shlex.quote(guarded)}",
+            )
+
+        if session_created and "on_project_stop" in self.session_config:
+            stop_cmds = self.session_config["on_project_stop"]
+            if isinstance(stop_cmds, str):
+                stop_cmds = [stop_cmds]
+            self.session.set_environment(
+                "TMUXP_ON_PROJECT_STOP",
+                "; ".join(stop_cmds),
+            )
+
+        if session_created and "start_directory" in self.session_config:
+            self.session.set_environment(
+                "TMUXP_START_DIRECTORY",
+                self.session_config["start_directory"],
+            )
 
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
