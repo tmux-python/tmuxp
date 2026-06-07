@@ -57,6 +57,12 @@ from .shell import (
     command_shell,
     create_shell_subparser,
 )
+from .stop import (
+    STOP_DESCRIPTION,
+    CLIStopNamespace,
+    command_stop,
+    create_stop_subparser,
+)
 from .utils import tmuxp_echo
 
 logger = logging.getLogger(__name__)
@@ -131,6 +137,13 @@ CLI_DESCRIPTION = build_description(
             ],
         ),
         (
+            "stop",
+            [
+                "tmuxp stop mysession",
+                "tmuxp stop -L mysocket mysession",
+            ],
+        ),
+        (
             "debug-info",
             [
                 "tmuxp debug-info",
@@ -155,6 +168,7 @@ if t.TYPE_CHECKING:
         "import",
         "search",
         "shell",
+        "stop",
         "debug-info",
     ]
     CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
@@ -262,6 +276,14 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_freeze_subparser(freeze_parser)
 
+    stop_parser = subparsers.add_parser(
+        "stop",
+        help="stop (kill) a tmux session",
+        description=STOP_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_stop_subparser(stop_parser)
+
     return parser
 
 
@@ -351,6 +373,11 @@ def cli(_args: list[str] | None = None) -> None:
     elif args.subparser_name == "freeze":
         command_freeze(
             args=CLIFreezeNamespace(**vars(args)),
+            parser=parser,
+        )
+    elif args.subparser_name == "stop":
+        command_stop(
+            args=CLIStopNamespace(**vars(args)),
             parser=parser,
         )
     elif args.subparser_name == "ls":
