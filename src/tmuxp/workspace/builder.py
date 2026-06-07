@@ -600,7 +600,11 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        for window, window_config in self.iter_create_windows(session, append):
+        for window, window_config in self.iter_create_windows(
+            session,
+            append,
+            defer_synchronize_panes=True,
+        ):
             assert isinstance(window, Window)
 
             for plugin in self.plugins:
@@ -643,6 +647,7 @@ class WorkspaceBuilder:
         self,
         session: Session,
         append: bool = False,
+        defer_synchronize_panes: bool = False,
     ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -657,6 +662,9 @@ class WorkspaceBuilder:
             session to create windows in
         append : bool
             append windows in current active session
+        defer_synchronize_panes : bool
+            defer ``synchronize-panes`` until the high-level build can restore
+            it after setup commands run
 
         Returns
         -------
@@ -736,7 +744,7 @@ class WorkspaceBuilder:
                 dict,
             ):
                 for key, val in window_config["options"].items():
-                    if key == SYNCHRONIZE_PANES_OPTION:
+                    if defer_synchronize_panes and key == SYNCHRONIZE_PANES_OPTION:
                         continue
                     window.set_option(key, val)
 

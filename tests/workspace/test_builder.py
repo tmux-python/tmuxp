@@ -421,6 +421,58 @@ def test_synchronize_builder_options(
     assert session.windows[0].show_option("synchronize-panes") is expected_synchronized
 
 
+class IteratorSynchronizeOptionFixture(t.NamedTuple):
+    """Fixture for direct iterator synchronize-panes option behavior."""
+
+    test_id: str
+    option_value: str
+    expected_synchronized: bool
+
+
+ITERATOR_SYNCHRONIZE_OPTION_FIXTURES: list[IteratorSynchronizeOptionFixture] = [
+    IteratorSynchronizeOptionFixture(
+        test_id="on",
+        option_value="on",
+        expected_synchronized=True,
+    ),
+    IteratorSynchronizeOptionFixture(
+        test_id="off",
+        option_value="off",
+        expected_synchronized=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(IteratorSynchronizeOptionFixture._fields),
+    ITERATOR_SYNCHRONIZE_OPTION_FIXTURES,
+    ids=[fixture.test_id for fixture in ITERATOR_SYNCHRONIZE_OPTION_FIXTURES],
+)
+def test_iter_create_windows_preserves_raw_synchronize_panes_option(
+    session: Session,
+    test_id: str,
+    option_value: str,
+    expected_synchronized: bool,
+) -> None:
+    """Direct iter_create_windows() calls apply raw synchronize-panes options."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": f"iterator-sync-{test_id}",
+                "options": {"synchronize-panes": option_value},
+                "panes": ["echo pane0"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    window, _window_config = next(builder.iter_create_windows(session=session))
+
+    assert window.show_option("synchronize-panes") is expected_synchronized
+
+
 class SyncIsolationFixture(t.NamedTuple):
     """Fixture for build-time synchronize-panes isolation."""
 
