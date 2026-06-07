@@ -70,6 +70,11 @@ windows:
 | `pane_title_format` | session | Format string using tmux variables. |
 | `title` | pane | Title text for an individual pane. |
 
+```{note}
+tmux ignores empty pane titles — `title: ""` logs a warning and keeps the
+default label. Use a single space (`title: " "`) to visually blank one.
+```
+
 ## synchronize
 
 Window-level shorthand for setting `synchronize-panes`. It accepts

@@ -465,6 +465,7 @@ def test_synchronize_after_runs_shell_command_after_once_per_pane(
 
 def test_pane_titles(
     session: Session,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Pane title config sets pane-border options and pane titles."""
     workspace: dict[str, t.Any] = {
@@ -476,7 +477,8 @@ def test_pane_titles(
                 "panes": [
                     {"title": "editor", "shell_command": ["echo pane0"]},
                     {"title": "runner", "shell_command": ["echo pane1"]},
-                    {"shell_command": ["echo pane2"]},
+                    {"title": "", "shell_command": ["echo pane2"]},
+                    {"shell_command": ["echo pane3"]},
                 ],
             },
         ],
@@ -484,14 +486,15 @@ def test_pane_titles(
     workspace = loader.expand(workspace)
 
     builder = WorkspaceBuilder(session_config=workspace, server=session.server)
-    builder.build(session=session)
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder.build(session=session)
 
     window = session.windows[0]
     assert window.show_option("pane-border-status") == "top"
     assert window.show_option("pane-border-format") == "#{pane_index}: #{pane_title}"
 
     panes = window.panes
-    assert len(panes) == 3
+    assert len(panes) == 4
 
     def check_title(pane: Pane, expected: str) -> bool:
         pane.refresh()
@@ -503,6 +506,15 @@ def test_pane_titles(
     assert retry_until(functools.partial(check_title, panes[1], "runner")), (
         f"Expected title 'runner', got {panes[1].pane_title!r}"
     )
+
+    # tmux discards empty titles; an explicit title: "" warns instead
+    blank_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_pane")
+    ]
+    assert len(blank_warnings) == 1
+    assert blank_warnings[0].tmux_pane == panes[2].pane_id
 
 
 class ClearBuilderFixture(t.NamedTuple):

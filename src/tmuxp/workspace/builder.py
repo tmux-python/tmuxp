@@ -813,8 +813,16 @@ class WorkspaceBuilder:
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
-            if pane_config.get("title"):
-                pane.set_title(pane_config["title"])
+            title = pane_config.get("title")
+            if title:
+                pane.set_title(title)
+            elif title is not None:
+                # tmux discards `select-pane -T ""`; an empty pane title
+                # cannot be applied.
+                pane_log.warning(
+                    "tmux ignores empty pane titles; use a single space "
+                    "to blank the label",
+                )
 
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
