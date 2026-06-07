@@ -213,6 +213,32 @@ def test_run_hook_commands_logs_failure(
     assert records[0].tmux_exit_code == 7
 
 
+def test_run_hook_commands_redacts_logged_command(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """run_hook_commands() keeps expanded hook commands out of logs."""
+    secret = "secret-token-for-hook-log"
+
+    with caplog.at_level(logging.INFO, logger="tmuxp.util"):
+        run_hook_commands(f"false # {secret}")
+
+    for record in caplog.records:
+        assert secret not in record.getMessage()
+        assert secret not in str(record.__dict__)
+
+    hook_records = [
+        record for record in caplog.records if hasattr(record, "tmux_hook_cmd")
+    ]
+    assert hook_records
+    assert all(record.tmux_hook_cmd == "<redacted>" for record in hook_records)
+
+    failure_records = [
+        record for record in caplog.records if hasattr(record, "tmux_exit_code")
+    ]
+    assert len(failure_records) == 1
+    assert failure_records[0].tmux_exit_code == 1
+
+
 def test_get_session_should_default_to_local_attached_session(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
