@@ -27,6 +27,7 @@ teamocil_dict = {
 
 expected = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "my-first-window",

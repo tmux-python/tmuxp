@@ -16,7 +16,7 @@ from libtmux.window import Window
 
 from tmuxp import exc
 from tmuxp.log import TmuxpLoggerAdapter
-from tmuxp.util import get_current_pane, run_before_script
+from tmuxp.util import get_current_pane, run_before_script, run_lifecycle_hook
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterator
@@ -491,6 +491,33 @@ class WorkspaceBuilder:
 
         focus = None
 
+        # Lifecycle hooks: on_project_start fires every load (matches
+        # tmuxinator template.erb:14). first_start fires only on a NEW
+        # session; restart fires only when appending to an existing one.
+        # All execute via run_lifecycle_hook which reuses run_before_script
+        # (no shell=True; pipes need a script file).
+        hook_cwd = self.session_config.get("start_directory")
+        run_lifecycle_hook(
+            "on_project_start",
+            self.session_config.get("on_project_start"),
+            cwd=hook_cwd,
+            on_line=self.on_script_output,
+        )
+        if append:
+            run_lifecycle_hook(
+                "on_project_restart",
+                self.session_config.get("on_project_restart"),
+                cwd=hook_cwd,
+                on_line=self.on_script_output,
+            )
+        else:
+            run_lifecycle_hook(
+                "on_project_first_start",
+                self.session_config.get("on_project_first_start"),
+                cwd=hook_cwd,
+                on_line=self.on_script_output,
+            )
+
         if "before_script" in self.session_config:
             if self.on_before_script:
                 self.on_before_script()
@@ -537,6 +564,21 @@ class WorkspaceBuilder:
         if "environment" in self.session_config:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
+
+        # Pane title display options: tmuxinator's enable_pane_titles
+        # toggles `pane-border-status`; pane_title_position picks where the
+        # status bar lives; pane_title_format defines what tmux renders.
+        # Per-pane `title` is set later in iter_create_panes via set_title().
+        # Both pane-border-* are window-scope options; use global_=True so
+        # the values cover every window in the session.
+        if self.session_config.get("enable_pane_titles"):
+            position = self.session_config.get("pane_title_position", "top")
+            fmt = self.session_config.get(
+                "pane_title_format",
+                "#{pane_index}: #{pane_title}",
+            )
+            self.session.set_option("pane-border-status", position, global_=True)
+            self.session.set_option("pane-border-format", fmt, global_=True)
 
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
@@ -673,6 +715,13 @@ class WorkspaceBuilder:
             ):
                 for key, val in window_config["options"].items():
                     window.set_option(key, val)
+
+            # synchronize-panes: before/true fires here, after fires in
+            # config_after_window. tmuxinator deprecates true/before in favor
+            # of after (project.rb:21-29) but accepts all three for compat.
+            sync = window_config.get("synchronize")
+            if sync is True or sync == "before":
+                window.set_option("synchronize-panes", "on")
 
             if window_config.get("focus"):
                 window.select()
@@ -813,6 +862,12 @@ class WorkspaceBuilder:
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
+            # Per-pane title via libtmux Pane.set_title; works regardless of
+            # pane-border-status (title is stored on the pane, display is
+            # independent — see tmux cmd-select-pane.c:215-221).
+            if "title" in pane_config:
+                pane.set_title(pane_config["title"])
+
             if pane_config.get("focus"):
                 assert pane.pane_id is not None
                 window.select_pane(pane.pane_id)
@@ -843,6 +898,18 @@ class WorkspaceBuilder:
         ):
             for key, val in window_config["options_after"].items():
                 window.set_option(key, val)
+
+        # synchronize-panes value "after" fires here (post-pane-build) so
+        # the option is enabled only after pane commands have been sent.
+        if window_config.get("synchronize") == "after":
+            window.set_option("synchronize-panes", "on")
+
+        # Window-level shell_command_after: send each command to every pane
+        # after the main shell_command for that pane has run. The teamocil
+        # importer produces this on the window dict from `filters.after`.
+        for after_cmd in window_config.get("shell_command_after", []) or []:
+            for pane in window.panes:
+                pane.send_keys(after_cmd, suppress_history=False)
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""

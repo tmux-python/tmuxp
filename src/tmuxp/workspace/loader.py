@@ -193,7 +193,11 @@ def expand(
     return workspace_dict
 
 
-def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
+def trickle(
+    workspace_dict: dict[str, t.Any],
+    *,
+    no_shell_command_before: bool = False,
+) -> dict[str, t.Any]:
     """Return a dict with "trickled down" / inherited workspace values.
 
     This will only work if workspace has been expanded to full form with
@@ -207,6 +211,12 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     ----------
     workspace_dict : dict
         the tmuxp workspace.
+    no_shell_command_before : bool, optional
+        When True, skip the shell_command_before propagation entirely.
+        Mirrors tmuxinator's ``--no-pre-window``, but slightly broader:
+        tmuxinator's flag only suppresses ``pre_window`` proper, whereas
+        tmuxp's flag skips ``shell_command_before`` at session, window,
+        and pane levels.
 
     Returns
     -------
@@ -251,19 +261,22 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
         for pane_idx, pane_dict in enumerate(window_dict["panes"]):
             commands_before = []
 
-            # Prepend shell_command_before to commands
-            if "shell_command_before" in workspace_dict:
-                commands_before.extend(
-                    workspace_dict["shell_command_before"]["shell_command"],
-                )
-            if "shell_command_before" in window_dict:
-                commands_before.extend(
-                    window_dict["shell_command_before"]["shell_command"],
-                )
-            if "shell_command_before" in pane_dict:
-                commands_before.extend(
-                    pane_dict["shell_command_before"]["shell_command"],
-                )
+            # Prepend shell_command_before to commands. Skipped entirely when
+            # no_shell_command_before is True (mirrors tmuxinator's
+            # --no-pre-window, but broader — we skip all three levels).
+            if not no_shell_command_before:
+                if "shell_command_before" in workspace_dict:
+                    commands_before.extend(
+                        workspace_dict["shell_command_before"]["shell_command"],
+                    )
+                if "shell_command_before" in window_dict:
+                    commands_before.extend(
+                        window_dict["shell_command_before"]["shell_command"],
+                    )
+                if "shell_command_before" in pane_dict:
+                    commands_before.extend(
+                        pane_dict["shell_command_before"]["shell_command"],
+                    )
 
             if "shell_command" in pane_dict:
                 commands_before.extend(pane_dict["shell_command"])

@@ -87,6 +87,7 @@ teamocil_dict = {
 
 two_windows = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "foo",
@@ -102,10 +103,7 @@ two_windows = {
             "window_name": "bar",
             "start_directory": "/bar",
             "panes": [
-                {
-                    "shell_command": ["echo 'bar'", "echo 'bar in an array'"],
-                    "target": "bottom-right",
-                },
+                {"shell_command": ["echo 'bar'", "echo 'bar in an array'"]},
                 {"shell_command": "echo 'bar again'", "focus": True},
             ],
         },
@@ -114,6 +112,7 @@ two_windows = {
 
 two_windows_with_filters = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "foo",
@@ -136,6 +135,7 @@ two_windows_with_filters = {
 
 two_windows_with_custom_command_options = {
     "session_name": None,
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {
             "window_name": "foo",
@@ -151,10 +151,7 @@ two_windows_with_custom_command_options = {
             "window_name": "bar",
             "start_directory": "/bar",
             "panes": [
-                {
-                    "shell_command": ["echo 'bar'", "echo 'bar in an array'"],
-                    "target": "bottom-right",
-                },
+                {"shell_command": ["echo 'bar'", "echo 'bar in an array'"]},
                 {"shell_command": "echo 'bar again'", "focus": True},
             ],
         },
@@ -163,6 +160,7 @@ two_windows_with_custom_command_options = {
 
 three_windows_within_a_session = {
     "session_name": "my awesome session",
+    "environment": {"TEAMOCIL": "1"},
     "windows": [
         {"window_name": "first window", "panes": [{"shell_command": "echo 'foo'"}]},
         {"window_name": "second window", "panes": [{"shell_command": "echo 'foo'"}]},

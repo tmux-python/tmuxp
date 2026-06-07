@@ -46,6 +46,30 @@ TEAMOCIL_CONFIG_TEST_FIXTURES: list[TeamocilConfigTestFixture] = [
         teamocil_dict=fixtures.test4.teamocil_dict,
         tmuxp_dict=fixtures.test4.expected,
     ),
+    TeamocilConfigTestFixture(
+        test_id="with_env_var_default",  # v0.x default exports TEAMOCIL=1
+        teamocil_yaml=fixtures.test_with_env_var_default.teamocil_yaml,
+        teamocil_dict=fixtures.test_with_env_var_default.teamocil_dict,
+        tmuxp_dict=fixtures.test_with_env_var_default.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="with_env_var_false",  # explicit false suppresses
+        teamocil_yaml=fixtures.test_with_env_var_false.teamocil_yaml,
+        teamocil_dict=fixtures.test_with_env_var_false.teamocil_dict,
+        tmuxp_dict=fixtures.test_with_env_var_false.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="v1x_string_pane",  # bare string pane -> shell_command list
+        teamocil_yaml=fixtures.test_v1x_string_pane.teamocil_yaml,
+        teamocil_dict=fixtures.test_v1x_string_pane.teamocil_dict,
+        tmuxp_dict=fixtures.test_v1x_string_pane.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="v1x_full",  # commands, focus, options, mixed panes
+        teamocil_yaml=fixtures.test_v1x_full.teamocil_yaml,
+        teamocil_dict=fixtures.test_v1x_full.teamocil_dict,
+        tmuxp_dict=fixtures.test_v1x_full.expected,
+    ),
 ]
 
 
@@ -157,3 +181,122 @@ def test_import_teamocil_logs_debug(
     records = [r for r in caplog.records if r.msg == "importing teamocil workspace"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test"
+
+
+def test_import_teamocil_with_env_var_string_false_suppresses() -> None:
+    """A YAML-quoted ``with_env_var`` of ``false`` suppresses TEAMOCIL=1."""
+    workspace = {
+        "session": {
+            "name": "string-false",
+            "with_env_var": "false",
+            "windows": [{"name": "main", "panes": [{"cmd": "echo hi"}]}],
+        },
+    }
+    result = importers.import_teamocil(workspace)
+    assert "environment" not in result
+
+
+def test_import_teamocil_warns_on_cmd_separator(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`cmd_separator` emits WARNING."""
+    workspace = {
+        "session": {
+            "name": "sep",
+            "cmd_separator": " && ",
+            "windows": [{"name": "main", "panes": [{"cmd": "echo hi"}]}],
+        },
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING
+        and getattr(r, "tmux_key", None) == "cmd_separator"
+    ]
+    assert len(warnings) == 1
+
+
+def test_import_teamocil_warns_on_clear(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """`clear` on a window emits WARNING."""
+    workspace = {
+        "session": {
+            "name": "clr",
+            "windows": [
+                {"name": "main", "clear": True, "panes": [{"cmd": "echo hi"}]},
+            ],
+        },
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(workspace)
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and getattr(r, "tmux_key", None) == "clear"
+    ]
+    assert len(warnings) == 1
+
+
+def test_import_teamocil_v1x_skips_env_var(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A v1.x config (no `session:` wrapper, no `cmd`/`splits`) skips env."""
+    workspace = {
+        "name": "v1x",
+        "windows": [{"name": "main", "panes": [{"commands": ["echo hi"]}]}],
+    }
+    result = importers.import_teamocil(workspace)
+    assert "environment" not in result
+
+
+def test_import_teamocil_v1x_unknown_pane_keys_warns(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A v1.x pane dict with no recognizable keys warns and produces {}."""
+    workspace = {
+        "name": "v1x",
+        "windows": [{"name": "w", "panes": [{"width": 50}]}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        result = importers.import_teamocil(workspace)
+    assert result["windows"][0]["panes"][0] == {}
+    warnings = [
+        r
+        for r in caplog.records
+        if r.levelno == logging.WARNING and "no recognizable keys" in r.msg
+    ]
+    assert len(warnings) == 1
+    assert getattr(warnings[0], "tmux_key", None) == "width"
+
+
+def test_import_teamocil_warns_on_v0x_pane_geometry(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """v0.x pane width/height/target each emit WARNING."""
+    workspace = {
+        "session": {
+            "name": "geom",
+            "windows": [
+                {
+                    "name": "w",
+                    "splits": [
+                        {"cmd": "echo a", "width": 50},
+                        {"cmd": "echo b", "height": 30},
+                        {"cmd": "echo c", "target": "bottom-right"},
+                    ],
+                },
+            ],
+        },
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        importers.import_teamocil(workspace)
+    keys: list[str] = sorted(
+        t.cast(str, getattr(r, "tmux_key", ""))
+        for r in caplog.records
+        if r.levelno == logging.WARNING
+        and getattr(r, "tmux_key", None) in {"width", "height", "target"}
+    )
+    assert keys == ["height", "target", "width"]

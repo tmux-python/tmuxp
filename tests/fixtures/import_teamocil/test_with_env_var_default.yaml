@@ -1,0 +1,6 @@
+session:
+  name: env-default
+  windows:
+  - name: main
+    panes:
+    - cmd: echo hi

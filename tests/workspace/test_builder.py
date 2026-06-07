@@ -1768,3 +1768,166 @@ def test_builder_logs_window_and_pane_creation(
     assert len(cmd_logs) >= 1
 
     builder.session.kill()
+
+
+class SynchronizeFixture(t.NamedTuple):
+    """Synchronize-panes fixture."""
+
+    test_id: str
+    workspace_file: str
+    expected_enabled: bool  # True if synchronize-panes is "on" after build
+
+
+SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
+    SynchronizeFixture(
+        test_id="before",
+        workspace_file="workspace/builder/synchronize_before.yaml",
+        expected_enabled=True,
+    ),
+    SynchronizeFixture(
+        test_id="after",
+        workspace_file="workspace/builder/synchronize_after.yaml",
+        expected_enabled=True,
+    ),
+    SynchronizeFixture(
+        test_id="omitted",
+        workspace_file="workspace/builder/synchronize_omitted.yaml",
+        expected_enabled=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizeFixture._fields),
+    SYNCHRONIZE_FIXTURES,
+    ids=[f.test_id for f in SYNCHRONIZE_FIXTURES],
+)
+def test_synchronize_panes(
+    test_id: str,
+    workspace_file: str,
+    expected_enabled: bool,
+    session: Session,
+) -> None:
+    """`synchronize` config key turns synchronize-panes on at the right phase."""
+    workspace = ConfigReader._from_file(test_utils.get_workspace_file(workspace_file))
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+    window = builder.session.windows[-1]
+    assert bool(window.show_option("synchronize-panes")) is expected_enabled
+    builder.session.kill()
+
+
+def test_synchronize_panes_true_treated_as_before(
+    session: Session,
+) -> None:
+    """`synchronize: true` is equivalent to `synchronize: before`."""
+    workspace = {
+        "session_name": "sync-true",
+        "windows": [
+            {
+                "window_name": "w1",
+                "synchronize": True,
+                "panes": [{"shell_command": ["echo a"]}, {"shell_command": ["echo b"]}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+    window = builder.session.windows[-1]
+    assert bool(window.show_option("synchronize-panes")) is True
+    builder.session.kill()
+
+
+def test_pane_titles_session_options_set(
+    session: Session,
+) -> None:
+    """enable_pane_titles applies pane-border-status and -format."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/pane_titles.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    # pane-border-* are window-scope options applied via global_=True
+    assert builder.session.show_option("pane-border-status", global_=True) == "bottom"
+    assert (
+        builder.session.show_option("pane-border-format", global_=True)
+        == "#{pane_index}: #{pane_title}"
+    )
+    builder.session.kill()
+
+
+def test_pane_titles_per_pane_title_applied(
+    session: Session,
+) -> None:
+    """Per-pane `title` is stored on the pane via set_title()."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/pane_titles.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = builder.session.windows[-1]
+    titles = [
+        p.cmd("display-message", "-p", "#{pane_title}").stdout[0] for p in window.panes
+    ]
+    assert "editor" in titles
+    assert "server" in titles
+    builder.session.kill()
+
+
+def test_pane_titles_defaults_when_only_enable(
+    session: Session,
+) -> None:
+    """enable_pane_titles=true with no other keys uses defaults."""
+    workspace = {
+        "session_name": "titles-defaults",
+        "enable_pane_titles": True,
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [{"shell_command": ["echo a"]}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    assert builder.session.show_option("pane-border-status", global_=True) == "top"
+    assert (
+        builder.session.show_option("pane-border-format", global_=True)
+        == "#{pane_index}: #{pane_title}"
+    )
+    builder.session.kill()
+
+
+@pytest.mark.flaky(reruns=5)
+def test_shell_command_after_runs_in_each_pane(
+    session: Session,
+) -> None:
+    """Window-level `shell_command_after` runs in every pane post-build."""
+    workspace = ConfigReader._from_file(
+        test_utils.get_workspace_file("workspace/builder/shell_command_after.yaml"),
+    )
+    workspace = loader.expand(workspace)
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    def saw_marker(p: Pane) -> bool:
+        def f() -> bool:
+            captured = p.cmd("capture-pane", "-p", "-J").stdout
+            return any("TMUXP_T3_MARKER" in line for line in captured)
+
+        return retry_until(f, raises=False)
+
+    window = builder.session.windows[-1]
+    for pane in window.panes:
+        assert saw_marker(pane), (
+            f"shell_command_after did not run in pane {pane.pane_id}"
+        )
+    builder.session.kill()

@@ -105,6 +105,10 @@ class CLILoadNamespace(argparse.Namespace):
     answer_yes: bool | None
     detached: bool
     append: bool | None
+    no_shell_command_before: bool
+    here: bool
+    dry_run: bool
+    template_vars: list[str]
     colors: CLIColorsLiteral | None
     color: CLIColorModeLiteral
     log_file: str | None
@@ -450,6 +454,9 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    no_shell_command_before: bool = False,
+    template_vars: t.Mapping[str, str] | None = None,
+    here: bool = False,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -532,6 +539,17 @@ def load_workspace(
     behalf. An exception raised during this process means it's not easy to
     predict how broken the session is.
     """
+    # --here precondition checks. Forces append=True so the existing
+    # append codepath layers windows onto the user's current session.
+    if here and append:
+        msg = "--here is mutually exclusive with --append"
+        raise exc.TmuxpException(msg)
+    if here and not os.environ.get("TMUX"):
+        msg = "--here requires being inside an existing tmux session"
+        raise exc.TmuxpException(msg)
+    if here:
+        append = True
+
     # Initialize CLI colors if not provided
     if cli_colors is None:
         cli_colors = Colors(ColorMode.AUTO)
@@ -552,8 +570,20 @@ def load_workspace(
             + cli_colors.highlight(str(PrivatePath(workspace_file))),
         )
 
-    # ConfigReader allows us to open a yaml or json file as a dict
-    raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
+    # Render ${var} / ${var:-default} placeholders against the raw YAML
+    # text BEFORE parsing (matches tmuxinator's ERB-before-YAML ordering).
+    # JSON files skip this step. strict=False leaves unresolved placeholders
+    # in place so loader.expandshell handles $ENV_VAR forms.
+    workspace_path = pathlib.Path(workspace_file)
+    if template_vars and workspace_path.suffix.lower() in {".yaml", ".yml"}:
+        from tmuxp._internal import template as _template
+
+        raw_text = workspace_path.read_text(encoding="utf-8")
+        rendered = _template.render(raw_text, template_vars, strict=False)
+        raw_workspace = config_reader.ConfigReader._load("yaml", rendered) or {}
+    else:
+        # ConfigReader allows us to open a yaml or json file as a dict
+        raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
 
     # shapes workspaces relative to config / profile file location
     expanded_workspace = loader.expand(
@@ -566,7 +596,10 @@ def load_workspace(
         expanded_workspace["session_name"] = new_session_name
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
-    expanded_workspace = loader.trickle(expanded_workspace)
+    expanded_workspace = loader.trickle(
+        expanded_workspace,
+        no_shell_command_before=no_shell_command_before,
+    )
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
@@ -758,6 +791,51 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         action="store_true",
         help="load workspace, appending windows to the current session",
     )
+    parser.add_argument(
+        "--no-shell-command-before",
+        dest="no_shell_command_before",
+        action="store_true",
+        default=False,
+        help=(
+            "skip session/window/pane shell_command_before propagation "
+            "(broader than tmuxinator's --no-pre-window, which only skips "
+            "pre_window)"
+        ),
+    )
+    parser.add_argument(
+        "--here",
+        dest="here",
+        action="store_true",
+        default=False,
+        help=(
+            "load workspace into the current tmux session (rename it + add "
+            "windows here). Mirrors teamocil --here. Requires being inside "
+            "tmux. Mutually exclusive with -a/--append."
+        ),
+    )
+    parser.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=False,
+        help=(
+            "execute the build on an isolated tmux socket (won't touch your "
+            "main tmux server) and surface the libtmux command log at INFO. "
+            "The temp server is killed when done."
+        ),
+    )
+    parser.add_argument(
+        "-D",
+        "--var",
+        dest="template_vars",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help=(
+            "template variable for ${var} / ${var:-default} substitution "
+            "in YAML workspace files; repeatable"
+        ),
+    )
     colorsgroup = parser.add_mutually_exclusive_group()
 
     colorsgroup.add_argument(
@@ -877,6 +955,25 @@ def command_load(
     original_detached_option = args.detached
     original_new_session_name = args.new_session_name
 
+    # --dry-run isolates the build on a temp socket so the user's main tmux
+    # server is untouched. Force socket_name to a unique value, force
+    # detached=True (no attaching to a sandbox session), bump tmuxp's logger
+    # to DEBUG so libtmux's `tmux command dispatched` messages surface, and
+    # kill the temp server in finally.
+    dry_run = getattr(args, "dry_run", False)
+    dry_run_socket: str | None = None
+    if dry_run:
+        import secrets as _secrets
+
+        dry_run_socket = f"tmuxp-dryrun-{os.getpid()}-{_secrets.token_hex(2)}"
+        args.socket_name = dry_run_socket
+        original_detached_option = True
+        logging.getLogger("libtmux").setLevel(logging.DEBUG)
+        logging.getLogger("tmuxp").setLevel(logging.DEBUG)
+        tmuxp_echo(
+            cli_colors.info(f"[dry-run] using isolated socket: {dry_run_socket}"),
+        )
+
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
             workspace_file,
@@ -890,18 +987,41 @@ def command_load(
             detached = True
             new_session_name = None
 
-        load_workspace(
-            workspace_file,
-            socket_name=args.socket_name,
-            socket_path=args.socket_path,
-            tmux_config_file=args.tmux_config_file,
-            new_session_name=new_session_name,
-            colors=args.colors,
-            detached=detached,
-            answer_yes=args.answer_yes or False,
-            append=args.append or False,
-            cli_colors=cli_colors,
-            progress_format=args.progress_format,
-            panel_lines=args.panel_lines,
-            no_progress=args.no_progress,
-        )
+        from tmuxp._internal import template as _template
+
+        try:
+            load_workspace(
+                workspace_file,
+                socket_name=args.socket_name,
+                socket_path=args.socket_path,
+                tmux_config_file=args.tmux_config_file,
+                new_session_name=new_session_name,
+                colors=args.colors,
+                detached=dry_run or detached,
+                answer_yes=args.answer_yes or False,
+                append=args.append or False,
+                cli_colors=cli_colors,
+                progress_format=args.progress_format,
+                panel_lines=args.panel_lines,
+                no_progress=args.no_progress,
+                no_shell_command_before=args.no_shell_command_before,
+                template_vars=_template.parse_cli_vars(args.template_vars or []),
+                here=getattr(args, "here", False),
+            )
+        finally:
+            if dry_run and dry_run_socket:
+                # Kill the temp tmux server we spun up. Best-effort: if the
+                # build raised before any session was created, the server
+                # may not exist yet.
+                try:
+                    Server(socket_name=dry_run_socket).kill_server()
+                    tmuxp_echo(
+                        cli_colors.muted(
+                            f"[dry-run] cleaned up isolated socket: {dry_run_socket}",
+                        ),
+                    )
+                except Exception:
+                    logger.debug(
+                        "dry-run cleanup skipped",
+                        extra={"tmux_session": dry_run_socket},
+                    )
