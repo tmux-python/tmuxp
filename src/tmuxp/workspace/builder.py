@@ -110,41 +110,6 @@ def _get_window_option_value(
     return _MISSING
 
 
-def _get_final_synchronize_panes(window_config: dict[str, t.Any]) -> t.Any:
-    """Return the final configured ``synchronize-panes`` value.
-
-    ``options_after`` wins because it is the final tmux option bucket.
-
-    Examples
-    --------
-    >>> cfg = {
-    ...     "options": {"synchronize-panes": "off"},
-    ...     "_synchronize_panes": True,
-    ...     "options_after": {"synchronize-panes": "on"},
-    ... }
-    >>> _get_final_synchronize_panes(cfg)
-    'on'
-    >>> _get_final_synchronize_panes({}) is _MISSING
-    True
-    """
-    final_sync = _get_window_option_value(
-        window_config,
-        "options",
-        SYNCHRONIZE_PANES_OPTION,
-    )
-    if SYNCHRONIZE_PANES_FINAL_OPTION in window_config:
-        final_sync = window_config[SYNCHRONIZE_PANES_FINAL_OPTION]
-
-    after_sync = _get_window_option_value(
-        window_config,
-        "options_after",
-        SYNCHRONIZE_PANES_OPTION,
-    )
-    if after_sync is not _MISSING:
-        final_sync = after_sync
-    return final_sync
-
-
 COLUMNS_FALLBACK = 80
 
 
@@ -600,12 +565,14 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        for window, window_config in self.iter_create_windows(
-            session,
-            append,
-            defer_synchronize_panes=True,
-        ):
+        for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
+
+            if SYNCHRONIZE_PANES_FINAL_OPTION in window_config:
+                window.set_option(
+                    SYNCHRONIZE_PANES_OPTION,
+                    window_config[SYNCHRONIZE_PANES_FINAL_OPTION],
+                )
 
             for plugin in self.plugins:
                 plugin.on_window_create(window)
@@ -647,7 +614,6 @@ class WorkspaceBuilder:
         self,
         session: Session,
         append: bool = False,
-        defer_synchronize_panes: bool = False,
     ) -> Iterator[t.Any]:
         """Return :class:`libtmux.Window` iterating through session config dict.
 
@@ -662,9 +628,6 @@ class WorkspaceBuilder:
             session to create windows in
         append : bool
             append windows in current active session
-        defer_synchronize_panes : bool
-            defer ``synchronize-panes`` until the high-level build can restore
-            it after setup commands run
 
         Returns
         -------
@@ -744,8 +707,6 @@ class WorkspaceBuilder:
                 dict,
             ):
                 for key, val in window_config["options"].items():
-                    if defer_synchronize_panes and key == SYNCHRONIZE_PANES_OPTION:
-                        continue
                     window.set_option(key, val)
 
             if window_config.get("focus"):
@@ -762,12 +723,13 @@ class WorkspaceBuilder:
 
         Examples
         --------
-        >>> cfg = {"_synchronize_panes": True}
+        >>> cfg = {}
         >>> builder = WorkspaceBuilder(
         ...     session_config={"session_name": session.name, "windows": []},
         ...     server=session.server,
         ... )
         >>> scratch = session.new_window(window_name="sync-prepare")
+        >>> _ = scratch.set_option("synchronize-panes", True)
         >>> builder.prepare_window_synchronize_panes(scratch, cfg)
         >>> scratch.show_option("synchronize-panes")
         False
@@ -776,16 +738,14 @@ class WorkspaceBuilder:
         True
         >>> _ = scratch.kill()
         """
-        final_sync = _get_final_synchronize_panes(window_config)
         local_sync = window.show_option(SYNCHRONIZE_PANES_OPTION)
         effective_sync = window.show_option(
             SYNCHRONIZE_PANES_OPTION,
             include_inherited=True,
         )
 
-        if final_sync is not _MISSING or effective_sync is True:
-            if final_sync is _MISSING:
-                window_config[SYNCHRONIZE_PANES_RESTORE_OPTION] = local_sync
+        if effective_sync is True:
+            window_config[SYNCHRONIZE_PANES_RESTORE_OPTION] = local_sync
             window.set_option(SYNCHRONIZE_PANES_OPTION, False)
             window_config[SYNCHRONIZE_PANES_FORCED_OFF_OPTION] = True
 
@@ -798,31 +758,38 @@ class WorkspaceBuilder:
 
         Examples
         --------
-        >>> cfg = {"_synchronize_panes": False}
+        >>> cfg = {"options_after": {"synchronize-panes": "off"}}
         >>> builder = WorkspaceBuilder(
         ...     session_config={"session_name": session.name, "windows": []},
         ...     server=session.server,
         ... )
         >>> scratch = session.new_window(window_name="sync-restore")
+        >>> _ = scratch.set_option("synchronize-panes", True)
         >>> builder.restore_window_synchronize_panes(scratch, cfg)
         >>> scratch.show_option("synchronize-panes")
         False
         >>> _ = scratch.kill()
         """
-        final_sync = _get_final_synchronize_panes(window_config)
-        if final_sync is _MISSING:
-            if window_config.get(SYNCHRONIZE_PANES_FORCED_OFF_OPTION):
-                restore_sync = window_config.get(
-                    SYNCHRONIZE_PANES_RESTORE_OPTION,
-                    _MISSING,
-                )
-                if restore_sync is _MISSING or restore_sync is None:
-                    window.unset_option(SYNCHRONIZE_PANES_OPTION, ignore_errors=True)
-                else:
-                    window.set_option(SYNCHRONIZE_PANES_OPTION, restore_sync)
+        after_sync = _get_window_option_value(
+            window_config,
+            "options_after",
+            SYNCHRONIZE_PANES_OPTION,
+        )
+        if after_sync is not _MISSING:
+            window.set_option(SYNCHRONIZE_PANES_OPTION, after_sync)
             return
 
-        window.set_option(SYNCHRONIZE_PANES_OPTION, final_sync)
+        if not window_config.get(SYNCHRONIZE_PANES_FORCED_OFF_OPTION):
+            return
+
+        restore_sync = window_config.get(
+            SYNCHRONIZE_PANES_RESTORE_OPTION,
+            _MISSING,
+        )
+        if restore_sync is _MISSING or restore_sync is None:
+            window.unset_option(SYNCHRONIZE_PANES_OPTION, ignore_errors=True)
+        else:
+            window.set_option(SYNCHRONIZE_PANES_OPTION, restore_sync)
 
     def iter_create_panes(
         self,

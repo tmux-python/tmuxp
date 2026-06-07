@@ -592,44 +592,51 @@ def test_synchronize_keeps_setup_commands_isolated(
     )
 
 
-def test_synchronize_preserves_plugin_final_state(session: Session) -> None:
-    """Plugin-set synchronize-panes is restored after isolated setup."""
+class SyncPluginOverrideFixture(t.NamedTuple):
+    """Fixture for plugin synchronize-panes override behavior."""
 
-    class SyncOnWindowCreatePlugin:
-        """Plugin that chooses synchronized panes as the final window state."""
+    test_id: str
+    window_extra: dict[str, t.Any]
+    plugin_synchronize: bool
+    expected_synchronized: bool
 
-        def before_workspace_builder(self, session: Session) -> None:
-            """No-op workspace hook."""
 
-        def on_window_create(self, window: Window) -> None:
-            """Set the final synchronized state before pane setup starts."""
-            window.set_option("synchronize-panes", True)
+SYNC_PLUGIN_OVERRIDE_FIXTURES: list[SyncPluginOverrideFixture] = [
+    SyncPluginOverrideFixture(
+        test_id="no_config_plugin_on",
+        window_extra={},
+        plugin_synchronize=True,
+        expected_synchronized=True,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="options_on_plugin_off",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        plugin_synchronize=False,
+        expected_synchronized=False,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="options_off_plugin_on",
+        window_extra={"options": {"synchronize-panes": "off"}},
+        plugin_synchronize=True,
+        expected_synchronized=True,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="synchronize_true_plugin_off",
+        window_extra={"synchronize": True},
+        plugin_synchronize=False,
+        expected_synchronized=False,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="synchronize_false_plugin_on",
+        window_extra={"synchronize": False},
+        plugin_synchronize=True,
+        expected_synchronized=True,
+    ),
+]
 
-        def after_window_finished(self, window: Window) -> None:
-            """No-op window hook."""
 
-    workspace: dict[str, t.Any] = {
-        "session_name": session.name,
-        "windows": [
-            {
-                "window_name": "sync-plugin-final",
-                "panes": [
-                    "printf '__PANE0__\\n'",
-                    "printf '__PANE1__\\n'",
-                ],
-            },
-        ],
-    }
-    workspace = loader.expand(workspace)
-
-    builder = WorkspaceBuilder(
-        session_config=workspace,
-        server=session.server,
-        plugins=[SyncOnWindowCreatePlugin()],
-    )
-    builder.build(session=session)
-
-    window = session.windows[0]
+def _assert_synchronize_setup_isolated(window: Window) -> None:
+    """Assert pane setup commands did not broadcast across synchronized panes."""
     panes = window.panes
 
     def output_lines(pane: Pane, marker: str) -> int:
@@ -644,7 +651,147 @@ def test_synchronize_preserves_plugin_final_state(session: Session) -> None:
     assert retry_until(setup_complete), "Expected setup markers in their own panes"
     assert output_lines(panes[0], "__PANE1__") == 0
     assert output_lines(panes[1], "__PANE0__") == 0
-    assert window.show_option("synchronize-panes") is True
+
+
+def _build_synchronize_plugin_workspace(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    plugins: list[t.Any],
+) -> Window:
+    """Build a two-pane workspace for synchronize-panes plugin tests."""
+    window_config: dict[str, t.Any] = {
+        "window_name": f"sync-plugin-{test_id}",
+        "panes": [
+            "printf '__PANE0__\\n'",
+            "printf '__PANE1__\\n'",
+        ],
+    }
+    window_config.update(window_extra)
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        server=session.server,
+        plugins=plugins,
+    )
+    builder.build(session=session)
+
+    window = session.windows[0]
+    _assert_synchronize_setup_isolated(window)
+    return window
+
+
+@pytest.mark.parametrize(
+    list(SyncPluginOverrideFixture._fields),
+    SYNC_PLUGIN_OVERRIDE_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_PLUGIN_OVERRIDE_FIXTURES],
+)
+def test_synchronize_preserves_on_window_create_plugin_override(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    plugin_synchronize: bool,
+    expected_synchronized: bool,
+) -> None:
+    """on_window_create can override configured initial synchronize-panes state."""
+
+    class SyncOnWindowCreatePlugin:
+        """Plugin that chooses the final sync state before pane setup."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Set the final synchronized state before pane setup starts."""
+            window.set_option("synchronize-panes", plugin_synchronize)
+
+        def after_window_finished(self, window: Window) -> None:
+            """No-op window hook."""
+
+    window = _build_synchronize_plugin_workspace(
+        session=session,
+        test_id=test_id,
+        window_extra=window_extra,
+        plugins=[SyncOnWindowCreatePlugin()],
+    )
+
+    assert window.show_option("synchronize-panes") is expected_synchronized
+
+
+class SyncPluginPrecedenceFixture(t.NamedTuple):
+    """Fixture for synchronize-panes plugin/config precedence."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    on_window_create_synchronize: bool
+    after_window_finished_synchronize: bool | None
+    expected_synchronized: bool
+
+
+SYNC_PLUGIN_PRECEDENCE_FIXTURES: list[SyncPluginPrecedenceFixture] = [
+    SyncPluginPrecedenceFixture(
+        test_id="options_after_on_overrides_on_window_create_off",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        on_window_create_synchronize=False,
+        after_window_finished_synchronize=None,
+        expected_synchronized=True,
+    ),
+    SyncPluginPrecedenceFixture(
+        test_id="after_window_finished_overrides_options_after",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        on_window_create_synchronize=False,
+        after_window_finished_synchronize=False,
+        expected_synchronized=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncPluginPrecedenceFixture._fields),
+    SYNC_PLUGIN_PRECEDENCE_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_PLUGIN_PRECEDENCE_FIXTURES],
+)
+def test_synchronize_options_after_and_plugin_precedence(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    on_window_create_synchronize: bool,
+    after_window_finished_synchronize: bool | None,
+    expected_synchronized: bool,
+) -> None:
+    """options_after and after_window_finished keep their usual late precedence."""
+
+    class SyncPrecedencePlugin:
+        """Plugin that mutates sync state at both window hook boundaries."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Set the synchronized state before pane setup starts."""
+            window.set_option("synchronize-panes", on_window_create_synchronize)
+
+        def after_window_finished(self, window: Window) -> None:
+            """Optionally set the synchronized state after options_after."""
+            if after_window_finished_synchronize is not None:
+                window.set_option(
+                    "synchronize-panes",
+                    after_window_finished_synchronize,
+                )
+
+    window = _build_synchronize_plugin_workspace(
+        session=session,
+        test_id=test_id,
+        window_extra=window_extra,
+        plugins=[SyncPrecedencePlugin()],
+    )
+
+    assert window.show_option("synchronize-panes") is expected_synchronized
 
 
 class SyncFanoutFixture(t.NamedTuple):
