@@ -268,10 +268,15 @@ def import_tmuxinator(
                 and tmuxp_workspace[socket_key] != explicit_value
             ):
                 logger.warning(
-                    "explicit %s %s overrides tmux option value %s",
+                    "explicit %s %s overrode tmux option value %s",
                     socket_key,
                     explicit_value,
                     tmuxp_workspace[socket_key],
+                    extra={
+                        "tmux_session": str(
+                            tmuxp_workspace.get("session_name") or "",
+                        ),
+                    },
                 )
             tmuxp_workspace[socket_key] = explicit_value
 

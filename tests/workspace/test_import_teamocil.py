@@ -240,5 +240,15 @@ def test_import_teamocil_warns_and_drops_pane_dimensions(
         result = importers.import_teamocil(workspace)
 
     assert result["windows"][0]["panes"] == [{"shell_command": "vim"}]
-    assert any("width" in record.message for record in caplog.records)
-    assert any("height" in record.message for record in caplog.records)
+    dropped = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_window")
+    ]
+    dropped_keys = sorted(
+        str(record.args[0])
+        for record in dropped
+        if isinstance(record.args, tuple) and record.args
+    )
+    assert dropped_keys == ["height", "width"]
+    assert all(record.tmux_window == "main" for record in dropped)

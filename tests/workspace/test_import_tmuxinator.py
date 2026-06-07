@@ -274,8 +274,14 @@ def test_import_tmuxinator_socket_name_conflict_warns(
         result = importers.import_tmuxinator(workspace)
 
     assert result["socket_name"] == "explicit"
-    assert any("explicit" in record.message for record in caplog.records)
-    assert any("from_cli" in record.message for record in caplog.records)
+    conflict_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_session")
+    ]
+    assert len(conflict_warnings) == 1
+    assert conflict_warnings[0].tmux_session == "conflict"
+    assert conflict_warnings[0].args == ("socket_name", "explicit", "from_cli")
 
 
 def test_import_tmuxinator_attached_tmux_flags() -> None:
