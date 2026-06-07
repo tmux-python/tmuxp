@@ -23,6 +23,7 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 PY2 = sys.version_info[0] == 2
+_REDACTED_HOOK_COMMAND = "<redacted>"
 
 
 def run_before_script(
@@ -127,7 +128,9 @@ def run_hook_commands(
     if not joined.strip():
         return
 
-    logger.info("hook commands started", extra={"tmux_hook_cmd": joined})
+    logger.info(
+        "hook commands started", extra={"tmux_hook_cmd": _REDACTED_HOOK_COMMAND}
+    )
     try:
         result = subprocess.run(
             joined,
@@ -140,7 +143,7 @@ def run_hook_commands(
     except OSError:
         logger.warning(
             "hook command failed",
-            extra={"tmux_hook_cmd": joined},
+            extra={"tmux_hook_cmd": _REDACTED_HOOK_COMMAND},
         )
         return
 
@@ -148,7 +151,7 @@ def run_hook_commands(
         logger.warning(
             "hook command failed",
             extra={
-                "tmux_hook_cmd": joined,
+                "tmux_hook_cmd": _REDACTED_HOOK_COMMAND,
                 "tmux_exit_code": result.returncode,
             },
         )
