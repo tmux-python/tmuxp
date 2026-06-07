@@ -155,10 +155,15 @@ def run_hook_commands(
                 "tmux_exit_code": result.returncode,
             },
         )
-        if result.stdout:
-            logger.debug("hook stdout: %s", result.stdout.rstrip())
-        if result.stderr:
-            logger.debug("hook stderr: %s", result.stderr.rstrip())
+        # Hook output may carry the same expanded credentials as the
+        # redacted command text; persist lengths only.
+        logger.debug(
+            "hook output suppressed",
+            extra={
+                "tmux_stdout_len": len(result.stdout),
+                "tmux_stderr_len": len(result.stderr),
+            },
+        )
 
 
 def oh_my_zsh_auto_title() -> None:
