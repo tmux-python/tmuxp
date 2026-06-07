@@ -333,6 +333,217 @@ def test_validate_plugins() -> None:
         assert excinfo.match("only supports list type")
 
 
+class SynchronizeFixture(t.NamedTuple):
+    """Fixture for synchronize shorthand expansion."""
+
+    test_id: str
+    synchronize: bool | str
+    expected_section: str | None
+
+
+SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
+    SynchronizeFixture(
+        test_id="true-enables-before",
+        synchronize=True,
+        expected_section="options",
+    ),
+    SynchronizeFixture(
+        test_id="before-enables-before",
+        synchronize="before",
+        expected_section="options",
+    ),
+    SynchronizeFixture(
+        test_id="after-enables-after",
+        synchronize="after",
+        expected_section="options_after",
+    ),
+    SynchronizeFixture(
+        test_id="false-only-removes-key",
+        synchronize=False,
+        expected_section=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizeFixture._fields),
+    SYNCHRONIZE_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNCHRONIZE_FIXTURES],
+)
+def test_expand_synchronize(
+    test_id: str,
+    synchronize: bool | str,
+    expected_section: str | None,
+) -> None:
+    """expand() desugars synchronize into tmux window options."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"sync-{test_id}",
+        "windows": [
+            {
+                "window_name": "main",
+                "synchronize": synchronize,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+
+    result = loader.expand(workspace)
+    window = result["windows"][0]
+
+    assert "synchronize" not in window
+    if expected_section is None:
+        assert "synchronize-panes" not in window.get("options", {})
+        assert "synchronize-panes" not in window.get("options_after", {})
+    else:
+        assert window[expected_section]["synchronize-panes"] == "on"
+
+
+class ShellCommandAfterFixture(t.NamedTuple):
+    """Fixture for shell_command_after expansion."""
+
+    test_id: str
+    shell_command_after: str | list[str]
+    expected_commands: list[str]
+
+
+SHELL_COMMAND_AFTER_FIXTURES: list[ShellCommandAfterFixture] = [
+    ShellCommandAfterFixture(
+        test_id="string-command",
+        shell_command_after="echo done",
+        expected_commands=["echo done"],
+    ),
+    ShellCommandAfterFixture(
+        test_id="list-commands",
+        shell_command_after=["echo done", "echo bye"],
+        expected_commands=["echo done", "echo bye"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ShellCommandAfterFixture._fields),
+    SHELL_COMMAND_AFTER_FIXTURES,
+    ids=[fixture.test_id for fixture in SHELL_COMMAND_AFTER_FIXTURES],
+)
+def test_expand_shell_command_after(
+    test_id: str,
+    shell_command_after: str | list[str],
+    expected_commands: list[str],
+) -> None:
+    """expand() normalizes shell_command_after like shell_command_before."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"after-{test_id}",
+        "windows": [
+            {
+                "window_name": "main",
+                "shell_command_after": shell_command_after,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+
+    result = loader.expand(workspace)
+    after = result["windows"][0]["shell_command_after"]
+
+    assert [cmd["cmd"] for cmd in after["shell_command"]] == expected_commands
+
+
+class PaneTitleFixture(t.NamedTuple):
+    """Fixture for pane title option expansion."""
+
+    test_id: str
+    enabled: bool
+    position: str | None
+    expected_position: str | None
+    expect_warning: bool
+
+
+PANE_TITLE_FIXTURES: list[PaneTitleFixture] = [
+    PaneTitleFixture(
+        test_id="enabled-defaults",
+        enabled=True,
+        position=None,
+        expected_position="top",
+        expect_warning=False,
+    ),
+    PaneTitleFixture(
+        test_id="enabled-bottom",
+        enabled=True,
+        position="bottom",
+        expected_position="bottom",
+        expect_warning=False,
+    ),
+    PaneTitleFixture(
+        test_id="enabled-invalid-falls-back",
+        enabled=True,
+        position="invalid",
+        expected_position="top",
+        expect_warning=True,
+    ),
+    PaneTitleFixture(
+        test_id="disabled-removes-session-keys",
+        enabled=False,
+        position="bottom",
+        expected_position=None,
+        expect_warning=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PaneTitleFixture._fields),
+    PANE_TITLE_FIXTURES,
+    ids=[fixture.test_id for fixture in PANE_TITLE_FIXTURES],
+)
+def test_expand_pane_titles(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    enabled: bool,
+    position: str | None,
+    expected_position: str | None,
+    expect_warning: bool,
+) -> None:
+    """expand() turns session pane title keys into tmux window options."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"title-{test_id}",
+        "enable_pane_titles": enabled,
+        "pane_title_format": " #T ",
+        "windows": [
+            {
+                "window_name": "main",
+                "panes": [
+                    {"title": "editor", "shell_command": ["echo hi"]},
+                    {"shell_command": ["echo bye"]},
+                ],
+            },
+        ],
+    }
+    if position is not None:
+        workspace["pane_title_position"] = position
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.loader"):
+        result = loader.expand(workspace)
+
+    window = result["windows"][0]
+    assert "enable_pane_titles" not in result
+    assert "pane_title_position" not in result
+    assert "pane_title_format" not in result
+    assert window["panes"][0]["title"] == "editor"
+
+    if expected_position is None:
+        assert "pane-border-status" not in window.get("options", {})
+    else:
+        assert window["options"]["pane-border-status"] == expected_position
+        assert window["options"]["pane-border-format"] == " #T "
+
+    warnings = [
+        record for record in caplog.records if record.levelno == logging.WARNING
+    ]
+    assert any("pane_title_position" in record.message for record in warnings) is (
+        expect_warning
+    )
+
+
 def test_expand_logs_debug(
     tmp_path: pathlib.Path,
     caplog: pytest.LogCaptureFixture,
