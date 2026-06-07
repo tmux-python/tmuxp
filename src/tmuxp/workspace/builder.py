@@ -850,6 +850,15 @@ class WorkspaceBuilder:
         """
         suppress = window_config.get("suppress_history", True)
 
+        # With synchronize-panes already on (synchronize: before/true or an
+        # explicit option), tmux mirrors each send to every pane — send to
+        # one pane and let tmux broadcast.
+        fanout_panes = (
+            window.panes[:1]
+            if window.show_option("synchronize-panes") is True
+            else window.panes
+        )
+
         if "shell_command_after" in window_config and isinstance(
             window_config["shell_command_after"],
             dict,
@@ -861,13 +870,13 @@ class WorkspaceBuilder:
                 # Sleeps apply once per command wave, not once per pane.
                 if sleep_before is not None:
                     time.sleep(sleep_before)
-                for pane in window.panes:
+                for pane in fanout_panes:
                     pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
                 if sleep_after is not None:
                     time.sleep(sleep_after)
 
         if window_config.get("clear"):
-            for pane in window.panes:
+            for pane in fanout_panes:
                 pane.send_keys("clear", enter=True, suppress_history=suppress)
 
         # Keep options_after last. synchronize-panes mirrors send-keys to every

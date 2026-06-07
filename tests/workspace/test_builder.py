@@ -421,23 +421,52 @@ def test_synchronize_builder_options(
     assert session.windows[0].show_option("synchronize-panes") is expected_synchronized
 
 
-def test_synchronize_after_runs_shell_command_after_once_per_pane(
+class SyncFanoutFixture(t.NamedTuple):
+    """Fixture for shell_command_after under synchronize-panes modes."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+
+
+SYNC_FANOUT_FIXTURES: list[SyncFanoutFixture] = [
+    SyncFanoutFixture(test_id="sync_after", window_extra={"synchronize": "after"}),
+    SyncFanoutFixture(test_id="sync_before", window_extra={"synchronize": "before"}),
+    SyncFanoutFixture(test_id="sync_true", window_extra={"synchronize": True}),
+    SyncFanoutFixture(
+        test_id="explicit_option",
+        window_extra={"options": {"synchronize-panes": "on"}},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncFanoutFixture._fields),
+    SYNC_FANOUT_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_FANOUT_FIXTURES],
+)
+def test_shell_command_after_runs_once_per_pane_when_synchronized(
     session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
 ) -> None:
-    """synchronize: after does not mirror shell_command_after across panes."""
+    """shell_command_after runs exactly once per pane in every sync mode.
+
+    tmux mirrors send-keys across panes while synchronize-panes is on,
+    whether the option was enabled before the build (before/true or an
+    explicit option) or queued for after (options_after ordering).
+    """
+    window_config: dict[str, t.Any] = {
+        "window_name": f"sync-cmds-{test_id}",
+        "shell_command_after": [
+            "echo __SYNC_AF''TER__",
+            "echo __SYNC_DO''NE__",
+        ],
+        "panes": ["echo pane0", "echo pane1"],
+    }
+    window_config.update(window_extra)
     workspace: dict[str, t.Any] = {
         "session_name": session.name,
-        "windows": [
-            {
-                "window_name": "sync-after-cmds",
-                "synchronize": "after",
-                "shell_command_after": [
-                    "echo __SYNC_AF''TER__",
-                    "echo __SYNC_DO''NE__",
-                ],
-                "panes": ["echo pane0", "echo pane1"],
-            },
-        ],
+        "windows": [window_config],
     }
     workspace = loader.expand(workspace)
 
