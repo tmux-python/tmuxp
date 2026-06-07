@@ -536,12 +536,14 @@ def test_expand_pane_titles(
         assert window["options"]["pane-border-status"] == expected_position
         assert window["options"]["pane-border-format"] == " #T "
 
-    warnings = [
-        record for record in caplog.records if record.levelno == logging.WARNING
+    position_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_session")
     ]
-    assert any("pane_title_position" in record.message for record in warnings) is (
-        expect_warning
-    )
+    assert bool(position_warnings) is expect_warning
+    if expect_warning:
+        assert position_warnings[0].tmux_session == f"title-{test_id}"
 
 
 def test_expand_logs_debug(

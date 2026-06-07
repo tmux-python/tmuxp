@@ -196,6 +196,9 @@ def expand(
                 "defaulting to 'top'",
                 position,
                 valid_positions,
+                extra={
+                    "tmux_session": str(workspace_dict.get("session_name") or ""),
+                },
             )
             position = "top"
         pane_title_format = workspace_dict.pop(
