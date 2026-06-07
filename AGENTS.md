@@ -201,6 +201,7 @@ Pass structured data on every log call where useful for filtering, searching, or
 | `tmux_pane` | `str` | pane identifier |
 | `tmux_config_path` | `str` | workspace config file path |
 | `tmux_layout` | `str` | window layout string |
+| `tmux_hook_cmd` | `str` | lifecycle hook shell command line |
 
 **Heavy/optional keys** (DEBUG only, potentially large):
 
