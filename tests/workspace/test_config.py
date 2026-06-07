@@ -338,29 +338,40 @@ class SynchronizeFixture(t.NamedTuple):
 
     test_id: str
     synchronize: bool | str
-    expected_section: str | None
+    expected_final_sync: bool | None
+    expect_warning: bool
 
 
 SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
     SynchronizeFixture(
         test_id="true-enables-before",
         synchronize=True,
-        expected_section="options",
+        expected_final_sync=True,
+        expect_warning=False,
     ),
     SynchronizeFixture(
         test_id="before-enables-before",
         synchronize="before",
-        expected_section="options",
+        expected_final_sync=True,
+        expect_warning=False,
     ),
     SynchronizeFixture(
         test_id="after-enables-after",
         synchronize="after",
-        expected_section="options_after",
+        expected_final_sync=True,
+        expect_warning=False,
     ),
     SynchronizeFixture(
-        test_id="false-only-removes-key",
+        test_id="false-disables-final-sync",
         synchronize=False,
-        expected_section=None,
+        expected_final_sync=False,
+        expect_warning=False,
+    ),
+    SynchronizeFixture(
+        test_id="invalid-warns-and-removes-key",
+        synchronize="during",
+        expected_final_sync=None,
+        expect_warning=True,
     ),
 ]
 
@@ -371,11 +382,13 @@ SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
     ids=[fixture.test_id for fixture in SYNCHRONIZE_FIXTURES],
 )
 def test_expand_synchronize(
+    caplog: pytest.LogCaptureFixture,
     test_id: str,
     synchronize: bool | str,
-    expected_section: str | None,
+    expected_final_sync: bool | None,
+    expect_warning: bool,
 ) -> None:
-    """expand() desugars synchronize into tmux window options."""
+    """expand() normalizes synchronize without enabling tmux during build."""
     workspace: dict[str, t.Any] = {
         "session_name": f"sync-{test_id}",
         "windows": [
@@ -387,15 +400,28 @@ def test_expand_synchronize(
         ],
     }
 
-    result = loader.expand(workspace)
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.loader"):
+        result = loader.expand(workspace)
     window = result["windows"][0]
 
     assert "synchronize" not in window
-    if expected_section is None:
-        assert "synchronize-panes" not in window.get("options", {})
-        assert "synchronize-panes" not in window.get("options_after", {})
+    assert "synchronize-panes" not in window.get("options", {})
+    assert "synchronize-panes" not in window.get("options_after", {})
+    if expected_final_sync is None:
+        assert "_synchronize_panes" not in window
     else:
-        assert window[expected_section]["synchronize-panes"] == "on"
+        assert window["_synchronize_panes"] is expected_final_sync
+
+    synchronize_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_window")
+    ]
+    assert bool(synchronize_warnings) is expect_warning
+    if expect_warning:
+        warning = t.cast(t.Any, synchronize_warnings[0])
+        assert warning.tmux_session == f"sync-{test_id}"
+        assert warning.tmux_window == "main"
 
 
 class ShellCommandAfterFixture(t.NamedTuple):
