@@ -797,6 +797,19 @@ The `synchronize` window key provides a shorthand for enabling
 ```
 ````
 
+## Lifecycle Hooks
+
+Run shell commands at different stages of the session lifecycle:
+
+````{tab} YAML
+```{literalinclude} ../../examples/lifecycle-hooks.yaml
+:language: yaml
+
+```
+````
+
+See {ref}`top-level` for full hook documentation.
+
 ## Pane Titles
 
 Pane title keys turn on tmux pane border titles and label individual panes:

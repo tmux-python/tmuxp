@@ -41,6 +41,40 @@ Notes:
 
   Above: Use `tmux` directly to attach _banana_.
 
+## Lifecycle Hooks
+
+Workspace configs support four lifecycle hooks:
+
+```yaml
+session_name: myproject
+on_project_start: notify-send "Starting myproject"
+on_project_restart: notify-send "Reattaching to myproject"
+on_project_exit: notify-send "Detached from myproject"
+on_project_stop: notify-send "Stopping myproject"
+windows:
+  - window_name: main
+    panes:
+      -
+```
+
+| Hook | When it runs |
+|------|-------------|
+| `on_project_start` | Before a new session is built. |
+| `on_project_restart` | Before reattaching to an existing session. |
+| `on_project_exit` | When the last client detaches. |
+| `on_project_stop` | Before `tmuxp stop` kills the session. |
+
+Each hook accepts a string command or a list of command strings:
+
+```yaml
+on_project_start:
+  - notify-send "Starting"
+  - ./setup.sh
+```
+
+Hooks run through the shell and block tmuxp until they finish. Hook failures are
+logged and do not stop the tmuxp command.
+
 ## Pane Titles
 
 Enable pane border titles to display labels on each pane:
