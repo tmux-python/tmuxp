@@ -20,6 +20,7 @@ ls
 progress
 search
 shell
+stop
 utils
 ```
 
