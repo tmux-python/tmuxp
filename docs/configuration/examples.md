@@ -785,6 +785,29 @@ windows:
 [poetry]: https://python-poetry.org/
 [uv]: https://github.com/astral-sh/uv
 
+## Synchronize Panes Shorthand
+
+The `synchronize` window key provides a shorthand for enabling
+`synchronize-panes` without spelling out tmux options directly:
+
+````{tab} YAML
+```{literalinclude} ../../examples/synchronize-shorthand.yaml
+:language: yaml
+
+```
+````
+
+## Pane Titles
+
+Pane title keys turn on tmux pane border titles and label individual panes:
+
+````{tab} YAML
+```{literalinclude} ../../examples/pane-titles.yaml
+:language: yaml
+
+```
+````
+
 ## Kung fu
 
 :::{note}
