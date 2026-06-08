@@ -79,8 +79,15 @@ class ConfigReader:
         )
 
     @classmethod
-    def _from_file(cls, path: pathlib.Path) -> dict[str, t.Any]:
+    def _from_file(
+        cls,
+        path: pathlib.Path,
+        template_context: dict[str, str] | None = None,
+    ) -> dict[str, t.Any]:
         r"""Load data from file path directly to dictionary.
+
+        When *template_context* is provided, ``{{ variable }}`` expressions in the
+        raw file content are replaced before YAML/JSON parsing.
 
         **YAML file**
 
@@ -107,10 +114,23 @@ class ConfigReader:
 
         >>> ConfigReader._from_file(json_file)
         {'session_name': 'my session'}
+
+        **Template rendering**
+
+        >>> tpl_file = tmp_path / 'tpl.yaml'
+        >>> tpl_file.write_text('session_name: {{ name }}', encoding='utf-8')
+        24
+        >>> ConfigReader._from_file(tpl_file, template_context={"name": "rendered"})
+        {'session_name': 'rendered'}
         """
         assert isinstance(path, pathlib.Path)
         logger.debug("loading config", extra={"tmux_config_path": str(path)})
         content = path.open(encoding="utf-8").read()
+
+        if template_context:
+            from tmuxp.workspace.loader import render_template
+
+            content = render_template(content, template_context)
 
         if path.suffix in {".yaml", ".yml"}:
             fmt: FormatLiteral = "yaml"

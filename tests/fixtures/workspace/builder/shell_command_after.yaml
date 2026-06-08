@@ -1,0 +1,11 @@
+session_name: test shell_command_after
+windows:
+  - window_name: with-after
+    panes:
+      - echo pane0
+      - echo pane1
+    shell_command_after:
+      - echo __AFTER__
+  - window_name: without-after
+    panes:
+      - echo normal
