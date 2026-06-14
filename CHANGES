@@ -44,6 +44,23 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Pane titles (#1047)
+
+Workspace configs can label panes natively: session-level
+`enable_pane_titles`, `pane_title_position`, and `pane_title_format`
+turn on tmux's pane border titles, and a pane-level `title` names
+individual panes — replacing the escape-sequence workaround previously
+required. See {ref}`top-level` for examples.
+
+#### New window keys: `synchronize`, `shell_command_after`, `clear` (#1047)
+
+`synchronize` sets the final pane synchronization state while tmuxp keeps
+setup and post-build commands isolated per pane; `shell_command_after` runs
+commands in every pane after the window is built; `clear: true` clears each
+pane once its commands complete. See {ref}`top-level`.
+
 ## tmuxp 1.70.0 (2026-05-23)
 
 tmuxp 1.70.0 bumps libtmux to 0.58.0, fixing session and window listing on systems whose locale is not UTF-8.
