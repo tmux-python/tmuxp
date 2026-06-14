@@ -616,3 +616,66 @@ def test_validate_schema_logs_debug(
     records = [r for r in caplog.records if r.msg == "validating workspace schema"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test_validate"
+
+
+class LifecycleHookExpandFixture(t.NamedTuple):
+    """Fixture for lifecycle hook expansion."""
+
+    test_id: str
+    hook_key: str
+    hook_value: str | list[str]
+    env: dict[str, str]
+    expected: str | list[str]
+
+
+LIFECYCLE_HOOK_EXPAND_FIXTURES: list[LifecycleHookExpandFixture] = [
+    LifecycleHookExpandFixture(
+        test_id="start-string-env",
+        hook_key="on_project_start",
+        hook_value="$TMUXP_HOOK_CMD",
+        env={"TMUXP_HOOK_CMD": "docker compose up"},
+        expected="docker compose up",
+    ),
+    LifecycleHookExpandFixture(
+        test_id="stop-string-with-suffix",
+        hook_key="on_project_stop",
+        hook_value="$TMUXP_HOOK_CMD down",
+        env={"TMUXP_HOOK_CMD": "docker compose"},
+        expected="docker compose down",
+    ),
+    LifecycleHookExpandFixture(
+        test_id="restart-list-env",
+        hook_key="on_project_restart",
+        hook_value=["$TMUXP_HOOK_CMD", "echo world"],
+        env={"TMUXP_HOOK_CMD": "echo hello"},
+        expected=["echo hello", "echo world"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(LifecycleHookExpandFixture._fields),
+    LIFECYCLE_HOOK_EXPAND_FIXTURES,
+    ids=[fixture.test_id for fixture in LIFECYCLE_HOOK_EXPAND_FIXTURES],
+)
+def test_expand_lifecycle_hooks(
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    hook_key: str,
+    hook_value: str | list[str],
+    env: dict[str, str],
+    expected: str | list[str],
+) -> None:
+    """expand() expands environment variables in lifecycle hook values."""
+    for key, value in env.items():
+        monkeypatch.setenv(key, value)
+
+    workspace: dict[str, t.Any] = {
+        "session_name": f"hook-{test_id}",
+        hook_key: hook_value,
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+
+    result = loader.expand(workspace)
+
+    assert result[hook_key] == expected

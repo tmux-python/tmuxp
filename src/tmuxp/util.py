@@ -23,6 +23,7 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 PY2 = sys.version_info[0] == 2
+_REDACTED_HOOK_COMMAND = "<redacted>"
 
 
 def run_before_script(
@@ -105,6 +106,66 @@ def run_before_script(
     return return_code
 
 
+def run_hook_commands(
+    commands: str | list[str],
+    cwd: pathlib.Path | str | None = None,
+) -> None:
+    """Run lifecycle hook shell commands.
+
+    Hooks use ``shell=True`` so project configs can use normal shell syntax
+    such as pipes, redirects, and command chaining. Hook failures are logged
+    and do not raise.
+
+    Examples
+    --------
+    >>> run_hook_commands("")
+
+    >>> run_hook_commands("printf hook >/dev/null")
+    """
+    if isinstance(commands, str):
+        commands = [commands]
+    joined = "; ".join(commands)
+    if not joined.strip():
+        return
+
+    logger.info(
+        "hook commands started", extra={"tmux_hook_cmd": _REDACTED_HOOK_COMMAND}
+    )
+    try:
+        result = subprocess.run(
+            joined,
+            shell=True,
+            cwd=cwd,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError:
+        logger.warning(
+            "hook command failed",
+            extra={"tmux_hook_cmd": _REDACTED_HOOK_COMMAND},
+        )
+        return
+
+    if result.returncode != 0:
+        logger.warning(
+            "hook command failed",
+            extra={
+                "tmux_hook_cmd": _REDACTED_HOOK_COMMAND,
+                "tmux_exit_code": result.returncode,
+            },
+        )
+        # Hook output may carry the same expanded credentials as the
+        # redacted command text; persist lengths only.
+        logger.debug(
+            "hook output suppressed",
+            extra={
+                "tmux_stdout_len": len(result.stdout),
+                "tmux_stderr_len": len(result.stderr),
+            },
+        )
+
+
 def oh_my_zsh_auto_title() -> None:
     """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 
@@ -145,27 +206,41 @@ def get_session(
     server: Server,
     session_name: str | None = None,
     current_pane: Pane | None = None,
+    require_pane_resolution: bool = False,
 ) -> Session:
-    """Get tmux session for server by session name, respects current pane, if passed."""
+    """Get tmux session for server by name or current pane.
+
+    Examples
+    --------
+    >>> from tmuxp.util import get_session
+    >>> get_session(server, session_name=session.name) == session
+    True
+    """
+    session_result: Session | None = None
     try:
         if session_name:
-            session = server.sessions.get(session_name=session_name)
+            session_result = server.sessions.get(session_name=session_name)
         elif current_pane is not None:
-            session = server.sessions.get(session_id=current_pane.session_id)
+            session_result = server.sessions.get(session_id=current_pane.session_id)
         else:
             current_pane = get_current_pane(server)
             if current_pane:
-                session = server.sessions.get(session_id=current_pane.session_id)
-            else:
-                session = server.sessions[0]
+                session_result = server.sessions.get(session_id=current_pane.session_id)
+            elif require_pane_resolution:
+                pass
+            elif server.sessions:
+                session_result = server.sessions[0]
 
     except Exception as e:
         if session_name:
             raise exc.SessionNotFound(session_name) from e
         raise exc.SessionNotFound from e
 
-    assert session is not None
-    return session
+    if session_result is None:
+        if session_name:
+            raise exc.SessionNotFound(session_name)
+        raise exc.SessionNotFound
+    return session_result
 
 
 def get_window(

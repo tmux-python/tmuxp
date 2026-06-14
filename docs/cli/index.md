@@ -25,6 +25,12 @@ Interactive Python shell with tmux context.
 Export running sessions to config files.
 :::
 
+:::{grid-item-card} tmuxp stop
+:link: stop
+:link-type: doc
+Stop running sessions with cleanup hooks.
+:::
+
 :::{grid-item-card} tmuxp convert
 :link: convert
 :link-type: doc
@@ -53,6 +59,7 @@ load
 shell
 ls
 search
+stop
 ```
 
 ```{toctree}

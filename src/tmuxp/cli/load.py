@@ -234,6 +234,7 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
 def _load_attached(
     builder: WorkspaceBuilder,
     detached: bool,
+    pre_build_hook: t.Callable[[], None] | None = None,
     pre_attach_hook: t.Callable[[], None] | None = None,
 ) -> None:
     """
@@ -243,10 +244,15 @@ def _load_attached(
     ----------
     builder: :class:`workspace.builder.WorkspaceBuilder`
     detached : bool
+    pre_build_hook : callable, optional
+        called immediately before ``builder.build()`` for new-session load paths.
     pre_attach_hook : callable, optional
         called after build, before attach/switch_client; use to stop the spinner
         so its cleanup sequences don't appear inside the tmux pane.
     """
+    if pre_build_hook is not None:
+        pre_build_hook()
+
     builder.build()
     assert builder.session is not None
 
@@ -267,6 +273,7 @@ def _load_attached(
 def _load_detached(
     builder: WorkspaceBuilder,
     colors: Colors | None = None,
+    pre_build_hook: t.Callable[[], None] | None = None,
     pre_output_hook: t.Callable[[], None] | None = None,
 ) -> None:
     """
@@ -277,9 +284,14 @@ def _load_detached(
     builder: :class:`workspace.builder.WorkspaceBuilder`
     colors : Colors | None
         Optional Colors instance for styled output.
+    pre_build_hook : Callable | None
+        Called immediately before ``builder.build()`` for new-session load paths.
     pre_output_hook : Callable | None
         Called after build but before printing, e.g. to stop a spinner.
     """
+    if pre_build_hook is not None:
+        pre_build_hook()
+
     builder.build()
 
     assert builder.session is not None
@@ -325,6 +337,7 @@ def _dispatch_build(
     append: bool,
     answer_yes: bool,
     cli_colors: Colors,
+    pre_build_hook: t.Callable[[], None] | None = None,
     pre_attach_hook: t.Callable[[], None] | None = None,
     on_error_hook: t.Callable[[], None] | None = None,
     pre_prompt_hook: t.Callable[[], None] | None = None,
@@ -347,6 +360,8 @@ def _dispatch_build(
         Skip interactive prompts.
     cli_colors : Colors
         Colors instance for styled output.
+    pre_build_hook : callable, optional
+        Called before the build only for code paths that create a new session.
     pre_attach_hook : callable, optional
         Called before attach/switch_client (e.g. stop spinner).
     on_error_hook : callable, optional
@@ -368,20 +383,35 @@ def _dispatch_build(
     """
     try:
         if detached:
-            _load_detached(builder, cli_colors, pre_output_hook=pre_attach_hook)
+            _load_detached(
+                builder,
+                cli_colors,
+                pre_build_hook=pre_build_hook,
+                pre_output_hook=pre_attach_hook,
+            )
             return _setup_plugins(builder)
 
         if append:
             if "TMUX" in os.environ:  # tmuxp ran from inside tmux
                 _load_append_windows_to_current_session(builder)
             else:
-                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+                _load_attached(
+                    builder,
+                    detached,
+                    pre_build_hook=pre_build_hook,
+                    pre_attach_hook=pre_attach_hook,
+                )
 
             return _setup_plugins(builder)
 
         # append and answer_yes have no meaning if specified together
         if answer_yes:
-            _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+            _load_attached(
+                builder,
+                detached,
+                pre_build_hook=pre_build_hook,
+                pre_attach_hook=pre_attach_hook,
+            )
             return _setup_plugins(builder)
 
         if "TMUX" in os.environ:  # tmuxp ran from inside tmux
@@ -395,13 +425,27 @@ def _dispatch_build(
             choice = prompt_choices(msg, choices=options, color_mode=cli_colors.mode)
 
             if choice == "y":
-                _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+                _load_attached(
+                    builder,
+                    detached,
+                    pre_build_hook=pre_build_hook,
+                    pre_attach_hook=pre_attach_hook,
+                )
             elif choice == "a":
                 _load_append_windows_to_current_session(builder)
             else:
-                _load_detached(builder, cli_colors)
+                _load_detached(
+                    builder,
+                    cli_colors,
+                    pre_build_hook=pre_build_hook,
+                )
         else:
-            _load_attached(builder, detached, pre_attach_hook=pre_attach_hook)
+            _load_attached(
+                builder,
+                detached,
+                pre_build_hook=pre_build_hook,
+                pre_attach_hook=pre_attach_hook,
+            )
 
     except exc.TmuxpException as e:
         if on_error_hook is not None:
@@ -599,16 +643,32 @@ def load_workspace(
 
     # Session-exists check — outside spinner so prompt_yes_no is safe
     if builder.session_exists(session_name) and not append:
-        if not detached and (
+        should_attach = not detached and (
             answer_yes
             or prompt_yes_no(
                 f"{cli_colors.highlight(session_name)} is already running. Attach?",
                 default=True,
                 color_mode=cli_colors.mode,
             )
-        ):
+        )
+        if should_attach:
+            if "on_project_restart" in expanded_workspace:
+                hook_cwd = expanded_workspace.get("start_directory")
+                util.run_hook_commands(
+                    expanded_workspace["on_project_restart"],
+                    cwd=hook_cwd,
+                )
             _reattach(builder, cli_colors)
         return None
+
+    def _run_on_project_start() -> None:
+        if "on_project_start" not in expanded_workspace:
+            return
+        hook_cwd = expanded_workspace.get("start_directory")
+        util.run_hook_commands(
+            expanded_workspace["on_project_start"],
+            cwd=hook_cwd,
+        )
 
     if _progress_disabled:
         _private_path = str(PrivatePath(workspace_file))
@@ -618,6 +678,7 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            pre_build_hook=_run_on_project_start,
         )
         if result is not None:
             summary = ""
@@ -693,6 +754,7 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            pre_build_hook=_run_on_project_start,
             pre_attach_hook=_emit_success,
             on_error_hook=spinner.stop,
             pre_prompt_hook=spinner.stop,

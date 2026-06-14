@@ -186,6 +186,19 @@ def expand(
         if any(workspace_dict["before_script"].startswith(a) for a in [".", "./"]):
             workspace_dict["before_script"] = str(cwd / workspace_dict["before_script"])
 
+    for hook_key in (
+        "on_project_start",
+        "on_project_restart",
+        "on_project_exit",
+        "on_project_stop",
+    ):
+        if hook_key in workspace_dict:
+            hook_value = workspace_dict[hook_key]
+            if isinstance(hook_value, str):
+                workspace_dict[hook_key] = expandshell(hook_value)
+            elif isinstance(hook_value, list):
+                workspace_dict[hook_key] = [expandshell(v) for v in hook_value]
+
     if "shell_command" in workspace_dict and isinstance(
         workspace_dict["shell_command"],
         str,
