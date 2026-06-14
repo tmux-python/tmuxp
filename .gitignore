@@ -88,3 +88,7 @@ docs/_static/css/fonts.css
 **/CLAUDE.local.md
 **/CLAUDE.*.md
 **/.claude/settings.local.json
+.claude/commands/
+
+# Development notes
+notes/

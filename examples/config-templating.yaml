@@ -1,0 +1,5 @@
+session_name: "{{ project }}"
+windows:
+  - window_name: "{{ project }}-main"
+    panes:
+      - echo "Working on {{ project }}"

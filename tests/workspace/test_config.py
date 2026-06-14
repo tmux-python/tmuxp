@@ -333,6 +333,238 @@ def test_validate_plugins() -> None:
         assert excinfo.match("only supports list type")
 
 
+def test_expand_synchronize() -> None:
+    """Test that expand() desugars synchronize into options/options_after."""
+    workspace = {
+        "session_name": "test",
+        "windows": [
+            {
+                "window_name": "before",
+                "synchronize": True,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "after",
+                "synchronize": "after",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "false",
+                "synchronize": False,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    # synchronize: True → options with synchronize-panes on, key removed
+    assert "synchronize" not in result["windows"][0]
+    assert result["windows"][0]["options"]["synchronize-panes"] == "on"
+
+    # synchronize: "after" → options_after with synchronize-panes on, key removed
+    assert "synchronize" not in result["windows"][1]
+    assert result["windows"][1]["options_after"]["synchronize-panes"] == "on"
+
+    # synchronize: False → no options added, key removed
+    assert "synchronize" not in result["windows"][2]
+    assert "options" not in result["windows"][2] or "synchronize-panes" not in result[
+        "windows"
+    ][2].get("options", {})
+
+
+def test_expand_shell_command_after() -> None:
+    """Test that expand() normalizes shell_command_after into expanded form."""
+    workspace = {
+        "session_name": "test",
+        "windows": [
+            {
+                "window_name": "with-after",
+                "shell_command_after": ["echo done", "echo bye"],
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "string-after",
+                "shell_command_after": "echo single",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+            {
+                "window_name": "no-after",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    # List form: normalized to {shell_command: [{cmd: "..."}, ...]}
+    after = result["windows"][0]["shell_command_after"]
+    assert isinstance(after, dict)
+    assert len(after["shell_command"]) == 2
+    assert after["shell_command"][0]["cmd"] == "echo done"
+    assert after["shell_command"][1]["cmd"] == "echo bye"
+
+    # String form: normalized the same way
+    after_str = result["windows"][1]["shell_command_after"]
+    assert isinstance(after_str, dict)
+    assert len(after_str["shell_command"]) == 1
+    assert after_str["shell_command"][0]["cmd"] == "echo single"
+
+    # No shell_command_after: key absent
+    assert "shell_command_after" not in result["windows"][2]
+
+
+def test_expand_pane_titles() -> None:
+    """Test that expand() desugars pane title session keys into window options."""
+    workspace = {
+        "session_name": "test",
+        "enable_pane_titles": True,
+        "pane_title_position": "bottom",
+        "pane_title_format": " #T ",
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [
+                    {"title": "editor", "shell_command": ["echo hi"]},
+                    {"shell_command": ["echo bye"]},
+                ],
+            },
+            {
+                "window_name": "w2",
+                "options": {"pane-border-status": "off"},
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    # Session-level keys removed
+    assert "enable_pane_titles" not in result
+    assert "pane_title_position" not in result
+    assert "pane_title_format" not in result
+
+    # Window 1: options populated from session-level config
+    assert result["windows"][0]["options"]["pane-border-status"] == "bottom"
+    assert result["windows"][0]["options"]["pane-border-format"] == " #T "
+
+    # Window 2: per-window override preserved (setdefault doesn't overwrite)
+    assert result["windows"][1]["options"]["pane-border-status"] == "off"
+    assert result["windows"][1]["options"]["pane-border-format"] == " #T "
+
+    # Pane title key preserved for builder
+    assert result["windows"][0]["panes"][0]["title"] == "editor"
+    assert "title" not in result["windows"][0]["panes"][1]
+
+
+def test_expand_pane_titles_disabled() -> None:
+    """Test that expand() removes pane title keys when disabled."""
+    workspace = {
+        "session_name": "test",
+        "enable_pane_titles": False,
+        "pane_title_position": "top",
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    assert "enable_pane_titles" not in result
+    assert "pane_title_position" not in result
+    assert "options" not in result["windows"][0] or "pane-border-status" not in result[
+        "windows"
+    ][0].get("options", {})
+
+
+def test_expand_pane_titles_defaults() -> None:
+    """Test that expand() uses default position and format when not specified."""
+    workspace = {
+        "session_name": "test",
+        "enable_pane_titles": True,
+        "windows": [
+            {
+                "window_name": "w1",
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+    result = loader.expand(workspace)
+
+    assert result["windows"][0]["options"]["pane-border-status"] == "top"
+    assert (
+        result["windows"][0]["options"]["pane-border-format"]
+        == "#{pane_index}: #{pane_title}"
+    )
+
+
+class PaneTitlePositionFixture(t.NamedTuple):
+    """Fixture for pane_title_position validation."""
+
+    test_id: str
+    position: str
+    expected_position: str
+    expect_warning: bool
+
+
+PANE_TITLE_POSITION_FIXTURES: list[PaneTitlePositionFixture] = [
+    PaneTitlePositionFixture(
+        test_id="top",
+        position="top",
+        expected_position="top",
+        expect_warning=False,
+    ),
+    PaneTitlePositionFixture(
+        test_id="bottom",
+        position="bottom",
+        expected_position="bottom",
+        expect_warning=False,
+    ),
+    PaneTitlePositionFixture(
+        test_id="off",
+        position="off",
+        expected_position="off",
+        expect_warning=False,
+    ),
+    PaneTitlePositionFixture(
+        test_id="invalid-falls-back-to-top",
+        position="invalid_value",
+        expected_position="top",
+        expect_warning=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PaneTitlePositionFixture._fields),
+    PANE_TITLE_POSITION_FIXTURES,
+    ids=[f.test_id for f in PANE_TITLE_POSITION_FIXTURES],
+)
+def test_expand_pane_title_position_validation(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    position: str,
+    expected_position: str,
+    expect_warning: bool,
+) -> None:
+    """Invalid pane_title_position values default to 'top' with a warning."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "pos-test",
+        "enable_pane_titles": True,
+        "pane_title_position": position,
+        "windows": [{"window_name": "main", "panes": [{"shell_command": "echo hi"}]}],
+    }
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.loader"):
+        result = loader.expand(workspace)
+
+    assert result["windows"][0]["options"]["pane-border-status"] == expected_position
+
+    warning_records = [r for r in caplog.records if r.levelno == logging.WARNING]
+    if expect_warning:
+        assert any("pane_title_position" in r.message for r in warning_records)
+    else:
+        assert not any("pane_title_position" in r.message for r in warning_records)
+
+
 def test_expand_logs_debug(
     tmp_path: pathlib.Path,
     caplog: pytest.LogCaptureFixture,
@@ -377,3 +609,146 @@ def test_validate_schema_logs_debug(
     records = [r for r in caplog.records if r.msg == "validating workspace schema"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test_validate"
+
+
+def test_expand_lifecycle_hooks_string(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """expand() expands shell variables in lifecycle hook string values."""
+    monkeypatch.setenv("MY_HOOK_CMD", "docker compose up")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": "test",
+        "on_project_start": "$MY_HOOK_CMD",
+        "on_project_stop": "$MY_HOOK_CMD down",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    result = loader.expand(workspace)
+
+    assert result["on_project_start"] == "docker compose up"
+    assert result["on_project_stop"] == "docker compose up down"
+
+
+def test_expand_lifecycle_hooks_list(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """expand() expands shell variables in lifecycle hook list values."""
+    monkeypatch.setenv("MY_CMD", "echo hello")
+
+    workspace: dict[str, t.Any] = {
+        "session_name": "test",
+        "on_project_start": ["$MY_CMD", "echo world"],
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    result = loader.expand(workspace)
+
+    assert result["on_project_start"] == ["echo hello", "echo world"]
+
+
+def test_expand_lifecycle_hooks_tilde() -> None:
+    """expand() expands ~ in lifecycle hook values."""
+    workspace: dict[str, t.Any] = {
+        "session_name": "test",
+        "on_project_exit": "~/scripts/cleanup.sh",
+        "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
+    }
+    result = loader.expand(workspace)
+
+    assert "~" not in result["on_project_exit"]
+    assert result["on_project_exit"].endswith("/scripts/cleanup.sh")
+
+
+class RenderTemplateFixture(t.NamedTuple):
+    """Test fixture for render_template tests."""
+
+    test_id: str
+    content: str
+    context: dict[str, str]
+    expected: str
+
+
+RENDER_TEMPLATE_FIXTURES: list[RenderTemplateFixture] = [
+    RenderTemplateFixture(
+        test_id="simple-replacement",
+        content="root: {{ project }}",
+        context={"project": "myapp"},
+        expected="root: myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="multiple-vars",
+        content="name: {{ name }}\nroot: {{ root }}",
+        context={"name": "dev", "root": "/tmp/dev"},
+        expected="name: dev\nroot: /tmp/dev",
+    ),
+    RenderTemplateFixture(
+        test_id="unknown-var-unchanged",
+        content="root: {{ unknown }}",
+        context={"project": "myapp"},
+        expected="root: {{ unknown }}",
+    ),
+    RenderTemplateFixture(
+        test_id="no-templates",
+        content="root: /tmp/myapp",
+        context={"project": "myapp"},
+        expected="root: /tmp/myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="env-var-not-affected",
+        content="root: $HOME/{{ project }}",
+        context={"project": "myapp"},
+        expected="root: $HOME/myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="whitespace-in-braces",
+        content="root: {{project}}",
+        context={"project": "myapp"},
+        expected="root: myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="extra-whitespace-in-braces",
+        content="root: {{  project  }}",
+        context={"project": "myapp"},
+        expected="root: myapp",
+    ),
+    RenderTemplateFixture(
+        test_id="empty-context",
+        content="root: {{ project }}",
+        context={},
+        expected="root: {{ project }}",
+    ),
+    RenderTemplateFixture(
+        test_id="same-var-multiple-times",
+        content="a: {{ x }}\nb: {{ x }}",
+        context={"x": "val"},
+        expected="a: val\nb: val",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(RenderTemplateFixture._fields),
+    RENDER_TEMPLATE_FIXTURES,
+    ids=[f.test_id for f in RENDER_TEMPLATE_FIXTURES],
+)
+def test_render_template(
+    test_id: str,
+    content: str,
+    context: dict[str, str],
+    expected: str,
+) -> None:
+    """render_template() replaces {{ var }} expressions with context values."""
+    result = loader.render_template(content, context)
+    assert result == expected
+
+
+def test_render_template_rejects_yaml_unsafe_values() -> None:
+    """render_template() raises ValueError for YAML-unsafe --set values."""
+    with pytest.raises(ValueError, match="YAML-unsafe"):
+        loader.render_template("cmd: {{ val }}", {"val": "foo: bar"})
+
+    with pytest.raises(ValueError, match="YAML-unsafe"):
+        loader.render_template("cmd: {{ val }}", {"val": "line1\nline2"})
+
+    # Safe values should work fine
+    result = loader.render_template("cmd: {{ val }}", {"val": "hello-world"})
+    assert result == "cmd: hello-world"

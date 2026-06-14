@@ -109,11 +109,15 @@ def test_main_help_examples_are_valid_subcommands() -> None:
         "shell",
         "import",
         "convert",
+        "copy",
         "debug-info",
+        "delete",
         "ls",
         "edit",
         "freeze",
+        "new",
         "search",
+        "stop",
     }
 
     for example in examples:
@@ -132,11 +136,15 @@ def test_main_help_examples_are_valid_subcommands() -> None:
         "shell",
         "import",
         "convert",
+        "copy",
         "debug-info",
+        "delete",
         "ls",
         "edit",
         "freeze",
+        "new",
         "search",
+        "stop",
     ],
 )
 def test_subcommand_help_has_examples(subcommand: str) -> None:
@@ -226,6 +234,46 @@ def test_debug_info_subcommand_examples_are_valid() -> None:
         assert example.startswith("tmuxp debug-info"), f"Bad example format: {example}"
 
 
+def test_stop_subcommand_examples_are_valid() -> None:
+    """Stop subcommand examples should have valid flags."""
+    help_text = _get_help_text("stop")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp stop"), f"Bad example format: {example}"
+
+
+def test_new_subcommand_examples_are_valid() -> None:
+    """New subcommand examples should have valid flags."""
+    help_text = _get_help_text("new")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp new"), f"Bad example format: {example}"
+
+
+def test_copy_subcommand_examples_are_valid() -> None:
+    """Copy subcommand examples should have valid flags."""
+    help_text = _get_help_text("copy")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp copy"), f"Bad example format: {example}"
+
+
+def test_delete_subcommand_examples_are_valid() -> None:
+    """Delete subcommand examples should have valid flags."""
+    help_text = _get_help_text("delete")
+    examples = extract_examples_from_help(help_text)
+
+    # Verify each example has valid structure
+    for example in examples:
+        assert example.startswith("tmuxp delete"), f"Bad example format: {example}"
+
+
 def test_search_subcommand_examples_are_valid() -> None:
     """Search subcommand examples should have valid flags."""
     help_text = _get_help_text("search")
@@ -252,6 +300,18 @@ def test_search_no_args_shows_help() -> None:
     assert result.returncode == 0
 
 
+@pytest.mark.parametrize("subcommand", ["new", "copy", "delete"])
+def test_new_commands_no_args_shows_help(subcommand: str) -> None:
+    """Running new commands with no args shows help and exits 1."""
+    result = subprocess.run(
+        ["tmuxp", subcommand],
+        capture_output=True,
+        text=True,
+    )
+    assert f"usage: tmuxp {subcommand}" in result.stdout
+    assert result.returncode == 1
+
+
 def test_main_help_example_sections_have_examples_suffix() -> None:
     """Main --help should have section headings ending with 'examples:'."""
     help_text = _get_help_text()
@@ -271,3 +331,75 @@ def test_main_help_examples_are_colorized(monkeypatch: pytest.MonkeyPatch) -> No
 
     # Should contain ANSI escape codes for colorization
     assert "\033[" in help_text, "Example sections should be colorized"
+
+
+# Commands that can mutate tmux state (kill sessions, create sessions, etc.)
+# These must NEVER be called via subprocess without -L <test_socket>.
+_DANGEROUS_SUBCOMMANDS = {"stop", "load"}
+
+
+def test_no_dangerous_subprocess_tmuxp_calls() -> None:
+    """Subprocess calls to tmuxp mutation commands must use -L test socket.
+
+    Catches bugs like the one where ``subprocess.run(["tmuxp", "stop"])``
+    killed the user's real tmux session because it ran on the default server
+    without ``-L``.
+    """
+    import ast
+    import pathlib
+
+    tests_dir = pathlib.Path(__file__).parent.parent
+    violations: list[str] = []
+
+    for py_file in tests_dir.rglob("*.py"):
+        try:
+            tree = ast.parse(py_file.read_text(encoding="utf-8"), filename=str(py_file))
+        except SyntaxError:
+            continue
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            # Match subprocess.run(...) or subprocess.call(...)
+            func = node.func
+            is_subprocess = False
+            if (
+                isinstance(func, ast.Attribute)
+                and func.attr in ("run", "call")
+                and isinstance(func.value, ast.Name)
+                and func.value.id == "subprocess"
+            ):
+                is_subprocess = True
+            if not is_subprocess:
+                continue
+
+            # Check first arg is a list literal like ["tmuxp", "stop", ...]
+            if not node.args or not isinstance(node.args[0], ast.List):
+                continue
+            elts = node.args[0].elts
+            if len(elts) < 2:
+                continue
+            if not (isinstance(elts[0], ast.Constant) and elts[0].value == "tmuxp"):
+                continue
+            if not isinstance(elts[1], ast.Constant):
+                continue
+
+            subcmd = str(elts[1].value)
+            if subcmd not in _DANGEROUS_SUBCOMMANDS:
+                continue
+
+            # Check if -L appears anywhere in the arg list
+            has_socket = any(
+                isinstance(e, ast.Constant) and e.value == "-L" for e in elts
+            )
+            if not has_socket:
+                rel = py_file.relative_to(tests_dir)
+                violations.append(
+                    f"{rel}:{node.lineno}: subprocess calls "
+                    f"'tmuxp {subcmd}' without -L test socket"
+                )
+
+    assert not violations, (
+        "Dangerous subprocess tmuxp calls found (could kill real sessions):\n"
+        + "\n".join(f"  {v}" for v in violations)
+    )
