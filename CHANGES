@@ -44,6 +44,10 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+## tmuxp 1.70.1 (2026-06-16)
+
+tmuxp 1.70.1 bumps libtmux to 0.58.1, fixing a pytest 9.1 plugin import failure that broke test collection for projects using tmuxp's or libtmux's fixtures.
+
 ### Dependencies
 
 #### Minimum `libtmux~=0.58.1` (was `~=0.58.0`) (#1052)
