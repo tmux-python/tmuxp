@@ -44,6 +44,16 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.58.1` (was `~=0.58.0`) (#1052)
+
+### Fixes
+
+#### pytest 9.1 plugin import compatibility (#1052)
+
+libtmux's pytest plugin aborted at import under pytest 9.1, breaking test collection for projects that use tmuxp's or libtmux's fixtures. Fixed by the libtmux 0.58.1 floor bump.
+
 ## tmuxp 1.70.0 (2026-05-23)
 
 tmuxp 1.70.0 bumps libtmux to 0.58.0, fixing session and window listing on systems whose locale is not UTF-8.
