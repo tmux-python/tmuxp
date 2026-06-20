@@ -113,6 +113,11 @@ lint = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv.sources]
+# Experiment: pin libtmux to the sibling chainable-commands worktree so the
+# experimental libtmux._experimental.chain API is importable. Do not merge.
+libtmux = { path = "../libtmux", editable = true }
+
 [tool.uv.exclude-newer-package]
 # git-pull packages release in lockstep with their workspaces, so a
 # fresh release blocking on the 3-day cooldown blocks every
