@@ -19,6 +19,7 @@ from tmuxp._internal import config_reader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import WorkspaceBuilder
+from tmuxp.workspace.chain_builder import ChainWorkspaceBuilder
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
 from ._colors import ColorMode, Colors, build_description, get_color_mode
@@ -112,6 +113,7 @@ class CLILoadNamespace(argparse.Namespace):
     progress_format: str | None
     panel_lines: int | None
     no_progress: bool
+    builder: str
 
 
 def load_plugins(
@@ -450,6 +452,7 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    builder_name: str = "default",
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -578,8 +581,9 @@ def load_workspace(
     shutil.which("tmux")  # raise exception if tmux not found
 
     # WorkspaceBuilder creation — outside spinner so plugin prompts are safe
+    builder_cls = ChainWorkspaceBuilder if builder_name == "chain" else WorkspaceBuilder
     try:
-        builder = WorkspaceBuilder(
+        builder = builder_cls(
             session_config=expanded_workspace,
             plugins=load_plugins(expanded_workspace, colors=cli_colors),
             server=t,
@@ -820,6 +824,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
     )
 
+    parser.add_argument(
+        "--builder",
+        dest="builder",
+        choices=["default", "chain"],
+        default=os.environ.get("TMUXP_BUILDER", "default"),
+        help=(
+            "Workspace builder. 'chain' (experimental) builds the window/pane "
+            "tree via libtmux's chain API. Env: TMUXP_BUILDER"
+        ),
+    )
+
     try:
         import shtab
 
@@ -904,4 +919,5 @@ def command_load(
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            builder_name=args.builder,
         )

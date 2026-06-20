@@ -108,3 +108,14 @@ def test_chain_batched_mode(session: Session) -> None:
     assert isinstance(editor, Window)
     editor.refresh()
     assert len(editor.panes) == 2
+
+
+def test_cli_builder_flag() -> None:
+    """The load CLI exposes --builder with default and chain choices."""
+    import argparse
+
+    from tmuxp.cli.load import create_load_subparser
+
+    parser = create_load_subparser(argparse.ArgumentParser())
+    assert parser.parse_args(["ws.yaml", "--builder", "chain"]).builder == "chain"
+    assert parser.parse_args(["ws.yaml"]).builder == "default"
