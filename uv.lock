@@ -612,6 +612,8 @@ version = "0.61.0"
 source = { editable = "../libtmux" }
 
 [package.metadata]
+requires-dist = [{ name = "fastmcp", marker = "extra == 'mcp'", specifier = ">=3.4.2" }]
+provides-extras = ["mcp"]
 
 [package.metadata.requires-dev]
 coverage = [
@@ -622,6 +624,7 @@ coverage = [
 dev = [
     { name = "codecov" },
     { name = "coverage" },
+    { name = "fastmcp" },
     { name = "gp-libs", specifier = ">=0.0.18" },
     { name = "gp-sphinx", specifier = "==0.0.1a32" },
     { name = "mypy" },
@@ -635,6 +638,8 @@ dev = [
     { name = "sphinx-autobuild" },
     { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a32" },
     { name = "sphinx-autodoc-pytest-fixtures", specifier = "==0.0.1a32" },
+    { name = "tomlkit" },
+    { name = "ty" },
     { name = "types-docutils" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
@@ -650,11 +655,13 @@ lint = [
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 testing = [
+    { name = "fastmcp" },
     { name = "gp-libs", specifier = ">=0.0.18" },
     { name = "pytest" },
     { name = "pytest-mock" },
     { name = "pytest-rerunfailures" },
     { name = "pytest-watcher" },
+    { name = "tomlkit" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 

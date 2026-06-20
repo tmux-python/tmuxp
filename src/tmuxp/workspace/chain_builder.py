@@ -25,10 +25,10 @@ from tmuxp import exc
 from tmuxp.util import run_before_script
 from tmuxp.workspace.builder import (
     WorkspaceBuilder,
-    _wait_for_pane_ready,
     get_default_columns,
     get_default_rows,
 )
+from tmuxp.workspace.builder.classic import _wait_for_pane_ready
 
 if t.TYPE_CHECKING:
     import collections.abc as cabc
