@@ -286,6 +286,41 @@ Setting environment variables for windows and panes requires tmuxp 1.19 or newer
 
 ````
 
+## `if` conditions
+
+tmuxp enables one to optionally open windows / panes based on conditions. The `if` conditions can appears in the configuration for window or pane.
+
+````{tab} YAML
+
+```{literalinclude} ../../examples/if-conditions.yaml
+:language: yaml
+
+```
+````
+
+````{tab} JSON
+
+```{literalinclude} ../../examples/if-conditions.json
+:language: json
+
+```
+
+````
+
+In the example, running the example
+
+```console
+$ tmuxp load examples/if-conditions.yaml
+```
+
+should produce **only** a window with upper and lower split panes (others should have `if` conditions that evaluates to false). This example allows for on-demand pane showing, where
+
+```console
+$ show_htop=false tmuxp load examples/if-conditions.yaml
+```
+
+will instead suppress the `htop` command pane and resulting in a different behaviour.
+
 ## Focusing
 
 tmuxp allows `focus: true` for assuring windows and panes are attached /
