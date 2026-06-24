@@ -328,6 +328,7 @@ def _dispatch_build(
     pre_attach_hook: t.Callable[[], None] | None = None,
     on_error_hook: t.Callable[[], None] | None = None,
     pre_prompt_hook: t.Callable[[], None] | None = None,
+    session_name: str | None = None,
 ) -> Session | None:
     """Dispatch the build to the correct load path and handle errors.
 
@@ -367,6 +368,26 @@ def _dispatch_build(
     True
     """
     try:
+        # When append is requested and the target session already exists,
+        # build windows onto it directly. This applies whether running
+        # detached or attached, and is what makes ``tmuxp load f1 f2 --append``
+        # land all files in the same session instead of failing on the
+        # second file's create-session call.
+        if append and session_name is not None and builder.session_exists(session_name):
+            existing = builder.server.sessions.get(session_name=session_name)
+            builder.build(existing, append=True)
+            assert builder.session is not None
+            if pre_attach_hook is not None:
+                pre_attach_hook()
+            if not detached:
+                if "TMUX" in os.environ:
+                    tmux_env = os.environ.pop("TMUX")
+                    builder.session.switch_client()
+                    os.environ["TMUX"] = tmux_env
+                else:
+                    builder.session.attach()
+            return _setup_plugins(builder)
+
         if detached:
             _load_detached(builder, cli_colors, pre_output_hook=pre_attach_hook)
             return _setup_plugins(builder)
@@ -618,6 +639,7 @@ def load_workspace(
             append,
             answer_yes,
             cli_colors,
+            session_name=session_name,
         )
         if result is not None:
             summary = ""
@@ -696,6 +718,7 @@ def load_workspace(
             pre_attach_hook=_emit_success,
             on_error_hook=spinner.stop,
             pre_prompt_hook=spinner.stop,
+            session_name=session_name,
         )
         if result is not None:
             _emit_success()
@@ -877,6 +900,33 @@ def command_load(
     original_detached_option = args.detached
     original_new_session_name = args.new_session_name
 
+    # When --append spans multiple files, every load must target the same
+    # session — otherwise each file would be appended to whatever its own
+    # config names, defeating the point. Resolve the target once: explicit
+    # --new-session-name wins; otherwise fall back to the first file's
+    # `session_name` config key.
+    append_target_session_name: str | None = None
+    if args.append and last_idx > 0:
+        if original_new_session_name:
+            append_target_session_name = original_new_session_name
+        else:
+            try:
+                first_workspace_file = find_workspace_file(
+                    args.workspace_files[0],
+                    workspace_dir=get_workspace_dir(),
+                )
+                first_config = config_reader.ConfigReader._from_file(
+                    pathlib.Path(first_workspace_file),
+                )
+                resolved = first_config.get("session_name")
+                if isinstance(resolved, str):
+                    append_target_session_name = resolved
+            except Exception:
+                logger.debug(
+                    "could not pre-resolve session_name for multi-file --append",
+                    exc_info=True,
+                )
+
     for idx, workspace_file in enumerate(args.workspace_files):
         workspace_file = find_workspace_file(
             workspace_file,
@@ -889,6 +939,9 @@ def command_load(
         if last_idx > 0 and idx < last_idx:
             detached = True
             new_session_name = None
+
+        if append_target_session_name is not None:
+            new_session_name = append_target_session_name
 
         load_workspace(
             workspace_file,
