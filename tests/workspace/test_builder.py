@@ -26,7 +26,11 @@ from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
 from tmuxp.workspace import builder as builder_module, loader
-from tmuxp.workspace.builder import WorkspaceBuilder, _wait_for_pane_ready
+from tmuxp.workspace.builder import (
+    WorkspaceBuilder,
+    _wait_for_pane_ready,
+    _wait_for_panes_ready,
+)
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
@@ -1549,6 +1553,35 @@ def test_wait_for_pane_ready_timeout(session: Session) -> None:
     assert result is False
 
 
+def test_wait_for_panes_ready_all_ready(session: Session) -> None:
+    """The shared barrier reports every default-shell pane ready."""
+    window = session.active_window
+    first = window.active_pane
+    assert first is not None
+    second = first.split()
+    assert second is not None
+
+    result = _wait_for_panes_ready([first, second], timeout=5.0)
+
+    assert result == {first.pane_id: True, second.pane_id: True}
+
+
+def test_wait_for_panes_ready_mixed(session: Session) -> None:
+    """The shared barrier times out only the pane that never draws a prompt."""
+    window = session.active_window
+    first = window.active_pane
+    assert first is not None
+    sleeper = first.split(shell="sleep 999")
+    assert sleeper is not None
+    assert first.pane_id is not None
+    assert sleeper.pane_id is not None
+
+    result = _wait_for_panes_ready([first, sleeper], timeout=0.5)
+
+    assert result[first.pane_id] is True
+    assert result[sleeper.pane_id] is False
+
+
 class PaneReadinessFixture(t.NamedTuple):
     """Test fixture for pane readiness call count verification."""
 
@@ -1625,7 +1658,7 @@ windows:
     PANE_READINESS_FIXTURES,
     ids=[t.test_id for t in PANE_READINESS_FIXTURES],
 )
-def test_pane_readiness_call_count(
+def test_pane_readiness_waits_for_default_shell_panes(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
@@ -1633,20 +1666,19 @@ def test_pane_readiness_call_count(
     yaml: str,
     expected_wait_count: int,
 ) -> None:
-    """Verify _wait_for_pane_ready is called only for appropriate panes."""
-    call_count = 0
-    original = builder_module._wait_for_pane_ready
+    """Only default-shell panes are submitted to the readiness barrier."""
+    waited: list[str] = []
+    original = builder_module._wait_for_panes_ready
 
-    def counting_wait(
-        pane: Pane,
+    def recording_barrier(
+        panes: list[Pane],
         timeout: float = 2.0,
         interval: float = 0.05,
-    ) -> bool:
-        nonlocal call_count
-        call_count += 1
-        return original(pane, timeout=timeout, interval=interval)
+    ) -> dict[str, bool]:
+        waited.extend(p.pane_id for p in panes if p.pane_id is not None)
+        return original(panes, timeout=timeout, interval=interval)
 
-    monkeypatch.setattr(builder_module, "_wait_for_pane_ready", counting_wait)
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
 
     yaml_workspace = tmp_path / "readiness.yaml"
     yaml_workspace.write_text(yaml, encoding="utf-8")
@@ -1656,15 +1688,15 @@ def test_pane_readiness_call_count(
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
-    assert call_count == expected_wait_count
+    assert len(waited) == expected_wait_count
 
 
-def test_select_layout_not_called_after_yield(
+def test_select_layout_called_once_per_window(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Verify select_layout is called once per pane, not duplicated in build()."""
+    """select_layout runs once per window, after the readiness barrier."""
     call_count = 0
     original_select_layout = Window.select_layout
 
@@ -1695,8 +1727,118 @@ windows:
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
-    # 3 panes = 3 layout calls (one per pane in iter_create_panes), not 6
-    assert call_count == 3
+    # One window, one layout pass — no per-pane and no duplicate build() pass.
+    assert call_count == 1
+
+
+def test_build_waits_for_whole_workspace_in_one_barrier(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """build() creates every pane up front, then waits for all in one barrier."""
+    barrier_sizes: list[int] = []
+    original = builder_module._wait_for_panes_ready
+
+    def recording_barrier(
+        panes: list[Pane],
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> dict[str, bool]:
+        barrier_sizes.append(len(panes))
+        return original(panes, timeout=timeout, interval=interval)
+
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: barrier-test
+windows:
+- window_name: one
+  layout: tiled
+  panes:
+  - shell_command: []
+  - shell_command: []
+- window_name: two
+  layout: tiled
+  panes:
+  - shell_command: []
+  - shell_command: []
+""",
+    )
+    yaml_workspace = tmp_path / "barrier.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    # All four panes (across both windows) are awaited together, not per window.
+    assert barrier_sizes == [4]
+
+
+def test_layout_runs_after_readiness_barrier(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No window is laid out until the shared readiness barrier has completed.
+
+    This is the issue #365 safety invariant under the parallel structure: a
+    pane must draw its prompt before it is resized, so every ``select_layout``
+    must follow the barrier.
+    """
+    events: list[str] = []
+    original_barrier = builder_module._wait_for_panes_ready
+    original_select_layout = Window.select_layout
+
+    def traced_barrier(
+        panes: list[Pane],
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> dict[str, bool]:
+        result = original_barrier(panes, timeout=timeout, interval=interval)
+        events.append("barrier")
+        return result
+
+    def traced_layout(self: Window, layout: str | None = None) -> Window:
+        events.append("layout")
+        return original_select_layout(self, layout)
+
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", traced_barrier)
+    monkeypatch.setattr(Window, "select_layout", traced_layout)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: ordering-test
+windows:
+- window_name: one
+  layout: tiled
+  panes:
+  - shell_command: []
+  - shell_command: []
+- window_name: two
+  layout: tiled
+  panes:
+  - shell_command: []
+""",
+    )
+    yaml_workspace = tmp_path / "ordering.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    assert "barrier" in events
+    assert "layout" in events
+    # The single workspace barrier precedes every layout pass.
+    assert events.count("barrier") == 1
+    assert events.index("barrier") < events.index("layout")
 
 
 def test_builder_logs_session_created(

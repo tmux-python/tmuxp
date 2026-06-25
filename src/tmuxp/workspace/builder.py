@@ -9,6 +9,7 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -24,15 +25,112 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _pane_has_drawn_prompt(pane: Pane) -> bool:
+    """Return whether a pane's shell has drawn its prompt.
+
+    The cursor leaving the origin ``(0, 0)`` is the signal that the shell has
+    finished initializing and rendered its first prompt. Resizing a pane before
+    this point races zsh's prompt redraw and surfaces its partial-line ``%``
+    marker (issue #365), so the build waits for this to become true before
+    applying layouts or sending keys.
+
+    Parameters
+    ----------
+    pane : :class:`libtmux.Pane`
+        pane whose freshly refreshed cursor position to inspect
+
+    Returns
+    -------
+    bool
+        True once the cursor has moved away from ``(0, 0)``
+
+    Examples
+    --------
+    >>> pane = session.active_window.active_pane
+    >>> _wait_for_pane_ready(pane, timeout=5.0)
+    True
+    >>> _pane_has_drawn_prompt(pane)
+    True
+    """
+    return pane.cursor_x != "0" or pane.cursor_y != "0"
+
+
+def _wait_for_panes_ready(
+    panes: list[Pane],
+    timeout: float = 2.0,
+    interval: float = 0.05,
+) -> dict[str, bool]:
+    """Wait for many panes to draw their prompts, sharing one timeout budget.
+
+    tmux spawns each pane's shell the moment the pane is created, so the shells
+    initialize concurrently. Polling every pane in a single loop — rather than
+    blocking on each one to completion before starting the next — observes that
+    concurrency, collapsing the worst case from ``len(panes) * timeout`` of
+    serial waiting into a single shared ``timeout`` window.
+
+    Parameters
+    ----------
+    panes : list of :class:`libtmux.Pane`
+        panes to wait for; panes without an id are ignored
+    timeout : float
+        maximum seconds to wait for the whole set before giving up
+    interval : float
+        seconds between polling sweeps
+
+    Returns
+    -------
+    dict of str to bool
+        maps each pane id to whether it became ready before the timeout
+
+    Examples
+    --------
+    >>> pane = session.active_window.active_pane
+    >>> _wait_for_panes_ready([pane], timeout=5.0)  # doctest: +ELLIPSIS
+    {'%...': True}
+    """
+    pending = {p.pane_id: p for p in panes if p.pane_id is not None}
+    ready: dict[str, bool] = {}
+    start = time.monotonic()
+    while pending and time.monotonic() - start < timeout:
+        for pane_id, pane in list(pending.items()):
+            try:
+                pane.refresh()
+            except Exception:
+                logger.debug(
+                    "pane refresh failed during readiness check",
+                    exc_info=True,
+                    extra={"tmux_pane": str(pane_id)},
+                )
+                ready[pane_id] = False
+                del pending[pane_id]
+                continue
+            if _pane_has_drawn_prompt(pane):
+                logger.debug(
+                    "pane ready, cursor moved from origin",
+                    extra={"tmux_pane": str(pane_id)},
+                )
+                ready[pane_id] = True
+                del pending[pane_id]
+        if pending:
+            time.sleep(interval)
+    for pane_id in pending:
+        logger.debug(
+            "pane readiness check timed out after %.1f seconds",
+            timeout,
+            extra={"tmux_pane": str(pane_id)},
+        )
+        ready[pane_id] = False
+    return ready
+
+
 def _wait_for_pane_ready(
     pane: Pane,
     timeout: float = 2.0,
     interval: float = 0.05,
 ) -> bool:
-    """Wait for pane shell to draw its prompt.
+    """Wait for a single pane's shell to draw its prompt.
 
-    Polls the pane's cursor position until it moves from origin (0, 0),
-    indicating the shell has finished initializing and drawn its prompt.
+    Convenience wrapper over :func:`_wait_for_panes_ready` for the one-pane case.
 
     Parameters
     ----------
@@ -57,30 +155,10 @@ def _wait_for_pane_ready(
     >>> _wait_for_pane_ready(pane, timeout=5.0)
     True
     """
-    start = time.monotonic()
-    while time.monotonic() - start < timeout:
-        try:
-            pane.refresh()
-        except Exception:
-            logger.debug(
-                "pane refresh failed during readiness check",
-                exc_info=True,
-                extra={"tmux_pane": str(pane.pane_id)},
-            )
-            return False
-        if pane.cursor_x != "0" or pane.cursor_y != "0":
-            logger.debug(
-                "pane ready, cursor moved from origin",
-                extra={"tmux_pane": str(pane.pane_id)},
-            )
-            return True
-        time.sleep(interval)
-    logger.debug(
-        "pane readiness check timed out after %.1f seconds",
-        timeout,
-        extra={"tmux_pane": str(pane.pane_id)},
-    )
-    return False
+    if pane.pane_id is None:
+        return False
+    results = _wait_for_panes_ready([pane], timeout=timeout, interval=interval)
+    return results.get(pane.pane_id, False)
 
 
 COLUMNS_FALLBACK = 80
@@ -99,6 +177,19 @@ ROWS_FALLBACK = int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", 24)))
 def get_default_rows() -> int:
     """Return default session row size use when building new tmux sessions."""
     return int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", ROWS_FALLBACK)))
+
+
+class _PaneEntry(t.NamedTuple):
+    """A created pane awaiting the readiness barrier, layout, and its commands.
+
+    Carries the bits the second build phase needs once every shell is ready:
+    the pane, its config section, and the resolved custom ``shell`` (``None`` for
+    a default-shell pane, which is the only kind whose prompt the build waits on).
+    """
+
+    pane: Pane
+    config: dict[str, t.Any]
+    shell: str | None
 
 
 class WorkspaceBuilder:
@@ -538,16 +629,34 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
+        # Phase one — structure: create every window and its panes first, so all
+        # of their shells start initializing concurrently. Nothing is resized and
+        # no keys are sent yet.
+        window_layout: list[tuple[Window, dict[str, t.Any], list[_PaneEntry]]] = []
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
 
             for plugin in self.plugins:
                 plugin.on_window_create(window)
 
+            entries = self._create_window_panes(window, window_config)
+            window_layout.append((window, window_config, entries))
+
+        # Barrier — wait once for every default-shell pane to draw its prompt.
+        # Because the shells warmed up in parallel during phase one, this single
+        # shared wait replaces what used to be one blocking wait per pane.
+        self._wait_for_workspace_ready(window_layout)
+
+        # Phase two — finish: lay each window out (a single resize with all shells
+        # ready, so no zsh ``%`` marker) and send its commands.
+        for window, window_config, entries in window_layout:
             focus_pane = None
-            for pane, pane_config in self.iter_create_panes(window, window_config):
+            for pane, pane_config in self._dispatch_window_commands(
+                window,
+                window_config,
+                entries,
+            ):
                 assert isinstance(pane, Pane)
-                pane = pane
 
                 if pane_config.get("focus"):
                     focus_pane = pane
@@ -679,14 +788,23 @@ class WorkspaceBuilder:
 
             yield window, window_config
 
-    def iter_create_panes(
+    def _create_window_panes(
         self,
         window: Window,
         window_config: dict[str, t.Any],
-    ) -> Iterator[t.Any]:
-        """Return :class:`libtmux.Pane` iterating through window config dict.
+    ) -> list[_PaneEntry]:
+        """Create a window's panes without waiting, laying out, or sending keys.
 
-        Run ``shell_command`` with ``$ tmux send-keys``.
+        This is the first build phase. Splitting the panes back-to-back lets
+        their shells initialize concurrently while the build moves on; readiness,
+        layout, and commands are deferred to later phases.
+
+        Each split resizes the pane it targets, and the build only ever splits
+        the newest pane — one created microseconds earlier, still sourcing its rc
+        and therefore safe to resize. The exception is running out of room: when
+        a split fails for space, the existing panes are first waited on (so they
+        are past their prompt and safe to resize), then ``select_layout``
+        reclaims space, and the split is retried.
 
         Parameters
         ----------
@@ -697,16 +815,34 @@ class WorkspaceBuilder:
 
         Returns
         -------
-        tuple of (:class:`libtmux.Pane`, ``pane_config``)
-            Newly created pane, and the section from the tmuxp configuration
-            that was used to create the pane.
+        list of :class:`_PaneEntry`
+            one entry per created pane, in config order
+
+        Examples
+        --------
+        >>> session = server.new_session('create-window-panes')
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> entries = builder._create_window_panes(
+        ...     session.active_window,
+        ...     {'window_name': 'main', 'panes': [{'shell_command': []},
+        ...      {'shell_command': []}]},
+        ... )
+        >>> len(entries)
+        2
+        >>> entries[0].shell is None
+        True
         """
         assert isinstance(window, Window)
 
         pane_base_index = window.show_option("pane-base-index", global_=True)
         assert pane_base_index is not None
 
+        layout = window_config.get("layout")
         pane = None
+        entries: list[_PaneEntry] = []
 
         for pane_index, pane_config in enumerate(
             window_config["panes"],
@@ -754,17 +890,25 @@ class WorkspaceBuilder:
 
                 assert pane is not None
 
-                pane = pane.split(
-                    attach=True,
-                    start_directory=get_pane_start_directory(
+                split_kwargs: dict[str, t.Any] = {
+                    "attach": True,
+                    "start_directory": get_pane_start_directory(
                         pane_config=pane_config,
                         window_config=window_config,
                     ),
-                    shell=get_pane_shell(
+                    "shell": get_pane_shell(
                         pane_config=pane_config,
                         window_config=window_config,
                     ),
-                    environment=environment,
+                    "environment": environment,
+                }
+
+                pane = self._split_pane_reclaiming_space(
+                    window,
+                    pane,
+                    split_kwargs,
+                    layout,
+                    entries,
                 )
 
             assert isinstance(pane, Pane)
@@ -778,16 +922,179 @@ class WorkspaceBuilder:
             )
             pane_log.debug("pane created")
 
-            # Skip readiness wait when a custom shell/command launcher is set.
-            # The shell/window_shell key runs a command (e.g. "top", "sleep 999")
-            # that replaces the default shell — the pane exits when the command
-            # exits, so there is no interactive prompt to wait for.
+            # A pane with a custom shell/command launcher (e.g. "top", "sleep
+            # 999") replaces the default shell and never draws an interactive
+            # prompt, so it is recorded but excluded from the readiness barrier.
             pane_shell = pane_config.get("shell", window_config.get("window_shell"))
-            if pane_shell is None:
-                _wait_for_pane_ready(pane)
+            entries.append(_PaneEntry(pane=pane, config=pane_config, shell=pane_shell))
 
-            if "layout" in window_config:
-                window.select_layout(window_config["layout"])
+        return entries
+
+    def _split_pane_reclaiming_space(
+        self,
+        window: Window,
+        pane: Pane,
+        split_kwargs: dict[str, t.Any],
+        layout: str | None,
+        entries: list[_PaneEntry],
+    ) -> Pane:
+        """Split ``pane``; on a space failure, reclaim room once and retry.
+
+        Without an intermediate ``select_layout`` after every split, a window
+        with many panes eventually has no room for the next split. Reclaiming
+        space means resizing the panes already created, which is only safe once
+        their shells are past their prompts — so the readiness barrier runs
+        first, then the layout, then the split is retried.
+
+        Parameters
+        ----------
+        window : :class:`libtmux.Window`
+            window the panes belong to
+        pane : :class:`libtmux.Pane`
+            pane to split
+        split_kwargs : dict
+            keyword arguments forwarded to :meth:`libtmux.Pane.split`
+        layout : str or None
+            window layout used to reclaim space, if configured
+        entries : list of :class:`_PaneEntry`
+            panes created so far, waited on before reclaiming space
+
+        Returns
+        -------
+        :class:`libtmux.Pane`
+            the newly split pane
+
+        Examples
+        --------
+        >>> session = server.new_session('reclaim-space')
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> first = session.active_window.active_pane
+        >>> second = builder._split_pane_reclaiming_space(
+        ...     session.active_window, first, {'attach': True}, 'tiled', [],
+        ... )
+        >>> second is not None
+        True
+        """
+        try:
+            return pane.split(**split_kwargs)
+        except LibTmuxException:
+            _wait_for_panes_ready([e.pane for e in entries if e.shell is None])
+            if layout is not None:
+                window.select_layout(layout)
+            return pane.split(**split_kwargs)
+
+    def _wait_for_workspace_ready(
+        self,
+        window_layout: list[tuple[Window, dict[str, t.Any], list[_PaneEntry]]],
+    ) -> dict[str, bool]:
+        """Wait for every default-shell pane across the workspace, concurrently.
+
+        Collects the panes that draw an interactive prompt from all windows and
+        waits for them in a single shared barrier (:func:`_wait_for_panes_ready`).
+
+        Parameters
+        ----------
+        window_layout : list of tuple
+            ``(window, window_config, entries)`` triples from phase one
+
+        Returns
+        -------
+        dict of str to bool
+            maps each waited pane id to whether it became ready
+
+        Examples
+        --------
+        >>> session = server.new_session('workspace-ready')
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> window_config = {'window_name': 'main', 'panes': [{'shell_command': []}]}
+        >>> entries = builder._create_window_panes(
+        ...     session.active_window, window_config,
+        ... )
+        >>> sorted(
+        ...     builder._wait_for_workspace_ready(
+        ...         [(session.active_window, window_config, entries)],
+        ...     ).values(),
+        ... )
+        [True]
+        """
+        panes = [
+            entry.pane
+            for (_window, _window_config, entries) in window_layout
+            for entry in entries
+            if entry.shell is None
+        ]
+        return _wait_for_panes_ready(panes)
+
+    def _dispatch_window_commands(
+        self,
+        window: Window,
+        window_config: dict[str, t.Any],
+        entries: list[_PaneEntry],
+    ) -> Iterator[t.Any]:
+        """Lay the window out, then send each pane its ``shell_command``.
+
+        The final build phase, run only after the readiness barrier. Applying the
+        layout here is a single resize with every shell already past its prompt,
+        which is what keeps zsh from printing its partial-line ``%`` marker
+        (issue #365).
+
+        Parameters
+        ----------
+        window : :class:`libtmux.Window`
+            window to finish
+        window_config : dict
+            config section for window
+        entries : list of :class:`_PaneEntry`
+            panes created for this window in phase one
+
+        Yields
+        ------
+        tuple of (:class:`libtmux.Pane`, ``pane_config``)
+            each pane and the config section used to create it
+
+        Examples
+        --------
+        >>> session = server.new_session('dispatch-window')
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> window_config = {
+        ...     'window_name': 'main', 'layout': 'tiled',
+        ...     'panes': [{'shell_command': []}],
+        ... }
+        >>> entries = builder._create_window_panes(
+        ...     session.active_window, window_config,
+        ... )
+        >>> _ = builder._wait_for_workspace_ready(
+        ...     [(session.active_window, window_config, entries)],
+        ... )
+        >>> dispatched = list(
+        ...     builder._dispatch_window_commands(
+        ...         session.active_window, window_config, entries,
+        ...     ),
+        ... )
+        >>> len(dispatched)
+        1
+        """
+        if "layout" in window_config:
+            window.select_layout(window_config["layout"])
+
+        for pane, pane_config, _pane_shell in entries:
+            pane_log = TmuxpLoggerAdapter(
+                logger,
+                {
+                    "tmux_session": window.session.name or "",
+                    "tmux_window": window.name or "",
+                    "tmux_pane": pane.pane_id or "",
+                },
+            )
 
             if "suppress_history" in pane_config:
                 suppress = pane_config["suppress_history"]
@@ -818,6 +1125,53 @@ class WorkspaceBuilder:
                 window.select_pane(pane.pane_id)
 
             yield pane, pane_config
+
+    def iter_create_panes(
+        self,
+        window: Window,
+        window_config: dict[str, t.Any],
+    ) -> Iterator[t.Any]:
+        """Return :class:`libtmux.Pane` iterating through window config dict.
+
+        Run ``shell_command`` with ``$ tmux send-keys``.
+
+        Creates the window's panes, waits for their shells concurrently, then
+        lays out and sends commands. :meth:`build` drives these phases across the
+        whole workspace for one shared wait; this per-window form is kept for
+        direct callers.
+
+        Parameters
+        ----------
+        window : :class:`libtmux.Window`
+            window to create panes for
+        window_config : dict
+            config section for window
+
+        Returns
+        -------
+        tuple of (:class:`libtmux.Pane`, ``pane_config``)
+            Newly created pane, and the section from the tmuxp configuration
+            that was used to create the pane.
+
+        Examples
+        --------
+        >>> session = server.new_session('iter-create-panes')
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> panes = list(
+        ...     builder.iter_create_panes(
+        ...         session.active_window,
+        ...         {'window_name': 'main', 'panes': [{'shell_command': []}]},
+        ...     ),
+        ... )
+        >>> len(panes)
+        1
+        """
+        entries = self._create_window_panes(window, window_config)
+        _wait_for_panes_ready([e.pane for e in entries if e.shell is None])
+        yield from self._dispatch_window_commands(window, window_config, entries)
 
     def config_after_window(
         self,
