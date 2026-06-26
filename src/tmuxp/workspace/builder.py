@@ -799,12 +799,10 @@ class WorkspaceBuilder:
         their shells initialize concurrently while the build moves on; readiness,
         layout, and commands are deferred to later phases.
 
-        Each split resizes the pane it targets, and the build only ever splits
-        the newest pane — one created microseconds earlier, still sourcing its rc
-        and therefore safe to resize. The exception is running out of room: when
-        a split fails for space, the existing panes are first waited on (so they
-        are past their prompt and safe to resize), then ``select_layout``
-        reclaims space, and the split is retried.
+        Each split resizes the pane it targets, so default-shell targets are
+        waited on before splitting. If a split fails for space, the existing
+        panes are waited on, ``select_layout`` reclaims space, and the split is
+        retried.
 
         Parameters
         ----------
@@ -903,6 +901,9 @@ class WorkspaceBuilder:
                     "environment": environment,
                 }
 
+                if entries and entries[-1].shell is None:
+                    _wait_for_panes_ready([entries[-1].pane])
+
                 pane = self._split_pane_reclaiming_space(
                     window,
                     pane,
@@ -942,9 +943,7 @@ class WorkspaceBuilder:
 
         Without an intermediate ``select_layout`` after every split, a window
         with many panes eventually has no room for the next split. Reclaiming
-        space means resizing the panes already created, which is only safe once
-        their shells are past their prompts — so the readiness barrier runs
-        first, then the layout, then the split is retried.
+        space resizes created panes, so default-shell panes are waited on first.
 
         Parameters
         ----------
