@@ -26,6 +26,7 @@ from tests.fixtures import utils as test_utils
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
+from tmuxp.plugin import TmuxpPlugin
 from tmuxp.workspace import builder as builder_module, loader
 from tmuxp.workspace.builder import (
     WorkspaceBuilder,
@@ -2035,6 +2036,107 @@ windows:
     assert events.count("barrier") == 2
     assert events.index("layout") > events.index("barrier")
     assert events[: events.index("layout")] == ["barrier", "barrier"]
+
+
+class _HookOrderRecorder(TmuxpPlugin):
+    """Plugin that records the order its lifecycle hooks fire."""
+
+    def __init__(self, calls: list[str]) -> None:
+        self.calls = calls
+
+    def before_workspace_builder(self, session: Session) -> None:
+        """Record the session-level pre-build hook."""
+        self.calls.append("before_workspace_builder")
+
+    def on_window_create(self, window: Window) -> None:
+        """Record the per-window creation hook."""
+        self.calls.append(f"on_window_create:{window.name}")
+
+    def after_window_finished(self, window: Window) -> None:
+        """Record the per-window completion hook."""
+        self.calls.append(f"after_window_finished:{window.name}")
+
+
+class PluginHookOrderFixture(t.NamedTuple):
+    """Expected plugin hook firing order for a workspace config."""
+
+    test_id: str
+    yaml: str
+    expected_order: list[str]
+
+
+PLUGIN_HOOK_ORDER_FIXTURES: list[PluginHookOrderFixture] = [
+    PluginHookOrderFixture(
+        test_id="single_window",
+        yaml=textwrap.dedent(
+            """\
+session_name: hook-order
+windows:
+- window_name: one
+  panes:
+  - shell_command: []
+""",
+        ),
+        expected_order=[
+            "before_workspace_builder",
+            "on_window_create:one",
+            "after_window_finished:one",
+        ],
+    ),
+    PluginHookOrderFixture(
+        test_id="all_creates_before_any_finish",
+        yaml=textwrap.dedent(
+            """\
+session_name: hook-order
+windows:
+- window_name: one
+  panes:
+  - shell_command: []
+- window_name: two
+  panes:
+  - shell_command: []
+""",
+        ),
+        expected_order=[
+            "before_workspace_builder",
+            "on_window_create:one",
+            "on_window_create:two",
+            "after_window_finished:one",
+            "after_window_finished:two",
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PluginHookOrderFixture._fields),
+    PLUGIN_HOOK_ORDER_FIXTURES,
+    ids=[f.test_id for f in PLUGIN_HOOK_ORDER_FIXTURES],
+)
+def test_plugin_hook_order(
+    tmp_path: pathlib.Path,
+    server: Server,
+    test_id: str,
+    yaml: str,
+    expected_order: list[str],
+) -> None:
+    """on_window_create fires for all windows before any after_window_finished."""
+    calls: list[str] = []
+
+    yaml_workspace = tmp_path / "hook_order.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        plugins=[_HookOrderRecorder(calls)],
+        server=server,
+    )
+    builder.build()
+
+    assert calls == expected_order
 
 
 def test_builder_logs_session_created(

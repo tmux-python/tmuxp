@@ -507,6 +507,11 @@ class WorkspaceBuilder:
         Without ``session``, it will use :class:`libmtux.Server` at ``self.server``
         passed in on initialization to create a new Session object.
 
+        Plugin hooks fire by phase: ``on_window_create`` runs for every window
+        as it is created, before any ``after_window_finished``. Each window's
+        ``after_window_finished`` still runs once that window has been laid out
+        and its pane commands dispatched.
+
         Parameters
         ----------
         session : :class:`libtmux.Session`
