@@ -632,8 +632,8 @@ class WorkspaceBuilder:
                 self.session.set_environment(option, value)
 
         # Phase one — structure: create every window and its panes first, so all
-        # of their shells start initializing concurrently. Nothing is resized and
-        # no keys are sent yet.
+        # of their shells start initializing concurrently. Layout and pane
+        # commands come after the barrier.
         window_layout: list[tuple[Window, dict[str, t.Any], list[_PaneEntry]]] = []
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
