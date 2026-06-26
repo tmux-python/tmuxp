@@ -1728,7 +1728,7 @@ windows:
     - cmd: echo world
 """,
         ),
-        expected_wait_count=3,
+        expected_wait_count=2,
     ),
     PaneReadinessFixture(
         test_id="waits_for_pane_without_commands",
@@ -1742,7 +1742,7 @@ windows:
   - shell_command: []
 """,
         ),
-        expected_wait_count=3,
+        expected_wait_count=2,
     ),
     PaneReadinessFixture(
         test_id="skips_pane_with_custom_shell",
@@ -1758,7 +1758,7 @@ windows:
     - cmd: echo world
 """,
         ),
-        expected_wait_count=2,
+        expected_wait_count=1,
     ),
     PaneReadinessFixture(
         test_id="skips_all_panes_with_window_shell",
@@ -1815,77 +1815,6 @@ def test_pane_readiness_waits_for_default_shell_panes(
     assert len(waited) == expected_wait_count
 
 
-class SplitReadinessFixture(t.NamedTuple):
-    """Pane split readiness ordering fixture."""
-
-    test_id: str
-    yaml: str
-    expected_events: list[str]
-
-
-SPLIT_READINESS_FIXTURES: list[SplitReadinessFixture] = [
-    SplitReadinessFixture(
-        test_id="default_shell_target",
-        yaml=textwrap.dedent(
-            """\
-session_name: split-readiness-test
-windows:
-- panes:
-  - shell_command: []
-  - shell_command: []
-""",
-        ),
-        expected_events=["wait:1", "split"],
-    ),
-]
-
-
-@pytest.mark.parametrize(
-    list(SplitReadinessFixture._fields),
-    SPLIT_READINESS_FIXTURES,
-    ids=[t.test_id for t in SPLIT_READINESS_FIXTURES],
-)
-def test_default_shell_pane_waits_before_split_resize(
-    tmp_path: pathlib.Path,
-    session: Session,
-    monkeypatch: pytest.MonkeyPatch,
-    test_id: str,
-    yaml: str,
-    expected_events: list[str],
-) -> None:
-    """Default-shell panes are ready before split-window resizes them."""
-    assert test_id == "default_shell_target"
-    events: list[str] = []
-    original_split = Pane.split
-
-    def recording_barrier(
-        panes: list[Pane],
-        timeout: float = 2.0,
-        interval: float = 0.05,
-    ) -> dict[str, bool]:
-        events.append(f"wait:{len(panes)}")
-        return {pane.pane_id: True for pane in panes if pane.pane_id is not None}
-
-    def recording_split(self: Pane, *args: t.Any, **kwargs: t.Any) -> Pane:
-        events.append("split")
-        return original_split(self, *args, **kwargs)
-
-    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
-    monkeypatch.setattr(Pane, "split", recording_split)
-
-    yaml_workspace = tmp_path / "split_readiness.yaml"
-    yaml_workspace.write_text(yaml, encoding="utf-8")
-    workspace = ConfigReader._from_file(yaml_workspace)
-    workspace = loader.expand(workspace)
-    workspace = loader.trickle(workspace)
-
-    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
-    window_config = workspace["windows"][0]
-    builder._create_window_panes(session.active_window, window_config)
-
-    assert events[:2] == expected_events
-
-
 def test_select_layout_called_once_per_window(
     tmp_path: pathlib.Path,
     server: Server,
@@ -1924,6 +1853,58 @@ windows:
     builder.build()
     # One window, one layout pass — no per-pane and no duplicate build() pass.
     assert call_count == 1
+
+
+def test_split_target_refreshes_without_readiness_wait(
+    tmp_path: pathlib.Path,
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Normal pane splitting refreshes target state without prompt waiting."""
+    events: list[str] = []
+    original_refresh = Pane.refresh
+    original_split = Pane.split
+
+    def recording_refresh(self: Pane) -> None:
+        events.append("refresh")
+        return original_refresh(self)
+
+    def recording_split(self: Pane, *args: t.Any, **kwargs: t.Any) -> Pane:
+        events.append("split")
+        return original_split(self, *args, **kwargs)
+
+    def recording_barrier(
+        panes: list[Pane],
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> dict[str, bool]:
+        events.append("wait")
+        return {pane.pane_id: True for pane in panes if pane.pane_id is not None}
+
+    monkeypatch.setattr(Pane, "refresh", recording_refresh)
+    monkeypatch.setattr(Pane, "split", recording_split)
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: split-refresh-test
+windows:
+- panes:
+  - shell_command: []
+  - shell_command: []
+""",
+    )
+    yaml_workspace = tmp_path / "split_refresh.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder._create_window_panes(session.active_window, workspace["windows"][0])
+
+    assert "wait" not in events
+    assert events[:2] == ["refresh", "split"]
 
 
 def test_build_waits_for_whole_workspace_in_one_barrier(
@@ -1970,9 +1951,8 @@ windows:
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
 
-    # The final barrier waits all panes together; earlier one-pane waits protect
-    # split-window resize targets.
-    assert barrier_sizes == [1, 1, 4]
+    # All four panes (across both windows) are awaited together, not per window.
+    assert barrier_sizes == [4]
 
 
 def test_layout_runs_after_readiness_barrier(
@@ -2032,10 +2012,9 @@ windows:
 
     assert "barrier" in events
     assert "layout" in events
-    # All readiness barriers precede every layout pass.
-    assert events.count("barrier") == 2
-    assert events.index("layout") > events.index("barrier")
-    assert events[: events.index("layout")] == ["barrier", "barrier"]
+    # The single workspace barrier precedes every layout pass.
+    assert events.count("barrier") == 1
+    assert events.index("barrier") < events.index("layout")
 
 
 class _HookOrderRecorder(TmuxpPlugin):
