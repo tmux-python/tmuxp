@@ -67,7 +67,8 @@ def _wait_for_panes_ready(
     initialize concurrently. Polling every pane in a single loop — rather than
     blocking on each one to completion before starting the next — observes that
     concurrency, collapsing the worst case from ``len(panes) * timeout`` of
-    serial waiting into a single shared ``timeout`` window.
+    serial waiting into a single shared ``timeout`` window. A slow prompt that
+    exceeds the timeout continues without blocking the rest of the workspace.
 
     Parameters
     ----------
