@@ -940,11 +940,12 @@ class WorkspaceBuilder:
         layout: str | None,
         entries: list[_PaneEntry],
     ) -> Pane:
-        """Split ``pane``; on a space failure, reclaim room once and retry.
+        """Split ``pane``; if it fails for space and a layout is set, retry.
 
         Without an intermediate ``select_layout`` after every split, a window
         with many panes eventually has no room for the next split. Reclaiming
         space resizes created panes, so default-shell panes are waited on first.
+        With no layout to redistribute with, the split failure propagates.
 
         Parameters
         ----------
@@ -981,9 +982,10 @@ class WorkspaceBuilder:
         try:
             return pane.split(**split_kwargs)
         except LibTmuxException:
+            if layout is None:
+                raise
             _wait_for_panes_ready([e.pane for e in entries if e.shell is None])
-            if layout is not None:
-                window.select_layout(layout)
+            window.select_layout(layout)
             return pane.split(**split_kwargs)
 
     def _wait_for_workspace_ready(
