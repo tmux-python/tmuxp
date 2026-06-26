@@ -9,6 +9,7 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.constants import OptionScope
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.server import Server
@@ -1082,48 +1083,73 @@ class WorkspaceBuilder:
         >>> len(dispatched)
         1
         """
-        if "layout" in window_config:
-            window.select_layout(window_config["layout"])
+        sync_option = "synchronize-panes"
+        window_sync = window.show_option(sync_option, scope=OptionScope.Window)
+        pane_sync = [
+            (entry.pane, entry.pane.show_option(sync_option, scope=OptionScope.Pane))
+            for entry in entries
+        ]
 
-        for pane, pane_config, _pane_shell in entries:
-            pane_log = TmuxpLoggerAdapter(
-                logger,
-                {
-                    "tmux_session": window.session.name or "",
-                    "tmux_window": window.name or "",
-                    "tmux_pane": pane.pane_id or "",
-                },
+        def restore_sync(target: Window | Pane, value: t.Any | None) -> None:
+            if value is None:
+                target.unset_option(sync_option)
+                return
+            target.set_option(
+                sync_option,
+                "on" if value is True or value == "on" else "off",
             )
 
-            if "suppress_history" in pane_config:
-                suppress = pane_config["suppress_history"]
-            elif "suppress_history" in window_config:
-                suppress = window_config["suppress_history"]
-            else:
-                suppress = True
+        window.set_option(sync_option, "off", scope=OptionScope.Window)
+        for pane, _value in pane_sync:
+            pane.set_option(sync_option, "off", scope=OptionScope.Pane)
 
-            enter = pane_config.get("enter", True)
-            sleep_before = pane_config.get("sleep_before", None)
-            sleep_after = pane_config.get("sleep_after", None)
-            for cmd in pane_config["shell_command"]:
-                enter = cmd.get("enter", enter)
-                sleep_before = cmd.get("sleep_before", sleep_before)
-                sleep_after = cmd.get("sleep_after", sleep_after)
+        try:
+            if "layout" in window_config:
+                window.select_layout(window_config["layout"])
 
-                if sleep_before is not None:
-                    time.sleep(sleep_before)
+            for pane, pane_config, _pane_shell in entries:
+                pane_log = TmuxpLoggerAdapter(
+                    logger,
+                    {
+                        "tmux_session": window.session.name or "",
+                        "tmux_window": window.name or "",
+                        "tmux_pane": pane.pane_id or "",
+                    },
+                )
 
-                pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
-                pane_log.debug("sent command %s", cmd["cmd"])
+                if "suppress_history" in pane_config:
+                    suppress = pane_config["suppress_history"]
+                elif "suppress_history" in window_config:
+                    suppress = window_config["suppress_history"]
+                else:
+                    suppress = True
 
-                if sleep_after is not None:
-                    time.sleep(sleep_after)
+                enter = pane_config.get("enter", True)
+                sleep_before = pane_config.get("sleep_before", None)
+                sleep_after = pane_config.get("sleep_after", None)
+                for cmd in pane_config["shell_command"]:
+                    enter = cmd.get("enter", enter)
+                    sleep_before = cmd.get("sleep_before", sleep_before)
+                    sleep_after = cmd.get("sleep_after", sleep_after)
 
-            if pane_config.get("focus"):
-                assert pane.pane_id is not None
-                window.select_pane(pane.pane_id)
+                    if sleep_before is not None:
+                        time.sleep(sleep_before)
 
-            yield pane, pane_config
+                    pane.send_keys(cmd["cmd"], suppress_history=suppress, enter=enter)
+                    pane_log.debug("sent command %s", cmd["cmd"])
+
+                    if sleep_after is not None:
+                        time.sleep(sleep_after)
+
+                if pane_config.get("focus"):
+                    assert pane.pane_id is not None
+                    window.select_pane(pane.pane_id)
+
+                yield pane, pane_config
+        finally:
+            restore_sync(window, window_sync)
+            for pane, value in pane_sync:
+                restore_sync(pane, value)
 
     def iter_create_panes(
         self,

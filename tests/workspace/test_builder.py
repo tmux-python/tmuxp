@@ -13,6 +13,7 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.constants import OptionScope
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -361,6 +362,128 @@ def test_window_options_after(
             pane,
             "moo",
         ), "Synchronized command did not execute properly"
+
+
+class SynchronizePanesFixture(t.NamedTuple):
+    """Synchronize-panes command isolation fixture."""
+
+    test_id: str
+    yaml: str
+    enable_global_sync: bool
+    expected_local_sync: bool | None
+
+
+SYNCHRONIZE_PANES_FIXTURES: list[SynchronizePanesFixture] = [
+    SynchronizePanesFixture(
+        test_id="window_option",
+        yaml=textwrap.dedent(
+            """\
+session_name: sync-command-test
+windows:
+- window_name: sync
+  options:
+    synchronize-panes: on
+  panes:
+  - shell_command:
+    - cmd: echo tmuxp-left-sync-marker
+  - shell_command:
+    - cmd: echo tmuxp-right-sync-marker
+""",
+        ),
+        enable_global_sync=False,
+        expected_local_sync=True,
+    ),
+    SynchronizePanesFixture(
+        test_id="global_default",
+        yaml=textwrap.dedent(
+            """\
+session_name: sync-command-test
+windows:
+- window_name: sync
+  panes:
+  - shell_command:
+    - cmd: echo tmuxp-left-sync-marker
+  - shell_command:
+    - cmd: echo tmuxp-right-sync-marker
+""",
+        ),
+        enable_global_sync=True,
+        expected_local_sync=None,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizePanesFixture._fields),
+    SYNCHRONIZE_PANES_FIXTURES,
+    ids=[t.test_id for t in SYNCHRONIZE_PANES_FIXTURES],
+)
+def test_synchronize_panes_disabled_during_pane_commands(
+    tmp_path: pathlib.Path,
+    session: Session,
+    test_id: str,
+    yaml: str,
+    enable_global_sync: bool,
+    expected_local_sync: bool | None,
+) -> None:
+    """Per-pane shell commands do not broadcast when synchronize-panes is on."""
+    yaml_workspace = tmp_path / f"{test_id}.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    if enable_global_sync:
+        session.active_window.set_option(
+            "synchronize-panes",
+            "on",
+            global_=True,
+            scope=OptionScope.Window,
+        )
+
+    try:
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session)
+        window = session.active_window
+        left, right = window.panes
+
+        def capture(pane: Pane) -> str:
+            return "\n".join(pane.cmd("capture-pane", "-p", "-J").stdout)
+
+        def commands_stayed_per_pane() -> bool:
+            left_text = capture(left)
+            right_text = capture(right)
+            return (
+                "tmuxp-left-sync-marker" in left_text
+                and "tmuxp-right-sync-marker" not in left_text
+                and "tmuxp-right-sync-marker" in right_text
+                and "tmuxp-left-sync-marker" not in right_text
+            )
+
+        assert retry_until(commands_stayed_per_pane, 5, interval=0.1), (
+            capture(left),
+            capture(right),
+        )
+        assert (
+            window.show_option("synchronize-panes", scope=OptionScope.Window)
+            is expected_local_sync
+        )
+        assert (
+            window.show_option(
+                "synchronize-panes",
+                scope=OptionScope.Window,
+                include_inherited=True,
+            )
+            is True
+        )
+    finally:
+        if enable_global_sync:
+            session.active_window.set_option(
+                "synchronize-panes",
+                "off",
+                global_=True,
+                scope=OptionScope.Window,
+            )
 
 
 def test_window_shell(
