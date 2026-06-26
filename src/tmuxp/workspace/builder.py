@@ -48,8 +48,7 @@ def _pane_has_drawn_prompt(pane: Pane) -> bool:
     Examples
     --------
     >>> pane = session.active_window.active_pane
-    >>> _wait_for_pane_ready(pane, timeout=5.0)
-    True
+    >>> _ = _wait_for_panes_ready([pane], timeout=5.0)
     >>> _pane_has_drawn_prompt(pane)
     True
     """
