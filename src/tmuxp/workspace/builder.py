@@ -644,8 +644,8 @@ class WorkspaceBuilder:
             window_layout.append((window, window_config, entries))
 
         # Barrier — wait once for every default-shell pane to draw its prompt.
-        # Because the shells warmed up in parallel during phase one, this single
-        # shared wait replaces what used to be one blocking wait per pane.
+        # The shells warmed up in parallel during phase one, so one shared wait
+        # covers them all.
         self._wait_for_workspace_ready(window_layout)
 
         # Phase two — finish: lay each window out (a single resize with all shells
