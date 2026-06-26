@@ -655,7 +655,10 @@ class WorkspaceBuilder:
 
         # Phase two — finish: lay each window out (a single resize with all shells
         # ready, so no zsh ``%`` marker) and send its commands.
-        for window, window_config, entries in window_layout:
+        for window_index, (window, window_config, entries) in enumerate(
+            window_layout,
+            start=1,
+        ):
             focus_pane = None
             for pane, pane_config in self._dispatch_window_commands(
                 window,
@@ -679,7 +682,14 @@ class WorkspaceBuilder:
                 focus_pane.select()
 
             if self.on_build_event:
-                self.on_build_event({"event": "window_done"})
+                window_name = window_config.get("window_name") or str(window_index)
+                self.on_build_event(
+                    {
+                        "event": "window_done",
+                        "name": window_name,
+                        "pane_total": len(window_config["panes"]),
+                    }
+                )
 
         if focus:
             focus.select()
