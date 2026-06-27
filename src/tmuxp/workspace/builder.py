@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pathlib
 import shutil
 import time
 import typing as t
@@ -647,15 +648,22 @@ class WorkspaceBuilder:
             for plugin in self.plugins:
                 plugin.on_window_create(window)
 
-            entries = self._create_window_panes(window, window_config)
-            self._wait_for_workspace_ready([(window, window_config, entries)])
-
             focus_pane = None
-            for pane, pane_config in self._dispatch_window_commands(
-                window,
-                window_config,
-                entries,
-            ):
+            if self._window_needs_sequential_pane_setup(window_config):
+                pane_iter = self._iter_create_panes_sequentially(
+                    window,
+                    window_config,
+                )
+            else:
+                entries = self._create_window_panes(window, window_config)
+                self._wait_for_workspace_ready([(window, window_config, entries)])
+                pane_iter = self._dispatch_window_commands(
+                    window,
+                    window_config,
+                    entries,
+                )
+
+            for pane, pane_config in pane_iter:
                 assert isinstance(pane, Pane)
 
                 if pane_config.get("focus"):
@@ -794,6 +802,52 @@ class WorkspaceBuilder:
                 window.select()
 
             yield window, window_config
+
+    def _window_needs_sequential_pane_setup(
+        self,
+        window_config: dict[str, t.Any],
+    ) -> bool:
+        """Return whether later pane splits depend on missing directories.
+
+        Examples
+        --------
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> builder._window_needs_sequential_pane_setup({
+        ...     'panes': [
+        ...         {'shell_command': []},
+        ...         {'shell_command': [], 'start_directory': '/'},
+        ...     ],
+        ... })
+        False
+        >>> builder._window_needs_sequential_pane_setup({
+        ...     'panes': [
+        ...         {'shell_command': []},
+        ...         {
+        ...             'shell_command': [],
+        ...             'start_directory': '/__tmuxp_missing_start_directory__',
+        ...         },
+        ...     ],
+        ... })
+        True
+        """
+        for pane_config in window_config["panes"][1:]:
+            start_directory = pane_config.get(
+                "start_directory",
+                window_config.get("start_directory"),
+            )
+            if (
+                start_directory is not None
+                and not pathlib.Path(
+                    os.fspath(start_directory),
+                )
+                .expanduser()
+                .is_dir()
+            ):
+                return True
+        return False
 
     def _create_window_panes(
         self,
@@ -936,6 +990,126 @@ class WorkspaceBuilder:
             entries.append(_PaneEntry(pane=pane, config=pane_config, shell=pane_shell))
 
         return entries
+
+    def _iter_create_panes_sequentially(
+        self,
+        window: Window,
+        window_config: dict[str, t.Any],
+    ) -> Iterator[t.Any]:
+        """Create, wait, and dispatch a window's panes one at a time.
+
+        This compatibility path preserves configs where an earlier pane command
+        prepares a later pane's split-time ``start_directory``.
+
+        Examples
+        --------
+        >>> session = server.new_session('create-panes-sequentially')
+        >>> builder = WorkspaceBuilder(
+        ...     session_config={'session_name': 'x', 'windows': []},
+        ...     server=server,
+        ... )
+        >>> panes = list(
+        ...     builder._iter_create_panes_sequentially(
+        ...         session.active_window,
+        ...         {'window_name': 'main', 'panes': [{'shell_command': []}]},
+        ...     ),
+        ... )
+        >>> len(panes)
+        1
+        """
+        assert isinstance(window, Window)
+
+        pane_base_index = window.show_option("pane-base-index", global_=True)
+        assert pane_base_index is not None
+
+        layout = window_config.get("layout")
+        pane = None
+        entries: list[_PaneEntry] = []
+
+        for pane_index, pane_config in enumerate(
+            window_config["panes"],
+            start=pane_base_index,
+        ):
+            if self.on_progress:
+                self.on_progress(f"Creating pane: {pane_index}")
+            if self.on_build_event:
+                self.on_build_event(
+                    {
+                        "event": "pane_creating",
+                        "pane_num": pane_index - int(pane_base_index) + 1,
+                        "pane_total": len(window_config["panes"]),
+                    }
+                )
+
+            if pane_index == int(pane_base_index):
+                pane = window.active_pane
+            else:
+
+                def get_pane_start_directory(
+                    pane_config: dict[str, str],
+                    window_config: dict[str, str],
+                ) -> str | None:
+                    if "start_directory" in pane_config:
+                        return pane_config["start_directory"]
+                    if "start_directory" in window_config:
+                        return window_config["start_directory"]
+                    return None
+
+                def get_pane_shell(
+                    pane_config: dict[str, str],
+                    window_config: dict[str, str],
+                ) -> str | None:
+                    if "shell" in pane_config:
+                        return pane_config["shell"]
+                    if "window_shell" in window_config:
+                        return window_config["window_shell"]
+                    return None
+
+                environment = pane_config.get(
+                    "environment",
+                    window_config.get("environment"),
+                )
+
+                assert pane is not None
+
+                split_kwargs: dict[str, t.Any] = {
+                    "attach": True,
+                    "start_directory": get_pane_start_directory(
+                        pane_config=pane_config,
+                        window_config=window_config,
+                    ),
+                    "shell": get_pane_shell(
+                        pane_config=pane_config,
+                        window_config=window_config,
+                    ),
+                    "environment": environment,
+                }
+
+                pane = self._split_pane_reclaiming_space(
+                    window,
+                    pane,
+                    split_kwargs,
+                    layout,
+                    entries,
+                )
+
+            assert isinstance(pane, Pane)
+            pane_log = TmuxpLoggerAdapter(
+                logger,
+                {
+                    "tmux_session": window.session.name or "",
+                    "tmux_window": window.name or "",
+                    "tmux_pane": pane.pane_id or "",
+                },
+            )
+            pane_log.debug("pane created")
+
+            pane_shell = pane_config.get("shell", window_config.get("window_shell"))
+            entry = _PaneEntry(pane=pane, config=pane_config, shell=pane_shell)
+            entries.append(entry)
+
+            self._wait_for_workspace_ready([(window, window_config, [entry])])
+            yield from self._dispatch_window_commands(window, window_config, [entry])
 
     def _split_pane_reclaiming_space(
         self,
@@ -1224,6 +1398,10 @@ class WorkspaceBuilder:
         >>> len(panes)
         1
         """
+        if self._window_needs_sequential_pane_setup(window_config):
+            yield from self._iter_create_panes_sequentially(window, window_config)
+            return
+
         entries = self._create_window_panes(window, window_config)
         _wait_for_panes_ready([e.pane for e in entries if e.shell is None])
         yield from self._dispatch_window_commands(window, window_config, entries)

@@ -768,6 +768,65 @@ windows:
     assert retry_until(has_late_dir)
 
 
+class SameWindowStartDirectoryFixture(t.NamedTuple):
+    """Same-window start_directory dependency fixture."""
+
+    test_id: str
+    later_pane_yaml: str
+
+
+SAME_WINDOW_START_DIRECTORY_FIXTURES: list[SameWindowStartDirectoryFixture] = [
+    SameWindowStartDirectoryFixture(
+        test_id="pane_start_directory",
+        later_pane_yaml="  - shell_command: []\n    start_directory: {late_dir!s}\n",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SameWindowStartDirectoryFixture._fields),
+    SAME_WINDOW_START_DIRECTORY_FIXTURES,
+    ids=[t.test_id for t in SAME_WINDOW_START_DIRECTORY_FIXTURES],
+)
+def test_build_dispatches_same_window_commands_before_later_start_directory(
+    session: Session,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    later_pane_yaml: str,
+) -> None:
+    """Earlier pane commands can prepare a later pane's start_directory."""
+    late_dir = tmp_path / test_id / "late-dir"
+    yaml_config = textwrap.dedent(
+        f"""\
+session_name: same-window-command-order
+windows:
+- window_name: dependent
+  panes:
+  - shell_command:
+    - cmd: mkdir -p {shlex.quote(str(late_dir))}
+      sleep_after: 0.2
+{later_pane_yaml.format(late_dir=late_dir)}
+""",
+    )
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_config)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    dependent = session.windows.get(window_name="dependent")
+    assert dependent is not None
+    panes = dependent.panes
+    assert len(panes) == 2
+    pane = panes[1]
+
+    def has_late_dir() -> bool:
+        return pane.pane_current_path == str(late_dir)
+
+    assert retry_until(has_late_dir)
+
+
 def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> None:
     """Test workspace builder setting start_directory relative to project file.
 
