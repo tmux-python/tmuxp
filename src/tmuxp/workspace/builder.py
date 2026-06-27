@@ -635,30 +635,21 @@ class WorkspaceBuilder:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
 
-        # Phase one — structure: create every window and its panes first, so all
-        # of their shells start initializing concurrently. Layout and pane
-        # commands come after the barrier.
-        window_layout: list[tuple[Window, dict[str, t.Any], list[_PaneEntry]]] = []
-        for window, window_config in self.iter_create_windows(session, append):
+        # Build each window in config order. Pane shells still warm up together
+        # inside a window, but earlier window commands run before later windows
+        # are created.
+        for window_index, (window, window_config) in enumerate(
+            self.iter_create_windows(session, append),
+            start=1,
+        ):
             assert isinstance(window, Window)
 
             for plugin in self.plugins:
                 plugin.on_window_create(window)
 
             entries = self._create_window_panes(window, window_config)
-            window_layout.append((window, window_config, entries))
+            self._wait_for_workspace_ready([(window, window_config, entries)])
 
-        # Barrier — wait once for every default-shell pane to draw its prompt.
-        # The shells warmed up in parallel during phase one, so one shared wait
-        # covers them all.
-        self._wait_for_workspace_ready(window_layout)
-
-        # Phase two — finish: lay each window out (a single resize with all shells
-        # ready, so no zsh ``%`` marker) and send its commands.
-        for window_index, (window, window_config, entries) in enumerate(
-            window_layout,
-            start=1,
-        ):
             focus_pane = None
             for pane, pane_config in self._dispatch_window_commands(
                 window,
@@ -1009,9 +1000,9 @@ class WorkspaceBuilder:
         self,
         window_layout: list[tuple[Window, dict[str, t.Any], list[_PaneEntry]]],
     ) -> dict[str, bool]:
-        """Wait for every default-shell pane across the workspace, concurrently.
+        """Wait for default-shell panes in the provided windows, concurrently.
 
-        Collects the panes that draw an interactive prompt from all windows and
+        Collects the panes that draw an interactive prompt from each window and
         waits for them in a single shared barrier (:func:`_wait_for_panes_ready`).
 
         Parameters
@@ -1201,9 +1192,8 @@ class WorkspaceBuilder:
         Run ``shell_command`` with ``$ tmux send-keys``.
 
         Creates the window's panes, waits for their shells concurrently, then
-        lays out and sends commands. :meth:`build` drives these phases across the
-        whole workspace for one shared wait; this per-window form is kept for
-        direct callers.
+        lays out and sends commands. :meth:`build` uses the same per-window
+        boundary so config-order command effects are visible to later windows.
 
         Parameters
         ----------

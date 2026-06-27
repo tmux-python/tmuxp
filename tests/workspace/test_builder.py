@@ -6,6 +6,7 @@ import functools
 import logging
 import os
 import pathlib
+import shlex
 import textwrap
 import time
 import typing as t
@@ -726,6 +727,45 @@ def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
 
             # handle case with OS X adding /private/ to /tmp/ paths
             assert retry_until(f_)
+
+
+def test_build_dispatches_window_commands_before_later_start_directory(
+    session: Session,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Earlier window commands can prepare a later window's start_directory."""
+    late_dir = tmp_path / "late-dir"
+    yaml_config = textwrap.dedent(
+        f"""\
+session_name: window-command-order
+windows:
+- window_name: bootstrap
+  panes:
+  - shell_command:
+    - cmd: mkdir -p {shlex.quote(str(late_dir))}
+      sleep_after: 0.2
+- window_name: dependent
+  start_directory: {late_dir!s}
+  panes:
+  - shell_command: []
+""",
+    )
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_config)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    dependent = session.windows.get(window_name="dependent")
+    assert dependent is not None
+    pane = dependent.active_pane
+    assert pane is not None
+
+    def has_late_dir() -> bool:
+        return pane.pane_current_path == str(late_dir)
+
+    assert retry_until(has_late_dir)
 
 
 def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> None:
@@ -1964,12 +2004,12 @@ windows:
     assert events[:2] == ["refresh", "split"]
 
 
-def test_build_waits_for_whole_workspace_in_one_barrier(
+def test_build_waits_for_each_window_before_dispatch(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """build() creates every pane up front, then waits for all in one barrier."""
+    """build() waits per window so earlier commands run before later windows."""
     barrier_sizes: list[int] = []
     original = builder_module._wait_for_panes_ready
 
@@ -2008,8 +2048,7 @@ windows:
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
 
-    # All four panes (across both windows) are awaited together, not per window.
-    assert barrier_sizes == [4]
+    assert barrier_sizes == [2, 2]
 
 
 def test_layout_runs_after_readiness_barrier(
@@ -2017,11 +2056,10 @@ def test_layout_runs_after_readiness_barrier(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """No window is laid out until the shared readiness barrier has completed.
+    """Each window is laid out after that window's readiness barrier.
 
-    This is the issue #365 safety invariant under the parallel structure: a
-    pane must draw its prompt before it is resized, so every ``select_layout``
-    must follow the barrier.
+    This is the issue #365 safety invariant: a pane must draw its prompt before
+    it is resized, so every ``select_layout`` must follow a barrier.
     """
     events: list[str] = []
     original_barrier = builder_module._wait_for_panes_ready
@@ -2069,9 +2107,7 @@ windows:
 
     assert "barrier" in events
     assert "layout" in events
-    # The single workspace barrier precedes every layout pass.
-    assert events.count("barrier") == 1
-    assert events.index("barrier") < events.index("layout")
+    assert events == ["barrier", "layout", "barrier", "layout"]
 
 
 class _HookOrderRecorder(TmuxpPlugin):
@@ -2120,7 +2156,7 @@ windows:
         ],
     ),
     PluginHookOrderFixture(
-        test_id="all_creates_before_any_finish",
+        test_id="interleaves_create_and_finish",
         yaml=textwrap.dedent(
             """\
 session_name: hook-order
@@ -2136,8 +2172,8 @@ windows:
         expected_order=[
             "before_workspace_builder",
             "on_window_create:one",
-            "on_window_create:two",
             "after_window_finished:one",
+            "on_window_create:two",
             "after_window_finished:two",
         ],
     ),
@@ -2156,7 +2192,7 @@ def test_plugin_hook_order(
     yaml: str,
     expected_order: list[str],
 ) -> None:
-    """on_window_create fires for all windows before any after_window_finished."""
+    """Per-window create and finish hooks follow config order."""
     calls: list[str] = []
 
     yaml_workspace = tmp_path / "hook_order.yaml"
