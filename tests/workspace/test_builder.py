@@ -414,6 +414,35 @@ windows:
 ]
 
 
+class SynchronizePanesExitFixture(t.NamedTuple):
+    """Synchronize-panes fixture with a pane that exits during setup."""
+
+    test_id: str
+    yaml: str
+
+
+SYNCHRONIZE_PANES_EXIT_FIXTURES: list[SynchronizePanesExitFixture] = [
+    SynchronizePanesExitFixture(
+        test_id="pane_exit",
+        yaml=textwrap.dedent(
+            """\
+session_name: sync-exit-test
+windows:
+- window_name: sync-exit
+  options:
+    synchronize-panes: on
+  panes:
+  - shell_command:
+    - cmd: printf tmuxp-survivor-marker; sleep 1
+  - shell_command:
+    - cmd: exit
+      sleep_after: 0.3
+""",
+        ),
+    ),
+]
+
+
 @pytest.mark.parametrize(
     list(SynchronizePanesFixture._fields),
     SYNCHRONIZE_PANES_FIXTURES,
@@ -485,6 +514,34 @@ def test_synchronize_panes_disabled_during_pane_commands(
                 global_=True,
                 scope=OptionScope.Window,
             )
+
+
+@pytest.mark.parametrize(
+    list(SynchronizePanesExitFixture._fields),
+    SYNCHRONIZE_PANES_EXIT_FIXTURES,
+    ids=[t.test_id for t in SYNCHRONIZE_PANES_EXIT_FIXTURES],
+)
+def test_synchronize_panes_ignores_exited_targets(
+    tmp_path: pathlib.Path,
+    session: Session,
+    test_id: str,
+    yaml: str,
+) -> None:
+    """Exiting startup panes do not break temporary sync restoration."""
+    yaml_workspace = tmp_path / f"{test_id}.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+    window = session.active_window
+
+    def pane_count() -> bool:
+        return len(window.panes) == 1
+
+    assert retry_until(pane_count, 5, interval=0.1)
 
 
 def test_window_shell(

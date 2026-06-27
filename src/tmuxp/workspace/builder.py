@@ -10,7 +10,7 @@ import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 from libtmux.constants import OptionScope
-from libtmux.exc import LibTmuxException
+from libtmux.exc import LibTmuxException, OptionError
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -1104,23 +1104,44 @@ class WorkspaceBuilder:
         """
         sync_option = "synchronize-panes"
         window_sync = window.show_option(sync_option, scope=OptionScope.Window)
-        pane_sync = [
-            (entry.pane, entry.pane.show_option(sync_option, scope=OptionScope.Pane))
-            for entry in entries
-        ]
+
+        def target_missing(error: OptionError) -> bool:
+            message = str(error)
+            return "no such pane" in message or "no such window" in message
+
+        def show_pane_sync(pane: Pane) -> t.Any | None:
+            try:
+                return pane.show_option(sync_option, scope=OptionScope.Pane)
+            except OptionError as e:
+                if not target_missing(e):
+                    raise
+                return None
+
+        def set_pane_sync_off(pane: Pane) -> None:
+            try:
+                pane.set_option(sync_option, "off", scope=OptionScope.Pane)
+            except OptionError as e:
+                if not target_missing(e):
+                    raise
+
+        pane_sync = [(entry.pane, show_pane_sync(entry.pane)) for entry in entries]
 
         def restore_sync(target: Window | Pane, value: t.Any | None) -> None:
-            if value is None:
-                target.unset_option(sync_option)
-                return
-            target.set_option(
-                sync_option,
-                "on" if value is True or value == "on" else "off",
-            )
+            try:
+                if value is None:
+                    target.unset_option(sync_option)
+                    return
+                target.set_option(
+                    sync_option,
+                    "on" if value is True or value == "on" else "off",
+                )
+            except OptionError as e:
+                if not target_missing(e):
+                    raise
 
         window.set_option(sync_option, "off", scope=OptionScope.Window)
         for pane, _value in pane_sync:
-            pane.set_option(sync_option, "off", scope=OptionScope.Pane)
+            set_pane_sync_off(pane)
 
         try:
             if "layout" in window_config:
