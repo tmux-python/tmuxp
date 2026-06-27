@@ -44,6 +44,16 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.59.0` (was `~=0.58.1`) (#1057)
+
+### What's new
+
+#### tmux 3.7 support (#1057)
+
+tmuxp now supports tmux 3.7, which joins 3.2a through 3.6 in the tested version range. There are no behavior changes for users on earlier tmux releases.
+
 ## tmuxp 1.70.1 (2026-06-16)
 
 tmuxp 1.70.1 bumps libtmux to 0.58.1, fixing a pytest 9.1 plugin import failure that broke test collection for projects using tmuxp's or libtmux's fixtures.

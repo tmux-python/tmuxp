@@ -1517,7 +1517,13 @@ def test_issue_800_default_size_many_windows(
         assert callable(builder.session.kill)
         builder.session.kill()
 
-        with pytest.raises(libtmux.exc.LibTmuxException, match="no space for new pane"):
+        # tmux 3.7 reworded this error from "no space for new pane" to
+        # "size or position no space for a new pane"; the optional "a "
+        # matches both wordings.
+        with pytest.raises(
+            libtmux.exc.LibTmuxException,
+            match=r"no space for (a )?new pane",
+        ):
             builder.build()
         return
 

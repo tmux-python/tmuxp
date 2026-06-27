@@ -604,11 +604,11 @@ wheels = [
 
 [[package]]
 name = "libtmux"
-version = "0.58.1"
+version = "0.59.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c7/58/346776e0491ede33e1554a4bff9b545dbe9f3164e45abac483195938a1cf/libtmux-0.58.1.tar.gz", hash = "sha256:a294dd585aa419d4ecce36f3e55df656693743c97a0b5b5bb1e5fea31ada2482", size = 519541, upload-time = "2026-06-17T00:03:31.81Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3b/a3/4112c3e30f7620eaaef9e7445dc1c040a006ad83a071697136652014ea5a/libtmux-0.59.0.tar.gz", hash = "sha256:bc279de9626408a5460c752ef1cc1884fc93ad00f5cc43a6170f619bc1617cf1", size = 518313, upload-time = "2026-06-27T17:26:04.613Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/22/4d/e44ada32edfe947c40d4dfc596a6f5355400a16d08be06016bd754375e41/libtmux-0.58.1-py3-none-any.whl", hash = "sha256:ab0f47d03a59d674962bc23e36e188fcfa4a82b0f270d474afab519e3076839b", size = 113653, upload-time = "2026-06-17T00:03:30.48Z" },
+    { url = "https://files.pythonhosted.org/packages/52/37/76d812918faaff95ec28c8f4c5cfacacb125a3ece4f33bd09357da3093c8/libtmux-0.59.0-py3-none-any.whl", hash = "sha256:c2525cbd4243a7d8ff0228f48696097b2cb53b2ee34267d9f9a88330d6f05c21", size = 113864, upload-time = "2026-06-27T17:26:03.171Z" },
 ]
 
 [[package]]
@@ -1670,7 +1670,7 @@ testing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "libtmux", specifier = "~=0.58.1" },
+    { name = "libtmux", specifier = "~=0.59.0" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
