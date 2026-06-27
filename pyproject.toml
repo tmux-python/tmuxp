@@ -60,10 +60,10 @@ dev = [
   "gp-sphinx==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-argparse==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-api-style==0.0.1a31",
-  "gp-libs",  # https://gp-libs.git-pull.com/
+  "gp-libs>=0.0.18",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
   # Testing
-  "gp-libs",
+  "gp-libs>=0.0.18",
   "pytest",
   "pytest-rerunfailures",
   "pytest-mock",
@@ -86,11 +86,11 @@ docs = [
   "gp-sphinx==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-argparse==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-api-style==0.0.1a31",
-  "gp-libs",  # https://gp-libs.git-pull.com/
+  "gp-libs>=0.0.18",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
 ]
 testing = [
-  "gp-libs",
+  "gp-libs>=0.0.18",
   "pytest",
   "pytest-rerunfailures",
   "pytest-mock",
