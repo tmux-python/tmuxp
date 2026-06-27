@@ -60,15 +60,15 @@ Equivalent to the `--progress-format` CLI flag.
 
 ## `TMUXP_PROGRESS_LINES`
 
-Number of script-output lines shown in the spinner panel. Defaults to `3`.
+Capture `before_script` output in the spinner panel with this many lines. By default, scripts keep their normal terminal output.
 
-Set to `0` to hide the panel entirely (script output goes to stdout):
+Set to `0` to keep native script output and hide the panel:
 
 ```console
 $ TMUXP_PROGRESS_LINES=0 tmuxp load myproject
 ```
 
-Set to `-1` for unlimited lines (capped to terminal height):
+Set to `-1` to capture unlimited lines (capped to terminal height):
 
 ```console
 $ TMUXP_PROGRESS_LINES=-1 tmuxp load myproject

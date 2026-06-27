@@ -218,21 +218,21 @@ $ tmuxp load --progress-format "{session} {bar} {overall_percent}%" myproject
 
 ### Panel lines
 
-The spinner shows script output in a panel below the spinner line. Control the panel height with `--progress-lines`:
+By default, `before_script` runs with its normal terminal output before the spinner appears. Use `--progress-lines` to capture that output in a panel below the spinner line:
 
-Hide the panel entirely (script output goes to stdout):
+Keep native script output and hide the panel:
 
 ```console
 $ tmuxp load --progress-lines 0 myproject
 ```
 
-Show unlimited lines (capped to terminal height):
+Capture unlimited lines (capped to terminal height):
 
 ```console
 $ tmuxp load --progress-lines -1 myproject
 ```
 
-Set a custom height (default is 3):
+Capture five lines:
 
 ```console
 $ tmuxp load --progress-lines 5 myproject
