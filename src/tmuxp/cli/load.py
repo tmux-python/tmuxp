@@ -568,7 +568,7 @@ def load_workspace(
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
-    t = Server(  # create tmux server object
+    tmux_server = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
         config_file=tmux_config_file,
@@ -582,7 +582,7 @@ def load_workspace(
         builder = WorkspaceBuilder(
             session_config=expanded_workspace,
             plugins=load_plugins(expanded_workspace, colors=cli_colors),
-            server=t,
+            server=tmux_server,
         )
     except exc.EmptyWorkspaceException:
         logger.warning(
@@ -669,6 +669,7 @@ def load_workspace(
         workspace_path=_private_path,
     )
     _success_emitted = False
+    _has_before_script = "before_script" in expanded_workspace
 
     def _emit_success() -> None:
         nonlocal _success_emitted
@@ -677,29 +678,32 @@ def load_workspace(
         _success_emitted = True
         _spinner.success()
 
-    with (
-        _silence_stream_handlers(),
-        _spinner as spinner,
-    ):
-        builder.on_build_event = spinner.on_build_event
-        _resolved_panel = (
-            _panel_lines if _panel_lines is not None else DEFAULT_OUTPUT_LINES
-        )
-        if _resolved_panel != 0:
-            builder.on_script_output = spinner.add_output_line
-        result = _dispatch_build(
-            builder,
-            detached,
-            append,
-            answer_yes,
-            cli_colors,
-            pre_attach_hook=_emit_success,
-            on_error_hook=spinner.stop,
-            pre_prompt_hook=spinner.stop,
-        )
-        if result is not None:
-            _emit_success()
-        return result
+    def _on_build_event(event: dict[str, t.Any]) -> None:
+        spinner.on_build_event(event)
+        if event.get("event") == "before_script_done":
+            spinner.start()
+
+    spinner = _spinner
+    with _silence_stream_handlers():
+        if not _has_before_script:
+            spinner.start()
+        builder.on_build_event = _on_build_event
+        try:
+            result = _dispatch_build(
+                builder,
+                detached,
+                append,
+                answer_yes,
+                cli_colors,
+                pre_attach_hook=_emit_success,
+                on_error_hook=spinner.stop,
+                pre_prompt_hook=spinner.stop,
+            )
+            if result is not None:
+                _emit_success()
+            return result
+        finally:
+            spinner.stop()
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:

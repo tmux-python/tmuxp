@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import pathlib
+import subprocess
 import sys
 import typing as t
 
@@ -41,6 +42,40 @@ def test_run_before_script_raise_BeforeLoadScriptError_if_retcode() -> None:
         run_before_script(script_file)
 
 
+def test_run_before_script_inherits_stdio_without_observer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """run_before_script() leaves stdio attached unless an observer is needed."""
+    captured_kwargs: dict[str, t.Any] = {}
+
+    class EmptyStream:
+        def readline(self) -> str:
+            return ""
+
+    class FakeProcess:
+        returncode = 0
+        stdout = EmptyStream()
+        stderr = EmptyStream()
+
+        def poll(self) -> int:
+            return self.returncode
+
+        def wait(self) -> int:
+            return self.returncode
+
+    def fake_popen(_args: list[str], **kwargs: t.Any) -> FakeProcess:
+        captured_kwargs.update(kwargs)
+        return FakeProcess()
+
+    monkeypatch.setattr(subprocess, "Popen", fake_popen)
+
+    returncode = run_before_script("echo ok")
+
+    assert returncode == 0
+    assert captured_kwargs.get("stdout") is None
+    assert captured_kwargs.get("stderr") is None
+
+
 @pytest.fixture
 def temp_script(tmp_path: pathlib.Path) -> pathlib.Path:
     """Fixture of an example script that prints "Hello, world!"."""
@@ -56,7 +91,7 @@ exit 0
 
 
 class TTYTestFixture(t.NamedTuple):
-    """Test fixture for isatty behavior verification."""
+    """Test fixture for inherited subprocess stdio verification."""
 
     test_id: str
     isatty_value: bool
@@ -70,9 +105,9 @@ TTY_TEST_FIXTURES: list[TTYTestFixture] = [
         expected_output="Hello, World!",
     ),
     TTYTestFixture(
-        test_id="tty_disabled_suppresses_output",
+        test_id="tty_disabled_still_streams_output",
         isatty_value=False,
-        expected_output="",
+        expected_output="Hello, World!",
     ),
 ]
 
@@ -82,32 +117,28 @@ TTY_TEST_FIXTURES: list[TTYTestFixture] = [
     TTY_TEST_FIXTURES,
     ids=[test.test_id for test in TTY_TEST_FIXTURES],
 )
-def test_run_before_script_isatty(
+def test_run_before_script_inherits_stdio_regardless_of_parent_isatty(
     temp_script: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
+    capfd: pytest.CaptureFixture[str],
     test_id: str,
     isatty_value: bool,
     expected_output: str,
 ) -> None:
-    """Verify behavior of ``isatty()``, which we mock in `run_before_script()`."""
-    # Mock sys.stdout.isatty() to return the desired value.
+    """run_before_script() lets the child process own its stdout behavior."""
     monkeypatch.setattr(sys.stdout, "isatty", lambda: isatty_value)
 
-    # Run the script.
     returncode = run_before_script(temp_script)
 
-    # Assert that the script ran successfully.
     assert returncode == 0
 
-    out, _err = capsys.readouterr()
+    out, _err = capfd.readouterr()
 
-    # In TTY mode, we expect the output; in non-TTY mode, we expect it to be suppressed.
     assert expected_output in out
 
 
 def test_return_stdout_if_ok(
-    capsys: pytest.CaptureFixture[str],
+    capfd: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """run_before_script() returns stdout if script succeeds."""
@@ -118,7 +149,7 @@ def test_return_stdout_if_ok(
     script_file = FIXTURE_PATH / "script_complete.sh"
 
     run_before_script(script_file)
-    out, _err = capsys.readouterr()
+    out, _err = capfd.readouterr()
     assert "hello" in out
 
 

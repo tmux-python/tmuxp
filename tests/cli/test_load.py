@@ -887,6 +887,86 @@ def test_load_workspace_env_progress_disabled(
     assert session.name == "sample workspace"
 
 
+def test_load_workspace_pauses_spinner_for_before_script(
+    server: Server,
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """before_script workspaces do not render progress before the script exits."""
+    import yaml
+
+    from tmuxp.cli._colors import ColorMode, Colors
+
+    calls: list[str] = []
+    captured_script_callback: list[t.Callable[[str], None] | None] = []
+
+    class FakeSpinner:
+        def __init__(self, *_args: t.Any, **_kwargs: t.Any) -> None:
+            pass
+
+        def __enter__(self) -> FakeSpinner:
+            self.start()
+            return self
+
+        def __exit__(self, *_args: object) -> t.Literal[False]:
+            self.stop()
+            return False
+
+        def start(self) -> None:
+            calls.append("start")
+
+        def stop(self) -> None:
+            calls.append("stop")
+
+        def success(self) -> None:
+            calls.append("success")
+
+        def add_output_line(self, _line: str) -> None:
+            calls.append("add_output_line")
+
+        def on_build_event(self, event: dict[str, t.Any]) -> None:
+            calls.append(str(event["event"]))
+
+    def fake_dispatch_build(
+        builder: WorkspaceBuilder,
+        *_args: t.Any,
+        **_kwargs: t.Any,
+    ) -> None:
+        captured_script_callback.append(builder.on_script_output)
+        assert builder.on_before_script is None
+        assert builder.on_build_event is not None
+
+        builder.on_build_event({"event": "before_script_started"})
+        builder.on_build_event({"event": "before_script_done"})
+
+    config = {
+        "session_name": "before-script-progress",
+        "before_script": "echo before",
+        "windows": [{"window_name": "main"}],
+    }
+    config_file = tmp_path / "before-script.yaml"
+    config_file.write_text(yaml.dump(config))
+
+    monkeypatch.delenv("TMUX", raising=False)
+    monkeypatch.setattr("tmuxp.cli.load.Spinner", FakeSpinner)
+    monkeypatch.setattr("tmuxp.cli.load._dispatch_build", fake_dispatch_build)
+
+    result = load_workspace(
+        str(config_file),
+        socket_name=server.socket_name,
+        cli_colors=Colors(ColorMode.NEVER),
+    )
+
+    assert result is None
+    assert captured_script_callback == [None]
+    assert calls == [
+        "before_script_started",
+        "before_script_done",
+        "start",
+        "stop",
+    ]
+
+
 def test_load_masks_home_in_spinner_message(monkeypatch: pytest.MonkeyPatch) -> None:
     """Spinner message should mask home directory via PrivatePath."""
     monkeypatch.setattr(pathlib.Path, "home", lambda: pathlib.Path("/home/testuser"))
