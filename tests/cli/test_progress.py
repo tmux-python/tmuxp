@@ -24,6 +24,7 @@ from tmuxp.cli._progress import (
     _truncate_visible,
     _visible_len,
     render_bar,
+    render_build_bar,
     resolve_progress_format,
 )
 
@@ -76,6 +77,55 @@ TWO_PHASE_WINDOW_DONE_FIXTURES: list[TwoPhaseWindowDoneFixture] = [
         expected_window="w2",
         expected_progress="2/3 win",
         expected_session_pane_progress="3/6",
+    ),
+]
+
+
+class BuildBarFixture(t.NamedTuple):
+    """Test fixture for the two-phase build bar renderer."""
+
+    test_id: str
+    windows_done: int
+    windows_created: int
+    total: int
+    expected: str
+
+
+BUILD_BAR_FIXTURES: list[BuildBarFixture] = [
+    BuildBarFixture(
+        test_id="none_created",
+        windows_done=0,
+        windows_created=0,
+        total=11,
+        expected="░░░░░░░░░░",
+    ),
+    BuildBarFixture(
+        test_id="created_before_done",
+        windows_done=0,
+        windows_created=5,
+        total=11,
+        expected="▓▓▓▓▓░░░░░",
+    ),
+    BuildBarFixture(
+        test_id="done_and_created",
+        windows_done=1,
+        windows_created=5,
+        total=11,
+        expected="█▓▓▓▓░░░░░",
+    ),
+    BuildBarFixture(
+        test_id="done_does_not_complete_early",
+        windows_done=10,
+        windows_created=11,
+        total=11,
+        expected="█████████▓",
+    ),
+    BuildBarFixture(
+        test_id="all_done",
+        windows_done=11,
+        windows_created=11,
+        total=11,
+        expected="██████████",
     ),
 ]
 
@@ -624,6 +674,22 @@ def test_render_bar_width_constant() -> None:
     assert len(bar) == BAR_WIDTH
 
 
+@pytest.mark.parametrize(
+    list(BuildBarFixture._fields),
+    BUILD_BAR_FIXTURES,
+    ids=[f.test_id for f in BUILD_BAR_FIXTURES],
+)
+def test_render_build_bar(
+    test_id: str,
+    windows_done: int,
+    windows_created: int,
+    total: int,
+    expected: str,
+) -> None:
+    """render_build_bar shows done, created, and empty segments."""
+    assert render_build_bar(windows_done, windows_created, total) == expected
+
+
 # BuildTree new token tests
 
 
@@ -832,9 +898,43 @@ def test_spinner_default_progress_tracks_started_window_in_phase_one() -> None:
     ):
         spinner.on_build_event(event)
 
-    assert "2/3 win" in spinner.message
-    assert "0/3" not in spinner.message
+    assert "0/2 win · pane 0/1" in spinner.message
+    assert render_build_bar(0, 2, 3) in spinner.message
     assert spinner.message.endswith("w2")
+
+
+def test_spinner_default_bar_tracks_created_windows_before_completion() -> None:
+    """The default bar shows created windows before any window_done events."""
+    stream = io.StringIO()
+    spinner = Spinner(
+        message="Building...",
+        color_mode=ColorMode.NEVER,
+        stream=stream,
+        progress_format="default",
+    )
+    spinner.on_build_event(
+        {
+            "event": "session_created",
+            "name": "study",
+            "window_total": 11,
+            "session_pane_total": 44,
+        }
+    )
+    for index in range(1, 6):
+        spinner.on_build_event(
+            {
+                "event": "window_started",
+                "name": f"w{index}",
+                "pane_total": 4,
+            }
+        )
+        spinner.on_build_event(
+            {"event": "pane_creating", "pane_num": 4, "pane_total": 4}
+        )
+
+    assert "0/5 win · pane 4/4" in spinner.message
+    assert "▓" in spinner.message
+    assert render_bar(0, 11) not in spinner.message
 
 
 def test_spinner_default_progress_tracks_completed_window_in_phase_two() -> None:
@@ -862,9 +962,7 @@ def test_spinner_default_progress_tracks_completed_window_in_phase_two() -> None
         spinner.on_build_event(event)
 
     assert "1/3 win" in spinner.message
-    assert "3/3 win" not in spinner.message
-    assert render_bar(1, 3) in spinner.message
-    assert render_bar(2, 3) not in spinner.message
+    assert render_build_bar(1, 3, 3) in spinner.message
     assert spinner.message.endswith("w1")
 
 

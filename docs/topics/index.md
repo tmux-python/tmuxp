@@ -7,6 +7,12 @@ Conceptual guides and workflow documentation.
 ::::{grid} 1 1 2 2
 :gutter: 2 2 3 3
 
+:::{grid-item-card} Loading workspaces
+:link: loading-workspaces
+:link-type: doc
+How tmuxp creates windows, panes, and progress output.
+:::
+
 :::{grid-item-card} Workflows
 :link: workflows
 :link-type: doc
@@ -46,6 +52,7 @@ instead of raw shell commands, supports JSON and YAML, and can
 :hidden:
 
 workflows
+loading-workspaces
 plugins
 library-vs-cli
 troubleshooting

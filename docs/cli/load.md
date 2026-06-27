@@ -157,13 +157,16 @@ $ tmuxp --log-level [LEVEL] load [filename] --log-file [log_filename]
 
 When loading a workspace, tmuxp shows an animated spinner with build progress. The spinner updates as windows and panes are created, giving real-time feedback during session builds.
 
+See {ref}`loading-workspaces` for how tmuxp creates windows and panes during
+load and how to read the default progress line.
+
 ### Presets
 
 Five built-in presets control the spinner format:
 
 | Preset | Format |
 |--------|--------|
-| `default` | `Loading workspace: {session} {bar} {progress} {window}` |
+| `default` | `Loading workspace: {session} {bar} {build_progress} {window}` |
 | `minimal` | `Loading workspace: {session} [{window_progress}]` |
 | `window` | `Loading workspace: {session} {window_bar} {window_progress_rel}` |
 | `pane` | `Loading workspace: {session} {pane_bar} {session_pane_progress}` |
@@ -199,9 +202,10 @@ Use a custom format string with any of the available tokens:
 | `{pane_total}` | Total panes in the current window |
 | `{pane_progress}` | Pane fraction (e.g. `2/4`) |
 | `{progress}` | Combined progress (e.g. `1/3 win · 2/4 pane`) |
+| `{build_progress}` | Finished windows over created windows (e.g. `1/3 win · pane 2/4`) |
 | `{session_pane_progress}` | Panes completed across the session (e.g. `5/10`) |
 | `{overall_percent}` | Pane-based completion percentage (0–100) |
-| `{bar}` | Composite progress bar |
+| `{bar}` | Build progress bar: finished, created, and empty window segments |
 | `{pane_bar}` | Pane-based progress bar |
 | `{window_bar}` | Window-based progress bar |
 | `{status_icon}` | Status icon (⏸ during before_script) |
