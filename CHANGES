@@ -44,6 +44,18 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Faster workspace loads (#1056)
+
+Loading a workspace is faster: {ref}`tmuxp-load` now prepares all of a window's panes at once and waits for their shells together, rather than one pane at a time. Workspaces with multiple panes per window — particularly with a slow interactive shell startup — open noticeably quicker, with no changes to your configuration.
+
+See {ref}`loading-workspaces` for an overview of how a load proceeds.
+
+#### `before_script` runs interactively by default (#1056)
+
+A workspace's `before_script` now runs attached to your terminal, so interactive prompts and TTY-aware tools behave normally. Pass `--progress-lines` (or set `TMUXP_PROGRESS_LINES`) to capture its output into the load progress panel instead.
+
 ## tmuxp 1.71.0 (2026-06-27)
 
 tmuxp 1.71.0 bumps libtmux to 0.59.0, adding support for tmux 3.7.
