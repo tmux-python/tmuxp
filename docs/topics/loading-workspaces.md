@@ -8,14 +8,14 @@ applying layouts and sending commands.
 
 ## What happens during load
 
-tmuxp loads a workspace in two broad phases.
+tmuxp builds each window in config order.
 
-First, tmuxp creates the session structure. It creates each configured window
-and its panes so the panes can start their shells in parallel.
+For each window, tmuxp creates the window and prepares its panes. When later
+pane `start_directory` values already exist, panes can start their shells
+together and tmuxp waits for them together.
 
-Then, tmuxp waits for the panes to be ready. Once the shells have drawn their
-prompts, tmuxp finishes each window by applying layout, sending configured
-commands, running window-level configuration, and firing
+Once the panes are ready, tmuxp applies layout, sends configured commands,
+runs window-level configuration, and fires
 {meth}`~tmuxp.plugin.TmuxpPlugin.after_window_finished` plugin hooks.
 
 This means {meth}`~tmuxp.plugin.TmuxpPlugin.on_window_create` runs while the
@@ -28,11 +28,11 @@ window has been laid out and configured.
 The default progress line reports the same build in a compact form:
 
 ```text
-Loading workspace: study ▓▓░░░░░░░░ 0/2 win · pane 3/4 learning-asyncio
+Loading workspace: study ▓░░░░░░░░░ 0/1 win · pane 3/4 learning-asyncio
 ```
 
 The fraction before `win` is finished windows over windows created so far. In
-the example above, two windows have been created and neither has finished yet.
+the example above, one window has been created and has not finished yet.
 
 The `pane` fraction describes the current window's pane creation progress. When
 a new window starts, this can briefly show `pane 0/N` before tmuxp creates the
@@ -47,12 +47,12 @@ The progress bar shows the whole workspace:
 Once tmuxp enters the finish phase, the finished-window count rises:
 
 ```text
-Loading workspace: study █▓░░░░░░░░ 1/2 win learning-dsa
+Loading workspace: study █░░░░░░░░░ 1/1 win learning-asyncio
 ```
 
 ## Why tmuxp loads this way
 
-Creating all panes before finishing windows lets shell startup happen in
-parallel. The later finish phase can then apply layouts and commands after the
+Preparing a window's panes before layout lets shell startup happen in parallel
+when config-order dependencies allow it. Layout and commands then run after the
 panes are ready, which avoids resizing panes while shells are still drawing
 their first prompts.

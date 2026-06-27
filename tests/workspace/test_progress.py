@@ -120,7 +120,7 @@ def test_builder_window_done_events_include_window_identity(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """window_done events identify the window completed in phase two."""
+    """window_done events identify the completed window."""
     monkeypatch.delenv("TMUX", raising=False)
 
     session_config = {

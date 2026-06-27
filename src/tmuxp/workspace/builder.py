@@ -508,10 +508,9 @@ class WorkspaceBuilder:
         Without ``session``, it will use :class:`libmtux.Server` at ``self.server``
         passed in on initialization to create a new Session object.
 
-        Plugin hooks fire by phase: ``on_window_create`` runs for every window
-        as it is created, before any ``after_window_finished``. Each window's
-        ``after_window_finished`` still runs once that window has been laid out
-        and its pane commands dispatched.
+        Plugin hooks fire in config order. For each window, ``on_window_create``
+        runs after creation; ``after_window_finished`` runs after layout,
+        configuration, and pane command dispatch.
 
         Parameters
         ----------
@@ -1182,7 +1181,7 @@ class WorkspaceBuilder:
         Parameters
         ----------
         window_layout : list of tuple
-            ``(window, window_config, entries)`` triples from phase one
+            ``(window, window_config, entries)`` triples for created panes
 
         Returns
         -------
@@ -1235,7 +1234,7 @@ class WorkspaceBuilder:
         window_config : dict
             config section for window
         entries : list of :class:`_PaneEntry`
-            panes created for this window in phase one
+            panes created for this window
 
         Yields
         ------

@@ -48,7 +48,7 @@ _Notes on the upcoming release will go here._
 
 #### Faster workspace loads (#1056)
 
-Loading a workspace is faster: {ref}`tmuxp-load` now prepares all of a window's panes at once and waits for their shells together, rather than one pane at a time. Workspaces with multiple panes per window — particularly with a slow interactive shell startup — open noticeably quicker, with no changes to your configuration.
+Loading a workspace is faster: {ref}`tmuxp-load` now prepares panes in a window together when config-order dependencies allow it, rather than waiting on every pane one at a time. Workspaces with multiple panes per window — particularly with a slow interactive shell startup — open noticeably quicker, with no changes to your configuration.
 
 See {ref}`loading-workspaces` for an overview of how a load proceeds.
 

@@ -938,7 +938,7 @@ def test_spinner_default_bar_tracks_created_windows_before_completion() -> None:
 
 
 def test_spinner_default_progress_tracks_completed_window_in_phase_two() -> None:
-    """The default preset changes current window when phase two completes it."""
+    """The default preset changes current window when it completes."""
     stream = io.StringIO()
     spinner = Spinner(
         message="Building...",
