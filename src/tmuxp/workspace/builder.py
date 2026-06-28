@@ -963,6 +963,11 @@ class WorkspaceBuilder:
                     "environment": environment,
                 }
 
+                # Splitting resizes the target, but we only ever split the
+                # freshest pane (pre-prompt, still sourcing its rc), so no
+                # readiness wait is needed here; the post-creation barrier
+                # guards layout and commands. (Residual #365 risk if a slow
+                # on_window_create plugin lets pane 0 prompt first.)
                 pane = self._split_pane_reclaiming_space(
                     window,
                     pane,
