@@ -1608,7 +1608,7 @@ wheels = [
 
 [[package]]
 name = "tmuxp"
-version = "1.72.0"
+version = "1.73.0"
 source = { editable = "." }
 dependencies = [
     { name = "libtmux" },
