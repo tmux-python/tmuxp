@@ -152,10 +152,7 @@ def test_at_home_directory(
     assert result[0] == home / ".tmuxp.yaml"
 
 
-def test_at_filesystem_root(
-    tmp_path: pathlib.Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_at_filesystem_root() -> None:
     """Test traversal stops at filesystem root."""
     # This test verifies no infinite loop at root
     result = find_local_workspace_files(pathlib.Path("/"), stop_at_home=False)
