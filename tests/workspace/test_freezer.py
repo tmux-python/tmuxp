@@ -6,7 +6,6 @@ import logging
 import typing
 
 import pytest
-from libtmux.test.retry import retry_until
 
 from tests.fixtures import utils as test_utils
 from tmuxp._internal.config_reader import ConfigReader
@@ -31,11 +30,6 @@ def test_freeze_config(session: Session) -> None:
     builder.build(session=session)
     assert session == builder.session
 
-    # Wait for all configured windows to register instead of a fixed sleep.
-    expected_windows = len(session_config["windows"])
-    retry_until(lambda: len(session.windows) >= expected_windows, 2)
-
-    session = session
     new_config = freezer.freeze(session)
 
     validation.validate_schema(new_config)
@@ -123,10 +117,6 @@ def test_freeze_logs_debug(
     )
     builder = WorkspaceBuilder(session_config=session_config, server=session.server)
     builder.build(session=session)
-
-    # Wait for all configured windows to register instead of a fixed sleep.
-    expected_windows = len(session_config["windows"])
-    retry_until(lambda: len(session.windows) >= expected_windows, 2)
 
     with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.freezer"):
         freezer.freeze(session)
