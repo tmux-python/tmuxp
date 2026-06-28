@@ -46,49 +46,48 @@ _Notes on the upcoming release will go here._
 
 ### What's new
 
-#### Pluggable workspace builders (#1065)
+#### Pluggable workspace builders (#1066)
 
-tmuxp can now load a workspace with a builder other than the built-in one. Set
-`workspace_builder` in a workspace file to a Python dotted path
-(`package.module:Builder`), a `module.attr` path, or the name of a builder
-registered under the `tmuxp.workspace_builders` entry-point group. When a builder
-lives outside tmuxp's environment, `workspace_builder_paths` lists trusted
-directories that are temporarily added to `sys.path` for the import and build —
-without the broader, code-executing behavior of site-directory processing.
+tmuxp can now build a workspace with a builder other than its built-in one. Point
+a workspace file's `workspace_builder` key at an installed builder — by registered
+name or by Python import path — and tmuxp loads the session through it. Builders
+that ship outside tmuxp's environment can be imported from directories listed in
+`workspace_builder_paths`, which tmuxp trusts only for that load. The built-in
+builder stays the default, so existing workspaces are unaffected. See
+{ref}`custom-workspace-builders`.
 
-The built-in builder is now the explicit classic builder, available as the
-`classic` entry point and as
-{class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`. A public
-contract, {class}`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`,
-documents what a builder must provide and is shaped to allow async builders as a
-future additive extension. `WorkspaceBuilder` remains importable from
-`tmuxp.workspace.builder` as a backwards-compatible alias. See
-{ref}`custom-workspace-builders` for details.
+#### Configurable pane readiness (#1066)
 
-#### Configurable pane readiness (#1065)
-
-Whether tmuxp waits for a pane's shell prompt before sending layout and commands
-is now configurable through a new `workspace_builder_options` catalog:
+Before sending a pane's layout and commands, tmuxp can wait for the shell to draw
+its prompt — a guard against a zsh prompt-redraw artifact. That wait is now a
+policy you set per workspace:
 
 ```yaml
 workspace_builder_options:
-  pane_readiness: auto   # auto | always | never (+ truthy/falsy aliases)
+  pane_readiness: auto   # auto | always | never (also true/false)
 ```
 
-The prompt wait exists to avoid a zsh prompt-redraw artifact, so the new default,
-`auto`, waits only when the session's interactive shell is zsh. zsh users see no
-change. Sessions on other shells (bash, sh, …) skip a wait they did not need and
-load slightly faster. To restore the previous always-wait behavior set
-`pane_readiness: always`; to skip the wait entirely set `never`. See
-{class}`~tmuxp.workspace.options.PaneReadiness`.
+The new default, `auto`, waits only when the session's shell is zsh, so zsh users
+see no change while bash, sh, and other shells skip a wait they never needed. Set
+`always` to keep the previous wait-everywhere behavior, or `never` to skip it
+entirely. See {ref}`custom-workspace-builders`.
 
-### Documentation
+### Development
 
-#### Custom workspace builder guide (#1065)
+#### Workspace builder API (#1066)
 
-A new {ref}`custom-workspace-builders` topic explains how tmuxp hands a workspace
-to a builder, how to select or package a builder, the trust boundary for
-importing builder code, how to tune pane readiness, and how to test a builder.
+`tmuxp.workspace.builder` is now a package. The default builder is
+{class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`, with
+`WorkspaceBuilder` kept as a backwards-compatible alias. Third-party builders
+implement {class}`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
+(shaped to allow async builders later) and are resolved by
+{func}`~tmuxp.workspace.builder.registry.resolve_builder_class` from an entry
+point or import path, with trusted import directories handled by
+{func}`~tmuxp.workspace.builder.registry.resolve_builder_paths`. Builder behavior
+is configured through {class}`~tmuxp.workspace.options.WorkspaceBuilderOptions`
+and {class}`~tmuxp.workspace.options.PaneReadiness`, and resolution failures raise
+{exc}`~tmuxp.exc.WorkspaceBuilderError` and its subclasses. See
+{ref}`custom-workspace-builders` for the guide.
 
 ## tmuxp 1.72.0 (2026-06-28)
 
