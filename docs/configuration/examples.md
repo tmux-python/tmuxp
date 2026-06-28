@@ -791,7 +791,7 @@ windows:
 
 tmuxp sessions can be scripted in python. The first way is to use the
 ORM in the {ref}`API`. The second is to pass a {py:obj}`dict` into
-{class}`~tmuxp.workspace.builder.WorkspaceBuilder` with a correct schema.
+{class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder` with a correct schema.
 See: {meth}`tmuxp.validation.validate_schema`.
 
 :::
