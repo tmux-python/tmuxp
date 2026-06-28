@@ -307,6 +307,12 @@ class BuildTree:
          - —
          - —
          - —
+       * - ``{windows_created}``
+         - ``0``
+         - ``0``
+         - increments
+         - —
+         - —
        * - ``{window_progress}``
          - ``""``
          - ``""``

@@ -194,7 +194,9 @@ Use a custom format string with any of the available tokens:
 | `{window}` | Current window name |
 | `{window_index}` | Current window number (1-based) |
 | `{window_total}` | Total number of windows |
+| `{windows_created}` | Number of windows created so far |
 | `{window_progress}` | Window fraction (e.g. `1/3`) |
+| `{window_progress_created}` | Created windows fraction (e.g. `2/3`) |
 | `{window_progress_rel}` | Completed windows fraction (e.g. `1/3`) |
 | `{windows_done}` | Number of completed windows |
 | `{windows_remaining}` | Number of remaining windows |
