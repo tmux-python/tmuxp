@@ -40,3 +40,12 @@ Notes:
   ```
 
   Above: Use `tmux` directly to attach _banana_.
+
+## Workspace builder keys
+
+A workspace file can also select a custom builder and tune builder behavior with
+`workspace_builder`, `workspace_builder_paths`, and `workspace_builder_options`.
+
+```{seealso}
+{ref}`workspace-builders`
+```

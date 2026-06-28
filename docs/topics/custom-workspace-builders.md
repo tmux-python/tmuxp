@@ -11,6 +11,11 @@ can distribute builders that users select by name.
 This is an advanced, opt-in feature. Existing workspace files keep using the
 classic builder with no changes.
 
+```{seealso}
+If you only want to set these keys in a workspace file, see
+{ref}`workspace-builders` in the configuration reference.
+```
+
 ## How a workspace is built
 
 1. `tmuxp load` reads the YAML/JSON file and expands it (shorthand, environment

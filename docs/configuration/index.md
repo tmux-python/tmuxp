@@ -27,6 +27,12 @@ TMUXP_CONFIGDIR and other env vars.
 Sample workspace configurations.
 :::
 
+:::{grid-item-card} Workspace builders
+:link: workspace-builders
+:link-type: doc
+Select a builder and tune pane readiness.
+:::
+
 ::::
 
 tmuxp loads your terminal workspace into tmux using workspace files.
@@ -211,6 +217,12 @@ TMUXP_CONFIGDIR and other env vars.
 Sample workspace configurations.
 :::
 
+:::{grid-item-card} Workspace builders
+:link: workspace-builders
+:link-type: doc
+Select a builder and tune pane readiness.
+:::
+
 ::::
 
 ```{toctree}
@@ -219,4 +231,5 @@ Sample workspace configurations.
 top-level
 environmental-variables
 examples
+workspace-builders
 ```
