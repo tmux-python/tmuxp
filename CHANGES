@@ -72,8 +72,6 @@ see no change while bash, sh, and other shells skip a wait they never needed. Se
 `always` to keep the previous wait-everywhere behavior, or `never` to skip it
 entirely. See {ref}`custom-workspace-builders`.
 
-### Development
-
 #### Workspace builder API (#1066)
 
 `tmuxp.workspace.builder` is now a package. The default builder is
