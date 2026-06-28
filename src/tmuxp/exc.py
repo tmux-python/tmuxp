@@ -94,6 +94,85 @@ class ActiveSessionMissingWorkspaceException(WorkspaceError):
         return super().__init__("No session active.", *args, **kwargs)
 
 
+class WorkspaceBuilderError(WorkspaceError):
+    """Base error for resolving and validating a workspace builder."""
+
+
+class WorkspaceBuilderNotFound(WorkspaceBuilderError):
+    """Configured ``workspace_builder`` could not be resolved."""
+
+    def __init__(
+        self,
+        target: str,
+        available: list[str] | None = None,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        msg = f"Workspace builder {target!r} could not be found."
+        if available:
+            names = ", ".join(sorted(available))
+            msg += f" Available entry point builders: {names}."
+        else:
+            msg += (
+                " Provide a Python dotted path (e.g. 'package.module:Builder') "
+                "or register an entry point in the 'tmuxp.workspace_builders' group."
+            )
+        return super().__init__(msg, *args, **kwargs)
+
+
+class WorkspaceBuilderImportError(WorkspaceBuilderError):
+    """Configured ``workspace_builder`` failed to import."""
+
+    def __init__(
+        self,
+        target: str,
+        reason: str | None = None,
+        paths: list[str] | None = None,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        msg = f"Could not import workspace builder {target!r}."
+        if reason:
+            msg += f" {reason}"
+        if paths:
+            msg += f" Searched trusted paths: {', '.join(paths)}."
+        msg += (
+            " Confirm the builder is importable, or add its directory to "
+            "'workspace_builder_paths'."
+        )
+        return super().__init__(msg, *args, **kwargs)
+
+
+class InvalidWorkspaceBuilder(WorkspaceBuilderError):
+    """Resolved ``workspace_builder`` object is not a usable builder."""
+
+    def __init__(
+        self,
+        target: str,
+        reason: str | None = None,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        msg = f"{target!r} is not a valid workspace builder"
+        msg += f": {reason}" if reason else "."
+        return super().__init__(msg, *args, **kwargs)
+
+
+class WorkspaceBuilderPathError(WorkspaceBuilderError):
+    """A ``workspace_builder_paths`` entry is not a usable directory."""
+
+    def __init__(
+        self,
+        path: str,
+        reason: str | None = None,
+        *args: object,
+        **kwargs: object,
+    ) -> None:
+        msg = f"workspace_builder_paths entry is invalid: {path}."
+        msg += f" {reason}" if reason else " Each entry must be an existing directory."
+        return super().__init__(msg, *args, **kwargs)
+
+
 class TmuxpPluginException(TmuxpException):
     """Base Exception for Tmuxp Errors."""
 
