@@ -146,7 +146,7 @@ tmuxp 1.67.0 makes {ref}`tmuxp-load` visibly track the workspace build it is per
 
 The {ref}`tmuxp-load` command now shows an animated progress display while it builds a session. Built-in formats cover terse, window-focused, pane-focused, and verbose views, while `--progress-format` and `TMUXP_PROGRESS_FORMAT` allow a custom display.
 
-`--progress-lines` and `TMUXP_PROGRESS_LINES` capture `before_script` output in the panel when requested, and `--no-progress` or `TMUXP_PROGRESS=0` restores quiet output.
+`--progress-lines` and `TMUXP_PROGRESS_LINES` control how much `before_script` output appears in the panel, and `--no-progress` or `TMUXP_PROGRESS=0` restores quiet output.
 
 ## tmuxp 1.66.0 (2026-03-08)
 
