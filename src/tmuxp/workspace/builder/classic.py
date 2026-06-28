@@ -572,8 +572,8 @@ class ClassicWorkspaceBuilder:
         _log.debug(
             "pane readiness resolved",
             extra={
-                "pane_readiness": readiness.value,
-                "pane_readiness_wait": self._pane_readiness_wait,
+                "tmux_pane_readiness": readiness.value,
+                "tmux_pane_readiness_wait": self._pane_readiness_wait,
             },
         )
 
