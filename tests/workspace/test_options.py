@@ -113,3 +113,29 @@ def test_resolve_session_shell_falls_back_to_env() -> None:
 def test_resolve_session_shell_empty_when_unknown() -> None:
     """Returns an empty string when neither source resolves."""
     assert resolve_session_shell(_FakeSession(None), env={}) == ""
+
+
+class _InheritedShellSession:
+    """Session whose default-shell is only visible with include_inherited."""
+
+    def __init__(self, shell: str) -> None:
+        self._shell = shell
+
+    def show_option(
+        self,
+        name: str,
+        *,
+        include_inherited: bool = False,
+        **kwargs: t.Any,
+    ) -> str | None:
+        """Return the shell only when inherited options are requested."""
+        return self._shell if include_inherited else None
+
+
+def test_resolve_session_shell_reads_inherited_default_shell() -> None:
+    """A globally-inherited default-shell wins over the $SHELL fallback."""
+    shell = resolve_session_shell(
+        _InheritedShellSession("/usr/bin/zsh"),
+        env={"SHELL": "/bin/bash"},
+    )
+    assert shell == "/usr/bin/zsh"

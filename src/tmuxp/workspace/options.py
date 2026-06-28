@@ -219,7 +219,10 @@ def resolve_session_shell(
     >>> resolve_session_shell(FakeSession(None), env={"SHELL": "/bin/bash"})
     '/bin/bash'
     """
-    default_shell = session.show_option("default-shell")
+    # include_inherited resolves a globally-set default-shell (e.g.
+    # ``set -g default-shell`` in tmux.conf) that the session inherits rather
+    # than overrides; without it tmux returns None and we'd fall back to $SHELL.
+    default_shell = session.show_option("default-shell", include_inherited=True)
     environ = os.environ if env is None else env
     env_shell = environ.get("SHELL", "")
     return str(default_shell or env_shell or "")
