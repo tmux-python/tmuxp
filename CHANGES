@@ -36,13 +36,17 @@ Run the developmental install with:
 $ tmuxp@next load yoursession
 ```
 
-## tmuxp 1.72.0 (Yet to be released)
+## tmuxp 1.73.0 (Yet to be released)
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
 <!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+## tmuxp 1.72.0 (2026-06-28)
+
+tmuxp 1.72.0 bumps libtmux to 0.60.0, completing tmux 3.7 feature parity at the library layer tmuxp builds on. The new libtmux capabilities — floating panes, typed tmux 3.7 options, new pane format variables, and new command flags — are reachable through tmuxp's Python API and `tmuxp shell`, while the YAML workspace format and tmux 3.2a-3.6 support stay unchanged.
 
 ### Dependencies
 
