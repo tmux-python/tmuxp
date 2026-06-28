@@ -44,6 +44,16 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.60.0` (was `~=0.59.0`) (#1065)
+
+### What's new
+
+#### libtmux 0.60.0 completes tmux 3.7 feature parity (#1065)
+
+The libtmux floor bump brings tmux 3.7 feature parity to the library layer tmuxp builds on: floating panes ({meth}`~libtmux.Window.new_pane`), typed tmux 3.7 server, session, window, and pane options, new pane format variables, and new tmux 3.7 command flags. Every 3.7-only surface is version-gated, so tmux 3.2a-3.6 are unaffected. These APIs are reachable through tmuxp's Python API and `tmuxp shell`; the YAML workspace format is unchanged.
+
 ## tmuxp 1.71.0 (2026-06-27)
 
 tmuxp 1.71.0 bumps libtmux to 0.59.0, adding support for tmux 3.7.
