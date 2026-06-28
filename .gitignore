@@ -88,3 +88,6 @@ docs/_static/css/fonts.css
 **/CLAUDE.local.md
 **/CLAUDE.*.md
 **/.claude/settings.local.json
+
+# pytest-optimizer durable state (profiling/benchmarks)
+.pytest-optimizer/
