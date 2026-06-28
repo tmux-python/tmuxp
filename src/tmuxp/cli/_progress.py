@@ -380,7 +380,7 @@ class BuildTree:
          - ``"N/M win · P/Q pane"``
          - —
        * - ``{build_progress}``
-         - ``""``
+         - ``"0/0 win"``
          - ``"0/0 win"``
          - denominator increments
          - pane progress appended
