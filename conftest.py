@@ -114,7 +114,7 @@ def socket_name(request: pytest.FixtureRequest) -> str:
 
 # Modules that actually need tmux fixtures in their doctests
 DOCTEST_NEEDS_TMUX = {
-    "tmuxp.workspace.builder",
+    "tmuxp.workspace.builder.classic",
 }
 
 

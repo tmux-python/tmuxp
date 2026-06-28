@@ -19,6 +19,12 @@ CI integration, scripting, and automation patterns.
 Plugin system for custom behavior.
 :::
 
+:::{grid-item-card} Custom workspace builders
+:link: custom-workspace-builders
+:link-type: doc
+Select or ship a custom builder; tune pane readiness.
+:::
+
 :::{grid-item-card} Library vs CLI
 :link: library-vs-cli
 :link-type: doc
@@ -47,6 +53,7 @@ instead of raw shell commands, supports JSON and YAML, and can
 
 workflows
 plugins
+custom-workspace-builders
 library-vs-cli
 troubleshooting
 ```

@@ -17,6 +17,12 @@ from libtmux.window import Window
 from tmuxp import exc
 from tmuxp.log import TmuxpLoggerAdapter
 from tmuxp.util import get_current_pane, run_before_script
+from tmuxp.workspace.options import (
+    PaneReadiness,
+    WorkspaceBuilderOptions,
+    resolve_session_shell,
+    shell_is_zsh,
+)
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterator
@@ -101,7 +107,7 @@ def get_default_rows() -> int:
     return int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", ROWS_FALLBACK)))
 
 
-class WorkspaceBuilder:
+class ClassicWorkspaceBuilder:
     """Load workspace from workspace :py:obj:`dict` object.
 
     Build tmux workspace from a configuration. Creates and names windows, sets options,
@@ -134,7 +140,7 @@ class WorkspaceBuilder:
     ...         - cmd: htop
     ... ''', Loader=yaml.Loader)
 
-    >>> builder = WorkspaceBuilder(session_config=session_config, server=server)
+    >>> builder = ClassicWorkspaceBuilder(session_config=session_config, server=server)
 
     **New session:**
 
@@ -176,7 +182,7 @@ class WorkspaceBuilder:
     ...     "session_name": "progress-demo",
     ...     "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
     ... }
-    >>> builder = WorkspaceBuilder(
+    >>> builder = ClassicWorkspaceBuilder(
     ...     session_config=progress_cfg,
     ...     server=server,
     ...     on_progress=calls.append,
@@ -192,7 +198,7 @@ class WorkspaceBuilder:
     ...     "session_name": "hook-demo",
     ...     "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
     ... }
-    >>> builder = WorkspaceBuilder(
+    >>> builder = ClassicWorkspaceBuilder(
     ...     session_config=no_script_cfg,
     ...     server=server,
     ...     on_before_script=lambda: hook_calls.append(True),
@@ -208,7 +214,7 @@ class WorkspaceBuilder:
     ...     "session_name": "script-output-demo",
     ...     "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
     ... }
-    >>> builder = WorkspaceBuilder(
+    >>> builder = ClassicWorkspaceBuilder(
     ...     session_config=no_script_cfg2,
     ...     server=server,
     ...     on_script_output=script_lines.append,
@@ -224,7 +230,7 @@ class WorkspaceBuilder:
     ...     "session_name": "events-demo",
     ...     "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
     ... }
-    >>> builder = WorkspaceBuilder(
+    >>> builder = ClassicWorkspaceBuilder(
     ...     session_config=event_cfg,
     ...     server=server,
     ...     on_build_event=events.append,
@@ -247,7 +253,7 @@ class WorkspaceBuilder:
     ...     "before_script": "echo hello",
     ...     "windows": [{"window_name": "main", "panes": [{"shell_command": []}]}],
     ... }
-    >>> builder = WorkspaceBuilder(
+    >>> builder = ClassicWorkspaceBuilder(
     ...     session_config=script_event_cfg,
     ...     server=server,
     ...     on_build_event=script_events.append,
@@ -297,7 +303,9 @@ class WorkspaceBuilder:
        their panes, returning full :class:`libtmux.Window` and
        :class:`libtmux.Pane` objects each step of the way::
 
-           workspace = WorkspaceBuilder(session_config=session_config, server=server)
+           workspace = ClassicWorkspaceBuilder(
+               session_config=session_config, server=server
+           )
 
     It handles the magic of cases where the user may want to start
     a session inside tmux (when `$TMUX` is in the env variables).
@@ -310,6 +318,8 @@ class WorkspaceBuilder:
     on_before_script: t.Callable[[], None] | None
     on_script_output: t.Callable[[str], None] | None
     on_build_event: t.Callable[[dict[str, t.Any]], None] | None
+    _builder_options: WorkspaceBuilderOptions
+    _pane_readiness_wait: bool
 
     def __init__(
         self,
@@ -373,6 +383,14 @@ class WorkspaceBuilder:
         self.on_script_output = on_script_output
         self.on_build_event = on_build_event
 
+        # Builder-behavior catalog (e.g. pane readiness). Parsed eagerly so an
+        # invalid value fails fast; the readiness decision itself needs a live
+        # session and is resolved in build().
+        self._builder_options = WorkspaceBuilderOptions.from_config(session_config)
+        # Safe default for direct iter_create_panes() use that bypasses build();
+        # build() replaces this with the policy-resolved value.
+        self._pane_readiness_wait = True
+
         if self.server is not None and self.session_exists(
             session_name=self.session_config["session_name"],
         ):
@@ -425,7 +443,7 @@ class WorkspaceBuilder:
         if not session:
             if not self.server:
                 msg = (
-                    "WorkspaceBuilder.build requires server to be passed "
+                    "ClassicWorkspaceBuilder.build requires server to be passed "
                     "on initialization, or pass in session object to here."
                 )
                 raise exc.TmuxpException(
@@ -537,6 +555,27 @@ class WorkspaceBuilder:
         if "environment" in self.session_config:
             for option, value in self.session_config["environment"].items():
                 self.session.set_environment(option, value)
+
+        # Resolve the pane-readiness decision once, now that the session exists
+        # and its options (including `default-shell`) have been applied above.
+        # AUTO waits only for zsh (the shell the prompt-redraw wait was added
+        # for); ALWAYS/NEVER force the choice.
+        readiness = self._builder_options.pane_readiness
+        if readiness is PaneReadiness.ALWAYS:
+            self._pane_readiness_wait = True
+        elif readiness is PaneReadiness.NEVER:
+            self._pane_readiness_wait = False
+        else:  # PaneReadiness.AUTO
+            self._pane_readiness_wait = shell_is_zsh(
+                resolve_session_shell(self.session),
+            )
+        _log.debug(
+            "pane readiness resolved",
+            extra={
+                "tmux_pane_readiness": readiness.value,
+                "tmux_pane_readiness_wait": self._pane_readiness_wait,
+            },
+        )
 
         for window, window_config in self.iter_create_windows(session, append):
             assert isinstance(window, Window)
@@ -781,9 +820,11 @@ class WorkspaceBuilder:
             # Skip readiness wait when a custom shell/command launcher is set.
             # The shell/window_shell key runs a command (e.g. "top", "sleep 999")
             # that replaces the default shell — the pane exits when the command
-            # exits, so there is no interactive prompt to wait for.
+            # exits, so there is no interactive prompt to wait for. The
+            # pane_readiness policy (resolved in build()) further gates whether
+            # default-shell panes wait at all.
             pane_shell = pane_config.get("shell", window_config.get("window_shell"))
-            if pane_shell is None:
+            if pane_shell is None and self._pane_readiness_wait:
                 _wait_for_pane_ready(pane)
 
             if "layout" in window_config:

@@ -23,7 +23,7 @@
 "api/cli/shell.md" "internals/api/cli/shell.md"
 "api/cli/utils.md" "internals/api/cli/utils.md"
 "api/workspace/index.md" "internals/api/workspace/index.md"
-"api/workspace/builder.md" "internals/api/workspace/builder.md"
+"api/workspace/builder.md" "internals/api/workspace/builder/index.md"
 "api/workspace/constants.md" "internals/api/workspace/constants.md"
 "api/workspace/finders.md" "internals/api/workspace/finders.md"
 "api/workspace/freezer.md" "internals/api/workspace/freezer.md"

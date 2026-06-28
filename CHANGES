@@ -44,6 +44,49 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Pluggable workspace builders (#1066)
+
+tmuxp can now build a workspace with a builder other than its built-in one. Point
+a workspace file's `workspace_builder` key at an installed builder — by registered
+name or by Python import path — and tmuxp loads the session through it. Builders
+that ship outside tmuxp's environment can be imported from directories listed in
+`workspace_builder_paths`, which tmuxp trusts only for that load. The built-in
+builder stays the default, so existing workspaces are unaffected. See
+{ref}`custom-workspace-builders`.
+
+#### Configurable pane readiness (#1066)
+
+Before sending a pane's layout and commands, tmuxp can wait for the shell to draw
+its prompt — a guard against a zsh prompt-redraw artifact. That wait is now a
+policy you set per workspace:
+
+```yaml
+workspace_builder_options:
+  pane_readiness: auto   # auto | always | never (also true/false)
+```
+
+The new default, `auto`, waits only when the session's shell is zsh, so zsh users
+see no change while bash, sh, and other shells skip a wait they never needed. Set
+`always` to keep the previous wait-everywhere behavior, or `never` to skip it
+entirely. See {ref}`custom-workspace-builders`.
+
+#### Workspace builder API (#1066)
+
+`tmuxp.workspace.builder` is now a package. The default builder is
+{class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`, with
+`WorkspaceBuilder` kept as a backwards-compatible alias. Third-party builders
+implement {class}`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
+(shaped to allow async builders later) and are resolved by
+{func}`~tmuxp.workspace.builder.registry.resolve_builder_class` from an entry
+point or import path, with trusted import directories handled by
+{func}`~tmuxp.workspace.builder.registry.resolve_builder_paths`. Builder behavior
+is configured through {class}`~tmuxp.workspace.options.WorkspaceBuilderOptions`
+and {class}`~tmuxp.workspace.options.PaneReadiness`, and resolution failures raise
+{exc}`~tmuxp.exc.WorkspaceBuilderError` and its subclasses. See
+{ref}`custom-workspace-builders` for the guide.
+
 ## tmuxp 1.72.0 (2026-06-28)
 
 tmuxp 1.72.0 bumps libtmux to 0.60.0, completing tmux 3.7 feature parity at the library layer tmuxp builds on. The new libtmux capabilities — floating panes, typed tmux 3.7 options, new pane format variables, and new command flags — are reachable through tmuxp's Python API and `tmuxp shell`, while the YAML workspace format and tmux 3.2a-3.6 support stay unchanged.

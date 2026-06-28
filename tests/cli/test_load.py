@@ -653,6 +653,100 @@ def test_load_plugins_plugin_missing(
     assert "[Plugin Error]" in result.out
 
 
+class WorkspaceBuilderErrorFixture(t.NamedTuple):
+    """Test fixture for invalid ``workspace_builder`` selections."""
+
+    test_id: str
+    yaml: str
+    expected_substring: str
+
+
+WORKSPACE_BUILDER_ERROR_FIXTURES: list[WorkspaceBuilderErrorFixture] = [
+    WorkspaceBuilderErrorFixture(
+        test_id="unknown_entry_point_name",
+        yaml="""\
+session_name: builder-error
+workspace_builder: nonexistent-builder
+windows:
+- panes:
+  - echo hi
+""",
+        expected_substring="could not be found",
+    ),
+    WorkspaceBuilderErrorFixture(
+        test_id="dotted_import_error",
+        yaml="""\
+session_name: builder-error
+workspace_builder: tmuxp.does_not_exist:Thing
+windows:
+- panes:
+  - echo hi
+""",
+        expected_substring="Could not import",
+    ),
+    WorkspaceBuilderErrorFixture(
+        test_id="invalid_object",
+        yaml="""\
+session_name: builder-error
+workspace_builder: tests.fixtures.workspace_builders.invalid:NotABuilder
+windows:
+- panes:
+  - echo hi
+""",
+        expected_substring="not a valid workspace builder",
+    ),
+    WorkspaceBuilderErrorFixture(
+        test_id="missing_builder_path",
+        yaml="""\
+session_name: builder-error
+workspace_builder: any:Builder
+workspace_builder_paths:
+- /nonexistent/tmuxp/builder/dir
+windows:
+- panes:
+  - echo hi
+""",
+        expected_substring="workspace_builder_paths entry is invalid",
+    ),
+    WorkspaceBuilderErrorFixture(
+        test_id="invalid_pane_readiness",
+        yaml="""\
+session_name: builder-error
+workspace_builder_options:
+  pane_readiness: sometimes
+windows:
+- panes:
+  - echo hi
+""",
+        expected_substring="pane_readiness",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(WorkspaceBuilderErrorFixture._fields),
+    WORKSPACE_BUILDER_ERROR_FIXTURES,
+    ids=[test.test_id for test in WORKSPACE_BUILDER_ERROR_FIXTURES],
+)
+def test_load_workspace_builder_error_exits(
+    tmp_path: pathlib.Path,
+    server: Server,
+    capsys: pytest.CaptureFixture[str],
+    test_id: str,
+    yaml: str,
+    expected_substring: str,
+) -> None:
+    """Invalid workspace_builder exits with a styled error, not a traceback."""
+    config_file = tmp_path / ".tmuxp.yaml"
+    config_file.write_text(yaml, encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        load_workspace(config_file, socket_name=server.socket_name, detached=True)
+
+    assert excinfo.value.code == 1
+    assert expected_substring in capsys.readouterr().out
+
+
 def test_plugin_system_before_script(
     monkeypatch_plugin_test_packages: None,
     server: Server,
