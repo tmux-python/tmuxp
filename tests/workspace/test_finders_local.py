@@ -222,7 +222,7 @@ def test_stop_at_home_false_continues_past_home(
     assert len(result_stop) == 1
     assert "project" in str(result_stop[0])
 
-    # With stop_at_home=False, should find both
+    # With stop_at_home=False, finds both, plus any configs above home
     result_continue = find_local_workspace_files(project, stop_at_home=False)
     assert len(result_continue) >= 2
 
