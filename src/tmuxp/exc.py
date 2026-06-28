@@ -99,7 +99,11 @@ class WorkspaceBuilderError(WorkspaceError):
 
 
 class WorkspaceBuilderNotFound(WorkspaceBuilderError):
-    """Configured ``workspace_builder`` could not be resolved."""
+    """Configured ``workspace_builder`` could not be resolved.
+
+    >>> print(WorkspaceBuilderNotFound("nope"))
+    Workspace builder 'nope' could not be found....
+    """
 
     def __init__(
         self,
@@ -121,7 +125,11 @@ class WorkspaceBuilderNotFound(WorkspaceBuilderError):
 
 
 class WorkspaceBuilderImportError(WorkspaceBuilderError):
-    """Configured ``workspace_builder`` failed to import."""
+    """Configured ``workspace_builder`` failed to import.
+
+    >>> print(WorkspaceBuilderImportError("pkg:B"))
+    Could not import workspace builder 'pkg:B'....
+    """
 
     def __init__(
         self,
@@ -144,7 +152,11 @@ class WorkspaceBuilderImportError(WorkspaceBuilderError):
 
 
 class InvalidWorkspaceBuilder(WorkspaceBuilderError):
-    """Resolved ``workspace_builder`` object is not a usable builder."""
+    """Resolved ``workspace_builder`` object is not a usable builder.
+
+    >>> print(InvalidWorkspaceBuilder("pkg:B"))
+    'pkg:B' is not a valid workspace builder.
+    """
 
     def __init__(
         self,
@@ -159,7 +171,11 @@ class InvalidWorkspaceBuilder(WorkspaceBuilderError):
 
 
 class WorkspaceBuilderPathError(WorkspaceBuilderError):
-    """A ``workspace_builder_paths`` entry is not a usable directory."""
+    """A ``workspace_builder_paths`` entry is not a usable directory.
+
+    >>> print(WorkspaceBuilderPathError("/x"))
+    workspace_builder_paths entry is invalid: /x....
+    """
 
     def __init__(
         self,
@@ -174,7 +190,11 @@ class WorkspaceBuilderPathError(WorkspaceBuilderError):
 
 
 class InvalidWorkspaceBuilderOption(WorkspaceBuilderError):
-    """A ``workspace_builder_options`` value is invalid."""
+    """A ``workspace_builder_options`` value is invalid.
+
+    >>> print(InvalidWorkspaceBuilderOption("bad"))
+    Invalid workspace_builder_options: bad
+    """
 
     def __init__(self, reason: str, *args: object, **kwargs: object) -> None:
         return super().__init__(
