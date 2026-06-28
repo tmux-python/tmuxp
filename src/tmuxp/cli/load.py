@@ -478,9 +478,9 @@ def load_workspace(
     progress_format : str, optional
         Spinner format preset name or custom format string with tokens.
     panel_lines : int, optional
-        Number of script-output lines shown in the spinner panel.
-        Defaults to the :class:`~tmuxp.cli._progress.Spinner` default (3).
-        Override via ``TMUXP_PROGRESS_LINES`` environment variable.
+        Nonzero values capture ``before_script`` output in the spinner panel.
+        By default, scripts keep their normal terminal output. Override via
+        ``TMUXP_PROGRESS_LINES`` environment variable.
     no_progress : bool
         Disable the progress spinner entirely. Default False.
         Also disabled when ``TMUXP_PROGRESS=0``.
@@ -568,7 +568,7 @@ def load_workspace(
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
 
-    t = Server(  # create tmux server object
+    tmux_server = Server(  # create tmux server object
         socket_name=socket_name,
         socket_path=socket_path,
         config_file=tmux_config_file,
@@ -582,7 +582,7 @@ def load_workspace(
         builder = WorkspaceBuilder(
             session_config=expanded_workspace,
             plugins=load_plugins(expanded_workspace, colors=cli_colors),
-            server=t,
+            server=tmux_server,
         )
     except exc.EmptyWorkspaceException:
         logger.warning(
@@ -658,6 +658,7 @@ def load_workspace(
     else:
         _panel_lines_env_int = None
     _panel_lines = panel_lines if panel_lines is not None else _panel_lines_env_int
+    _panel_lines_explicit = panel_lines is not None or _panel_lines_env_int is not None
     _private_path = str(PrivatePath(workspace_file))
     _spinner = Spinner(
         message=(
@@ -669,6 +670,10 @@ def load_workspace(
         workspace_path=_private_path,
     )
     _success_emitted = False
+    _has_before_script = "before_script" in expanded_workspace
+    _capture_script_output = (
+        _has_before_script and _panel_lines_explicit and _panel_lines != 0
+    )
 
     def _emit_success() -> None:
         nonlocal _success_emitted
@@ -677,29 +682,34 @@ def load_workspace(
         _success_emitted = True
         _spinner.success()
 
-    with (
-        _silence_stream_handlers(),
-        _spinner as spinner,
-    ):
-        builder.on_build_event = spinner.on_build_event
-        _resolved_panel = (
-            _panel_lines if _panel_lines is not None else DEFAULT_OUTPUT_LINES
-        )
-        if _resolved_panel != 0:
+    def _on_build_event(event: dict[str, t.Any]) -> None:
+        spinner.on_build_event(event)
+        if event.get("event") == "before_script_done" and not _capture_script_output:
+            spinner.start()
+
+    spinner = _spinner
+    with _silence_stream_handlers():
+        if _capture_script_output:
             builder.on_script_output = spinner.add_output_line
-        result = _dispatch_build(
-            builder,
-            detached,
-            append,
-            answer_yes,
-            cli_colors,
-            pre_attach_hook=_emit_success,
-            on_error_hook=spinner.stop,
-            pre_prompt_hook=spinner.stop,
-        )
-        if result is not None:
-            _emit_success()
-        return result
+        if not _has_before_script or _capture_script_output:
+            spinner.start()
+        builder.on_build_event = _on_build_event
+        try:
+            result = _dispatch_build(
+                builder,
+                detached,
+                append,
+                answer_yes,
+                cli_colors,
+                pre_attach_hook=_emit_success,
+                on_error_hook=spinner.stop,
+                pre_prompt_hook=spinner.stop,
+            )
+            if result is not None:
+                _emit_success()
+            return result
+        finally:
+            spinner.stop()
 
 
 def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -805,8 +815,8 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         type=int,
         default=None,
         help=(
-            "Number of script-output lines shown in the spinner panel (default: 3). "
-            "0 hides the panel entirely (script output goes to stdout). "
+            "Capture before_script output in the spinner panel with N lines. "
+            "0 keeps native script output and hides the panel. "
             "-1 shows unlimited lines (capped to terminal height). "
             "Env: TMUXP_PROGRESS_LINES"
         ),

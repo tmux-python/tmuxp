@@ -6,6 +6,7 @@ import functools
 import logging
 import os
 import pathlib
+import shlex
 import textwrap
 import time
 import typing as t
@@ -13,6 +14,7 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.constants import OptionScope
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -25,8 +27,13 @@ from tests.fixtures import utils as test_utils
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
+from tmuxp.plugin import TmuxpPlugin
 from tmuxp.workspace import builder as builder_module, loader
-from tmuxp.workspace.builder import WorkspaceBuilder, _wait_for_pane_ready
+from tmuxp.workspace.builder import (
+    WorkspaceBuilder,
+    _wait_for_pane_ready,
+    _wait_for_panes_ready,
+)
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
@@ -359,6 +366,185 @@ def test_window_options_after(
         ), "Synchronized command did not execute properly"
 
 
+class SynchronizePanesFixture(t.NamedTuple):
+    """Synchronize-panes command isolation fixture."""
+
+    test_id: str
+    yaml: str
+    enable_global_sync: bool
+    expected_local_sync: bool | None
+
+
+SYNCHRONIZE_PANES_FIXTURES: list[SynchronizePanesFixture] = [
+    SynchronizePanesFixture(
+        test_id="window_option",
+        yaml=textwrap.dedent(
+            """\
+session_name: sync-command-test
+windows:
+- window_name: sync
+  options:
+    synchronize-panes: on
+  panes:
+  - shell_command:
+    - cmd: echo tmuxp-left-sync-marker
+  - shell_command:
+    - cmd: echo tmuxp-right-sync-marker
+""",
+        ),
+        enable_global_sync=False,
+        expected_local_sync=True,
+    ),
+    SynchronizePanesFixture(
+        test_id="global_default",
+        yaml=textwrap.dedent(
+            """\
+session_name: sync-command-test
+windows:
+- window_name: sync
+  panes:
+  - shell_command:
+    - cmd: echo tmuxp-left-sync-marker
+  - shell_command:
+    - cmd: echo tmuxp-right-sync-marker
+""",
+        ),
+        enable_global_sync=True,
+        expected_local_sync=None,
+    ),
+]
+
+
+class SynchronizePanesExitFixture(t.NamedTuple):
+    """Synchronize-panes fixture with a pane that exits during setup."""
+
+    test_id: str
+    yaml: str
+
+
+SYNCHRONIZE_PANES_EXIT_FIXTURES: list[SynchronizePanesExitFixture] = [
+    SynchronizePanesExitFixture(
+        test_id="pane_exit",
+        yaml=textwrap.dedent(
+            """\
+session_name: sync-exit-test
+windows:
+- window_name: sync-exit
+  options:
+    synchronize-panes: on
+  panes:
+  - shell_command:
+    - cmd: printf tmuxp-survivor-marker; sleep 1
+  - shell_command:
+    - cmd: exit
+      sleep_after: 0.3
+""",
+        ),
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizePanesFixture._fields),
+    SYNCHRONIZE_PANES_FIXTURES,
+    ids=[t.test_id for t in SYNCHRONIZE_PANES_FIXTURES],
+)
+def test_synchronize_panes_disabled_during_pane_commands(
+    tmp_path: pathlib.Path,
+    session: Session,
+    test_id: str,
+    yaml: str,
+    enable_global_sync: bool,
+    expected_local_sync: bool | None,
+) -> None:
+    """Per-pane shell commands do not broadcast when synchronize-panes is on."""
+    yaml_workspace = tmp_path / f"{test_id}.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    if enable_global_sync:
+        session.active_window.set_option(
+            "synchronize-panes",
+            "on",
+            global_=True,
+            scope=OptionScope.Window,
+        )
+
+    try:
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session)
+        window = session.active_window
+        left, right = window.panes
+
+        def capture(pane: Pane) -> str:
+            return "\n".join(pane.cmd("capture-pane", "-p", "-J").stdout)
+
+        def commands_stayed_per_pane() -> bool:
+            left_text = capture(left)
+            right_text = capture(right)
+            return (
+                "tmuxp-left-sync-marker" in left_text
+                and "tmuxp-right-sync-marker" not in left_text
+                and "tmuxp-right-sync-marker" in right_text
+                and "tmuxp-left-sync-marker" not in right_text
+            )
+
+        assert retry_until(commands_stayed_per_pane, 5, interval=0.1), (
+            capture(left),
+            capture(right),
+        )
+        assert (
+            window.show_option("synchronize-panes", scope=OptionScope.Window)
+            is expected_local_sync
+        )
+        assert (
+            window.show_option(
+                "synchronize-panes",
+                scope=OptionScope.Window,
+                include_inherited=True,
+            )
+            is True
+        )
+    finally:
+        if enable_global_sync:
+            session.active_window.set_option(
+                "synchronize-panes",
+                "off",
+                global_=True,
+                scope=OptionScope.Window,
+            )
+
+
+@pytest.mark.parametrize(
+    list(SynchronizePanesExitFixture._fields),
+    SYNCHRONIZE_PANES_EXIT_FIXTURES,
+    ids=[t.test_id for t in SYNCHRONIZE_PANES_EXIT_FIXTURES],
+)
+def test_synchronize_panes_ignores_exited_targets(
+    tmp_path: pathlib.Path,
+    session: Session,
+    test_id: str,
+    yaml: str,
+) -> None:
+    """Exiting startup panes do not break temporary sync restoration."""
+    yaml_workspace = tmp_path / f"{test_id}.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+    window = session.active_window
+
+    def pane_count() -> bool:
+        return len(window.panes) == 1
+
+    assert retry_until(pane_count, 5, interval=0.1)
+
+
 def test_window_shell(
     session: Session,
 ) -> None:
@@ -541,6 +727,104 @@ def test_start_directory(session: Session, tmp_path: pathlib.Path) -> None:
 
             # handle case with OS X adding /private/ to /tmp/ paths
             assert retry_until(f_)
+
+
+def test_build_dispatches_window_commands_before_later_start_directory(
+    session: Session,
+    tmp_path: pathlib.Path,
+) -> None:
+    """Earlier window commands can prepare a later window's start_directory."""
+    late_dir = tmp_path / "late-dir"
+    yaml_config = textwrap.dedent(
+        f"""\
+session_name: window-command-order
+windows:
+- window_name: bootstrap
+  panes:
+  - shell_command:
+    - cmd: mkdir -p {shlex.quote(str(late_dir))}
+      sleep_after: 0.2
+- window_name: dependent
+  start_directory: {late_dir!s}
+  panes:
+  - shell_command: []
+""",
+    )
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_config)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    dependent = session.windows.get(window_name="dependent")
+    assert dependent is not None
+    pane = dependent.active_pane
+    assert pane is not None
+
+    def has_late_dir() -> bool:
+        return pane.pane_current_path == str(late_dir)
+
+    assert retry_until(has_late_dir)
+
+
+class SameWindowStartDirectoryFixture(t.NamedTuple):
+    """Same-window start_directory dependency fixture."""
+
+    test_id: str
+    later_pane_yaml: str
+
+
+SAME_WINDOW_START_DIRECTORY_FIXTURES: list[SameWindowStartDirectoryFixture] = [
+    SameWindowStartDirectoryFixture(
+        test_id="pane_start_directory",
+        later_pane_yaml="  - shell_command: []\n    start_directory: {late_dir!s}\n",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SameWindowStartDirectoryFixture._fields),
+    SAME_WINDOW_START_DIRECTORY_FIXTURES,
+    ids=[t.test_id for t in SAME_WINDOW_START_DIRECTORY_FIXTURES],
+)
+def test_build_dispatches_same_window_commands_before_later_start_directory(
+    session: Session,
+    tmp_path: pathlib.Path,
+    test_id: str,
+    later_pane_yaml: str,
+) -> None:
+    """Earlier pane commands can prepare a later pane's start_directory."""
+    late_dir = tmp_path / test_id / "late-dir"
+    yaml_config = textwrap.dedent(
+        f"""\
+session_name: same-window-command-order
+windows:
+- window_name: dependent
+  panes:
+  - shell_command:
+    - cmd: mkdir -p {shlex.quote(str(late_dir))}
+      sleep_after: 0.2
+{later_pane_yaml.format(late_dir=late_dir)}
+""",
+    )
+    workspace = ConfigReader._load(fmt="yaml", content=yaml_config)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    dependent = session.windows.get(window_name="dependent")
+    assert dependent is not None
+    panes = dependent.panes
+    assert len(panes) == 2
+    pane = panes[1]
+
+    def has_late_dir() -> bool:
+        return pane.pane_current_path == str(late_dir)
+
+    assert retry_until(has_late_dir)
 
 
 def test_start_directory_relative(session: Session, tmp_path: pathlib.Path) -> None:
@@ -1549,6 +1833,35 @@ def test_wait_for_pane_ready_timeout(session: Session) -> None:
     assert result is False
 
 
+def test_wait_for_panes_ready_all_ready(session: Session) -> None:
+    """The shared barrier reports every default-shell pane ready."""
+    window = session.active_window
+    first = window.active_pane
+    assert first is not None
+    second = first.split()
+    assert second is not None
+
+    result = _wait_for_panes_ready([first, second], timeout=5.0)
+
+    assert result == {first.pane_id: True, second.pane_id: True}
+
+
+def test_wait_for_panes_ready_mixed(session: Session) -> None:
+    """The shared barrier times out only the pane that never draws a prompt."""
+    window = session.active_window
+    first = window.active_pane
+    assert first is not None
+    sleeper = first.split(shell="sleep 999")
+    assert sleeper is not None
+    assert first.pane_id is not None
+    assert sleeper.pane_id is not None
+
+    result = _wait_for_panes_ready([first, sleeper], timeout=0.5)
+
+    assert result[first.pane_id] is True
+    assert result[sleeper.pane_id] is False
+
+
 class PaneReadinessFixture(t.NamedTuple):
     """Test fixture for pane readiness call count verification."""
 
@@ -1625,7 +1938,7 @@ windows:
     PANE_READINESS_FIXTURES,
     ids=[t.test_id for t in PANE_READINESS_FIXTURES],
 )
-def test_pane_readiness_call_count(
+def test_pane_readiness_waits_for_default_shell_panes(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
@@ -1633,20 +1946,19 @@ def test_pane_readiness_call_count(
     yaml: str,
     expected_wait_count: int,
 ) -> None:
-    """Verify _wait_for_pane_ready is called only for appropriate panes."""
-    call_count = 0
-    original = builder_module._wait_for_pane_ready
+    """Only default-shell panes are submitted to the readiness barrier."""
+    waited: list[str] = []
+    original = builder_module._wait_for_panes_ready
 
-    def counting_wait(
-        pane: Pane,
+    def recording_barrier(
+        panes: list[Pane],
         timeout: float = 2.0,
         interval: float = 0.05,
-    ) -> bool:
-        nonlocal call_count
-        call_count += 1
-        return original(pane, timeout=timeout, interval=interval)
+    ) -> dict[str, bool]:
+        waited.extend(p.pane_id for p in panes if p.pane_id is not None)
+        return original(panes, timeout=timeout, interval=interval)
 
-    monkeypatch.setattr(builder_module, "_wait_for_pane_ready", counting_wait)
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
 
     yaml_workspace = tmp_path / "readiness.yaml"
     yaml_workspace.write_text(yaml, encoding="utf-8")
@@ -1656,15 +1968,15 @@ def test_pane_readiness_call_count(
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
-    assert call_count == expected_wait_count
+    assert len(waited) == expected_wait_count
 
 
-def test_select_layout_not_called_after_yield(
+def test_select_layout_called_once_per_window(
     tmp_path: pathlib.Path,
     server: Server,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Verify select_layout is called once per pane, not duplicated in build()."""
+    """select_layout runs once per window, after the readiness barrier."""
     call_count = 0
     original_select_layout = Window.select_layout
 
@@ -1695,8 +2007,334 @@ windows:
 
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
-    # 3 panes = 3 layout calls (one per pane in iter_create_panes), not 6
-    assert call_count == 3
+    # One window, one layout pass — no per-pane and no duplicate build() pass.
+    assert call_count == 1
+
+
+def test_split_target_refreshes_without_readiness_wait(
+    tmp_path: pathlib.Path,
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Normal pane splitting refreshes target state without prompt waiting."""
+    events: list[str] = []
+    original_refresh = Pane.refresh
+    original_split = Pane.split
+
+    def recording_refresh(self: Pane) -> None:
+        events.append("refresh")
+        return original_refresh(self)
+
+    def recording_split(self: Pane, *args: t.Any, **kwargs: t.Any) -> Pane:
+        events.append("split")
+        return original_split(self, *args, **kwargs)
+
+    def recording_barrier(
+        panes: list[Pane],
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> dict[str, bool]:
+        events.append("wait")
+        return {pane.pane_id: True for pane in panes if pane.pane_id is not None}
+
+    monkeypatch.setattr(Pane, "refresh", recording_refresh)
+    monkeypatch.setattr(Pane, "split", recording_split)
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: split-refresh-test
+windows:
+- panes:
+  - shell_command: []
+  - shell_command: []
+""",
+    )
+    yaml_workspace = tmp_path / "split_refresh.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder._create_window_panes(session.active_window, workspace["windows"][0])
+
+    assert "wait" not in events
+    assert events[:2] == ["refresh", "split"]
+
+
+class ReclaimSpaceFixture(t.NamedTuple):
+    """Reclaim-retry exception-matching fixture."""
+
+    test_id: str
+    error_message: str
+    expect_reclaim: bool
+
+
+RECLAIM_SPACE_FIXTURES: list[ReclaimSpaceFixture] = [
+    ReclaimSpaceFixture(
+        test_id="no_space_reclaims",
+        error_message="no space for new pane",
+        expect_reclaim=True,
+    ),
+    ReclaimSpaceFixture(
+        test_id="other_error_propagates",
+        error_message="some other tmux failure",
+        expect_reclaim=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ReclaimSpaceFixture._fields),
+    RECLAIM_SPACE_FIXTURES,
+    ids=[c.test_id for c in RECLAIM_SPACE_FIXTURES],
+)
+def test_split_reclaims_only_on_no_space(
+    session: Session,
+    test_id: str,
+    error_message: str,
+    expect_reclaim: bool,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Reclaim retry runs only when a split fails for lack of space."""
+    builder = WorkspaceBuilder(
+        session_config={"session_name": "x", "windows": []},
+        server=session.server,
+    )
+    window = session.active_window
+    pane = window.active_pane
+    assert pane is not None
+
+    layout_calls: list[str | None] = []
+    monkeypatch.setattr(
+        Window,
+        "select_layout",
+        lambda self, layout=None: layout_calls.append(layout),
+    )
+
+    def failing_split(self: Pane, *args: t.Any, **kwargs: t.Any) -> Pane:
+        raise LibTmuxException(error_message)
+
+    monkeypatch.setattr(Pane, "split", failing_split)
+
+    with pytest.raises(LibTmuxException, match=error_message):
+        builder._split_pane_reclaiming_space(
+            window,
+            pane,
+            {"attach": True},
+            "tiled",
+            [],
+        )
+
+    assert bool(layout_calls) == expect_reclaim
+
+
+def test_build_waits_for_each_window_before_dispatch(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """build() waits per window so earlier commands run before later windows."""
+    barrier_sizes: list[int] = []
+    original = builder_module._wait_for_panes_ready
+
+    def recording_barrier(
+        panes: list[Pane],
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> dict[str, bool]:
+        barrier_sizes.append(len(panes))
+        return original(panes, timeout=timeout, interval=interval)
+
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", recording_barrier)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: barrier-test
+windows:
+- window_name: one
+  layout: tiled
+  panes:
+  - shell_command: []
+  - shell_command: []
+- window_name: two
+  layout: tiled
+  panes:
+  - shell_command: []
+  - shell_command: []
+""",
+    )
+    yaml_workspace = tmp_path / "barrier.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    assert barrier_sizes == [2, 2]
+
+
+def test_layout_runs_after_readiness_barrier(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Each window is laid out after that window's readiness barrier.
+
+    This is the issue #365 safety invariant: a pane must draw its prompt before
+    it is resized, so every ``select_layout`` must follow a barrier.
+    """
+    events: list[str] = []
+    original_barrier = builder_module._wait_for_panes_ready
+    original_select_layout = Window.select_layout
+
+    def traced_barrier(
+        panes: list[Pane],
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> dict[str, bool]:
+        result = original_barrier(panes, timeout=timeout, interval=interval)
+        events.append("barrier")
+        return result
+
+    def traced_layout(self: Window, layout: str | None = None) -> Window:
+        events.append("layout")
+        return original_select_layout(self, layout)
+
+    monkeypatch.setattr(builder_module, "_wait_for_panes_ready", traced_barrier)
+    monkeypatch.setattr(Window, "select_layout", traced_layout)
+
+    yaml_config = textwrap.dedent(
+        """\
+session_name: ordering-test
+windows:
+- window_name: one
+  layout: tiled
+  panes:
+  - shell_command: []
+  - shell_command: []
+- window_name: two
+  layout: tiled
+  panes:
+  - shell_command: []
+""",
+    )
+    yaml_workspace = tmp_path / "ordering.yaml"
+    yaml_workspace.write_text(yaml_config, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+
+    assert "barrier" in events
+    assert "layout" in events
+    assert events == ["barrier", "layout", "barrier", "layout"]
+
+
+class _HookOrderRecorder(TmuxpPlugin):
+    """Plugin that records the order its lifecycle hooks fire."""
+
+    def __init__(self, calls: list[str]) -> None:
+        self.calls = calls
+
+    def before_workspace_builder(self, session: Session) -> None:
+        """Record the session-level pre-build hook."""
+        self.calls.append("before_workspace_builder")
+
+    def on_window_create(self, window: Window) -> None:
+        """Record the per-window creation hook."""
+        self.calls.append(f"on_window_create:{window.name}")
+
+    def after_window_finished(self, window: Window) -> None:
+        """Record the per-window completion hook."""
+        self.calls.append(f"after_window_finished:{window.name}")
+
+
+class PluginHookOrderFixture(t.NamedTuple):
+    """Expected plugin hook firing order for a workspace config."""
+
+    test_id: str
+    yaml: str
+    expected_order: list[str]
+
+
+PLUGIN_HOOK_ORDER_FIXTURES: list[PluginHookOrderFixture] = [
+    PluginHookOrderFixture(
+        test_id="single_window",
+        yaml=textwrap.dedent(
+            """\
+session_name: hook-order
+windows:
+- window_name: one
+  panes:
+  - shell_command: []
+""",
+        ),
+        expected_order=[
+            "before_workspace_builder",
+            "on_window_create:one",
+            "after_window_finished:one",
+        ],
+    ),
+    PluginHookOrderFixture(
+        test_id="interleaves_create_and_finish",
+        yaml=textwrap.dedent(
+            """\
+session_name: hook-order
+windows:
+- window_name: one
+  panes:
+  - shell_command: []
+- window_name: two
+  panes:
+  - shell_command: []
+""",
+        ),
+        expected_order=[
+            "before_workspace_builder",
+            "on_window_create:one",
+            "after_window_finished:one",
+            "on_window_create:two",
+            "after_window_finished:two",
+        ],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PluginHookOrderFixture._fields),
+    PLUGIN_HOOK_ORDER_FIXTURES,
+    ids=[f.test_id for f in PLUGIN_HOOK_ORDER_FIXTURES],
+)
+def test_plugin_hook_order(
+    tmp_path: pathlib.Path,
+    server: Server,
+    test_id: str,
+    yaml: str,
+    expected_order: list[str],
+) -> None:
+    """Per-window create and finish hooks follow config order."""
+    calls: list[str] = []
+
+    yaml_workspace = tmp_path / "hook_order.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = ConfigReader._from_file(yaml_workspace)
+    workspace = loader.expand(workspace)
+    workspace = loader.trickle(workspace)
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        plugins=[_HookOrderRecorder(calls)],
+        server=server,
+    )
+    builder.build()
+
+    assert calls == expected_order
 
 
 def test_builder_logs_session_created(
