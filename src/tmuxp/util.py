@@ -32,7 +32,8 @@ def run_before_script(
 ) -> int:
     """Execute shell script, streaming output to callback or terminal (if TTY).
 
-    Output is buffered and optionally forwarded via the ``on_line`` callback.
+    Output is forwarded line-by-line via ``on_line`` when given; otherwise it
+    is inherited by the terminal.
     """
     script_cmd = shlex.split(str(script_file))
 
