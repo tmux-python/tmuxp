@@ -17,15 +17,27 @@ from tmuxp.workspace.builder.classic import (
     get_default_rows,
 )
 from tmuxp.workspace.builder.protocol import WorkspaceBuilderProtocol
+from tmuxp.workspace.builder.registry import (
+    WORKSPACE_BUILDERS_GROUP,
+    available_builders,
+    prepended_sys_path,
+    resolve_builder_class,
+    resolve_builder_paths,
+)
 
 # Backwards-compatible alias: the classic builder was historically named
 # ``WorkspaceBuilder`` and imported from ``tmuxp.workspace.builder``.
 WorkspaceBuilder = ClassicWorkspaceBuilder
 
 __all__ = [
+    "WORKSPACE_BUILDERS_GROUP",
     "ClassicWorkspaceBuilder",
     "WorkspaceBuilder",
     "WorkspaceBuilderProtocol",
+    "available_builders",
     "get_default_columns",
     "get_default_rows",
+    "prepended_sys_path",
+    "resolve_builder_class",
+    "resolve_builder_paths",
 ]
