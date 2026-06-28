@@ -44,6 +44,23 @@ def _pin_test_shell_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SHELL", "/bin/sh")
 
 
+@pytest.fixture(autouse=True)
+def _pin_test_color_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Neutralize ``FORCE_COLOR`` / ``NO_COLOR`` for every test.
+
+    CLI color is decided live from these env vars (see
+    :class:`tmuxp._internal.colors.Colors`). A contributor who exports
+    ``FORCE_COLOR`` in their shell would otherwise get ANSI-wrapped help
+    text, breaking the plain-text example assertions in
+    ``tests/cli/test_help_examples.py`` and similar. Clearing both here gives
+    every test a deterministic, auto-detected baseline; tests that exercise
+    color set the vars explicitly, and ``monkeypatch`` restores the
+    contributor's values at teardown.
+    """
+    monkeypatch.delenv("FORCE_COLOR", raising=False)
+    monkeypatch.delenv("NO_COLOR", raising=False)
+
+
 @pytest.fixture(autouse=USING_ZSH, scope="session")
 def zshrc(user_path: pathlib.Path) -> pathlib.Path | None:
     """Quiets ZSH default message.
