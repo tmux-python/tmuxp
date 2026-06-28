@@ -1167,8 +1167,8 @@ class WorkspaceBuilder:
         pane.refresh()
         try:
             return pane.split(**split_kwargs)
-        except LibTmuxException:
-            if layout is None:
+        except LibTmuxException as error:
+            if layout is None or "no space for" not in str(error):
                 raise
             _wait_for_panes_ready([e.pane for e in entries if e.shell is None])
             window.select_layout(layout)

@@ -2063,6 +2063,73 @@ windows:
     assert events[:2] == ["refresh", "split"]
 
 
+class ReclaimSpaceFixture(t.NamedTuple):
+    """Reclaim-retry exception-matching fixture."""
+
+    test_id: str
+    error_message: str
+    expect_reclaim: bool
+
+
+RECLAIM_SPACE_FIXTURES: list[ReclaimSpaceFixture] = [
+    ReclaimSpaceFixture(
+        test_id="no_space_reclaims",
+        error_message="no space for new pane",
+        expect_reclaim=True,
+    ),
+    ReclaimSpaceFixture(
+        test_id="other_error_propagates",
+        error_message="some other tmux failure",
+        expect_reclaim=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ReclaimSpaceFixture._fields),
+    RECLAIM_SPACE_FIXTURES,
+    ids=[c.test_id for c in RECLAIM_SPACE_FIXTURES],
+)
+def test_split_reclaims_only_on_no_space(
+    session: Session,
+    test_id: str,
+    error_message: str,
+    expect_reclaim: bool,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Reclaim retry runs only when a split fails for lack of space."""
+    builder = WorkspaceBuilder(
+        session_config={"session_name": "x", "windows": []},
+        server=session.server,
+    )
+    window = session.active_window
+    pane = window.active_pane
+    assert pane is not None
+
+    layout_calls: list[str | None] = []
+    monkeypatch.setattr(
+        Window,
+        "select_layout",
+        lambda self, layout=None: layout_calls.append(layout),
+    )
+
+    def failing_split(self: Pane, *args: t.Any, **kwargs: t.Any) -> Pane:
+        raise LibTmuxException(error_message)
+
+    monkeypatch.setattr(Pane, "split", failing_split)
+
+    with pytest.raises(LibTmuxException, match=error_message):
+        builder._split_pane_reclaiming_space(
+            window,
+            pane,
+            {"attach": True},
+            "tiled",
+            [],
+        )
+
+    assert bool(layout_calls) == expect_reclaim
+
+
 def test_build_waits_for_each_window_before_dispatch(
     tmp_path: pathlib.Path,
     server: Server,
