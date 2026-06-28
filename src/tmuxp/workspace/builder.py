@@ -9,6 +9,7 @@ import time
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.options import handle_option_error
 from libtmux.pane import Pane
 from libtmux.server import Server
 from libtmux.session import Session
@@ -19,7 +20,7 @@ from tmuxp.log import TmuxpLoggerAdapter
 from tmuxp.util import get_current_pane, run_before_script
 
 if t.TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Mapping
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 def _wait_for_pane_ready(
     pane: Pane,
     timeout: float = 2.0,
-    interval: float = 0.05,
+    interval: float = 0.01,
 ) -> bool:
     """Wait for pane shell to draw its prompt.
 
@@ -407,6 +408,57 @@ class WorkspaceBuilder:
             return False
         return True
 
+    def _bulk_set_options(
+        self,
+        items: Mapping[str, int | str | bool],
+        *,
+        target: str | None,
+        scope_flag: str,
+    ) -> None:
+        """Apply ``set-option`` for each (key, value) pair.
+
+        Mirrors :meth:`libtmux.options.OptionsMixin.set_option`'s
+        ``True/False -> "on"/"off"`` convention so behaviour matches a
+        plain loop of ``set_option`` calls. Errors propagate as the
+        same ``OptionError`` subclasses ``handle_option_error``
+        produces.
+
+        Currently issues one ``set-option`` round-trip per item. The
+        helper's API (mapping + scope flag + optional target) is
+        deliberately batch-shaped so the body can swap to a single
+        pipelined dispatch (e.g. ``Server.batch()``) once libtmux
+        exposes one, without touching the call sites in ``build`` and
+        ``iter_create_windows``.
+
+        Parameters
+        ----------
+        items : mapping
+            Option name -> value pairs.
+        target : str, optional
+            Target identifier (session_id / window_id) for ``-t``;
+            pass ``None`` for global options where ``-g`` already
+            names the scope.
+        scope_flag : str
+            ``"-s"``, ``"-g"``, or ``"-w"``. Selects the option scope.
+        """
+        if not items:
+            return
+        server = self.server
+        assert server is not None
+        for key, raw_val in items.items():
+            if raw_val is True:
+                val: int | str = "on"
+            elif raw_val is False:
+                val = "off"
+            else:
+                val = raw_val
+            if target is not None:
+                cmd = server.cmd("set-option", scope_flag, "-t", target, key, val)
+            else:
+                cmd = server.cmd("set-option", scope_flag, key, val)
+            if cmd.stderr:
+                handle_option_error(cmd.stderr[0])
+
     def build(self, session: Session | None = None, append: bool = False) -> None:
         """Build tmux workspace in session.
 
@@ -527,12 +579,18 @@ class WorkspaceBuilder:
                     self.on_build_event({"event": "before_script_done"})
 
         if "options" in self.session_config:
-            for option, value in self.session_config["options"].items():
-                self.session.set_option(option, value)
+            self._bulk_set_options(
+                self.session_config["options"],
+                target=self.session.session_id,
+                scope_flag="-s",
+            )
 
         if "global_options" in self.session_config:
-            for option, value in self.session_config["global_options"].items():
-                self.session.set_option(option, value, global_=True)
+            self._bulk_set_options(
+                self.session_config["global_options"],
+                target=None,
+                scope_flag="-g",
+            )
 
         if "environment" in self.session_config:
             for option, value in self.session_config["environment"].items():
@@ -671,8 +729,11 @@ class WorkspaceBuilder:
                 window_config["options"],
                 dict,
             ):
-                for key, val in window_config["options"].items():
-                    window.set_option(key, val)
+                self._bulk_set_options(
+                    window_config["options"],
+                    target=window.window_id,
+                    scope_flag="-w",
+                )
 
             if window_config.get("focus"):
                 window.select()
@@ -841,8 +902,11 @@ class WorkspaceBuilder:
             window_config["options_after"],
             dict,
         ):
-            for key, val in window_config["options_after"].items():
-                window.set_option(key, val)
+            self._bulk_set_options(
+                window_config["options_after"],
+                target=window.window_id,
+                scope_flag="-w",
+            )
 
     def find_current_attached_session(self) -> Session:
         """Return current attached session."""
