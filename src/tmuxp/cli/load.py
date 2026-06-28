@@ -18,7 +18,12 @@ from tmuxp import exc, log, util
 from tmuxp._internal import config_reader
 from tmuxp._internal.private_path import PrivatePath
 from tmuxp.workspace import loader
-from tmuxp.workspace.builder import WorkspaceBuilder
+from tmuxp.workspace.builder import (
+    WorkspaceBuilderProtocol,
+    prepended_sys_path,
+    resolve_builder_class,
+    resolve_builder_paths,
+)
 from tmuxp.workspace.finders import find_workspace_file, get_workspace_dir
 
 from ._colors import ColorMode, Colors, build_description, get_color_mode
@@ -195,7 +200,7 @@ def load_plugins(
     return plugins
 
 
-def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
+def _reattach(builder: WorkspaceBuilderProtocol, colors: Colors | None = None) -> None:
     """
     Reattach session (depending on env being inside tmux already or not).
 
@@ -232,7 +237,7 @@ def _reattach(builder: WorkspaceBuilder, colors: Colors | None = None) -> None:
 
 
 def _load_attached(
-    builder: WorkspaceBuilder,
+    builder: WorkspaceBuilderProtocol,
     detached: bool,
     pre_attach_hook: t.Callable[[], None] | None = None,
 ) -> None:
@@ -265,7 +270,7 @@ def _load_attached(
 
 
 def _load_detached(
-    builder: WorkspaceBuilder,
+    builder: WorkspaceBuilderProtocol,
     colors: Colors | None = None,
     pre_output_hook: t.Callable[[], None] | None = None,
 ) -> None:
@@ -292,7 +297,9 @@ def _load_detached(
     logger.info("session created in detached state")
 
 
-def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
+def _load_append_windows_to_current_session(
+    builder: WorkspaceBuilderProtocol,
+) -> None:
     """
     Load workspace as new windows in current session.
 
@@ -305,7 +312,7 @@ def _load_append_windows_to_current_session(builder: WorkspaceBuilder) -> None:
     assert builder.session is not None
 
 
-def _setup_plugins(builder: WorkspaceBuilder) -> Session:
+def _setup_plugins(builder: WorkspaceBuilderProtocol) -> Session:
     """Execute hooks for plugins running after ``before_script``.
 
     Parameters
@@ -320,7 +327,7 @@ def _setup_plugins(builder: WorkspaceBuilder) -> Session:
 
 
 def _dispatch_build(
-    builder: WorkspaceBuilder,
+    builder: WorkspaceBuilderProtocol,
     detached: bool,
     append: bool,
     answer_yes: bool,
@@ -577,13 +584,21 @@ def load_workspace(
 
     shutil.which("tmux")  # raise exception if tmux not found
 
-    # WorkspaceBuilder creation — outside spinner so plugin prompts are safe
+    # Resolve any trusted import roots for the builder. Absent config -> [] ->
+    # a no-op sandbox, so existing workspaces add nothing to sys.path.
+    builder_paths = resolve_builder_paths(expanded_workspace, workspace_file)
+
+    # Builder resolution + creation — outside spinner so plugin prompts are safe.
+    # Trusted paths stay on sys.path for the import and instantiation; each
+    # build dispatch re-enters the sandbox so build-time lazy imports resolve.
     try:
-        builder = WorkspaceBuilder(
-            session_config=expanded_workspace,
-            plugins=load_plugins(expanded_workspace, colors=cli_colors),
-            server=t,
-        )
+        with prepended_sys_path(builder_paths):
+            builder_cls = resolve_builder_class(expanded_workspace)
+            builder = builder_cls(
+                session_config=expanded_workspace,
+                plugins=load_plugins(expanded_workspace, colors=cli_colors),
+                server=t,
+            )
     except exc.EmptyWorkspaceException:
         logger.warning(
             "workspace file is empty",
@@ -612,13 +627,14 @@ def load_workspace(
 
     if _progress_disabled:
         _private_path = str(PrivatePath(workspace_file))
-        result = _dispatch_build(
-            builder,
-            detached,
-            append,
-            answer_yes,
-            cli_colors,
-        )
+        with prepended_sys_path(builder_paths):
+            result = _dispatch_build(
+                builder,
+                detached,
+                append,
+                answer_yes,
+                cli_colors,
+            )
         if result is not None:
             summary = ""
             try:
@@ -687,16 +703,17 @@ def load_workspace(
         )
         if _resolved_panel != 0:
             builder.on_script_output = spinner.add_output_line
-        result = _dispatch_build(
-            builder,
-            detached,
-            append,
-            answer_yes,
-            cli_colors,
-            pre_attach_hook=_emit_success,
-            on_error_hook=spinner.stop,
-            pre_prompt_hook=spinner.stop,
-        )
+        with prepended_sys_path(builder_paths):
+            result = _dispatch_build(
+                builder,
+                detached,
+                append,
+                answer_yes,
+                cli_colors,
+                pre_attach_hook=_emit_success,
+                on_error_hook=spinner.stop,
+                pre_prompt_hook=spinner.stop,
+            )
         if result is not None:
             _emit_success()
         return result
