@@ -584,14 +584,12 @@ def load_workspace(
 
     shutil.which("tmux")  # raise exception if tmux not found
 
-    # Resolve any trusted import roots for the builder. Absent config -> [] ->
-    # a no-op sandbox, so existing workspaces add nothing to sys.path.
-    builder_paths = resolve_builder_paths(expanded_workspace, workspace_file)
-
     # Builder resolution + creation — outside spinner so plugin prompts are safe.
-    # Trusted paths stay on sys.path for the import and instantiation; each
-    # build dispatch re-enters the sandbox so build-time lazy imports resolve.
+    # Trusted import roots (absent config -> [] -> a no-op sandbox) stay on
+    # sys.path for the import and instantiation; each build dispatch re-enters
+    # the sandbox so build-time lazy imports resolve.
     try:
+        builder_paths = resolve_builder_paths(expanded_workspace, workspace_file)
         with prepended_sys_path(builder_paths):
             builder_cls = resolve_builder_class(expanded_workspace)
             builder = builder_cls(
@@ -609,6 +607,10 @@ def load_workspace(
             + f" {PrivatePath(workspace_file)} is empty or parsed no workspace data",
         )
         return None
+    except exc.WorkspaceBuilderError as e:
+        logger.debug("workspace builder resolution failed", exc_info=True)
+        tmuxp_echo(cli_colors.error("[Builder Error]") + f" {e}")
+        sys.exit(1)
 
     session_name = expanded_workspace["session_name"]
 
