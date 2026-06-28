@@ -268,9 +268,3 @@ def test_symlinked_directory(
 def test_local_workspace_files_constant_order() -> None:
     """Verify LOCAL_WORKSPACE_FILES has correct order (yaml, yml, json)."""
     assert LOCAL_WORKSPACE_FILES == [".tmuxp.yaml", ".tmuxp.yml", ".tmuxp.json"]
-
-
-def test_local_workspace_files_constant_is_list() -> None:
-    """Verify LOCAL_WORKSPACE_FILES is a list."""
-    assert isinstance(LOCAL_WORKSPACE_FILES, list)
-    assert len(LOCAL_WORKSPACE_FILES) == 3
