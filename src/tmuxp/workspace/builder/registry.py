@@ -1,11 +1,11 @@
 """Resolve and sandbox workspace builders selected by a workspace config.
 
 A workspace may point tmuxp at a builder other than the classic
-:class:`tmuxp.workspace.builder.WorkspaceBuilder` via the ``workspace_builder``
-key (a Python dotted path, ``module:attr`` reference, or an entry-point name in
-the ``tmuxp.workspace_builders`` group). When the builder lives outside the
-active environment, ``workspace_builder_paths`` lists trusted directories that
-are temporarily added to ``sys.path`` for the import and build.
+:class:`tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder` via the
+``workspace_builder`` key (a Python dotted path, ``module:attr`` reference, or
+an entry-point name in the ``tmuxp.workspace_builders`` group). When the builder
+lives outside the active environment, ``workspace_builder_paths`` lists trusted
+directories that are temporarily added to ``sys.path`` for the import and build.
 
 Security note: only literal directories are prepended to ``sys.path``. This
 deliberately avoids :func:`site.addsitedir`, which executes ``.pth`` startup

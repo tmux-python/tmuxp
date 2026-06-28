@@ -557,9 +557,9 @@ class ClassicWorkspaceBuilder:
                 self.session.set_environment(option, value)
 
         # Resolve the pane-readiness decision once, now that the session exists
-        # and any config `options.default-shell` has been applied above. AUTO
-        # waits only for zsh (the shell the prompt-redraw wait was added for);
-        # ALWAYS/NEVER force the choice.
+        # and its options (including `default-shell`) have been applied above.
+        # AUTO waits only for zsh (the shell the prompt-redraw wait was added
+        # for); ALWAYS/NEVER force the choice.
         readiness = self._builder_options.pane_readiness
         if readiness is PaneReadiness.ALWAYS:
             self._pane_readiness_wait = True
