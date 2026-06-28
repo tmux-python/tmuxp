@@ -25,8 +25,9 @@ from tests.fixtures import utils as test_utils
 from tmuxp import exc
 from tmuxp._internal.config_reader import ConfigReader
 from tmuxp.cli.load import load_plugins
-from tmuxp.workspace import builder as builder_module, loader
-from tmuxp.workspace.builder import WorkspaceBuilder, _wait_for_pane_ready
+from tmuxp.workspace import loader
+from tmuxp.workspace.builder import WorkspaceBuilder, classic as builder_classic
+from tmuxp.workspace.builder.classic import _wait_for_pane_ready
 
 if t.TYPE_CHECKING:
     from libtmux.server import Server
@@ -1563,6 +1564,8 @@ PANE_READINESS_FIXTURES: list[PaneReadinessFixture] = [
         yaml=textwrap.dedent(
             """\
 session_name: readiness-test
+workspace_builder_options:
+  pane_readiness: always
 windows:
 - panes:
   - shell_command:
@@ -1578,6 +1581,8 @@ windows:
         yaml=textwrap.dedent(
             """\
 session_name: readiness-test
+workspace_builder_options:
+  pane_readiness: always
 windows:
 - panes:
   - shell_command:
@@ -1592,6 +1597,8 @@ windows:
         yaml=textwrap.dedent(
             """\
 session_name: readiness-test
+workspace_builder_options:
+  pane_readiness: always
 windows:
 - panes:
   - shell_command:
@@ -1608,6 +1615,8 @@ windows:
         yaml=textwrap.dedent(
             """\
 session_name: readiness-test
+workspace_builder_options:
+  pane_readiness: always
 windows:
 - window_shell: top
   panes:
@@ -1635,7 +1644,7 @@ def test_pane_readiness_call_count(
 ) -> None:
     """Verify _wait_for_pane_ready is called only for appropriate panes."""
     call_count = 0
-    original = builder_module._wait_for_pane_ready
+    original = builder_classic._wait_for_pane_ready
 
     def counting_wait(
         pane: Pane,
@@ -1646,7 +1655,7 @@ def test_pane_readiness_call_count(
         call_count += 1
         return original(pane, timeout=timeout, interval=interval)
 
-    monkeypatch.setattr(builder_module, "_wait_for_pane_ready", counting_wait)
+    monkeypatch.setattr(builder_classic, "_wait_for_pane_ready", counting_wait)
 
     yaml_workspace = tmp_path / "readiness.yaml"
     yaml_workspace.write_text(yaml, encoding="utf-8")
@@ -1657,6 +1666,151 @@ def test_pane_readiness_call_count(
     builder = WorkspaceBuilder(session_config=workspace, server=server)
     builder.build()
     assert call_count == expected_wait_count
+
+
+def _count_readiness_waits(
+    *,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+    yaml: str,
+    shell: str | None = None,
+) -> int:
+    """Build a workspace from ``yaml`` and count ``_wait_for_pane_ready`` calls.
+
+    When ``shell`` is given, the resolved session shell is forced so ``auto``
+    detection is deterministic regardless of the shell the suite runs under.
+    """
+    call_count = 0
+    original = builder_classic._wait_for_pane_ready
+
+    def counting_wait(
+        pane: Pane,
+        timeout: float = 2.0,
+        interval: float = 0.05,
+    ) -> bool:
+        nonlocal call_count
+        call_count += 1
+        return original(pane, timeout=timeout, interval=interval)
+
+    monkeypatch.setattr(builder_classic, "_wait_for_pane_ready", counting_wait)
+    if shell is not None:
+        monkeypatch.setattr(
+            builder_classic,
+            "resolve_session_shell",
+            lambda session, env=None: shell,
+        )
+
+    yaml_workspace = tmp_path / "readiness.yaml"
+    yaml_workspace.write_text(yaml, encoding="utf-8")
+    workspace = loader.trickle(loader.expand(ConfigReader._from_file(yaml_workspace)))
+    builder = WorkspaceBuilder(session_config=workspace, server=server)
+    builder.build()
+    return call_count
+
+
+_TWO_DEFAULT_PANES = """\
+- panes:
+  - shell_command:
+    - cmd: echo hello
+  - shell_command:
+    - cmd: echo world
+"""
+
+
+def _readiness_yaml(windows: str, policy: str | None = None) -> str:
+    """Compose a readiness workspace with an optional pane_readiness policy."""
+    catalog = (
+        f"workspace_builder_options:\n  pane_readiness: {policy}\n" if policy else ""
+    )
+    return f"session_name: readiness-test\n{catalog}windows:\n{windows}"
+
+
+def test_pane_readiness_auto_waits_for_zsh(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Wait for default-shell panes under auto when the session shell is zsh."""
+    count = _count_readiness_waits(
+        server=server,
+        monkeypatch=monkeypatch,
+        tmp_path=tmp_path,
+        yaml=_readiness_yaml(_TWO_DEFAULT_PANES),
+        shell="/usr/bin/zsh",
+    )
+    assert count == 2
+
+
+def test_pane_readiness_auto_skips_non_zsh(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Skip the wait under auto for non-zsh shells (the intended speedup)."""
+    count = _count_readiness_waits(
+        server=server,
+        monkeypatch=monkeypatch,
+        tmp_path=tmp_path,
+        yaml=_readiness_yaml(_TWO_DEFAULT_PANES),
+        shell="/bin/bash",
+    )
+    assert count == 0
+
+
+def test_pane_readiness_always_waits_non_zsh(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Wait for default-shell panes under always even for non-zsh shells."""
+    count = _count_readiness_waits(
+        server=server,
+        monkeypatch=monkeypatch,
+        tmp_path=tmp_path,
+        yaml=_readiness_yaml(_TWO_DEFAULT_PANES, policy="always"),
+        shell="/bin/bash",
+    )
+    assert count == 2
+
+
+def test_pane_readiness_never_skips_zsh(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Skip the wait under never even for zsh."""
+    count = _count_readiness_waits(
+        server=server,
+        monkeypatch=monkeypatch,
+        tmp_path=tmp_path,
+        yaml=_readiness_yaml(_TWO_DEFAULT_PANES, policy="never"),
+        shell="/usr/bin/zsh",
+    )
+    assert count == 0
+
+
+def test_pane_readiness_custom_shell_skips_under_always(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A window_shell pane skips the wait even when policy is always."""
+    windows = textwrap.dedent(
+        """\
+- window_shell: top
+  panes:
+  - shell_command: []
+  - shell_command: []
+""",
+    )
+    count = _count_readiness_waits(
+        server=server,
+        monkeypatch=monkeypatch,
+        tmp_path=tmp_path,
+        yaml=_readiness_yaml(windows, policy="always"),
+    )
+    assert count == 0
 
 
 def test_select_layout_not_called_after_yield(
