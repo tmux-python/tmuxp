@@ -83,6 +83,18 @@ def test_resolve_invalid_builder() -> None:
         )
 
 
+def test_resolve_rejects_constructor_without_plugins() -> None:
+    """A builder whose __init__ lacks plugins is rejected before instantiation.
+
+    The CLI always calls the builder with ``plugins=...``, so such a constructor
+    would otherwise raise a raw TypeError instead of a styled error.
+    """
+    with pytest.raises(exc.InvalidWorkspaceBuilder):
+        registry.resolve_builder_class(
+            {"workspace_builder": f"{INVALID}:MissingPluginsBuilder"},
+        )
+
+
 def test_available_builders_includes_classic() -> None:
     """The classic entry point is discoverable."""
     assert "classic" in registry.available_builders()

@@ -218,8 +218,9 @@ def _validate_builder(obj: t.Any, target: str) -> None:
     """Validate that ``obj`` is a usable workspace builder.
 
     A class must expose a callable ``build`` method and a constructor accepting
-    ``session_config`` and ``server`` (or ``**kwargs``). Non-class callables
-    (factories) are trusted and validated at instantiation.
+    ``session_config``, ``server``, and ``plugins`` (or ``**kwargs``) — the
+    arguments ``tmuxp load`` always passes. Non-class callables (factories) are
+    trusted and validated at instantiation.
 
     Examples
     --------
@@ -244,7 +245,7 @@ def _validate_builder(obj: t.Any, target: str) -> None:
         has_var_kw = any(
             p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values()
         )
-        missing = {"session_config", "server"} - set(params)
+        missing = {"session_config", "server", "plugins"} - set(params)
         if not has_var_kw and missing:
             joined = ", ".join(sorted(missing))
             raise exc.InvalidWorkspaceBuilder(
