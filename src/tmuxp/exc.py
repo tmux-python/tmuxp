@@ -173,6 +173,17 @@ class WorkspaceBuilderPathError(WorkspaceBuilderError):
         return super().__init__(msg, *args, **kwargs)
 
 
+class InvalidWorkspaceBuilderOption(WorkspaceBuilderError):
+    """A ``workspace_builder_options`` value is invalid."""
+
+    def __init__(self, reason: str, *args: object, **kwargs: object) -> None:
+        return super().__init__(
+            f"Invalid workspace_builder_options: {reason}",
+            *args,
+            **kwargs,
+        )
+
+
 class TmuxpPluginException(TmuxpException):
     """Base Exception for Tmuxp Errors."""
 

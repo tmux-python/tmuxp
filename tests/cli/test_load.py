@@ -708,6 +708,18 @@ windows:
 """,
         expected_substring="workspace_builder_paths entry is invalid",
     ),
+    WorkspaceBuilderErrorFixture(
+        test_id="invalid_pane_readiness",
+        yaml="""\
+session_name: builder-error
+workspace_builder_options:
+  pane_readiness: sometimes
+windows:
+- panes:
+  - echo hi
+""",
+        expected_substring="pane_readiness",
+    ),
 ]
 
 

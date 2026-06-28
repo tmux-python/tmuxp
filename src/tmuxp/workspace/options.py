@@ -21,6 +21,8 @@ import enum
 import os
 import typing as t
 
+from tmuxp import exc
+
 _AUTO_ALIASES = frozenset({"auto"})
 _ALWAYS_ALIASES = frozenset({"always", "true", "on", "yes", "1"})
 _NEVER_ALIASES = frozenset({"never", "false", "off", "no", "0"})
@@ -144,14 +146,13 @@ class WorkspaceBuilderOptions:
         """
         catalog = session_config.get("workspace_builder_options") or {}
         if not isinstance(catalog, dict):
-            msg = (
-                "workspace_builder_options must be a mapping, got "
-                f"{type(catalog).__name__}"
-            )
-            raise TypeError(msg)
-        return cls(
-            pane_readiness=PaneReadiness.from_config(catalog.get("pane_readiness")),
-        )
+            msg = f"must be a mapping, got {type(catalog).__name__}"
+            raise exc.InvalidWorkspaceBuilderOption(msg)
+        try:
+            pane_readiness = PaneReadiness.from_config(catalog.get("pane_readiness"))
+        except ValueError as e:
+            raise exc.InvalidWorkspaceBuilderOption(str(e)) from e
+        return cls(pane_readiness=pane_readiness)
 
 
 def shell_is_zsh(shell: str | None) -> bool:

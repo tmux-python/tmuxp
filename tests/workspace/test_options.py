@@ -6,6 +6,7 @@ import typing as t
 
 import pytest
 
+from tmuxp import exc
 from tmuxp.workspace.options import (
     PaneReadiness,
     WorkspaceBuilderOptions,
@@ -62,9 +63,17 @@ def test_workspace_builder_options_reads_catalog() -> None:
 
 
 def test_workspace_builder_options_invalid_catalog_type() -> None:
-    """A non-mapping catalog is rejected."""
-    with pytest.raises(TypeError, match="must be a mapping"):
+    """A non-mapping catalog is rejected as a builder-option error."""
+    with pytest.raises(exc.InvalidWorkspaceBuilderOption, match="must be a mapping"):
         WorkspaceBuilderOptions.from_config({"workspace_builder_options": ["nope"]})
+
+
+def test_workspace_builder_options_invalid_pane_readiness() -> None:
+    """An invalid pane_readiness is wrapped as a builder-option error."""
+    with pytest.raises(exc.InvalidWorkspaceBuilderOption, match="pane_readiness"):
+        WorkspaceBuilderOptions.from_config(
+            {"workspace_builder_options": {"pane_readiness": "sometimes"}},
+        )
 
 
 @pytest.mark.parametrize(
