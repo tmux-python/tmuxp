@@ -20,7 +20,8 @@ guarantees the workspace is fully prepped before you attach.
 
 You can also send a workspace through a different or custom builder instead of the
 classic one, and tune its options the same way. For the braver cases, you can subclass
-the classic builder or write your own in Python on top of libtmux — see
+the classic builder or write your own in Python on top of
+[libtmux](https://libtmux.git-pull.com/) — see
 {ref}`custom-workspace-builders` for writing, packaging, testing, and the trust
 boundary that comes with running builder code.
 
