@@ -47,11 +47,46 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 #: Bump to invalidate the on-disk render cache when render arguments change.
-_RENDER_VERSION = "mmdc11-svg-v1"
+_RENDER_VERSION = "mmdc11-furo-svg-v1"
 
-#: mermaid theme presets used for the two inlined variants.
-_THEME_LIGHT = "default"
+#: Logical names for the two inlined variants (cache key, SVG id, CSS class).
+_THEME_LIGHT = "light"
 _THEME_DARK = "dark"
+
+#: System font stack matching gp-furo's body font (gp-furo-tokens --font-stack).
+_FONT_STACK = (
+    "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+)
+
+#: mermaid ``base``-theme variables mapped to gp-furo's light/dark colour tokens
+#: (gp-furo-tokens: light.ts / dark.ts) so diagrams match the site palette.
+#: Colour does not affect layout, so both variants share geometry.
+_PALETTES: dict[str, dict[str, str]] = {
+    _THEME_LIGHT: {
+        "primaryColor": "#f8f9fb",
+        "primaryBorderColor": "#0a4bff",
+        "primaryTextColor": "#000000",
+        "lineColor": "#6b6f76",
+        "textColor": "#000000",
+        "background": "#ffffff",
+        "edgeLabelBackground": "#f8f9fb",
+        "secondaryColor": "#ffffff",
+        "tertiaryColor": "#f8f9fb",
+        "fontFamily": _FONT_STACK,
+    },
+    _THEME_DARK: {
+        "primaryColor": "#1a1c1e",
+        "primaryBorderColor": "#3d94ff",
+        "primaryTextColor": "#cfd0d0",
+        "lineColor": "#81868d",
+        "textColor": "#cfd0d0",
+        "background": "#131416",
+        "edgeLabelBackground": "#1a1c1e",
+        "secondaryColor": "#131416",
+        "tertiaryColor": "#1a1c1e",
+        "fontFamily": _FONT_STACK,
+    },
+}
 
 #: mermaid hardcodes this id on every rendered SVG and scopes its CSS and
 #: arrowhead markers to it; it is rewritten per diagram+theme to avoid
@@ -240,7 +275,13 @@ def _render(app: Sphinx, source: str, theme: str) -> str:
         tmpdir = pathlib.Path(td)
         in_file = tmpdir / "diagram.mmd"
         out_file = tmpdir / "diagram.svg"
+        config_file = tmpdir / "config.json"
         in_file.write_text(source, encoding="utf-8")
+        config: dict[str, t.Any] = {
+            "theme": "base",
+            "themeVariables": _PALETTES[theme],
+        }
+        config_file.write_text(json.dumps(config), encoding="utf-8")
         argv = [
             *mmdc,
             "-i",
@@ -249,8 +290,8 @@ def _render(app: Sphinx, source: str, theme: str) -> str:
             str(out_file),
             "-b",
             "transparent",
-            "-t",
-            theme,
+            "-c",
+            str(config_file),
             "-p",
             str(_puppeteer_config_file(app, tmpdir)),
         ]

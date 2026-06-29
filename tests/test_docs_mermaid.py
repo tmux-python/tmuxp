@@ -160,6 +160,40 @@ def test_svg_element_id_is_themed_and_unique() -> None:
     assert light.endswith("-light")
 
 
+class PaletteCase(t.NamedTuple):
+    """A theme name whose furo palette must define the flowchart variables."""
+
+    test_id: str
+    theme: str
+
+
+_PALETTE_CASES: list[PaletteCase] = [
+    PaletteCase(test_id=f"{theme}-palette", theme=theme)
+    for theme in (mi._THEME_LIGHT, mi._THEME_DARK)
+]
+
+_REQUIRED_PALETTE_KEYS = (
+    "primaryColor",
+    "primaryBorderColor",
+    "primaryTextColor",
+    "lineColor",
+    "textColor",
+)
+
+
+@pytest.mark.parametrize(
+    "case",
+    _PALETTE_CASES,
+    ids=[c.test_id for c in _PALETTE_CASES],
+)
+def test_palette_defines_flowchart_colors(case: PaletteCase) -> None:
+    """Each theme palette defines the mermaid colour variables as hex values."""
+    palette = mi._PALETTES[case.theme]
+    for key in _REQUIRED_PALETTE_KEYS:
+        assert key in palette, f"{case.test_id}: missing {key}"
+        assert palette[key].startswith("#"), f"{case.test_id}: {key} not hex"
+
+
 def _make_translator(tmp_path: Path) -> types.SimpleNamespace:
     """Return a minimal stand-in for the HTML translator the visitor needs."""
     config = types.SimpleNamespace(
