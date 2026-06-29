@@ -272,7 +272,7 @@ def test_render_cache_is_idempotent(
     """``_render_cached`` invokes mmdc once, then serves from the disk cache."""
     calls = {"n": 0}
 
-    def fake_render(app: object, source: str, theme: str) -> str:
+    def fake_render(app: object, source: str, config_json: str) -> str:
         calls["n"] += 1
         return _FAKE_MMDC_SVG
 
@@ -283,8 +283,12 @@ def test_render_cache_is_idempotent(
     )
     app = types.SimpleNamespace(confdir=str(tmp_path), config=config)
 
-    first = mi._render_cached(t.cast("t.Any", app), "flowchart LR a-->b", "default")
-    second = mi._render_cached(t.cast("t.Any", app), "flowchart LR a-->b", "default")
+    first = mi._render_cached(
+        t.cast("t.Any", app), "flowchart LR a-->b", mi._THEME_LIGHT
+    )
+    second = mi._render_cached(
+        t.cast("t.Any", app), "flowchart LR a-->b", mi._THEME_LIGHT
+    )
 
     assert first == second == _FAKE_MMDC_SVG
     assert calls["n"] == 1

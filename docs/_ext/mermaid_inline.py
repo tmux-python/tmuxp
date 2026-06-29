@@ -48,7 +48,7 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 #: Bump to invalidate the on-disk render cache when render arguments change.
-_RENDER_VERSION = "mmdc11-furo-svg-v3"
+_RENDER_VERSION = "mmdc11-furo-svg-v4"
 
 #: Logical names for the two inlined variants (cache key, SVG id, CSS class).
 _THEME_LIGHT = "light"
@@ -97,11 +97,17 @@ def _theme_css(theme: str) -> str:
     """Return the CSS injected into a rendered SVG for the given theme.
 
     Renders ``:::cmd`` nodes in a monospace font so commands read as code;
-    centres node labels (the build's headless Chrome may lack the exact mono
-    face, so the measured box can be wider than the on-page text, which would
-    otherwise fall left); and collapses mermaid's three stacked edge-label
-    backgrounds into one padded chip in the theme's label colour. ``white-space:
-    normal`` lets a padded label wrap instead of overflowing its measured box.
+    centres each node label in its box; and collapses mermaid's three stacked
+    edge-label backgrounds into one padded chip in the theme's label colour.
+
+    Centering uses ``display: table`` + ``margin: 0 auto`` rather than a width
+    or flex rule: the build's headless Chrome may render the font at a different
+    width than the visitor's browser, leaving the shrink-to-fit ``table-cell``
+    narrower than the measured box (so it falls left), but anything that
+    *resizes* the label corrupts mermaid's build-time measurement pass. A table
+    with auto margins re-centres without changing the measured size.
+    ``white-space: normal`` lets a padded edge label wrap instead of
+    overflowing its measured box.
 
     >>> "monospace" in _theme_css("light")
     True
@@ -112,6 +118,10 @@ def _theme_css(theme: str) -> str:
     return (
         ".cmd .nodeLabel { font-family: " + _MONO_STACK + " !important; }"
         " .nodeLabel, .nodeLabel p { text-align: center !important; }"
+        " .node foreignObject > div {"
+        " display: table !important;"
+        " margin: 0 auto !important;"
+        " }"
         " .edgeLabel rect { opacity: 0 !important; }"
         " .labelBkg { background: transparent !important; }"
         " .edgeLabel { background: transparent !important; }"
@@ -151,21 +161,31 @@ class mermaid_inline(nodes.General, nodes.Element):
     """Doctree node carrying mermaid source until the HTML write phase."""
 
 
-def _diagram_digest(source: str, theme: str, *, version: str = _RENDER_VERSION) -> str:
+def _diagram_digest(
+    source: str,
+    theme: str,
+    *,
+    version: str = _RENDER_VERSION,
+    extra: str = "",
+) -> str:
     """Return a stable content hash that keys the render cache.
 
-    The hash covers the render version, the theme, and the source, so light and
-    dark variants cache separately and a render-argument change busts the cache.
+    The hash covers the render version, the theme, the source, and ``extra``
+    (the full mermaid config JSON) — so light and dark variants cache
+    separately and any styling change, not just a source change, busts the
+    cache.
 
     >>> a = _diagram_digest("flowchart LR a-->b", "default")
     >>> a == _diagram_digest("flowchart LR a-->b", "default")
     True
     >>> a != _diagram_digest("flowchart LR a-->b", "dark")
     True
+    >>> a != _diagram_digest("flowchart LR a-->b", "default", extra="{}")
+    True
     >>> len(a)
     40
     """
-    payload = f"{version}\x00{theme}\x00{source}"
+    payload = f"{version}\x00{theme}\x00{extra}\x00{source}"
     return hashlib.sha1(payload.encode("utf-8")).hexdigest()
 
 
@@ -320,8 +340,22 @@ def _puppeteer_config_file(app: Sphinx, tmpdir: pathlib.Path) -> pathlib.Path:
     return out
 
 
-def _render(app: Sphinx, source: str, theme: str) -> str:
-    """Render ``source`` to an SVG string via ``mmdc`` for the given theme."""
+def _mermaid_config(theme: str) -> dict[str, t.Any]:
+    """Return the mermaid ``-c`` config: base theme + furo palette + themeCSS.
+
+    >>> cfg = _mermaid_config("light")
+    >>> cfg["theme"], "themeVariables" in cfg, "themeCSS" in cfg
+    ('base', True, True)
+    """
+    return {
+        "theme": "base",
+        "themeVariables": _PALETTES[theme],
+        "themeCSS": _theme_css(theme),
+    }
+
+
+def _render(app: Sphinx, source: str, config_json: str) -> str:
+    """Render ``source`` to an SVG string via ``mmdc`` using ``config_json``."""
     mmdc = _resolve_mmdc(app)
     if mmdc is None:
         msg = (
@@ -335,12 +369,7 @@ def _render(app: Sphinx, source: str, theme: str) -> str:
         out_file = tmpdir / "diagram.svg"
         config_file = tmpdir / "config.json"
         in_file.write_text(source, encoding="utf-8")
-        config: dict[str, t.Any] = {
-            "theme": "base",
-            "themeVariables": _PALETTES[theme],
-            "themeCSS": _theme_css(theme),
-        }
-        config_file.write_text(json.dumps(config), encoding="utf-8")
+        config_file.write_text(config_json, encoding="utf-8")
         argv = [
             *mmdc,
             "-i",
@@ -380,12 +409,13 @@ def _render_cached(app: Sphinx, source: str, theme: str) -> str:
     The cache lives outside ``_build`` (under the confdir) so it survives the
     ``rm -rf docs/_build`` that precedes a full build.
     """
-    digest = _diagram_digest(source, theme)
+    config_json = json.dumps(_mermaid_config(theme), sort_keys=True)
+    digest = _diagram_digest(source, theme, extra=config_json)
     cache_dir = pathlib.Path(app.confdir) / "_mermaid_cache"
     cache_file = cache_dir / f"{digest}.svg"
     if cache_file.is_file():
         return cache_file.read_text(encoding="utf-8")
-    svg = _render(app, source, theme)
+    svg = _render(app, source, config_json)
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_file.write_text(svg, encoding="utf-8")
     return svg
