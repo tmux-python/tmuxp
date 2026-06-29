@@ -32,6 +32,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import typing as t
 
@@ -210,17 +211,39 @@ class MermaidDirective(SphinxDirective):
         return [node]
 
 
+def _chrome_glob(platform: str) -> str:
+    """Return the puppeteer-cache glob for Chrome on the given ``sys.platform``.
+
+    Puppeteer lays the binary out per platform under ``chrome/<build>/``.
+
+    >>> _chrome_glob("linux")
+    '*/chrome-linux64/chrome'
+    >>> _chrome_glob("win32")
+    '*/chrome-win64/chrome.exe'
+    >>> _chrome_glob("darwin").startswith("*/chrome-mac-")
+    True
+    """
+    if platform.startswith("win"):
+        return "*/chrome-win64/chrome.exe"
+    if platform == "darwin":
+        return (
+            "*/chrome-mac-*/Google Chrome for Testing.app"
+            "/Contents/MacOS/Google Chrome for Testing"
+        )
+    return "*/chrome-linux64/chrome"
+
+
 def _discover_chrome() -> str | None:
     """Return a Chrome installed by ``puppeteer browsers install``, if any.
 
     Puppeteer's automatic resolution can miss the cached browser (its cache dir
     is computed relative to the install location); pointing ``executablePath`` at
-    the discovered binary sidesteps that. Linux/WSL layout only.
+    the discovered binary sidesteps that.
     """
     cache = pathlib.Path.home() / ".cache" / "puppeteer" / "chrome"
     if not cache.is_dir():
         return None
-    candidates = sorted(cache.glob("*/chrome-linux64/chrome"))
+    candidates = sorted(cache.glob(_chrome_glob(sys.platform)))
     return str(candidates[-1]) if candidates else None
 
 
