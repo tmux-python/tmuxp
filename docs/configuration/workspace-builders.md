@@ -12,6 +12,14 @@ their commands. You usually never have to think about it: tmuxp ships with a bui
 box, just as they always have. **Everything on this page is optional; leave a setting
 out to fall back to the default.**
 
+:::{mermaid}
+:caption: How a workspace file becomes a live tmux session.
+
+flowchart LR
+    load["tmuxp load &lt;workspace-file&gt;"] -->|reads workspace config| builder["Workspace Builder"]
+    builder -->|"creates session, windows, panes"| attach["Attach tmux session"]
+:::
+
 Workspaces with special needs can reach for a builder's options to fine-tune how a
 session loads. The classic builder, for instance, can wait for a pane's shell prompt
 before sending its layout and commands — by default only when that shell is zsh (the
