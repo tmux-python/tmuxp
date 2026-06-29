@@ -44,6 +44,26 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Faster pane-readiness polling (#1040)
+
+When the classic builder waits for a pane's shell to draw its prompt, it now
+polls every 10ms instead of every 50ms. tmux's shell-ready latency typically
+lands in the 50-150ms band, so the finer interval notices readiness sooner and
+shortens workspace loads that wait on the prompt, with no change to the
+readiness condition itself.
+
+### Development
+
+#### Centralized set-option dispatch (#1040)
+
+The classic builder now applies session, global, per-window, and post-build
+window options through one internal entry point instead of four separate loops.
+It still issues one `set-option` per option, so behavior is unchanged; the
+shared, batch-shaped entry point exists so a future libtmux batching API can cut
+the per-option round-trips without revisiting the call sites.
+
 ## tmuxp 1.73.0 (2026-06-28)
 
 tmuxp 1.73.0 makes the workspace build step pluggable and tunable. A workspace can now build through a third-party builder selected by registered entry-point name or Python import path, and a new `workspace_builder_options` catalog controls the pane-readiness wait per workspace. The built-in builder stays the default, so existing workspaces keep working — though the new `pane_readiness: auto` default skips the prompt wait on non-zsh shells. See {ref}`custom-workspace-builders` for the guide.
