@@ -34,8 +34,12 @@ conf = merge_sphinx_config(
     extra_extensions=[
         "sphinx_autodoc_api_style",
         "aafig",
+        "mermaid_inline",
         "sphinx_autodoc_argparse.exemplar",
     ],
+    # Route a plain ```mermaid fence to the mermaid_inline directive (the colon
+    # and brace forms route there already via colon_fence).
+    myst_fence_as_directive=["mermaid"],
     intersphinx_mapping={
         "python": ("https://docs.python.org/", None),
         "libtmux": ("https://libtmux.git-pull.com/", None),
@@ -48,8 +52,15 @@ conf = merge_sphinx_config(
     aafig_format={"latex": "pdf", "html": "gif"},
     aafig_default_options={"scale": 0.75, "aspect": 0.5, "proportional": True},
     rediraffe_redirects="redirects.txt",
-    # AGENTS.md (+ its CLAUDE.md symlink) is agent guidance, not a site
-    # page; keep Sphinx from treating it as an orphan document.
-    exclude_patterns=["_build", "AGENTS.md", "CLAUDE.md"],
+    # Keep Sphinx out of non-document trees under docs/: the mermaid toolchain
+    # (node_modules) and its render cache, plus agent guidance (AGENTS.md and
+    # its CLAUDE.md symlink) which would otherwise be orphan documents.
+    exclude_patterns=[
+        "_build",
+        "node_modules",
+        "_mermaid_cache",
+        "AGENTS.md",
+        "CLAUDE.md",
+    ],
 )
 globals().update(conf)

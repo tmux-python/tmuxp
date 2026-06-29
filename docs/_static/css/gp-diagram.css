@@ -1,0 +1,72 @@
+/*
+ * Build-time mermaid diagrams (docs/_ext/mermaid_inline.py).
+ *
+ * Each diagram is inlined twice — a light and a dark SVG — and this stylesheet
+ * shows exactly one. Mermaid bakes literal colours into an id-scoped,
+ * !important <style>, so a single SVG cannot be re-themed by CSS; the two
+ * variants share identical geometry, so toggling display never shifts layout.
+ */
+
+.gp-diagram-wrapper {
+  margin: 1.5rem 0;
+  /* Wide diagrams scroll within the column instead of overflowing it. */
+  overflow-x: auto;
+}
+
+.gp-diagram svg {
+  /* Intrinsic width/height/viewBox are set at build time; these let the
+     diagram scale down on narrow columns while keeping its aspect ratio,
+     so there is no layout shift. */
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.gp-diagram figcaption,
+.gp-diagram-wrapper > figcaption {
+  text-align: center;
+  font-size: 0.9em;
+  margin-top: 0.5rem;
+}
+
+/*
+ * Three-state theme toggle, mirroring Furo's light/dark logo switching:
+ *   - default: light variant,
+ *   - explicit dark (body[data-theme="dark"]): dark variant,
+ *   - system dark with no explicit choice: dark variant.
+ * data-theme is set on <body> before first paint and <body> is never swapped
+ * during SPA navigation, so the correct variant shows immediately and stays
+ * correct across page swaps with no JavaScript.
+ */
+.gp-diagram--light {
+  display: block;
+}
+
+.gp-diagram--dark {
+  display: none;
+}
+
+body[data-theme="dark"] .gp-diagram--light {
+  display: none;
+}
+
+body[data-theme="dark"] .gp-diagram--dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) .gp-diagram--light {
+    display: none;
+  }
+
+  body:not([data-theme="light"]) .gp-diagram--dark {
+    display: block;
+  }
+}
+
+/* Shown only when mmdc is unavailable at build time (degraded fallback). */
+.gp-diagram-fallback {
+  white-space: pre;
+  overflow-x: auto;
+}
