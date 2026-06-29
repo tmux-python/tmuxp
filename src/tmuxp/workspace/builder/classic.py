@@ -583,13 +583,7 @@ class ClassicWorkspaceBuilder:
             for plugin in self.plugins:
                 plugin.on_window_create(window)
 
-            focus_pane = None
-            for pane, pane_config in self.iter_create_panes(window, window_config):
-                assert isinstance(pane, Pane)
-                pane = pane
-
-                if pane_config.get("focus"):
-                    focus_pane = pane
+            focus_pane = self._build_window(window, window_config)
 
             if window_config.get("focus"):
                 focus = window
@@ -613,6 +607,52 @@ class ClassicWorkspaceBuilder:
         _log.info("workspace built")
         if self.on_build_event:
             self.on_build_event({"event": "workspace_built"})
+
+    def _build_window(
+        self,
+        window: Window,
+        window_config: dict[str, t.Any],
+    ) -> Pane | None:
+        """Create, lay out, and run a window's panes; return its focus pane.
+
+        The per-window construction seam :meth:`build` drives once per window,
+        after ``on_window_create`` and before ``config_after_window``. The
+        classic builder creates panes one at a time through
+        :meth:`iter_create_panes`. Subclasses override this to change how a
+        window's panes are built and made ready — see
+        :class:`~tmuxp.workspace.builder.concurrent.ConcurrentWorkspaceBuilder`,
+        which prepares a window's panes together.
+
+        Parameters
+        ----------
+        window : :class:`libtmux.Window`
+            the window to populate
+        window_config : dict
+            config section for the window
+
+        Returns
+        -------
+        :class:`libtmux.Pane` or None
+            the pane that requested focus, or ``None`` when no pane did;
+            :meth:`build` selects it once the window is fully configured
+
+        Examples
+        --------
+        >>> session = server.new_session("build-window-demo")
+        >>> builder = ClassicWorkspaceBuilder(
+        ...     session_config={"session_name": "x", "windows": []},
+        ...     server=server,
+        ... )
+        >>> window_config = {"window_name": "main", "panes": [{"shell_command": []}]}
+        >>> builder._build_window(session.active_window, window_config) is None
+        True
+        """
+        focus_pane: Pane | None = None
+        for pane, pane_config in self.iter_create_panes(window, window_config):
+            assert isinstance(pane, Pane)
+            if pane_config.get("focus"):
+                focus_pane = pane
+        return focus_pane
 
     def iter_create_windows(
         self,
