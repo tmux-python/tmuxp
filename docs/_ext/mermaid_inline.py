@@ -358,12 +358,16 @@ def _puppeteer_config_file(app: Sphinx, tmpdir: pathlib.Path) -> pathlib.Path:
 def _mermaid_config(theme: str) -> dict[str, t.Any]:
     """Return the mermaid ``-c`` config: base theme + furo palette + themeCSS.
 
+    ``block.padding: 0`` tiles block-beta panes contiguously, like a tmux
+    window; other diagram types ignore the ``block`` key.
+
     >>> cfg = _mermaid_config("light")
-    >>> cfg["theme"], "themeVariables" in cfg, "themeCSS" in cfg
-    ('base', True, True)
+    >>> cfg["theme"], "themeVariables" in cfg, cfg["block"]["padding"]
+    ('base', True, 0)
     """
     return {
         "theme": "base",
+        "block": {"padding": 0},
         "themeVariables": _PALETTES[theme],
         "themeCSS": _theme_css(theme),
     }
