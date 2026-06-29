@@ -9,20 +9,12 @@ punctual.
 
 ::::{sidebar} short hand
 
-```{eval-rst}
-.. aafig::
-   :textual:
-
-    +-------------------+
-    | 'did you know'    |
-    | 'you can inline'  |
-    +-------------------+
-    | 'single commands' |
-    |                   |
-    +-------------------+
-    | 'for panes'       |
-    |                   |
-    +-------------------+
+```mermaid
+block-beta
+  columns 1
+  p1["'did you know'<br/>'you can inline'"]
+  p2["'single commands'"]
+  p3["'for panes'"]
 ```
 
 ::::
@@ -75,18 +67,11 @@ Note `''` counts as an empty carriage return.
 
 ::::{sidebar} 2 pane
 
-```{eval-rst}
-.. aafig::
-
-    +-----------------+
-    | $ pwd           |
-    |                 |
-    |                 |
-    +-----------------+
-    | $ pwd           |
-    |                 |
-    |                 |
-    +-----------------+
+```mermaid
+block-beta
+  columns 1
+  a["$ pwd"]
+  b["$ pwd"]
 ```
 
 ::::
@@ -113,18 +98,11 @@ Note `''` counts as an empty carriage return.
 
 ::::{sidebar} 3 panes
 
-```{eval-rst}
-.. aafig::
-
-    +-----------------+
-    | $ pwd           |
-    |                 |
-    |                 |
-    +--------+--------+
-    | $ pwd  | $ pwd  |
-    |        |        |
-    |        |        |
-    +--------+--------+
+```mermaid
+block-beta
+  columns 2
+  top["$ pwd"]:2
+  bl["$ pwd"] br["$ pwd"]
 ```
 
 ::::
@@ -151,18 +129,11 @@ Note `''` counts as an empty carriage return.
 
 ::::{sidebar} 4 panes
 
-```{eval-rst}
-.. aafig::
-
-    +--------+--------+
-    | $ pwd  | $ pwd  |
-    |        |        |
-    |        |        |
-    +--------+--------+
-    | $ pwd  | $ pwd  |
-    |        |        |
-    |        |        |
-    +--------+--------+
+```mermaid
+block-beta
+  columns 2
+  a["$ pwd"] b["$ pwd"]
+  c["$ pwd"] d["$ pwd"]
 ```
 
 ::::
