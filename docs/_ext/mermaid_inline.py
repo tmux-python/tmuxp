@@ -48,7 +48,7 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 #: Bump to invalidate the on-disk render cache when render arguments change.
-_RENDER_VERSION = "mmdc11-furo-svg-v2"
+_RENDER_VERSION = "mmdc11-furo-svg-v3"
 
 #: Logical names for the two inlined variants (cache key, SVG id, CSS class).
 _THEME_LIGHT = "light"
@@ -89,19 +89,40 @@ _PALETTES: dict[str, dict[str, str]] = {
     },
 }
 
-#: Extra CSS injected into every rendered SVG (theme-agnostic). Nodes tagged
-#: ``:::cmd`` render in a monospace font so commands read as code; edge labels
-#: get padding. ``white-space: normal`` lets a padded label keep wrapping
-#: instead of overflowing the box mermaid measured for it.
+#: Monospace stack matching gp-furo's ``--font-stack--monospace``.
 _MONO_STACK = "'SFMono-Regular', Menlo, Consolas, Monaco, 'Liberation Mono', monospace"
-_THEME_CSS = (
-    ".cmd .nodeLabel { font-family: " + _MONO_STACK + " !important; }"
-    " .edgeLabels .labelBkg {"
-    " padding: 3px 10px !important;"
-    " white-space: normal !important;"
-    " border-radius: 4px;"
-    " }"
-)
+
+
+def _theme_css(theme: str) -> str:
+    """Return the CSS injected into a rendered SVG for the given theme.
+
+    Renders ``:::cmd`` nodes in a monospace font so commands read as code;
+    centres node labels (the build's headless Chrome may lack the exact mono
+    face, so the measured box can be wider than the on-page text, which would
+    otherwise fall left); and collapses mermaid's three stacked edge-label
+    backgrounds into one padded chip in the theme's label colour. ``white-space:
+    normal`` lets a padded label wrap instead of overflowing its measured box.
+
+    >>> "monospace" in _theme_css("light")
+    True
+    >>> "#f8f9fb" in _theme_css("light")
+    True
+    """
+    bg = _PALETTES[theme]["edgeLabelBackground"]
+    return (
+        ".cmd .nodeLabel { font-family: " + _MONO_STACK + " !important; }"
+        " .nodeLabel, .nodeLabel p { text-align: center !important; }"
+        " .edgeLabel rect { opacity: 0 !important; }"
+        " .labelBkg { background: transparent !important; }"
+        " .edgeLabel { background: transparent !important; }"
+        " .edgeLabel p {"
+        " background: " + bg + " !important;"
+        " padding: 3px 10px !important;"
+        " border-radius: 4px !important;"
+        " white-space: normal !important;"
+        " }"
+    )
+
 
 #: mermaid hardcodes this id on every rendered SVG and scopes its CSS and
 #: arrowhead markers to it; it is rewritten per diagram+theme to avoid
@@ -317,7 +338,7 @@ def _render(app: Sphinx, source: str, theme: str) -> str:
         config: dict[str, t.Any] = {
             "theme": "base",
             "themeVariables": _PALETTES[theme],
-            "themeCSS": _THEME_CSS,
+            "themeCSS": _theme_css(theme),
         }
         config_file.write_text(json.dumps(config), encoding="utf-8")
         argv = [
