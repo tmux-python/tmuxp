@@ -44,6 +44,24 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Concurrent workspace builder (opt-in) (#1056)
+
+A new opt-in builder,
+{class}`~tmuxp.workspace.builder.concurrent.ConcurrentWorkspaceBuilder`, speeds
+up loads by preparing a window's panes together instead of one at a time. Select
+it from a workspace file with `workspace_builder: concurrent`. For each window it
+creates all the panes up front so their shells warm up together, waits for them
+in a single readiness barrier, applies the layout once, then sends each pane's
+commands. Windows with several panes — especially with a slow interactive shell
+startup — open noticeably quicker, and the resulting session is identical to the
+classic builder's. It honors the same `workspace_builder_options.pane_readiness`
+policy and falls back to the classic one-pane-at-a-time path for windows whose
+later panes depend on an earlier pane's `start_directory` side effects.
+
+See {ref}`custom-workspace-builders` for the guide.
+
 ## tmuxp 1.73.0 (2026-06-28)
 
 tmuxp 1.73.0 makes the workspace build step pluggable and tunable. A workspace can now build through a third-party builder selected by registered entry-point name or Python import path, and a new `workspace_builder_options` catalog controls the pane-readiness wait per workspace. The built-in builder stays the default, so existing workspaces keep working — though the new `pane_readiness: auto` default skips the prompt wait on non-zsh shells. See {ref}`custom-workspace-builders` for the guide.

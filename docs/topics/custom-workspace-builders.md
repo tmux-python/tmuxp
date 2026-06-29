@@ -120,6 +120,41 @@ covers what `tmuxp load` drives:
 The contract is synchronous today. It is shaped so an async builder can be added
 later as an additive extension without changing this surface.
 
+## Concurrent builder
+
+tmuxp ships a second built-in builder,
+{class}`~tmuxp.workspace.builder.concurrent.ConcurrentWorkspaceBuilder`, that
+speeds up loads by observing pane readiness *concurrently* within each window.
+Select it by name:
+
+```yaml
+session_name: my-session
+workspace_builder: concurrent
+windows:
+  - window_name: editor
+    layout: main-vertical
+    panes:
+      - vim
+      - git status
+```
+
+Where the classic builder creates a pane, waits for its prompt, lays out, and
+sends its commands one pane at a time, the concurrent builder builds each window
+in three phases: it creates all of a window's panes up front so their shells warm
+up together, waits for them in a single shared readiness barrier, applies the
+layout once, then dispatches each pane's commands. tmux starts each pane's shell
+the moment the pane is created, so waiting for the whole set at once observes
+that overlap instead of paying for it pane by pane. Windows with several panes
+and a slow interactive shell startup open noticeably quicker.
+
+The result is the same session the classic builder produces — same windows,
+panes, layout, commands, plugin hooks, and `before_script` behavior. The
+concurrent builder honors the same `pane_readiness` policy described below, and a
+window whose later panes depend on an earlier pane's `start_directory` side
+effects automatically falls back to the classic one-pane-at-a-time path for that
+window. If you depend on strict, pane-by-pane command side effects across a
+window, prefer the classic builder.
+
 ## Pane readiness
 
 tmuxp waits for a pane's shell prompt before dispatching layout and commands,
@@ -177,6 +212,10 @@ For builders that live in a trusted directory, build the `sys.path` sandbox with
 - **Classic builder** — the default. Use it for any workspace that depends on
   strict, pane-by-pane side effects (`start_directory`, `shell`, `window_shell`,
   pane environment).
+- **Concurrent builder** — set `workspace_builder: concurrent` to prepare each
+  window's panes together for faster loads, while falling back to the classic
+  path for windows whose later panes depend on an earlier pane's
+  `start_directory`.
 - **Readiness tuning** — set `pane_readiness` to trade prompt-safety for speed
   without swapping builders.
 - **A custom builder** — when you need behavior the classic builder doesn't
@@ -186,6 +225,7 @@ For builders that live in a trusted directory, build the `sys.path` sandbox with
 ## Reference
 
 - {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`
+- {class}`~tmuxp.workspace.builder.concurrent.ConcurrentWorkspaceBuilder`
 - {class}`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
 - {func}`~tmuxp.workspace.builder.registry.resolve_builder_class`
 - {class}`~tmuxp.workspace.options.PaneReadiness`

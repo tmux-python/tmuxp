@@ -17,6 +17,12 @@ backwards-compatible alias of
 The built-in, default builder — `tmuxp.workspace.builder.classic`.
 :::
 
+:::{grid-item-card} Concurrent builder
+:link: concurrent
+:link-type: doc
+Opt-in builder that prepares a window's panes together — `tmuxp.workspace.builder.concurrent`.
+:::
+
 :::{grid-item-card} Builder protocol
 :link: protocol
 :link-type: doc
@@ -35,6 +41,7 @@ Builder selection and trusted import paths — `tmuxp.workspace.builder.registry
 :hidden:
 
 classic
+concurrent
 protocol
 registry
 ```
