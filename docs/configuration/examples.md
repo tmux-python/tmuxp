@@ -7,17 +7,17 @@
 tmuxp has a short-hand syntax for those who wish to keep their workspace
 punctual.
 
-::::{sidebar} short hand
+:::{tmux-layout}
+:size: 36x12
+:layout: even-vertical
 
-```mermaid
-block-beta
-  columns 1
-  p1["'did you know'<br/>'you can inline'"]
-  p2["'single commands'"]
-  p3["'for panes'"]
-```
-
-::::
+echo 'did you know'
+echo 'you can inline'
+---
+echo 'single commands'
+---
+echo 'for panes'
+:::
 
 ````{tab} YAML
 
@@ -65,16 +65,14 @@ Note `''` counts as an empty carriage return.
 
 ## 2 panes
 
-::::{sidebar} 2 pane
+:::{tmux-layout}
+:size: 30x10
+:layout: even-vertical
 
-```mermaid
-block-beta
-  columns 1
-  a["$ pwd"]
-  b["$ pwd"]
-```
-
-::::
+pwd
+---
+pwd
+:::
 
 ````{tab} YAML
 
@@ -96,16 +94,16 @@ block-beta
 
 ## 3 panes
 
-::::{sidebar} 3 panes
+:::{tmux-layout}
+:size: 30x12
+:layout: main-horizontal
 
-```mermaid
-block-beta
-  columns 2
-  top["$ pwd"]:2
-  bl["$ pwd"] br["$ pwd"]
-```
-
-::::
+pwd
+---
+pwd
+---
+pwd
+:::
 
 ````{tab} YAML
 
@@ -127,16 +125,18 @@ block-beta
 
 ## 4 panes
 
-::::{sidebar} 4 panes
+:::{tmux-layout}
+:size: 30x12
+:layout: tiled
 
-```mermaid
-block-beta
-  columns 2
-  a["$ pwd"] b["$ pwd"]
-  c["$ pwd"] d["$ pwd"]
-```
-
-::::
+pwd
+---
+pwd
+---
+pwd
+---
+pwd
+:::
 
 ````{tab} YAML
 

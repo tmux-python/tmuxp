@@ -35,6 +35,7 @@ conf = merge_sphinx_config(
         "sphinx_autodoc_api_style",
         "aafig",
         "mermaid_inline",
+        "tmux_layout",
         "sphinx_autodoc_argparse.exemplar",
     ],
     # Route a plain ```mermaid fence to the mermaid_inline directive (the colon
