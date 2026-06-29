@@ -29,6 +29,13 @@ The contract a builder must satisfy — `tmuxp.workspace.builder.protocol`.
 Builder selection and trusted import paths — `tmuxp.workspace.builder.registry`.
 :::
 
+:::{grid-item-card} Chain builder (experimental)
+:link: chain
+:link-type: doc
+Experimental builder over libtmux's unreleased chain API —
+`tmuxp.workspace.builder.chain`.
+:::
+
 ::::
 
 ```{toctree}
@@ -37,4 +44,5 @@ Builder selection and trusted import paths — `tmuxp.workspace.builder.registry
 classic
 protocol
 registry
+chain
 ```

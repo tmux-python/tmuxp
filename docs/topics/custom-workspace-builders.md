@@ -120,6 +120,26 @@ covers what `tmuxp load` drives:
 The contract is synchronous today. It is shaped so an async builder can be added
 later as an additive extension without changing this surface.
 
+## Experimental chain builder
+
+tmuxp ships an experimental
+{class}`~tmuxp.workspace.builder.chain.ChainWorkspaceBuilder` that describes the
+whole window/pane tree in one plan and resolves it in the fewest tmux
+invocations, instead of one subprocess per `new-window` / `split-window`. Select
+it by name like any other registered builder:
+
+```yaml
+workspace_builder: chain
+```
+
+:::{warning}
+The chain builder depends on libtmux's chain API (libtmux#685), which is
+**unreleased** and absent from published libtmux builds. The builder module
+imports cleanly without it, but selecting `workspace_builder: chain` and loading
+the workspace raises {exc}`~tmuxp.exc.WorkspaceBuilderImportError` until that API
+ships. It is non-functional today and provided as scaffolding only.
+:::
+
 ## Pane readiness
 
 tmuxp waits for a pane's shell prompt before dispatching layout and commands,
@@ -186,6 +206,7 @@ For builders that live in a trusted directory, build the `sys.path` sandbox with
 ## Reference
 
 - {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`
+- {class}`~tmuxp.workspace.builder.chain.ChainWorkspaceBuilder` (experimental)
 - {class}`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
 - {func}`~tmuxp.workspace.builder.registry.resolve_builder_class`
 - {class}`~tmuxp.workspace.options.PaneReadiness`
