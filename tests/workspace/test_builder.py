@@ -13,6 +13,7 @@ import typing as t
 import libtmux
 import pytest
 from libtmux._internal.query_list import ObjectDoesNotExist
+from libtmux.constants import OptionScope
 from libtmux.exc import LibTmuxException
 from libtmux.pane import Pane
 from libtmux.session import Session
@@ -1928,3 +1929,1114 @@ def test_builder_logs_window_and_pane_creation(
     assert len(cmd_logs) >= 1
 
     builder.session.kill()
+
+
+def _pane_shows_marker(line: str, marker: str) -> bool:
+    """Return whether a captured pane ``line`` is a marker's command output.
+
+    Under ``/bin/sh`` the shell prompt and a command's first line of output can
+    render on the same captured row (``"$ __PANE0__"``), so an exact match is
+    unreliable. The command-echo row ends with the quoted command rather than
+    the bare marker, so matching the trailing token isolates real output from
+    the echoed command line.
+
+    Parameters
+    ----------
+    line : str
+        a single captured pane row
+    marker : str
+        the marker a command prints to its own pane
+
+    Returns
+    -------
+    bool
+        True when ``line`` is the marker's output row
+
+    Examples
+    --------
+    >>> _pane_shows_marker("__PANE0__", "__PANE0__")
+    True
+    >>> _pane_shows_marker("$ __PANE0__", "__PANE0__")
+    True
+    >>> _pane_shows_marker("$ echo __DON''E__", "__DONE__")
+    False
+    >>> _pane_shows_marker("$ __PANE0__", "__PANE1__")
+    False
+    """
+    return line.strip().endswith(marker)
+
+
+class SynchronizeBuilderFixture(t.NamedTuple):
+    """Fixture for synchronize shorthand builder behavior."""
+
+    test_id: str
+    synchronize: bool | str
+    expected_synchronized: bool | None
+
+
+SYNCHRONIZE_BUILDER_FIXTURES: list[SynchronizeBuilderFixture] = [
+    SynchronizeBuilderFixture(
+        test_id="true",
+        synchronize=True,
+        expected_synchronized=True,
+    ),
+    SynchronizeBuilderFixture(
+        test_id="before",
+        synchronize="before",
+        expected_synchronized=True,
+    ),
+    SynchronizeBuilderFixture(
+        test_id="after",
+        synchronize="after",
+        expected_synchronized=True,
+    ),
+    SynchronizeBuilderFixture(
+        test_id="false",
+        synchronize=False,
+        expected_synchronized=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizeBuilderFixture._fields),
+    SYNCHRONIZE_BUILDER_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNCHRONIZE_BUILDER_FIXTURES],
+)
+def test_synchronize_builder_options(
+    session: Session,
+    test_id: str,
+    synchronize: bool | str,
+    expected_synchronized: bool | None,
+) -> None:
+    """Synchronize shorthand sets synchronize-panes on the built window."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"sync-builder-{test_id}",
+        "windows": [
+            {
+                "window_name": "main",
+                "synchronize": synchronize,
+                "panes": ["echo pane0", "echo pane1"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    assert session.windows[0].show_option("synchronize-panes") is expected_synchronized
+
+
+class IteratorSynchronizeOptionFixture(t.NamedTuple):
+    """Fixture for direct iterator synchronize-panes option behavior."""
+
+    test_id: str
+    option_value: str
+    expected_synchronized: bool
+
+
+ITERATOR_SYNCHRONIZE_OPTION_FIXTURES: list[IteratorSynchronizeOptionFixture] = [
+    IteratorSynchronizeOptionFixture(
+        test_id="on",
+        option_value="on",
+        expected_synchronized=True,
+    ),
+    IteratorSynchronizeOptionFixture(
+        test_id="off",
+        option_value="off",
+        expected_synchronized=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(IteratorSynchronizeOptionFixture._fields),
+    ITERATOR_SYNCHRONIZE_OPTION_FIXTURES,
+    ids=[fixture.test_id for fixture in ITERATOR_SYNCHRONIZE_OPTION_FIXTURES],
+)
+def test_iter_create_windows_preserves_raw_synchronize_panes_option(
+    session: Session,
+    test_id: str,
+    option_value: str,
+    expected_synchronized: bool,
+) -> None:
+    """Direct iter_create_windows() calls apply raw synchronize-panes options."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": f"iterator-sync-{test_id}",
+                "options": {"synchronize-panes": option_value},
+                "panes": ["echo pane0"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    window, _window_config = next(builder.iter_create_windows(session=session))
+
+    assert window.show_option("synchronize-panes") is expected_synchronized
+
+
+class SyncIsolationFixture(t.NamedTuple):
+    """Fixture for build-time synchronize-panes isolation."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    global_synchronize: bool
+    expected_local_sync: bool | None
+    expected_effective_sync: bool
+
+
+SYNC_ISOLATION_FIXTURES: list[SyncIsolationFixture] = [
+    SyncIsolationFixture(
+        test_id="sync_before",
+        window_extra={"synchronize": "before"},
+        global_synchronize=False,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncIsolationFixture(
+        test_id="sync_true",
+        window_extra={"synchronize": True},
+        global_synchronize=False,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncIsolationFixture(
+        test_id="sync_after",
+        window_extra={"synchronize": "after"},
+        global_synchronize=False,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncIsolationFixture(
+        test_id="explicit_options_on",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        global_synchronize=False,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncIsolationFixture(
+        test_id="explicit_options_after_on",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        global_synchronize=False,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncIsolationFixture(
+        test_id="inherits_global_on",
+        window_extra={},
+        global_synchronize=True,
+        expected_local_sync=None,
+        expected_effective_sync=True,
+    ),
+    SyncIsolationFixture(
+        test_id="sync_false_overrides_global_on",
+        window_extra={"synchronize": False},
+        global_synchronize=True,
+        expected_local_sync=False,
+        expected_effective_sync=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncIsolationFixture._fields),
+    SYNC_ISOLATION_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_ISOLATION_FIXTURES],
+)
+def test_synchronize_keeps_setup_commands_isolated(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    global_synchronize: bool,
+    expected_local_sync: bool | None,
+    expected_effective_sync: bool,
+) -> None:
+    """Pane setup commands are never broadcast while a window is building."""
+    try:
+        if global_synchronize:
+            session.server.cmd("set-window-option", "-g", "synchronize-panes", "on")
+
+        window_config: dict[str, t.Any] = {
+            "window_name": f"sync-isolated-{test_id}",
+            "panes": [
+                "printf '__PANE0__\\n'",
+                "printf '__PANE1__\\n'",
+            ],
+        }
+        window_config.update(window_extra)
+        workspace: dict[str, t.Any] = {
+            "session_name": session.name,
+            "windows": [window_config],
+        }
+        workspace = loader.expand(workspace)
+
+        builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+        builder.build(session=session)
+
+        window = session.windows[0]
+        panes = window.panes
+
+        def output_lines(pane: Pane, marker: str) -> int:
+            return sum(
+                1 for line in pane.capture_pane() if _pane_shows_marker(line, marker)
+            )
+
+        def setup_complete() -> bool:
+            return (
+                output_lines(panes[0], "__PANE0__") >= 1
+                and output_lines(panes[1], "__PANE1__") >= 1
+            )
+
+        assert retry_until(setup_complete), "Expected setup markers in their own panes"
+        assert output_lines(panes[0], "__PANE1__") == 0
+        assert output_lines(panes[1], "__PANE0__") == 0
+        assert window.show_option("synchronize-panes") is expected_local_sync
+        assert (
+            window.show_option("synchronize-panes", include_inherited=True)
+            is expected_effective_sync
+        )
+    finally:
+        session.server.cmd("set-window-option", "-gu", "synchronize-panes")
+
+
+class SyncSetupAbortFixture(t.NamedTuple):
+    """Fixture for synchronize-panes cleanup after pane setup aborts."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    global_synchronize: bool
+    plugin_synchronize: bool | None
+    expected_local_sync: bool | None
+    expected_effective_sync: bool
+
+
+SYNC_SETUP_ABORT_FIXTURES: list[SyncSetupAbortFixture] = [
+    SyncSetupAbortFixture(
+        test_id="sync_true",
+        window_extra={"synchronize": True},
+        global_synchronize=False,
+        plugin_synchronize=None,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="raw_option_on",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        global_synchronize=False,
+        plugin_synchronize=None,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="inherits_global_on",
+        window_extra={},
+        global_synchronize=True,
+        plugin_synchronize=None,
+        expected_local_sync=None,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="options_after_off_keeps_inherited_global_on",
+        window_extra={"options_after": {"synchronize-panes": "off"}},
+        global_synchronize=True,
+        plugin_synchronize=None,
+        expected_local_sync=None,
+        expected_effective_sync=True,
+    ),
+    SyncSetupAbortFixture(
+        test_id="options_after_on_does_not_run_on_setup_abort",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        global_synchronize=False,
+        plugin_synchronize=None,
+        expected_local_sync=None,
+        expected_effective_sync=False,
+    ),
+    SyncSetupAbortFixture(
+        test_id="plugin_on",
+        window_extra={},
+        global_synchronize=False,
+        plugin_synchronize=True,
+        expected_local_sync=True,
+        expected_effective_sync=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncSetupAbortFixture._fields),
+    SYNC_SETUP_ABORT_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_SETUP_ABORT_FIXTURES],
+)
+def test_synchronize_restores_state_when_pane_setup_aborts(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    global_synchronize: bool,
+    plugin_synchronize: bool | None,
+    expected_local_sync: bool | None,
+    expected_effective_sync: bool,
+) -> None:
+    """Pane setup failures restore temporarily disabled synchronize-panes state."""
+
+    class SyncOnWindowCreatePlugin:
+        """Plugin that optionally sets the sync state before pane setup."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Set the synchronized state before pane setup starts."""
+            if plugin_synchronize is not None:
+                window.set_option("synchronize-panes", plugin_synchronize)
+
+        def after_window_finished(self, window: Window) -> None:
+            """No-op window hook."""
+
+    try:
+        if global_synchronize:
+            session.server.cmd("set-window-option", "-g", "synchronize-panes", "on")
+
+        window_config: dict[str, t.Any] = {
+            "window_name": f"sync-abort-{test_id}",
+            "layout": "not-a-layout",
+            "panes": [
+                "printf '__PANE0__\\n'",
+                "printf '__PANE1__\\n'",
+            ],
+        }
+        window_config.update(window_extra)
+        workspace: dict[str, t.Any] = {
+            "session_name": session.name,
+            "windows": [window_config],
+        }
+        workspace = loader.expand(workspace)
+
+        plugins: list[t.Any] = []
+        if plugin_synchronize is not None:
+            plugins.append(SyncOnWindowCreatePlugin())
+        builder = WorkspaceBuilder(
+            session_config=workspace,
+            server=session.server,
+            plugins=plugins,
+        )
+
+        with pytest.raises(LibTmuxException, match="invalid layout"):
+            builder.build(session=session)
+
+        window = session.windows[0]
+        assert window.show_option("synchronize-panes") is expected_local_sync
+        assert (
+            window.show_option("synchronize-panes", include_inherited=True)
+            is expected_effective_sync
+        )
+    finally:
+        session.server.cmd("set-window-option", "-gu", "synchronize-panes")
+
+
+class SyncPaneLocalPluginFixture(t.NamedTuple):
+    """Fixture for plugin-created pane-local synchronize-panes state."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    expected_window_sync: bool | None
+
+
+SYNC_PANE_LOCAL_PLUGIN_FIXTURES: list[SyncPaneLocalPluginFixture] = [
+    SyncPaneLocalPluginFixture(
+        test_id="window_option_on",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        expected_window_sync=True,
+    ),
+    SyncPaneLocalPluginFixture(
+        test_id="synchronize_false",
+        window_extra={"synchronize": False},
+        expected_window_sync=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncPaneLocalPluginFixture._fields),
+    SYNC_PANE_LOCAL_PLUGIN_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_PANE_LOCAL_PLUGIN_FIXTURES],
+)
+def test_synchronize_disables_plugin_pane_local_state_during_setup(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    expected_window_sync: bool | None,
+) -> None:
+    """Pane-local plugin sync state does not broadcast tmuxp setup commands."""
+
+    class PaneLocalSyncPlugin:
+        """Plugin that creates panes with pane-local sync before tmuxp setup."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Create pane-local sync state before tmuxp sends setup keys."""
+            first = window.active_pane
+            assert isinstance(first, Pane)
+            second = first.split(attach=True)
+            assert isinstance(second, Pane)
+            first.set_option(
+                "synchronize-panes",
+                True,
+                scope=OptionScope.Pane,
+            )
+            second.set_option(
+                "synchronize-panes",
+                True,
+                scope=OptionScope.Pane,
+            )
+
+        def after_window_finished(self, window: Window) -> None:
+            """No-op window hook."""
+
+    window_config: dict[str, t.Any] = {
+        "window_name": f"sync-pane-local-{test_id}",
+        "panes": [
+            "printf '__PANE0__\\n'",
+            "printf '__PANE1__\\n'",
+        ],
+    }
+    window_config.update(window_extra)
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        server=session.server,
+        plugins=[PaneLocalSyncPlugin()],
+    )
+    builder.build(session=session)
+
+    window = session.windows[0]
+    panes = window.panes
+
+    def output_lines(pane: Pane, marker: str) -> int:
+        return sum(
+            1 for line in pane.capture_pane() if _pane_shows_marker(line, marker)
+        )
+
+    def setup_complete() -> bool:
+        return sum(output_lines(pane, "__PANE1__") for pane in panes) == 1
+
+    assert retry_until(setup_complete), "Expected plugin-pane setup to finish"
+    assert sum(output_lines(pane, "__PANE0__") for pane in panes) == 1
+    assert sum(output_lines(pane, "__PANE1__") for pane in panes) == 1
+    assert panes[0].show_option("synchronize-panes") is True
+    assert panes[1].show_option("synchronize-panes") is True
+    assert window.show_option("synchronize-panes") is expected_window_sync
+
+
+class SyncPluginOverrideFixture(t.NamedTuple):
+    """Fixture for plugin synchronize-panes override behavior."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    plugin_synchronize: bool
+    expected_synchronized: bool
+
+
+SYNC_PLUGIN_OVERRIDE_FIXTURES: list[SyncPluginOverrideFixture] = [
+    SyncPluginOverrideFixture(
+        test_id="no_config_plugin_on",
+        window_extra={},
+        plugin_synchronize=True,
+        expected_synchronized=True,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="options_on_plugin_off",
+        window_extra={"options": {"synchronize-panes": "on"}},
+        plugin_synchronize=False,
+        expected_synchronized=False,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="options_off_plugin_on",
+        window_extra={"options": {"synchronize-panes": "off"}},
+        plugin_synchronize=True,
+        expected_synchronized=True,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="synchronize_true_plugin_off",
+        window_extra={"synchronize": True},
+        plugin_synchronize=False,
+        expected_synchronized=False,
+    ),
+    SyncPluginOverrideFixture(
+        test_id="synchronize_false_plugin_on",
+        window_extra={"synchronize": False},
+        plugin_synchronize=True,
+        expected_synchronized=True,
+    ),
+]
+
+
+def _assert_synchronize_setup_isolated(window: Window) -> None:
+    """Assert pane setup commands did not broadcast across synchronized panes."""
+    panes = window.panes
+
+    def output_lines(pane: Pane, marker: str) -> int:
+        return sum(
+            1 for line in pane.capture_pane() if _pane_shows_marker(line, marker)
+        )
+
+    def setup_complete() -> bool:
+        return (
+            output_lines(panes[0], "__PANE0__") >= 1
+            and output_lines(panes[1], "__PANE1__") >= 1
+        )
+
+    assert retry_until(setup_complete), "Expected setup markers in their own panes"
+    assert output_lines(panes[0], "__PANE1__") == 0
+    assert output_lines(panes[1], "__PANE0__") == 0
+
+
+def _build_synchronize_plugin_workspace(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    plugins: list[t.Any],
+) -> Window:
+    """Build a two-pane workspace for synchronize-panes plugin tests."""
+    window_config: dict[str, t.Any] = {
+        "window_name": f"sync-plugin-{test_id}",
+        "panes": [
+            "printf '__PANE0__\\n'",
+            "printf '__PANE1__\\n'",
+        ],
+    }
+    window_config.update(window_extra)
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(
+        session_config=workspace,
+        server=session.server,
+        plugins=plugins,
+    )
+    builder.build(session=session)
+
+    window = session.windows[0]
+    _assert_synchronize_setup_isolated(window)
+    return window
+
+
+@pytest.mark.parametrize(
+    list(SyncPluginOverrideFixture._fields),
+    SYNC_PLUGIN_OVERRIDE_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_PLUGIN_OVERRIDE_FIXTURES],
+)
+def test_synchronize_preserves_on_window_create_plugin_override(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    plugin_synchronize: bool,
+    expected_synchronized: bool,
+) -> None:
+    """on_window_create can override configured initial synchronize-panes state."""
+
+    class SyncOnWindowCreatePlugin:
+        """Plugin that chooses the final sync state before pane setup."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Set the final synchronized state before pane setup starts."""
+            window.set_option("synchronize-panes", plugin_synchronize)
+
+        def after_window_finished(self, window: Window) -> None:
+            """No-op window hook."""
+
+    window = _build_synchronize_plugin_workspace(
+        session=session,
+        test_id=test_id,
+        window_extra=window_extra,
+        plugins=[SyncOnWindowCreatePlugin()],
+    )
+
+    assert window.show_option("synchronize-panes") is expected_synchronized
+
+
+class SyncPluginPrecedenceFixture(t.NamedTuple):
+    """Fixture for synchronize-panes plugin/config precedence."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+    on_window_create_synchronize: bool
+    after_window_finished_synchronize: bool | None
+    expected_synchronized: bool
+
+
+SYNC_PLUGIN_PRECEDENCE_FIXTURES: list[SyncPluginPrecedenceFixture] = [
+    SyncPluginPrecedenceFixture(
+        test_id="options_after_on_overrides_on_window_create_off",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        on_window_create_synchronize=False,
+        after_window_finished_synchronize=None,
+        expected_synchronized=True,
+    ),
+    SyncPluginPrecedenceFixture(
+        test_id="after_window_finished_overrides_options_after",
+        window_extra={"options_after": {"synchronize-panes": "on"}},
+        on_window_create_synchronize=False,
+        after_window_finished_synchronize=False,
+        expected_synchronized=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncPluginPrecedenceFixture._fields),
+    SYNC_PLUGIN_PRECEDENCE_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_PLUGIN_PRECEDENCE_FIXTURES],
+)
+def test_synchronize_options_after_and_plugin_precedence(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+    on_window_create_synchronize: bool,
+    after_window_finished_synchronize: bool | None,
+    expected_synchronized: bool,
+) -> None:
+    """options_after and after_window_finished keep their usual late precedence."""
+
+    class SyncPrecedencePlugin:
+        """Plugin that mutates sync state at both window hook boundaries."""
+
+        def before_workspace_builder(self, session: Session) -> None:
+            """No-op workspace hook."""
+
+        def on_window_create(self, window: Window) -> None:
+            """Set the synchronized state before pane setup starts."""
+            window.set_option("synchronize-panes", on_window_create_synchronize)
+
+        def after_window_finished(self, window: Window) -> None:
+            """Optionally set the synchronized state after options_after."""
+            if after_window_finished_synchronize is not None:
+                window.set_option(
+                    "synchronize-panes",
+                    after_window_finished_synchronize,
+                )
+
+    window = _build_synchronize_plugin_workspace(
+        session=session,
+        test_id=test_id,
+        window_extra=window_extra,
+        plugins=[SyncPrecedencePlugin()],
+    )
+
+    assert window.show_option("synchronize-panes") is expected_synchronized
+
+
+class SyncFanoutFixture(t.NamedTuple):
+    """Fixture for shell_command_after under synchronize-panes modes."""
+
+    test_id: str
+    window_extra: dict[str, t.Any]
+
+
+SYNC_FANOUT_FIXTURES: list[SyncFanoutFixture] = [
+    SyncFanoutFixture(test_id="sync_after", window_extra={"synchronize": "after"}),
+    SyncFanoutFixture(test_id="sync_before", window_extra={"synchronize": "before"}),
+    SyncFanoutFixture(test_id="sync_true", window_extra={"synchronize": True}),
+    SyncFanoutFixture(
+        test_id="explicit_option",
+        window_extra={"options": {"synchronize-panes": "on"}},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SyncFanoutFixture._fields),
+    SYNC_FANOUT_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNC_FANOUT_FIXTURES],
+)
+def test_shell_command_after_runs_once_per_pane_when_synchronized(
+    session: Session,
+    test_id: str,
+    window_extra: dict[str, t.Any],
+) -> None:
+    """shell_command_after runs exactly once per pane in every sync mode.
+
+    tmuxp keeps synchronize-panes off while it sends post-build commands,
+    then restores the final configured synchronize-panes state afterward.
+    """
+    window_config: dict[str, t.Any] = {
+        "window_name": f"sync-cmds-{test_id}",
+        "shell_command_after": [
+            "echo __SYNC_AF''TER__",
+            "echo __SYNC_DO''NE__",
+        ],
+        "panes": ["echo pane0", "echo pane1"],
+    }
+    window_config.update(window_extra)
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("synchronize-panes") is True
+
+    def output_lines(pane: Pane, marker: str) -> int:
+        return sum(
+            1 for line in pane.capture_pane() if _pane_shows_marker(line, marker)
+        )
+
+    for pane in window.panes:
+
+        def done(p: Pane = pane) -> bool:
+            return output_lines(p, "__SYNC_DONE__") >= 1
+
+        assert retry_until(done), f"Expected __SYNC_DONE__ in pane {pane.pane_id}"
+        count = output_lines(pane, "__SYNC_AFTER__")
+        assert count == 1, (
+            f"Pane {pane.pane_id} ran shell_command_after {count} times; "
+            "synchronize-panes was enabled before the fan-out"
+        )
+
+
+def test_pane_titles(
+    session: Session,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Pane title config sets pane-border options and pane titles."""
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "enable_pane_titles": True,
+        "windows": [
+            {
+                "window_name": "titled",
+                "panes": [
+                    {"title": "editor", "shell_command": ["echo pane0"]},
+                    {"title": "runner", "shell_command": ["echo pane1"]},
+                    {"title": "", "shell_command": ["echo pane2"]},
+                    {"shell_command": ["echo pane3"]},
+                ],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.builder"):
+        builder.build(session=session)
+
+    window = session.windows[0]
+    assert window.show_option("pane-border-status") == "top"
+    assert window.show_option("pane-border-format") == "#{pane_index}: #{pane_title}"
+
+    panes = window.panes
+    assert len(panes) == 4
+
+    def check_title(pane: Pane, expected: str) -> bool:
+        pane.refresh()
+        return pane.pane_title == expected
+
+    assert retry_until(functools.partial(check_title, panes[0], "editor")), (
+        f"Expected title 'editor', got {panes[0].pane_title!r}"
+    )
+    assert retry_until(functools.partial(check_title, panes[1], "runner")), (
+        f"Expected title 'runner', got {panes[1].pane_title!r}"
+    )
+
+    # tmux discards empty titles; an explicit title: "" warns instead
+    blank_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_pane")
+    ]
+    assert len(blank_warnings) == 1
+    assert blank_warnings[0].tmux_pane == panes[2].pane_id
+
+
+class ClearBuilderFixture(t.NamedTuple):
+    """Fixture for clear window behavior."""
+
+    test_id: str
+    clear: bool
+    marker_should_remain: bool
+
+
+CLEAR_BUILDER_FIXTURES: list[ClearBuilderFixture] = [
+    ClearBuilderFixture(
+        test_id="clear-true",
+        clear=True,
+        marker_should_remain=False,
+    ),
+    ClearBuilderFixture(
+        test_id="clear-false",
+        clear=False,
+        marker_should_remain=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ClearBuilderFixture._fields),
+    CLEAR_BUILDER_FIXTURES,
+    ids=[fixture.test_id for fixture in CLEAR_BUILDER_FIXTURES],
+)
+def test_clear_window(
+    session: Session,
+    test_id: str,
+    clear: bool,
+    marker_should_remain: bool,
+) -> None:
+    """Clear sends clear to panes only when enabled."""
+    marker = f"__{test_id.upper().replace('-', '_')}__"
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": "clear-test",
+                "clear": clear,
+                "panes": [{"shell_command": [f"echo {marker}"]}],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    pane = session.windows[0].panes[0]
+
+    def marker_visible() -> bool:
+        return marker in "\n".join(pane.capture_pane())
+
+    if marker_should_remain:
+        assert retry_until(marker_visible)
+    else:
+
+        def marker_cleared() -> bool:
+            return not marker_visible()
+
+        assert retry_until(marker_cleared, raises=False)
+
+
+class PostBuildSuppressHistoryFixture(t.NamedTuple):
+    """Fixture for post-build suppress_history behavior."""
+
+    test_id: str
+    suppress_history: bool | None
+    expected_suppress_history: bool
+
+
+POST_BUILD_SUPPRESS_HISTORY_FIXTURES: list[PostBuildSuppressHistoryFixture] = [
+    PostBuildSuppressHistoryFixture(
+        test_id="default",
+        suppress_history=None,
+        expected_suppress_history=True,
+    ),
+    PostBuildSuppressHistoryFixture(
+        test_id="explicit-false",
+        suppress_history=False,
+        expected_suppress_history=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PostBuildSuppressHistoryFixture._fields),
+    POST_BUILD_SUPPRESS_HISTORY_FIXTURES,
+    ids=[fixture.test_id for fixture in POST_BUILD_SUPPRESS_HISTORY_FIXTURES],
+)
+def test_post_build_commands_honor_suppress_history(
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    suppress_history: bool | None,
+    expected_suppress_history: bool,
+) -> None:
+    """Post-build commands use the window suppress_history setting."""
+    sent: list[tuple[str | None, bool | None]] = []
+    original_send_keys = Pane.send_keys
+
+    def spy_send_keys(
+        self: Pane,
+        cmd: str | None = None,
+        enter: bool | None = True,
+        suppress_history: bool | None = False,
+        literal: bool | None = False,
+        reset: bool | None = None,
+        copy_mode_cmd: str | None = None,
+        repeat: int | None = None,
+        expand_formats: bool | None = None,
+        hex_keys: bool | None = None,
+        target_client: str | None = None,
+        key_name: bool | None = None,
+    ) -> None:
+        sent.append((cmd, suppress_history))
+        original_send_keys(
+            self,
+            cmd=cmd,
+            enter=enter,
+            suppress_history=suppress_history,
+            literal=literal,
+            reset=reset,
+            copy_mode_cmd=copy_mode_cmd,
+            repeat=repeat,
+            expand_formats=expand_formats,
+            hex_keys=hex_keys,
+            target_client=target_client,
+            key_name=key_name,
+        )
+
+    monkeypatch.setattr(Pane, "send_keys", spy_send_keys)
+
+    window_config: dict[str, t.Any] = {
+        "window_name": f"post-build-history-{test_id}",
+        "shell_command_after": ["echo __POST_BUILD_AFTER__"],
+        "clear": True,
+        "panes": ["echo pane"],
+    }
+    if suppress_history is not None:
+        window_config["suppress_history"] = suppress_history
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [window_config],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    assert ("echo __POST_BUILD_AFTER__", expected_suppress_history) in sent
+    assert ("clear", expected_suppress_history) in sent
+
+
+class AfterCommandOptionsFixture(t.NamedTuple):
+    """Fixture for per-command options in shell_command_after mappings."""
+
+    test_id: str
+    command: dict[str, t.Any]
+    expected_enter: bool
+    expected_sleeps: list[float]
+
+
+AFTER_COMMAND_OPTIONS_FIXTURES: list[AfterCommandOptionsFixture] = [
+    AfterCommandOptionsFixture(
+        test_id="enter_false_respected",
+        command={"cmd": "echo __AFTER_OPT__", "enter": False},
+        expected_enter=False,
+        expected_sleeps=[],
+    ),
+    AfterCommandOptionsFixture(
+        test_id="sleeps_once_per_wave",
+        command={
+            "cmd": "echo __AFTER_OPT__",
+            "sleep_before": 0.21,
+            "sleep_after": 0.31,
+        },
+        expected_enter=True,
+        expected_sleeps=[0.21, 0.31],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(AfterCommandOptionsFixture._fields),
+    AFTER_COMMAND_OPTIONS_FIXTURES,
+    ids=[fixture.test_id for fixture in AFTER_COMMAND_OPTIONS_FIXTURES],
+)
+def test_shell_command_after_honors_command_options(
+    session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    command: dict[str, t.Any],
+    expected_enter: bool,
+    expected_sleeps: list[float],
+) -> None:
+    """shell_command_after mappings keep their enter and sleep options.
+
+    The pane command loop honors per-command enter/sleep_before/
+    sleep_after; the post-build fan-out accepts the same mapping syntax
+    and must behave the same. Sleeps apply once per command wave, not
+    once per pane.
+    """
+    sent: list[tuple[str | None, bool | None]] = []
+    original_send_keys = Pane.send_keys
+
+    def spy_send_keys(
+        self: Pane,
+        cmd: str | None = None,
+        enter: bool | None = True,
+        suppress_history: bool | None = False,
+        literal: bool | None = False,
+        reset: bool | None = None,
+        copy_mode_cmd: str | None = None,
+        repeat: int | None = None,
+        expand_formats: bool | None = None,
+        hex_keys: bool | None = None,
+        target_client: str | None = None,
+        key_name: bool | None = None,
+    ) -> None:
+        sent.append((cmd, enter))
+        original_send_keys(
+            self,
+            cmd=cmd,
+            enter=enter,
+            suppress_history=suppress_history,
+            literal=literal,
+            reset=reset,
+            copy_mode_cmd=copy_mode_cmd,
+            repeat=repeat,
+            expand_formats=expand_formats,
+            hex_keys=hex_keys,
+            target_client=target_client,
+            key_name=key_name,
+        )
+
+    monkeypatch.setattr(Pane, "send_keys", spy_send_keys)
+
+    slept: list[float] = []
+    original_sleep = time.sleep
+
+    def spy_sleep(seconds: float) -> None:
+        slept.append(seconds)
+        original_sleep(0)
+
+    monkeypatch.setattr("tmuxp.workspace.builder.classic.time.sleep", spy_sleep)
+
+    workspace: dict[str, t.Any] = {
+        "session_name": session.name,
+        "windows": [
+            {
+                "window_name": f"after-options-{test_id}",
+                "shell_command_after": [command],
+                "panes": ["echo pane0", "echo pane1"],
+            },
+        ],
+    }
+    workspace = loader.expand(workspace)
+
+    builder = WorkspaceBuilder(session_config=workspace, server=session.server)
+    builder.build(session=session)
+
+    after_sends = [entry for entry in sent if entry[0] == "echo __AFTER_OPT__"]
+    assert len(after_sends) == 2, "after-command should reach both panes"
+    assert all(enter is expected_enter for _, enter in after_sends)
+
+    option_sleeps = [s for s in slept if s in (0.21, 0.31)]
+    assert sorted(option_sleeps) == sorted(expected_sleeps)
