@@ -155,6 +155,11 @@ omit = [
   "pkg/*",
   "*/log.py",
   "docs/_ext/*",
+  # Experimental chain builder: its plan-building methods require the
+  # unreleased libtmux._experimental.chain API (libtmux#685) and cannot
+  # execute on released libtmux, so they are not measurable yet. Remove
+  # this once that API ships and the builder becomes testable.
+  "*/workspace/builder/chain.py",
 ]
 
 [tool.coverage.report]
