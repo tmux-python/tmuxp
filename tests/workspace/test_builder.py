@@ -2280,6 +2280,7 @@ def test_synchronize_restores_state_when_pane_setup_aborts(
     plugin_synchronize: bool | None,
     expected_local_sync: bool | None,
     expected_effective_sync: bool,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Pane setup failures restore temporarily disabled synchronize-panes state."""
 
@@ -2303,7 +2304,6 @@ def test_synchronize_restores_state_when_pane_setup_aborts(
 
         window_config: dict[str, t.Any] = {
             "window_name": f"sync-abort-{test_id}",
-            "layout": "not-a-layout",
             "panes": [
                 "printf '__PANE0__\\n'",
                 "printf '__PANE1__\\n'",
@@ -2325,7 +2325,18 @@ def test_synchronize_restores_state_when_pane_setup_aborts(
             plugins=plugins,
         )
 
-        with pytest.raises(LibTmuxException, match="invalid layout"):
+        # Abort pane setup deterministically. A tmux-triggered abort (e.g. an
+        # invalid layout) is unusable here: its error wording varies by tmux
+        # version and some versions crash the server outright. Inject the
+        # failure in Python instead, after synchronize-panes is disabled and
+        # before it is restored.
+        def _abort_pane_setup(*args: t.Any, **kwargs: t.Any) -> t.NoReturn:
+            msg = "simulated pane setup failure"
+            raise LibTmuxException(msg)
+
+        monkeypatch.setattr(builder, "iter_create_panes", _abort_pane_setup)
+
+        with pytest.raises(LibTmuxException, match="simulated pane setup failure"):
             builder.build(session=session)
 
         window = session.windows[0]
