@@ -16,6 +16,7 @@ from tmuxp.workspace.builder.classic import (
     get_default_columns,
     get_default_rows,
 )
+from tmuxp.workspace.builder.concurrent import ConcurrentWorkspaceBuilder
 from tmuxp.workspace.builder.protocol import WorkspaceBuilderProtocol
 from tmuxp.workspace.builder.registry import (
     WORKSPACE_BUILDERS_GROUP,
@@ -32,6 +33,7 @@ WorkspaceBuilder = ClassicWorkspaceBuilder
 __all__ = [
     "WORKSPACE_BUILDERS_GROUP",
     "ClassicWorkspaceBuilder",
+    "ConcurrentWorkspaceBuilder",
     "WorkspaceBuilder",
     "WorkspaceBuilderProtocol",
     "available_builders",
