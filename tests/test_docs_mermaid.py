@@ -81,6 +81,16 @@ _NORMALIZE_CASES: list[NormalizeCase] = [
         expect_contains=('width="1141.25"', 'height="94"'),
         expect_absent=("max-width",),
     ),
+    NormalizeCase(
+        test_id="block-negative-viewbox-origin",
+        raw_svg=(
+            '<svg id="my-svg" width="100%" viewBox="-5 -97 148 194">'
+            '<marker viewBox="0 0 10 10"/></svg>'
+        ),
+        svg_id="mermaid-blk-light",
+        expect_contains=('width="148"', 'height="194"'),
+        expect_absent=('width="100%"', 'width="10"'),
+    ),
 ]
 
 

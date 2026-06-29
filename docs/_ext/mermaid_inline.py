@@ -139,7 +139,11 @@ def _theme_css(theme: str) -> str:
 #: duplicate-id collisions when both variants are inlined on one page.
 _MERMAID_DEFAULT_ID = "my-svg"
 
-_VIEWBOX_RE = re.compile(r'viewBox="0 0 ([\d.]+) ([\d.]+)"')
+# Width/height are the 3rd/4th viewBox numbers of the ROOT <svg> tag. Anchoring
+# to ``<svg ... >`` (no ``>`` in between) avoids matching an inner element's
+# viewBox, and the min-x/min-y may be negative (block diagrams use e.g.
+# ``viewBox="-5 -97 148 194"``).
+_VIEWBOX_RE = re.compile(r'<svg\b[^>]*?\bviewBox="-?[\d.]+ -?[\d.]+ ([\d.]+) ([\d.]+)"')
 
 #: Guards the "renderer missing/failed" warning so it fires once, not per node.
 _render_warned = False
@@ -226,6 +230,17 @@ def _normalize_svg(svg: str, *, svg_id: str) -> str:
     >>> "max-width" in out
     False
     >>> 'id="mermaid-abc-light"' in out and "url(#mermaid-abc-light_end)" in out
+    True
+
+    Block diagrams use a negative viewBox origin and carry inner viewBoxes;
+    the root's width/height (3rd/4th numbers) win, not an inner ``0 0 10 10``:
+
+    >>> block = (
+    ...     '<svg id="my-svg" width="100%" viewBox="-5 -97 148 194">'
+    ...     '<marker viewBox="0 0 10 10"/></svg>'
+    ... )
+    >>> out = _normalize_svg(block, svg_id="x")
+    >>> 'width="148"' in out and 'height="194"' in out
     True
     """
     svg = svg.replace(_MERMAID_DEFAULT_ID, svg_id)
