@@ -54,6 +54,7 @@ tmuxp = 'tmuxp:cli.cli'
 
 [project.entry-points."tmuxp.workspace_builders"]
 classic = "tmuxp.workspace.builder.classic:ClassicWorkspaceBuilder"
+chain = "tmuxp.workspace.builder.chain:ChainWorkspaceBuilder"
 
 [dependency-groups]
 dev = [
