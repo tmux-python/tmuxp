@@ -35,8 +35,9 @@ boundary that comes with running builder code.
 
 ## `workspace_builder`
 
-Selects the builder. The default, `classic`, is tmuxp's built-in builder. A value
-is resolved in this order:
+This is where you name the builder. Leave it out — or set `classic` — and you get
+tmuxp's built-in builder, with nothing imported. When you name something else, tmuxp
+works out what you mean from the shape of the value, in this order:
 
 1. absent or empty → the built-in classic builder (nothing is imported);
 2. contains `:` → a `module:attr` object reference;
@@ -60,11 +61,12 @@ See {ref}`custom-workspace-builders` for selecting and packaging builders, and
 
 ## `workspace_builder_paths`
 
-Directories to import a builder from when it lives outside tmuxp's environment —
-for example, a script in your config directory. Accepts a single string or a list
-of strings. tmuxp expands `~` and environment variables, resolves relative entries
-against the workspace file's directory, and requires each entry to be an existing
-directory; the paths are added to `sys.path` only for the import and build.
+When your builder lives outside tmuxp's environment — say, a script sitting in your
+config directory — this tells tmuxp where to find it. Give it a single directory or a
+list of them. tmuxp expands `~` and environment variables, reads relative entries
+against the workspace file's own directory, and expects each one to be a directory
+that already exists. The paths join `sys.path` only for the import and build, not for
+the rest of your session.
 
 ```yaml
 workspace_builder: my_local_builder:CustomBuilder
@@ -81,10 +83,10 @@ workspace files you trust. See the security note in {ref}`custom-workspace-build
 
 ## `workspace_builder_options`
 
-A catalog of builder-behavior settings, independent of which builder you use.
-Today it holds a single key, `pane_readiness`, which controls whether tmuxp waits
-for a pane's shell prompt before sending its layout and commands — a guard against
-a zsh prompt-redraw artifact:
+This holds builder-behavior settings, whichever builder you use. For now there's just
+one, `pane_readiness`, which decides whether tmuxp waits for a pane's shell prompt
+before it sends that pane's layout and commands — a guard against a zsh prompt-redraw
+artifact:
 
 ```yaml
 workspace_builder_options:
@@ -105,7 +107,7 @@ workspace_builder_options:
 invalid pane_readiness value: 'sometimes'; expected one of: auto, always/true/on/yes/1, never/false/off/no/0
 ```
 
-Panes that run a custom `shell` or `window_shell` never wait, regardless of policy.
+A pane that runs a custom `shell` or `window_shell` never waits, whatever you set here.
 See {class}`~tmuxp.workspace.options.PaneReadiness` and
 {class}`~tmuxp.workspace.options.WorkspaceBuilderOptions` for the parsing rules.
 
