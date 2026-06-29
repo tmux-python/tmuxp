@@ -15,6 +15,11 @@ out to fall back to the default.**
 :::{mermaid}
 :caption: How a workspace file becomes a live tmux session.
 
+---
+config:
+  flowchart:
+    wrappingWidth: 500
+---
 flowchart TD
     load["tmuxp load &lt;workspace-file&gt;"] -->|reads workspace config| builder["Workspace Builder"]
     builder -->|"creates session, windows, panes"| attach["Attach tmux session"]
