@@ -5,20 +5,30 @@
 ```{versionadded} 1.72.0
 ```
 
-Most workspaces never need these keys. By default tmuxp builds your session with
-its built-in *classic* builder and waits for a pane's shell prompt only when that
-shell is zsh — existing workspace files keep working unchanged. Set the keys below
-to swap in a different builder or to tune the prompt wait. **Omit a key (or remove
-it) to restore the default.**
+A *workspace builder* is the part of tmuxp that turns a workspace configuration into a
+live tmux session — it creates the session, lays out its windows and panes, and runs
+their commands. You usually never have to think about it: tmuxp ships with a built-in
+*classic* builder, and your YAML or JSON workspace files load through it out of the
+box, just as they always have. **Everything on this page is optional; leave a setting
+out to fall back to the default.**
+
+Workspaces with special needs can reach for a builder's options to fine-tune how a
+session loads. The classic builder, for instance, can wait for a pane's shell prompt
+before sending its layout and commands — by default only when that shell is zsh (the
+`pane_readiness` option). Waiting makes a session a little slower to load, but
+guarantees the workspace is fully prepped before you attach.
+
+You can also send a workspace through a different or custom builder instead of the
+classic one, and tune its options the same way. For the braver cases, you can subclass
+the classic builder or write your own in Python on top of libtmux — see
+{ref}`custom-workspace-builders` for writing, packaging, testing, and the trust
+boundary that comes with running builder code.
 
 | Key | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `workspace_builder` | string | `classic` | Which builder turns the workspace into a session. |
 | `workspace_builder_paths` | string or list of strings | _(none)_ | Trusted directories to import a builder from. |
-| `workspace_builder_options` | mapping | _(all defaults)_ | Builder-behavior knobs, such as `pane_readiness`. |
-
-For the narrative — writing a builder, packaging one, the trust boundary, and
-testing — see {ref}`custom-workspace-builders`.
+| `workspace_builder_options` | mapping | _(all defaults)_ | Builder-behavior settings, such as `pane_readiness`. |
 
 (workspace-builder-key)=
 
