@@ -48,8 +48,8 @@ conf = merge_sphinx_config(
     aafig_format={"latex": "pdf", "html": "gif"},
     aafig_default_options={"scale": 0.75, "aspect": 0.5, "proportional": True},
     rediraffe_redirects="redirects.txt",
-    # AGENTS.md is agent guidance, not a site page; keep Sphinx from
-    # treating it as an orphan document.
-    exclude_patterns=["_build", "AGENTS.md"],
+    # AGENTS.md (+ its CLAUDE.md symlink) is agent guidance, not a site
+    # page; keep Sphinx from treating it as an orphan document.
+    exclude_patterns=["_build", "AGENTS.md", "CLAUDE.md"],
 )
 globals().update(conf)
