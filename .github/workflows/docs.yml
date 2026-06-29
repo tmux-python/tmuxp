@@ -56,6 +56,38 @@ jobs:
         if: env.PUBLISH == 'true'
         uses: extractions/setup-just@v4
 
+      - name: Set up Node.js
+        if: env.PUBLISH == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up pnpm
+        if: env.PUBLISH == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Cache Puppeteer browser
+        if: env.PUBLISH == 'true'
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('docs/pnpm-lock.yaml') }}
+          restore-keys: |
+            puppeteer-${{ runner.os }}-
+
+      # Diagrams (docs/_ext/mermaid_inline.py) are rendered at build time by
+      # mmdc, which drives a headless Chrome. Without it the build still
+      # succeeds but degrades diagrams to a text fallback, so provision both.
+      - name: Install diagram toolchain (mermaid-cli + Chrome)
+        if: env.PUBLISH == 'true'
+        run: |
+          pnpm -C docs install --frozen-lockfile
+          pnpm -C docs rebuild puppeteer
+          pnpm -C docs exec mmdc --version
+
       - name: Print python versions
         if: env.PUBLISH == 'true'
         run: |
