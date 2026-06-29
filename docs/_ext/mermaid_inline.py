@@ -48,7 +48,7 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 #: Bump to invalidate the on-disk render cache when render arguments change.
-_RENDER_VERSION = "mmdc11-furo-svg-v1"
+_RENDER_VERSION = "mmdc11-furo-svg-v2"
 
 #: Logical names for the two inlined variants (cache key, SVG id, CSS class).
 _THEME_LIGHT = "light"
@@ -88,6 +88,20 @@ _PALETTES: dict[str, dict[str, str]] = {
         "fontFamily": _FONT_STACK,
     },
 }
+
+#: Extra CSS injected into every rendered SVG (theme-agnostic). Nodes tagged
+#: ``:::cmd`` render in a monospace font so commands read as code; edge labels
+#: get padding. ``white-space: normal`` lets a padded label keep wrapping
+#: instead of overflowing the box mermaid measured for it.
+_MONO_STACK = "'SFMono-Regular', Menlo, Consolas, Monaco, 'Liberation Mono', monospace"
+_THEME_CSS = (
+    ".cmd .nodeLabel { font-family: " + _MONO_STACK + " !important; }"
+    " .edgeLabels .labelBkg {"
+    " padding: 3px 10px !important;"
+    " white-space: normal !important;"
+    " border-radius: 4px;"
+    " }"
+)
 
 #: mermaid hardcodes this id on every rendered SVG and scopes its CSS and
 #: arrowhead markers to it; it is rewritten per diagram+theme to avoid
@@ -303,6 +317,7 @@ def _render(app: Sphinx, source: str, theme: str) -> str:
         config: dict[str, t.Any] = {
             "theme": "base",
             "themeVariables": _PALETTES[theme],
+            "themeCSS": _THEME_CSS,
         }
         config_file.write_text(json.dumps(config), encoding="utf-8")
         argv = [

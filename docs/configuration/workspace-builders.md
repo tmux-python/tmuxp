@@ -21,7 +21,7 @@ config:
     wrappingWidth: 500
 ---
 flowchart TD
-    load["tmuxp load &lt;workspace-file&gt;"] -->|reads workspace config| builder["Workspace Builder"]
+    load["tmuxp load &lt;workspace-file&gt;"]:::cmd -->|reads workspace config| builder["Workspace Builder"]
     builder -->|"creates session, windows, panes"| attach["Attach tmux session"]
 :::
 
