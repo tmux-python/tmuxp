@@ -221,8 +221,10 @@ def _reattach(builder: WorkspaceBuilderProtocol, colors: Colors | None = None) -
     assert builder.session is not None
     for plugin in builder.plugins:
         plugin.reattach(builder.session)
-        proc = builder.session.cmd("display-message", "-p", "'#S'")
-        for line in proc.stdout:
+        active_pane = builder.session.active_pane
+        assert active_pane is not None
+        lines = active_pane.display_message("'#S'", get_text=True)
+        for line in lines:
             tmuxp_echo(colors.info(line) if colors else line)
             logger.debug(
                 "reattach display-message output",
