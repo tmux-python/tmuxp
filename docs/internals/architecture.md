@@ -24,9 +24,9 @@ flowchart LR
 ### CLI Layer (`tmuxp.cli`)
 
 The CLI uses Python's `argparse` with a custom formatter ({mod}`tmuxp.cli._formatter`).
-Each subcommand lives in its own module under `tmuxp.cli`.
+Each subcommand lives in its own module under {mod}`tmuxp.cli`.
 
-The entry point is `tmuxp.cli.cli()`, registered as a console script in `pyproject.toml`.
+The entry point is {func}`tmuxp.cli.cli`, registered as a console script in `pyproject.toml`.
 
 ### Workspace Layer (`tmuxp.workspace`)
 
@@ -41,5 +41,5 @@ The workspace layer handles configuration lifecycle:
 
 tmuxp delegates all tmux operations to [libtmux](https://libtmux.git-pull.com/).
 The {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder` creates
-libtmux `Server`, `Session`, `Window`, and `Pane` objects to construct the
-requested workspace.
+libtmux {class}`~libtmux.Server`, {class}`~libtmux.Session`, {class}`~libtmux.Window`,
+and {class}`~libtmux.Pane` objects to construct the requested workspace.

@@ -13,6 +13,7 @@ convert
 debug_info
 edit
 freeze
+formatter
 import_config
 load
 ls
