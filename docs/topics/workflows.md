@@ -3,7 +3,8 @@
 tmuxp is small enough to drop into a script, a CI job, or your daily startup
 routine. This page collects a few patterns — running headless, branching on exit
 codes, and turning a session you arranged by hand into a reusable file. None of
-it is special machinery; it's the same `tmuxp load`, `freeze`, and exit codes you
+it is special machinery; it's the same {ref}`tmuxp load <cli-load>`,
+{ref}`tmuxp freeze <cli-freeze>`, and {ref}`exit codes <cli-exit-codes>` you
 already have.
 
 ## CI integration

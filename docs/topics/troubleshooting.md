@@ -23,7 +23,8 @@ Minimum required version: tmux 3.2.
 
 ## Configuration errors
 
-Use `tmuxp debug-info` to collect system information for bug reports:
+Use {ref}`tmuxp debug-info <cli-debug-info>` to collect system information for
+bug reports:
 
 ```console
 $ tmuxp debug-info
@@ -32,7 +33,8 @@ $ tmuxp debug-info
 ## Session already exists
 
 If a session with the same name already exists, tmuxp will prompt you.
-Use `tmuxp load -d` to load in detached mode alongside existing sessions.
+Use {ref}`tmuxp load -d <cli-load>` to load in detached mode alongside existing
+sessions.
 
 ## Shell completion not working
 

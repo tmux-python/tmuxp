@@ -1,8 +1,9 @@
 # Architecture
 
-This page traces how a tmuxp command travels from the CLI down to libtmux, the
-library that does the actual tmux work. Each subcommand takes its own short path
-through one or two workspace modules:
+This page traces how a tmuxp command travels from the CLI down to
+[libtmux](https://libtmux.git-pull.com/), the library that does the actual tmux
+work. Each subcommand takes its own short path through one or two workspace
+modules:
 
 :::{mermaid}
 :caption: How each tmuxp subcommand reaches libtmux.

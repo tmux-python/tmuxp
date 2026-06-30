@@ -8,7 +8,8 @@ Use `tmuxp` when:
 
 - You want **declarative workspace configs** — define your layout in YAML, load it with one command
 - You're setting up **daily development environments** — same windows, same panes, every time
-- You need **CI/CD tmux sessions** — `tmuxp load -d` in a script
+- You need **CI/CD tmux sessions** — run {ref}`tmuxp load -d <cli-load>` in a
+  script
 - You prefer **configuration over code** — no Python needed
 
 ```console
@@ -24,7 +25,8 @@ Use libtmux directly when:
 
 - You need **dynamic logic** — conditionals, loops, branching based on state
 - You want to **read pane output** — capture what's on screen and react to it
-- You're **testing** tmux interactions — libtmux provides pytest fixtures
+- You're **testing** tmux interactions — libtmux provides
+  [pytest](https://docs.pytest.org/) fixtures
 - You need **multi-server orchestration** — manage multiple tmux servers programmatically
 - The CLI's config format **can't express** what you need
 

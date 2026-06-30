@@ -8,9 +8,9 @@
 {mod}`tmuxp.workspace.builder.classic`; the public contract and the selection
 machinery live alongside it.
 
-`WorkspaceBuilder` remains importable from `tmuxp.workspace.builder` as a
-backwards-compatible alias of
-{class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`.
+{class}`WorkspaceBuilder <tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder>`
+remains importable from {mod}`tmuxp.workspace.builder` as a backwards-compatible
+alias of {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`.
 
 ::::{grid} 1 1 2 2
 :gutter: 2 2 3 3

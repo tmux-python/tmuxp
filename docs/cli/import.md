@@ -2,7 +2,8 @@
 
 # tmuxp import
 
-Import and convert workspace configurations from other tmux session managers like teamocil and tmuxinator.
+Import and convert workspace configurations from other tmux session managers like
+[teamocil] and [tmuxinator].
 
 (import-teamocil)=
 
@@ -71,3 +72,6 @@ $ tmuxp import tmuxinator /path/to/file.json
 ```
 
 ````
+
+[teamocil]: https://github.com/remiprev/teamocil
+[tmuxinator]: https://github.com/aziz/tmuxinator

@@ -4,8 +4,8 @@
 
 tmuxp launches a whole tmux workspace — its windows, panes, and the commands
 inside them — from a single YAML or JSON file. Install it, write one file, and
-`tmuxp load` builds the session and drops you into it. This page takes you from
-nothing to a running session.
+{ref}`tmuxp load <cli-load>` builds the session and drops you into it. This page
+takes you from nothing to a running session.
 
 ## Installation
 

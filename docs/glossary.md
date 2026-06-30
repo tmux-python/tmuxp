@@ -14,7 +14,8 @@ tmux(1)
     layer on top of tmux.
 
 ConfigReader
-    configuration management class, for parsing YAML / JSON / etc. files
+    The {class}`~tmuxp._internal.config_reader.ConfigReader` configuration
+    management class, for parsing YAML / JSON / etc. files
     to and from python data (dictionaries, in the future, potentially
     dataclasses)
 

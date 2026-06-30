@@ -2,7 +2,7 @@
 
 # Custom workspace builders
 
-A *workspace builder* turns an expanded workspace ``dict`` into a live tmux
+A *workspace builder* turns an expanded workspace {class}`dict` into a live tmux
 session. tmuxp ships one builder,
 {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`, and uses it
 by default. You can point tmuxp at a different builder, and packagers can
@@ -18,10 +18,11 @@ If you only want to set these keys in a workspace file, see
 
 ## How a workspace is built
 
-1. `tmuxp load` reads the YAML/JSON file and expands it (shorthand, environment
-   variables, trickle-down defaults).
-2. tmuxp resolves which builder to use from the `workspace_builder` config key
-   (default: the classic builder).
+1. {ref}`tmuxp load <cli-load>` reads the YAML/JSON file and expands it
+   (shorthand, environment variables, trickle-down defaults).
+2. tmuxp resolves which builder to use from the
+   {ref}`workspace_builder <workspace-builder-key>` config key (default: the
+   classic builder).
 3. tmuxp constructs the builder with the expanded workspace and a
    {class}`libtmux.Server`, then calls `.build()`.
 4. The builder creates the session, windows, and panes, honoring plugin hooks
@@ -65,7 +66,8 @@ mybuilder = "my_tmuxp_builders.builders:CustomBuilder"
 
 When a builder lives outside tmuxp's runtime environment (for example, a script
 in your config directory), list trusted directories in
-`workspace_builder_paths`. tmuxp expands `~` and environment variables,
+{ref}`workspace_builder_paths <workspace-builder-paths-key>`. tmuxp expands `~`
+and environment variables,
 resolves relative entries against the workspace file's directory, requires each
 entry to be an existing directory, and temporarily prepends them to {data}`sys.path`
 for the import and build:
@@ -125,7 +127,7 @@ later as an additive extension without changing this surface.
 tmuxp waits for a pane's shell prompt before dispatching layout and commands,
 which avoids a zsh prompt-redraw artifact. That wait is only needed for zsh, so
 it is configurable independently of which builder you use, through the
-`workspace_builder_options` catalog:
+{ref}`workspace_builder_options <workspace-builder-options-key>` catalog:
 
 ```yaml
 workspace_builder_options:

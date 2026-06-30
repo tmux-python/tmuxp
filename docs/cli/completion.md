@@ -8,7 +8,7 @@
 
 Shell completion teaches your shell to finish `tmuxp` subcommands and flags when
 you press Tab. It's optional, and how you set it up depends on your tmuxp
-version — 1.17 and newer use shtab, while 1.1 through 1.16 used click. Pick the
+version — 1.17 and newer use [shtab], while 1.1 through 1.16 used [click]. Pick the
 section that matches yours.
 
 ## tmuxp 1.17+ (experimental)
@@ -17,7 +17,7 @@ section that matches yours.
 See the [shtab library's documentation on shell completion](https://docs.iterative.ai/shtab/use/#cli-usage) for the most up to date way of connecting completion for tmuxp.
 ```
 
-Provisional support for completions in tmuxp 1.17+ are powered by [shtab](https://docs.iterative.ai/shtab/). This must be **installed separately**, as it's **not currently bundled with tmuxp**.
+Provisional support for completions in tmuxp 1.17+ are powered by [shtab]. This must be **installed separately**, as it's **not currently bundled with tmuxp**.
 
 ```console
 $ pip install shtab --user
@@ -68,7 +68,7 @@ $ shtab --shell=tcsh -u tmuxp.cli.create_parser \
 See the [click library's documentation on shell completion](https://click.palletsprojects.com/en/8.0.x/shell-completion/) for the most up to date way of connecting completion for tmuxp.
 ```
 
-tmuxp 1.1 to 1.16 use [click](https://click.palletsprojects.com)'s completion:
+tmuxp 1.1 to 1.16 use [click]'s completion:
 
 :::{tab} Bash
 
@@ -93,3 +93,6 @@ eval "$(_TMUXP_COMPLETE=zsh_source tmuxp)"
 ```
 
 :::
+
+[shtab]: https://docs.iterative.ai/shtab/
+[click]: https://click.palletsprojects.com

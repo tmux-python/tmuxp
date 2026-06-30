@@ -36,10 +36,10 @@ your workspace file under `plugins`:
 
 A plugin is a class whose methods tmuxp calls at set points while it builds and
 attaches the session. You override only the hooks you care about; the rest do
-nothing. The order is fixed:
+nothing. {ref}`tmuxp load <cli-load>` drives the lifecycle in a fixed order:
 
 :::{mermaid}
-:caption: When each plugin hook fires during `tmuxp load`.
+:caption: When each plugin hook fires.
 
 flowchart TD
     load["tmuxp load"]:::cmd --> bwb["before_workspace_builder"]:::cmd

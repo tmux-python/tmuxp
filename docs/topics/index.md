@@ -28,7 +28,7 @@ Select or ship a custom builder; tune pane readiness.
 :::{grid-item-card} Library vs CLI
 :link: library-vs-cli
 :link-type: doc
-When to use tmuxp CLI vs libtmux directly.
+When to use tmuxp CLI vs [libtmux](https://libtmux.git-pull.com/) directly.
 :::
 
 :::{grid-item-card} Troubleshooting
@@ -39,7 +39,7 @@ Common shell, PATH, and tmux issues.
 
 ::::
 
-## Compared to tmuxinator / teamocil
+## Compared to other session managers
 
 tmuxp, [tmuxinator](https://github.com/aziz/tmuxinator), and
 [teamocil](https://github.com/remiprev/teamocil) all load tmux sessions

@@ -4,7 +4,8 @@
 
 This is the internal Python API — the modules tmuxp's CLI is built from,
 documented for contributors and plugin authors. Everyday use goes through the
-{ref}`CLI <cli>`; to drive tmux from Python directly, reach for libtmux instead.
+{ref}`CLI <cli>`; to drive tmux from Python directly, reach for
+[libtmux](https://libtmux.git-pull.com/) instead.
 
 :::{seealso}
 See {ref}`libtmux's API <libtmux:api>` and {ref}`Quickstart <libtmux:quickstart>` to see how you can control
@@ -23,13 +24,13 @@ Finding, loading, building, and freezing sessions.
 :::{grid-item-card} CLI modules
 :link: cli/index
 :link-type: doc
-The argparse commands behind each subcommand.
+The {mod}`argparse` commands behind each subcommand.
 :::
 
 :::{grid-item-card} Plugin API
 :link: plugin
 :link-type: doc
-The TmuxpPlugin base class and its hooks.
+The {class}`~tmuxp.plugin.TmuxpPlugin` base class and its hooks.
 :::
 
 :::{grid-item-card} Internal helpers
@@ -41,7 +42,7 @@ Config reader, colors, and private path helpers.
 :::{grid-item-card} Exceptions
 :link: exc
 :link-type: doc
-The TmuxpException hierarchy.
+The {exc}`~tmuxp.exc.TmuxpException` hierarchy.
 :::
 
 :::{grid-item-card} Logging

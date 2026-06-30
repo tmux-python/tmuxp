@@ -393,7 +393,9 @@ _Experimental setting_: behavior and api is subject to change until stable.
 Omit sending {kbd}`enter` to key commands. Equivalent to having
 a {func}`time.sleep` before and after {meth}`~libtmux.Pane.send_keys`.
 
-This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, uv, sourcing a configuration, launching a tui app, etc).
+This is especially useful for expensive commands where the terminal needs some
+breathing room (virtualenv, [poetry], [pipenv], [uv], sourcing a configuration,
+launching a tui app, etc).
 
 ````{tab} Virtualenv
 
@@ -689,8 +691,8 @@ before_script: /absolute/path/this.sh # abs path to shell script
 You can load your software project in tmux by placing a `.tmuxp.yaml` or
 `.tmuxp.json` in the project's workspace and loading it.
 
-tmuxp supports loading workspace via absolute filename with `tmuxp load`
-and via `$ tmuxp load .` if workspace is in the directory.
+Use {ref}`tmuxp load <cli-load>` with an absolute filename, or `$ tmuxp load .`
+when the workspace is in the current directory.
 
 ```console
 

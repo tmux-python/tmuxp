@@ -7,7 +7,7 @@ shows you while loading — set from your shell, outside any workspace file. You
 rarely need them: tmuxp works out of the box. Reach for one when you want to
 point tmuxp at a different config directory, quiet or reshape the load progress
 display, or work around a rare tmux quirk. The progress variables each mirror a
-`tmuxp load` flag, noted alongside the variable.
+{ref}`tmuxp load <cli-load>` flag, noted alongside the variable.
 
 (TMUXP_CONFIGDIR)=
 

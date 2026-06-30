@@ -243,7 +243,7 @@ This loads the `.tmuxp.yaml` at the project root:
 
 ## Formatting
 
-### ruff
+### Linting
 
 The project uses [ruff] for linting, import sorting, and formatting.
 
@@ -259,7 +259,7 @@ Autofix what ruff can:
 $ uv run ruff check . --fix --show-fixes
 ```
 
-#### ruff format
+#### Formatting
 
 [ruff format] handles formatting:
 
@@ -267,7 +267,7 @@ $ uv run ruff check . --fix --show-fixes
 $ just ruff-format
 ```
 
-### mypy
+### Type checking
 
 [mypy] does static type checking:
 

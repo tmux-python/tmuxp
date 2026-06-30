@@ -115,11 +115,14 @@ one yourself with a flag:
 
 - `--pdb`: plain {func}`breakpoint` (python 3.7+) or {func}`pdb.set_trace`
 - `--code`: drop into {func}`code.interact`, accepts `--use-pythonrc`
-- `--bpython`: drop into bpython
-- `--ipython`: drop into ipython
-- `--ptpython`: drop into ptpython, accepts `--use-vi-mode`
-- `--ptipython`: drop into ipython + ptpython, accepts `--use-vi-mode`
+- `--bpython`: drop into [bpython]
+- `--ipython`: drop into [IPython]
+- `--ptpython`: drop into [ptpython], accepts `--use-vi-mode`
+- `--ptipython`: drop into [IPython] + [ptpython], accepts `--use-vi-mode`
 
 [pep 553]: https://www.python.org/dev/peps/pep-0553/
 [ipdb]: https://pypi.org/project/ipdb/
 [libtmux]: https://libtmux.git-pull.com
+[bpython]: https://bpython-interpreter.org/
+[IPython]: https://ipython.org/
+[ptpython]: https://github.com/prompt-toolkit/ptpython

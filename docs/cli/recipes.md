@@ -71,7 +71,7 @@ $ tmuxp debug-info
 $ tmuxp shell
 ```
 
-Access libtmux objects directly:
+Access [libtmux](https://libtmux.git-pull.com/) objects directly:
 
 ```console
 $ tmuxp shell --best --command 'print(server.sessions)'
