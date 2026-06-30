@@ -7,25 +7,17 @@
 tmuxp has a short-hand syntax for those who wish to keep their workspace
 punctual.
 
-::::{sidebar} short hand
+:::{tmux-layout}
+:size: 36x12
+:layout: even-vertical
 
-```{eval-rst}
-.. aafig::
-   :textual:
-
-    +-------------------+
-    | 'did you know'    |
-    | 'you can inline'  |
-    +-------------------+
-    | 'single commands' |
-    |                   |
-    +-------------------+
-    | 'for panes'       |
-    |                   |
-    +-------------------+
-```
-
-::::
+echo 'did you know'
+echo 'you can inline'
+---
+echo 'single commands'
+---
+echo 'for panes'
+:::
 
 ````{tab} YAML
 
@@ -73,23 +65,14 @@ Note `''` counts as an empty carriage return.
 
 ## 2 panes
 
-::::{sidebar} 2 pane
+:::{tmux-layout}
+:size: 30x10
+:layout: even-vertical
 
-```{eval-rst}
-.. aafig::
-
-    +-----------------+
-    | $ pwd           |
-    |                 |
-    |                 |
-    +-----------------+
-    | $ pwd           |
-    |                 |
-    |                 |
-    +-----------------+
-```
-
-::::
+pwd
+---
+pwd
+:::
 
 ````{tab} YAML
 
@@ -111,23 +94,16 @@ Note `''` counts as an empty carriage return.
 
 ## 3 panes
 
-::::{sidebar} 3 panes
+:::{tmux-layout}
+:size: 30x12
+:layout: main-horizontal
 
-```{eval-rst}
-.. aafig::
-
-    +-----------------+
-    | $ pwd           |
-    |                 |
-    |                 |
-    +--------+--------+
-    | $ pwd  | $ pwd  |
-    |        |        |
-    |        |        |
-    +--------+--------+
-```
-
-::::
+pwd
+---
+pwd
+---
+pwd
+:::
 
 ````{tab} YAML
 
@@ -149,23 +125,18 @@ Note `''` counts as an empty carriage return.
 
 ## 4 panes
 
-::::{sidebar} 4 panes
+:::{tmux-layout}
+:size: 30x12
+:layout: tiled
 
-```{eval-rst}
-.. aafig::
-
-    +--------+--------+
-    | $ pwd  | $ pwd  |
-    |        |        |
-    |        |        |
-    +--------+--------+
-    | $ pwd  | $ pwd  |
-    |        |        |
-    |        |        |
-    +--------+--------+
-```
-
-::::
+pwd
+---
+pwd
+---
+pwd
+---
+pwd
+:::
 
 ````{tab} YAML
 

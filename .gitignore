@@ -59,6 +59,10 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# Mermaid diagram tooling (docs/_ext/mermaid_inline.py)
+docs/node_modules/
+docs/_mermaid_cache/
+
 # PyBuilder
 target/
 

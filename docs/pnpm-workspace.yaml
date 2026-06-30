@@ -1,0 +1,4 @@
+# Allow @mermaid-js/mermaid-cli's puppeteer dependency to run its install
+# script, which fetches the headless Chrome used to render diagrams.
+allowBuilds:
+  puppeteer: true

@@ -5,27 +5,52 @@
 ```{versionadded} 1.72.0
 ```
 
-Most workspaces never need these keys. By default tmuxp builds your session with
-its built-in *classic* builder and waits for a pane's shell prompt only when that
-shell is zsh — existing workspace files keep working unchanged. Set the keys below
-to swap in a different builder or to tune the prompt wait. **Omit a key (or remove
-it) to restore the default.**
+A *workspace builder* is the part of tmuxp that turns a workspace configuration into a
+live tmux session — it creates the session, lays out its windows and panes, and runs
+their commands. You usually never have to think about it: tmuxp ships with a built-in
+*classic* builder, and your YAML or JSON workspace files load through it out of the
+box, just as they always have. **Everything on this page is optional; leave a setting
+out to fall back to the default.**
+
+:::{mermaid}
+:caption: How a workspace file becomes a live tmux session.
+
+---
+config:
+  flowchart:
+    wrappingWidth: 500
+---
+flowchart TD
+    load["tmuxp load &lt;workspace-file&gt;"]:::cmd -->|reads workspace config| builder["Workspace Builder"]
+    builder -->|"creates session, windows, panes"| attach["Attach tmux session"]
+:::
+
+Workspaces with special needs can reach for a builder's options to fine-tune how a
+session loads. The classic builder, for instance, can wait for a pane's shell prompt
+before sending its layout and commands — by default only when that shell is zsh (the
+`pane_readiness` option). Waiting makes a session a little slower to load, but
+guarantees the workspace is fully prepped before you attach.
+
+You can also send a workspace through a different or custom builder instead of the
+classic one, and tune its options the same way. For the braver cases, you can subclass
+the classic builder or write your own in Python on top of
+[libtmux](https://libtmux.git-pull.com/) — see
+{ref}`custom-workspace-builders` for writing, packaging, testing, and the trust
+boundary that comes with running builder code.
 
 | Key | Type | Default | Purpose |
 | --- | --- | --- | --- |
 | `workspace_builder` | string | `classic` | Which builder turns the workspace into a session. |
 | `workspace_builder_paths` | string or list of strings | _(none)_ | Trusted directories to import a builder from. |
-| `workspace_builder_options` | mapping | _(all defaults)_ | Builder-behavior knobs, such as `pane_readiness`. |
-
-For the narrative — writing a builder, packaging one, the trust boundary, and
-testing — see {ref}`custom-workspace-builders`.
+| `workspace_builder_options` | mapping | _(all defaults)_ | Builder-behavior settings, such as `pane_readiness`. |
 
 (workspace-builder-key)=
 
 ## `workspace_builder`
 
-Selects the builder. The default, `classic`, is tmuxp's built-in builder. A value
-is resolved in this order:
+This is where you name the builder. Leave it out — or set `classic` — and you get
+tmuxp's built-in builder, with nothing imported. When you name something else, tmuxp
+works out what you mean from the shape of the value, in this order:
 
 1. absent or empty → the built-in classic builder (nothing is imported);
 2. contains `:` → a `module:attr` object reference;
@@ -49,11 +74,12 @@ See {ref}`custom-workspace-builders` for selecting and packaging builders, and
 
 ## `workspace_builder_paths`
 
-Directories to import a builder from when it lives outside tmuxp's environment —
-for example, a script in your config directory. Accepts a single string or a list
-of strings. tmuxp expands `~` and environment variables, resolves relative entries
-against the workspace file's directory, and requires each entry to be an existing
-directory; the paths are added to `sys.path` only for the import and build.
+When your builder lives outside tmuxp's environment — say, a script sitting in your
+config directory — this tells tmuxp where to find it. Give it a single directory or a
+list of them. tmuxp expands `~` and environment variables, reads relative entries
+against the workspace file's own directory, and expects each one to be a directory
+that already exists. The paths join `sys.path` only for the import and build, not for
+the rest of your session.
 
 ```yaml
 workspace_builder: my_local_builder:CustomBuilder
@@ -70,10 +96,10 @@ workspace files you trust. See the security note in {ref}`custom-workspace-build
 
 ## `workspace_builder_options`
 
-A catalog of builder-behavior settings, independent of which builder you use.
-Today it holds a single key, `pane_readiness`, which controls whether tmuxp waits
-for a pane's shell prompt before sending its layout and commands — a guard against
-a zsh prompt-redraw artifact:
+This holds builder-behavior settings, whichever builder you use. For now there's just
+one, `pane_readiness`, which decides whether tmuxp waits for a pane's shell prompt
+before it sends that pane's layout and commands — a guard against a zsh prompt-redraw
+artifact:
 
 ```yaml
 workspace_builder_options:
@@ -94,7 +120,7 @@ workspace_builder_options:
 invalid pane_readiness value: 'sometimes'; expected one of: auto, always/true/on/yes/1, never/false/off/no/0
 ```
 
-Panes that run a custom `shell` or `window_shell` never wait, regardless of policy.
+A pane that runs a custom `shell` or `window_shell` never waits, whatever you set here.
 See {class}`~tmuxp.workspace.options.PaneReadiness` and
 {class}`~tmuxp.workspace.options.WorkspaceBuilderOptions` for the parsing rules.
 
