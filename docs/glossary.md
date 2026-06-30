@@ -19,17 +19,14 @@ ConfigReader
     dataclasses)
 
 Server
-    Tmux runs in the background of your system as a process.
+    tmux runs in the background of your system as a process.
 
-    The server holds multiple {term}`Session`. By default, tmux
-    automatically starts the server the first time ``$ tmux`` is ran.
+    A server holds one or more {term}`Session`. tmux starts the server
+    automatically the first time ``$ tmux`` runs, if it isn't already
+    running.
 
-    A server contains {term}`session`'s.
-
-    tmux starts the server automatically if it's not running.
-
-    Advanced cases: multiple can be run by specifying
-    ``[-L socket-name]`` and ``[-S socket-path]``.
+    Advanced: you can run more than one by specifying
+    ``[-L socket-name]`` or ``[-S socket-path]``.
 
 Client
     Attaches to a tmux {term}`server`.  When you use tmux through CLI,
@@ -51,7 +48,7 @@ Window
 
     Can have 1 or more {term}`pane`.
 
-    Panes can be organized with a layouts.
+    Panes can be organized with layouts.
 
     Windows can have names.
 
