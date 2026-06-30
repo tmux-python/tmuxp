@@ -1,18 +1,23 @@
 # Architecture
 
-How the tmuxp CLI dispatches commands to the underlying library.
+This page traces how a tmuxp command travels from the CLI down to libtmux, the
+library that does the actual tmux work. Each subcommand takes its own short path
+through one or two workspace modules:
 
-## Request Flow
+:::{mermaid}
+:caption: How each tmuxp subcommand reaches libtmux.
 
-```
-tmuxp CLI (argparse)
-    │
-    ├── tmuxp load ──→ workspace.loader ──→ workspace.builder ──→ libtmux
-    ├── tmuxp freeze ──→ workspace.freezer ──→ libtmux
-    ├── tmuxp convert ──→ _internal.config_reader
-    ├── tmuxp shell ──→ libtmux (interactive)
-    └── tmuxp ls/search ──→ workspace.finders
-```
+flowchart LR
+    cli["tmuxp CLI (argparse)"]
+    cli -->|load| loader["workspace.loader"]
+    loader --> builder["workspace.builder"]
+    builder --> libtmux["libtmux"]
+    cli -->|freeze| freezer["workspace.freezer"]
+    freezer --> libtmux
+    cli -->|convert| reader["_internal.config_reader"]
+    cli -->|shell| interactive["libtmux (interactive)"]
+    cli -->|"ls / search"| finders["workspace.finders"]
+:::
 
 ## Key Components
 
@@ -35,5 +40,6 @@ The workspace layer handles configuration lifecycle:
 ### Library Layer (libtmux)
 
 tmuxp delegates all tmux operations to [libtmux](https://libtmux.git-pull.com/).
-The `WorkspaceBuilder` creates libtmux `Server`, `Session`, `Window`, and `Pane`
-objects to construct the requested workspace.
+The {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder` creates
+libtmux `Server`, `Session`, `Window`, and `Pane` objects to construct the
+requested workspace.
