@@ -1,6 +1,6 @@
 # tmuxp
 
-Session manager for tmux, which allows users to save and load tmux sessions through simple configuration files. Powered by [libtmux](https://github.com/tmux-python/libtmux).
+Session manager for tmux. Save and load your tmux sessions through simple configuration files. Powered by [libtmux](https://github.com/tmux-python/libtmux).
 
 [![Python Package](https://img.shields.io/pypi/v/tmuxp.svg)](https://pypi.org/project/tmuxp/)
 [![Docs](https://github.com/tmux-python/tmuxp/workflows/docs/badge.svg)](https://tmuxp.git-pull.com/)
@@ -13,7 +13,7 @@ is available on Leanpub and [Amazon Kindle](http://amzn.to/2gPfRhC).
 Read and browse the book for free [on the
 web](https://leanpub.com/the-tao-of-tmux/read).
 
-**Have some spare time?** Help us triage and code review and the tracker. See [issue
+**Have some spare time?** Help us triage and code-review on the tracker. See [issue
 #290](https://github.com/tmux-python/tmuxp/discussions/290)!
 
 # Installation
@@ -21,38 +21,38 @@ web](https://leanpub.com/the-tao-of-tmux/read).
 pip:
 
 ```console
-$ pip install --user tmuxp
+pip install --user tmuxp
 ```
 
 If you're managing the project with [uv](https://docs.astral.sh/uv/), add tmuxp as a dependency instead:
 
 ```console
-$ uv add tmuxp
+uv add tmuxp
 ```
 
 To run tmuxp without installing it globally, similar to `pipx`, invoke it with
 [uvx](https://docs.astral.sh/uv/guides/tools/):
 
 ```console
-$ uvx tmuxp
+uvx tmuxp
 ```
 
 Homebrew:
 
 ```console
-$ brew install tmuxp
+brew install tmuxp
 ```
 
 Debian / ubuntu:
 
 ```console
-$ sudo apt install tmuxp
+sudo apt install tmuxp
 ```
 
 Nix:
 
 ```console
-$ [[ -z $(which tmux) ]] && (nix-env -i tmux && nix-env -i tmuxp) || nix-env -i tmuxp
+[[ -z $(which tmux) ]] && (nix-env -i tmux && nix-env -i tmuxp) || nix-env -i tmuxp
 ```
 
 Find the package for your distro on repology: <https://repology.org/project/tmuxp/versions>
@@ -149,7 +149,7 @@ Load your tmuxp config from anywhere by using the filename, assuming
 _\~/.config/tmuxp/mysession.yaml_ (or _.json_):
 
 ```console
-$ tmuxp load mysession
+tmuxp load mysession
 ```
 
 See [author's tmuxp configs](https://github.com/tony/tmuxp-config) and
@@ -165,7 +165,7 @@ server, session, and window in
 [libtmux](https://github.com/tmux-python/libtmux) objects.
 
 ```console
-$ tmuxp shell
+tmuxp shell
 
 (Pdb) server
 <libtmux.server.Server object at 0x7f7dc8e69d10>
@@ -190,10 +190,10 @@ Supports [PEP
 (including `PYTHONBREAKPOINT`). Also supports direct commands via `-c`:
 
 ```console
-$ tmuxp shell -c 'print(window.name)'
+tmuxp shell -c 'print(window.name)'
 my_window
 
-$ tmuxp shell -c 'print(window.name.upper())'
+tmuxp shell -c 'print(window.name.upper())'
 MY_WINDOW
 ```
 
@@ -220,7 +220,7 @@ You can also load sessions in the background by passing `-d` flag
 Snapshot your tmux layout, pane paths, and window/session names.
 
 ```console
-$ tmuxp freeze session-name
+tmuxp freeze session-name
 ```
 
 See more about [freezing
@@ -231,7 +231,7 @@ tmux](https://tmuxp.git-pull.com/cli/freeze/) sessions.
 Convert a session file from yaml to json and vice versa.
 
 ```console
-$ tmuxp convert filename
+tmuxp convert filename
 ```
 
 This will prompt you for confirmation and shows you the new file that is
@@ -240,8 +240,8 @@ going to be written.
 You can auto confirm the prompt. In this case no preview will be shown.
 
 ```console
-$ tmuxp convert -y filename
-$ tmuxp convert --yes filename
+tmuxp convert -y filename
+tmuxp convert --yes filename
 ```
 
 # Plugin System
@@ -255,13 +255,13 @@ The `load` command provides a way to log output to a log file for
 debugging purposes.
 
 ```console
-$ tmuxp load --log-file <log-file-name> .
+tmuxp load --log-file <log-file-name> .
 ```
 
 Collect system info to submit with a Github issue:
 
 ```console
-$ tmuxp debug-info
+tmuxp debug-info
 ------------------
 environment:
     system: Linux
