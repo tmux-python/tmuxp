@@ -54,6 +54,16 @@ site's light/dark palette and code styling, replacing the old static ASCII art.
 with a concept-first overview, and {ref}`examples` shows each pane example as a
 faithful tmux window layout.
 
+#### Concept-first documentation pass (#1072)
+
+The docs now open with what each feature *is* before its configuration, in a
+consistent second-person voice, with advanced and Python-only material marked
+opt-in. New diagrams trace the plugin hook lifecycle, the CLI request flow, the
+workspace hierarchy, and what `tmuxp load` does inside an existing session, and
+more internal API cross-references resolve to their pages. The {ref}`quickstart`
+and {ref}`about-tmux` primer also pick up corrected version requirements,
+tooling, and commands.
+
 ## tmuxp 1.73.0 (2026-06-28)
 
 tmuxp 1.73.0 makes the workspace build step pluggable and tunable. A workspace can now build through a third-party builder selected by registered entry-point name or Python import path, and a new `workspace_builder_options` catalog controls the pane-readiness wait per workspace. The built-in builder stays the default, so existing workspaces keep working — though the new `pane_readiness: auto` default skips the prompt wait on non-zsh shells. See {ref}`custom-workspace-builders` for the guide.
