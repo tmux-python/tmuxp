@@ -60,6 +60,21 @@ put the link where their interest peaks — on the phrase that made them
 curious ("write your own") — not as a standalone footnote the eye
 skips. Use the MyST roles listed in the root `AGENTS.md`.
 
+Link the first prose mention of any symbol that has a useful destination on
+that page. This includes Python objects, tmuxp APIs, libtmux APIs, CLI command
+pages, topic/configuration pages, and external tools or projects. Use the most
+specific target available: `{class}`, `{meth}`, `{func}`, `{mod}`, `{exc}`, or
+`{attr}` for API objects; `{ref}` or `{doc}` for documentation pages and
+section anchors; and a Markdown link or reference link for external projects.
+After the first linked mention on a page, later mentions can stay plain unless
+the distance or context makes another link useful.
+
+Do not rely on a later reference section to satisfy the first-mention rule. If
+the first occurrence would be a heading, grid-card teaser, or introductory
+sentence, link that occurrence or retitle the heading so the first prose mention
+can carry the link. Leave command examples, code blocks, Mermaid node labels,
+and literal configuration values as code; link the surrounding prose instead.
+
 ## A page that does this
 
 `docs/configuration/workspace-builders.md` is the worked example:
