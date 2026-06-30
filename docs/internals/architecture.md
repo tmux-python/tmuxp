@@ -23,7 +23,7 @@ flowchart LR
 
 ### CLI Layer (`tmuxp.cli`)
 
-The CLI uses Python's `argparse` with a custom formatter ({mod}`tmuxp.cli._formatter`).
+The CLI uses Python's {mod}`argparse` with a custom formatter ({mod}`tmuxp.cli._formatter`).
 Each subcommand lives in its own module under {mod}`tmuxp.cli`.
 
 The entry point is {func}`tmuxp.cli.cli`, registered as a console script in `pyproject.toml`.

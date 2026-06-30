@@ -113,8 +113,8 @@ $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 `tmuxp shell` drops into the richest shell available in your _site packages_. Pick
 one yourself with a flag:
 
-- `--pdb`: plain `breakpoint()` (python 3.7+) or `pdb.set_trace`
-- `--code`: drop into `code.interact`, accepts `--use-pythonrc`
+- `--pdb`: plain {func}`breakpoint` (python 3.7+) or {func}`pdb.set_trace`
+- `--code`: drop into {func}`code.interact`, accepts `--use-pythonrc`
 - `--bpython`: drop into bpython
 - `--ipython`: drop into ipython
 - `--ptpython`: drop into ptpython, accepts `--use-vi-mode`

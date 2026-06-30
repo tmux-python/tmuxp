@@ -171,13 +171,13 @@ Under the hood, tmuxp drives tmux through
 [abstraction layer] over `tmux(1)`'s commands. Each config concept maps to a
 libtmux call:
 
-| {ref}`tmuxp python api <libtmux:api>` | {term}`tmux(1)` equivalent |
+| {ref}`libtmux Python API <libtmux:api>` | {term}`tmux(1)` equivalent |
 | ------------------------------------- | -------------------------- |
 | {meth}`libtmux.Server.new_session`    | `$ tmux new-session`       |
-| {meth}`libtmux.Server.sessions`       | `$ tmux list-sessions`     |
-| {meth}`libtmux.Session.windows`       | `$ tmux list-windows`      |
+| {attr}`libtmux.Server.sessions`       | `$ tmux list-sessions`     |
+| {attr}`libtmux.Session.windows`       | `$ tmux list-windows`      |
 | {meth}`libtmux.Session.new_window`    | `$ tmux new-window`        |
-| {meth}`libtmux.Window.panes`          | `$ tmux list-panes`        |
+| {attr}`libtmux.Window.panes`          | `$ tmux list-panes`        |
 | {meth}`libtmux.Window.split`          | `$ tmux split-window`      |
 | {meth}`libtmux.Pane.send_keys`        | `$ tmux send-keys`         |
 

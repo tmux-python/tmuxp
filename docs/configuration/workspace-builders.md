@@ -78,8 +78,8 @@ When your builder lives outside tmuxp's environment — say, a script sitting in
 config directory — this tells tmuxp where to find it. Give it a single directory or a
 list of them. tmuxp expands `~` and environment variables, reads relative entries
 against the workspace file's own directory, and expects each one to be a directory
-that already exists. The paths join `sys.path` only for the import and build, not for
-the rest of your session.
+that already exists. The paths join {data}`sys.path` only for the import and
+build, not for the rest of your session.
 
 ```yaml
 workspace_builder: my_local_builder:CustomBuilder

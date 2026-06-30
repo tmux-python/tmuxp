@@ -20,7 +20,7 @@ in {ref}`examples`.
 
 ## When to Use libtmux
 
-Use [libtmux](https://libtmux.git-pull.com/) directly when:
+Use libtmux directly when:
 
 - You need **dynamic logic** — conditionals, loops, branching based on state
 - You want to **read pane output** — capture what's on screen and react to it
@@ -44,13 +44,13 @@ How tmuxp config keys map to libtmux API calls:
 
 | tmuxp YAML | libtmux equivalent |
 |------------|-------------------|
-| `session_name: foo` | `server.new_session(session_name="foo")` |
-| `windows:` | `session.new_window(...)` |
-| `panes:` | `window.split(...)` |
-| `shell_command:` | `pane.send_keys(...)` |
-| `layout: main-vertical` | `window.select_layout("main-vertical")` |
-| `start_directory: ~/project` | `session.new_window(start_directory="~/project")` |
-| `before_script:` | Run via `subprocess` before building |
+| `session_name: foo` | {meth}`server.new_session(session_name="foo") <libtmux.Server.new_session>` |
+| `windows:` | {meth}`session.new_window(...) <libtmux.Session.new_window>` |
+| `panes:` | {meth}`window.split(...) <libtmux.Window.split>` |
+| `shell_command:` | {meth}`pane.send_keys(...) <libtmux.Pane.send_keys>` |
+| `layout: main-vertical` | {meth}`window.select_layout("main-vertical") <libtmux.Window.select_layout>` |
+| `start_directory: ~/project` | {meth}`session.new_window(start_directory="~/project") <libtmux.Session.new_window>` |
+| `before_script:` | Run via {mod}`subprocess` before building |
 
 ## What the CLI Can't Express
 
@@ -62,4 +62,4 @@ tmuxp configs are static declarations. They can't:
 - **Orchestrate across servers** — "connect to both local and remote tmux"
 - **Build layouts dynamically** — "create N panes based on a list of services"
 
-For these, use libtmux directly. See the [libtmux quickstart](https://libtmux.git-pull.com/quickstart.html).
+For these, use libtmux directly. See the {ref}`libtmux quickstart <libtmux:quickstart>`.

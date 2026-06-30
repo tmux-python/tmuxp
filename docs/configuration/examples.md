@@ -333,7 +333,7 @@ _Experimental setting_: behavior and api is subject to change until stable.
 ```
 
 Omit sending {kbd}`enter` to key commands. Equivalent to
-[`send_keys(enter=False)`](libtmux.Pane.send_keys).
+{meth}`send_keys(enter=False) <libtmux.Pane.send_keys>`.
 
 ````{tab} YAML
 
@@ -386,11 +386,12 @@ _Experimental setting_: behavior and api is subject to change until stable.
 ```
 
 ```{warning}
-**Blocking.** This will delay loading as it runs synchronously for each pane as [`asyncio`](asyncio)) is not implemented yet.
+**Blocking.** This will delay loading as it runs synchronously for each pane as
+{mod}`asyncio` is not implemented yet.
 ```
 
 Omit sending {kbd}`enter` to key commands. Equivalent to having
-a [`time.sleep`](time.sleep) before and after [`send_keys`](libtmux.Pane.send_keys).
+a {func}`time.sleep` before and after {meth}`~libtmux.Pane.send_keys`.
 
 This is especially useful for expensive commands where the terminal needs some breathing room (virtualenv, poetry, pipenv, uv, sourcing a configuration, launching a tui app, etc).
 
@@ -769,7 +770,7 @@ windows:
 tmuxp sessions can be scripted in python. The first way is to use the
 ORM in the {ref}`API`. The second is to pass a {py:obj}`dict` into
 {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder` with a correct schema.
-See: {meth}`tmuxp.validation.validate_schema`.
+See: {func}`~tmuxp.workspace.validation.validate_schema`.
 
 :::
 

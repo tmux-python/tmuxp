@@ -27,6 +27,8 @@ All public functions and methods use NumPy-style docstrings.
 ## Imports
 
 - Standard library: namespace imports (`import pathlib`, not `from pathlib import Path`)
-  - Exception: `from dataclasses import dataclass, field`
-- Typing: `import typing as t`, access via `t.Optional`, `t.NamedTuple`, etc.
+  - Exception: `from dataclasses import dataclass, field` for
+    {func}`~dataclasses.dataclass` and {func}`~dataclasses.field`
+- Typing: `import typing as t`, access via {data}`t.Optional <typing.Optional>`,
+  {class}`t.NamedTuple <typing.NamedTuple>`, etc.
 - All files: `from __future__ import annotations`

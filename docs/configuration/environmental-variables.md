@@ -21,7 +21,8 @@ Example: `TMUXP_CONFIGDIR=$HOME/.mytmuxpconfigdir tmuxp load cpython`
 
 :::{seealso}
 
-[`LIBTMUX_TMUX_FORMAT_SEPARATOR`](https://libtmux.git-pull.com/api.html#tmux-format-separator) in libtmux API.
+{ref}`LIBTMUX_TMUX_FORMAT_SEPARATOR <libtmux:libtmux_tmux_format_separator>`
+in the libtmux API.
 
 :::
 

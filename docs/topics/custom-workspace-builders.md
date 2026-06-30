@@ -67,7 +67,7 @@ When a builder lives outside tmuxp's runtime environment (for example, a script
 in your config directory), list trusted directories in
 `workspace_builder_paths`. tmuxp expands `~` and environment variables,
 resolves relative entries against the workspace file's directory, requires each
-entry to be an existing directory, and temporarily prepends them to `sys.path`
+entry to be an existing directory, and temporarily prepends them to {data}`sys.path`
 for the import and build:
 
 ```yaml
@@ -79,7 +79,7 @@ workspace_builder_paths:
 :::{warning}
 A workspace file that names a builder runs that builder's Python code. Only load
 workspace files you trust. tmuxp deliberately does **not** use
-`site.addsitedir()` for these paths — that would execute `.pth` startup files
+{func}`site.addsitedir` for these paths — that would execute `.pth` startup files
 and is broader than making a module importable.
 :::
 
@@ -168,7 +168,7 @@ def test_custom_builder(server):
     builder.session.kill()
 ```
 
-For builders that live in a trusted directory, build the `sys.path` sandbox with
+For builders that live in a trusted directory, build the {data}`sys.path` sandbox with
 {func}`~tmuxp.workspace.builder.registry.resolve_builder_paths` and
 {func}`~tmuxp.workspace.builder.registry.prepended_sys_path`.
 
