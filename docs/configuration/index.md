@@ -37,7 +37,7 @@ Select a builder and tune pane readiness.
 
 tmuxp loads your terminal workspace into tmux using workspace files.
 
-The workspace file can be JSON or YAML. It's declarative style resembles tmux's object hierarchy: session, window and panes.
+The workspace file can be JSON or YAML. Its declarative style resembles tmux's object hierarchy: session, window, and panes.
 
 ## Launching your session
 
@@ -61,6 +61,18 @@ tmuxp will offer to assist when:
 2. A list of _windows_
 3. A list of _panes_ for each window
 4. A list of _commands_ for each pane
+
+:::{mermaid}
+:caption: A workspace file mirrors tmux's own hierarchy.
+
+flowchart TD
+    session["session_name"] --> w1["window"]
+    session --> w2["window"]
+    w1 --> p1["pane"]
+    w1 --> p2["pane"]
+    p1 --> c1["shell_command"]
+    p1 --> c2["shell_command"]
+:::
 
 ````{tab} Basics
 
