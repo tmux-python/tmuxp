@@ -2,7 +2,8 @@
 
 # Recipes
 
-Copy-pasteable command invocations for common tasks.
+Copy-pasteable command invocations for common tasks. Each command has a full
+reference — with every flag — under {ref}`cli`.
 
 ## Load a workspace
 

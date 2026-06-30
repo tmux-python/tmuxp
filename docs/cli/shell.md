@@ -4,7 +4,10 @@
 
 # tmuxp shell
 
-Launch an interactive Python shell with [libtmux] objects pre-loaded. Similar to Django's shell command, this provides quick access to your tmux server, sessions, windows, and panes for scripting and debugging.
+Launch an interactive Python shell with [libtmux] objects pre-loaded. Like
+Django's `shell` command, it hands you the current tmux server, sessions,
+windows, and panes already wired up, so you can poke at a live session or
+prototype a script without writing boilerplate.
 
 ## Command
 
@@ -16,26 +19,12 @@ Launch an interactive Python shell with [libtmux] objects pre-loaded. Similar to
     :path: shell
 ```
 
-## Directly enter commands
-
-```console
-$ tmuxp shell -c 'python code'
-```
-
-```{image} ../_static/tmuxp-shell.gif
-:width: 878
-:height: 109
-:loading: lazy
-```
-
 ## Interactive usage
 
-Launch into a Python console with [libtmux] objects. Compare to django's shell.
-
-Automatically preloads current tmux {class}`server <libtmux.Server>`,
-{class}`session <libtmux.Session>`, {class}`window <libtmux.Window>`
-{class}`pane <libtmux.Pane>`. Pass additional arguments to select a
-specific one of your choice:
+Run `tmuxp shell` to drop into a Python console with the current tmux
+{class}`server <libtmux.Server>`, {class}`session <libtmux.Session>`,
+{class}`window <libtmux.Window>`, and {class}`pane <libtmux.Pane>` already bound.
+Pass arguments to select a specific one:
 
 ```console
 (Pdb) server
@@ -56,16 +45,54 @@ Window(@3 1:your_window, Session($1 your_project))
 Pane(%6 Window(@3 1:your_window, Session($1 your_project)))
 ```
 
+## Running code directly
+
+Pass `-c` to run a snippet and exit, much like `python -c`:
+
+```console
+$ tmuxp shell -c 'python code'
+```
+
+```{image} ../_static/tmuxp-shell.gif
+:width: 878
+:height: 109
+:loading: lazy
+```
+
+The same objects are in scope. Name a server, then a window, to narrow what the
+snippet sees:
+
+```console
+$ tmuxp shell -c 'print(session.name); print(window.name)'
+my_server
+my_window
+```
+
+```console
+$ tmuxp shell my_server my_window -c 'print(window.name.upper())'
+MY_WINDOW
+```
+
+Inside a tmux pane — or attached to the default server — the pane is in scope
+too:
+
+```console
+$ tmuxp shell -c 'print(pane.id); print(pane.window.name)'
+%2
+my_window
+```
+
 ## Debugger integration
 
-Supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and
-compatible debuggers, for instance [ipdb][ipdb]:
+`tmuxp shell` supports [PEP 553][pep 553]'s `PYTHONBREAKPOINT` and compatible
+debuggers, such as [ipdb][ipdb]:
 
 ```console
 $ pip install --user ipdb
 ```
 
-Inside a [uv](https://docs.astral.sh/uv/getting-started/features/#python-versions)-managed project you can add `ipdb` as a development dependency:
+Inside a [uv](https://docs.astral.sh/uv/getting-started/features/#python-versions)-managed
+project, add `ipdb` as a development dependency:
 
 ```console
 $ uv add --dev ipdb
@@ -81,55 +108,18 @@ $ uvx --from ipdb ipdb3 --help
 $ env PYTHONBREAKPOINT=ipdb.set_trace tmuxp shell
 ```
 
-## Code execution
+## Shell detection
 
-You can also pass in python code directly, similar to `python -c`, do
-this via `tmuxp -c`:
+`tmuxp shell` drops into the richest shell available in your _site packages_. Pick
+one yourself with a flag:
 
-```console
-$ tmuxp shell -c 'print(session.name); print(window.name)'
-my_server
-my_window
-```
-
-```console
-$ tmuxp shell my_server -c 'print(session.name); print(window.name)'
-my_server
-my_window
-```
-
-```console
-$ tmuxp shell my_server my_window -c 'print(session.name); print(window.name)'
-my_server
-my_window
-```
-
-```console
-$ tmuxp shell my_server my_window -c 'print(window.name.upper())'
-MY_WINDOW
-```
-
-Assuming inside a tmux pane or one is attached on default server:
-
-```console
-$ tmuxp shell -c 'print(pane.id); print(pane.window.name)'
-%2
-my_window
-```
+- `--pdb`: plain `breakpoint()` (python 3.7+) or `pdb.set_trace`
+- `--code`: drop into `code.interact`, accepts `--use-pythonrc`
+- `--bpython`: drop into bpython
+- `--ipython`: drop into ipython
+- `--ptpython`: drop into ptpython, accepts `--use-vi-mode`
+- `--ptipython`: drop into ipython + ptpython, accepts `--use-vi-mode`
 
 [pep 553]: https://www.python.org/dev/peps/pep-0553/
 [ipdb]: https://pypi.org/project/ipdb/
 [libtmux]: https://libtmux.git-pull.com
-
-## Shell detection
-
-`tmuxp shell` detects the richest shell available in your _site packages_, you can also pick your shell via args:
-
-- `--pdb`: Use plain old `breakpoint()` (python 3.7+) or
-  `pdb.set_trace`
-- `--code`: Drop into `code.interact`, accepts `--use-pythonrc`
-- `--bpython`: Drop into bpython
-- `--ipython`: Drop into ipython
-- `--ptpython`: Drop into ptpython, accepts `--use-vi-mode`
-- `--ptipython`: Drop into ipython + ptpython, accepts
-  `--use-vi-mode`

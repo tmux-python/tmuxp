@@ -2,16 +2,9 @@
 
 # Developing and Testing
 
-```{eval-rst}
-.. todo::
-    link to sliderepl or ipython notebook slides
-```
-
-Our tests are inside `tests/`. Tests are implemented using
-[pytest].
-
-`make test` will create a tmux server on a separate `socket_name`
-using `$ tmux -L test_case`.
+The tests live in `tests/`, written with [pytest]. They run against a real tmux
+server on a separate socket (`$ tmux -L test_case`), so they never disturb your
+own sessions.
 
 [pytest]: http://pytest.org/
 
@@ -21,7 +14,7 @@ using `$ tmux -L test_case`.
 
 ### Get the source
 
-To begin developing, check out the code from github:
+Check out the code from GitHub:
 
 ```console
 $ git clone git@github.com:tmux-python/tmuxp.git
@@ -33,201 +26,152 @@ $ cd tmuxp
 
 ### Bootstrap
 
-The easiest way to configure a dev environment is through [uv]. This
-automatically will manage virtualenv and python dependencies for tmuxp.
-For information on installing uv visit the [uv's documentation].
+The easiest way to set up a dev environment is with [uv], which manages the
+virtualenv and Python dependencies for you. (See [uv's documentation] to install
+uv itself.)
 
-To begin developing, check out the code from github:
-
-```console
-$ git clone git@github.com:tmux-python/tmuxp.git
-```
-
-```console
-$ cd tmuxp
-```
-
-You can create a virtualenv, and install all of the locked
-packages as listed in uv.lock:
+Create the virtualenv and install everything locked in `uv.lock`:
 
 ```console
 $ uv sync --all-extras --dev
 ```
 
-If you ever need to update packages during your development session, the
-following command can be used to update all packages as per uv settings:
+To refresh those packages later:
 
 ```console
 $ uv sync --all-extras --dev --upgrade
 ```
 
-Then before any python command in tty / terminal session, run with:
+Then prefix any Python command with `uv run`:
 
 ```console
 $ uv run [command]
 ```
 
-That is it! You are now ready to code!
+That's it — you're ready to code.
 
 [uv]: https://github.com/astral-sh/uv
 [uv's documentation]: https://docs.astral.sh/uv
 
-### Advanced: Manual virtualenv
+### Advanced: manual virtualenv
 
-Now create a virtualenv, if you don't know how to, you can create a
-virtualenv with:
+Prefer to manage the virtualenv yourself? Create one:
 
 ```console
 $ virtualenv .venv
 ```
 
-Then activate it to your current tty / terminal session with:
+Activate it in your current shell:
 
 ```console
 $ source .venv/bin/activate
 ```
 
-Good! Now let's run this:
+Install tmuxp in editable mode, so your edits take effect immediately:
 
 ```console
 $ pip install -e .
 ```
 
-This has `pip`, a python package manager install the python package
-in the current directory. `-e` means `--editable`, which means you can
-adjust the code and the installed software will reflect the changes.
-
-When you manage dependencies with
-[uv](https://docs.astral.sh/uv/getting-started/features/#python-versions),
-add the checkout as an editable development dependency instead:
+With a uv-managed project, add the checkout as an editable dev dependency
+instead:
 
 ```console
 $ uv add --dev --editable .
 ```
 
-Prefer a one-off, pipx-style execution while you hack? Call tmuxp via
-[uvx](https://docs.astral.sh/uv/guides/tools/):
+Prefer a one-off, pipx-style run while you hack? Call tmuxp through [uvx]:
 
 ```console
 $ uvx tmuxp
 ```
 
-```console
-$ tmuxp
-```
+[uvx]: https://docs.astral.sh/uv/guides/tools/
 
-## Test Runner
+## Test runner
 
-[pytest] is used for tests.
-
-As you've seen above, the `tmuxp` command will now be available to you,
-since you are in the virtual environment, your `PATH` environment was
-updated to include a special version of `python` inside your `.venv`
-folder with its own packages.
+[pytest] runs the tests. Inside the virtualenv, the `tmuxp` command and a
+project-local `python` are already on your `PATH`.
 
 ### Rerun on file change
 
-via [pytest-watcher] (works out of the box):
+Watch files and re-run tests on every save, via [pytest-watcher]:
 
 ```console
-$ make start
-```
-
-via [`entr(1)`] (requires installation):
-
-```console
-$ make watch_test
+$ just start
 ```
 
 [pytest-watcher]: https://github.com/olzhasar/pytest-watcher
 
-### Manual (just the command, please)
+### Manual
 
 ```console
 $ uv run py.test
 ```
 
-or:
+Or:
 
 ```console
-$ make test
+$ just test
 ```
 
 ### pytest options
 
-`PYTEST_ADDOPTS` can be set in the commands below. For more
-information read [docs.pytest.com] for the latest documentation.
+Pass extra arguments through `PYTEST_ADDOPTS`. See the [pytest usage docs] for
+everything it accepts.
 
-[docs.pytest.com]: https://docs.pytest.org/
+[pytest usage docs]: https://docs.pytest.org/
 
 Verbose:
 
 ```console
-$ env PYTEST_ADDOPTS="-verbose" make start
+$ env PYTEST_ADDOPTS="--verbose" just start
 ```
 
 Pick a file:
 
 ```console
-$ env PYTEST_ADDOPTS="tests/workspace/test_builder.py" uv run make start
+$ env PYTEST_ADDOPTS="tests/workspace/test_builder.py" just start
 ```
 
-Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py`:
-
-```console
-$ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py" \
-    uv run make start
-```
-
-Drop into `test_automatic_rename_option()` in `tests/workspace/test_builder.py` and stop on first error:
+Drop into a single test and stop on the first error:
 
 ```console
 $ env PYTEST_ADDOPTS="-s -x -vv tests/workspace/test_builder.py::test_automatic_rename_option" \
-    uv run make start
+    just start
 ```
 
-Drop into `pdb` on first error:
+Drop into `pdb` on the first error:
 
 ```console
-$ env PYTEST_ADDOPTS="-x -s --pdb" make start
+$ env PYTEST_ADDOPTS="-x -s --pdb" just start
 ```
 
-If you have [ipython] installed:
+With [ipython] installed:
 
 ```console
-$ env PYTEST_ADDOPTS="--pdbcls=IPython.terminal.debugger:TerminalPdb" make start
+$ env PYTEST_ADDOPTS="--pdbcls=IPython.terminal.debugger:TerminalPdb" just start
 ```
 
 [ipython]: https://ipython.org/
-
-```console
-$ make test
-```
-
-You probably didn't see anything but tests scroll by.
-
-If you found a problem or are trying to write a test, you can file an
-[issue on github].
 
 (test-specific-tests)=
 
 ### Manual invocation
 
-Test only a file:
+Test a single file:
 
 ```console
 $ py.test tests/test_config.py
 ```
 
-will test the `tests/test_config.py` tests.
+A single test inside it:
 
 ```console
 $ py.test tests/test_config.py::test_export_json
 ```
 
-tests `test_export_json` inside of `tests/test_config.py`.
-
-Multiple can be separated by spaces:
+Several at once, space-separated:
 
 ```console
 $ py.test tests/test_{window,pane}.py tests/test_config.py::test_export_json
@@ -237,249 +181,117 @@ $ py.test tests/test_{window,pane}.py tests/test_config.py::test_export_json
 
 ### Visual testing
 
-You can watch tmux testsuite build sessions visually by keeping a client
-open in a separate terminal.
+You can watch the suite build sessions in real time by keeping a client open in
+a second terminal.
 
-Create two terminals:
-
-- Terminal 1: `$ tmux -L test_case`
-
-- Terminal 2: `$ cd` into the tmuxp project and into the
-  `virtualenv` if you are using one, see details on installing the dev
-  version of tmuxp above. Then:
-
-  ```console
-  $ py.test tests/workspace/test_builder.py
-  ```
-
-Terminal 1 should have flickered and built the session before your eyes.
-tmuxp hides this building from normal users.
-
-### Run tests on save (old method)
-
-You can re-run tests automatically on file edit.
-
-:::{note}
-
-This requires [`entr(1)`].
-
-:::
-
-Install [entr]. Packages are available on most Linux and BSD
-variants, including Debian, Ubuntu, FreeBSD, OS X.
-
-To run all tests upon editing any `.py` file:
+Terminal 1 — start a server on the test socket:
 
 ```console
-$ make watch_test
+$ tmux -L test_case
 ```
 
-You can also re-run a specific test file or any other [py.test usage
-argument]:
-
-```console
-$ make watch_test test=tests/test_config.py
-```
+Terminal 2 — from the tmuxp checkout (and your virtualenv, if you use one), run
+the builder tests:
 
 ```console
-$ make watch_test test='-x tests/test_config.py tests/test_util.py'
+$ py.test tests/workspace/test_builder.py
 ```
+
+Terminal 1 flickers as sessions build before your eyes — the building tmuxp
+normally hides from users.
 
 ### Testing options
 
-`RETRY_TIMEOUT_SECONDS` can be toggled if certain workspace builder
-tests are being stubborn.
+Set `RETRY_TIMEOUT_SECONDS` if certain workspace-builder tests are stubborn on
+your machine, e.g. `RETRY_TIMEOUT_SECONDS=10 py.test`. CI runs the same suite:
 
-e.g. `RETRY_TIMEOUT_SECONDS=10 py.test`
-
-```{literalinclude} ../.github/workflows/tests.yml
+```{literalinclude} ../../.github/workflows/tests.yml
 :language: yaml
-
 ```
 
 ## Documentation
 
-### Rebuild on save
-
-Rebuild the documentation when an `.md` file is edited:
+Rebuild the docs whenever a source file changes:
 
 ```console
-$ cd doc
-```
-
-```console
-$ make watch
-```
-
-```console
-$ make SPHINXBUILD='uv run sphinx-build' watch
+$ just watch-docs
 ```
 
 (tmuxp-developer-config)=
 
 ## tmuxp developer config
 
-```{image} _static/tmuxp-dev-screenshot.png
+```{image} /_static/tmuxp-dev-screenshot.png
 :width: 1030
 :height: 605
 :align: center
 :loading: lazy
 ```
 
-After you {ref}`install-dev-env`, when inside the tmuxp checkout:
+After you {ref}`install-dev-env`, load the project's own workspace from the
+checkout root:
 
 ```console
 $ tmuxp load .
 ```
 
-this will load the `.tmuxp.yaml` in the root of the project.
+This loads the `.tmuxp.yaml` at the project root:
 
-```{literalinclude} ../.tmuxp.yaml
+```{literalinclude} ../../.tmuxp.yaml
 :language: yaml
-
 ```
 
 ## Formatting
 
 ### ruff
 
-The project uses [ruff] to handle formatting, sorting imports and linting.
+The project uses [ruff] for linting, import sorting, and formatting.
 
-````{tab} Command
-
-uv:
+Lint:
 
 ```console
-$ uv run ruff
+$ just ruff
 ```
 
-If you setup manually:
+Autofix what ruff can:
 
 ```console
-$ ruff check .
+$ uv run ruff check . --fix --show-fixes
 ```
-
-````
-
-````{tab} make
-
-```console
-$ make ruff
-```
-
-````
-
-````{tab} Watch
-
-```console
-$ make watch_ruff
-```
-
-requires [`entr(1)`].
-
-````
-
-````{tab} Fix files
-
-uv:
-
-```console
-$ uv run ruff check . --fix
-```
-
-If you setup manually:
-
-```console
-$ ruff check . --fix
-```
-
-````
 
 #### ruff format
 
-[ruff format] is used for formatting.
-
-````{tab} Command
-
-uv:
+[ruff format] handles formatting:
 
 ```console
-$ uv run ruff format .
+$ just ruff-format
 ```
-
-If you setup manually:
-
-```console
-$ ruff format .
-```
-
-````
-
-````{tab} make
-
-```console
-$ make ruff_format
-```
-
-````
 
 ### mypy
 
-[mypy] is used for static type checking.
-
-````{tab} Command
-
-uv:
+[mypy] does static type checking:
 
 ```console
-$ uv run mypy .
+$ just mypy
 ```
 
-If you setup manually:
+Re-check on change:
 
 ```console
-$ mypy .
+$ just watch-mypy
 ```
-
-````
-
-````{tab} make
-
-```console
-$ make mypy
-```
-
-````
-
-````{tab} Watch
-
-```console
-$ make watch_mypy
-```
-
-requires [`entr(1)`].
-````
 
 (gh-actions)=
 
 ## Continuous integration
 
-### Github Actions
+tmuxp uses [GitHub Actions] for continuous integration. To see the tmux and
+Python versions under test, read [.github/workflows/tests.yml]. Builds run on
+`master` and on pull requests, and are visible on the [build site].
 
-tmuxp uses [github actions] for continuous integration / automatic unit
-testing.
-
-To view the tmux and python versions tested see the [.github/workflows/tests.yml].
-Builds are done on `master` and pull requests and can be viewed on
-the [gh build site].
-
-[py.test usage argument]: https://pytest.org/latest/usage.html
-[entr]: http://entrproject.org/
-[`entr(1)`]: http://entrproject.org/
 [ruff]: https://ruff.rs
 [ruff format]: https://docs.astral.sh/ruff/formatter/
 [mypy]: http://mypy-lang.org/
-[github actions]: https://github.com/features/actions
-[gh build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests
+[GitHub Actions]: https://github.com/features/actions
+[build site]: https://github.com/tmux-python/tmuxp/actions?query=workflow%3Atests
 [.github/workflows/tests.yml]: https://github.com/tmux-python/tmuxp/blob/master/.github/workflows/tests.yml
-[issue on github]: https://github.com/tmux-python/tmuxp/issues

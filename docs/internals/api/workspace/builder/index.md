@@ -1,5 +1,9 @@
 # Builder - `tmuxp.workspace.builder`
 
+```{eval-rst}
+.. py:module:: tmuxp.workspace.builder
+```
+
 `tmuxp.workspace.builder` is a package. The classic, default builder lives in
 {mod}`tmuxp.workspace.builder.classic`; the public contract and the selection
 machinery live alongside it.

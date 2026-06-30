@@ -10,7 +10,10 @@ tmuxp uses standard exit codes for scripting and automation.
 | `1` | General error (config validation, tmux command failure) |
 | `2` | Usage error (invalid arguments, missing required options) |
 
-## Usage in Scripts
+## Usage in scripts
+
+Because the exit code is meaningful, a script can check it and react. Test it
+explicitly with `$?`:
 
 ```bash
 #!/bin/bash
@@ -20,6 +23,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 ```
+
+Or short-circuit with `||` to handle the failure inline:
 
 ```bash
 #!/bin/bash

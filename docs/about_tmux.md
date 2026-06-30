@@ -38,29 +38,23 @@ inside the text dimension. Inside tmux you can:
 | ----------- | ------------------------------- | ------------------------------------- |
 | Multiplexer | Multi-tasking                   | Multiple applications simultaneously. |
 | Session     | Desktop                         | Applications are visible here         |
-| Window      | Virtual Desktop or applications | A desktop that stores it own screen   |
+| Window      | Virtual Desktop or applications | A desktop that stores its own screen  |
 | Pane        | Application                     | Performs operations                   |
 
-```{eval-rst}
-.. aafig::
-    :textual:
+:::{mermaid}
+:caption: A session holds windows; each window holds one or more panes.
 
-    +----------------------------------------------------------------+
-    |  +--------+--------+ +-----------------+ +-----------------+   |
-    |  | pane   | pane   | | pane            | | pane            |   |
-    |  |        |        | |                 | |                 |   |
-    |  |        |        | |                 | |                 |   |
-    |  +--------+--------+ |                 | +-----------------+   |
-    |  | pane   | pane   | |                 | | pane            |   |
-    |  |        |        | |                 | |                 |   |
-    |  |        |        | |                 | |                 |   |
-    |  +--------+--------+ +-----------------+ +-----------------+   |
-    |  | window          | | window          | | window          |   |
-    |  \--------+--------/ \-----------------/ \-----------------/   |
-    +----------------------------------------------------------------+
-    | session                                                        |
-    \----------------------------------------------------------------/
-```
+flowchart TD
+    session["session"] --> w1["window"]
+    session --> w2["window"]
+    session --> w3["window"]
+    w1 --> p1["pane"]
+    w1 --> p2["pane"]
+    w1 --> p3["pane"]
+    w1 --> p4["pane"]
+    w3 --> p5["pane"]
+    w3 --> p6["pane"]
+:::
 
 - 1 {term}`Server`.
 
@@ -84,66 +78,36 @@ splitting up 1 terminal into multiple.
 One screen can be used to edit a file, and another may be used to
 `$ tail -F` a logfile.
 
-```{eval-rst}
-.. aafig::
+:::{tmux-layout}
+:size: 40x10
+:layout: even-horizontal
 
-   +--------+--------+
-   | $ bash | $ bash |
-   |        |        |
-   |        |        |
-   |        |        |
-   |        |        |
-   |        |        |
-   |        |        |
-   +--------+--------+
-```
+bash
+---
+bash
+:::
 
-```{eval-rst}
-.. aafig::
+:::{tmux-layout}
+:size: 40x12
+:layout: tiled
 
-   +--------+--------+
-   | $ bash | $ bash |
-   |        |        |
-   |        |        |
-   +--------+--------+
-   | $ vim  | $ bash |
-   |        |        |
-   |        |        |
-   +--------+--------+
-```
+bash
+---
+bash
+---
+vim
+---
+bash
+:::
 
 tmux supports as many terminals as you want.
 
-```{eval-rst}
-.. aafig::
-   :textual:
+:::{mermaid}
+:caption: Switch between the windows in a session.
 
-   +---------+---------+
-   | $ bash  | $ bash  |
-   |         |         |
-   |         |         |     /-----------------\
-   +---------+---------+ --> |'switch-window 2'|
-   | $ bash  | $ bash  |     \-----------------/
-   |         |         |              |
-   |         |         |              |
-   +---------+---------+              |
-   | '1:sys*  2:vim'   |              |
-   +-------------------+              |
-             /------------------------/
-             |
-             v
-   +---------+---------+
-   | $ vim             |
-   |                   |
-   |                   |
-   +-------------------+
-   | $ bash  | $ bash  |
-   |         |         |
-   |         |         |
-   +-------------------+
-   | '1:sys  2:vim*'   |
-   +-------------------+
-```
+flowchart TD
+    w1["window 1 · sys (active)"] -->|"switch-window 2"| w2["window 2 · vim (active)"]
+:::
 
 You can switch between the windows you create.
 
@@ -152,57 +116,13 @@ You can switch between the windows you create.
 You can leave tmux and all applications running (detach), log out, make
 a sandwich, and re-(attach), all applications are still running!
 
-```{eval-rst}
-.. aafig::
-   :textual:
+:::{mermaid}
+:caption: Detach, leave everything running, and reattach later.
 
-   +--------+--------+
-   | $ bash | $ bash |
-   |        |        |
-   |        |        |     /------------\
-   +--------+--------+ --> |   detach   |
-   | $ vim  | $ bash |     | 'Ctrl-b b' |
-   |        |        |     \------------/
-   |        |        |            |
-   +--------+--------+            |
-               /------------------/
-               |
-               v
-   +-----------------------+
-   | $ [screen detached]   |
-   |                       |
-   |                       |
-   |                       |
-   |                       |
-   |                       |
-   |                       |
-   +-----------------------+
-              v
-              |
-              v
-   +-----------------------+
-   | $ [screen detached]   |
-   | $ tmux attach         |
-   |                       |     /------------\
-   |                       | --> | attaching  |
-   |                       |     \------------/
-   |                       |            |
-   |                       |            |
-   +-----------------------+            |
-                                        |
-            /---------------------------/
-            |
-            v
-   +--------+--------+
-   | $ bash | $ bash |
-   |        |        |
-   |        |        |
-   +--------+--------+
-   | $ vim  | $ bash |
-   |        |        |
-   |        |        |
-   +--------+--------+
-```
+flowchart TD
+    running["session running"] -->|"detach · Prefix d"| detached["screen detached — apps keep running"]
+    detached -->|"tmux attach"| running
+:::
 
 ### Manage workflow
 

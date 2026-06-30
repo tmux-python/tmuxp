@@ -1,50 +1,54 @@
 # Releasing
 
-## Release Process
+## Release process
 
-Releases are triggered by git tags and published to PyPI via OIDC trusted publishing.
+You release tmuxp by tagging a version: pushing a `v<version>` tag triggers a CI
+workflow that builds the package and publishes it to PyPI via OIDC trusted
+publishing.
 
-1. Update `CHANGES` with the release notes
-
-2. Bump version in `src/tmuxp/__about__.py`
-
-3. Commit:
+1. Update `CHANGES` with the release notes.
+2. Bump the version in `src/tmuxp/__about__.py`.
+3. Commit the bump:
 
    ```console
-   $ git commit -m "tmuxp <version>"
+   $ git commit -m "Tag v<version>"
    ```
 
-4. Tag:
+4. Tag it:
 
    ```console
    $ git tag v<version>
    ```
 
-5. Push:
+5. Push the commit and the tag:
 
    ```console
    $ git push && git push --tags
    ```
 
-6. CI builds and publishes to PyPI automatically via trusted publishing
+6. CI builds and publishes to PyPI automatically.
 
-## Changelog Format
+## Changelog format
 
-The `CHANGES` file uses this format:
+`CHANGES` is rendered as the changelog page. Each release is a Markdown section
+headed by its version and date:
 
 ```text
-tmuxp <version> (<date>)
-------------------------
-
-### What's new
-
-- Description of feature (#issue)
-
-### Bug fixes
-
-- Description of fix (#issue)
+## tmuxp <version> (<date>)
 
 ### Breaking changes
 
-- Description of break, migration path (#issue)
+- Description of the break, with a migration path (#issue)
+
+### What's new
+
+- Description of the feature (#issue)
+
+### Fixes
+
+- Description of the fix (#issue)
 ```
+
+Subheadings appear in a fixed order when present: `### Breaking changes`,
+`### Dependencies`, `### What's new`, `### Fixes`, `### Documentation`,
+`### Development`.

@@ -2,10 +2,16 @@
 
 # Examples
 
+This is a gallery of working workspace files — each a small, complete YAML (with
+its JSON twin) you can copy, load, and adapt. They run from the simplest
+two-pane split up to a full development environment, and many preview the panes
+they build. Skim for the feature you need — inline shorthand, blank panes,
+environment variables, pane shells, focus, history, timed pauses — and lift the
+snippet.
+
 ## Short hand / inline style
 
-tmuxp has a short-hand syntax for those who wish to keep their workspace
-punctual.
+tmuxp has a short-hand syntax for those who like to keep a workspace concise.
 
 :::{tmux-layout}
 :size: 36x12
@@ -628,7 +634,7 @@ A successful script will exit with a status of `0`.
 
 Important: the script file must be chmod executable `+x` or `755`.
 
-Run a python script (and check for it's return code), the script is
+Run a python script (and check for its return code), the script is
 _relative to the `.tmuxp.yaml`'s root_ (Windows and panes omitted in
 this example):
 

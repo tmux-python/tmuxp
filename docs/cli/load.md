@@ -6,7 +6,10 @@
 
 # tmuxp load
 
-Load tmux sessions from workspace configuration files. This is the primary command for starting sessions from YAML or JSON configurations.
+Load a tmux session from a workspace file — this is the command you reach for
+most. Point it at a project directory or a YAML/JSON file and tmuxp builds the
+session and attaches you to it; the flags below are for the cases where you want
+something other than that default.
 
 ## Command
 
@@ -88,15 +91,25 @@ $ tmuxp load [filename]
 
 ## Inside sessions
 
-If you try to load a workspace file from within a tmux session, it will ask you
-if you want to load and attach to the new session, or just load detached.
-You can also load a workspace file and append the windows to the current active session.
+When you load a workspace from _inside_ an existing tmux client, tmuxp asks what
+you want rather than guessing — switch to the freshly built session, append its
+windows to the session you're in, or build it detached and stay put:
 
 ```
 Already inside TMUX, switch to session? yes/no
 Or (a)ppend windows in the current active session?
 [y/n/a]:
 ```
+
+:::{mermaid}
+:caption: Loading from inside an existing tmux client.
+
+flowchart TD
+    load["tmuxp load"]:::cmd --> q{"y / n / a ?"}
+    q -->|yes| switch["build the new session, switch the client to it"]
+    q -->|a| append["append its windows to the current session"]
+    q -->|no| detached["build it detached, stay where you are"]
+:::
 
 ## Options
 
