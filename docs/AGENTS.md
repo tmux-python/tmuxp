@@ -68,6 +68,25 @@ by shrinking audience, an honest trade-off on the prompt wait, and
 precise reference tables left precise. Read it before reshaping another
 page.
 
+## Diagrams and reference pages
+
+Two mechanical conventions, separate from voice:
+
+- **Mermaid diagrams** render to inline SVG at build time (see
+  `docs/_ext`). Tag any node whose label is a command, code identifier,
+  config key, or other symbol with `:::cmd` so it renders monospace —
+  the way that text reads as code inline; leave prose and concept nodes
+  unstyled. Prefer top-to-bottom (`flowchart TD`); wide left-to-right
+  charts don't scale on narrow viewports. `docs/configuration/workspace-builders.md`
+  is the reference.
+- **Internal API pages** document a module with an `{eval-rst}` block
+  wrapping `.. automodule:: <module>` (with `:members:`), the way the
+  existing `docs/internals/api/**` pages do. A bare `.. py:module::`
+  registers a cross-reference target but renders an empty page — reach
+  for it only to add a *package* target to an index page that already
+  carries its own content (grids, prose), where `automodule` would
+  duplicate members documented on the leaf pages.
+
 ## Before you commit
 
 - Does the page open with what the feature *is*, or with how to
@@ -78,3 +97,5 @@ page.
   concept instead?
 - Are the advanced and Python-only parts clearly marked opt-in?
 - Did you leave every table, error string, and cross-reference exact?
+- Are diagram command/symbol nodes tagged `:::cmd`, and is the chart
+  vertical unless it has a reason to be wide?
