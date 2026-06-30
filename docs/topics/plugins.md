@@ -42,19 +42,21 @@ nothing. The order is fixed:
 :caption: When each plugin hook fires during `tmuxp load`.
 
 flowchart TD
-    load["tmuxp load"] --> bwb["before_workspace_builder<br/>session created, no windows yet"]
-    bwb --> oc["on_window_create<br/>per window, before its panes"]
-    oc --> panes["panes and commands run"]
-    panes --> awf["after_window_finished<br/>per window, after its panes"]
+    load["tmuxp load"]:::cmd --> bwb["before_workspace_builder"]:::cmd
+    bwb --> oc["on_window_create"]:::cmd
+    oc --> panes["create panes, run commands"]
+    panes --> awf["after_window_finished"]:::cmd
     awf -->|more windows| oc
-    awf -->|all windows built| bs["before_script<br/>after the build completes"]
-    bs --> reattach["reattach<br/>only when re-attaching an existing session"]
+    awf -->|all windows built| bs["before_script"]:::cmd
+    bs --> reattach["reattach"]:::cmd
 :::
 
-Two of these names can mislead. `before_script` runs _after_ the session is
-built — it augments, rather than replaces, the workspace's own `before_script`.
-And `reattach` fires only on the path where tmuxp re-attaches you to a session
-that already exists.
+`before_workspace_builder` runs first, once the session exists but before any
+windows. `on_window_create` and `after_window_finished` bracket each window's
+panes. Two of the names can mislead: `before_script` runs _after_ the whole
+session is built — it augments, rather than replaces, the workspace's own
+`before_script` — and `reattach` fires only when tmuxp re-attaches you to a
+session that already exists.
 
 ## Developing a plugin
 

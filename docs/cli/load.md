@@ -105,7 +105,7 @@ Or (a)ppend windows in the current active session?
 :caption: Loading from inside an existing tmux client.
 
 flowchart TD
-    load["tmuxp load (inside tmux)"] --> q{"y / n / a ?"}
+    load["tmuxp load"]:::cmd --> q{"y / n / a ?"}
     q -->|yes| switch["build the new session, switch the client to it"]
     q -->|a| append["append its windows to the current session"]
     q -->|no| detached["build it detached, stay where you are"]

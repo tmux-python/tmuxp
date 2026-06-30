@@ -66,12 +66,12 @@ tmuxp will offer to assist when:
 :caption: A workspace file mirrors tmux's own hierarchy.
 
 flowchart TD
-    session["session_name"] --> w1["window"]
+    session["session_name"]:::cmd --> w1["window"]
     session --> w2["window"]
     w1 --> p1["pane"]
     w1 --> p2["pane"]
-    p1 --> c1["shell_command"]
-    p1 --> c2["shell_command"]
+    p1 --> c1["shell_command"]:::cmd
+    p1 --> c2["shell_command"]:::cmd
 :::
 
 ````{tab} Basics

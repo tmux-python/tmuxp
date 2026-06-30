@@ -9,14 +9,14 @@ through one or two workspace modules:
 
 flowchart LR
     cli["tmuxp CLI (argparse)"]
-    cli -->|load| loader["workspace.loader"]
-    loader --> builder["workspace.builder"]
-    builder --> libtmux["libtmux"]
-    cli -->|freeze| freezer["workspace.freezer"]
+    cli -->|load| loader["workspace.loader"]:::cmd
+    loader --> builder["workspace.builder"]:::cmd
+    builder --> libtmux["libtmux"]:::cmd
+    cli -->|freeze| freezer["workspace.freezer"]:::cmd
     freezer --> libtmux
-    cli -->|convert| reader["_internal.config_reader"]
+    cli -->|convert| reader["_internal.config_reader"]:::cmd
     cli -->|shell| interactive["libtmux (interactive)"]
-    cli -->|"ls / search"| finders["workspace.finders"]
+    cli -->|"ls / search"| finders["workspace.finders"]:::cmd
 :::
 
 ## Key Components

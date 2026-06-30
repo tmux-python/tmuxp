@@ -32,10 +32,10 @@ you like it, freeze it to capture the layout, then edit and replay it anywhere:
 :caption: Capture a session once, replay it anywhere.
 
 flowchart TD
-    arrange["arrange tmux by hand"] --> freeze["tmuxp freeze"]
-    freeze --> yaml["workspace.yaml"]
+    arrange["arrange tmux by hand"] --> freeze["tmuxp freeze"]:::cmd
+    freeze --> yaml["workspace.yaml"]:::cmd
     yaml --> edit["edit + commit"]
-    edit --> load["tmuxp load"]
+    edit --> load["tmuxp load"]:::cmd
     load --> arrange
 :::
 
