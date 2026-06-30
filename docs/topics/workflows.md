@@ -31,7 +31,7 @@ you like it, freeze it to capture the layout, then edit and replay it anywhere:
 :::{mermaid}
 :caption: Capture a session once, replay it anywhere.
 
-flowchart LR
+flowchart TD
     arrange["arrange tmux by hand"] --> freeze["tmuxp freeze"]
     freeze --> yaml["workspace.yaml"]
     yaml --> edit["edit + commit"]

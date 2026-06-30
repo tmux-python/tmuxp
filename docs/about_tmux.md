@@ -105,7 +105,7 @@ tmux supports as many terminals as you want.
 :::{mermaid}
 :caption: Switch between the windows in a session.
 
-flowchart LR
+flowchart TD
     w1["window 1 · sys (active)"] -->|"switch-window 2"| w2["window 2 · vim (active)"]
 :::
 
@@ -119,7 +119,7 @@ a sandwich, and re-(attach), all applications are still running!
 :::{mermaid}
 :caption: Detach, leave everything running, and reattach later.
 
-flowchart LR
+flowchart TD
     running["session running"] -->|"detach · Prefix d"| detached["screen detached — apps keep running"]
     detached -->|"tmux attach"| running
 :::
