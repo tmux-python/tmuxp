@@ -19,7 +19,7 @@ Ensure tmux is installed:
 $ tmux -V
 ```
 
-Minimum required version: tmux 3.2a.
+Minimum required version: tmux 3.2.
 
 ## Configuration errors
 
@@ -36,5 +36,4 @@ Use `tmuxp load -d` to load in detached mode alongside existing sessions.
 
 ## Shell completion not working
 
-See [Shell Completion](../cli/completion.md) for setup instructions
-for bash, zsh, and fish.
+See {ref}`completion` for setup instructions for bash, zsh, and tcsh.

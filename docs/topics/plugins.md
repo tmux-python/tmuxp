@@ -2,15 +2,17 @@
 
 # Plugins
 
-The plugin system allows users to customize and extend different aspects of
-tmuxp without the need to change tmuxp itself.
+Plugins let you customize and extend how tmuxp builds a session — renaming it,
+reacting when you reattach, running setup at specific moments — without forking
+tmuxp or hand-editing your workspace files. This is an advanced, opt-in feature:
+most users never write or install one, and a workspace loads exactly the same
+with no plugins at all. Reach for a plugin when you want behavior the workspace
+format can't express and you're comfortable writing a little Python.
 
-## Using a Plugin
+## Using a plugin
 
-To use a plugin, install it in your local python environment and add it to
-your tmuxp workspace file.
-
-### Example Workspace files
+Install the plugin into the same Python environment as tmuxp, then name it in
+your workspace file under `plugins`:
 
 ````{tab} YAML
 
@@ -30,42 +32,61 @@ your tmuxp workspace file.
 
 ````
 
-## Developing a Plugin
+## When your hooks fire
 
-tmuxp expects all plugins to be a class within a python submodule named
-`plugin` that is within a python module that is installed in the local
-python environment. A plugin interface is provided by tmuxp to inherit.
+A plugin is a class whose methods tmuxp calls at set points while it builds and
+attaches the session. You override only the hooks you care about; the rest do
+nothing. The order is fixed:
 
-[uv] is the chosen python package manager for tmuxp. It is highly
-suggested to use it when developing plugins; however, `pip` will work
-just as well. Only one of the configuration files is needed for the packaging
-tool that the package developer decides to use.
+:::{mermaid}
+:caption: When each plugin hook fires during `tmuxp load`.
+
+flowchart TD
+    load["tmuxp load"] --> bwb["before_workspace_builder<br/>session created, no windows yet"]
+    bwb --> oc["on_window_create<br/>per window, before its panes"]
+    oc --> panes["panes and commands run"]
+    panes --> awf["after_window_finished<br/>per window, after its panes"]
+    awf -->|more windows| oc
+    awf -->|all windows built| bs["before_script<br/>after the build completes"]
+    bs --> reattach["reattach<br/>only when re-attaching an existing session"]
+:::
+
+Two of these names can mislead. `before_script` runs _after_ the session is
+built — it augments, rather than replaces, the workspace's own `before_script`.
+And `reattach` fires only on the path where tmuxp re-attaches you to a session
+that already exists.
+
+## Developing a plugin
+
+tmuxp expects a plugin to be a class in a Python submodule named `plugin`, inside
+a module installed in the same environment as tmuxp. You inherit from the
+interface tmuxp provides, {class}`~tmuxp.plugin.TmuxpPlugin`.
+
+[uv] is tmuxp's package manager of choice, and what these examples use; `pip`
+works just as well. You need only one project file, for whichever packaging tool
+you choose.
 
 ```console
-
 python_module
 ├── tmuxp_plugin_my_plugin_module
-│   ├── __init__.py
-│   └── plugin.py
+│   ├── __init__.py
+│   └── plugin.py
 └── pyproject.toml  # Python project configuration file
-
 ```
 
-When publishing plugins to pypi, tmuxp advocates for standardized naming:
-`tmuxp-plugin-{your-plugin-name}` to allow for easier searching. To create a
-module configuration file with uv, run `uv virtualenv` in the module
-directory. The resulting file looks something like this:
+When publishing to PyPI, tmuxp suggests the naming convention
+`tmuxp-plugin-{your-plugin-name}` so others can find it. A minimal
+`pyproject.toml` looks like this:
 
 ```toml
-
 [project]
 name = "tmuxp-plugin-my-tmuxp-plugin"
 version = "0.0.2"
 description = "An example tmuxp plugin."
-authors = ["Author Name <author.name@<domain>.com>"]
-requires-python = ">=3.8,<4.0"
+authors = [{ name = "Author Name", email = "author.name@example.com" }]
+requires-python = ">=3.10"
 dependencies = [
-  "tmuxp^=1.7.0"
+  "tmuxp>=1.7.0",
 ]
 
 [build-system]
@@ -73,28 +94,27 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 ```
 
-The `plugin.py` file could contain something like the following:
+The `plugin.py` file holds the class:
 
 ```python
+import datetime
 
 from tmuxp.plugin import TmuxpPlugin
-import datetime
+
 
 class MyTmuxpPlugin(TmuxpPlugin):
     def __init__(self):
-        """
-        Initialize my custom plugin.
-        """
-        # Optional version dependency configuration. See Plugin API docs
-        # for all supported config parameters
+        """Initialize my custom plugin."""
+        # Optional version-dependency configuration. See the Plugin API
+        # docs for every supported parameter.
         config = {
-            'tmuxp_min_version' = '1.6.2'
+            'tmuxp_min_version': '1.6.2',
         }
 
         TmuxpPlugin.__init__(
             self,
             plugin_name='tmuxp-plugin-my-tmuxp-plugin',
-            **config
+            **config,
         )
 
     def before_workspace_builder(self, session):
@@ -103,17 +123,15 @@ class MyTmuxpPlugin(TmuxpPlugin):
     def reattach(self, session):
         now = datetime.datetime.now().strftime('%Y-%m-%d')
         session.rename_session('session_{}'.format(now))
-
 ```
 
-Once this plugin is installed in the local python environment, it can be used
-in a configuration file like the following:
+Once it's installed in the same environment, name it in a workspace file:
 
 ```yaml
 session_name: plugin example
 plugins:
   - my_plugin_module.plugin.MyTmuxpPlugin
-# ... the rest of your config
+# ... the rest of your workspace
 ```
 
 ## Plugin API

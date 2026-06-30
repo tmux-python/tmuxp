@@ -15,6 +15,9 @@ Use `tmuxp` when:
 $ tmuxp load my-workspace.yaml
 ```
 
+New to the format? Start with {ref}`quickstart`, then browse ready-to-load files
+in {ref}`examples`.
+
 ## When to Use libtmux
 
 Use [libtmux](https://libtmux.git-pull.com/) directly when:

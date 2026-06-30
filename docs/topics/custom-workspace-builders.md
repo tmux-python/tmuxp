@@ -5,8 +5,8 @@
 A *workspace builder* turns an expanded workspace ``dict`` into a live tmux
 session. tmuxp ships one builder,
 {class}`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`, and uses it
-by default. Advanced users can point tmuxp at a different builder, and packagers
-can distribute builders that users select by name.
+by default. You can point tmuxp at a different builder, and packagers can
+distribute builders that you select by name.
 
 This is an advanced, opt-in feature. Existing workspace files keep using the
 classic builder with no changes.
