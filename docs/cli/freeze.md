@@ -38,7 +38,7 @@ $ tmuxp freeze --force [session_name]
 
 ## Output format
 
-Tmuxp will offer to save your session state to `.json` or `.yaml`.
+tmuxp will offer to save your session state to `.json` or `.yaml`.
 
 If no session is specified, it will default to the attached session.
 

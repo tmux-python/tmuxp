@@ -6,6 +6,11 @@
 
 # Completions
 
+Shell completion teaches your shell to finish `tmuxp` subcommands and flags when
+you press Tab. It's optional, and how you set it up depends on your tmuxp
+version — 1.17 and newer use shtab, while 1.1 through 1.16 used click. Pick the
+section that matches yours.
+
 ## tmuxp 1.17+ (experimental)
 
 ```{note}
