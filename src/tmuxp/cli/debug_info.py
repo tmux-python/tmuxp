@@ -155,7 +155,7 @@ def _format_human_output(data: dict[str, t.Any], colors: Colors) -> str:
     ----------
     data : dict[str, Any]
         Debug information dictionary.
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager for formatting.
 
     Returns

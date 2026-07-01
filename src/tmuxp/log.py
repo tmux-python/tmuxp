@@ -67,7 +67,7 @@ def setup_logger(
 
     Parameters
     ----------
-    logger : :py:class:`Logger`
+    logger : :class:`logging.Logger`
         logger instance for tmuxp
     """
     if not logger:  # if no logger exists, make one
@@ -113,8 +113,8 @@ class LogFormatter(logging.Formatter):
 
         Parameters
         ----------
-        record : :py:class:`logging.LogRecord`
-            Object passed from :py:meth:`logging.Formatter.format`.
+        record : :class:`logging.LogRecord`
+            Object passed from :meth:`logging.Formatter.format`.
 
         Returns
         -------
@@ -183,8 +183,8 @@ def debug_log_template(
 
     Parameters
     ----------
-    record : :py:class:`logging.LogRecord`
-        Object passed from :py:meth:`logging.Formatter.format`.
+    record : :class:`logging.LogRecord`
+        Object passed from :meth:`logging.Formatter.format`.
 
     Returns
     -------

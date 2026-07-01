@@ -129,8 +129,9 @@ def load_plugins(
     ----------
     session_config : dict
         Session configuration dictionary.
-    colors : Colors | None
-        Colors instance for output formatting. If None, uses AUTO mode.
+    colors : :class:`~tmuxp._internal.colors.Colors` | None
+        Colors instance for output formatting. If None, uses
+        :attr:`~tmuxp._internal.colors.ColorMode.AUTO`.
 
     Returns
     -------
@@ -207,7 +208,7 @@ def _reattach(builder: WorkspaceBuilderProtocol, colors: Colors | None = None) -
     Parameters
     ----------
     builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
-    colors : Colors | None
+    colors : :class:`~tmuxp._internal.colors.Colors` | None
         Optional Colors instance for styled output.
 
     Notes
@@ -280,7 +281,7 @@ def _load_detached(
     Parameters
     ----------
     builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
-    colors : Colors | None
+    colors : :class:`~tmuxp._internal.colors.Colors` | None
         Optional Colors instance for styled output.
     pre_output_hook : Callable | None
         Called after build but before printing, e.g. to stop a spinner.
@@ -352,7 +353,7 @@ def _dispatch_build(
         Append windows to the current session.
     answer_yes : bool
         Skip interactive prompts.
-    cli_colors : Colors
+    cli_colors : :class:`~tmuxp._internal.colors.Colors`
         Colors instance for styled output.
     pre_attach_hook : callable, optional
         Called before attach/switch_client (e.g. stop spinner).
@@ -480,8 +481,9 @@ def load_workspace(
     append : bool
        Assume current when given prompt to append windows in same session.
        Default False.
-    cli_colors : Colors, optional
-        Colors instance for CLI output formatting. If None, uses AUTO mode.
+    cli_colors : :class:`~tmuxp._internal.colors.Colors`, optional
+        Colors instance for CLI output formatting. If None, uses
+        :attr:`~tmuxp._internal.colors.ColorMode.AUTO`.
     progress_format : str, optional
         Spinner format preset name or custom format string with tokens.
     panel_lines : int, optional
@@ -494,17 +496,18 @@ def load_workspace(
 
     Notes
     -----
-    tmuxp will check and load a workspace file. The file will use ConfigReader
-    to load a JSON/YAML into a :py:obj:`dict`. Then :func:`loader.expand` and
-    :func:`loader.trickle` will be used to expand any shorthands, template
-    variables, or file paths relative to where the config/script is executed
-    from.
+    tmuxp will check and load a workspace file. The file will use
+    :class:`~tmuxp._internal.config_reader.ConfigReader` to load a JSON/YAML
+    into a :class:`dict`. Then :func:`~tmuxp.workspace.loader.expand` and
+    :func:`~tmuxp.workspace.loader.trickle` will be used to expand any
+    shorthands, template variables, or file paths relative to where the
+    config/script is executed from.
 
-    :func:`loader.expand` accepts the directory of the config file, so the
-    user's workspace can resolve absolute paths relative to where the
-    workspace file is. In otherwords, if a workspace file at */var/moo/hi.yaml*
-    has *./* in its workspaces, we want to be sure any file path with *./* is
-    relative to */var/moo*, not the user's PWD.
+    :func:`~tmuxp.workspace.loader.expand` accepts the directory of the config
+    file, so the user's workspace can resolve absolute paths relative to where
+    the workspace file is. In otherwords, if a workspace file at
+    */var/moo/hi.yaml* has *./* in its workspaces, we want to be sure any file
+    path with *./* is relative to */var/moo*, not the user's PWD.
 
     A :class:`libtmux.Server` object is created. No tmux server is started yet,
     just the object.

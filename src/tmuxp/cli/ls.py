@@ -262,7 +262,7 @@ def _render_config_tree(config: dict[str, t.Any], colors: Colors) -> list[str]:
     ----------
     config : dict[str, Any]
         Parsed config content.
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager.
 
     Returns
@@ -347,7 +347,7 @@ def _render_global_workspace_dirs(
     ----------
     formatter : OutputFormatter
         Output formatter.
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager.
     global_dir_candidates : list[dict[str, Any]]
         List of global workspace directory candidates with metadata.
@@ -414,7 +414,7 @@ def _output_flat(
         Workspaces to display.
     formatter : OutputFormatter
         Output formatter.
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager.
     full : bool
         If True, show full config details in tree format. Default False.
@@ -495,7 +495,7 @@ def _output_tree(
         Workspaces to display.
     formatter : OutputFormatter
         Output formatter.
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager.
     full : bool
         If True, show full config details in tree format. Default False.

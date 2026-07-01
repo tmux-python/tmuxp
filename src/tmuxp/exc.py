@@ -221,8 +221,8 @@ class BeforeLoadScriptNotExists(OSError):
 class BeforeLoadScriptError(Exception):
     """Shell script execution error.
 
-    Replaces :py:class:`subprocess.CalledProcessError` for
-    :meth:`tmuxp.util.run_before_script`.
+    Replaces :class:`subprocess.CalledProcessError` for
+    :func:`tmuxp.util.run_before_script`.
     """
 
     def __init__(

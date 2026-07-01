@@ -72,8 +72,9 @@ def expand(
 ) -> dict[str, t.Any]:
     """Resolve workspace variables and expand shorthand style / inline properties.
 
-    This is necessary to keep the code in the :class:`WorkspaceBuilder` clean
-    and also allow for neat, short-hand "sugarified" syntax.
+    This is necessary to keep the code in
+    :class:`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder` clean and
+    also allow for neat, short-hand "sugarified" syntax.
 
     As a simple example, internally, tmuxp expects that workspace options
     like ``shell_command`` are a list (array)::

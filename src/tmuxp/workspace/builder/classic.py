@@ -1,4 +1,4 @@
-"""Create a tmux workspace from a workspace :py:obj:`dict`."""
+"""Create a tmux workspace from a workspace :class:`dict`."""
 
 from __future__ import annotations
 
@@ -108,7 +108,7 @@ def get_default_rows() -> int:
 
 
 class ClassicWorkspaceBuilder:
-    """Load workspace from workspace :py:obj:`dict` object.
+    """Load workspace from workspace :class:`dict` object.
 
     Build tmux workspace from a configuration. Creates and names windows, sets options,
     splits windows into panes.
@@ -336,7 +336,7 @@ class ClassicWorkspaceBuilder:
         Parameters
         ----------
         session_config : dict
-            session config, includes a :py:obj:`list` of ``windows``.
+            session config, includes a :class:`list` of ``windows``.
 
         plugins : list
             plugins to be used for this session

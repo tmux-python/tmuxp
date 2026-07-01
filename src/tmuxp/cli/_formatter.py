@@ -269,11 +269,11 @@ class HelpTheme(t.NamedTuple):
 
     @classmethod
     def from_colors(cls, colors: t.Any) -> HelpTheme:
-        """Create theme from Colors instance.
+        """Create theme from a :class:`~tmuxp._internal.colors.Colors` instance.
 
         Parameters
         ----------
-        colors : Colors | None
+        colors : :class:`~tmuxp._internal.colors.Colors` | None
             Colors instance, or None for no colors.
 
         Returns
@@ -328,8 +328,9 @@ def create_themed_formatter(
 
     Parameters
     ----------
-    colors : Colors | None
-        Colors instance for styling. If None, uses ColorMode.AUTO.
+    colors : :class:`~tmuxp._internal.colors.Colors` | None
+        Colors instance for styling. If None, uses
+        :attr:`~tmuxp._internal.colors.ColorMode.AUTO`.
 
     Returns
     -------

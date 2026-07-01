@@ -61,8 +61,17 @@ def prompt(
 
     See Also
     --------
-    :meth:`~prompt`, :meth:`~prompt_bool` and :meth:`~prompt_choices` are from
-    `flask-script <https://github.com/techniq/flask-script>`_. See the
+    prompt_bool
+        Prompt for a boolean response.
+    prompt_choices
+        Prompt for a value from a fixed choice list.
+    prompt_yes_no
+        Prompt for a yes/no response.
+
+    Notes
+    -----
+    The prompt helpers are adapted from
+    `flask-script <https://github.com/techniq/flask-script>`_; see the
     `flask-script license <https://github.com/techniq/flask-script/blob/master/LICENSE>`_.
     """
     colors = Colors(color_mode if color_mode is not None else ColorMode.AUTO)

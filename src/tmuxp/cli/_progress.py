@@ -17,7 +17,7 @@ import threading
 import time
 import typing as t
 
-from ._colors import ANSI_SEQ_RE, ColorMode, Colors, strip_ansi
+from tmuxp._internal.colors import ANSI_SEQ_RE, ColorMode, Colors, strip_ansi
 
 logger = logging.getLogger(__name__)
 
@@ -490,7 +490,7 @@ class BuildTree:
 
         Parameters
         ----------
-        colors : Colors
+        colors : :class:`~tmuxp._internal.colors.Colors`
             Colors instance for ANSI styling.
         width : int
             Terminal width; window lines are truncated to ``width - 1``.
@@ -731,7 +731,7 @@ class Spinner:
         ----------
         message : str
             Text displayed next to the spinner animation.
-        color_mode : ColorMode
+        color_mode : :class:`~tmuxp._internal.colors.ColorMode`
             ANSI color mode for styled output.
         stream : t.TextIO
             Output stream (default ``sys.stderr``).

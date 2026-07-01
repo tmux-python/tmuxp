@@ -875,7 +875,7 @@ def highlight_matches(
         Text to search and highlight.
     patterns : list[SearchPattern]
         Compiled search patterns (uses their regex attribute).
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager for highlighting.
 
     Returns
@@ -959,7 +959,7 @@ def _output_search_results(
         Patterns used for highlighting.
     formatter : OutputFormatter
         Output formatter for JSON/NDJSON/human modes.
-    colors : Colors
+    colors : :class:`~tmuxp._internal.colors.Colors`
         Color manager.
     """
     if not results:

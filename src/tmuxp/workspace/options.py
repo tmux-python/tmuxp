@@ -34,7 +34,8 @@ class PaneReadiness(enum.Enum):
     tmuxp waits for each default-shell pane to draw its prompt before
     dispatching layout and commands, which avoids a zsh prompt-redraw artifact
     (see :func:`tmuxp.workspace.builder.classic._wait_for_pane_ready`). The wait
-    is only needed for zsh, so the default :attr:`AUTO` policy waits only when
+    is only needed for zsh, so the default
+    :attr:`~tmuxp.workspace.options.PaneReadiness.AUTO` policy waits only when
     the session's interactive shell is zsh.
     """
 
@@ -53,7 +54,8 @@ class PaneReadiness(enum.Enum):
         ----------
         value : Any
             value from ``workspace_builder_options.pane_readiness``; ``None``
-            (key absent) resolves to :attr:`AUTO`
+            (key absent) resolves to
+            :attr:`~tmuxp.workspace.options.PaneReadiness.AUTO`
 
         Returns
         -------
