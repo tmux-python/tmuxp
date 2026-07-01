@@ -75,9 +75,9 @@ Note `''` counts as an empty carriage return.
 :size: 30x10
 :layout: even-vertical
 
-pwd
+echo hello
 ---
-pwd
+echo hello
 :::
 
 ````{tab} YAML
@@ -104,11 +104,12 @@ pwd
 :size: 30x12
 :layout: main-horizontal
 
-pwd
+cd /var/log
+ls -al | grep \.log
 ---
-pwd
+echo hello
 ---
-pwd
+echo hello
 :::
 
 ````{tab} YAML
@@ -135,13 +136,14 @@ pwd
 :size: 30x12
 :layout: tiled
 
-pwd
+cd /var/log
+ls -al | grep \.log
 ---
-pwd
+echo hello
 ---
-pwd
+echo hello
 ---
-pwd
+echo hello
 :::
 
 ````{tab} YAML
