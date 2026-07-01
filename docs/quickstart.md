@@ -57,7 +57,7 @@ $ brew install tmuxp
 
 ### Developmental releases
 
-New versions of tmuxp are published to PyPI as alpha, beta, or release
+New versions of tmuxp are published to [PyPI] as alpha, beta, or release
 candidates. Their version carries an `a1`, `b1`, or `rc1` suffix — `1.10.0b4` is
 the fourth beta of `1.10.0`, before general availability.
 
@@ -101,6 +101,7 @@ $ pipx install --suffix=@master 'tmuxp @ git+https://github.com/tmux-python/tmux
 
 [pip]: https://pip.pypa.io/en/stable/
 [pipx]: https://pypa.github.io/pipx/docs/
+[PyPI]: https://pypi.org/project/tmuxp/
 [uv]: https://docs.astral.sh/uv/getting-started/features/#python-versions
 [uvx]: https://docs.astral.sh/uv/guides/tools/
 

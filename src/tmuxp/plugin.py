@@ -275,8 +275,9 @@ class TmuxpPlugin:
         is currently being used for the workspace, it would be cleaner to
         continue using the script in the ``before_section``.
 
-        If changes to the session need to be made prior to
-        anything being built, please use ``before_workspace_builder`` instead.
+        If changes to the session need to be made prior to anything being
+        built, please use
+        :meth:`~tmuxp.plugin.TmuxpPlugin.before_workspace_builder` instead.
 
         Parameters
         ----------

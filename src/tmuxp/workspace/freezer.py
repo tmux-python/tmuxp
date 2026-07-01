@@ -14,7 +14,9 @@ if t.TYPE_CHECKING:
 
 
 def inline(workspace_dict: dict[str, t.Any]) -> t.Any:
-    """Return workspace with inlined shorthands. Opposite of :meth:`loader.expand`.
+    """Return workspace with inlined shorthands.
+
+    Opposite of :func:`~tmuxp.workspace.loader.expand`.
 
     Parameters
     ----------

@@ -51,12 +51,15 @@ flowchart TD
     bs --> reattach["reattach"]:::cmd
 :::
 
-`before_workspace_builder` runs first, once the session exists but before any
-windows. `on_window_create` and `after_window_finished` bracket each window's
-panes. Two of the names can mislead: `before_script` runs _after_ the whole
-session is built — it augments, rather than replaces, the workspace's own
-`before_script` — and `reattach` fires only when tmuxp re-attaches you to a
-session that already exists.
+{meth}`~tmuxp.plugin.TmuxpPlugin.before_workspace_builder` runs first, once
+the session exists but before any windows.
+{meth}`~tmuxp.plugin.TmuxpPlugin.on_window_create` and
+{meth}`~tmuxp.plugin.TmuxpPlugin.after_window_finished` bracket each window's
+panes. Two of the names can mislead:
+{meth}`~tmuxp.plugin.TmuxpPlugin.before_script` runs _after_ the whole session
+is built — it augments, rather than replaces, the workspace's own
+`before_script` — and {meth}`~tmuxp.plugin.TmuxpPlugin.reattach` fires only
+when tmuxp re-attaches you to a session that already exists.
 
 ## Developing a plugin
 
@@ -76,7 +79,7 @@ python_module
 └── pyproject.toml  # Python project configuration file
 ```
 
-When publishing to PyPI, tmuxp suggests the naming convention
+When publishing to [PyPI], tmuxp suggests the naming convention
 `tmuxp-plugin-{your-plugin-name}` so others can find it. A minimal
 `pyproject.toml` looks like this:
 
@@ -163,3 +166,4 @@ plugins:
 ```
 
 [uv]: https://github.com/astral-sh/uv
+[PyPI]: https://pypi.org/

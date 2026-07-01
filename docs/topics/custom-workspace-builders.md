@@ -24,7 +24,8 @@ If you only want to set these keys in a workspace file, see
    {ref}`workspace_builder <workspace-builder-key>` config key (default: the
    classic builder).
 3. tmuxp constructs the builder with the expanded workspace and a
-   {class}`libtmux.Server`, then calls `.build()`.
+   {class}`libtmux.Server`, then calls
+   {meth}`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol.build`.
 4. The builder creates the session, windows, and panes, honoring plugin hooks
    and progress callbacks.
 
@@ -109,13 +110,19 @@ covers what `tmuxp load` drives:
 - **Constructor** accepting `session_config`, `server`, and the optional
   `plugins` list and `on_progress` / `on_before_script` / `on_script_output` /
   `on_build_event` callbacks.
-- **`build(session=None, append=False)`** — create or populate the session; the
-  `append` path adds windows to an existing session.
-- **`session`** — the populated {class}`libtmux.Session`.
-- **`session_exists()`** and **`find_current_attached_session()`** — used by the
-  CLI for attach/append decisions.
+- **{meth}`build(session=None, append=False) <tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol.build>`**
+  — create or populate the session; the `append` path adds windows to an
+  existing session.
+- **{attr}`session <tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol.session>`**
+  — the populated {class}`libtmux.Session`.
+- **{meth}`session_exists() <tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol.session_exists>`**
+  and
+  **{meth}`find_current_attached_session() <tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol.find_current_attached_session>`**
+  — used by the CLI for attach/append decisions.
 - **`plugins`** — the list of plugin instances; honor the plugin lifecycle hooks
-  (`before_workspace_builder`, `on_window_create`, `after_window_finished`).
+  ({meth}`~tmuxp.plugin.TmuxpPlugin.before_workspace_builder`,
+  {meth}`~tmuxp.plugin.TmuxpPlugin.on_window_create`,
+  {meth}`~tmuxp.plugin.TmuxpPlugin.after_window_finished`).
 - The **`on_*` callbacks** — call them at the documented milestones so the CLI's
   progress display and `before_script` output stay accurate.
 

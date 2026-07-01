@@ -7,10 +7,12 @@
 
 A *workspace builder* is the part of tmuxp that turns a workspace configuration into a
 live tmux session — it creates the session, lays out its windows and panes, and runs
-their commands. You usually never have to think about it: tmuxp ships with a built-in
-*classic* builder, and your YAML or JSON workspace files load through it out of the
-box, just as they always have. **Everything on this page is optional; leave a setting
-out to fall back to the default.**
+their commands. You usually never have to think about it: tmuxp ships with the
+built-in
+{class}`classic builder <tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder>`,
+and your YAML or JSON workspace files load through it out of the box, just as
+they always have. **Everything on this page is optional; leave a setting out to
+fall back to the default.**
 
 :::{mermaid}
 :caption: How a workspace file becomes a live tmux session.
@@ -31,9 +33,11 @@ before sending its layout and commands — by default only when that shell is zs
 `pane_readiness` option). Waiting makes a session a little slower to load, but
 guarantees the workspace is fully prepped before you attach.
 
-You can also send a workspace through a different or custom builder instead of the
-classic one, and tune its options the same way. For the braver cases, you can subclass
-the classic builder or write your own in Python on top of
+You can also send a workspace through a different or custom builder instead of
+the classic one, and tune its options the same way. For the braver cases, you
+can subclass the
+{class}`classic builder <tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder>`
+or write your own in Python on top of
 [libtmux](https://libtmux.git-pull.com/) — see
 {ref}`custom-workspace-builders` for writing, packaging, testing, and the trust
 boundary that comes with running builder code.

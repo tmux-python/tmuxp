@@ -3,8 +3,8 @@
 ## Release process
 
 You release tmuxp by tagging a version: pushing a `v<version>` tag triggers a CI
-workflow that builds the package and publishes it to PyPI via OIDC trusted
-publishing.
+workflow that builds the package and publishes it to [PyPI] via
+[OIDC trusted publishing].
 
 1. Update `CHANGES` with the release notes.
 2. Bump the version in `src/tmuxp/__about__.py`.
@@ -26,7 +26,7 @@ publishing.
    $ git push && git push --tags
    ```
 
-6. CI builds and publishes to PyPI automatically.
+6. CI builds and publishes to [PyPI] automatically.
 
 ## Changelog format
 
@@ -52,3 +52,6 @@ headed by its version and date:
 Subheadings appear in a fixed order when present: `### Breaking changes`,
 `### Dependencies`, `### What's new`, `### Fixes`, `### Documentation`,
 `### Development`.
+
+[PyPI]: https://pypi.org/project/tmuxp/
+[OIDC trusted publishing]: https://docs.pypi.org/trusted-publishers/

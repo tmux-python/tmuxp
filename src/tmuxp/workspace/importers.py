@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
-    """Return tmuxp workspace from a `tmuxinator`_ yaml workspace.
+    """Return tmuxp workspace from a `tmuxinator`__ YAML workspace.
 
-    .. _tmuxinator: https://github.com/aziz/tmuxinator
+    __ https://github.com/aziz/tmuxinator
 
     Parameters
     ----------
@@ -114,9 +114,9 @@ def import_tmuxinator(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
 
 
 def import_teamocil(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
-    """Return tmuxp workspace from a `teamocil`_ yaml workspace.
+    """Return tmuxp workspace from a `teamocil`__ YAML workspace.
 
-    .. _teamocil: https://github.com/remiprev/teamocil
+    __ https://github.com/remiprev/teamocil
 
     Parameters
     ----------

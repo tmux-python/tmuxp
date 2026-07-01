@@ -206,7 +206,7 @@ def _reattach(builder: WorkspaceBuilderProtocol, colors: Colors | None = None) -
 
     Parameters
     ----------
-    builder: :class:`workspace.builder.WorkspaceBuilder`
+    builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
     colors : Colors | None
         Optional Colors instance for styled output.
 
@@ -246,7 +246,7 @@ def _load_attached(
 
     Parameters
     ----------
-    builder: :class:`workspace.builder.WorkspaceBuilder`
+    builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
     detached : bool
     pre_attach_hook : callable, optional
         called after build, before attach/switch_client; use to stop the spinner
@@ -279,7 +279,7 @@ def _load_detached(
 
     Parameters
     ----------
-    builder: :class:`workspace.builder.WorkspaceBuilder`
+    builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
     colors : Colors | None
         Optional Colors instance for styled output.
     pre_output_hook : Callable | None
@@ -305,7 +305,7 @@ def _load_append_windows_to_current_session(
 
     Parameters
     ----------
-    builder: :class:`workspace.builder.WorkspaceBuilder`
+    builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
     """
     current_attached_session = builder.find_current_attached_session()
     builder.build(current_attached_session, append=True)
@@ -317,7 +317,7 @@ def _setup_plugins(builder: WorkspaceBuilderProtocol) -> Session:
 
     Parameters
     ----------
-    builder: :class:`workspace.builder.WorkspaceBuilder`
+    builder: :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`
     """
     assert builder.session is not None
     for plugin in builder.plugins:
@@ -510,7 +510,7 @@ def load_workspace(
     just the object.
 
     The prepared workspace and its server object is passed into an instance
-    of :class:`~tmuxp.workspace.builder.WorkspaceBuilder`.
+    of :class:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol`.
 
     A sanity check against :meth:`libtmux.common.which` is ran. It will raise
     an exception if tmux isn't found.
@@ -520,8 +520,9 @@ def load_workspace(
     does not allow appending a workspace / incremental building on top of a
     current session (pull requests are welcome!).
 
-    :meth:`~tmuxp.workspace.builder.build` will build the session in
-    the background via using tmux's detached state (``-d``).
+    :meth:`~tmuxp.workspace.builder.protocol.WorkspaceBuilderProtocol.build`
+    will build the session in the background via using tmux's detached state
+    (``-d``).
 
     After the session (workspace) is built, unless the user decided to load
     the session in the background via ``tmuxp -d`` (which is in the spirit
