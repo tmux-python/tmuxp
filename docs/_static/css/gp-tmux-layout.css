@@ -8,9 +8,8 @@
  * wrapped in <g class="highlight">, so `.highlight .nb`, `.highlight .gp`
  * (the prompt), etc. apply, and SVG <text> takes its colour from `color` via
  * `fill: currentColor` — so the panes match the site's console blocks exactly,
- * font and colours, in both light and dark. The viewBox is in pixels (one tmux
- * cell = _CW x _CH), so at intrinsic size the text renders at the code font
- * size.
+ * colours in both light and dark. The SVG itself owns the command text size
+ * because compact tiled panes need predictable cell math.
  */
 
 .gp-tmux-layout-wrapper {
@@ -58,7 +57,7 @@ body[data-theme="dark"] .gp-tmux-layout .pane {
 
 .gp-tmux-layout text {
   font-family: var(--font-stack--monospace, "SFMono-Regular", Menlo, monospace);
-  font-size: var(--code-font-size, 0.8125rem);
+  font-size: 12px;
   /* Match the site's code blocks (pre): even monospace advance, no kerning. */
   font-kerning: none;
   text-rendering: optimizeSpeed;

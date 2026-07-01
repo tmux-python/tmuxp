@@ -175,6 +175,28 @@ def test_render_layout_structure() -> None:
     assert svg.endswith("</svg>")
 
 
+def test_render_layout_clips_compact_pane_text_without_rescaling() -> None:
+    """Compact panes clip long text instead of shrinking the whole command."""
+    svg = tl.render_layout(
+        [
+            ["cd /var/log", "ls -al | grep \\.log"],
+            ["echo hello"],
+            ["echo hello"],
+            ["echo hello"],
+        ],
+        "tiled",
+        (30, 12),
+    )
+    assert "<clipPath" in svg
+    assert 'clip-path="url(#tmux-layout-' in svg
+    assert "scale(" not in svg
+    assert 'transform="translate' not in svg
+    assert 'x="6" y="18"' in svg
+    assert ">ls<" in svg
+    assert ">grep<" in svg
+    assert "\\.</tspan>log" in svg
+
+
 def test_setup_registers_components() -> None:
     """``setup`` registers the node, directive, css, and is parallel-safe."""
     recorded: dict[str, list[t.Any]] = {"nodes": [], "directives": [], "css": []}

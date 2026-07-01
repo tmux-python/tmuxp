@@ -101,7 +101,7 @@ echo hello
 ## 3 panes
 
 :::{tmux-layout}
-:size: 30x12
+:size: 44x12
 :layout: main-horizontal
 
 cd /var/log
@@ -133,7 +133,7 @@ echo hello
 ## 4 panes
 
 :::{tmux-layout}
-:size: 30x12
+:size: 44x12
 :layout: tiled
 
 cd /var/log

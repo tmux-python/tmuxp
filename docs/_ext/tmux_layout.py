@@ -34,6 +34,7 @@ mermaid pipeline needs.
 from __future__ import annotations
 
 import html
+import itertools
 import typing as t
 
 from docutils import nodes
@@ -72,6 +73,7 @@ _LAYOUTS = (
     "tiled",
 )
 _LEXER = BashLexer()
+_SVG_IDS = itertools.count(1)
 
 
 class TmuxLayoutError(ValueError):
@@ -209,6 +211,15 @@ def _highlight(line: str) -> str:
     return "".join(spans)
 
 
+def _clip_id(prefix: str, index: int) -> str:
+    """Return a clip-path id for one pane in a rendered SVG.
+
+    >>> _clip_id("tmux-layout-1", 0)
+    'tmux-layout-1-clip-0'
+    """
+    return f"{prefix}-clip-{index}"
+
+
 def _parse_size(size: str) -> tuple[int, int]:
     """Parse a ``WxH`` screen size.
 
@@ -233,11 +244,25 @@ def render_layout(panes: list[list[str]], layout: str, size: tuple[int, int]) ->
     w, h = size
     rects = arrange(layout, len(panes), w, h)
     vb_w, vb_h = w * _CW, h * _CH
+    svg_id = f"tmux-layout-{next(_SVG_IDS)}"
     parts = [
         f'<svg class="gp-tmux-layout" viewBox="0 0 {vb_w:g} {vb_h:g}" '
         f'width="{vb_w:g}" height="{vb_h:g}" role="img" '
         'xmlns="http://www.w3.org/2000/svg">',
     ]
+    parts.append("<defs>")
+    for index, rect in enumerate(rects):
+        clip_x = rect.x * _CW + 1
+        clip_y = rect.y * _CH + 1
+        clip_w = max(rect.w * _CW - 2, 1.0)
+        clip_h = max(rect.h * _CH - 2, 1.0)
+        parts.append(
+            f'<clipPath id="{_clip_id(svg_id, index)}" '
+            'clipPathUnits="userSpaceOnUse">'
+            f'<rect x="{clip_x:g}" y="{clip_y:g}" '
+            f'width="{clip_w:g}" height="{clip_h:g}"/></clipPath>',
+        )
+    parts.append("</defs>")
     # Pane fills first; the window border and single dividers go on top so a
     # shared edge is one line, not two abutting pane strokes.
     parts.extend(
@@ -263,16 +288,18 @@ def render_layout(panes: list[list[str]], layout: str, size: tuple[int, int]) ->
     # Pygments colours come from furo's own `.highlight` rules (theme-matched,
     # light/dark) via `fill: currentColor`; a <g> ignores its background.
     parts.append('<g class="highlight">')
-    for rect, commands in zip(rects, panes, strict=True):
+    for index, (rect, commands) in enumerate(zip(rects, panes, strict=True)):
         tx = rect.x * _CW + _PAD
         baseline = rect.y * _CH + _PAD + _FONT
+        clip_path = _clip_id(svg_id, index)
         for i, line in enumerate(commands):
             body = _highlight(line)
             if not body:
                 continue
             ty = baseline + i * _LINE_H
             parts.append(
-                f'<text class="cmd" x="{tx:g}" y="{ty:g}" '
+                f'<text class="cmd" clip-path="url(#{clip_path})" '
+                f'x="{tx:g}" y="{ty:g}" '
                 f'xml:space="preserve">{_PROMPT}{body}</text>',
             )
     parts.append("</g></svg>")
