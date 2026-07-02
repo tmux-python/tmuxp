@@ -63,6 +63,7 @@ dev = [
   "gp-sphinx==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-argparse==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-api-style==0.0.1a31",
+  "sphinx-gp-mermaid",  # via [tool.uv.sources] git branch until released
   "gp-libs>=0.0.18",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
   # Testing
@@ -89,6 +90,7 @@ docs = [
   "gp-sphinx==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-argparse==0.0.1a31",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-api-style==0.0.1a31",
+  "sphinx-gp-mermaid",  # via [tool.uv.sources] git branch until released
   "gp-libs>=0.0.18",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
 ]
@@ -116,6 +118,11 @@ lint = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.uv.sources]
+# Unreleased package under extraction from docs/_ext; switch to a PyPI
+# pin once gp-sphinx cuts a release that includes it.
+sphinx-gp-mermaid = { git = "https://github.com/git-pull/gp-sphinx", branch = "mermaid", subdirectory = "packages/sphinx-gp-mermaid" }
+
 [tool.uv.exclude-newer-package]
 # git-pull packages release in lockstep with their workspaces, so a
 # fresh release blocking on the 3-day cooldown blocks every
@@ -135,6 +142,7 @@ sphinx-autodoc-pytest-fixtures = false
 sphinx-autodoc-sphinx = false
 sphinx-autodoc-typehints-gp = false
 sphinx-fonts = false
+sphinx-gp-mermaid = false
 sphinx-gp-opengraph = false
 sphinx-gp-llms = false
 sphinx-gp-sitemap = false
