@@ -34,12 +34,14 @@ conf = merge_sphinx_config(
     extra_extensions=[
         "sphinx_autodoc_api_style",
         "aafig",
-        "mermaid_inline",
+        "sphinx_gp_mermaid",
         "tmux_layout",
         "sphinx_autodoc_argparse.exemplar",
     ],
-    # Route a plain ```mermaid fence to the mermaid_inline directive (the colon
-    # and brace forms route there already via colon_fence).
+    # Route a plain ```mermaid fence to the mermaid directive (the colon and
+    # brace forms route there already via colon_fence). Redundant once the
+    # pinned gp-sphinx release auto-routes when sphinx_gp_mermaid is active;
+    # drop this on the next gp-sphinx bump.
     myst_fence_as_directive=["mermaid"],
     intersphinx_mapping={
         "python": ("https://docs.python.org/", None),
