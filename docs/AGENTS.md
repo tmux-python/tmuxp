@@ -87,9 +87,10 @@ page.
 
 Two mechanical conventions, separate from voice:
 
-- **Mermaid diagrams** render to inline SVG at build time (see
-  `docs/_ext`). Tag any node whose label is a command, code identifier,
-  config key, or other symbol with `:::cmd` so it renders monospace —
+- **Mermaid diagrams** render to inline SVG at build time (via the
+  `sphinx-gp-mermaid` package). Tag any node whose label is a command,
+  code identifier, config key, or other symbol with `:::cmd` so it
+  renders monospace —
   the way that text reads as code inline; leave prose and concept nodes
   unstyled. Prefer top-to-bottom (`flowchart TD`); wide left-to-right
   charts don't scale on narrow viewports. `docs/configuration/workspace-builders.md`

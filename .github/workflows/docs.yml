@@ -78,7 +78,7 @@ jobs:
           restore-keys: |
             puppeteer-${{ runner.os }}-
 
-      # Diagrams (docs/_ext/mermaid_inline.py) are rendered at build time by
+      # Diagrams (sphinx-gp-mermaid) are rendered at build time by
       # mmdc, which drives a headless Chrome. Without it the build still
       # succeeds but degrades diagrams to a text fallback, so provision both.
       - name: Install diagram toolchain (mermaid-cli + Chrome)
