@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+      # TEMPORARY [DO NOT MERGE]: deploy the sphinx-gp-mermaid migration
+      # branch so the packaged renderer can be verified on the live site
+      # (Cloudflare in front; local builds can't reproduce that).
+      - mermaid
 
 permissions:
   contents: read
@@ -35,7 +39,9 @@ jobs:
               - uv.lock
 
       - name: Should publish
-        if: steps.changes.outputs.docs == 'true' || steps.changes.outputs.root_docs == 'true' || steps.changes.outputs.python_files == 'true'
+        # TEMPORARY [DO NOT MERGE]: the ref_name clause forces a deploy from
+        # the mermaid branch even when the push only touches this workflow.
+        if: steps.changes.outputs.docs == 'true' || steps.changes.outputs.root_docs == 'true' || steps.changes.outputs.python_files == 'true' || github.ref_name == 'mermaid'
         run: echo "PUBLISH=$(echo true)" >> $GITHUB_ENV
 
       - name: Install uv
@@ -78,7 +84,7 @@ jobs:
           restore-keys: |
             puppeteer-${{ runner.os }}-
 
-      # Diagrams (docs/_ext/mermaid_inline.py) are rendered at build time by
+      # Diagrams (sphinx-gp-mermaid) are rendered at build time by
       # mmdc, which drives a headless Chrome. Without it the build still
       # succeeds but degrades diagrams to a text fallback, so provision both.
       - name: Install diagram toolchain (mermaid-cli + Chrome)
@@ -121,12 +127,15 @@ jobs:
           aws s3 sync docs/_build/html "s3://${{ secrets.TMUXP_DOCS_BUCKET }}" \
             --delete --follow-symlinks
 
+      # TEMPORARY [DO NOT MERGE]: invalidate everything — this branch swaps
+      # the diagram markup on every page carrying a mermaid fence, and the
+      # standard 4-path invalidation leaves those pages stale for a day.
       - name: Invalidate CloudFront
         if: env.PUBLISH == 'true'
         run: |
           aws cloudfront create-invalidation \
             --distribution-id "${{ secrets.TMUXP_DOCS_DISTRIBUTION }}" \
-            --paths "/index.html" "/history.html" "/objects.inv" "/searchindex.js"
+            --paths "/*"
 
       - name: Purge cache on Cloudflare
         if: env.PUBLISH == 'true'
