@@ -60,9 +60,10 @@ dev = [
   # Docs
   "aafigure",  # https://launchpad.net/aafigure
   "pillow",  # https://pillow.readthedocs.io/
-  "gp-sphinx==0.0.1a31",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-argparse==0.0.1a31",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-api-style==0.0.1a31",
+  "gp-sphinx==0.0.1a32",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-argparse==0.0.1a32",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-api-style==0.0.1a32",
+  "sphinx-gp-mermaid==0.0.1a32",  # https://gp-sphinx.git-pull.com/
   "gp-libs>=0.0.18",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
   # Testing
@@ -86,9 +87,10 @@ dev = [
 docs = [
   "aafigure",  # https://launchpad.net/aafigure
   "pillow",  # https://pillow.readthedocs.io/
-  "gp-sphinx==0.0.1a31",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-argparse==0.0.1a31",  # https://gp-sphinx.git-pull.com/
-  "sphinx-autodoc-api-style==0.0.1a31",
+  "gp-sphinx==0.0.1a32",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-argparse==0.0.1a32",  # https://gp-sphinx.git-pull.com/
+  "sphinx-autodoc-api-style==0.0.1a32",
+  "sphinx-gp-mermaid==0.0.1a32",  # https://gp-sphinx.git-pull.com/
   "gp-libs>=0.0.18",  # https://gp-libs.git-pull.com/
   "sphinx-autobuild",  # https://sphinx-extensions.readthedocs.io/en/latest/sphinx-autobuild.html
 ]
@@ -135,6 +137,7 @@ sphinx-autodoc-pytest-fixtures = false
 sphinx-autodoc-sphinx = false
 sphinx-autodoc-typehints-gp = false
 sphinx-fonts = false
+sphinx-gp-mermaid = false
 sphinx-gp-opengraph = false
 sphinx-gp-llms = false
 sphinx-gp-sitemap = false

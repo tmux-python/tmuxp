@@ -59,7 +59,7 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-# Mermaid diagram tooling (docs/_ext/mermaid_inline.py)
+# Mermaid diagram tooling (sphinx-gp-mermaid)
 docs/node_modules/
 docs/_mermaid_cache/
 
