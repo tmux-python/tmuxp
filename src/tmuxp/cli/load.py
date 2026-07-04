@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import contextlib
 import importlib
 import logging
@@ -118,6 +119,9 @@ class CLILoadNamespace(argparse.Namespace):
     panel_lines: int | None
     no_progress: bool
     engine_ops: bool
+    parallel: bool
+    dry_run: bool
+    no_fold: bool
 
 
 def load_plugins(
@@ -859,6 +863,37 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
             "that folds a session's commands into a few tmux dispatches."
         ),
     )
+    parser.add_argument(
+        "--parallel",
+        dest="parallel",
+        action="store_true",
+        default=False,
+        help=(
+            "Build every WORKSPACE_FILE as one engine-ops workspace set: all "
+            "sessions compile into a single rebased, folded plan. Implies "
+            "--engine-ops; incompatible with -a/--append and -s."
+        ),
+    )
+    parser.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=False,
+        help=(
+            "With --parallel, print the compiled tmux dispatch plan and exit "
+            "without touching the tmux server."
+        ),
+    )
+    parser.add_argument(
+        "--no-fold",
+        dest="no_fold",
+        action="store_true",
+        default=False,
+        help=(
+            "With --parallel, dispatch one tmux command per operation instead "
+            "of folding them into ;-chained batches (useful for debugging)."
+        ),
+    )
 
     try:
         import shtab
@@ -870,6 +905,139 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         pass
 
     return parser
+
+
+def _load_parallel(
+    args: CLILoadNamespace,
+    cli_colors: Colors,
+    parser: argparse.ArgumentParser | None = None,
+) -> None:
+    """Build every WORKSPACE_FILE as one engine-ops workspace set.
+
+    ``--parallel`` lowers all workspace files to libtmux's declarative
+    :class:`~libtmux.experimental.workspace.ir.Workspace` IR, groups them into a
+    single :class:`~libtmux.experimental.workspace.sets.WorkspaceSet`, and
+    ``abuild``s the whole set as one rebased, folded plan -- so N sessions
+    render in a few ``;``-chained tmux dispatches sharing one preflight, instead
+    of one detached ``load`` per file.
+
+    It implies the engine-ops backend. ``--append`` and ``-s`` describe
+    single-session semantics that don't compose with a multi-session set, so
+    they are rejected. Plugins are not run on this path (a known limitation of
+    the folded set build); use a plain load when you need them.
+
+    Parameters
+    ----------
+    args : CLILoadNamespace
+        Parsed ``tmuxp load`` arguments.
+    cli_colors : :class:`~tmuxp._internal.colors.Colors`
+        Colors instance for styled output.
+    parser : :class:`argparse.ArgumentParser`, optional
+        The load subparser, used only to print help on bad input.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _load_parallel
+    >>> callable(_load_parallel)
+    True
+    """
+    from libtmux.experimental.engines import AsyncSubprocessEngine
+    from libtmux.experimental.ops import SequentialPlanner
+    from libtmux.experimental.workspace import WorkspaceSet, analyze
+
+    if args.append:
+        tmuxp_echo(
+            cli_colors.error("[Error]")
+            + " --parallel cannot be combined with -a/--append",
+        )
+        sys.exit(1)
+    if args.new_session_name:
+        tmuxp_echo(
+            cli_colors.error("[Error]") + " --parallel cannot be combined with -s",
+        )
+        sys.exit(1)
+
+    # Lower each file to a Workspace IR node, mirroring load_workspace's
+    # read -> expand(cwd) -> trickle pipeline so relative paths resolve the same.
+    workspaces = []
+    for raw_file in args.workspace_files:
+        workspace_file = pathlib.Path(
+            find_workspace_file(
+                raw_file,
+                workspace_dir=get_workspace_dir(),
+            ),
+        )
+        raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
+        expanded = loader.expand(
+            raw_workspace,
+            cwd=os.path.dirname(workspace_file),
+        )
+        expanded = loader.trickle(expanded)
+        if not expanded:
+            tmuxp_echo(
+                cli_colors.warning("[Warning]")
+                + f" {PrivatePath(workspace_file)} is empty; skipping",
+            )
+            continue
+        workspaces.append(analyze(expanded))
+
+    if not workspaces:
+        tmuxp_echo(cli_colors.error("[Error]") + " no workspaces to build")
+        sys.exit(1)
+
+    try:
+        ws_set = WorkspaceSet(workspaces)
+    except ValueError as error:
+        # Duplicate session names across the set are unbuildable.
+        tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
+        sys.exit(1)
+
+    shutil.which("tmux")  # raise exception if tmux not found
+
+    # --dry-run: render the compiled plan without touching the tmux server.
+    if args.dry_run:
+        compiled = ws_set.compile()
+        tmuxp_echo(cli_colors.info("[Dry run]") + " compiled tmux plan:")
+        for idx, row in enumerate(compiled.plan.preview(), start=1):
+            # Forward-ref rows resolve to real args only at execution time.
+            rendered = "<deferred>" if row is None else " ".join(row)
+            tmuxp_echo(f"  {idx:>3}  {rendered}")
+        return
+
+    server = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path,
+        config_file=args.tmux_config_file,
+        colors=args.colors,
+    )
+
+    planner = SequentialPlanner() if args.no_fold else None
+    engine = AsyncSubprocessEngine.for_server(server)
+    try:
+        result = asyncio.run(ws_set.abuild(engine, planner=planner))
+    except FileExistsError as error:
+        # A session already exists and its on_exists policy is 'error'.
+        tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
+        sys.exit(1)
+
+    checkmark = cli_colors.success("✓")
+    for name in result.sessions:
+        tmuxp_echo(f"{checkmark} built {cli_colors.highlight(name)}")
+    for name in result.reused:
+        tmuxp_echo(cli_colors.muted(f"reused {name}"))
+
+    # Attach the last declared session unless detached or unavailable, matching
+    # the sequential path's "last file attaches" convention.
+    if args.detached:
+        return
+    last_name = workspaces[-1].name
+    session = server.sessions.get(session_name=last_name, default=None)
+    if session is None:
+        return
+    if "TMUX" in os.environ:
+        session.switch_client()
+    else:
+        session.attach()
 
 
 def command_load(
@@ -911,6 +1079,19 @@ def command_load(
         if parser is not None:
             parser.print_help()
         sys.exit()
+        return
+
+    # --dry-run/--no-fold only mean something for the workspace-set build; guard
+    # against the footgun where `load --dry-run foo` would silently build foo.
+    if (args.dry_run or args.no_fold) and not args.parallel:
+        tmuxp_echo(
+            cli_colors.error("[Error]") + " --dry-run and --no-fold require --parallel",
+        )
+        sys.exit(1)
+
+    # --parallel builds every file as one folded engine-ops workspace set.
+    if args.parallel:
+        _load_parallel(args, cli_colors, parser)
         return
 
     last_idx = len(args.workspace_files) - 1
