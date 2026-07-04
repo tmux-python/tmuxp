@@ -44,6 +44,26 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.61.0` (was `~=0.60.0`) (#1074)
+
+Picks up libtmux 0.61.0, which hardens tmux 3.7 patch-line support:
+{meth}`~libtmux.Pane.break_pane` keeps tmux's own default window name on
+tmux 3.7a/3.7b instead of forcing `libtmux`, and the new
+{func}`~libtmux.common.get_version_str` exposes the raw tmux version
+string. tmux 3.2a-3.6 are unaffected.
+
+### What's new
+
+#### `tmuxp debug-info` reports the exact tmux patch release (#1074)
+
+`tmuxp debug-info` now shows tmux's full version, keeping the
+point-release letter (for example `3.7a`) that was previously normalized
+away to `3.7`. Because tmux patch releases can differ in behavior, the
+precise release is what a bug report needs. This reads libtmux 0.61.0's
+{func}`~libtmux.common.get_version_str`.
+
 ### Documentation
 
 #### Themed diagrams across the docs (#1071)
