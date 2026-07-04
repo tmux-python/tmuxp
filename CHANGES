@@ -36,13 +36,17 @@ Run the developmental install with:
 $ tmuxp@next load yoursession
 ```
 
-## tmuxp 1.74.0 (Yet to be released)
+## tmuxp 1.75.0 (Yet to be released)
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
 <!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+## tmuxp 1.74.0 (2026-07-04)
+
+tmuxp 1.74.0 pairs a libtmux upgrade with a documentation overhaul. It bumps libtmux to 0.61.0 — hardening tmux 3.7 patch-line support — and teaches `tmuxp debug-info` to report the exact tmux patch release (`3.7a`/`3.7b`) instead of the numeric-normalized version. The docs also gain theme-aware inline diagrams and a concept-first rewrite that leads with what each feature is before its configuration.
 
 ### Dependencies
 
