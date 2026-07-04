@@ -39,6 +39,14 @@ $ tmuxp import teamocil /path/to/file.json
 
 ````
 
+### Supported teamocil features
+
+The teamocil importer handles:
+
+- **v1.x format** — `windows` at top level with `commands` key in panes
+- **Focus** — `focus: true` on windows and panes is preserved
+- **Window options** — `options` on windows are passed through
+
 (import-tmuxinator)=
 
 ## From tmuxinator
@@ -72,6 +80,16 @@ $ tmuxp import tmuxinator /path/to/file.json
 ```
 
 ````
+
+### Supported tmuxinator features
+
+The tmuxinator importer maps:
+
+- **Hook mapping** — `pre` maps to `on_project_start`, `pre_window` maps to `shell_command_before`
+- **CLI args** — `cli_args` values (`-f`, `-S`, `-L`) are parsed into tmuxp config equivalents
+- **Synchronize** — `synchronize` window key is converted
+- **Startup focus** — `startup_window` / `startup_pane` convert to `focus: true`
+- **Named panes** — hash-key pane syntax converts to `title` on the pane
 
 [teamocil]: https://github.com/remiprev/teamocil
 [tmuxinator]: https://github.com/aziz/tmuxinator
