@@ -117,6 +117,7 @@ class CLILoadNamespace(argparse.Namespace):
     progress_format: str | None
     panel_lines: int | None
     no_progress: bool
+    engine_ops: bool
 
 
 def load_plugins(
@@ -458,6 +459,7 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    builder_override: str | None = None,
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -578,6 +580,11 @@ def load_workspace(
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
+
+    # Select an alternate builder backend (e.g. --engine-ops) unless the config
+    # already names one; resolve_builder_class reads the workspace_builder key.
+    if builder_override:
+        expanded_workspace["workspace_builder"] = builder_override
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
@@ -842,6 +849,16 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         default=False,
         help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
     )
+    parser.add_argument(
+        "--engine-ops",
+        dest="engine_ops",
+        action="store_true",
+        default=False,
+        help=(
+            "Build with the experimental engine-ops backend: an async builder "
+            "that folds a session's commands into a few tmux dispatches."
+        ),
+    )
 
     try:
         import shtab
@@ -927,4 +944,5 @@ def command_load(
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            builder_override="engine-ops" if args.engine_ops else None,
         )

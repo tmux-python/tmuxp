@@ -13,6 +13,8 @@ from tmuxp.workspace.builder.protocol import WorkspaceBuilderProtocol
 from tmuxp.workspace.builder.registry import resolve_builder_class
 
 if t.TYPE_CHECKING:
+    import pathlib
+
     from libtmux.server import Server
     from libtmux.session import Session
 
@@ -127,3 +129,34 @@ def test_engine_ops_empty_config_raises(session: Session) -> None:
     """An empty config fails fast, matching the classic builder."""
     with pytest.raises(exc.EmptyWorkspaceException):
         EngineOpsWorkspaceBuilder(session_config={}, server=session.server)
+
+
+def test_engine_ops_cli_flag_builds(server: Server, tmp_path: pathlib.Path) -> None:
+    """`tmuxp load --engine-ops` routes a config through the engine-ops builder."""
+    from tmuxp import cli
+
+    socket_name = server.socket_name
+    assert socket_name is not None
+    config = tmp_path / "ws.yaml"
+    config.write_text(
+        "session_name: eo-cli\nwindows:\n  - panes: [echo a, echo b]\n",
+    )
+    try:
+        with contextlib.suppress(SystemExit):
+            cli.cli(
+                [
+                    "load",
+                    str(config),
+                    "--engine-ops",
+                    "-d",
+                    "-L",
+                    socket_name,
+                    "-y",
+                ],
+            )
+        assert server.has_session("eo-cli")
+        built = server.sessions.get(session_name="eo-cli")
+        assert built is not None
+        assert len(built.windows[0].panes) == 2
+    finally:
+        _kill(server, "eo-cli")
