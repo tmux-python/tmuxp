@@ -52,7 +52,7 @@ class WorkspaceBuilderProtocol(t.Protocol):
     ...     on_build_event = None
     ...     def __init__(self, session_config, server, **kwargs):
     ...         self._session_config = session_config
-    ...     def build(self, session=None, append=False):
+    ...     def build(self, session=None, append=False, here=False):
     ...         ...
     ...     def session_exists(self, session_name):
     ...         ...
@@ -95,7 +95,12 @@ class WorkspaceBuilderProtocol(t.Protocol):
         """Return the tmux session the builder created or populated."""
         ...
 
-    def build(self, session: Session | None = None, append: bool = False) -> None:
+    def build(
+        self,
+        session: Session | None = None,
+        append: bool = False,
+        here: bool = False,
+    ) -> None:
         """Build the workspace, creating or populating a tmux session."""
         ...
 
