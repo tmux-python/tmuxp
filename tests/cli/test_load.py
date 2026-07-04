@@ -21,6 +21,7 @@ from tmuxp._internal.private_path import PrivatePath
 from tmuxp.cli.load import (
     _load_append_windows_to_current_session,
     _load_attached,
+    _resolve_workspace_config_file,
     load_plugins,
     load_workspace,
 )
@@ -72,6 +73,129 @@ def test_load_workspace_passes_tmux_config(
     assert isinstance(session, Session)
     assert isinstance(session.server, Server)
     assert session.server.config_file == str(FIXTURE_PATH / "tmux" / "tmux.conf")
+
+
+class WorkspaceConfigResolutionFixture(t.NamedTuple):
+    """Fixture for workspace-level tmux config path resolution."""
+
+    test_id: str
+    config_value: str
+    expected_kind: str
+
+
+WORKSPACE_CONFIG_RESOLUTION_FIXTURES: list[WorkspaceConfigResolutionFixture] = [
+    WorkspaceConfigResolutionFixture(
+        test_id="relative",
+        config_value="./tmux.conf",
+        expected_kind="workspace",
+    ),
+    WorkspaceConfigResolutionFixture(
+        test_id="home",
+        config_value="~/.tmux.conf",
+        expected_kind="home",
+    ),
+    WorkspaceConfigResolutionFixture(
+        test_id="absolute",
+        config_value="/tmp/tmux.conf",
+        expected_kind="absolute",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(WorkspaceConfigResolutionFixture._fields),
+    WORKSPACE_CONFIG_RESOLUTION_FIXTURES,
+    ids=[fixture.test_id for fixture in WORKSPACE_CONFIG_RESOLUTION_FIXTURES],
+)
+def test_resolve_workspace_config_file(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+    test_id: str,
+    config_value: str,
+    expected_kind: str,
+) -> None:
+    """Workspace config paths resolve relative to the workspace file."""
+    home_dir = tmp_path / "home"
+    home_dir.mkdir()
+    monkeypatch.setenv("HOME", str(home_dir))
+    workspace_file = tmp_path / "project" / "session.yaml"
+    workspace_file.parent.mkdir()
+
+    if expected_kind == "workspace":
+        expected = workspace_file.parent / "tmux.conf"
+    elif expected_kind == "home":
+        expected = home_dir / ".tmux.conf"
+    else:
+        expected = pathlib.Path(config_value)
+
+    assert _resolve_workspace_config_file(config_value, workspace_file) == str(
+        expected.resolve(strict=False),
+    )
+
+
+def test_load_workspace_uses_workspace_server_fallbacks(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Workspace socket/config keys are Server fallbacks."""
+    monkeypatch.delenv("TMUX", raising=False)
+    tmux_conf = tmp_path / "tmux.conf"
+    tmux_conf.write_text("", encoding="utf-8")
+    workspace_file = tmp_path / "fallbacks.yaml"
+    workspace_file.write_text(
+        f"""\
+session_name: fallback-test
+socket_name: {server.socket_name}
+config: ./tmux.conf
+windows:
+  - window_name: main
+    panes:
+      - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(workspace_file, detached=True)
+
+    assert isinstance(session, Session)
+    assert session.server.socket_name == server.socket_name
+    assert session.server.config_file == str(tmux_conf.resolve(strict=False))
+
+
+def test_load_workspace_cli_server_args_override_workspace_fallbacks(
+    tmp_path: pathlib.Path,
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CLI socket/config values take precedence over workspace fallback keys."""
+    monkeypatch.delenv("TMUX", raising=False)
+    cli_tmux_conf = tmp_path / "cli.tmux.conf"
+    cli_tmux_conf.write_text("", encoding="utf-8")
+    workspace_file = tmp_path / "fallbacks.yaml"
+    workspace_file.write_text(
+        """\
+session_name: fallback-override-test
+socket_name: ignored-socket
+config: ./ignored.tmux.conf
+windows:
+  - window_name: main
+    panes:
+      - echo hello
+""",
+        encoding="utf-8",
+    )
+
+    session = load_workspace(
+        workspace_file,
+        socket_name=server.socket_name,
+        tmux_config_file=str(cli_tmux_conf),
+        detached=True,
+    )
+
+    assert isinstance(session, Session)
+    assert session.server.socket_name == server.socket_name
+    assert session.server.config_file == str(cli_tmux_conf)
 
 
 def test_load_workspace_named_session(
