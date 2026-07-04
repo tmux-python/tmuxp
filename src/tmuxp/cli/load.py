@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import contextlib
 import importlib
+import itertools
 import logging
 import os
 import pathlib
@@ -122,6 +123,7 @@ class CLILoadNamespace(argparse.Namespace):
     parallel: bool
     dry_run: bool
     no_fold: bool
+    expand: list[str] | None
 
 
 def load_plugins(
@@ -894,6 +896,18 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
             "of folding them into ;-chained batches (useful for debugging)."
         ),
     )
+    parser.add_argument(
+        "--expand",
+        dest="expand",
+        metavar="KEY=V1,V2",
+        action="append",
+        default=None,
+        help=(
+            "Expand ONE workspace file into a session per value by substituting "
+            "$KEY placeholders (e.g. session_name: app-$env). Repeat for a "
+            "matrix (Cartesian product). Implies a folded set build."
+        ),
+    )
 
     try:
         import shtab
@@ -905,6 +919,62 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         pass
 
     return parser
+
+
+def _parse_expand_specs(specs: list[str]) -> list[dict[str, str]]:
+    """Turn ``KEY=V1,V2`` ``--expand`` specs into variant dicts.
+
+    Each spec is one axis; multiple axes form a matrix (Cartesian product). The
+    variant dicts feed :func:`libtmux.experimental.workspace.expand`, which
+    substitutes ``$KEY`` placeholders in the base workspace.
+
+    Parameters
+    ----------
+    specs : list of str
+        Raw ``KEY=V1,V2`` strings, one per ``--expand`` flag.
+
+    Returns
+    -------
+    list of dict
+        One ``{key: value}`` variant per point in the matrix.
+
+    Raises
+    ------
+    ValueError
+        If a spec lacks ``=``, has an empty key, or lists no values.
+
+    Examples
+    --------
+    A single axis yields one variant per value:
+
+    >>> from tmuxp.cli.load import _parse_expand_specs
+    >>> _parse_expand_specs(["env=dev,prod"])
+    [{'env': 'dev'}, {'env': 'prod'}]
+
+    Two axes form a matrix:
+
+    >>> variants = _parse_expand_specs(["env=dev,prod", "region=us,eu"])
+    >>> len(variants)
+    4
+    >>> variants[0], variants[-1]
+    ({'env': 'dev', 'region': 'us'}, {'env': 'prod', 'region': 'eu'})
+    """
+    axes: list[tuple[str, list[str]]] = []
+    for spec in specs:
+        key, sep, raw = spec.partition("=")
+        if not sep or not key.strip():
+            msg = f"invalid --expand spec {spec!r}; expected KEY=V1,V2"
+            raise ValueError(msg)
+        values = [v.strip() for v in raw.split(",") if v.strip()]
+        if not values:
+            msg = f"invalid --expand spec {spec!r}; no values after '='"
+            raise ValueError(msg)
+        axes.append((key.strip(), values))
+    keys = [key for key, _ in axes]
+    value_lists = [values for _, values in axes]
+    return [
+        dict(zip(keys, combo, strict=True)) for combo in itertools.product(*value_lists)
+    ]
 
 
 def _load_parallel(
@@ -920,6 +990,11 @@ def _load_parallel(
     ``abuild``s the whole set as one rebased, folded plan -- so N sessions
     render in a few ``;``-chained tmux dispatches sharing one preflight, instead
     of one detached ``load`` per file.
+
+    With ``--expand KEY=V1,V2`` a single file is instead expanded into one
+    session per value (a matrix, over multiple ``--expand`` axes) by
+    substituting ``$KEY`` placeholders; the rendered variants build as the same
+    kind of folded set.
 
     It implies the engine-ops backend. ``--append`` and ``-s`` describe
     single-session semantics that don't compose with a multi-session set, so
@@ -943,7 +1018,12 @@ def _load_parallel(
     """
     from libtmux.experimental.engines import AsyncSubprocessEngine
     from libtmux.experimental.ops import SequentialPlanner
-    from libtmux.experimental.workspace import WorkspaceSet, analyze
+    from libtmux.experimental.workspace import (
+        Workspace,
+        WorkspaceSet,
+        analyze,
+        expand as expand_variants,
+    )
 
     if args.append:
         tmuxp_echo(
@@ -957,29 +1037,53 @@ def _load_parallel(
         )
         sys.exit(1)
 
-    # Lower each file to a Workspace IR node, mirroring load_workspace's
-    # read -> expand(cwd) -> trickle pipeline so relative paths resolve the same.
-    workspaces = []
-    for raw_file in args.workspace_files:
-        workspace_file = pathlib.Path(
-            find_workspace_file(
-                raw_file,
-                workspace_dir=get_workspace_dir(),
-            ),
+    def _lower(raw_file: str) -> tuple[dict[str, t.Any], pathlib.Path]:
+        """Resolve, read, and expand one file to a trickled config dict.
+
+        Mirrors load_workspace's read -> expand(cwd) -> trickle pipeline so
+        relative paths resolve identically on the set path.
+        """
+        path = pathlib.Path(
+            find_workspace_file(raw_file, workspace_dir=get_workspace_dir()),
         )
-        raw_workspace = config_reader.ConfigReader._from_file(workspace_file) or {}
-        expanded = loader.expand(
-            raw_workspace,
-            cwd=os.path.dirname(workspace_file),
-        )
-        expanded = loader.trickle(expanded)
+        raw = config_reader.ConfigReader._from_file(path) or {}
+        expanded = loader.trickle(loader.expand(raw, cwd=os.path.dirname(path)))
+        return expanded, path
+
+    workspaces: list[Workspace]
+    if args.expand:
+        # Matrix mode: expand ONE base file into a session per variant.
+        if len(args.workspace_files) != 1:
+            tmuxp_echo(
+                cli_colors.error("[Error]")
+                + " --expand takes exactly one workspace file",
+            )
+            sys.exit(1)
+        try:
+            variants = _parse_expand_specs(args.expand)
+        except ValueError as error:
+            tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
+            sys.exit(1)
+        expanded, path = _lower(args.workspace_files[0])
         if not expanded:
             tmuxp_echo(
-                cli_colors.warning("[Warning]")
-                + f" {PrivatePath(workspace_file)} is empty; skipping",
+                cli_colors.error("[Error]")
+                + f" {PrivatePath(path)} is empty or parsed no workspace data",
             )
-            continue
-        workspaces.append(analyze(expanded))
+            sys.exit(1)
+        workspaces = list(expand_variants(analyze(expanded), variants))
+    else:
+        # Multi-file mode: one session per file.
+        workspaces = []
+        for raw_file in args.workspace_files:
+            expanded, path = _lower(raw_file)
+            if not expanded:
+                tmuxp_echo(
+                    cli_colors.warning("[Warning]")
+                    + f" {PrivatePath(path)} is empty; skipping",
+                )
+                continue
+            workspaces.append(analyze(expanded))
 
     if not workspaces:
         tmuxp_echo(cli_colors.error("[Error]") + " no workspaces to build")
@@ -1081,16 +1185,20 @@ def command_load(
         sys.exit()
         return
 
-    # --dry-run/--no-fold only mean something for the workspace-set build; guard
-    # against the footgun where `load --dry-run foo` would silently build foo.
-    if (args.dry_run or args.no_fold) and not args.parallel:
+    # The set-build path is selected by --parallel (many files) or --expand
+    # (one file, many variants); --expand implies it.
+    _set_build = args.parallel or bool(args.expand)
+
+    # --dry-run/--no-fold only mean something for the set build; guard against
+    # the footgun where `load --dry-run foo` would silently build foo.
+    if (args.dry_run or args.no_fold) and not _set_build:
         tmuxp_echo(
-            cli_colors.error("[Error]") + " --dry-run and --no-fold require --parallel",
+            cli_colors.error("[Error]")
+            + " --dry-run and --no-fold require --parallel or --expand",
         )
         sys.exit(1)
 
-    # --parallel builds every file as one folded engine-ops workspace set.
-    if args.parallel:
+    if _set_build:
         _load_parallel(args, cli_colors, parser)
         return
 

@@ -8,6 +8,7 @@ import typing as t
 import pytest
 
 from tmuxp import cli
+from tmuxp.cli.load import _parse_expand_specs
 
 if t.TYPE_CHECKING:
     import pathlib
@@ -208,3 +209,114 @@ def test_parallel_rejects_incompatible_flags(
         assert server.sessions.get(session_name="ppar-reject", default=None) is None
     finally:
         _kill(server, "ppar-reject")
+
+
+def test_parse_expand_specs_matrix() -> None:
+    """Multiple --expand axes produce the Cartesian product of variants."""
+    variants = _parse_expand_specs(["env=dev,prod", "region=us,eu"])
+    assert variants == [
+        {"env": "dev", "region": "us"},
+        {"env": "dev", "region": "eu"},
+        {"env": "prod", "region": "us"},
+        {"env": "prod", "region": "eu"},
+    ]
+
+
+class _SpecErrorCase(t.NamedTuple):
+    """A malformed --expand spec and the phrase its error must mention."""
+
+    test_id: str
+    specs: list[str]
+    needle: str
+
+
+_SPEC_ERROR_CASES: tuple[_SpecErrorCase, ...] = (
+    _SpecErrorCase(
+        test_id="no_equals", specs=["noequals"], needle="expected KEY=V1,V2"
+    ),
+    _SpecErrorCase(test_id="empty_key", specs=["=v1,v2"], needle="expected KEY=V1,V2"),
+    _SpecErrorCase(test_id="no_values", specs=["env="], needle="no values"),
+    _SpecErrorCase(test_id="blank_values", specs=["env=,,"], needle="no values"),
+)
+
+
+@pytest.mark.parametrize(
+    "case",
+    _SPEC_ERROR_CASES,
+    ids=[c.test_id for c in _SPEC_ERROR_CASES],
+)
+def test_parse_expand_specs_rejects_malformed(case: _SpecErrorCase) -> None:
+    """Malformed --expand specs raise ValueError with a helpful message."""
+    with pytest.raises(ValueError, match=case.needle):
+        _parse_expand_specs(case.specs)
+
+
+def test_expand_matrix_builds_sessions(
+    server: Server,
+    tmp_path: pathlib.Path,
+) -> None:
+    """``--expand`` renders one session per matrix point, substituting $vars."""
+    assert server.socket_name is not None
+    cfg = tmp_path / "svc.yaml"
+    cfg.write_text(
+        "session_name: exp-$env-$region\n"
+        "windows:\n"
+        "  - window_name: $env\n"
+        "    panes: [echo $env $region]\n",
+        encoding="utf-8",
+    )
+    names = ["exp-dev-us", "exp-dev-eu", "exp-prod-us", "exp-prod-eu"]
+    try:
+        with contextlib.suppress(SystemExit):
+            # No --parallel: --expand implies the folded set build.
+            cli.cli(
+                [
+                    "load",
+                    str(cfg),
+                    "--expand",
+                    "env=dev,prod",
+                    "--expand",
+                    "region=us,eu",
+                    "-d",
+                    "-L",
+                    server.socket_name,
+                ],
+            )
+        built = sorted(
+            name
+            for s in server.sessions
+            if (name := s.name) is not None and name.startswith("exp-")
+        )
+        assert built == sorted(names)
+        dev_us = server.sessions.get(session_name="exp-dev-us", default=None)
+        assert dev_us is not None
+        # Substitution reaches nested fields, not just the session name.
+        assert dev_us.windows[0].window_name == "dev"
+    finally:
+        _kill(server, *names)
+
+
+def test_expand_rejects_multiple_files(
+    server: Server,
+    tmp_path: pathlib.Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """``--expand`` expands a single base file, so extra files are rejected."""
+    assert server.socket_name is not None
+    cfg = tmp_path / "a.yaml"
+    _write_workspace(cfg, "exp-multi-$env", ["echo a"])
+    with contextlib.suppress(SystemExit):
+        cli.cli(
+            [
+                "load",
+                str(cfg),
+                str(cfg),
+                "--expand",
+                "env=dev",
+                "-d",
+                "-L",
+                server.socket_name,
+            ],
+        )
+    out = capsys.readouterr().out
+    assert "exactly one workspace file" in out
