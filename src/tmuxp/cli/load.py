@@ -19,6 +19,7 @@ from libtmux.server import Server
 from tmuxp import exc, log, util
 from tmuxp._internal import config_reader
 from tmuxp._internal.private_path import PrivatePath
+from tmuxp.plugin import TmuxpPlugin
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import (
     WorkspaceBuilderProtocol,
@@ -977,6 +978,100 @@ def _parse_expand_specs(specs: list[str]) -> list[dict[str, str]]:
     ]
 
 
+#: Plugin hooks the classic builder fires *between* window/pane creation. The
+#: folded set build has no per-window boundary to run them at, so they are
+#: skipped with a warning; a sequential ``load`` runs them.
+_SET_UNSUPPORTED_HOOKS = (
+    "before_workspace_builder",
+    "on_window_create",
+    "after_window_finished",
+)
+
+
+class _SetPlugins(t.NamedTuple):
+    """One file's loaded plugins plus the import sandbox they resolve under."""
+
+    builder_paths: list[pathlib.Path]
+    plugins: list[t.Any]
+
+
+def _load_set_plugins(
+    expanded: dict[str, t.Any],
+    workspace_file: pathlib.Path,
+    cli_colors: Colors,
+) -> _SetPlugins:
+    """Load a file's plugins for a set build, warning on unsupported hooks.
+
+    Loads inside the file's import sandbox so the version-compat gate and any
+    skip prompt run *before* the fold (matching the sequential path), and warns
+    once per plugin that overrides a mid-build hook the folded build can't run.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _load_set_plugins
+    >>> callable(_load_set_plugins)
+    True
+    """
+    if not expanded.get("plugins"):
+        return _SetPlugins([], [])
+    builder_paths = resolve_builder_paths(expanded, workspace_file)
+    with prepended_sys_path(builder_paths):
+        plugins = load_plugins(expanded, colors=cli_colors)
+    for plugin in plugins:
+        skipped = [
+            hook
+            for hook in _SET_UNSUPPORTED_HOOKS
+            if getattr(type(plugin), hook) is not getattr(TmuxpPlugin, hook)
+        ]
+        if skipped:
+            logger.warning(
+                "plugin mid-build hooks skipped on set build; run without "
+                "--parallel/--expand for full plugin support",
+                extra={
+                    "plugin": type(plugin).__name__,
+                    "skipped_hooks": ",".join(skipped),
+                },
+            )
+    return _SetPlugins(builder_paths, plugins)
+
+
+def _run_set_before_script(
+    server: Server,
+    session_plugins: dict[str, _SetPlugins],
+    built: list[str],
+) -> None:
+    """Run each built session's ``before_script`` plugin hooks post-build.
+
+    The folded set path's analogue of :func:`_setup_plugins`. Hooks run after
+    ``abuild`` returns, by name lookup on materialized sessions, so the fold is
+    untouched. A hook that raises is logged and skipped -- one plugin failure
+    must not tear down the other already-built sessions.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _run_set_before_script
+    >>> callable(_run_set_before_script)
+    True
+    """
+    for name in built:
+        binding = session_plugins.get(name)
+        if binding is None:
+            continue
+        session = server.sessions.get(session_name=name, default=None)
+        if session is None:
+            continue
+        with prepended_sys_path(binding.builder_paths):
+            for plugin in binding.plugins:
+                try:
+                    plugin.before_script(session)
+                except Exception:  # noqa: PERF203 - isolate each plugin's hook
+                    logger.warning(
+                        "plugin before_script failed on set build",
+                        extra={"tmux_session": name, "plugin": type(plugin).__name__},
+                        exc_info=True,
+                    )
+
+
 def _load_parallel(
     args: CLILoadNamespace,
     cli_colors: Colors,
@@ -998,8 +1093,17 @@ def _load_parallel(
 
     It implies the engine-ops backend. ``--append`` and ``-s`` describe
     single-session semantics that don't compose with a multi-session set, so
-    they are rejected. Plugins are not run on this path (a known limitation of
-    the folded set build); use a plain load when you need them.
+    they are rejected.
+
+    Plugin support is partial by design: each built session's ``before_script``
+    hook runs post-build (the fold exposes whole-session endpoints, not
+    per-window boundaries). The mid-build hooks (``before_workspace_builder``,
+    ``on_window_create``, ``after_window_finished``) can't run without unfolding
+    the plan, so a plugin overriding one is skipped with a warning; the
+    ``reattach`` hook isn't fired here (as on any fresh sequential load). Unlike
+    the sequential path, a ``before_script`` that raises is logged and skipped
+    rather than surfaced -- one plugin must not tear down the other built
+    sessions. Use a sequential ``load`` when you need full plugin semantics.
 
     Parameters
     ----------
@@ -1050,6 +1154,10 @@ def _load_parallel(
         expanded = loader.trickle(loader.expand(raw, cwd=os.path.dirname(path)))
         return expanded, path
 
+    # session name -> (expanded config, source file), captured purely at
+    # lowering time so plugins can be loaded per built session later without
+    # re-reading files. (The IR drops the "plugins" key and the source path.)
+    session_sources: dict[str, tuple[dict[str, t.Any], pathlib.Path]] = {}
     workspaces: list[Workspace]
     if args.expand:
         # Matrix mode: expand ONE base file into a session per variant.
@@ -1072,6 +1180,8 @@ def _load_parallel(
             )
             sys.exit(1)
         workspaces = list(expand_variants(analyze(expanded), variants))
+        for ws in workspaces:
+            session_sources[ws.name] = (expanded, path)
     else:
         # Multi-file mode: one session per file.
         workspaces = []
@@ -1083,7 +1193,9 @@ def _load_parallel(
                     + f" {PrivatePath(path)} is empty; skipping",
                 )
                 continue
-            workspaces.append(analyze(expanded))
+            ws = analyze(expanded)
+            workspaces.append(ws)
+            session_sources[ws.name] = (expanded, path)
 
     if not workspaces:
         tmuxp_echo(cli_colors.error("[Error]") + " no workspaces to build")
@@ -1108,6 +1220,20 @@ def _load_parallel(
             tmuxp_echo(f"  {idx:>3}  {rendered}")
         return
 
+    # Load plugins BEFORE the fold so a version-incompatible plugin refuses up
+    # front (as the sequential path does), not after N sessions already exist.
+    # Memoized per file so --expand variants sharing one file load (and warn)
+    # once. Only post-build hooks run on the set path (see the docstring).
+    session_plugins: dict[str, _SetPlugins] = {}
+    loaded: dict[pathlib.Path, _SetPlugins] = {}
+    for name, (expanded, path) in session_sources.items():
+        if not expanded.get("plugins"):
+            continue
+        if path not in loaded:
+            loaded[path] = _load_set_plugins(expanded, path, cli_colors)
+        if loaded[path].plugins:
+            session_plugins[name] = loaded[path]
+
     server = Server(
         socket_name=args.socket_name,
         socket_path=args.socket_path,
@@ -1129,6 +1255,12 @@ def _load_parallel(
         tmuxp_echo(f"{checkmark} built {cli_colors.highlight(name)}")
     for name in result.reused:
         tmuxp_echo(cli_colors.muted(f"reused {name}"))
+
+    # Post-build before_script hooks on freshly built sessions (not reused).
+    if session_plugins:
+        reused = set(result.reused)
+        built = [name for name in result.sessions if name not in reused]
+        _run_set_before_script(server, session_plugins, built)
 
     # Attach the last declared session unless detached or unavailable, matching
     # the sequential path's "last file attaches" convention.
