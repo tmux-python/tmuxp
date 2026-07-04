@@ -116,6 +116,38 @@ def test_builder_on_build_event_sequence(
     assert created["session_pane_total"] == 3  # 2 panes + 1 pane
 
 
+def test_builder_window_done_events_include_window_identity(
+    server: Server,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """window_done events identify the completed window."""
+    monkeypatch.delenv("TMUX", raising=False)
+
+    session_config = {
+        "session_name": "window-done-identity-test",
+        "windows": [
+            {
+                "window_name": "editor",
+                "panes": [{"shell_command": []}, {"shell_command": []}],
+            },
+            {"window_name": "logs", "panes": [{"shell_command": []}]},
+        ],
+    }
+    events: list[dict[str, t.Any]] = []
+    builder = WorkspaceBuilder(
+        session_config=session_config,
+        server=server,
+        on_build_event=events.append,
+    )
+    builder.build()
+
+    done_events = [e for e in events if e["event"] == "window_done"]
+    assert [(e["name"], e["pane_total"]) for e in done_events] == [
+        ("editor", 2),
+        ("logs", 1),
+    ]
+
+
 def test_builder_on_build_event_session_name(
     server: Server,
     monkeypatch: pytest.MonkeyPatch,

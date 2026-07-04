@@ -11,6 +11,7 @@ import collections
 import dataclasses
 import itertools
 import logging
+import math
 import shutil
 import sys
 import threading
@@ -124,7 +125,7 @@ def _truncate_visible(text: str, max_visible: int, suffix: str = "...") -> str:
 SUCCESS_TEMPLATE = "Loaded workspace: {session} ({workspace_path}) {summary}"
 
 PROGRESS_PRESETS: dict[str, str] = {
-    "default": "Loading workspace: {session} {bar} {progress} {window}",
+    "default": "Loading workspace: {session} {bar} {build_progress} {window}",
     "minimal": "Loading workspace: {session} [{window_progress}]",
     "window": "Loading workspace: {session} {window_bar} {window_progress_rel}",
     "pane": "Loading workspace: {session} {pane_bar} {session_pane_progress}",
@@ -170,6 +171,63 @@ def render_bar(done: int, total: int, width: int = BAR_WIDTH) -> str:
         return ""
     filled = min(width, int(done / total * width))
     return "█" * filled + "░" * (width - filled)
+
+
+def _progress_cells(done: int, total: int, width: int = BAR_WIDTH) -> int:
+    """Return visible cells for nonzero progress without completing early.
+
+    Examples
+    --------
+    >>> _progress_cells(0, 11)
+    0
+    >>> _progress_cells(1, 11)
+    1
+    >>> _progress_cells(10, 11)
+    9
+    >>> _progress_cells(11, 11)
+    10
+    """
+    if done <= 0 or total <= 0 or width <= 0:
+        return 0
+    if done >= total:
+        return width
+    return min(width - 1, max(1, math.ceil(done / total * width)))
+
+
+def render_build_bar(
+    windows_done: int,
+    windows_created: int,
+    total: int,
+    width: int = BAR_WIDTH,
+) -> str:
+    """Render a two-phase window build bar.
+
+    ``windows_created`` is the total number of windows created so far,
+    including completed windows.  The rendered bar uses ``█`` for finished
+    windows, ``▓`` for created-but-unfinished windows, and ``░`` for windows
+    not created yet.
+
+    Examples
+    --------
+    >>> render_build_bar(0, 0, 11)
+    '░░░░░░░░░░'
+    >>> render_build_bar(0, 5, 11)
+    '▓▓▓▓▓░░░░░'
+    >>> render_build_bar(1, 5, 11)
+    '█▓▓▓▓░░░░░'
+    >>> render_build_bar(11, 11, 11)
+    '██████████'
+    """
+    if total <= 0 or width <= 0:
+        return ""
+
+    done = max(0, min(windows_done, total))
+    created = max(done, min(windows_created, total))
+    done_cells = _progress_cells(done, total, width)
+    created_cells = _progress_cells(created, total, width)
+    created_only_cells = max(0, created_cells - done_cells)
+    empty_cells = max(0, width - created_cells)
+    return "█" * done_cells + "▓" * created_only_cells + "░" * empty_cells
 
 
 class _SafeFormatMap(dict):  # type: ignore[type-arg]
@@ -249,10 +307,22 @@ class BuildTree:
          - —
          - —
          - —
+       * - ``{windows_created}``
+         - ``0``
+         - ``0``
+         - increments
+         - —
+         - —
        * - ``{window_progress}``
          - ``""``
          - ``""``
          - ``"N/M"`` when > 0
+         - —
+         - —
+       * - ``{window_progress_created}``
+         - ``""``
+         - ``"0/M"``
+         - increments
          - —
          - —
        * - ``{windows_done}``
@@ -315,6 +385,12 @@ class BuildTree:
          - ``"N/M win"``
          - ``"N/M win · P/Q pane"``
          - —
+       * - ``{build_progress}``
+         - ``"0/0 win"``
+         - ``"0/0 win"``
+         - denominator increments
+         - pane progress appended
+         - numerator increments
        * - ``{session_pane_total}``
          - ``0``
          - total
@@ -354,9 +430,9 @@ class BuildTree:
        * - ``{bar}`` (spinner)
          - ``[░░…]``
          - ``[░░…]``
-         - starts filling
-         - fractional
-         - jumps
+         - created segment fills
+         - —
+         - done segment fills
        * - ``{pane_bar}`` (spinner)
          - ``""``
          - ``[░░…]``
@@ -432,6 +508,7 @@ class BuildTree:
         self.session_pane_total: int | None = None
         self.session_panes_done: int = 0
         self.windows_done: int = 0
+        self._current_window: _WindowStatus | None = None
         self._before_script_event: threading.Event = threading.Event()
 
     def on_event(self, event: dict[str, t.Any]) -> None:
@@ -465,25 +542,70 @@ class BuildTree:
         elif kind == "before_script_done":
             self._before_script_event.clear()
         elif kind == "window_started":
-            self.windows.append(
-                _WindowStatus(name=event["name"], pane_total=event["pane_total"])
+            self._current_window = _WindowStatus(
+                name=event["name"],
+                pane_total=event["pane_total"],
             )
+            self.windows.append(self._current_window)
         elif kind == "pane_creating":
             if self.windows:
-                w = self.windows[-1]
+                w = self._current_window or self.windows[-1]
                 w.pane_num = event["pane_num"]
                 w.pane_total = event["pane_total"]
         elif kind == "window_done":
-            if self.windows:
-                w = self.windows[-1]
-                w.done = True
-                w.pane_num = None
-                w.pane_done = w.pane_total or 0
-                self.session_panes_done += w.pane_done
+            target_window = self._window_for_done_event(event)
+            if target_window is not None:
+                target_window.done = True
+                target_window.pane_num = None
+                target_window.pane_done = target_window.pane_total or 0
+                self.session_panes_done += target_window.pane_done
                 self.windows_done += 1
+                self._current_window = target_window
         elif kind == "workspace_built":
             for w in self.windows:
                 w.done = True
+
+    def _window_for_done_event(self, event: dict[str, t.Any]) -> _WindowStatus | None:
+        """Return the unfinished window targeted by a window_done event.
+
+        Examples
+        --------
+        >>> tree = BuildTree()
+        >>> tree.on_event({"event": "window_started", "name": "one", "pane_total": 1})
+        >>> tree.on_event({"event": "window_started", "name": "two", "pane_total": 1})
+        >>> tree._window_for_done_event({"event": "window_done", "name": "one"}).name
+        'one'
+        >>> tree._window_for_done_event({"event": "window_done", "name": "missing"})
+        """
+        name = event.get("name")
+        if isinstance(name, str):
+            for window in self.windows:
+                if not window.done and window.name == name:
+                    return window
+            return None
+
+        for window in self.windows:
+            if not window.done:
+                return window
+        return None
+
+    def _current_window_index(self) -> int:
+        """Return the 1-based index for the current window.
+
+        Examples
+        --------
+        >>> tree = BuildTree()
+        >>> tree._current_window_index()
+        0
+        >>> tree.on_event({"event": "window_started", "name": "one", "pane_total": 1})
+        >>> tree.on_event({"event": "window_started", "name": "two", "pane_total": 1})
+        >>> tree._current_window_index()
+        2
+        """
+        for index, window in enumerate(self.windows, start=1):
+            if window is self._current_window:
+                return index
+        return 0
 
     def render(self, colors: Colors, width: int) -> list[str]:
         """Render the current tree state to a list of display strings.
@@ -540,8 +662,12 @@ class BuildTree:
         5
         >>> ctx["window_index"]
         0
+        >>> ctx["windows_created"]
+        0
         >>> ctx["progress"]
         ''
+        >>> ctx["build_progress"]
+        '0/0 win'
         >>> ctx["windows_done"]
         0
         >>> ctx["windows_remaining"]
@@ -566,9 +692,10 @@ class BuildTree:
         >>> tree._context()["summary"]
         '[2 win, 8 panes]'
         """
-        w = self.windows[-1] if self.windows else None
-        window_idx = len(self.windows)
+        w = self._current_window if self._current_window else None
+        window_idx = self._current_window_index()
         win_tot = self.window_total or 0
+        windows_created = len(self.windows)
         pane_idx = (w.pane_num or 0) if w else 0
         pane_tot = (w.pane_total or 0) if w else 0
 
@@ -582,10 +709,18 @@ class BuildTree:
 
         win_done = self.windows_done
         win_progress_rel = f"{win_done}/{win_tot}" if win_tot else ""
-
         pane_done_cur = (
             (w.pane_num or 0) if w and not w.done else (w.pane_done if w else 0)
         )
+        build_pane_progress = (
+            f"{pane_done_cur}/{pane_tot}" if w and not w.done and pane_tot else ""
+        )
+        build_progress_parts = [
+            f"{win_done}/{windows_created} win",
+            f"pane {build_pane_progress}" if build_pane_progress else "",
+        ]
+        build_progress = " · ".join(p for p in build_progress_parts if p)
+
         pane_remaining = max(0, pane_tot - pane_done_cur)
         pane_progress_rel = f"{pane_done_cur}/{pane_tot}" if pane_tot else ""
 
@@ -606,11 +741,16 @@ class BuildTree:
             "window": w.name if w else "",
             "window_index": window_idx,
             "window_total": win_tot,
+            "windows_created": windows_created,
             "window_progress": win_progress,
+            "window_progress_created": (
+                f"{windows_created}/{win_tot}" if win_tot else ""
+            ),
             "pane_index": pane_idx,
             "pane_total": pane_tot,
             "pane_progress": pane_progress,
             "progress": progress,
+            "build_progress": build_progress,
             "windows_done": win_done,
             "windows_remaining": max(0, win_tot - win_done),
             "window_progress_rel": win_progress_rel,
@@ -945,16 +1085,11 @@ class Spinner:
         win_tot = tree.window_total or 0
         spt = tree.session_pane_total or 0
 
-        # Composite fraction: (windows_done + pane_frac) / window_total
-        if win_tot > 0:
-            cw = tree.windows[-1] if tree.windows else None
-            pane_frac = 0.0
-            if cw and not cw.done and cw.pane_total:
-                pane_frac = (cw.pane_num or 0) / cw.pane_total
-            composite_done = tree.windows_done + pane_frac
-            composite_bar = render_bar(int(composite_done * 100), win_tot * 100)
-        else:
-            composite_bar = render_bar(0, 0)
+        build_bar = render_build_bar(
+            windows_done=tree.windows_done,
+            windows_created=len(tree.windows),
+            total=win_tot,
+        )
 
         pane_bar = render_bar(tree.session_panes_done, spt)
         window_bar = render_bar(tree.windows_done, win_tot)
@@ -966,9 +1101,21 @@ class Spinner:
             empty = plain.count("░")
             return self.colors.success("█" * filled) + self.colors.muted("░" * empty)
 
+        def _color_build_bar(plain: str) -> str:
+            if not plain:
+                return plain
+            return "".join(
+                {
+                    "█": self.colors.success("█"),
+                    "▓": self.colors.info("▓"),
+                    "░": self.colors.muted("░"),
+                }.get(char, char)
+                for char in plain
+            )
+
         return {
             "session": self.colors.highlight(tree.session_name or ""),
-            "bar": _color_bar(composite_bar),
+            "bar": _color_build_bar(build_bar),
             "pane_bar": _color_bar(pane_bar),
             "window_bar": _color_bar(window_bar),
             "status_icon": "",
