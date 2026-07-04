@@ -163,6 +163,49 @@ def test_trickle_relative_start_directory(config_fixture: WorkspaceTestData) -> 
     assert test_workspace == config_fixture.trickle.expected
 
 
+def test_trickle_no_shell_command_before_skips_propagation() -> None:
+    """trickle(no_shell_command_before=True) skips session/window/pane prep."""
+    import copy as _copy
+
+    yaml_text = """
+    session_name: t7
+    shell_command_before:
+    - echo SESSION_BEFORE
+    windows:
+    - window_name: w1
+      shell_command_before:
+      - echo WINDOW_BEFORE
+      panes:
+      - shell_command:
+        - echo PANE_MAIN
+        shell_command_before:
+        - echo PANE_BEFORE
+    """
+    sconfig = ConfigReader._load(fmt="yaml", content=yaml_text)
+    expanded = loader.expand(sconfig)
+
+    # trickle mutates nested dicts; use deepcopy so the two runs don't share
+    # window/pane references.
+    skipped = loader.trickle(_copy.deepcopy(expanded), no_shell_command_before=True)
+    pane_cmds = skipped["windows"][0]["panes"][0]["shell_command"]
+    pane_strs = [c.get("cmd", "") if isinstance(c, dict) else c for c in pane_cmds]
+    assert all("BEFORE" not in s for s in pane_strs)
+    assert any("PANE_MAIN" in s for s in pane_strs)
+
+    # With flag=False (default): pane.shell_command has all three before's
+    # prepended.
+    propagated = loader.trickle(_copy.deepcopy(expanded))
+    propagated_cmds = propagated["windows"][0]["panes"][0]["shell_command"]
+    propagated_strs = [
+        c.get("cmd", "") if isinstance(c, dict) else c for c in propagated_cmds
+    ]
+    joined = " ".join(propagated_strs)
+    assert "SESSION_BEFORE" in joined
+    assert "WINDOW_BEFORE" in joined
+    assert "PANE_BEFORE" in joined
+    assert "PANE_MAIN" in joined
+
+
 def test_trickle_window_with_no_pane_workspace() -> None:
     """Verify tmuxp window config automatically infers a single pane."""
     test_yaml = """

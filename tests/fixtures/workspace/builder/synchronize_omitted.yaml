@@ -1,0 +1,8 @@
+session_name: sync-off
+windows:
+- window_name: w1
+  panes:
+  - shell_command:
+    - echo first
+  - shell_command:
+    - echo second

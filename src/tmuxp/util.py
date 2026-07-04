@@ -105,6 +105,52 @@ def run_before_script(
     return return_code
 
 
+def run_lifecycle_hook(
+    hook_name: str,
+    value: str | list[str] | None,
+    cwd: pathlib.Path | None = None,
+    on_line: t.Callable[[str], None] | None = None,
+) -> int:
+    """Execute a tmuxinator-style lifecycle hook value.
+
+    Reuses :func:`run_before_script`'s `shlex.split` + `subprocess.Popen`
+    semantics — no `shell=True`. Pipes/redirects in hook strings won't
+    work; users wrap shell logic in a script file.
+
+    Parameters
+    ----------
+    hook_name : str
+        The hook key (e.g. ``"on_project_start"``); used in DEBUG logs.
+    value : str | list[str] | None
+        The config value. ``None`` is a no-op (returns 0). String is
+        run once. List is run sequentially; aborts on first non-zero
+        exit code.
+    cwd : pathlib.Path | None
+        Working directory passed to each invocation.
+    on_line : Callable[[str], None] | None
+        Per-line output callback (same as ``run_before_script``).
+
+    Returns
+    -------
+    int
+        Final exit code (0 if all items succeeded). Raises the same
+        exceptions ``run_before_script`` does.
+    """
+    if value is None:
+        return 0
+    items = value if isinstance(value, list) else [value]
+    last_code = 0
+    for item in items:
+        logger.debug(
+            "running lifecycle hook",
+            extra={"tmux_key": hook_name},
+        )
+        last_code = run_before_script(item, cwd=cwd, on_line=on_line)
+        if last_code != 0:
+            return last_code
+    return last_code
+
+
 def oh_my_zsh_auto_title() -> None:
     """Give warning and offer to fix ``DISABLE_AUTO_TITLE``.
 

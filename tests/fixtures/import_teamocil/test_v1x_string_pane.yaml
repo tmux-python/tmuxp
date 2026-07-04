@@ -1,0 +1,6 @@
+name: v1x-string
+windows:
+- name: editor
+  panes:
+  - vim
+  - top
