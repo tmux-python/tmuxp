@@ -1,0 +1,10 @@
+name: ruby-app
+root: ~/projects/ruby-app
+rvm: 2.1.1
+pre: ./scripts/bootstrap.sh
+pre_tab: source .env
+startup_window: server
+startup_pane: 0
+windows:
+- editor: vim
+- server: rails s

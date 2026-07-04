@@ -20,6 +20,10 @@ ls
 progress
 search
 shell
+stop
+new
+copy
+delete
 utils
 ```
 
