@@ -146,11 +146,23 @@ class EngineOpsWorkspaceBuilder:
             raise NotImplementedError(msg)
         workspace = analyze(self.session_config)
         engine = AsyncSubprocessEngine.for_server(self.server)
+        windows = self.session_config.get("windows", [])
 
         async def _bridge(event: BuildEvent) -> None:
             name = _EVENT_NAMES.get(type(event))
-            if name is not None and self.on_build_event is not None:
-                self.on_build_event({"event": name})
+            if name is None or self.on_build_event is None:
+                return
+            payload: dict[str, t.Any] = {"event": name}
+            if isinstance(event, SessionCreated):
+                # The CLI progress spinner reads these keys on session_created;
+                # they come from the config since the folded build has no live
+                # per-window boundary to count from.
+                payload["name"] = workspace.name
+                payload["window_total"] = len(windows)
+                payload["session_pane_total"] = sum(
+                    len(w.get("panes", [])) for w in windows
+                )
+            self.on_build_event(payload)
 
         asyncio.run(workspace.abuild(engine, on_event=_bridge))
 
