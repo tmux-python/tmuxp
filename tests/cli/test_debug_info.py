@@ -167,3 +167,26 @@ def test_debug_info_json_paths_use_private_path(
     assert data["shell"] == "~/.local/bin/zsh", (
         f"Expected shell path to be masked with ~, got: {data['shell']}"
     )
+
+
+def test_debug_info_reports_raw_tmux_version(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """debug-info reports tmux's raw version, keeping the point-release suffix.
+
+    libtmux's ``get_version()`` strips the letter suffix (``"3.7a"`` -> ``"3.7"``)
+    for numeric comparison; ``get_version_str()`` keeps it. Bug reports want the
+    exact patch release, so debug-info reads the raw string verbatim.
+    """
+    monkeypatch.setenv("SHELL", "/bin/bash")
+    monkeypatch.setattr(
+        "tmuxp.cli.debug_info.get_version_str",
+        lambda *args, **kwargs: "3.7a",
+    )
+
+    cli.cli(["debug-info", "--json"])
+    output = capsys.readouterr().out
+    data = json.loads(output)
+
+    assert data["tmux_version"] == "3.7a"

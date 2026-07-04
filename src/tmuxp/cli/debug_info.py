@@ -12,7 +12,7 @@ import sys
 import typing as t
 
 from libtmux.__about__ import __version__ as libtmux_version
-from libtmux.common import get_version, tmux_cmd
+from libtmux.common import get_version_str, tmux_cmd
 
 from tmuxp.__about__ import __version__
 from tmuxp._internal.private_path import PrivatePath, collapse_home_in_string
@@ -132,7 +132,7 @@ def _collect_debug_info() -> dict[str, t.Any]:
         },
         "python_version": " ".join(sys.version.split("\n")),
         "system_path": collapse_home_in_string(os.environ.get("PATH", "")),
-        "tmux_version": str(get_version()),
+        "tmux_version": get_version_str(),
         "libtmux_version": libtmux_version,
         "tmuxp_version": __version__,
         "tmux_path": _private(shutil.which("tmux")),
