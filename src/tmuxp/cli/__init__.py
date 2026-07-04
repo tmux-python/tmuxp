@@ -19,12 +19,14 @@ from tmuxp.log import setup_logger
 from ._colors import build_description
 from ._formatter import TmuxpHelpFormatter, create_themed_formatter
 from .convert import CONVERT_DESCRIPTION, command_convert, create_convert_subparser
+from .copy import COPY_DESCRIPTION, command_copy, create_copy_subparser
 from .debug_info import (
     DEBUG_INFO_DESCRIPTION,
     CLIDebugInfoNamespace,
     command_debug_info,
     create_debug_info_subparser,
 )
+from .delete import DELETE_DESCRIPTION, command_delete, create_delete_subparser
 from .edit import EDIT_DESCRIPTION, command_edit, create_edit_subparser
 from .freeze import (
     FREEZE_DESCRIPTION,
@@ -45,6 +47,7 @@ from .load import (
     create_load_subparser,
 )
 from .ls import LS_DESCRIPTION, CLILsNamespace, command_ls, create_ls_subparser
+from .new import NEW_DESCRIPTION, command_new, create_new_subparser
 from .search import (
     SEARCH_DESCRIPTION,
     CLISearchNamespace,
@@ -56,6 +59,12 @@ from .shell import (
     CLIShellNamespace,
     command_shell,
     create_shell_subparser,
+)
+from .stop import (
+    STOP_DESCRIPTION,
+    CLIStopNamespace,
+    command_stop,
+    create_stop_subparser,
 )
 from .utils import tmuxp_echo
 
@@ -131,6 +140,32 @@ CLI_DESCRIPTION = build_description(
             ],
         ),
         (
+            "new",
+            [
+                "tmuxp new myproject",
+            ],
+        ),
+        (
+            "copy",
+            [
+                "tmuxp copy myproject myproject-backup",
+            ],
+        ),
+        (
+            "delete",
+            [
+                "tmuxp delete myproject",
+                "tmuxp delete -y old-project",
+            ],
+        ),
+        (
+            "stop",
+            [
+                "tmuxp stop mysession",
+                "tmuxp stop -L mysocket mysession",
+            ],
+        ),
+        (
             "debug-info",
             [
                 "tmuxp debug-info",
@@ -151,10 +186,14 @@ if t.TYPE_CHECKING:
         "load",
         "freeze",
         "convert",
+        "copy",
+        "delete",
         "edit",
+        "new",
         "import",
         "search",
         "shell",
+        "stop",
         "debug-info",
     ]
     CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
@@ -254,6 +293,30 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_edit_subparser(edit_parser)
 
+    new_parser = subparsers.add_parser(
+        "new",
+        help="create a new workspace config from template",
+        description=NEW_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_new_subparser(new_parser)
+
+    copy_parser = subparsers.add_parser(
+        "copy",
+        help="copy a workspace config to a new name",
+        description=COPY_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_copy_subparser(copy_parser)
+
+    delete_parser = subparsers.add_parser(
+        "delete",
+        help="delete workspace config files",
+        description=DELETE_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_delete_subparser(delete_parser)
+
     freeze_parser = subparsers.add_parser(
         "freeze",
         help="freeze a live tmux session to a tmuxp workspace file",
@@ -261,6 +324,14 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=formatter_class,
     )
     create_freeze_subparser(freeze_parser)
+
+    stop_parser = subparsers.add_parser(
+        "stop",
+        help="stop (kill) a tmux session",
+        description=STOP_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_stop_subparser(stop_parser)
 
     return parser
 
@@ -348,9 +419,43 @@ def cli(_args: list[str] | None = None) -> None:
             parser=parser,
             color=args.color,
         )
+    elif args.subparser_name == "new":
+        if not args.workspace_name:
+            args.print_help()
+            sys.exit(1)
+        command_new(
+            workspace_name=args.workspace_name,
+            parser=parser,
+            color=args.color,
+        )
+    elif args.subparser_name == "copy":
+        if not args.source or not args.destination:
+            args.print_help()
+            sys.exit(1)
+        command_copy(
+            source=args.source,
+            destination=args.destination,
+            parser=parser,
+            color=args.color,
+        )
+    elif args.subparser_name == "delete":
+        if not args.workspace_names:
+            args.print_help()
+            sys.exit(1)
+        command_delete(
+            workspace_names=args.workspace_names,
+            answer_yes=args.answer_yes,
+            parser=parser,
+            color=args.color,
+        )
     elif args.subparser_name == "freeze":
         command_freeze(
             args=CLIFreezeNamespace(**vars(args)),
+            parser=parser,
+        )
+    elif args.subparser_name == "stop":
+        command_stop(
+            args=CLIStopNamespace(**vars(args)),
             parser=parser,
         )
     elif args.subparser_name == "ls":
