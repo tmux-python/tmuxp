@@ -40,6 +40,9 @@ nothing. {ref}`tmuxp load <cli-load>` drives the lifecycle in a fixed order:
 
 :::{mermaid}
 :caption: When each plugin hook fires.
+:alt: tmuxp plugin hook order during tmuxp load
+:name: tmuxp-plugin-hook-order
+:responsive: fit
 
 flowchart TD
     load["tmuxp load"]:::cmd --> bwb["before_workspace_builder"]:::cmd

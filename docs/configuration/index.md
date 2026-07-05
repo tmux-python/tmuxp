@@ -64,6 +64,9 @@ tmuxp will offer to assist when:
 
 :::{mermaid}
 :caption: A workspace file mirrors tmux's own hierarchy.
+:alt: tmuxp workspace file hierarchy from session to windows, panes, and shell commands
+:name: tmuxp-workspace-hierarchy
+:responsive: fit
 
 flowchart TD
     session["session_name"]:::cmd --> w1["window"]

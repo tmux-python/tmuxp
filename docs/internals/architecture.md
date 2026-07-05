@@ -7,17 +7,25 @@ modules:
 
 :::{mermaid}
 :caption: How each tmuxp subcommand reaches libtmux.
+:alt: tmuxp CLI subcommands reaching workspace modules and libtmux
+:name: tmuxp-command-architecture
+:responsive: fit
 
-flowchart LR
+flowchart TD
     cli["tmuxp CLI (argparse)"]
-    cli -->|load| loader["workspace.loader"]:::cmd
+    cli --> load["load"]:::cmd
+    load --> loader["workspace.loader"]:::cmd
     loader --> builder["workspace.builder"]:::cmd
     builder --> libtmux["libtmux"]:::cmd
-    cli -->|freeze| freezer["workspace.freezer"]:::cmd
+    cli --> freeze["freeze"]:::cmd
+    freeze --> freezer["workspace.freezer"]:::cmd
     freezer --> libtmux
-    cli -->|convert| reader["_internal.config_reader"]:::cmd
-    cli -->|shell| interactive["libtmux (interactive)"]
-    cli -->|"ls / search"| finders["workspace.finders"]:::cmd
+    cli --> convert["convert"]:::cmd
+    convert --> reader["_internal.config_reader"]:::cmd
+    cli --> shell["shell"]:::cmd
+    shell --> interactive["libtmux (interactive)"]
+    cli --> search["ls / search"]:::cmd
+    search --> finders["workspace.finders"]:::cmd
 :::
 
 ## Key Components

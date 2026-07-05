@@ -31,6 +31,9 @@ you like it, freeze it to capture the layout, then edit and replay it anywhere:
 
 :::{mermaid}
 :caption: Capture a session once, replay it anywhere.
+:alt: manual tmux session captured with tmuxp freeze and replayed with tmuxp load
+:name: tmuxp-freeze-load-workflow
+:responsive: fit
 
 flowchart TD
     arrange["arrange tmux by hand"] --> freeze["tmuxp freeze"]:::cmd
