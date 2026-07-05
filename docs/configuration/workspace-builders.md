@@ -16,6 +16,9 @@ fall back to the default.**
 
 :::{mermaid}
 :caption: How a workspace file becomes a live tmux session.
+:alt: tmuxp load reading workspace config through a workspace builder to attach a session
+:name: tmuxp-workspace-builder-flow
+:responsive: fit
 
 ---
 config:

@@ -103,6 +103,9 @@ Or (a)ppend windows in the current active session?
 
 :::{mermaid}
 :caption: Loading from inside an existing tmux client.
+:alt: tmuxp load prompt choices inside an existing tmux client
+:name: tmuxp-load-inside-client
+:responsive: fit
 
 flowchart TD
     load["tmuxp load"]:::cmd --> q{"y / n / a ?"}

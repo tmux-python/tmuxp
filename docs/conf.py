@@ -35,9 +35,12 @@ conf = merge_sphinx_config(
         "sphinx_autodoc_api_style",
         "aafig",
         "sphinx_gp_mermaid",
+        "sphinx_gp_highlighting",
         "tmux_layout",
         "sphinx_autodoc_argparse.exemplar",
     ],
+    gp_highlighting_inline_literals="safe",
+    gp_highlighting_inline_commands=["tmuxp"],
     # Route a plain ```mermaid fence to the mermaid directive (the colon and
     # brace forms route there already via colon_fence). Redundant once the
     # pinned gp-sphinx release auto-routes when sphinx_gp_mermaid is active;

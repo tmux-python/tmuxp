@@ -93,8 +93,10 @@ Two mechanical conventions, separate from voice:
   renders monospace —
   the way that text reads as code inline; leave prose and concept nodes
   unstyled. Prefer top-to-bottom (`flowchart TD`); wide left-to-right
-  charts don't scale on narrow viewports. `docs/configuration/workspace-builders.md`
-  is the reference.
+  charts don't scale on narrow viewports. Add `:alt:`, `:name:`, and
+  `:responsive: fit` to every diagram; use `:responsive: preserve` only
+  when the wide artifact is intentional and should scroll instead of
+  shrinking. `docs/configuration/workspace-builders.md` is the reference.
 - **Internal API pages** document a module with an `{eval-rst}` block
   wrapping `.. automodule:: <module>` (with `:members:`), the way the
   existing `docs/internals/api/**` pages do. A bare `.. py:module::`

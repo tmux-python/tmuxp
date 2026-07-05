@@ -43,6 +43,9 @@ inside the text dimension. Inside tmux you can:
 
 :::{mermaid}
 :caption: A session holds windows; each window holds one or more panes.
+:alt: tmux session containing windows and panes
+:name: tmux-session-window-pane-tree
+:responsive: fit
 
 flowchart TD
     session["session"] --> w1["window"]
@@ -104,6 +107,9 @@ tmux supports as many terminals as you want.
 
 :::{mermaid}
 :caption: Switch between the windows in a session.
+:alt: switching from one active tmux window to another
+:name: tmux-window-switching
+:responsive: fit
 
 flowchart TD
     w1["window 1 · sys (active)"] -->|"switch-window 2"| w2["window 2 · vim (active)"]
@@ -118,6 +124,9 @@ a sandwich, and re-(attach), all applications are still running!
 
 :::{mermaid}
 :caption: Detach, leave everything running, and reattach later.
+:alt: detaching from and reattaching to a running tmux session
+:name: tmux-detach-reattach-cycle
+:responsive: fit
 
 flowchart TD
     running["session running"] -->|"detach · Prefix d"| detached["screen detached — apps keep running"]

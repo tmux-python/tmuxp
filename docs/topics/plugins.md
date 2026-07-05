@@ -40,6 +40,9 @@ nothing. {ref}`tmuxp load <cli-load>` drives the lifecycle in a fixed order:
 
 :::{mermaid}
 :caption: When each plugin hook fires.
+:alt: tmuxp plugin hook order during tmuxp load
+:name: tmuxp-plugin-hook-order
+:responsive: fit
 
 flowchart TD
     load["tmuxp load"]:::cmd --> bwb["before_workspace_builder"]:::cmd
@@ -71,7 +74,7 @@ interface tmuxp provides, {class}`~tmuxp.plugin.TmuxpPlugin`.
 works just as well. You need only one project file, for whichever packaging tool
 you choose.
 
-```console
+```tree
 python_module
 ├── tmuxp_plugin_my_plugin_module
 │   ├── __init__.py
