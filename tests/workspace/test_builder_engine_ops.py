@@ -76,6 +76,42 @@ def test_engine_ops_build_shape(case: _BuildCase, session: Session) -> None:
         _kill(server, case.config["session_name"])
 
 
+class _EngineCase(t.NamedTuple):
+    """An engine_ops_engine choice for the builder."""
+
+    test_id: str
+    engine_ops_engine: str
+
+
+_ENGINE_CASES: tuple[_EngineCase, ...] = (
+    _EngineCase(test_id="subprocess", engine_ops_engine="subprocess"),
+    _EngineCase(test_id="control_mode", engine_ops_engine="control_mode"),
+)
+
+
+@pytest.mark.parametrize("case", _ENGINE_CASES, ids=[c.test_id for c in _ENGINE_CASES])
+def test_engine_ops_engine_choice_builds(case: _EngineCase, session: Session) -> None:
+    """The engine_ops_engine key selects the async engine and still builds."""
+    server = session.server
+    session_name = f"eo-eng-{case.test_id}"
+    config = {
+        "session_name": session_name,
+        "engine_ops_engine": case.engine_ops_engine,
+        "windows": [
+            {"window_name": "w0", "panes": ["echo a", "echo b"]},
+            {"window_name": "w1", "panes": ["echo c"]},
+        ],
+    }
+    builder = EngineOpsWorkspaceBuilder(session_config=config, server=server)
+    try:
+        builder.build()
+        built = builder.session
+        assert built.name == session_name
+        assert [len(w.panes) for w in built.windows] == [2, 1]
+    finally:
+        _kill(server, session_name)
+
+
 def test_engine_ops_satisfies_protocol(session: Session) -> None:
     """The builder is a conforming WorkspaceBuilderProtocol instance."""
     builder = EngineOpsWorkspaceBuilder(

@@ -21,7 +21,10 @@ import asyncio
 import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
-from libtmux.experimental.engines import AsyncSubprocessEngine
+from libtmux.experimental.engines import (
+    AsyncControlModeEngine,
+    AsyncSubprocessEngine,
+)
 from libtmux.experimental.workspace import analyze
 from libtmux.experimental.workspace.events import (
     PaneCreated,
@@ -144,8 +147,9 @@ class EngineOpsWorkspaceBuilder:
         if append:
             msg = "engine-ops builder does not support append; use the classic builder"
             raise NotImplementedError(msg)
-        workspace = analyze(self.session_config)
-        engine = AsyncSubprocessEngine.for_server(self.server)
+        config = dict(self.session_config)
+        engine_kind = config.pop("engine_ops_engine", "subprocess")
+        workspace = analyze(config)
         windows = self.session_config.get("windows", [])
 
         async def _bridge(event: BuildEvent) -> None:
@@ -164,7 +168,17 @@ class EngineOpsWorkspaceBuilder:
                 )
             self.on_build_event(payload)
 
-        asyncio.run(workspace.abuild(engine, on_event=_bridge))
+        async def _run() -> None:
+            # control_mode uses one persistent ``tmux -C`` (an async context
+            # manager); subprocess forks per dispatch (a plain engine).
+            if engine_kind == "control_mode":
+                async with AsyncControlModeEngine.for_server(self.server) as engine:
+                    await workspace.abuild(engine, on_event=_bridge)
+            else:
+                subproc = AsyncSubprocessEngine.for_server(self.server)
+                await workspace.abuild(subproc, on_event=_bridge)
+
+        asyncio.run(_run())
 
         built = self.server.sessions.get(session_name=workspace.name)
         assert built is not None
