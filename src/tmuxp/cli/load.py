@@ -121,6 +121,7 @@ class CLILoadNamespace(argparse.Namespace):
     panel_lines: int | None
     no_progress: bool
     engine_ops: bool
+    engine_ops_engine: str
     parallel: bool
     dry_run: bool
     no_fold: bool
@@ -467,6 +468,7 @@ def load_workspace(
     panel_lines: int | None = None,
     no_progress: bool = False,
     builder_override: str | None = None,
+    engine_ops_engine: str = "subprocess",
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -592,6 +594,7 @@ def load_workspace(
     # already names one; resolve_builder_class reads the workspace_builder key.
     if builder_override:
         expanded_workspace["workspace_builder"] = builder_override
+        expanded_workspace["engine_ops_engine"] = engine_ops_engine
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
@@ -867,6 +870,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         ),
     )
     parser.add_argument(
+        "--engine-ops-engine",
+        dest="engine_ops_engine",
+        choices=("subprocess", "control_mode"),
+        default="subprocess",
+        help=(
+            "Async engine for --engine-ops: 'subprocess' (default, one tmux "
+            "fork per dispatch) or 'control_mode' (one persistent tmux -C "
+            "connection -- faster for larger workspaces)."
+        ),
+    )
+    parser.add_argument(
         "--parallel",
         dest="parallel",
         action="store_true",
@@ -1120,7 +1134,10 @@ def _load_parallel(
     >>> callable(_load_parallel)
     True
     """
-    from libtmux.experimental.engines import AsyncSubprocessEngine
+    from libtmux.experimental.engines import (
+        AsyncControlModeEngine,
+        AsyncSubprocessEngine,
+    )
     from libtmux.experimental.ops import SequentialPlanner
     from libtmux.experimental.workspace import (
         Workspace,
@@ -1242,9 +1259,18 @@ def _load_parallel(
     )
 
     planner = SequentialPlanner() if args.no_fold else None
-    engine = AsyncSubprocessEngine.for_server(server)
+
+    async def _abuild() -> t.Any:
+        # control_mode uses one persistent tmux -C (async context manager);
+        # subprocess forks per dispatch (a plain engine).
+        if args.engine_ops_engine == "control_mode":
+            async with AsyncControlModeEngine.for_server(server) as engine:
+                return await ws_set.abuild(engine, planner=planner)
+        subproc = AsyncSubprocessEngine.for_server(server)
+        return await ws_set.abuild(subproc, planner=planner)
+
     try:
-        result = asyncio.run(ws_set.abuild(engine, planner=planner))
+        result = asyncio.run(_abuild())
     except FileExistsError as error:
         # A session already exists and its on_exists policy is 'error'.
         tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
@@ -1366,4 +1392,5 @@ def command_load(
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
             builder_override="engine-ops" if args.engine_ops else None,
+            engine_ops_engine=args.engine_ops_engine,
         )
