@@ -137,6 +137,7 @@ sphinx-autodoc-pytest-fixtures = false
 sphinx-autodoc-sphinx = false
 sphinx-autodoc-typehints-gp = false
 sphinx-fonts = false
+sphinx-gp-highlighting = false
 sphinx-gp-mermaid = false
 sphinx-gp-opengraph = false
 sphinx-gp-llms = false
