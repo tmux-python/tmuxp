@@ -74,7 +74,7 @@ interface tmuxp provides, {class}`~tmuxp.plugin.TmuxpPlugin`.
 works just as well. You need only one project file, for whichever packaging tool
 you choose.
 
-```console
+```tree
 python_module
 ├── tmuxp_plugin_my_plugin_module
 │   ├── __init__.py
