@@ -610,7 +610,7 @@ wheels = [
 [[package]]
 name = "libtmux"
 version = "0.61.0"
-source = { git = "https://github.com/tmux-python/libtmux.git?branch=engine-ops#e88e87b6d6ef22ac08eb4025de78e5f9ec205928" }
+source = { git = "https://github.com/tmux-python/libtmux.git?branch=engine-ops#22557d9815bb332bfa0ef96fc1d7050f953aeba8" }
 
 [[package]]
 name = "linkify-it-py"
