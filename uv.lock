@@ -413,16 +413,16 @@ wheels = [
 
 [[package]]
 name = "gp-libs"
-version = "0.0.18"
+version = "0.0.19"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
     { name = "myst-parser", version = "4.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "myst-parser", version = "5.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/23/10/155b50d9aefeef98c590e605334864b069cfb14453a3d3d7395e05129c54/gp_libs-0.0.18.tar.gz", hash = "sha256:cd718110e156eee0efd0ec1c4016332d5839b077bc4fa9a56ca233a5dc232d5e", size = 15743, upload-time = "2026-06-27T16:35:18.345Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/e3/947c93526c57541d7876b3c0177372220a904b4d8fa4024c54a47506a1c6/gp_libs-0.0.19.tar.gz", hash = "sha256:26fa76740dcfcc37b071903572b3fb3bfc71d2b545e07e7e63977838a3b2393e", size = 16022, upload-time = "2026-07-14T01:21:11.509Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/02/b5b58549a9f48740359260dc74dec6e8d506dfb70c0a91e641293ab70c39/gp_libs-0.0.18-py3-none-any.whl", hash = "sha256:7e59ef4644366f33517a580e827b9f7837e3c02ce470af8bb9995ba87c86a20f", size = 16371, upload-time = "2026-06-27T16:35:17.003Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/62/f5ad23c155267d145c96ba3485f638956b818f32ba03c7ad3fc31236c01c/gp_libs-0.0.19-py3-none-any.whl", hash = "sha256:f79c3cf4a7f646b26784c599fa39919257df7add43fc004e602777adc0e59f1e", size = 16694, upload-time = "2026-07-14T01:21:10.404Z" },
 ]
 
 [[package]]
@@ -1700,7 +1700,7 @@ dev = [
     { name = "aafigure" },
     { name = "codecov" },
     { name = "coverage" },
-    { name = "gp-libs", specifier = ">=0.0.18" },
+    { name = "gp-libs", specifier = ">=0.0.19" },
     { name = "gp-sphinx", specifier = "==0.0.1a34" },
     { name = "mypy" },
     { name = "pillow" },
@@ -1721,7 +1721,7 @@ dev = [
 ]
 docs = [
     { name = "aafigure" },
-    { name = "gp-libs", specifier = ">=0.0.18" },
+    { name = "gp-libs", specifier = ">=0.0.19" },
     { name = "gp-sphinx", specifier = "==0.0.1a34" },
     { name = "pillow" },
     { name = "sphinx-autobuild" },
@@ -1738,7 +1738,7 @@ lint = [
     { name = "types-pyyaml" },
 ]
 testing = [
-    { name = "gp-libs", specifier = ">=0.0.18" },
+    { name = "gp-libs", specifier = ">=0.0.19" },
     { name = "pytest" },
     { name = "pytest-mock" },
     { name = "pytest-rerunfailures" },
