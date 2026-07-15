@@ -95,6 +95,8 @@ Load tmux sessions via json and YAML,
 [tmuxinator](https://github.com/aziz/tmuxinator) and
 [teamocil](https://github.com/remiprev/teamocil) style.
 
+<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/demos/asciinema/tmuxp-load.gif" alt="tmuxp load building a tmux session and attaching to it" width="1176" />
+
 ```yaml
 session_name: 4-pane-split
 windows:
@@ -199,6 +201,8 @@ $ tmuxp shell -c 'print(window.name.upper())'
 MY_WINDOW
 ```
 
+<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/demos/asciinema/tmuxp-shell.gif" alt="tmuxp shell introspecting a live session from Python" width="661" />
+
 Read more on [tmuxp shell](https://tmuxp.git-pull.com/cli/shell/) in the CLI
 docs.
 
@@ -215,7 +219,7 @@ You can also load sessions in the background by passing `-d` flag
 
 # Screenshot
 
-<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/tmuxp-demo.gif" class="align-center" style="width:45.0%" alt="image" />
+<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/demos/asciinema/tmuxp-ls.gif" alt="tmuxp ls listing configured workspaces" width="634" />
 
 # Freeze a tmux session
 
@@ -227,6 +231,8 @@ $ tmuxp freeze session-name
 
 See more about [freezing tmux](https://tmuxp.git-pull.com/cli/freeze/)
 sessions.
+
+<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/demos/asciinema/tmuxp-freeze.gif" alt="tmuxp freeze snapshotting a live session to a workspace file" width="624" />
 
 # Convert a session file
 
@@ -251,6 +257,8 @@ Or the long form:
 $ tmuxp convert --yes filename
 ```
 
+<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/demos/asciinema/tmuxp-convert.gif" alt="tmuxp convert turning a YAML workspace into JSON" width="536" />
+
 # Plugin System
 
 tmuxp has a plugin system to allow for custom behavior. See more about the
@@ -264,6 +272,10 @@ purposes.
 ```console
 $ tmuxp load --log-file <log-file-name> .
 ```
+
+`tmuxp debug-info` prints environment and version details to include in bug reports:
+
+<img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/docs/_static/demos/asciinema/tmuxp-debug-info.gif" alt="tmuxp debug-info printing environment and version diagnostics" width="873" />
 
 Collect system info to submit with a Github issue:
 
