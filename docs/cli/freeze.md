@@ -6,6 +6,12 @@
 
 Export a running tmux session to a workspace configuration file. This allows you to save the current state of your tmux session for later restoration.
 
+```{image} ../_static/demos/asciinema/tmuxp-freeze.gif
+:alt: tmuxp freeze snapshotting a live session to a workspace file
+:width: 100%
+:loading: lazy
+```
+
 ## Command
 
 ```{eval-rst}
