@@ -396,7 +396,7 @@ wheels = [
 
 [[package]]
 name = "gp-furo-theme"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "accessible-pygments" },
@@ -406,9 +406,9 @@ dependencies = [
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "sphinx-basic-ng" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/3d/2f84408adfd0ae79e00c021b205cea3f63e19e7bfb2a0a5adb5859f2e6a0/gp_furo_theme-0.0.1a34.tar.gz", hash = "sha256:fc6ae36a7ad7a23c0da776b6301ab29237b6ac37f4544373964cf94aceb4af75", size = 34308, upload-time = "2026-07-14T01:26:28.876Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/73/1e/06ca39c8eed45e401dcb56304fc400afb2614010721315febe838e4b3cb4/gp_furo_theme-0.0.1a35.tar.gz", hash = "sha256:d2fb40acebc215fd36345adbcd6d36f454b7f8047206d7f44f5068fbae688ff9", size = 34309, upload-time = "2026-07-19T21:54:01.462Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/83/88b831bf29ceb7282813f71b4a65d40e1bfdfd1643268f21292e2281f9c7/gp_furo_theme-0.0.1a34-py3-none-any.whl", hash = "sha256:96d4e721ca3747fce26effd5a55bcbbd4db6a056d2cd795cf4ae73828ec9d880", size = 43657, upload-time = "2026-07-14T01:26:02.191Z" },
+    { url = "https://files.pythonhosted.org/packages/63/db/a2ad42d667bd9a028dfcdf3c7bc97bfc761d6ae0c4299dbabd9441ae08cb/gp_furo_theme-0.0.1a35-py3-none-any.whl", hash = "sha256:08a9a87584ac3f971e398deb21468ca63a3243d71907c7c5c01d1f80d3eea257", size = 43660, upload-time = "2026-07-19T21:53:36.455Z" },
 ]
 
 [[package]]
@@ -427,7 +427,7 @@ wheels = [
 
 [[package]]
 name = "gp-sphinx"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
@@ -449,9 +449,9 @@ dependencies = [
     { name = "sphinx-inline-tabs" },
     { name = "sphinxext-rediraffe" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ad/a7/f85c7f300050f58460d13f65daca0ecb033349b57e461b6c1f643561b6d1/gp_sphinx-0.0.1a34.tar.gz", hash = "sha256:5601d9d4f19552d32e5629ce00cf034f7f1fbbbfe36ba6e00c2d2e76bdbb1433", size = 19762, upload-time = "2026-07-14T01:26:29.927Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/6a/92bc71e25c9a4dae7bac61ce526514a63dc6229012d89c92762a0d5064af/gp_sphinx-0.0.1a35.tar.gz", hash = "sha256:44cfbbd30950f574fdc50beec1c966c1eaa1ac7e71b21bdb775b960d516cc97e", size = 19761, upload-time = "2026-07-19T21:54:02.307Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/9b/1812365d4bd5b1a67aa00f18526676064ccfc6580994921f8a484b4b134f/gp_sphinx-0.0.1a34-py3-none-any.whl", hash = "sha256:4dc785ea4aa1374909ef13462a4a04bb138d6d1e57994297cf3f19bb6d02ffb5", size = 20279, upload-time = "2026-07-14T01:26:03.599Z" },
+    { url = "https://files.pythonhosted.org/packages/34/b2/cd304cc360cdb6771ad63f4084257959bf6bb50b15c0f41a3549e7845f09/gp_sphinx-0.0.1a35-py3-none-any.whl", hash = "sha256:d8772bb635e4001368c1432a5a97b2042e207e381f947e8317df31caf0fac011", size = 20277, upload-time = "2026-07-19T21:53:37.966Z" },
 ]
 
 [[package]]
@@ -1307,7 +1307,7 @@ wheels = [
 
 [[package]]
 name = "sphinx-autodoc-api-style"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -1315,14 +1315,14 @@ dependencies = [
     { name = "sphinx-ux-autodoc-layout" },
     { name = "sphinx-ux-badges" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8d/75/d1888a511b0f14af5f4b1b8d8a21281674ef16daf6a07b81d18e9491fa42/sphinx_autodoc_api_style-0.0.1a34.tar.gz", hash = "sha256:672146fa2760801653d258c175f3c9e05bb7e149e80b80b01051ddc52e755ca4", size = 9455, upload-time = "2026-07-14T01:26:30.903Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/50/11/5b740da185145e5514ca768ed482de5ee2cbffd2f4d239a610eb6ab5e7b3/sphinx_autodoc_api_style-0.0.1a35.tar.gz", hash = "sha256:39a3a3ebbeef23e7caae58bb437da1edb30af9a68c328a35198622993dc24c5a", size = 9453, upload-time = "2026-07-19T21:54:03.704Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/86/03/2f11f4acec4faeac941915777dc70cc31218714aa85e1dd70b894ac0918c/sphinx_autodoc_api_style-0.0.1a34-py3-none-any.whl", hash = "sha256:03b5202a976b2bed4249459519523c590d5dca80ff5a0378d9fa8856ab9e8a8b", size = 9567, upload-time = "2026-07-14T01:26:05.332Z" },
+    { url = "https://files.pythonhosted.org/packages/88/ec/8c984b39cc57ca21b2581f4095f03025ec19f10016aa4a5398041da51142/sphinx_autodoc_api_style-0.0.1a35-py3-none-any.whl", hash = "sha256:45c6a77e0f8df4c4d18c5be55d3db57c00690eb76bce0bf1fa67de1dd64a3a12", size = 9569, upload-time = "2026-07-19T21:53:39.479Z" },
 ]
 
 [[package]]
 name = "sphinx-autodoc-argparse"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
@@ -1330,22 +1330,22 @@ dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d2/82/1161221501a288edff7e778801f7d799381d79ef0f6c72ebb5d5167476e6/sphinx_autodoc_argparse-0.0.1a34.tar.gz", hash = "sha256:78ce98475090b2f718fd26e0459c8c6fe5fa1731e1de79571fc3e98271c3bfe0", size = 42801, upload-time = "2026-07-14T01:26:31.861Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c2/07/ae5226132714963082214ef73dd39e31f58c05ebe79cf5b4c690eab7b4ee/sphinx_autodoc_argparse-0.0.1a35.tar.gz", hash = "sha256:2e668dac2f115017bd8f95c5997ec174833159589577096b1ebb591b4ca6ed7a", size = 42803, upload-time = "2026-07-19T21:54:04.972Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f4/a3/af879d9718607a72eca9fe2a9308377766e0abad883ef404e606d7ae278e/sphinx_autodoc_argparse-0.0.1a34-py3-none-any.whl", hash = "sha256:2eab09a290674b2e7aace149f8e1cf07e3ca8d124ebb21b4826d6984a41b2ef6", size = 47654, upload-time = "2026-07-14T01:26:06.732Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/28/8d823a8ad5be0dcba4e62a9f9aa72985b0b7647b5cfc7c185fe7fcf36dd2/sphinx_autodoc_argparse-0.0.1a35-py3-none-any.whl", hash = "sha256:582329af0204874216cf081f5d6a31f6a4d3c070cfa6bdf5b03b0de506ee2309", size = 47654, upload-time = "2026-07-19T21:53:40.753Z" },
 ]
 
 [[package]]
 name = "sphinx-autodoc-typehints-gp"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dd/4a/cedc7da36921ba7fdb98d6b9f4b7a9f0d1546be3c84dae6e1667a185d77e/sphinx_autodoc_typehints_gp-0.0.1a34.tar.gz", hash = "sha256:97b9f197e6d3205745db3cad7ba6eb1668ce57680c2cae7c8550e0ce01f6098a", size = 36866, upload-time = "2026-07-14T01:26:36.857Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/6e/f9341eb41928e4512f011b480cc40db51f10718b8458981e7d774b8d7166/sphinx_autodoc_typehints_gp-0.0.1a35.tar.gz", hash = "sha256:38897bb5d3cb1d356cd86283594bf67853df279260493a3860e043c6eaf4cf65", size = 36865, upload-time = "2026-07-19T21:54:09.603Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/05/f49438bedcf8613666d3019b1d2d5816a58711fd944b5a6c64de2980f62d/sphinx_autodoc_typehints_gp-0.0.1a34-py3-none-any.whl", hash = "sha256:dd5575e4d904940eba0a59e1510666de512006a8df7893448bef9143aaabf64d", size = 39049, upload-time = "2026-07-14T01:26:14.05Z" },
+    { url = "https://files.pythonhosted.org/packages/a3/e4/78eab0d6113aa6c6051efa0bb19fde3e16f76722ad765bfe1a80e69bf1e8/sphinx_autodoc_typehints_gp-0.0.1a35-py3-none-any.whl", hash = "sha256:fdbd3e3e63c6690f8e0a56abc167e6c74964b5e30a0ee6fbdf931a3aee7ac6ba", size = 39049, upload-time = "2026-07-19T21:53:47.797Z" },
 ]
 
 [[package]]
@@ -1407,20 +1407,20 @@ wheels = [
 
 [[package]]
 name = "sphinx-fonts"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/64/654804528ef85604722dbb168de178fcae5daac8e85c86317dff5155422d/sphinx_fonts-0.0.1a34.tar.gz", hash = "sha256:bf8392cd057c430db3064a0dd6f43bfd0defe94a80fcd0c68993b04268201cb4", size = 5790, upload-time = "2026-07-14T01:26:37.893Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2d/db/db42563a8b22886241c00d319cb7c7297c074ce5d45ff4ed23f2fa4b001f/sphinx_fonts-0.0.1a35.tar.gz", hash = "sha256:13a1c83a02c0f14547f0295d8d9d9f5728ba5fb19793b319dbadddace714ee4c", size = 5788, upload-time = "2026-07-19T21:54:10.475Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0f/bf/713e7e8f1f79105045c30a864bceeef62b6ebf65b6551e531868f2403fa4/sphinx_fonts-0.0.1a34-py3-none-any.whl", hash = "sha256:5057228567d03e554f47045cc32a178bd6bbeab9cd01e760bde8f2236843872e", size = 4361, upload-time = "2026-07-14T01:26:15.473Z" },
+    { url = "https://files.pythonhosted.org/packages/13/73/875faebf651c63eb29462ae181b70e164b707d53b245770ab8aa74c93ed2/sphinx_fonts-0.0.1a35-py3-none-any.whl", hash = "sha256:c1a78e43591937d32dab3e4335cfd810f1b3ccc656e2deb873b10d55b179f07d", size = 4360, upload-time = "2026-07-19T21:53:48.957Z" },
 ]
 
 [[package]]
 name = "sphinx-gp-highlighting"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "docutils" },
@@ -1428,75 +1428,75 @@ dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1f/b7/0e144d176a024285c43b81c38e6a49fdd517c06b83b7371afd83fdc6c390/sphinx_gp_highlighting-0.0.1a34.tar.gz", hash = "sha256:e38a705a74ff733079c9d4a4220511b363a313b131da620f6bd641987785ace3", size = 7451, upload-time = "2026-07-14T01:26:38.79Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/8e/7a169e2f3f8015d1e2af4921186cc032a8cd29e119a33cbb84f426f8a8db/sphinx_gp_highlighting-0.0.1a35.tar.gz", hash = "sha256:d51ddbc437b5458a8c39f7a09761b8332fa9599f6f10468686574cf4f4936ddf", size = 7453, upload-time = "2026-07-19T21:54:11.279Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/5c/646952a5105b64dda2309d10a5a0154fb2df47db3799049256a42b1b6c6e/sphinx_gp_highlighting-0.0.1a34-py3-none-any.whl", hash = "sha256:ef9cf59c39324f0e749b5247fe15286976532d36a0a1bd89234ad4debb336976", size = 7388, upload-time = "2026-07-14T01:26:16.711Z" },
+    { url = "https://files.pythonhosted.org/packages/93/6a/b31a5d0614af78f6d13601d2501a6766b245b395e9d395f99a8f7bfdd135/sphinx_gp_highlighting-0.0.1a35-py3-none-any.whl", hash = "sha256:93fb5de31af957c7fa0ecb0d0448c3f098ccd6ddcd32c480d0ac5a10441c28b0", size = 7388, upload-time = "2026-07-19T21:53:50.117Z" },
 ]
 
 [[package]]
 name = "sphinx-gp-llms"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f9/86/3a1d4a33af633f77a2463bccfd88905eff5c76625250f56e66e5fc8ada8d/sphinx_gp_llms-0.0.1a34.tar.gz", hash = "sha256:19b0d98ba21057c09af49b0794c65cf8fd62860ff2576a631a1ba53684a15037", size = 9911, upload-time = "2026-07-14T01:26:39.676Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/67/9c/e44a783c0efcf05a0c0589dc66e82d76754a6d4873da3f869c4183fc4b7f/sphinx_gp_llms-0.0.1a35.tar.gz", hash = "sha256:6b511c2f3e7301087ef5c994b9805882a95064a1bb9c40a8bb849528f5103d62", size = 9911, upload-time = "2026-07-19T21:54:12.078Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/0e/fff0db236b43e6e11b1625c9988585f14151f1a871bd4d2f20a6ba1d9255/sphinx_gp_llms-0.0.1a34-py3-none-any.whl", hash = "sha256:ef4707c96e5387c95dbc4237f87f8c2d0e85afdd5798aea4f0a86bf767cf87ce", size = 12635, upload-time = "2026-07-14T01:26:18.435Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/44/81938643bfb8ecfd06fbd0e55326e0f0924b2f0aa06856f14ecaacaa1485/sphinx_gp_llms-0.0.1a35-py3-none-any.whl", hash = "sha256:7f245717fd75218e1cf430fdc774a184a455ace6ec52c6c67a0196e721a2d46c", size = 12638, upload-time = "2026-07-19T21:53:51.27Z" },
 ]
 
 [[package]]
 name = "sphinx-gp-mermaid"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7a/8c/e2f9a363438430cdc30ad5f2caa391416c1e2a5f3458c1ec561c09fb3c49/sphinx_gp_mermaid-0.0.1a34.tar.gz", hash = "sha256:82b2f7594d97a31f87bc9f9285db338b19abdd6f39c35d074198d63b55a6667f", size = 71319, upload-time = "2026-07-14T01:26:40.616Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/79/7a/2e2510a76ff3a6fb66307bbc4cdbb86ed98b91818559efdc281e3bd14897/sphinx_gp_mermaid-0.0.1a35.tar.gz", hash = "sha256:bdab75ef56933541839463efbbb064315ebe1e03234e925c60ff6cfa824d4494", size = 71320, upload-time = "2026-07-19T21:54:13.078Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/e6/d25d546cccf18afb87bf1944380e95a5a87c942a5f8b95ccddb3142f942f/sphinx_gp_mermaid-0.0.1a34-py3-none-any.whl", hash = "sha256:a6333edc54516caf7c71bfdbdec25a8710f42e53622ba6f9448e5f84368e4529", size = 12812, upload-time = "2026-07-14T01:26:19.651Z" },
+    { url = "https://files.pythonhosted.org/packages/33/56/1301a894a30015d53e0868a4bf0305c76a0fdda88fd53069218ef8e3550f/sphinx_gp_mermaid-0.0.1a35-py3-none-any.whl", hash = "sha256:205e765bab7666d2bc4d8848d819b10a24886088a5bdc664fde49cb6704d3b86", size = 12816, upload-time = "2026-07-19T21:53:52.616Z" },
 ]
 
 [[package]]
 name = "sphinx-gp-opengraph"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f8/9f/3b7f06a5cf4cf9b0d5708c40a5b4b731e44626d2bae6ae9e3c1a88beee42/sphinx_gp_opengraph-0.0.1a34.tar.gz", hash = "sha256:a77faf3015422d0e6809a0ad3050ee530701d81cf13e9b0514801b2ec07578c5", size = 11947, upload-time = "2026-07-14T01:26:41.621Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/08/39/26f3f640d542dd0ce29fda607b7ba14e69be570361d977f1472483fb5ce5/sphinx_gp_opengraph-0.0.1a35.tar.gz", hash = "sha256:7cdff5b7bd301ef07f3a38c9506e89e2650fa21380f8bbf5e961aedc0bd9e91b", size = 11947, upload-time = "2026-07-19T21:54:13.972Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/99/607674ef3fbd704457f028780c09fbd23a03105113ee9562ed66e65c4d95/sphinx_gp_opengraph-0.0.1a34-py3-none-any.whl", hash = "sha256:2de6db5c3b50e4fa8ade045d1107143eb63d017e2591bdf7bb5e93b05953991b", size = 12183, upload-time = "2026-07-14T01:26:20.855Z" },
+    { url = "https://files.pythonhosted.org/packages/af/a2/9df8761ba248add19fddf75ce83b2802bd1c753e7a835b9ed4ec75f9280c/sphinx_gp_opengraph-0.0.1a35-py3-none-any.whl", hash = "sha256:75c6a1bffcc21e9484fd5f65b0688cf6063bcf1648f122abd451cc4e7b7a9a80", size = 12185, upload-time = "2026-07-19T21:53:53.803Z" },
 ]
 
 [[package]]
 name = "sphinx-gp-sitemap"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/40/8fafe3ed25a9ce3f25f7184076544dc87c22014033150190d217d741c70f/sphinx_gp_sitemap-0.0.1a34.tar.gz", hash = "sha256:cef3ba77d161cfabe4655e6278a38e346b074afab261bfbf9a8a318fdc5ccd70", size = 9959, upload-time = "2026-07-14T01:26:42.473Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3d/de/6f2ae4274b696d6ae4e19dc2323481c93ee45c7e7ac2fa84f7721042877f/sphinx_gp_sitemap-0.0.1a35.tar.gz", hash = "sha256:83d2ab5b307f3ef03215c0a51c0cae52d46c4bfead2d3c4343ba56d670d7c30f", size = 9956, upload-time = "2026-07-19T21:54:14.732Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/13/864d81d87bb2785d36267083c7b018ca3cacd599775cdfa95ae9656a8f56/sphinx_gp_sitemap-0.0.1a34-py3-none-any.whl", hash = "sha256:4f4b0bbdd7cc573d9d9ecf5d0a94d833f5198e47c4909ab3fb16f5c7573d67d0", size = 8980, upload-time = "2026-07-14T01:26:22.264Z" },
+    { url = "https://files.pythonhosted.org/packages/28/12/8e5cf2ce8cdae9ab3fbf4cd78ada87d0e8539ed6481d286cb3640d7d63da/sphinx_gp_sitemap-0.0.1a35-py3-none-any.whl", hash = "sha256:1852bddc1f67820394cd6c40be1040fc2e9830f63ba2786505c0d55591efb2ac", size = 8982, upload-time = "2026-07-19T21:53:54.969Z" },
 ]
 
 [[package]]
 name = "sphinx-gp-theme"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gp-furo-theme" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/48/4a/5d42ea3502af7f1a6d7d537cd4b7a8958105ead177964abfaf4604a2ed45/sphinx_gp_theme-0.0.1a34.tar.gz", hash = "sha256:851029dd34c56c6fbda27dd6a228bf57e0b897bf96da1147ad78f11c4f09c067", size = 18286, upload-time = "2026-07-14T01:26:43.306Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/33/c70d2736ad56f10dfda3086a5001aec03da53197aeb7289c3e20a4b53547/sphinx_gp_theme-0.0.1a35.tar.gz", hash = "sha256:8c699698cbe65fbdbe6d64201778c4339c4f9707feb6c618c8f4bad6dc191bf0", size = 18486, upload-time = "2026-07-19T21:54:15.518Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/90/5af335d6537df8287993d12941962e9732b657ca7b5f7e3d54fe9361c82c/sphinx_gp_theme-0.0.1a34-py3-none-any.whl", hash = "sha256:d54c3dc65d2fb1a96883f7a87fbc6057b66683cf067f3ef227d57cbc097d45a6", size = 19886, upload-time = "2026-07-14T01:26:23.522Z" },
+    { url = "https://files.pythonhosted.org/packages/57/d9/eed280cbae7110e6930b134605c2e6be76350b67b7fcbb47e25e9ea7b3e3/sphinx_gp_theme-0.0.1a35-py3-none-any.whl", hash = "sha256:5978fe159e467e3263383850331ff14d3f814631e060883764f68278068e0d36", size = 20106, upload-time = "2026-07-19T21:53:56.179Z" },
 ]
 
 [[package]]
@@ -1514,28 +1514,28 @@ wheels = [
 
 [[package]]
 name = "sphinx-ux-autodoc-layout"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/09/3a/86386c93a03f5f7da5af3854bfe59c6f5f497a4f2ca5695d46a5f061d421/sphinx_ux_autodoc_layout-0.0.1a34.tar.gz", hash = "sha256:1f988b52f33a5d618b5eda9441aadbc2ce752f07debe1b518cf566e49e22bdc1", size = 30598, upload-time = "2026-07-14T01:26:44.323Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/75/b6b218eb91a7fd24710ebafd4e0be7e3a1a598a7adb389d330a47719345d/sphinx_ux_autodoc_layout-0.0.1a35.tar.gz", hash = "sha256:aec957122a4e20015fd93d5d313d883d934f22fb1f38ec6edcb19d475f6e10b9", size = 30602, upload-time = "2026-07-19T21:54:16.543Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/44/2ff46d3b18c53b3218ded9affb99afffe988b33bb722bb377ba070899f37/sphinx_ux_autodoc_layout-0.0.1a34-py3-none-any.whl", hash = "sha256:ce440b8882e034219f2a23a3751e6626b9d81aec71c0ff768ca9c414d99fc783", size = 34998, upload-time = "2026-07-14T01:26:24.881Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/32/3bc568bb987755aeb2617054c2949f83ff552e05a8de6d33cf5602b2044b/sphinx_ux_autodoc_layout-0.0.1a35-py3-none-any.whl", hash = "sha256:69110289993ed8be86ba256c2f833f31e6b7628c858a5fa6842ed2d93a9a1ee6", size = 34999, upload-time = "2026-07-19T21:53:57.624Z" },
 ]
 
 [[package]]
 name = "sphinx-ux-badges"
-version = "0.0.1a34"
+version = "0.0.1a35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "sphinx", version = "8.2.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/92/ed/dcc90346f1681ed6ae9f7b16552afdde2e13a3bb407284bf48d7b3aa6bb3/sphinx_ux_badges-0.0.1a34.tar.gz", hash = "sha256:3bd4716e9ab05ca9dac26cadb54213057f7932eb266a943ce2e98d2d08e7e9b5", size = 16723, upload-time = "2026-07-14T01:26:45.277Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9a/b6/3cda8ad1a84fd2712a8220a8c97b852e93ed88644dd118911ba7de348faa/sphinx_ux_badges-0.0.1a35.tar.gz", hash = "sha256:f2d322c0d1d8bd51804a10daa1ee9e93adab6b5977c13c85b6a7d5ed29efd770", size = 16723, upload-time = "2026-07-19T21:54:17.52Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/f9/07029ca3cbdb6818dd12bcf89a8396cd0f51464e2dcfd5fac4f395589113/sphinx_ux_badges-0.0.1a34-py3-none-any.whl", hash = "sha256:1f837645d2addd6ce83f3e641148c6ef7e3580bed9e9a981b61da2810eebc433", size = 17490, upload-time = "2026-07-14T01:26:26.113Z" },
+    { url = "https://files.pythonhosted.org/packages/96/32/6fcaeda520e242521084220442a5cabefae075ec3477261e0530dacec9d7/sphinx_ux_badges-0.0.1a35-py3-none-any.whl", hash = "sha256:c73426d800e59d403411921cbc37db41bcee70501cb856e50a812c545263de05", size = 17487, upload-time = "2026-07-19T21:53:58.872Z" },
 ]
 
 [[package]]
@@ -1701,7 +1701,7 @@ dev = [
     { name = "codecov" },
     { name = "coverage" },
     { name = "gp-libs", specifier = ">=0.0.19" },
-    { name = "gp-sphinx", specifier = "==0.0.1a34" },
+    { name = "gp-sphinx", specifier = "==0.0.1a35" },
     { name = "mypy" },
     { name = "pillow" },
     { name = "pytest" },
@@ -1711,10 +1711,10 @@ dev = [
     { name = "pytest-watcher" },
     { name = "ruff" },
     { name = "sphinx-autobuild" },
-    { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a34" },
-    { name = "sphinx-autodoc-argparse", specifier = "==0.0.1a34" },
-    { name = "sphinx-gp-highlighting", specifier = "==0.0.1a34" },
-    { name = "sphinx-gp-mermaid", specifier = "==0.0.1a34" },
+    { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a35" },
+    { name = "sphinx-autodoc-argparse", specifier = "==0.0.1a35" },
+    { name = "sphinx-gp-highlighting", specifier = "==0.0.1a35" },
+    { name = "sphinx-gp-mermaid", specifier = "==0.0.1a35" },
     { name = "types-docutils" },
     { name = "types-pygments" },
     { name = "types-pyyaml" },
@@ -1722,13 +1722,13 @@ dev = [
 docs = [
     { name = "aafigure" },
     { name = "gp-libs", specifier = ">=0.0.19" },
-    { name = "gp-sphinx", specifier = "==0.0.1a34" },
+    { name = "gp-sphinx", specifier = "==0.0.1a35" },
     { name = "pillow" },
     { name = "sphinx-autobuild" },
-    { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a34" },
-    { name = "sphinx-autodoc-argparse", specifier = "==0.0.1a34" },
-    { name = "sphinx-gp-highlighting", specifier = "==0.0.1a34" },
-    { name = "sphinx-gp-mermaid", specifier = "==0.0.1a34" },
+    { name = "sphinx-autodoc-api-style", specifier = "==0.0.1a35" },
+    { name = "sphinx-autodoc-argparse", specifier = "==0.0.1a35" },
+    { name = "sphinx-gp-highlighting", specifier = "==0.0.1a35" },
+    { name = "sphinx-gp-mermaid", specifier = "==0.0.1a35" },
 ]
 lint = [
     { name = "mypy" },
