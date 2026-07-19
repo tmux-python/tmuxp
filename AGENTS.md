@@ -547,6 +547,11 @@ patterns:
   robust, seamless, production-ready, leverage, delve, tapestry,* and
   *best practices* with concrete descriptions of behavior,
   constraints, or trade-offs.
+- **Coded Labels:** Write rules, options, and findings as plain
+  imperatives. Don't tag them with codes like `[R1]`, `A1`, or
+  `Option B` in artifacts a human reads — the reader shouldn't have to
+  decode an index. Internal agent bookkeeping may use ids; shipped text
+  may not.
 
 ### Preservation & Context
 
@@ -600,3 +605,25 @@ to identify which commits this branch actually introduced. Then:
   work or expand the branch beyond its stated goal, stay in lane:
   protect the current goal and leave prior slop alone.
 
+### Change Discipline
+
+- Make the smallest coherent change that solves the verified problem;
+  keep unrelated cleanup out of it.
+- Reuse an existing file, component, helper, API, or test before adding
+  a new one. Modify in place when the change fits the file's
+  responsibility.
+- Keep new APIs private until a caller outside the module needs them.
+- Add a file only for a durable boundary — a distinct responsibility,
+  independent reuse, or splitting an oversized high-touch module — not
+  for a single-use helper or a one-line re-export.
+
+### Keep Instructions Lean
+
+Treat this file like code and prune it.
+
+- Delete a line whose removal would not cause a mistake.
+- Move multi-step procedures into skills, path-specific rules into
+  nested AGENTS.md files, and hard limits into hooks or CI.
+- Keep only non-obvious, broadly applicable defaults here. Anything a
+  reader can infer from the code, a manifest, or a linter does not
+  belong.
