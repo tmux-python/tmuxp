@@ -553,6 +553,22 @@ patterns:
   decode an index. Internal agent bookkeeping may use ids; shipped text
   may not.
 
+### Durable Source Links
+
+Link to a pinned revision, never to trunk. A pinned permalink is not a
+brittle reference; an unlinked SHA dropped into prose is. `blob/master/…`
+links rot silently — the file moves, lines shift, and the anchor lands
+on unrelated code while still resolving.
+
+- Prefer a release tag (`blob/v1.4.0/…`). Most durable, and it tells
+  the reader which released version the claim held for.
+- Otherwise use a 7-char commit ref (`blob/9a29b1a/…`) reachable from
+  trunk. Use when there is no tag or the claim is about unreleased
+  code. Never a PR-head SHA — it can be rebased or garbage-collected.
+- Reserve `blob/master/…` for living documents meant to always show the
+  latest state, such as a contributing guide.
+- Line anchors (`#L120-L145`) are only safe on a pinned ref.
+
 ### Preservation & Context
 
 **When unsure, leave the text in place and ask.** Subjective cleanup
