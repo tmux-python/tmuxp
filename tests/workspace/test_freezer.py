@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import time
 import typing
 
 import pytest
@@ -31,9 +30,6 @@ def test_freeze_config(session: Session) -> None:
     builder.build(session=session)
     assert session == builder.session
 
-    time.sleep(0.50)
-
-    session = session
     new_config = freezer.freeze(session)
 
     validation.validate_schema(new_config)
@@ -121,8 +117,6 @@ def test_freeze_logs_debug(
     )
     builder = WorkspaceBuilder(session_config=session_config, server=session.server)
     builder.build(session=session)
-
-    time.sleep(0.50)
 
     with caplog.at_level(logging.DEBUG, logger="tmuxp.workspace.freezer"):
         freezer.freeze(session)
