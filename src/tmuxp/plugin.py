@@ -43,7 +43,23 @@ if t.TYPE_CHECKING:
     from ._internal.types import PluginConfigSchema
 
     class VersionConstraints(TypedDict):
-        """Version constraints mapping for a tmuxp plugin."""
+        """Version constraints mapping for a tmuxp plugin.
+
+        Unpacked into :meth:`TmuxpPlugin._pass_version_check` to decide whether
+        one dependency satisfies the plugin's requirements.
+
+        Attributes
+        ----------
+        version : Version | str
+            Installed version of the dependency being checked.
+        vmin : str
+            Oldest version accepted. An empty string skips the lower bound.
+        vmax : str | None
+            Newest version accepted. ``None`` leaves the upper bound open.
+        incompatible : list[t.Any | str]
+            Versions rejected outright, even when inside the ``vmin`` /
+            ``vmax`` range.
+        """
 
         version: Version | str
         vmin: str
@@ -51,7 +67,20 @@ if t.TYPE_CHECKING:
         incompatible: list[t.Any | str]
 
     class TmuxpPluginVersionConstraints(TypedDict):
-        """Version constraints for a tmuxp plugin."""
+        """Version constraints for a tmuxp plugin.
+
+        Held on :attr:`TmuxpPlugin.version_constraints` and walked by
+        :meth:`TmuxpPlugin._version_check`, one entry per dependency.
+
+        Attributes
+        ----------
+        tmux : VersionConstraints
+            Bounds checked against the running tmux binary.
+        tmuxp : VersionConstraints
+            Bounds checked against the installed tmuxp.
+        libtmux : VersionConstraints
+            Bounds checked against the installed libtmux.
+        """
 
         tmux: VersionConstraints
         tmuxp: VersionConstraints
@@ -59,7 +88,42 @@ if t.TYPE_CHECKING:
 
 
 class Config(t.TypedDict):
-    """tmuxp plugin configuration mapping."""
+    """tmuxp plugin configuration mapping.
+
+    The fully populated form of the plugin keyword arguments: every key is
+    present once :func:`setup_plugin_config` has merged the caller's arguments
+    over ``DEFAULT_CONFIG``.
+
+    Attributes
+    ----------
+    plugin_name : str
+        Name of the plugin, used to identify it in version incompatibility
+        messages.
+    tmux_min_version : str
+        Oldest tmux version the plugin supports.
+    tmux_max_version : str | None
+        Newest tmux version the plugin supports. ``None`` leaves the upper
+        bound open.
+    tmux_version_incompatible : list[str] | None
+        Individual tmux versions the plugin rejects even though they fall
+        inside the min / max range. ``None`` means no such exclusions.
+    libtmux_min_version : str
+        Oldest libtmux version the plugin supports.
+    libtmux_max_version : str | None
+        Newest libtmux version the plugin supports. ``None`` leaves the upper
+        bound open.
+    libtmux_version_incompatible : list[str] | None
+        Individual libtmux versions the plugin rejects even though they fall
+        inside the min / max range. ``None`` means no such exclusions.
+    tmuxp_min_version : str
+        Oldest tmuxp version the plugin supports.
+    tmuxp_max_version : str | None
+        Newest tmuxp version the plugin supports. ``None`` leaves the upper
+        bound open.
+    tmuxp_version_incompatible : list[str] | None
+        Individual tmuxp versions the plugin rejects even though they fall
+        inside the min / max range. ``None`` means no such exclusions.
+    """
 
     plugin_name: str
     tmux_min_version: str
