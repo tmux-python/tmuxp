@@ -116,6 +116,27 @@ windows:
 - **Type imports**: Use `import typing as t` and access via namespace (e.g., `t.Optional`)
 - **Development workflow**: Format → Test → Commit → Lint/Type Check → Test → Final Commit
 
+**Classes with fields** — `NamedTuple`, dataclasses — document every field in
+an `Attributes` section:
+
+```python
+class SearchToken(t.NamedTuple):
+    """Parsed search token with target fields and raw pattern.
+
+    Attributes
+    ----------
+    fields : tuple[str, ...]
+        Canonical field names to search (e.g., ('name', 'session_name')).
+    pattern : str
+        Raw search pattern before regex compilation.
+    """
+```
+
+Autodoc renders every field whether or not you describe it, so an
+undocumented `NamedTuple` field ships to the API docs as "Alias for field
+number 0" and a dataclass field ships bare. Document all of them — a class
+with three fields and two documented still ships a stub for the third.
+
 ## Git Commit Standards
 
 Format commit messages as:
