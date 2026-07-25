@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Filter changed file paths to outputs
-        uses: dorny/paths-filter@v4.0.1
+        uses: dorny/paths-filter@v4
         id: changes
         with:
           filters: |
