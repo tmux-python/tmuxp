@@ -251,6 +251,27 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
 class HelpTheme(t.NamedTuple):
     """Theme colors for help output.
 
+    Each field is the ANSI escape prefix written before a token; ``reset``
+    closes it. :meth:`from_colors` sets every field to ``""`` when color is
+    disabled, so the same formatting code emits plain text.
+
+    Attributes
+    ----------
+    prog : str
+        Escape prefix for the program name leading an example command.
+    action : str
+        Escape prefix for the subcommand following the program name.
+    long_option : str
+        Escape prefix for ``--`` options.
+    short_option : str
+        Escape prefix for single-dash options.
+    label : str
+        Escape prefix for the value that follows an option expecting one.
+    heading : str
+        Escape prefix for example section headings such as ``Examples:``.
+    reset : str
+        Escape sequence that ends styling, ``""`` when color is disabled.
+
     Examples
     --------
     >>> from tmuxp.cli._formatter import HelpTheme
