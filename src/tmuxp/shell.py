@@ -32,7 +32,23 @@ if t.TYPE_CHECKING:
     ]
 
     class LaunchOptionalImports(TypedDict):
-        """tmuxp shell optional imports."""
+        """tmuxp shell optional imports.
+
+        The live tmux objects a caller can hand to the shell launchers. A key
+        left out is bound to ``None`` in the shell namespace by
+        :func:`get_launch_args`.
+
+        Attributes
+        ----------
+        server : NotRequired[Server]
+            Server the shell is attached to.
+        session : NotRequired[Session]
+            Session the shell is attached to.
+        window : NotRequired[Window]
+            Window the shell is attached to.
+        pane : NotRequired[Pane]
+            Pane the shell is attached to.
+        """
 
         server: NotRequired[Server]
         session: NotRequired[Session]
@@ -40,7 +56,32 @@ if t.TYPE_CHECKING:
         pane: NotRequired[Pane]
 
     class LaunchImports(t.TypedDict):
-        """tmuxp shell launch import mapping."""
+        """tmuxp shell launch import mapping.
+
+        The namespace pre-populated in the interactive shell: the libtmux
+        classes plus whichever live tmux objects the caller supplied.
+
+        Attributes
+        ----------
+        libtmux : ModuleType
+            The :mod:`libtmux` module itself.
+        Server : type[Server]
+            The :class:`libtmux.Server` class, for constructing new servers.
+        Session : type[Session]
+            The :class:`libtmux.Session` class, for constructing new sessions.
+        Window : type[Window]
+            The :class:`libtmux.Window` class, for constructing new windows.
+        Pane : type[Pane]
+            The :class:`libtmux.Pane` class, for constructing new panes.
+        server : Server | None
+            Server the shell is attached to, ``None`` when not supplied.
+        session : Session | None
+            Session the shell is attached to, ``None`` when not supplied.
+        window : Window | None
+            Window the shell is attached to, ``None`` when not supplied.
+        pane : Pane | None
+            Pane the shell is attached to, ``None`` when not supplied.
+        """
 
         libtmux: ModuleType
         Server: type[Server]
