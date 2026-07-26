@@ -95,16 +95,21 @@ COLUMNS_FALLBACK = 80
 def get_default_columns() -> int:
     """Return default session column size use when building new tmux sessions."""
     return int(
-        os.getenv("TMUXP_DEFAULT_COLUMNS", os.getenv("COLUMNS", COLUMNS_FALLBACK)),
+        os.getenv(
+            "TMUXP_DEFAULT_COLUMNS",
+            os.getenv("COLUMNS", str(COLUMNS_FALLBACK)),
+        ),
     )
 
 
-ROWS_FALLBACK = int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", 24)))
+ROWS_FALLBACK = int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", "24")))
 
 
 def get_default_rows() -> int:
     """Return default session row size use when building new tmux sessions."""
-    return int(os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", ROWS_FALLBACK)))
+    return int(
+        os.getenv("TMUXP_DEFAULT_ROWS", os.getenv("ROWS", str(ROWS_FALLBACK))),
+    )
 
 
 class ClassicWorkspaceBuilder:
