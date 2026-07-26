@@ -160,7 +160,7 @@ def render_aafig_images(app: Sphinx, doctree: nodes.Node) -> None:
 
 class AafigureNotInstalled(AafigError):
     def __init__(self, *args: object, **kwargs: object) -> None:
-        return super().__init__("aafigure module not installed", *args, **kwargs)
+        super().__init__("aafigure module not installed", *args, **kwargs)
 
 
 def render_aafigure(

@@ -72,7 +72,7 @@ class ConvertUnknownFileType(exc.TmuxpException):
     """Raise if tmuxp convert encounters an unknown filetype."""
 
     def __init__(self, ext: str, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             f"Unknown filetype: {ext} (valid: [.json, .yaml, .yml])",
         )
 
