@@ -75,6 +75,13 @@ The workspace, plugin, and CLI types now say what each field holds. They
 previously reached the rendered API reference as "Alias for field number 0"
 or as a bare name carrying only its type.
 
+#### Minimum `ruff>=0.16.0` (was unpinned) (#1081)
+
+Contributors and CI now resolve the same linter release instead of whatever
+each machine happened to install. ruff 0.16.0 also formats Python code blocks
+inside Markdown, so documentation examples are held to the same style as
+source.
+
 ## tmuxp 1.74.0 (2026-07-04)
 
 tmuxp 1.74.0 pairs a libtmux upgrade with a documentation overhaul. It bumps libtmux to 0.61.0 — hardening tmux 3.7 patch-line support — and teaches `tmuxp debug-info` to report the exact tmux patch release (`3.7a`/`3.7b`) instead of the numeric-normalized version. The docs also gain theme-aware inline diagrams and a concept-first rewrite that leads with what each feature is before its configuration.
