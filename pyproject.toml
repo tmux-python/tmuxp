@@ -251,6 +251,12 @@ convention = "numpy"
 "src/tmuxp/workspace/finders.py" = ["PTH"]
 "src/tmuxp/cli/*.py" = ["PTH"]
 "docs/_ext/aafig.py" = ["PTH"]
+# `breakpoint = breakpoint` is not a no-op at module scope: the right-hand
+# side resolves to the builtin, and the assignment binds it as a module
+# attribute so `from tmuxp._compat import breakpoint` resolves. Module
+# attribute lookup does not fall back to builtins, so dropping the line
+# breaks the import in `tmuxp.cli.shell`.
+"src/tmuxp/_compat.py" = ["PLW0127"]
 
 [tool.pytest.ini_options]
 addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"
