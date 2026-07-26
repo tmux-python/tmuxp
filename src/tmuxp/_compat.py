@@ -30,12 +30,7 @@ def _identity(x: object) -> object:
     return x
 
 
-if PY3 and PYMINOR >= 7:
-    breakpoint = breakpoint  # noqa: A001
-else:
-    import pdb
-
-    breakpoint = pdb.set_trace  # noqa: A001
+breakpoint = breakpoint  # noqa: A001
 
 
 implements_to_string = _identity
