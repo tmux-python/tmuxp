@@ -69,7 +69,7 @@ class CLIFreezeNamespace(argparse.Namespace):
         Format the workspace is written in (``-f``/``--workspace-format``).
         ``None`` infers it from the destination file's extension and prompts
         when that fails.
-    save_to : str | None
+    save_to : pathlib.Path | None
         Destination file (``-o``/``--save-to``). ``None`` prompts for a path,
         defaulting to the session name inside the tmuxp workspace directory.
     answer_yes : bool | None
@@ -89,7 +89,7 @@ class CLIFreezeNamespace(argparse.Namespace):
     socket_name: str | None
     socket_path: str | None
     workspace_format: CLIOutputFormatLiteral | None
-    save_to: str | None
+    save_to: pathlib.Path | None
     answer_yes: bool | None
     quiet: bool | None
     force: bool | None
@@ -142,13 +142,13 @@ def create_freeze_subparser(
         "-q",
         dest="quiet",
         action="store_true",
-        help="don't prompt for confirmation",
+        help="suppress informational output (use --yes to skip prompts)",
     )
     parser.add_argument(
         "--force",
         dest="force",
         action="store_true",
-        help="overwrite the workspace file",
+        help="accept a prompted destination that already exists",
     )
 
     return parser
@@ -209,7 +209,7 @@ def command_freeze(
             )
         sys.exit()
 
-    dest = args.save_to
+    dest: str | None = str(args.save_to) if args.save_to else None
     while not dest:
         save_to = os.path.abspath(
             os.path.join(
