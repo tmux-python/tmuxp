@@ -264,6 +264,9 @@ convention = "numpy"
 # exit"; running the operator's own code in a tmux-aware namespace is the
 # command's purpose, not an injection sink.
 "src/tmuxp/cli/shell.py" = ["S102"]
+# The interactive console honors `$PYTHONSTARTUP` and `~/.pythonrc.py` by
+# `exec`-ing them, mirroring how CPython's own REPL sources them.
+"src/tmuxp/shell.py" = ["S102"]
 
 [tool.pytest.ini_options]
 addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"
