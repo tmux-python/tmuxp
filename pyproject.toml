@@ -198,7 +198,10 @@ ignore_missing_imports = true
 target-version = "py310"
 
 [tool.ruff.lint]
-select = [
+# `select` is deliberately unset: ruff 0.16 enables a curated default rule
+# set, and an explicit `select` would replace it rather than extend it.
+# `extend-select` layers this project's additional linters on top.
+extend-select = [
   "E", # pycodestyle
   "F", # pyflakes
   "I", # isort
@@ -215,7 +218,7 @@ select = [
   "PERF", # Perflint
   "RUF", # Ruff-specific rules
   "D", # pydocstyle
-  "FA100",  # future annotations
+  "FA100", # future annotations
 ]
 ignore = [
   "COM812", # missing trailing comma, ruff format conflict
