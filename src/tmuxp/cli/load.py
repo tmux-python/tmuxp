@@ -89,7 +89,7 @@ if t.TYPE_CHECKING:
 
     from tmuxp.types import StrPath
 
-    CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
+    CLIColorsLiteral: TypeAlias = t.Literal[256, 88]
     CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
     class OptionOverrides(TypedDict):
