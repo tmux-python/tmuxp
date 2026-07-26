@@ -59,6 +59,16 @@ Inline mentions of `tmuxp` commands and file paths now carry syntax
 highlighting via the shared `sphinx-gp-highlighting` package, and the plugin
 module layout renders as a highlighted directory tree.
 
+### Development
+
+#### CI actions updated to current majors
+
+Workflow actions moved to their current major releases: `actions/checkout` v7,
+`actions/cache` v6, `actions/setup-node` v7, `astral-sh/setup-uv` v9.0.0,
+`codecov/codecov-action` v7, `dorny/paths-filter` v4, and `pnpm/action-setup`
+v6. Workflow behavior is unchanged, though setup-uv no longer prunes the uv
+cache, so the first run after this repopulates it.
+
 ## tmuxp 1.74.0 (2026-07-04)
 
 tmuxp 1.74.0 pairs a libtmux upgrade with a documentation overhaul. It bumps libtmux to 0.61.0 — hardening tmux 3.7 patch-line support — and teaches `tmuxp debug-info` to report the exact tmux patch release (`3.7a`/`3.7b`) instead of the numeric-normalized version. The docs also gain theme-aware inline diagrams and a concept-first rewrite that leads with what each feature is before its configuration.
