@@ -228,7 +228,6 @@ def trickle(workspace_dict: dict[str, t.Any]) -> dict[str, t.Any]:
     for window_dict in workspace_dict["windows"]:
         # Prepend start_directory to relative window commands
         if session_start_directory:
-            session_start_directory = session_start_directory
             if "start_directory" not in window_dict:
                 window_dict["start_directory"] = session_start_directory
             elif not any(

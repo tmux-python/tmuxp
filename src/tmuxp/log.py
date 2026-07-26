@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Log utilities for tmuxp."""
 
 from __future__ import annotations

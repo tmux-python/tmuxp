@@ -246,9 +246,11 @@ def render_layout(panes: list[list[str]], layout: str, size: tuple[int, int]) ->
     vb_w, vb_h = w * _CW, h * _CH
     svg_id = f"tmux-layout-{next(_SVG_IDS)}"
     parts = [
-        f'<svg class="gp-tmux-layout" viewBox="0 0 {vb_w:g} {vb_h:g}" '
-        f'width="{vb_w:g}" height="{vb_h:g}" role="img" '
-        'xmlns="http://www.w3.org/2000/svg">',
+        (
+            f'<svg class="gp-tmux-layout" viewBox="0 0 {vb_w:g} {vb_h:g}" '
+            f'width="{vb_w:g}" height="{vb_h:g}" role="img" '
+            'xmlns="http://www.w3.org/2000/svg">'
+        ),
     ]
     parts.append("<defs>")
     for index, rect in enumerate(rects):

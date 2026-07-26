@@ -17,8 +17,6 @@ from tmuxp.util import get_pane, get_session, oh_my_zsh_auto_title, run_before_s
 from .constants import FIXTURE_PATH
 
 if t.TYPE_CHECKING:
-    import pathlib
-
     from libtmux.server import Server
 
 

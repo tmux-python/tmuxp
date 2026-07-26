@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 if t.TYPE_CHECKING:
     import types
 
+    from typing_extensions import Self
+
 
 # ANSI Escape Sequences
 HIDE_CURSOR = "\033[?25l"
@@ -1117,7 +1119,7 @@ class Spinner:
         self.stream.write(f"{msg}\n")
         self.stream.flush()
 
-    def __enter__(self) -> Spinner:
+    def __enter__(self) -> Self:
         self.start()
         return self
 

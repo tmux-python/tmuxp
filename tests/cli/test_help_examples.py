@@ -245,6 +245,7 @@ def test_search_no_args_shows_help() -> None:
         ["tmuxp", "search"],
         capture_output=True,
         text=True,
+        check=False,
     )
     # Should show help (usage line present)
     assert "usage: tmuxp search" in result.stdout

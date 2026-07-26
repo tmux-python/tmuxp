@@ -18,7 +18,7 @@ class SessionNameMissingValidationError(SchemaValidationError):
     """Tmuxp configuration error for session name missing."""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             'workspace requires "session_name"',
             *args,
             **kwargs,
@@ -29,7 +29,7 @@ class WindowListMissingValidationError(SchemaValidationError):
     """Tmuxp configuration error for window list missing."""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             'workspace requires list of "windows"',
             *args,
             **kwargs,
@@ -40,7 +40,7 @@ class WindowNameMissingValidationError(SchemaValidationError):
     """Tmuxp configuration error for missing window_name."""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             'workspace window is missing "window_name"',
             *args,
             **kwargs,
@@ -51,7 +51,7 @@ class InvalidPluginsValidationError(SchemaValidationError):
     """Tmuxp configuration error for invalid plugins."""
 
     def __init__(self, plugins: t.Any, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             '"plugins" only supports list type. '
             f" Received {type(plugins)}, "
             f"value: {plugins}",

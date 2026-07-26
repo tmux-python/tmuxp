@@ -31,7 +31,7 @@ class SessionNotFound(TmuxpException):
         msg = "Session not found"
         if session_target is not None:
             msg += f": {session_target}"
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class WindowNotFound(TmuxpException):
@@ -46,7 +46,7 @@ class WindowNotFound(TmuxpException):
         msg = "Window not found"
         if window_target is not None:
             msg += f": {window_target}"
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class PaneNotFound(TmuxpException):
@@ -61,7 +61,7 @@ class PaneNotFound(TmuxpException):
         msg = "Pane not found"
         if pane_target is not None:
             msg += f": {pane_target}"
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class EmptyWorkspaceException(WorkspaceError):
@@ -72,14 +72,14 @@ class EmptyWorkspaceException(WorkspaceError):
         *args: object,
         **kwargs: object,
     ) -> None:
-        return super().__init__("Session configuration is empty.", *args, **kwargs)
+        super().__init__("Session configuration is empty.", *args, **kwargs)
 
 
 class SessionMissingWorkspaceException(WorkspaceError, ObjectDoesNotExist):
     """Session missing while loading tmuxp workspace."""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             "No session object exists for WorkspaceBuilder. "
             "Tip: Add session_name in constructor or run WorkspaceBuilder.build()",
             *args,
@@ -91,7 +91,7 @@ class ActiveSessionMissingWorkspaceException(WorkspaceError):
     """Active session cannot be found while loading tmuxp workspace."""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        return super().__init__("No session active.", *args, **kwargs)
+        super().__init__("No session active.", *args, **kwargs)
 
 
 class WorkspaceBuilderError(WorkspaceError):
@@ -121,7 +121,7 @@ class WorkspaceBuilderNotFound(WorkspaceBuilderError):
                 " Provide a Python dotted path (e.g. 'package.module:Builder') "
                 "or register an entry point in the 'tmuxp.workspace_builders' group."
             )
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class WorkspaceBuilderImportError(WorkspaceBuilderError):
@@ -148,7 +148,7 @@ class WorkspaceBuilderImportError(WorkspaceBuilderError):
             " Confirm the builder is importable, or add its directory to "
             "'workspace_builder_paths'."
         )
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class InvalidWorkspaceBuilder(WorkspaceBuilderError):
@@ -167,7 +167,7 @@ class InvalidWorkspaceBuilder(WorkspaceBuilderError):
     ) -> None:
         msg = f"{target!r} is not a valid workspace builder"
         msg += f": {reason}" if reason else "."
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class WorkspaceBuilderPathError(WorkspaceBuilderError):
@@ -186,7 +186,7 @@ class WorkspaceBuilderPathError(WorkspaceBuilderError):
     ) -> None:
         msg = f"workspace_builder_paths entry is invalid: {path}."
         msg += f" {reason}" if reason else " Each entry must be an existing directory."
-        return super().__init__(msg, *args, **kwargs)
+        super().__init__(msg, *args, **kwargs)
 
 
 class InvalidWorkspaceBuilderOption(WorkspaceBuilderError):
@@ -197,7 +197,7 @@ class InvalidWorkspaceBuilderOption(WorkspaceBuilderError):
     """
 
     def __init__(self, reason: str, *args: object, **kwargs: object) -> None:
-        return super().__init__(
+        super().__init__(
             f"Invalid workspace_builder_options: {reason}",
             *args,
             **kwargs,

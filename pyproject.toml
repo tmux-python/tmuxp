@@ -78,7 +78,7 @@ dev = [
   "coverage",
   "pytest-cov",
   # Lint
-  "ruff",
+  "ruff>=0.16.0",
   "mypy",
   "types-docutils",
   "types-Pygments",
@@ -109,7 +109,7 @@ coverage =[
   "pytest-cov",
 ]
 lint = [
-  "ruff",
+  "ruff>=0.16.0",
   "mypy",
   "types-docutils",
   "types-Pygments",
@@ -198,7 +198,10 @@ ignore_missing_imports = true
 target-version = "py310"
 
 [tool.ruff.lint]
-select = [
+# `select` is deliberately unset: ruff 0.16 enables a curated default rule
+# set, and an explicit `select` would replace it rather than extend it.
+# `extend-select` layers this project's additional linters on top.
+extend-select = [
   "E", # pycodestyle
   "F", # pyflakes
   "I", # isort
@@ -215,7 +218,7 @@ select = [
   "PERF", # Perflint
   "RUF", # Ruff-specific rules
   "D", # pydocstyle
-  "FA100",  # future annotations
+  "FA100", # future annotations
 ]
 ignore = [
   "COM812", # missing trailing comma, ruff format conflict
@@ -248,6 +251,26 @@ convention = "numpy"
 "src/tmuxp/workspace/finders.py" = ["PTH"]
 "src/tmuxp/cli/*.py" = ["PTH"]
 "docs/_ext/aafig.py" = ["PTH"]
+# `breakpoint = breakpoint` is not a no-op at module scope: the right-hand
+# side resolves to the builtin, and the assignment binds it as a module
+# attribute so `from tmuxp._compat import breakpoint` resolves. Module
+# attribute lookup does not fall back to builtins, so dropping the line
+# breaks the import in `tmuxp.cli.shell`.
+"src/tmuxp/_compat.py" = ["PLW0127"]
+# Sphinx reads the package's version metadata by `exec`-ing `__about__.py`
+# into a dict, so `conf.py` never imports the package it documents.
+"docs/conf.py" = ["S102"]
+# `tmuxp shell -c` documents itself as "execute python code in libtmux and
+# exit"; running the operator's own code in a tmux-aware namespace is the
+# command's purpose, not an injection sink.
+"src/tmuxp/cli/shell.py" = ["S102"]
+# The interactive console honors `$PYTHONSTARTUP` and `~/.pythonrc.py` by
+# `exec`-ing them, mirroring how CPython's own REPL sources them.
+"src/tmuxp/shell.py" = ["S102"]
+# A log formatter must never raise: `record.getMessage()` interpolates
+# caller-supplied args, so anything their `__str__` throws has to be
+# rendered into the line instead of propagating into the caller.
+"src/tmuxp/log.py" = ["BLE001"]
 
 [tool.pytest.ini_options]
 addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"

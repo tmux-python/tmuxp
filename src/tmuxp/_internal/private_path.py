@@ -14,6 +14,8 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
+    from typing_extensions import Self
+
     PrivatePathBase = pathlib.Path
 else:
     PrivatePathBase = type(pathlib.Path())
@@ -45,7 +47,7 @@ class PrivatePath(PrivatePathBase):
     'config: ~/.tmuxp/config.yaml'
     """
 
-    def __new__(cls, *args: t.Any, **kwargs: t.Any) -> PrivatePath:
+    def __new__(cls, *args: t.Any, **kwargs: t.Any) -> Self:
         """Create a new PrivatePath instance."""
         return super().__new__(cls, *args, **kwargs)
 

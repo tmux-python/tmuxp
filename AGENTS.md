@@ -518,13 +518,13 @@ Global workspace directories:                  ← heading()
 
 ```python
 colors = Colors()
-colors.heading("Section:")      # Cyan + bold (section headers)
-colors.highlight("item")        # Magenta + bold (primary content)
-colors.info("/path/to/file")    # Cyan (paths, supplementary info)
-colors.muted("label:")          # Blue (metadata, labels)
-colors.success("ok")            # Green (success states)
-colors.warning("caution")       # Yellow (warnings)
-colors.error("failed")          # Red (errors)
+colors.heading("Section:")  # Cyan + bold (section headers)
+colors.highlight("item")  # Magenta + bold (primary content)
+colors.info("/path/to/file")  # Cyan (paths, supplementary info)
+colors.muted("label:")  # Blue (metadata, labels)
+colors.success("ok")  # Green (success states)
+colors.warning("caution")  # Yellow (warnings)
+colors.error("failed")  # Red (errors)
 ```
 
 ### Key Rules
