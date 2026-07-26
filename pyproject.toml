@@ -78,7 +78,7 @@ dev = [
   "coverage",
   "pytest-cov",
   # Lint
-  "ruff",
+  "ruff>=0.16.0",
   "mypy",
   "types-docutils",
   "types-Pygments",
@@ -109,7 +109,7 @@ coverage =[
   "pytest-cov",
 ]
 lint = [
-  "ruff",
+  "ruff>=0.16.0",
   "mypy",
   "types-docutils",
   "types-Pygments",
