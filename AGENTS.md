@@ -116,8 +116,14 @@ windows:
 - **Type imports**: Use `import typing as t` and access via namespace (e.g., `t.Optional`)
 - **Development workflow**: Format → Test → Commit → Lint/Type Check → Test → Final Commit
 
-**Classes with fields** — `NamedTuple`, dataclasses — document every field in
-an `Attributes` section:
+**Class-level names** — every name a class declares that autodoc renders gets
+exactly one description. That covers `NamedTuple` fields, dataclass fields
+including `InitVar`, `TypedDict` keys, `Enum` members, `ClassVar`s, and plain
+constants. The shape does not change the rule.
+
+Three styles count: a NumPy `Attributes` entry in the class docstring, a
+docstring under the assignment, or a `#:` comment above it. Prefer
+`Attributes`:
 
 ```python
 class SearchToken(t.NamedTuple):
@@ -132,10 +138,13 @@ class SearchToken(t.NamedTuple):
     """
 ```
 
-Autodoc renders every field whether or not you describe it, so an
-undocumented `NamedTuple` field ships to the API docs as "Alias for field
-number 0" and a dataclass field ships bare. Document all of them — a class
-with three fields and two documented still ships a stub for the third.
+A `Parameters` section does **not** describe attributes — it documents the
+initializer, and the attribute entries still render bare beneath it.
+
+A field nobody describes reaches the reference as a bare name. A `ClassVar`
+nobody describes is withheld from it entirely, so an undescribed one is
+silently missing rather than visibly empty. A field a base class describes is
+carried through to the subclass, so an inherited field needs no restatement.
 
 ## Git Commit Standards
 
