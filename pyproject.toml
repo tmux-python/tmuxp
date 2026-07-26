@@ -267,6 +267,10 @@ convention = "numpy"
 # The interactive console honors `$PYTHONSTARTUP` and `~/.pythonrc.py` by
 # `exec`-ing them, mirroring how CPython's own REPL sources them.
 "src/tmuxp/shell.py" = ["S102"]
+# A log formatter must never raise: `record.getMessage()` interpolates
+# caller-supplied args, so anything their `__str__` throws has to be
+# rendered into the line instead of propagating into the caller.
+"src/tmuxp/log.py" = ["BLE001"]
 
 [tool.pytest.ini_options]
 addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"
