@@ -147,3 +147,39 @@ def test_freeze_overwrite(
 
     yaml_config_path = tmp_path / "exists.yaml"
     assert yaml_config_path.exists()
+
+
+def _freeze_help(dest: str) -> str:
+    """Return the help text of the freeze flag storing into *dest*."""
+    import argparse
+
+    from tmuxp.cli.freeze import create_freeze_subparser
+
+    parser = create_freeze_subparser(argparse.ArgumentParser(prog="freeze"))
+    action = next(a for a in parser._actions if a.dest == dest)
+    assert action.help is not None
+    return action.help
+
+
+def test_freeze_save_to_parses_as_a_path() -> None:
+    """-o/--save-to stores a pathlib.Path, matching its declared type."""
+    import argparse
+    import pathlib
+
+    from tmuxp.cli.freeze import create_freeze_subparser
+
+    parser = create_freeze_subparser(argparse.ArgumentParser(prog="freeze"))
+    args = parser.parse_args(["-o", "out.yaml"])
+    assert isinstance(args.save_to, pathlib.Path)
+
+
+def test_freeze_quiet_help_describes_what_it_silences() -> None:
+    """--quiet advertises output suppression, not prompt suppression."""
+    help_text = _freeze_help("quiet")
+    assert "output" in help_text
+    assert "--yes" in help_text
+
+
+def test_freeze_force_help_scopes_itself_to_the_prompt() -> None:
+    """--force advertises the prompted destination it actually affects."""
+    assert "prompt" in _freeze_help("force")
