@@ -116,21 +116,21 @@ class MyTmuxpPlugin(TmuxpPlugin):
         # Optional version-dependency configuration. See the Plugin API
         # docs for every supported parameter.
         config = {
-            'tmuxp_min_version': '1.6.2',
+            "tmuxp_min_version": "1.6.2",
         }
 
         TmuxpPlugin.__init__(
             self,
-            plugin_name='tmuxp-plugin-my-tmuxp-plugin',
+            plugin_name="tmuxp-plugin-my-tmuxp-plugin",
             **config,
         )
 
     def before_workspace_builder(self, session):
-        session.rename_session('my-new-session-name')
+        session.rename_session("my-new-session-name")
 
     def reattach(self, session):
-        now = datetime.datetime.now().strftime('%Y-%m-%d')
-        session.rename_session('session_{}'.format(now))
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        session.rename_session("session_{}".format(now))
 ```
 
 Once it's installed in the same environment, name it in a workspace file:
