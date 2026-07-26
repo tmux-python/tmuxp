@@ -82,6 +82,15 @@ each machine happened to install. ruff 0.16.0 also formats Python code blocks
 inside Markdown, so documentation examples are held to the same style as
 source.
 
+#### ruff's default rule set is enabled (#1081)
+
+The lint configuration now extends ruff's curated default rule set instead of
+replacing it. An explicit `select` overrides those defaults, so the project had
+been opting out of every rule outside its own prefix list. The findings this
+surfaced are fixed in place, and the idioms it flagged as intentional — `exec`
+in the Sphinx config and in `tmuxp shell`, the catch-all in the log formatter —
+carry per-file ignores that record why.
+
 ## tmuxp 1.74.0 (2026-07-04)
 
 tmuxp 1.74.0 pairs a libtmux upgrade with a documentation overhaul. It bumps libtmux to 0.61.0 — hardening tmux 3.7 patch-line support — and teaches `tmuxp debug-info` to report the exact tmux patch release (`3.7a`/`3.7b`) instead of the numeric-normalized version. The docs also gain theme-aware inline diagrams and a concept-first rewrite that leads with what each feature is before its configuration.
