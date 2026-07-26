@@ -147,6 +147,10 @@ sphinx-gp-sitemap = false
 sphinx-gp-theme = false
 sphinx-ux-autodoc-layout = false
 sphinx-ux-badges = false
+# TEMPORARY - REVERT BEFORE MERGE. ruff 0.16.0 released 2026-07-23 and is
+# still inside the 3-day cooldown, so the resolver cannot see it. Drop this
+# line once the cooldown clears; the version floor is what holds ruff 0.16.
+ruff = false
 
 [tool.coverage.run]
 branch = true
