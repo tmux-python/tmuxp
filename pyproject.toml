@@ -257,6 +257,9 @@ convention = "numpy"
 # attribute lookup does not fall back to builtins, so dropping the line
 # breaks the import in `tmuxp.cli.shell`.
 "src/tmuxp/_compat.py" = ["PLW0127"]
+# Sphinx reads the package's version metadata by `exec`-ing `__about__.py`
+# into a dict, so `conf.py` never imports the package it documents.
+"docs/conf.py" = ["S102"]
 
 [tool.pytest.ini_options]
 addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"
