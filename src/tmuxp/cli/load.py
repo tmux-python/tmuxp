@@ -93,7 +93,19 @@ if t.TYPE_CHECKING:
     CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
 
     class OptionOverrides(TypedDict):
-        """Optional argument overrides for tmuxp load."""
+        """Optional argument overrides for tmuxp load.
+
+        Per-workspace-file adjustments layered over the command line options
+        when a single ``tmuxp load`` invocation builds more than one workspace.
+
+        Attributes
+        ----------
+        detached : NotRequired[bool]
+            Build the session in the background instead of attaching to it.
+        new_session_name : NotRequired[str | None]
+            Session name to use in place of the one in the workspace file.
+            ``None`` keeps the workspace file's own ``session_name``.
+        """
 
         detached: NotRequired[bool]
         new_session_name: NotRequired[str | None]

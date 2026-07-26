@@ -28,6 +28,40 @@ if t.TYPE_CHECKING:
 
 
 class PluginConfigSchema(TypedDict):
+    """Keyword arguments accepted by :class:`tmuxp.plugin.TmuxpPlugin`.
+
+    Every key is optional. :func:`tmuxp.plugin.setup_plugin_config` fills each
+    omitted key from ``tmuxp.plugin.DEFAULT_CONFIG`` before the plugin runs its
+    version checks.
+
+    Attributes
+    ----------
+    plugin_name : NotRequired[str]
+        Name of the plugin, used to identify it in version incompatibility
+        messages.
+    tmux_min_version : NotRequired[str]
+        Oldest tmux version the plugin supports.
+    tmux_max_version : NotRequired[str]
+        Newest tmux version the plugin supports.
+    tmux_version_incompatible : NotRequired[list[str]]
+        Individual tmux versions the plugin rejects even though they fall
+        inside the min / max range.
+    libtmux_min_version : NotRequired[str]
+        Oldest libtmux version the plugin supports.
+    libtmux_max_version : NotRequired[str]
+        Newest libtmux version the plugin supports.
+    libtmux_version_incompatible : NotRequired[list[str]]
+        Individual libtmux versions the plugin rejects even though they fall
+        inside the min / max range.
+    tmuxp_min_version : NotRequired[str]
+        Oldest tmuxp version the plugin supports.
+    tmuxp_max_version : NotRequired[str]
+        Newest tmuxp version the plugin supports.
+    tmuxp_version_incompatible : NotRequired[list[str]]
+        Individual tmuxp versions the plugin rejects even though they fall
+        inside the min / max range.
+    """
+
     plugin_name: NotRequired[str]
     tmux_min_version: NotRequired[str]
     tmux_max_version: NotRequired[str]
