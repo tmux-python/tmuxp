@@ -282,16 +282,12 @@ class CLINamespace(argparse.Namespace):
     import_subparser_name : CLIImportSubparserName | None
         Source format chosen under ``tmuxp import``. Unset when ``import`` runs
         without one, so readers reach for it with :func:`getattr`.
-    version : bool
-        Declared for ``--version``/``-V``. argparse's version action prints and
-        exits on its own, so this is never assigned.
     """
 
     log_level: CLIVerbosity
     color: CLIColorMode
     subparser_name: CLISubparserName
     import_subparser_name: CLIImportSubparserName | None
-    version: bool
 
 
 ns = CLINamespace()
