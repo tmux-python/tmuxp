@@ -1083,6 +1083,46 @@ SEARCH_DESCRIPTION = build_description(
 class CLISearchNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp search command.
 
+    Attributes
+    ----------
+    color : CLIColorModeLiteral
+        When to colorize output (``--color``). ``auto`` honors ``NO_COLOR``,
+        ``FORCE_COLOR`` and TTY detection; ``always`` and ``never`` override it.
+    query_terms : list[str]
+        Search patterns, each optionally prefixed with ``field:`` to scope it
+        to one field. Empty when no pattern was given, which prints the
+        subcommand help instead of searching.
+    field : list[str] | None
+        Fields that unprefixed patterns search, from repeated ``-f``/
+        ``--field``: ``name``, ``session``/``s``, ``path``/``p``,
+        ``window``/``w``, ``pane``. ``None`` searches all of them.
+    ignore_case : bool
+        ``-i``/``--ignore-case``: match without regard to case.
+    smart_case : bool
+        ``-S``/``--smart-case``: match without regard to case unless the
+        pattern itself contains an uppercase letter.
+    fixed_strings : bool
+        ``-F``/``--fixed-strings``: treat patterns as literal text, escaping
+        regex metacharacters.
+    word_regexp : bool
+        ``-w``/``--word-regexp``: surround each pattern with word boundaries so
+        it matches whole words only.
+    invert_match : bool
+        ``-v``/``--invert-match``: report the workspaces that do *not* match.
+    match_any : bool
+        ``--any``: a workspace matches when any pattern hits. Default is for
+        every pattern to hit.
+    output_json : bool
+        ``--json``: emit results as JSON rather than human-readable text.
+    output_ndjson : bool
+        ``--ndjson``: emit one JSON object per result, one per line. Takes
+        precedence over ``output_json``.
+    print_help : t.Callable[[], None]
+        The search subparser's
+        :meth:`~argparse.ArgumentParser.print_help`, bound by
+        :meth:`~argparse.ArgumentParser.set_defaults` so the command can print
+        its own help when called with no patterns.
+
     Examples
     --------
     >>> ns = CLISearchNamespace()

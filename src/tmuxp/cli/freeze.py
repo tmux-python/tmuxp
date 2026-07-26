@@ -49,7 +49,40 @@ if t.TYPE_CHECKING:
 
 
 class CLIFreezeNamespace(argparse.Namespace):
-    """Typed :class:`argparse.Namespace` for tmuxp freeze command."""
+    """Typed :class:`argparse.Namespace` for tmuxp freeze command.
+
+    Attributes
+    ----------
+    color : CLIColorModeLiteral
+        When to colorize output (``--color``). ``auto`` honors ``NO_COLOR``,
+        ``FORCE_COLOR`` and TTY detection; ``always`` and ``never`` override it.
+    session_name : str
+        Session to snapshot. Unset when the positional is omitted, which
+        snapshots the session tmuxp is running inside.
+    socket_name : str | None
+        Pass-through for ``tmux -L``. ``None`` leaves tmux on its default
+        socket.
+    socket_path : str | None
+        Pass-through for ``tmux -S``. ``None`` leaves tmux on its default
+        socket path.
+    workspace_format : CLIOutputFormatLiteral | None
+        Format the workspace is written in (``-f``/``--workspace-format``).
+        ``None`` infers it from the destination file's extension and prompts
+        when that fails.
+    save_to : str | None
+        Destination file (``-o``/``--save-to``). ``None`` prompts for a path,
+        defaulting to the session name inside the tmuxp workspace directory.
+    answer_yes : bool | None
+        ``--yes``/``-y``: answer yes to the save confirmations instead of
+        prompting.
+    quiet : bool | None
+        ``--quiet``/``-q``: suppress the introductory notice and the closing
+        "Saved to" line. Confirmations are still asked unless ``answer_yes``.
+    force : bool | None
+        ``--force``: accept a prompted destination that already exists.
+        Without it the prompt repeats until a free path is entered; it has no
+        effect when ``save_to`` is given.
+    """
 
     color: CLIColorModeLiteral
     session_name: str

@@ -35,6 +35,22 @@ logger = logging.getLogger(__name__)
 class OutputMode(enum.Enum):
     """Output format modes for CLI commands.
 
+    Attributes
+    ----------
+    HUMAN
+        Prose for a terminal reader, and the default. Only
+        :meth:`OutputFormatter.emit_text` writes; the structured emitters
+        stay silent so a command may call both unconditionally.
+    JSON
+        One document on stdout. :meth:`OutputFormatter.emit` buffers records
+        for a single array flushed at the end, so nothing appears until the
+        command finishes; :meth:`OutputFormatter.emit_object` bypasses the
+        buffer and writes indented immediately.
+    NDJSON
+        One compact JSON object per line, written and flushed as each record
+        arrives. Suited to a long-running command whose output is piped, where
+        JSON mode's end-of-run array would stall the consumer.
+
     Examples
     --------
     >>> OutputMode.HUMAN.value

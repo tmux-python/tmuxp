@@ -112,7 +112,59 @@ if t.TYPE_CHECKING:
 
 
 class CLILoadNamespace(argparse.Namespace):
-    """Typed :class:`argparse.Namespace` for tmuxp load command."""
+    """Typed :class:`argparse.Namespace` for tmuxp load command.
+
+    Attributes
+    ----------
+    workspace_files : list[str]
+        Workspaces to load, each a filepath or the name of a file in the tmuxp
+        workspace directory. When several are given, all are built and only the
+        last one is attached.
+    socket_name : str | None
+        Passthru to ``tmux -L``. ``None`` leaves tmux on its default socket.
+    socket_path : str | None
+        Passthru to ``tmux -S``. ``None`` leaves tmux on its default socket
+        path.
+    tmux_config_file : str | None
+        Passthru to ``tmux -f``. ``None`` lets tmux locate its own config.
+    new_session_name : str | None
+        Session name from ``-s``, used in place of the workspace file's own
+        ``session_name``. Applies only to the last file when several are
+        loaded; ``None`` keeps the name in the file.
+    answer_yes : bool | None
+        ``--yes``/``-y``: answer yes to every prompt, including the offer to
+        attach when the session is already running.
+    detached : bool
+        ``-d``: build the session without attaching to it.
+    append : bool | None
+        ``-a``/``--append``: add the workspace's windows to the current session
+        instead of creating a new one.
+    colors : CLIColorsLiteral | None
+        Color count forced on tmux: 256 from ``-2``, 88 from ``-8``. ``None``
+        leaves the terminal's own detection alone.
+    color : CLIColorModeLiteral
+        When to colorize tmuxp's output (``--color``). ``auto`` honors
+        ``NO_COLOR``, ``FORCE_COLOR`` and TTY detection; ``always`` and
+        ``never`` override it.
+    log_file : str | None
+        Destination for the file log (``--log-file``), passed to
+        :func:`~tmuxp.log.setup_log_file`. ``None`` logs to the console only.
+    log_level : str
+        Level the file log is filtered at, taken from the root ``--log-level``.
+    progress_format : str | None
+        Spinner line layout (``--progress-format``): a preset name
+        (``default``, ``minimal``, ``window``, ``pane``, ``verbose``) or a
+        format string of tokens. ``None`` falls back to
+        ``TMUXP_PROGRESS_FORMAT``, then the ``default`` preset.
+    panel_lines : int | None
+        Lines of script output shown in the spinner panel
+        (``--progress-lines``). ``0`` hides the panel and lets script output go
+        to stdout, ``-1`` shows as many lines as the terminal allows, ``None``
+        falls back to ``TMUXP_PROGRESS_LINES`` and then the built-in default.
+    no_progress : bool
+        ``--no-progress``: skip the animated spinner and print plain status
+        lines instead. Also implied by ``TMUXP_PROGRESS=0``.
+    """
 
     workspace_files: list[str]
     socket_name: str | None

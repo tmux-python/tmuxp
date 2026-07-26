@@ -266,7 +266,26 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 class CLINamespace(argparse.Namespace):
-    """Typed :class:`argparse.Namespace` for tmuxp root-level CLI."""
+    """Typed :class:`argparse.Namespace` for tmuxp root-level CLI.
+
+    Attributes
+    ----------
+    log_level : CLIVerbosity
+        Threshold handed to :func:`~tmuxp.log.setup_logger` (``--log-level``),
+        defaulting to ``warning``.
+    color : CLIColorMode
+        When to colorize output (``--color``). ``auto`` honors ``NO_COLOR``,
+        ``FORCE_COLOR`` and TTY detection; ``always`` and ``never`` override it.
+    subparser_name : CLISubparserName
+        Subcommand that was invoked. ``None`` when tmuxp runs bare, which
+        prints the top-level help.
+    import_subparser_name : CLIImportSubparserName | None
+        Source format chosen under ``tmuxp import``. Unset when ``import`` runs
+        without one, so readers reach for it with :func:`getattr`.
+    version : bool
+        Declared for ``--version``/``-V``. argparse's version action prints and
+        exits on its own, so this is never assigned.
+    """
 
     log_level: CLIVerbosity
     color: CLIColorMode

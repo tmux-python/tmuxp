@@ -113,6 +113,24 @@ class WorkspaceInfo(t.TypedDict):
 class CLILsNamespace(argparse.Namespace):
     """Typed :class:`argparse.Namespace` for tmuxp ls command.
 
+    Attributes
+    ----------
+    color : CLIColorModeLiteral
+        When to colorize output (``--color``). ``auto`` honors ``NO_COLOR``,
+        ``FORCE_COLOR`` and TTY detection; ``always`` and ``never`` override it.
+    tree : bool
+        ``--tree``: group workspaces under the directory holding them instead
+        of listing them flat.
+    output_json : bool
+        ``--json``: emit one JSON object holding the workspaces and the global
+        workspace directories, rather than human-readable text.
+    output_ndjson : bool
+        ``--ndjson``: emit one JSON object per workspace, one per line. Takes
+        precedence over ``output_json``.
+    full : bool
+        ``--full``: include each workspace's parsed config — rendered as a tree
+        in human output, carried under a ``config`` key in JSON.
+
     Examples
     --------
     >>> ns = CLILsNamespace()

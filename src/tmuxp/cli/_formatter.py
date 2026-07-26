@@ -77,6 +77,13 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     ``_help_theme`` on older Pythons. With neither, the formatter falls back
     to plain text output.
 
+    Attributes
+    ----------
+    _help_theme : HelpTheme | None
+        tmuxp's escape sequences for example lines, bound by
+        :func:`create_themed_formatter` and used below Python 3.14. ``None``
+        leaves help output plain.
+
     Examples
     --------
     >>> formatter = TmuxpHelpFormatter("tmuxp")
@@ -194,7 +201,17 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
         return "".join(formatted_lines)
 
     class _ColorizedLine(t.NamedTuple):
-        """Result of colorizing an example line."""
+        """Result of colorizing an example line.
+
+        Attributes
+        ----------
+        text : str
+            The line with theme escape sequences wrapped around its tokens.
+        expect_value : bool
+            Whether the line ended on an option that still awaits its value.
+            The caller carries this into the next line so the value is colored
+            as a value rather than as a command.
+        """
 
         text: str
         expect_value: bool
