@@ -260,6 +260,10 @@ convention = "numpy"
 # Sphinx reads the package's version metadata by `exec`-ing `__about__.py`
 # into a dict, so `conf.py` never imports the package it documents.
 "docs/conf.py" = ["S102"]
+# `tmuxp shell -c` documents itself as "execute python code in libtmux and
+# exit"; running the operator's own code in a tmux-aware namespace is the
+# command's purpose, not an injection sink.
+"src/tmuxp/cli/shell.py" = ["S102"]
 
 [tool.pytest.ini_options]
 addopts = "--reruns=0 --tb=short --no-header --showlocals --doctest-modules"
