@@ -27,7 +27,6 @@ sphinx-ux-badges = false
 gp-libs = false
 sphinx-autodoc-docutils = false
 gp-furo-theme = false
-ruff = false
 sphinx-gp-sitemap = false
 sphinx-fonts = false
 sphinx-autodoc-typehints-gp = false
