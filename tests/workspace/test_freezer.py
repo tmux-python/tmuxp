@@ -33,7 +33,6 @@ def test_freeze_config(session: Session) -> None:
 
     time.sleep(0.50)
 
-    session = session
     new_config = freezer.freeze(session)
 
     validation.validate_schema(new_config)

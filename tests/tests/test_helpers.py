@@ -14,7 +14,6 @@ if t.TYPE_CHECKING:
 
 def test_temp_session_kills_session_on_exit(server: Server) -> None:
     """Test temp_session() context manager kills session on exit."""
-    server = server
     session_name = get_test_session_name(server=server)
 
     with temp_session(server=server, session_name=session_name):
@@ -27,7 +26,6 @@ def test_temp_session_kills_session_on_exit(server: Server) -> None:
 @pytest.mark.flaky(reruns=5)
 def test_temp_session_if_session_killed_before_exit(server: Server) -> None:
     """Handles situation where session already closed within context."""
-    server = server
     session_name = get_test_session_name(server=server)
 
     with temp_session(server=server, session_name=session_name):

@@ -586,7 +586,6 @@ class ClassicWorkspaceBuilder:
             focus_pane = None
             for pane, pane_config in self.iter_create_panes(window, window_config):
                 assert isinstance(pane, Pane)
-                pane = pane
 
                 if pane_config.get("focus"):
                     focus_pane = pane
