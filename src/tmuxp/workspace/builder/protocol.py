@@ -39,6 +39,33 @@ class WorkspaceBuilderProtocol(t.Protocol):
     class-level ``issubclass`` checks are not supported for runtime-checkable
     protocols with non-method members.
 
+    The ``on_*`` callbacks are what ``tmuxp load`` passes in to drive its
+    terminal UI. An implementation stores whichever ones it was constructed
+    with and calls them at the points described below; ``None`` means the
+    caller wants nothing reported and the builder makes no call.
+
+    Attributes
+    ----------
+    plugins
+        Plugin instances the builder calls at each hook point: the new session,
+        each window as it is created, and each window once its panes are built.
+        Empty when the workspace loads no plugins.
+    on_progress
+        Called with one human-readable line per build step, e.g.
+        ``"Creating window: editor"``.
+    on_before_script
+        Called immediately before a workspace's ``before_script`` runs, so the
+        caller can clear the terminal (e.g. stop a spinner) before script
+        output appears.
+    on_script_output
+        Called with each output line of the ``before_script`` subprocess. When
+        set, the builder does not tee the script to the TTY itself, leaving
+        the caller to display the lines.
+    on_build_event
+        Called with a dict for each structural milestone — session created,
+        window started, pane creating, window done, workspace built — under an
+        ``"event"`` key plus per-event detail.
+
     Examples
     --------
     A builder implementing the full contract satisfies the protocol:
