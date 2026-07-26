@@ -118,6 +118,42 @@ class ClassicWorkspaceBuilder:
     Build tmux workspace from a configuration. Creates and names windows, sets options,
     splits windows into panes.
 
+    Attributes
+    ----------
+    server
+        tmux server the workspace is built on. :meth:`build` re-points this at
+        the server owning the session it created or was handed.
+    _session
+        Session the builder populates, read through :attr:`session`. Assigned
+        at construction when a session already answers to the config's
+        ``session_name``, otherwise first assigned by :meth:`build`; until then
+        the attribute is unset and :attr:`session` raises.
+    session_name
+        Declared but never assigned; the builder reads the session name from
+        ``session_config["session_name"]``.
+    on_progress
+        Called with one human-readable line per build step, e.g.
+        ``"Creating window: editor"``. ``None`` reports nothing.
+    on_before_script
+        Called immediately before ``before_script`` runs, so the caller can
+        clear the terminal before script output appears.
+    on_script_output
+        Called with each ``before_script`` output line. When set, the script is
+        not teed to the TTY, leaving the caller to display the lines.
+    on_build_event
+        Called with a dict for each structural milestone — session created,
+        window started, pane creating, window done, workspace built — under an
+        ``"event"`` key plus per-event detail.
+    _builder_options
+        Parsed ``workspace_builder_options`` catalog. Read from the config at
+        construction so an invalid value fails before tmux is touched.
+    _pane_readiness_wait
+        Whether panes running the session's default shell are waited on until
+        they draw a prompt. ``True`` until :meth:`build` resolves the
+        :class:`~tmuxp.workspace.options.PaneReadiness` policy against the live
+        session's shell, so calling :meth:`iter_create_panes` directly (without
+        :meth:`build`) waits.
+
     Examples
     --------
     >>> import yaml

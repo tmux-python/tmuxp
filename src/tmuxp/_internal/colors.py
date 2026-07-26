@@ -60,6 +60,18 @@ if t.TYPE_CHECKING:
 class ColorMode(enum.Enum):
     """Color output modes for CLI.
 
+    ``NO_COLOR`` outranks every mode; ``FORCE_COLOR`` only affects
+    :attr:`AUTO`.
+
+    Attributes
+    ----------
+    AUTO
+        Colorize when stdout is a terminal, or when ``FORCE_COLOR`` is set.
+    ALWAYS
+        Colorize without checking for a terminal.
+    NEVER
+        Emit plain text.
+
     Examples
     --------
     >>> ColorMode.AUTO.value

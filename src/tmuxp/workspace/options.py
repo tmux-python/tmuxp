@@ -37,6 +37,20 @@ class PaneReadiness(enum.Enum):
     is only needed for zsh, so the default
     :attr:`~tmuxp.workspace.options.PaneReadiness.AUTO` policy waits only when
     the session's interactive shell is zsh.
+
+    Panes that launch a custom command via ``shell`` / ``window_shell`` skip
+    the wait under every policy — such a pane has no interactive prompt.
+
+    Attributes
+    ----------
+    AUTO
+        Wait only when the session's interactive shell is zsh.
+    ALWAYS
+        Wait for every pane running the session's default shell, whatever that
+        shell is.
+    NEVER
+        Never wait; layout and commands are dispatched as soon as the pane
+        exists.
     """
 
     AUTO = "auto"
