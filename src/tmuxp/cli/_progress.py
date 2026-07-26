@@ -201,13 +201,31 @@ def resolve_progress_format(fmt: str) -> str:
 
 @dataclasses.dataclass
 class _WindowStatus:
-    """State for a single window in the build tree."""
+    """State for a single window in the build tree.
+
+    Attributes
+    ----------
+    name : str
+        Window name carried by the ``window_started`` event.
+    done : bool
+        Whether the window has finished building, set on ``window_done`` and
+        on ``workspace_built`` for any window still outstanding.
+    pane_num : int | None
+        One-based index of the pane currently being created. ``None`` before
+        the first ``pane_creating`` event and again once the window is done.
+    pane_total : int | None
+        Panes the window will hold. ``None`` until a ``window_started`` or
+        ``pane_creating`` event reports it.
+    pane_done : int
+        Panes completed in this window. Stays ``0`` while the window builds and
+        is set to ``pane_total`` on ``window_done``.
+    """
 
     name: str
     done: bool = False
     pane_num: int | None = None
     pane_total: int | None = None
-    pane_done: int = 0  # panes completed in this window (set on window_done)
+    pane_done: int = 0
 
 
 class BuildTree:

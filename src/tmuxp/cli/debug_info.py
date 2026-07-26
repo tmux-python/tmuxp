@@ -52,7 +52,19 @@ tmuxp_path = pathlib.Path(__file__).parent.parent
 
 
 class CLIDebugInfoNamespace(argparse.Namespace):
-    """Typed :class:`argparse.Namespace` for tmuxp debug-info command."""
+    """Typed :class:`argparse.Namespace` for tmuxp debug-info command.
+
+    Attributes
+    ----------
+    color
+        When to colorize output, from the root parser's ``--color``:
+        ``"auto"`` (the default) colorizes only for a terminal, ``"always"``
+        and ``"never"`` force the decision either way.
+    output_json
+        Emit the report as one JSON object rather than prose, set by
+        ``--json``. The JSON form carries the same fields but skips the
+        section headers and blank-line grouping.
+    """
 
     color: CLIColorModeLiteral
     output_json: bool

@@ -75,6 +75,13 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     The formatter uses a `_theme` attribute (set externally) to apply colors.
     If no theme is set, the formatter falls back to plain text output.
 
+    Attributes
+    ----------
+    _theme : HelpTheme | None
+        Escape sequences applied to example lines, bound by
+        :func:`create_themed_formatter` or assigned externally. ``None`` leaves
+        help output plain.
+
     Examples
     --------
     >>> formatter = TmuxpHelpFormatter("tmuxp")
@@ -82,7 +89,6 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     <...TmuxpHelpFormatter object at ...>
     """
 
-    # Theme for colorization, set by create_themed_formatter() or externally
     _theme: HelpTheme | None = None
 
     def _fill_text(self, text: str, width: int, indent: str) -> str:
@@ -164,7 +170,17 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
         return "".join(formatted_lines)
 
     class _ColorizedLine(t.NamedTuple):
-        """Result of colorizing an example line."""
+        """Result of colorizing an example line.
+
+        Attributes
+        ----------
+        text : str
+            The line with theme escape sequences wrapped around its tokens.
+        expect_value : bool
+            Whether the line ended on an option that still awaits its value.
+            The caller carries this into the next line so the value is colored
+            as a value rather than as a command.
+        """
 
         text: str
         expect_value: bool

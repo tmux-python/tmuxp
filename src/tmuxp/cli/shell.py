@@ -52,7 +52,48 @@ if t.TYPE_CHECKING:
 
 
 class CLIShellNamespace(argparse.Namespace):
-    """Typed :class:`argparse.Namespace` for tmuxp shell command."""
+    """Typed :class:`argparse.Namespace` for tmuxp shell command.
+
+    Attributes
+    ----------
+    color : CLIColorModeLiteral
+        When to colorize output (``--color``). ``auto`` honors ``NO_COLOR``,
+        ``FORCE_COLOR`` and TTY detection; ``always`` and ``never`` override it.
+    session_name : str
+        Session bound to the shell's ``session`` variable. Unset when the
+        positional is omitted, which falls back to the session owning the pane
+        in ``TMUX_PANE``, then to the server's first session.
+    socket_name : str | None
+        Pass-through for ``tmux -L``. ``None`` leaves tmux on its default
+        socket.
+    socket_path : str | None
+        Pass-through for ``tmux -S``. When neither this nor ``socket_name`` is
+        given and ``TMUX`` is set, the socket path is read from that variable.
+    colors : CLIColorsLiteral | None
+        Color count forced on tmux. The ``shell`` subparser defines no
+        ``-2``/``-8`` flags, so argparse never sets this.
+    log_file : str | None
+        Destination for the file log. The ``shell`` subparser defines no
+        ``--log-file`` flag, so argparse never sets this.
+    window_name : str | None
+        Window bound to the shell's ``window`` variable. Unset when the
+        positional is omitted, which falls back to the window owning the pane
+        in ``TMUX_PANE``, then to the session's first window.
+    command : str | None
+        ``-c``: Python source executed against the loaded libtmux objects,
+        after which tmuxp exits. ``None`` opens an interactive shell.
+    shell : CLIShellLiteral | None
+        Interpreter selected by the mutually exclusive ``--best``, ``--pdb``,
+        ``--code``, ``--ptipython``, ``--ptpython``, ``--ipython`` and
+        ``--bpython`` flags. Defaults to ``best``, which picks the richest
+        interpreter installed.
+    use_pythonrc : bool
+        ``--use-pythonrc``: load ``PYTHONSTARTUP`` and ``~/.pythonrc.py`` in
+        the ``--code`` shell. ``--no-startup`` turns it back off.
+    use_vi_mode : bool
+        ``--use-vi-mode``: use vi keybindings in ptpython and ptipython.
+        ``--no-vi-mode`` turns it back off.
+    """
 
     color: CLIColorModeLiteral
     session_name: str
