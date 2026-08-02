@@ -1,0 +1,30 @@
+session_name: if conditions test
+environment:
+  Foo: 'false'
+  show_htop: 'true'
+windows:
+  # the following would not show up as it evaluates to false
+  - window_name: window 1 ${ha} $Foo
+    if: ${Foo}
+    panes:
+      - shell_command:
+          - echo "this shouldn't show up"
+      - echo neither should this $Foo
+  - window_name: window 2
+    panes:
+      # shell expression condition; should not show up
+      - if:
+          shell: '[ 5 -lt 4 ]'
+        shell_command:
+          - echo the above is a false statement
+      # python condition
+      - if:
+          python: import os; os.path.isdir(os.path.expandvars('${PWD}'))
+        shell_command:
+          - echo "checking for PWD (${PWD}) is a directory in python"
+          - python -m http.server
+      # display by default, but can be disabled by running `show_htop=false tmuxp load .....`
+      - if: ${show_htop}
+        shell_command:
+          - echo "the above is a true statement (by default), but can be disabled on-demand"
+          - htop
