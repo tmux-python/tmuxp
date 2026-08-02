@@ -11,6 +11,12 @@ most. Point it at a project directory or a YAML/JSON file and tmuxp builds the
 session and attaches you to it; the flags below are for the cases where you want
 something other than that default.
 
+```{image} ../_static/demos/asciinema/tmuxp-load.gif
+:alt: tmuxp load building and attaching a tmux session
+:width: 100%
+:loading: lazy
+```
+
 ## Command
 
 ```{eval-rst}
