@@ -129,6 +129,7 @@ class CLILoadNamespace(argparse.Namespace):
     progress_format: str | None
     panel_lines: int | None
     no_progress: bool
+    builder: str
 
 
 def load_plugins(
@@ -470,6 +471,7 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    builder_name: str = "default",
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -603,16 +605,29 @@ def load_workspace(
     # Builder resolution + creation — outside spinner so plugin prompts are safe.
     # Trusted import roots (absent config -> [] -> a no-op sandbox) stay on
     # sys.path for the import and instantiation; each build dispatch re-enters
-    # the sandbox so build-time lazy imports resolve.
+    # the sandbox so build-time lazy imports resolve. ``--builder=chain`` forces
+    # the experimental chain builder; otherwise the registry resolves the class
+    # from the workspace's ``workspace_builder`` key.
     try:
         builder_paths = resolve_builder_paths(expanded_workspace, workspace_file)
         with prepended_sys_path(builder_paths):
-            builder_cls = resolve_builder_class(expanded_workspace)
+            builder_cls: type[WorkspaceBuilderProtocol]
+            if builder_name == "chain":
+                # Imported lazily: the experimental chain builder pulls in
+                # libtmux's unreleased ``_experimental.chain`` API, absent from
+                # published builds. Deferring keeps ``tmuxp load`` importable
+                # when the API is missing; only ``--builder=chain`` needs it.
+                from tmuxp.workspace.chain_builder import ChainWorkspaceBuilder
+
+                builder_cls = ChainWorkspaceBuilder
+            else:
+                builder_cls = resolve_builder_class(expanded_workspace)
             builder = builder_cls(
                 session_config=expanded_workspace,
                 plugins=load_plugins(expanded_workspace, colors=cli_colors),
                 server=t,
             )
+
     except exc.EmptyWorkspaceException:
         logger.warning(
             "workspace file is empty",
@@ -855,6 +870,17 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
     )
 
+    parser.add_argument(
+        "--builder",
+        dest="builder",
+        choices=["default", "chain"],
+        default=os.environ.get("TMUXP_BUILDER", "default"),
+        help=(
+            "Workspace builder. 'chain' (experimental) builds the window/pane "
+            "tree via libtmux's chain API. Env: TMUXP_BUILDER"
+        ),
+    )
+
     try:
         import shtab
 
@@ -939,4 +965,5 @@ def command_load(
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            builder_name=args.builder,
         )
