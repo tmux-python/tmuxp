@@ -5,6 +5,12 @@
 Import and convert workspace configurations from other tmux session managers like
 [teamocil] and [tmuxinator].
 
+```{image} ../_static/demos/asciinema/tmuxp-import.gif
+:alt: tmuxp import showing the teamocil and tmuxinator importers
+:width: 100%
+:loading: lazy
+```
+
 (import-teamocil)=
 
 ## From teamocil

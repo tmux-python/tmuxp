@@ -38,6 +38,7 @@ conf = merge_sphinx_config(
         "sphinx_gp_highlighting",
         "tmux_layout",
         "sphinx_autodoc_argparse.exemplar",
+        "aspect_ratio",
     ],
     gp_highlighting_inline_literals="safe",
     gp_highlighting_inline_commands=["tmuxp"],
@@ -61,12 +62,16 @@ conf = merge_sphinx_config(
     # Keep Sphinx out of non-document trees under docs/: the mermaid toolchain
     # (node_modules) and its render cache, plus agent guidance (AGENTS.md and
     # its CLAUDE.md symlink) which would otherwise be orphan documents.
+    # "demos/**" keeps the recorded demo sources (tapes, casts, mp4/webm) in the
+    # repo but out of the published _static copy -- the referenced GIFs still
+    # reach the build via _images/.
     exclude_patterns=[
         "_build",
         "node_modules",
         "_mermaid_cache",
         "AGENTS.md",
         "CLAUDE.md",
+        "demos/**",
     ],
 )
 globals().update(conf)
