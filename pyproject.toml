@@ -54,6 +54,7 @@ tmuxp = 'tmuxp:cli.cli'
 
 [project.entry-points."tmuxp.workspace_builders"]
 classic = "tmuxp.workspace.builder.classic:ClassicWorkspaceBuilder"
+engine-ops = "tmuxp.workspace.builder.engine_ops:EngineOpsWorkspaceBuilder"
 
 [dependency-groups]
 dev = [
@@ -119,6 +120,13 @@ lint = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+# Development pin only (this branch): the engine-ops workspace API
+# (analyze/Workspace.abuild/WorkspaceSet, AsyncSubprocessEngine.for_server)
+# is unreleased. Points libtmux at the engine-ops branch so the
+# EngineOpsWorkspaceBuilder is importable. Not for release.
+[tool.uv.sources]
+libtmux = { git = "https://github.com/tmux-python/libtmux.git", branch = "engine-ops" }
 
 [tool.uv.exclude-newer-package]
 # git-pull packages release in lockstep with their workspaces, so a

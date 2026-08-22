@@ -64,6 +64,15 @@ is built — it augments, rather than replaces, the workspace's own
 `before_script` — and {meth}`~tmuxp.plugin.TmuxpPlugin.reattach` fires only
 when tmuxp re-attaches you to a session that already exists.
 
+Building several workspaces at once with `tmuxp load --parallel` or `--expand`
+folds them into one batched build, which exposes whole-session endpoints but no
+per-window boundary. Only {meth}`~tmuxp.plugin.TmuxpPlugin.before_script` runs
+there (once per built session); a plugin overriding a mid-build hook
+({meth}`~tmuxp.plugin.TmuxpPlugin.before_workspace_builder`,
+{meth}`~tmuxp.plugin.TmuxpPlugin.on_window_create`,
+{meth}`~tmuxp.plugin.TmuxpPlugin.after_window_finished`) is skipped with a
+warning. Load such a workspace on its own for the full hook sequence.
+
 ## Developing a plugin
 
 tmuxp expects a plugin to be a class in a Python submodule named `plugin`, inside

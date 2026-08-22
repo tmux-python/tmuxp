@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import contextlib
 import importlib
+import itertools
 import logging
 import os
 import pathlib
@@ -17,6 +19,7 @@ from libtmux.server import Server
 from tmuxp import exc, log, util
 from tmuxp._internal import config_reader
 from tmuxp._internal.private_path import PrivatePath
+from tmuxp.plugin import TmuxpPlugin
 from tmuxp.workspace import loader
 from tmuxp.workspace.builder import (
     WorkspaceBuilderProtocol,
@@ -129,6 +132,12 @@ class CLILoadNamespace(argparse.Namespace):
     progress_format: str | None
     panel_lines: int | None
     no_progress: bool
+    engine_ops: bool
+    engine_ops_engine: str
+    parallel: bool
+    dry_run: bool
+    no_fold: bool
+    expand: list[str] | None
 
 
 def load_plugins(
@@ -470,6 +479,8 @@ def load_workspace(
     progress_format: str | None = None,
     panel_lines: int | None = None,
     no_progress: bool = False,
+    builder_override: str | None = None,
+    engine_ops_engine: str = "subprocess",
 ) -> Session | None:
     """Entrypoint for ``tmuxp load``, load a tmuxp "workspace" session via config file.
 
@@ -590,6 +601,12 @@ def load_workspace(
 
     # propagate workspace inheritance (e.g. session -> window, window -> pane)
     expanded_workspace = loader.trickle(expanded_workspace)
+
+    # Select an alternate builder backend (e.g. --engine-ops) unless the config
+    # already names one; resolve_builder_class reads the workspace_builder key.
+    if builder_override:
+        expanded_workspace["workspace_builder"] = builder_override
+        expanded_workspace["engine_ops_engine"] = engine_ops_engine
 
     t = Server(  # create tmux server object
         socket_name=socket_name,
@@ -854,6 +871,70 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         default=False,
         help=("Disable the animated progress spinner. Env: TMUXP_PROGRESS=0"),
     )
+    parser.add_argument(
+        "--engine-ops",
+        dest="engine_ops",
+        action="store_true",
+        default=False,
+        help=(
+            "Build with the experimental engine-ops backend: an async builder "
+            "that folds a session's commands into a few tmux dispatches."
+        ),
+    )
+    parser.add_argument(
+        "--engine-ops-engine",
+        dest="engine_ops_engine",
+        choices=("subprocess", "control_mode"),
+        default="subprocess",
+        help=(
+            "Async engine for --engine-ops: 'subprocess' (default, one tmux "
+            "fork per dispatch) or 'control_mode' (one persistent tmux -C "
+            "connection -- faster for larger workspaces)."
+        ),
+    )
+    parser.add_argument(
+        "--parallel",
+        dest="parallel",
+        action="store_true",
+        default=False,
+        help=(
+            "Build every WORKSPACE_FILE as one engine-ops workspace set: all "
+            "sessions compile into a single rebased, folded plan. Implies "
+            "--engine-ops; incompatible with -a/--append and -s."
+        ),
+    )
+    parser.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=False,
+        help=(
+            "With --parallel, print the compiled tmux dispatch plan and exit "
+            "without touching the tmux server."
+        ),
+    )
+    parser.add_argument(
+        "--no-fold",
+        dest="no_fold",
+        action="store_true",
+        default=False,
+        help=(
+            "With --parallel, dispatch one tmux command per operation instead "
+            "of folding them into ;-chained batches (useful for debugging)."
+        ),
+    )
+    parser.add_argument(
+        "--expand",
+        dest="expand",
+        metavar="KEY=V1,V2",
+        action="append",
+        default=None,
+        help=(
+            "Expand ONE workspace file into a session per value by substituting "
+            "$KEY placeholders (e.g. session_name: app-$env). Repeat for a "
+            "matrix (Cartesian product). Implies a folded set build."
+        ),
+    )
 
     try:
         import shtab
@@ -865,6 +946,372 @@ def create_load_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentP
         pass
 
     return parser
+
+
+def _parse_expand_specs(specs: list[str]) -> list[dict[str, str]]:
+    """Turn ``KEY=V1,V2`` ``--expand`` specs into variant dicts.
+
+    Each spec is one axis; multiple axes form a matrix (Cartesian product). The
+    variant dicts feed :func:`libtmux.experimental.workspace.expand`, which
+    substitutes ``$KEY`` placeholders in the base workspace.
+
+    Parameters
+    ----------
+    specs : list of str
+        Raw ``KEY=V1,V2`` strings, one per ``--expand`` flag.
+
+    Returns
+    -------
+    list of dict
+        One ``{key: value}`` variant per point in the matrix.
+
+    Raises
+    ------
+    ValueError
+        If a spec lacks ``=``, has an empty key, or lists no values.
+
+    Examples
+    --------
+    A single axis yields one variant per value:
+
+    >>> from tmuxp.cli.load import _parse_expand_specs
+    >>> _parse_expand_specs(["env=dev,prod"])
+    [{'env': 'dev'}, {'env': 'prod'}]
+
+    Two axes form a matrix:
+
+    >>> variants = _parse_expand_specs(["env=dev,prod", "region=us,eu"])
+    >>> len(variants)
+    4
+    >>> variants[0], variants[-1]
+    ({'env': 'dev', 'region': 'us'}, {'env': 'prod', 'region': 'eu'})
+    """
+    axes: list[tuple[str, list[str]]] = []
+    for spec in specs:
+        key, sep, raw = spec.partition("=")
+        if not sep or not key.strip():
+            msg = f"invalid --expand spec {spec!r}; expected KEY=V1,V2"
+            raise ValueError(msg)
+        values = [v.strip() for v in raw.split(",") if v.strip()]
+        if not values:
+            msg = f"invalid --expand spec {spec!r}; no values after '='"
+            raise ValueError(msg)
+        axes.append((key.strip(), values))
+    keys = [key for key, _ in axes]
+    value_lists = [values for _, values in axes]
+    return [
+        dict(zip(keys, combo, strict=True)) for combo in itertools.product(*value_lists)
+    ]
+
+
+#: Plugin hooks the classic builder fires *between* window/pane creation. The
+#: folded set build has no per-window boundary to run them at, so they are
+#: skipped with a warning; a sequential ``load`` runs them.
+_SET_UNSUPPORTED_HOOKS = (
+    "before_workspace_builder",
+    "on_window_create",
+    "after_window_finished",
+)
+
+
+class _SetPlugins(t.NamedTuple):
+    """One file's loaded plugins plus the import sandbox they resolve under."""
+
+    builder_paths: list[pathlib.Path]
+    plugins: list[t.Any]
+
+
+def _load_set_plugins(
+    expanded: dict[str, t.Any],
+    workspace_file: pathlib.Path,
+    cli_colors: Colors,
+) -> _SetPlugins:
+    """Load a file's plugins for a set build, warning on unsupported hooks.
+
+    Loads inside the file's import sandbox so the version-compat gate and any
+    skip prompt run *before* the fold (matching the sequential path), and warns
+    once per plugin that overrides a mid-build hook the folded build can't run.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _load_set_plugins
+    >>> callable(_load_set_plugins)
+    True
+    """
+    if not expanded.get("plugins"):
+        return _SetPlugins([], [])
+    builder_paths = resolve_builder_paths(expanded, workspace_file)
+    with prepended_sys_path(builder_paths):
+        plugins = load_plugins(expanded, colors=cli_colors)
+    for plugin in plugins:
+        skipped = [
+            hook
+            for hook in _SET_UNSUPPORTED_HOOKS
+            if getattr(type(plugin), hook) is not getattr(TmuxpPlugin, hook)
+        ]
+        if skipped:
+            logger.warning(
+                "plugin mid-build hooks skipped on set build; run without "
+                "--parallel/--expand for full plugin support",
+                extra={
+                    "plugin": type(plugin).__name__,
+                    "skipped_hooks": ",".join(skipped),
+                },
+            )
+    return _SetPlugins(builder_paths, plugins)
+
+
+def _run_set_before_script(
+    server: Server,
+    session_plugins: dict[str, _SetPlugins],
+    built: list[str],
+) -> None:
+    """Run each built session's ``before_script`` plugin hooks post-build.
+
+    The folded set path's analogue of :func:`_setup_plugins`. Hooks run after
+    ``abuild`` returns, by name lookup on materialized sessions, so the fold is
+    untouched. A hook that raises is logged and skipped -- one plugin failure
+    must not tear down the other already-built sessions.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _run_set_before_script
+    >>> callable(_run_set_before_script)
+    True
+    """
+    for name in built:
+        binding = session_plugins.get(name)
+        if binding is None:
+            continue
+        session = server.sessions.get(session_name=name, default=None)
+        if session is None:
+            continue
+        with prepended_sys_path(binding.builder_paths):
+            for plugin in binding.plugins:
+                try:
+                    plugin.before_script(session)
+                except Exception:  # noqa: PERF203 - isolate each plugin's hook
+                    logger.warning(
+                        "plugin before_script failed on set build",
+                        extra={"tmux_session": name, "plugin": type(plugin).__name__},
+                        exc_info=True,
+                    )
+
+
+def _load_parallel(
+    args: CLILoadNamespace,
+    cli_colors: Colors,
+    parser: argparse.ArgumentParser | None = None,
+) -> None:
+    """Build every WORKSPACE_FILE as one engine-ops workspace set.
+
+    ``--parallel`` lowers all workspace files to libtmux's declarative
+    :class:`~libtmux.experimental.workspace.ir.Workspace` IR, groups them into a
+    single :class:`~libtmux.experimental.workspace.sets.WorkspaceSet`, and
+    ``abuild``s the whole set as one rebased, folded plan -- so N sessions
+    render in a few ``;``-chained tmux dispatches sharing one preflight, instead
+    of one detached ``load`` per file.
+
+    With ``--expand KEY=V1,V2`` a single file is instead expanded into one
+    session per value (a matrix, over multiple ``--expand`` axes) by
+    substituting ``$KEY`` placeholders; the rendered variants build as the same
+    kind of folded set.
+
+    It implies the engine-ops backend. ``--append`` and ``-s`` describe
+    single-session semantics that don't compose with a multi-session set, so
+    they are rejected.
+
+    Plugin support is partial by design: each built session's ``before_script``
+    hook runs post-build (the fold exposes whole-session endpoints, not
+    per-window boundaries). The mid-build hooks (``before_workspace_builder``,
+    ``on_window_create``, ``after_window_finished``) can't run without unfolding
+    the plan, so a plugin overriding one is skipped with a warning; the
+    ``reattach`` hook isn't fired here (as on any fresh sequential load). Unlike
+    the sequential path, a ``before_script`` that raises is logged and skipped
+    rather than surfaced -- one plugin must not tear down the other built
+    sessions. Use a sequential ``load`` when you need full plugin semantics.
+
+    Parameters
+    ----------
+    args : CLILoadNamespace
+        Parsed ``tmuxp load`` arguments.
+    cli_colors : :class:`~tmuxp._internal.colors.Colors`
+        Colors instance for styled output.
+    parser : :class:`argparse.ArgumentParser`, optional
+        The load subparser, used only to print help on bad input.
+
+    Examples
+    --------
+    >>> from tmuxp.cli.load import _load_parallel
+    >>> callable(_load_parallel)
+    True
+    """
+    from libtmux.experimental.engines import (
+        AsyncControlModeEngine,
+        AsyncSubprocessEngine,
+    )
+    from libtmux.experimental.ops import SequentialPlanner
+    from libtmux.experimental.workspace import (
+        Workspace,
+        WorkspaceSet,
+        analyze,
+        expand as expand_variants,
+    )
+
+    if args.append:
+        tmuxp_echo(
+            cli_colors.error("[Error]")
+            + " --parallel cannot be combined with -a/--append",
+        )
+        sys.exit(1)
+    if args.new_session_name:
+        tmuxp_echo(
+            cli_colors.error("[Error]") + " --parallel cannot be combined with -s",
+        )
+        sys.exit(1)
+
+    def _lower(raw_file: str) -> tuple[dict[str, t.Any], pathlib.Path]:
+        """Resolve, read, and expand one file to a trickled config dict.
+
+        Mirrors load_workspace's read -> expand(cwd) -> trickle pipeline so
+        relative paths resolve identically on the set path.
+        """
+        path = pathlib.Path(
+            find_workspace_file(raw_file, workspace_dir=get_workspace_dir()),
+        )
+        raw = config_reader.ConfigReader._from_file(path) or {}
+        expanded = loader.trickle(loader.expand(raw, cwd=os.path.dirname(path)))
+        return expanded, path
+
+    # session name -> (expanded config, source file), captured purely at
+    # lowering time so plugins can be loaded per built session later without
+    # re-reading files. (The IR drops the "plugins" key and the source path.)
+    session_sources: dict[str, tuple[dict[str, t.Any], pathlib.Path]] = {}
+    workspaces: list[Workspace]
+    if args.expand:
+        # Matrix mode: expand ONE base file into a session per variant.
+        if len(args.workspace_files) != 1:
+            tmuxp_echo(
+                cli_colors.error("[Error]")
+                + " --expand takes exactly one workspace file",
+            )
+            sys.exit(1)
+        try:
+            variants = _parse_expand_specs(args.expand)
+        except ValueError as error:
+            tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
+            sys.exit(1)
+        expanded, path = _lower(args.workspace_files[0])
+        if not expanded:
+            tmuxp_echo(
+                cli_colors.error("[Error]")
+                + f" {PrivatePath(path)} is empty or parsed no workspace data",
+            )
+            sys.exit(1)
+        workspaces = list(expand_variants(analyze(expanded), variants))
+        for ws in workspaces:
+            session_sources[ws.name] = (expanded, path)
+    else:
+        # Multi-file mode: one session per file.
+        workspaces = []
+        for raw_file in args.workspace_files:
+            expanded, path = _lower(raw_file)
+            if not expanded:
+                tmuxp_echo(
+                    cli_colors.warning("[Warning]")
+                    + f" {PrivatePath(path)} is empty; skipping",
+                )
+                continue
+            ws = analyze(expanded)
+            workspaces.append(ws)
+            session_sources[ws.name] = (expanded, path)
+
+    if not workspaces:
+        tmuxp_echo(cli_colors.error("[Error]") + " no workspaces to build")
+        sys.exit(1)
+
+    try:
+        ws_set = WorkspaceSet(workspaces)
+    except ValueError as error:
+        # Duplicate session names across the set are unbuildable.
+        tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
+        sys.exit(1)
+
+    shutil.which("tmux")  # raise exception if tmux not found
+
+    # --dry-run: render the compiled plan without touching the tmux server.
+    if args.dry_run:
+        compiled = ws_set.compile()
+        tmuxp_echo(cli_colors.info("[Dry run]") + " compiled tmux plan:")
+        for idx, row in enumerate(compiled.plan.preview(), start=1):
+            # Forward-ref rows resolve to real args only at execution time.
+            rendered = "<deferred>" if row is None else " ".join(row)
+            tmuxp_echo(f"  {idx:>3}  {rendered}")
+        return
+
+    # Load plugins BEFORE the fold so a version-incompatible plugin refuses up
+    # front (as the sequential path does), not after N sessions already exist.
+    # Memoized per file so --expand variants sharing one file load (and warn)
+    # once. Only post-build hooks run on the set path (see the docstring).
+    session_plugins: dict[str, _SetPlugins] = {}
+    loaded: dict[pathlib.Path, _SetPlugins] = {}
+    for name, (expanded, path) in session_sources.items():
+        if not expanded.get("plugins"):
+            continue
+        if path not in loaded:
+            loaded[path] = _load_set_plugins(expanded, path, cli_colors)
+        if loaded[path].plugins:
+            session_plugins[name] = loaded[path]
+
+    server = Server(
+        socket_name=args.socket_name,
+        socket_path=args.socket_path,
+        config_file=args.tmux_config_file,
+        colors=args.colors,
+    )
+
+    planner = SequentialPlanner() if args.no_fold else None
+
+    async def _abuild() -> t.Any:
+        # control_mode uses one persistent tmux -C (async context manager);
+        # subprocess forks per dispatch (a plain engine).
+        if args.engine_ops_engine == "control_mode":
+            async with AsyncControlModeEngine.for_server(server) as engine:
+                return await ws_set.abuild(engine, planner=planner)
+        subproc = AsyncSubprocessEngine.for_server(server)
+        return await ws_set.abuild(subproc, planner=planner)
+
+    try:
+        result = asyncio.run(_abuild())
+    except FileExistsError as error:
+        # A session already exists and its on_exists policy is 'error'.
+        tmuxp_echo(cli_colors.error("[Error]") + f" {error}")
+        sys.exit(1)
+
+    checkmark = cli_colors.success("✓")
+    for name in result.sessions:
+        tmuxp_echo(f"{checkmark} built {cli_colors.highlight(name)}")
+    for name in result.reused:
+        tmuxp_echo(cli_colors.muted(f"reused {name}"))
+
+    # Post-build before_script hooks on freshly built sessions (not reused).
+    if session_plugins:
+        reused = set(result.reused)
+        built = [name for name in result.sessions if name not in reused]
+        _run_set_before_script(server, session_plugins, built)
+
+    # Attach the last declared session unless detached or unavailable, matching
+    # the sequential path's "last file attaches" convention.
+    if args.detached:
+        return
+    last_name = workspaces[-1].name
+    session = server.sessions.get(session_name=last_name, default=None)
+    if session is None:
+        return
+    if "TMUX" in os.environ:
+        session.switch_client()
+    else:
+        session.attach()
 
 
 def command_load(
@@ -908,6 +1355,23 @@ def command_load(
         sys.exit()
         return
 
+    # The set-build path is selected by --parallel (many files) or --expand
+    # (one file, many variants); --expand implies it.
+    _set_build = args.parallel or bool(args.expand)
+
+    # --dry-run/--no-fold only mean something for the set build; guard against
+    # the footgun where `load --dry-run foo` would silently build foo.
+    if (args.dry_run or args.no_fold) and not _set_build:
+        tmuxp_echo(
+            cli_colors.error("[Error]")
+            + " --dry-run and --no-fold require --parallel or --expand",
+        )
+        sys.exit(1)
+
+    if _set_build:
+        _load_parallel(args, cli_colors, parser)
+        return
+
     last_idx = len(args.workspace_files) - 1
     original_detached_option = args.detached
     original_new_session_name = args.new_session_name
@@ -939,4 +1403,6 @@ def command_load(
             progress_format=args.progress_format,
             panel_lines=args.panel_lines,
             no_progress=args.no_progress,
+            builder_override="engine-ops" if args.engine_ops else None,
+            engine_ops_engine=args.engine_ops_engine,
         )
