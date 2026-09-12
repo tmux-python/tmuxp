@@ -3,6 +3,6 @@
   "private": true,
   "description": "Build-time tooling for the tmuxp docs (mermaid diagram rendering).",
   "devDependencies": {
-    "@mermaid-js/mermaid-cli": "11.15.0"
+    "@mermaid-js/mermaid-cli": "11.17.0"
   }
 }
