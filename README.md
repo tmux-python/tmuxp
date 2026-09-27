@@ -1,3 +1,12 @@
+<!-- libtmux-logo -->
+<p align="center">
+  <picture>
+    <source srcset="assets/logo.svg" type="image/svg+xml">
+    <img src="https://raw.githubusercontent.com/tmux-python/tmuxp/master/assets/logo.png" width="128" height="128" alt="tmuxp">
+  </picture>
+</p>
+<!-- /libtmux-logo -->
+
 # tmuxp
 
 Session manager for tmux. Save and load your tmux sessions through
