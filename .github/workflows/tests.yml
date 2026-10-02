@@ -48,6 +48,7 @@ jobs:
       - name: Build tmux ${{ matrix.tmux-version }}
         if: steps.tmux-build-cache.outputs.cache-hit != 'true'
         run: |
+          sudo apt-get update
           sudo apt install libevent-dev libncurses5-dev libtinfo-dev libutempter-dev bison
           mkdir ~/tmux-builds
           mkdir ~/tmux-src
@@ -77,6 +78,7 @@ jobs:
       - name: Test with pytest
         continue-on-error: ${{ matrix.tmux-version == 'master' }}
         run: |
+          sudo apt-get update
           sudo apt install libevent-2.1-7
           export PATH=$HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin:$PATH
           ls $HOME/tmux-builds/tmux-${{ matrix.tmux-version }}/bin
