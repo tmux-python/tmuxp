@@ -78,12 +78,11 @@ class EmptyWorkspaceException(WorkspaceError):
 class SessionMissingWorkspaceException(WorkspaceError, ObjectDoesNotExist):
     """Session missing while loading tmuxp workspace."""
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
+    def __init__(self, *args: object) -> None:
         super().__init__(
             "No session object exists for WorkspaceBuilder. "
             "Tip: Add session_name in constructor or run WorkspaceBuilder.build()",
             *args,
-            **kwargs,
         )
 
 
