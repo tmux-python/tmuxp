@@ -286,6 +286,19 @@ See the [Quickstart](https://tmuxp.git-pull.com/quickstart/).
 Want to learn more about tmux itself? [Read The Tao of Tmux
 online](https://tmuxp.git-pull.com/about_tmux/).
 
+## Attribution
+
+Please use the following BibTeX template to cite tmuxp in scientific discourse:
+
+```bibtex
+@misc{tmuxp,
+   author = {Tony Narlock},
+   year = {2013},
+   note = {https://tmuxp.git-pull.com},
+   title = {tmuxp: workspace manager for tmux}
+}
+```
+
 # Donations
 
 Your donations fund development of new features, testing and support. Your
