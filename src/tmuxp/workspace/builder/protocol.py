@@ -52,6 +52,7 @@ class WorkspaceBuilderProtocol(t.Protocol):
     ...     on_build_event = None
     ...     def __init__(self, session_config, server, **kwargs):
     ...         self._session_config = session_config
+    ...         self.server = server
     ...     def build(self, session=None, append=False):
     ...         ...
     ...     def session_exists(self, session_name):
@@ -71,6 +72,7 @@ class WorkspaceBuilderProtocol(t.Protocol):
     False
     """
 
+    server: Server
     plugins: list[t.Any]
     on_progress: t.Callable[[str], None] | None
     on_before_script: t.Callable[[], None] | None
