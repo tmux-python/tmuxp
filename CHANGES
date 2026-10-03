@@ -44,6 +44,22 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.62.0` (was `~=0.61.0`) (#1088)
+
+Picks up libtmux 0.62.0, which adds
+{meth}`Pane.from_env() <libtmux.Pane.from_env>` and its siblings for code
+running inside tmux, {attr}`~libtmux.Window.linked_sessions`, and
+tmux-accurate resolution of windows linked into several sessions. libtmux
+also moved {exc}`~libtmux.exc.ObjectDoesNotExist` and
+{exc}`~libtmux.exc.MultipleObjectsReturned` under
+{exc}`~libtmux.exc.LibTmuxException`, so code that catches
+`LibTmuxException` before them now intercepts missing and ambiguous
+lookups. tmuxp's own handlers are unaffected;
+{exc}`~tmuxp.exc.SessionMissingWorkspaceException`, which already derived
+from `ObjectDoesNotExist`, is now also a `LibTmuxException`.
+
 ### Documentation
 
 #### Diagrams stay readable on narrow screens (#1076)
