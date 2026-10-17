@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import logging
+import re
 import typing as t
 
 import libtmux
 from libtmux._compat import LegacyVersion as Version
-from libtmux.common import get_version
+from libtmux.server import Server
 
 from .__about__ import __version__
 from .exc import TmuxpPluginException
+from .util import _require_backend
 
 logger = logging.getLogger(__name__)
 
@@ -219,7 +221,9 @@ class TmuxpPlugin:
         self.plugin_name = config["plugin_name"]
 
         # Dependency versions
-        self.tmux_version = get_version()
+        self.tmux_version = Version(
+            re.sub(r"[a-z-]", "", _require_backend().server_version(Server()))
+        )
         self.libtmux_version = libtmux.__about__.__version__
         self.tmuxp_version = Version(__version__)
 
