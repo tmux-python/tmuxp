@@ -763,7 +763,7 @@ wheels = [
 [[package]]
 name = "libtmux"
 version = "0.62.0"
-source = { git = "https://github.com/tmux-python/libtmux.git?rev=f6e4630a15f342382487a60e1e1477abcd52294d#f6e4630a15f342382487a60e1e1477abcd52294d" }
+source = { git = "https://github.com/tmux-python/libtmux.git?rev=5df9cb3e89647577b7dd8484f844ffe1053129bb#5df9cb3e89647577b7dd8484f844ffe1053129bb" }
 
 [[package]]
 name = "linkify-it-py"
@@ -1862,7 +1862,7 @@ testing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "libtmux", git = "https://github.com/tmux-python/libtmux.git?rev=f6e4630a15f342382487a60e1e1477abcd52294d" },
+    { name = "libtmux", git = "https://github.com/tmux-python/libtmux.git?rev=5df9cb3e89647577b7dd8484f844ffe1053129bb" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
