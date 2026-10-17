@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import typing as t
 
 from libtmux._internal.query_list import ObjectDoesNotExist
 
@@ -78,12 +79,14 @@ class EmptyWorkspaceException(WorkspaceError):
 class SessionMissingWorkspaceException(WorkspaceError, ObjectDoesNotExist):
     """Session missing while loading tmuxp workspace."""
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
+    def __init__(
+        self, *args: object, query: t.Mapping[str, t.Any] | None = None
+    ) -> None:
         super().__init__(
             "No session object exists for WorkspaceBuilder. "
             "Tip: Add session_name in constructor or run WorkspaceBuilder.build()",
             *args,
-            **kwargs,
+            query=query,
         )
 
 
