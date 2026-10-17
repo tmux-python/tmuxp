@@ -92,6 +92,8 @@ jobs:
   unsupported-tmux:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
+    env:
+      UV_EXCLUDE_NEWER: P3D
     strategy:
       matrix:
         tmux-version: ['3.2a', '3.3']
