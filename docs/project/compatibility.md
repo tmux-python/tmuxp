@@ -21,18 +21,19 @@ without a running server or an installed tmux executable.
 
 ## Installing this checkout
 
-This branch depends on coordinated, unreleased libtmux admission changes.
-`uv.lock` pins their exact source revision; the package version by itself
-does not identify those changes. Install the checkout with its lockfile:
+This branch requires libtmux 0.63 or newer, the first release that carries
+the daemon version check, and `pyproject.toml` says so (`libtmux~=0.63.0`).
+Until that release exists, `uv.lock` pins an exact development revision.
+Install the checkout with its lockfile:
 
 ```console
 $ uv sync --locked
 ```
 
-A plain package install does not apply uv's source selection. The installed
-libtmux must provide the coordinated admission API before tmuxp can load,
-freeze, or open a shell. The matching release pair must be published before
-this branch can serve as a normal registry release.
+A plain package install does not apply uv's source selection and picks the
+released libtmux. If the installed libtmux lacks the version check, tmuxp
+refuses to load, freeze, or open a shell. Release libtmux first, then drop the
+source pin and merge this change.
 
 ## Workspace scripts and custom code
 
