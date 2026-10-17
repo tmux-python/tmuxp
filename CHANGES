@@ -62,8 +62,13 @@ tmux>=3.3a
 
 Save your sessions before upgrading and restarting an older daemon. Help,
 version information, diagnostics, and workspace conversion remain available
-without tmux. See {doc}`project/compatibility` for the coordinated libtmux
-source dependency and installation requirements.
+without tmux. See {doc}`project/compatibility` for installation requirements.
+
+#### Minimum `libtmux~=0.63.0` (was `~=0.62.0`)
+
+Picks up libtmux 0.63.0, whose version check covers the
+connected daemon before every command. tmuxp checks a daemon once per workspace
+build, and a libtmux without that module is refused before custom code runs.
 
 ## tmuxp 1.75.0 (2026-10-24)
 
