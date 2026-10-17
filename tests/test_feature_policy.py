@@ -1,4 +1,4 @@
-"""Coordinated optional-feature policy before custom workspace code."""
+"""Optional-feature command policy before custom workspace code."""
 
 from __future__ import annotations
 
@@ -9,37 +9,25 @@ import shlex
 import typing as t
 import uuid
 
-import libtmux.common
 import pytest
+from libtmux._internal import support
 from libtmux.exc import LibTmuxException
 from libtmux.server import Server
 from libtmux.session import Session
 
-from tmuxp import cli, exc, util
+from tmuxp import cli, exc
 from tmuxp.cli import load
 from tmuxp.workspace import freezer
 
 
-@pytest.mark.parametrize("marker", [None, False, True, "1", "2", -1, 0, 1, 1.0])
 @pytest.mark.parametrize("kind", ["builder", "plugin"])
-def test_unqualified_policy_refuses_before_import(
+def test_backend_without_command_policy_refuses_before_import(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
-    marker: t.Any,
     kind: str,
 ) -> None:
-    """A matching package version cannot authorize an unqualified backend."""
-    if marker is None:
-        monkeypatch.delattr(
-            libtmux.common, "TMUX_OPTIONAL_FEATURE_POLICY_VERSION", raising=False
-        )
-    else:
-        monkeypatch.setattr(
-            libtmux.common,
-            "TMUX_OPTIONAL_FEATURE_POLICY_VERSION",
-            marker,
-            raising=False,
-        )
+    """A libtmux that cannot check literal commands cannot run custom code."""
+    monkeypatch.delattr(support, "require_commands")
     effect = tmp_path / "imported"
     module = "tmuxp_policy_" + uuid.uuid4().hex
     (tmp_path / f"{module}.py").write_text(
@@ -59,44 +47,18 @@ def test_unqualified_policy_refuses_before_import(
         config["plugins"] = [f"{module}.Plugin"]
     path = tmp_path / "workspace.json"
     path.write_text(json.dumps(config))
-    with pytest.raises(exc.LibtmuxCompatibilityError, match="coordinated libtmux"):
+    with pytest.raises(exc.LibtmuxCompatibilityError, match=r"libtmux 0\.63"):
         load.load_workspace(path, detached=True)
     assert not effect.exists()
 
 
-@pytest.mark.parametrize("marker", [2, 3])
-def test_integer_policy_is_accepted(
-    monkeypatch: pytest.MonkeyPatch, marker: int
-) -> None:
-    """Accept this policy and later compatible integer policy revisions."""
-    monkeypatch.setattr(
-        libtmux.common,
-        "TMUX_OPTIONAL_FEATURE_POLICY_VERSION",
-        marker,
-        raising=False,
-    )
-    util._require_backend()
-
-
-@pytest.mark.parametrize("marker", [None, 1])
-def test_unqualified_policy_refuses_shell_code(
+def test_backend_without_command_policy_refuses_shell_code(
     tmp_path: pathlib.Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
-    marker: int | None,
 ) -> None:
     """Refuse a shell command before it can execute custom Python."""
-    if marker is None:
-        monkeypatch.delattr(
-            libtmux.common, "TMUX_OPTIONAL_FEATURE_POLICY_VERSION", raising=False
-        )
-    else:
-        monkeypatch.setattr(
-            libtmux.common,
-            "TMUX_OPTIONAL_FEATURE_POLICY_VERSION",
-            marker,
-            raising=False,
-        )
+    monkeypatch.delattr(support, "require_commands")
     effect = tmp_path / "executed"
     command = f"from pathlib import Path; Path({str(effect)!r}).touch()"
     with pytest.raises(SystemExit) as error:
@@ -104,7 +66,7 @@ def test_unqualified_policy_refuses_shell_code(
     assert error.value.code == 1
     assert not effect.exists()
     output = capsys.readouterr()
-    assert "coordinated libtmux" in output.out
+    assert "libtmux 0.63" in output.out
     assert "Traceback" not in output.err
 
 
@@ -187,8 +149,7 @@ def test_invalid_workspace_layout_preserves_running_sessions(
             }
         )
     )
-    error = ValueError if server._get_version() == "3.3a" else LibTmuxException
-    with pytest.raises(error, match="layout"):
+    with pytest.raises(LibTmuxException, match="layout"):
         load.load_workspace(
             config, socket_name=server.socket_name, detached=True, no_progress=True
         )
