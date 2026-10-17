@@ -38,15 +38,15 @@ Help, diagnostics, and configuration conversion do not require tmux.
 
 ### Optional tmux operations
 
-Custom builders, plugins, and `tmuxp shell` use the coordinated libtmux
-feature policy. Control clients require tmux 3.7+, exact named-buffer
-deletion and renaming require 3.4+, and captured foreground shell output
-requires 3.5+. On exact tmux 3.7, provide a window name to `Pane.break_pane`;
-unnamed and raw breaks refuse before dispatch. Ordinary tmux 3.3a workspace
-operations remain available. Percentage splits use the portable spelling.
-On tmux 3.3a, malformed literal layouts refuse before dispatch; valid built-in
-names and serialized layouts remain available. This checkout requires
-optional-feature policy version 2 or newer from its pinned backend.
+Custom builders, plugins, and `tmuxp shell` use libtmux's command policy.
+Control clients require tmux 3.7+, exact named-buffer deletion and renaming
+require 3.4+, and captured foreground shell output requires 3.5+. On exact tmux
+3.7, provide a window name to `Pane.break_pane`; unnamed and raw breaks refuse
+before dispatch. Ordinary tmux 3.3a workspace operations remain available.
+Percentage splits use the portable spelling. On tmux 3.3a, malformed literal
+layouts refuse before dispatch; valid built-in names and serialized layouts
+remain available. A libtmux without `libtmux._internal.support.require_commands` is
+refused.
 
 ## tmuxp 1.18.0 (2022-10-30)
 
