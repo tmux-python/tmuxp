@@ -39,7 +39,7 @@ include = [
   { path = "conftest.py", format = "sdist" },
 ]
 dependencies = [
-  "libtmux~=0.62.0",
+  "libtmux~=0.63.0",
   "PyYAML>=6.0"
 ]
 
@@ -128,7 +128,7 @@ exclude = [
 ]
 
 [tool.uv.sources]
-libtmux = { git = "https://github.com/tmux-python/libtmux.git", rev = "6d1be6344786c790df9ff87bad30cd46c1756e1d" }
+libtmux = { git = "https://github.com/tmux-python/libtmux.git", rev = "f6e4630a15f342382487a60e1e1477abcd52294d" }
 
 [tool.uv.exclude-newer-package]
 # git-pull packages release in lockstep with their workspaces, so a
