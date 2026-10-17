@@ -175,13 +175,13 @@ def test_debug_info_reports_raw_tmux_version(
 ) -> None:
     """debug-info reports tmux's raw version, keeping the point-release suffix.
 
-    libtmux's ``get_version()`` strips the letter suffix (``"3.7a"`` -> ``"3.7"``)
-    for numeric comparison; ``get_version_str()`` keeps it. Bug reports want the
-    exact patch release, so debug-info reads the raw string verbatim.
+    Numeric comparisons strip the letter suffix (``"3.7a"`` -> ``"3.7"``). Bug
+    reports want the exact patch release, so debug-info reads the raw string
+    verbatim.
     """
     monkeypatch.setenv("SHELL", "/bin/bash")
     monkeypatch.setattr(
-        "tmuxp.cli.debug_info.get_version_str",
+        "tmuxp.cli.debug_info._executable_version",
         lambda *args, **kwargs: "3.7a",
     )
 

@@ -201,6 +201,7 @@ def command_shell(
 
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
+    util._require_tmux(server)
     server.raise_if_dead()
 
     current_pane = util.get_current_pane(server=server)

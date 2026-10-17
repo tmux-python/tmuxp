@@ -9,14 +9,13 @@ import sys
 import typing as t
 
 from libtmux.__about__ import __version__ as libtmux_version
-from libtmux.common import has_minimum_version
-from libtmux.exc import TmuxCommandNotFound
+from libtmux.exc import TmuxCommandNotFound, VersionTooLow
 
 from tmuxp import exc
 from tmuxp.__about__ import __version__
 from tmuxp.log import setup_logger
 
-from ._colors import build_description
+from ._colors import Colors, build_description, get_color_mode
 from ._formatter import TmuxpHelpFormatter, create_themed_formatter
 from .convert import CONVERT_DESCRIPTION, command_convert, create_convert_subparser
 from .debug_info import (
@@ -285,20 +284,26 @@ def cli(_args: list[str] | None = None) -> None:
     See detailed documentation and examples at:
     http://tmuxp.git-pull.com/
     """
-    try:
-        has_minimum_version()
-    except TmuxCommandNotFound:
-        tmuxp_echo("tmux not found. tmuxp requires you install tmux first.")
-        sys.exit()
-    except exc.TmuxpException as e:
-        tmuxp_echo(str(e))
-        sys.exit()
-
     parser = create_parser()
     args = parser.parse_args(_args, namespace=ns)
 
     setup_logger(level=args.log_level.upper())
 
+    try:
+        _dispatch(args, parser)
+    except (VersionTooLow, TmuxCommandNotFound, exc.LibtmuxCompatibilityError) as error:
+        colors = Colors(get_color_mode(args.color))
+        detail = (
+            "tmux executable not found; install tmux 3.3a or newer"
+            if isinstance(error, TmuxCommandNotFound)
+            else str(error)
+        )
+        tmuxp_echo(colors.error("[Tmux Error]") + f" {detail}")
+        sys.exit(1)
+
+
+def _dispatch(args: CLINamespace, parser: argparse.ArgumentParser) -> None:
+    """Run the selected subcommand after argument parsing."""
     if args.subparser_name is None:
         parser.print_help()
         return

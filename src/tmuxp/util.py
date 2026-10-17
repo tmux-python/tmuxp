@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import logging
 import os
 import shlex
@@ -23,6 +24,30 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 PY2 = sys.version_info[0] == 2
+
+
+def _require_backend() -> None:
+    """Require coordinated libtmux admission before running user code."""
+    message = (
+        "tmuxp requires its coordinated libtmux dependency; "
+        "install this checkout with uv sync --locked"
+    )
+    try:
+        support = importlib.import_module("libtmux._internal.support")
+    except ImportError as error:
+        raise exc.LibtmuxCompatibilityError(message) from error
+    if not all(
+        callable(getattr(support, name, None))
+        for name in ("require_version", "prepare", "check_result")
+    ) or not isinstance(getattr(support, "MINIMUM", None), str):
+        raise exc.LibtmuxCompatibilityError(message)
+    support.require_version(support.MINIMUM, minimum="3.3a")
+
+
+def _require_tmux(server: Server) -> None:
+    """Admit the selected daemon or cold executable before user code."""
+    _require_backend()
+    server._get_version()
 
 
 def run_before_script(

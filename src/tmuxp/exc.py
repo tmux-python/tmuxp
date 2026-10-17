@@ -16,6 +16,10 @@ class TmuxpException(Exception):
     """Base Exception for Tmuxp Errors."""
 
 
+class LibtmuxCompatibilityError(TmuxpException):
+    """Installed libtmux lacks the required version check."""
+
+
 class WorkspaceError(TmuxpException):
     """Error parsing tmuxp workspace data."""
 
