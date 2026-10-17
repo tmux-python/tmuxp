@@ -26,11 +26,11 @@ logger = logging.getLogger(__name__)
 PY2 = sys.version_info[0] == 2
 
 
-def _require_backend() -> None:
-    """Require coordinated libtmux admission before running user code."""
+def _require_backend() -> t.Any:
+    """Require a libtmux that publishes the daemon-first version check."""
     message = (
-        "tmuxp requires its coordinated libtmux dependency; "
-        "install this checkout with uv sync --locked"
+        "tmuxp requires libtmux 0.63 or newer; "
+        "run uv sync --locked in a checkout, or install libtmux>=0.63"
     )
     try:
         support = importlib.import_module("libtmux._internal.support")
@@ -38,16 +38,16 @@ def _require_backend() -> None:
         raise exc.LibtmuxCompatibilityError(message) from error
     if not all(
         callable(getattr(support, name, None))
-        for name in ("require_version", "prepare", "check_result")
+        for name in ("require_version", "server_version")
     ) or not isinstance(getattr(support, "MINIMUM", None), str):
         raise exc.LibtmuxCompatibilityError(message)
     support.require_version(support.MINIMUM, minimum="3.3a")
+    return support
 
 
 def _require_tmux(server: Server) -> None:
-    """Admit the selected daemon or cold executable before user code."""
-    _require_backend()
-    server._get_version()
+    """Check the selected daemon or cold executable's version before user code."""
+    _require_backend().server_version(server)
 
 
 def run_before_script(

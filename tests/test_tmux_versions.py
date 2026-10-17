@@ -226,10 +226,32 @@ def test_unsupported_supplied_target_refuses_before_callback(
     assert not calls
 
 
+def test_builder_checks_a_server_once(
+    server: Server, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Window, pane and option hooks reuse the version check made for the build."""
+    checked: list[Server] = []
+    monkeypatch.setattr("tmuxp.workspace.builder.classic._require_tmux", checked.append)
+    config = loader.trickle(
+        loader.expand(
+            {
+                "session_name": "check-once",
+                "windows": [
+                    {"window_name": "one", "panes": ["true", "true"]},
+                    {"window_name": "two", "panes": ["true"]},
+                ],
+            }
+        )
+    )
+    builder = ClassicWorkspaceBuilder(config, server)
+    builder.build()
+    assert checked == [server]
+
+
 def test_missing_backend_refuses_before_import(
     tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Refuse an uncoordinated dependency before resolving custom builders."""
+    """Refuse a libtmux without a version check before resolving custom builders."""
     original = importlib.import_module
     calls: list[str] = []
 
@@ -241,7 +263,7 @@ def test_missing_backend_refuses_before_import(
 
     monkeypatch.setattr(importlib, "import_module", import_module)
     path = _workspace(tmp_path, workspace_builder="not_imported:Builder")
-    with pytest.raises(exc.TmuxpException, match="coordinated libtmux"):
+    with pytest.raises(exc.TmuxpException, match=r"libtmux 0\.63"):
         load.load_workspace(path, detached=True)
     assert "not_imported" not in calls
 
