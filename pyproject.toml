@@ -128,7 +128,7 @@ exclude = [
 ]
 
 [tool.uv.sources]
-libtmux = { git = "https://github.com/tmux-python/libtmux.git", rev = "82b40d3afb7c1ce7bba7c774046fcc96ac4ffe2d" }
+libtmux = { git = "https://github.com/tmux-python/libtmux.git", rev = "6d1be6344786c790df9ff87bad30cd46c1756e1d" }
 
 [tool.uv.exclude-newer-package]
 # git-pull packages release in lockstep with their workspaces, so a
