@@ -32,8 +32,8 @@ Upgrade tmux to 3.3a or newer before loading or freezing workspaces or opening
 before restarting an older daemon; updating the client alone does not
 upgrade a running server.
 
-This checkout requires coordinated libtmux source changes. Install with
-`uv sync --locked` until the matching registry release pair is published.
+This release requires libtmux 0.63 or newer. Until libtmux 0.63 is released,
+install a checkout with `uv sync --locked`.
 Help, diagnostics, and configuration conversion do not require tmux.
 
 ## tmuxp 1.18.0 (2022-10-30)
