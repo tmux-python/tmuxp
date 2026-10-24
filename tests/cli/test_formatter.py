@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 
 import pytest
 
@@ -13,6 +14,21 @@ from tmuxp.cli._formatter import (
     TmuxpHelpFormatter,
     create_themed_formatter,
 )
+
+
+def _pinned_formatter(
+    monkeypatch: pytest.MonkeyPatch,
+    colors: Colors,
+) -> TmuxpHelpFormatter:
+    """Return a formatter that colors examples with tmuxp's theme on any Python.
+
+    From Python 3.14 a formatter built outside a parser resolves argparse's
+    theme, which stays colorless until the parser enables color; pinning the
+    bound theme tests the colorizing itself.
+    """
+    formatter = create_themed_formatter(colors)("tmuxp")
+    monkeypatch.setattr(formatter, "_example_theme", lambda: formatter._help_theme)
+    return formatter
 
 
 def test_create_themed_formatter_returns_subclass() -> None:
@@ -28,19 +44,17 @@ def test_create_themed_formatter_with_colors_enabled(
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
     formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("test")
 
-    assert formatter._theme is not None
-    assert formatter._theme.prog != ""  # Has color codes
+    assert formatter_cls._help_theme is not None
+    assert formatter_cls._help_theme.prog != ""  # Has color codes
 
 
 def test_create_themed_formatter_with_colors_disabled() -> None:
     """Formatter has no theme when colors disabled."""
     colors = Colors(ColorMode.NEVER)
     formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("test")
 
-    assert formatter._theme is None
+    assert formatter_cls._help_theme is None
 
 
 def test_create_themed_formatter_auto_mode_respects_no_color(
@@ -49,9 +63,8 @@ def test_create_themed_formatter_auto_mode_respects_no_color(
     """Auto mode respects NO_COLOR environment variable."""
     monkeypatch.setenv("NO_COLOR", "1")
     formatter_cls = create_themed_formatter()
-    formatter = formatter_cls("test")
 
-    assert formatter._theme is None
+    assert formatter_cls._help_theme is None
 
 
 def test_create_themed_formatter_auto_mode_respects_force_color(
@@ -61,9 +74,8 @@ def test_create_themed_formatter_auto_mode_respects_force_color(
     monkeypatch.delenv("NO_COLOR", raising=False)
     monkeypatch.setenv("FORCE_COLOR", "1")
     formatter_cls = create_themed_formatter()
-    formatter = formatter_cls("test")
 
-    assert formatter._theme is not None
+    assert formatter_cls._help_theme is not None
 
 
 def test_fill_text_with_theme_colorizes_examples(
@@ -72,8 +84,7 @@ def test_fill_text_with_theme_colorizes_examples(
     """Examples section is colorized when theme is set."""
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
-    formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("tmuxp")
+    formatter = _pinned_formatter(monkeypatch, colors)
 
     text = "Examples:\n  tmuxp load myproject"
     result = formatter._fill_text(text, 80, "")
@@ -84,11 +95,12 @@ def test_fill_text_with_theme_colorizes_examples(
     assert "load" in result
 
 
-def test_fill_text_without_theme_plain_text() -> None:
+def test_fill_text_without_theme_plain_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Examples section is plain text when no theme."""
     colors = Colors(ColorMode.NEVER)
-    formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("tmuxp")
+    formatter = _pinned_formatter(monkeypatch, colors)
 
     text = "Examples:\n  tmuxp load myproject"
     result = formatter._fill_text(text, 80, "")
@@ -104,8 +116,7 @@ def test_fill_text_category_headings_colorized(
     """Category headings within examples block are colorized."""
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
-    formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("tmuxp")
+    formatter = _pinned_formatter(monkeypatch, colors)
 
     # Test category heading without "examples:" suffix
     text = "examples:\n  tmuxp ls\n\nMachine-readable output:\n  tmuxp ls --json"
@@ -126,8 +137,7 @@ def test_fill_text_category_heading_only_in_examples_block(
     """Category headings are only recognized within examples block."""
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
-    formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("tmuxp")
+    formatter = _pinned_formatter(monkeypatch, colors)
 
     # Text before examples block should not be colorized as heading
     text = "Some heading:\n  not a command\n\nexamples:\n  tmuxp load"
@@ -185,6 +195,32 @@ def test_parser_help_colorized_with_force_color(
     assert "\033[" in captured.out
 
 
+def test_parser_example_color_follows_argparse(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """From Python 3.14 argparse decides example color; below, tmuxp's theme.
+
+    argparse 3.14+ colors help itself, so examples share its on/off decision
+    and palette with the usage line. The bound theme asks for color here and
+    ``NO_COLOR`` refuses it, so the examples show which side decided.
+    """
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.delenv("FORCE_COLOR", raising=False)
+    formatter_cls = create_themed_formatter(Colors(ColorMode.ALWAYS))
+    monkeypatch.setenv("NO_COLOR", "1")
+    parser = argparse.ArgumentParser(
+        prog="tmuxp",
+        description="examples:\n  tmuxp load myproject",
+        formatter_class=formatter_cls,
+    )
+
+    example = next(
+        line for line in parser.format_help().splitlines() if "myproject" in line
+    )
+
+    assert ("\033[" in example) is (sys.version_info < (3, 14))
+
+
 def test_help_theme_from_colors_with_none_returns_empty() -> None:
     """HelpTheme.from_colors(None) returns empty theme."""
     theme = HelpTheme.from_colors(None)
@@ -224,8 +260,7 @@ def test_fill_text_section_heading_with_examples_suffix(
     """Section headings ending with 'examples:' are colorized without initial block."""
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
-    formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("tmuxp")
+    formatter = _pinned_formatter(monkeypatch, colors)
 
     # This is what build_description produces - no initial "examples:" block
     text = (
@@ -246,8 +281,7 @@ def test_fill_text_multiple_example_sections_all_colorized(
     """Multiple 'X examples:' sections should all be colorized."""
     monkeypatch.delenv("NO_COLOR", raising=False)
     colors = Colors(ColorMode.ALWAYS)
-    formatter_cls = create_themed_formatter(colors)
-    formatter = formatter_cls("tmuxp")
+    formatter = _pinned_formatter(monkeypatch, colors)
 
     text = """load examples:
   tmuxp load myproject

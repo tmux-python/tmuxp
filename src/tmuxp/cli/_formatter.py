@@ -72,8 +72,10 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     This formatter extends RawDescriptionHelpFormatter to preserve formatting
     of description text while adding syntax highlighting to example sections.
 
-    The formatter uses a `_theme` attribute (set externally) to apply colors.
-    If no theme is set, the formatter falls back to plain text output.
+    Example colors come from :meth:`_example_theme`: argparse's own theme on
+    Python 3.14+, where argparse colors help itself, and the bound
+    ``_help_theme`` on older Pythons. With neither, the formatter falls back
+    to plain text output.
 
     Examples
     --------
@@ -82,8 +84,36 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
     <...TmuxpHelpFormatter object at ...>
     """
 
-    # Theme for colorization, set by create_themed_formatter() or externally
-    _theme: HelpTheme | None = None
+    # tmuxp's theme, bound by create_themed_formatter(); used below Python
+    # 3.14. Never ``_theme``: argparse owns that name (an attribute on 3.14,
+    # a read-only property on 3.15).
+    _help_theme: HelpTheme | None = None
+
+    def _example_theme(self) -> HelpTheme | None:
+        """Return the theme that colors example sections.
+
+        On Python 3.14+ argparse decides whether help is colored
+        (``NO_COLOR``, ``FORCE_COLOR``, the output stream) and supplies the
+        palette as ``_theme``; examples follow it so they match the usage
+        line. Older argparse has no ``_theme``, so tmuxp's bound theme is
+        used.
+
+        Returns
+        -------
+        HelpTheme | None
+            Theme for example sections, or None for plain text.
+
+        Examples
+        --------
+        >>> import sys
+        >>> formatter = TmuxpHelpFormatter("tmuxp")
+        >>> theme = formatter._example_theme()
+        >>> (theme is None) == (sys.version_info < (3, 14))
+        True
+        """
+        return t.cast(
+            "HelpTheme | None", getattr(self, "_theme", None) or self._help_theme
+        )
 
     def _fill_text(self, text: str, width: int, indent: str) -> str:
         """Fill text, colorizing examples sections if theme is available.
@@ -110,7 +140,7 @@ class TmuxpHelpFormatter(argparse.RawDescriptionHelpFormatter):
         >>> formatter._fill_text("hello", 80, "")
         'hello'
         """
-        theme = getattr(self, "_theme", None)
+        theme = self._example_theme()
         if not text or theme is None:
             return super()._fill_text(text, width, indent)
 
@@ -345,7 +375,9 @@ def create_themed_formatter(
     allowing colorized help output without modifying argparse internals.
 
     When no colors argument is provided, uses AUTO mode which respects
-    NO_COLOR, FORCE_COLOR environment variables and TTY detection.
+    NO_COLOR, FORCE_COLOR environment variables and TTY detection. The bound
+    theme colors examples below Python 3.14; from 3.14 argparse's own theme
+    does (see :meth:`TmuxpHelpFormatter._example_theme`).
 
     Parameters
     ----------
@@ -367,16 +399,14 @@ def create_themed_formatter(
 
     >>> colors = Colors(ColorMode.ALWAYS)
     >>> formatter_cls = create_themed_formatter(colors)
-    >>> formatter = formatter_cls("test")
-    >>> formatter._theme is not None
+    >>> formatter_cls._help_theme is not None
     True
 
     With colors disabled:
 
     >>> colors = Colors(ColorMode.NEVER)
     >>> formatter_cls = create_themed_formatter(colors)
-    >>> formatter = formatter_cls("test")
-    >>> formatter._theme is None
+    >>> formatter_cls._help_theme is None
     True
     """
     # Import here to avoid circular import at module load
@@ -388,11 +418,12 @@ def create_themed_formatter(
     # Create theme if colors are enabled, None otherwise
     theme = HelpTheme.from_colors(colors) if colors._enabled else None
 
+    # A class attribute, not an ``__init__`` override: argparse constructs the
+    # formatter as ``formatter_class(prog=...)`` and its keywords differ
+    # between versions.
     class ThemedTmuxpHelpFormatter(TmuxpHelpFormatter):
         """TmuxpHelpFormatter with theme pre-configured."""
 
-        def __init__(self, prog: str, **kwargs: t.Any) -> None:
-            super().__init__(prog, **kwargs)
-            self._theme = theme
+        _help_theme = theme
 
     return ThemedTmuxpHelpFormatter

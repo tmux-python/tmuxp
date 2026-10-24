@@ -44,6 +44,15 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Fixes
+
+#### tmuxp runs on Python 3.15 (#1095)
+
+On Python 3.15 every tmuxp command, `--version` included, failed with
+`AttributeError: 'NoneType' object has no attribute 'reset'` while building
+its argument parser. The help formatter no longer reuses a name argparse 3.15
+reserves, and `--help` looks the same on 3.15 as on 3.14.
+
 ### Documentation
 
 #### Diagrams stay readable on narrow screens (#1076)
