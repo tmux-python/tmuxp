@@ -59,7 +59,6 @@ classic = "tmuxp.workspace.builder.classic:ClassicWorkspaceBuilder"
 dev = [
   # Docs
   "aafigure",  # https://launchpad.net/aafigure
-  "pillow",  # https://pillow.readthedocs.io/
   "gp-sphinx==0.1.0a39",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-argparse==0.1.0a39",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-api-style==0.1.0a39",
@@ -87,7 +86,6 @@ dev = [
 
 docs = [
   "aafigure",  # https://launchpad.net/aafigure
-  "pillow",  # https://pillow.readthedocs.io/
   "gp-sphinx==0.1.0a39",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-argparse==0.1.0a39",  # https://gp-sphinx.git-pull.com/
   "sphinx-autodoc-api-style==0.1.0a39",
