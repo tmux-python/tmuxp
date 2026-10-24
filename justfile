@@ -17,6 +17,11 @@ default:
 test *args:
     uv run py.test {{ args }}
 
+# Run tests in parallel with pytest-xdist (capped workers; -n auto can thrash)
+[group: 'test']
+test-parallel *args:
+    uv run py.test -n 8 {{ args }}
+
 # Run tests then start continuous testing with pytest-watcher
 [group: 'test']
 start:

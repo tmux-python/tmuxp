@@ -135,151 +135,136 @@ def test_find_local_workspace_files(
     assert result_relative == expected_paths
 
 
-class TestFindLocalWorkspaceEdgeCases:
-    """Edge case tests for local workspace discovery."""
+def test_at_home_directory(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test behavior when starting at home directory."""
+    home = tmp_path / "home"
+    home.mkdir()
+    monkeypatch.setattr(pathlib.Path, "home", lambda: home)
 
-    def test_at_home_directory(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test behavior when starting at home directory."""
-        home = tmp_path / "home"
-        home.mkdir()
-        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+    (home / ".tmuxp.yaml").write_text("session_name: home\n")
 
-        (home / ".tmuxp.yaml").write_text("session_name: home\n")
+    result = find_local_workspace_files(home, stop_at_home=True)
 
-        result = find_local_workspace_files(home, stop_at_home=True)
-
-        assert len(result) == 1
-        assert result[0] == home / ".tmuxp.yaml"
-
-    def test_at_filesystem_root(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test traversal stops at filesystem root."""
-        # This test verifies no infinite loop at root
-        result = find_local_workspace_files(pathlib.Path("/"), stop_at_home=False)
-        # Should complete without error; result depends on system state
-        assert isinstance(result, list)
-
-    def test_yaml_precedence_over_json(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test .yaml is preferred when multiple formats exist."""
-        home = tmp_path / "home"
-        project = home / "project"
-        project.mkdir(parents=True)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
-
-        # Create both formats
-        (project / ".tmuxp.yaml").write_text("session_name: yaml\n")
-        (project / ".tmuxp.json").write_text('{"session_name": "json"}')
-
-        result = find_local_workspace_files(project, stop_at_home=True)
-
-        assert len(result) == 1
-        assert result[0].name == ".tmuxp.yaml"
-
-    def test_yml_precedence_over_json(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test .yml is preferred when .yaml not present but .json exists."""
-        home = tmp_path / "home"
-        project = home / "project"
-        project.mkdir(parents=True)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
-
-        # Create yml and json (no yaml)
-        (project / ".tmuxp.yml").write_text("session_name: yml\n")
-        (project / ".tmuxp.json").write_text('{"session_name": "json"}')
-
-        result = find_local_workspace_files(project, stop_at_home=True)
-
-        assert len(result) == 1
-        assert result[0].name == ".tmuxp.yml"
-
-    def test_stop_at_home_false_continues_past_home(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test stop_at_home=False continues traversal past home."""
-        # Create structure: /grandparent/home/project
-        grandparent = tmp_path / "grandparent"
-        home = grandparent / "home"
-        project = home / "project"
-        project.mkdir(parents=True)
-
-        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
-
-        # Put config in grandparent (above home)
-        (grandparent / ".tmuxp.yaml").write_text("session_name: grandparent\n")
-        (project / ".tmuxp.yaml").write_text("session_name: project\n")
-
-        # With stop_at_home=True, should only find project config
-        result_stop = find_local_workspace_files(project, stop_at_home=True)
-        assert len(result_stop) == 1
-        assert "project" in str(result_stop[0])
-
-        # With stop_at_home=False, should find both
-        result_continue = find_local_workspace_files(project, stop_at_home=False)
-        assert len(result_continue) >= 2
-
-    def test_default_start_dir_uses_cwd(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test that None start_dir uses current working directory."""
-        home = tmp_path / "home"
-        project = home / "project"
-        project.mkdir(parents=True)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
-        monkeypatch.chdir(project)
-
-        (project / ".tmuxp.yaml").write_text("session_name: cwd\n")
-
-        result = find_local_workspace_files(None, stop_at_home=True)
-
-        assert len(result) == 1
-        assert result[0] == project / ".tmuxp.yaml"
-
-    def test_symlinked_directory(
-        self,
-        tmp_path: pathlib.Path,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test behavior with symlinked directories."""
-        home = tmp_path / "home"
-        real_project = home / "real_project"
-        real_project.mkdir(parents=True)
-        symlink_project = home / "symlink_project"
-        symlink_project.symlink_to(real_project)
-        monkeypatch.setattr(pathlib.Path, "home", lambda: home)
-
-        (real_project / ".tmuxp.yaml").write_text("session_name: test\n")
-
-        result = find_local_workspace_files(symlink_project, stop_at_home=True)
-
-        assert len(result) == 1
+    assert len(result) == 1
+    assert result[0] == home / ".tmuxp.yaml"
 
 
-class TestLocalWorkspaceFilesConstant:
-    """Tests for LOCAL_WORKSPACE_FILES constant."""
+def test_at_filesystem_root() -> None:
+    """Test traversal stops at filesystem root."""
+    # This test verifies no infinite loop at root
+    result = find_local_workspace_files(pathlib.Path("/"), stop_at_home=False)
+    # Should complete without error; result depends on system state
+    assert isinstance(result, list)
 
-    def test_constant_order(self) -> None:
-        """Verify LOCAL_WORKSPACE_FILES has correct order (yaml, yml, json)."""
-        assert LOCAL_WORKSPACE_FILES == [".tmuxp.yaml", ".tmuxp.yml", ".tmuxp.json"]
 
-    def test_constant_is_list(self) -> None:
-        """Verify LOCAL_WORKSPACE_FILES is a list."""
-        assert isinstance(LOCAL_WORKSPACE_FILES, list)
-        assert len(LOCAL_WORKSPACE_FILES) == 3
+def test_yaml_precedence_over_json(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test .yaml is preferred when multiple formats exist."""
+    home = tmp_path / "home"
+    project = home / "project"
+    project.mkdir(parents=True)
+    monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+    # Create both formats
+    (project / ".tmuxp.yaml").write_text("session_name: yaml\n")
+    (project / ".tmuxp.json").write_text('{"session_name": "json"}')
+
+    result = find_local_workspace_files(project, stop_at_home=True)
+
+    assert len(result) == 1
+    assert result[0].name == ".tmuxp.yaml"
+
+
+def test_yml_precedence_over_json(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test .yml is preferred when .yaml not present but .json exists."""
+    home = tmp_path / "home"
+    project = home / "project"
+    project.mkdir(parents=True)
+    monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+    # Create yml and json (no yaml)
+    (project / ".tmuxp.yml").write_text("session_name: yml\n")
+    (project / ".tmuxp.json").write_text('{"session_name": "json"}')
+
+    result = find_local_workspace_files(project, stop_at_home=True)
+
+    assert len(result) == 1
+    assert result[0].name == ".tmuxp.yml"
+
+
+def test_stop_at_home_false_continues_past_home(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test stop_at_home=False continues traversal past home."""
+    # Create structure: /grandparent/home/project
+    grandparent = tmp_path / "grandparent"
+    home = grandparent / "home"
+    project = home / "project"
+    project.mkdir(parents=True)
+
+    monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+    # Put config in grandparent (above home)
+    (grandparent / ".tmuxp.yaml").write_text("session_name: grandparent\n")
+    (project / ".tmuxp.yaml").write_text("session_name: project\n")
+
+    # With stop_at_home=True, should only find project config
+    result_stop = find_local_workspace_files(project, stop_at_home=True)
+    assert len(result_stop) == 1
+    assert "project" in str(result_stop[0])
+
+    # With stop_at_home=False, finds both, plus any configs above home
+    result_continue = find_local_workspace_files(project, stop_at_home=False)
+    assert len(result_continue) >= 2
+
+
+def test_default_start_dir_uses_cwd(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that None start_dir uses current working directory."""
+    home = tmp_path / "home"
+    project = home / "project"
+    project.mkdir(parents=True)
+    monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+    monkeypatch.chdir(project)
+
+    (project / ".tmuxp.yaml").write_text("session_name: cwd\n")
+
+    result = find_local_workspace_files(None, stop_at_home=True)
+
+    assert len(result) == 1
+    assert result[0] == project / ".tmuxp.yaml"
+
+
+def test_symlinked_directory(
+    tmp_path: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test behavior with symlinked directories."""
+    home = tmp_path / "home"
+    real_project = home / "real_project"
+    real_project.mkdir(parents=True)
+    symlink_project = home / "symlink_project"
+    symlink_project.symlink_to(real_project)
+    monkeypatch.setattr(pathlib.Path, "home", lambda: home)
+
+    (real_project / ".tmuxp.yaml").write_text("session_name: test\n")
+
+    result = find_local_workspace_files(symlink_project, stop_at_home=True)
+
+    assert len(result) == 1
+
+
+def test_local_workspace_files_constant_order() -> None:
+    """Verify LOCAL_WORKSPACE_FILES has correct order (yaml, yml, json)."""
+    assert LOCAL_WORKSPACE_FILES == [".tmuxp.yaml", ".tmuxp.yml", ".tmuxp.json"]
