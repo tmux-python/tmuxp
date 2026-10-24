@@ -46,6 +46,18 @@ TEAMOCIL_CONFIG_TEST_FIXTURES: list[TeamocilConfigTestFixture] = [
         teamocil_dict=fixtures.test4.teamocil_dict,
         tmuxp_dict=fixtures.test4.expected,
     ),
+    TeamocilConfigTestFixture(
+        test_id="v1_string_panes",
+        teamocil_yaml=fixtures.test5.teamocil_yaml,
+        teamocil_dict=fixtures.test5.teamocil_dict,
+        tmuxp_dict=fixtures.test5.expected,
+    ),
+    TeamocilConfigTestFixture(
+        test_id="focus_and_options",
+        teamocil_yaml=fixtures.test6.teamocil_yaml,
+        teamocil_dict=fixtures.test6.teamocil_dict,
+        tmuxp_dict=fixtures.test6.expected,
+    ),
 ]
 
 
@@ -157,3 +169,86 @@ def test_import_teamocil_logs_debug(
     records = [r for r in caplog.records if r.msg == "importing teamocil workspace"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test"
+
+
+class TeamocilPaneConversionFixture(t.NamedTuple):
+    """Test fixture for teamocil pane conversion."""
+
+    test_id: str
+    pane_config: t.Any
+    expected_pane: dict[str, t.Any]
+
+
+TEAMOCIL_PANE_CONVERSION_FIXTURES: list[TeamocilPaneConversionFixture] = [
+    TeamocilPaneConversionFixture(
+        test_id="string-pane",
+        pane_config="echo hi",
+        expected_pane={"shell_command": ["echo hi"]},
+    ),
+    TeamocilPaneConversionFixture(
+        test_id="blank-pane",
+        pane_config=None,
+        expected_pane={"shell_command": []},
+    ),
+    TeamocilPaneConversionFixture(
+        test_id="commands-key",
+        pane_config={"commands": ["pwd", "ls"]},
+        expected_pane={"shell_command": ["pwd", "ls"]},
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(TeamocilPaneConversionFixture._fields),
+    TEAMOCIL_PANE_CONVERSION_FIXTURES,
+    ids=[test.test_id for test in TEAMOCIL_PANE_CONVERSION_FIXTURES],
+)
+def test_import_teamocil_pane_conversion(
+    test_id: str,
+    pane_config: t.Any,
+    expected_pane: dict[str, t.Any],
+) -> None:
+    """Teamocil panes normalize to tmuxp pane dictionaries."""
+    workspace = {
+        "windows": [
+            {
+                "name": "main",
+                "panes": [pane_config],
+            }
+        ],
+    }
+
+    result = importers.import_teamocil(workspace)
+
+    assert result["windows"][0]["panes"] == [expected_pane]
+
+
+def test_import_teamocil_warns_and_drops_pane_dimensions(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Unsupported width/height pane keys are dropped with warnings."""
+    workspace = {
+        "windows": [
+            {
+                "name": "main",
+                "panes": [{"cmd": "vim", "width": 30, "height": 20}],
+            }
+        ],
+    }
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.importers"):
+        result = importers.import_teamocil(workspace)
+
+    assert result["windows"][0]["panes"] == [{"shell_command": "vim"}]
+    dropped = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_window")
+    ]
+    dropped_keys = sorted(
+        str(record.args[0])
+        for record in dropped
+        if isinstance(record.args, tuple) and record.args
+    )
+    assert dropped_keys == ["height", "width"]
+    assert all(record.tmux_window == "main" for record in dropped)

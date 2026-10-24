@@ -1,0 +1,6 @@
+name: multi-flag
+root: ~/projects/app
+cli_args: -f ~/.tmux.mac.conf -L mysocket
+windows:
+- editor: vim
+- server: rails s
