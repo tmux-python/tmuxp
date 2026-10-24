@@ -36,13 +36,17 @@ Run the developmental install with:
 $ tmuxp@next load yoursession
 ```
 
-## tmuxp 1.75.0 (Yet to be released)
+## tmuxp 1.76.0 (Yet to be released)
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
 <!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+## tmuxp 1.75.0 (2026-10-24)
+
+tmuxp 1.75.0 adds Python 3.15 support.
 
 ### Fixes
 
