@@ -1,0 +1,9 @@
+session_name: sync-after
+windows:
+- window_name: w1
+  synchronize: after
+  panes:
+  - shell_command:
+    - echo first
+  - shell_command:
+    - echo second

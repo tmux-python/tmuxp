@@ -267,6 +267,10 @@ convention = "numpy"
 # Sphinx reads the package's version metadata by `exec`-ing `__about__.py`
 # into a dict, so `conf.py` never imports the package it documents.
 "docs/conf.py" = ["S102"]
+# `tmuxp load --dry-run` kills its throwaway tmux server in a `finally`
+# block. A cleanup failure there would replace the build's own exception,
+# so any error is logged at debug level and the original one propagates.
+"src/tmuxp/cli/load.py" = ["BLE001"]
 # `tmuxp shell -c` documents itself as "execute python code in libtmux and
 # exit"; running the operator's own code in a tmux-aware namespace is the
 # command's purpose, not an injection sink.

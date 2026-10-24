@@ -45,6 +45,24 @@ from .load import (
     create_load_subparser,
 )
 from .ls import LS_DESCRIPTION, CLILsNamespace, command_ls, create_ls_subparser
+from .manage import (
+    COPY_DESCRIPTION,
+    DELETE_DESCRIPTION,
+    IMPLODE_DESCRIPTION,
+    NEW_DESCRIPTION,
+    CLICopyNamespace,
+    CLIDeleteNamespace,
+    CLIImplodeNamespace,
+    CLINewNamespace,
+    command_copy,
+    command_delete,
+    command_implode,
+    command_new,
+    create_copy_subparser,
+    create_delete_subparser,
+    create_implode_subparser,
+    create_new_subparser,
+)
 from .search import (
     SEARCH_DESCRIPTION,
     CLISearchNamespace,
@@ -56,6 +74,12 @@ from .shell import (
     CLIShellNamespace,
     command_shell,
     create_shell_subparser,
+)
+from .stop import (
+    STOP_DESCRIPTION,
+    CLIStopNamespace,
+    command_stop,
+    create_stop_subparser,
 )
 from .utils import tmuxp_echo
 
@@ -156,6 +180,11 @@ if t.TYPE_CHECKING:
         "search",
         "shell",
         "debug-info",
+        "new",
+        "copy",
+        "delete",
+        "implode",
+        "stop",
     ]
     CLIImportSubparserName: TypeAlias = t.Literal["teamocil", "tmuxinator"]
 
@@ -262,6 +291,46 @@ def create_parser() -> argparse.ArgumentParser:
     )
     create_freeze_subparser(freeze_parser)
 
+    new_parser = subparsers.add_parser(
+        "new",
+        help="create a new workspace file in the user config dir",
+        description=NEW_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_new_subparser(new_parser)
+
+    copy_parser = subparsers.add_parser(
+        "copy",
+        help="copy an existing workspace file to a new name",
+        description=COPY_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_copy_subparser(copy_parser)
+
+    delete_parser = subparsers.add_parser(
+        "delete",
+        help="delete one or more workspace files",
+        description=DELETE_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_delete_subparser(delete_parser)
+
+    implode_parser = subparsers.add_parser(
+        "implode",
+        help="delete ALL workspace files",
+        description=IMPLODE_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_implode_subparser(implode_parser)
+
+    stop_parser = subparsers.add_parser(
+        "stop",
+        help="stop a tmuxp-managed tmux session (fires on_project_stop)",
+        description=STOP_DESCRIPTION,
+        formatter_class=formatter_class,
+    )
+    create_stop_subparser(stop_parser)
+
     return parser
 
 
@@ -353,6 +422,16 @@ def cli(_args: list[str] | None = None) -> None:
             args=CLIFreezeNamespace(**vars(args)),
             parser=parser,
         )
+    elif args.subparser_name == "new":
+        command_new(args=CLINewNamespace(**vars(args)), parser=parser)
+    elif args.subparser_name == "copy":
+        command_copy(args=CLICopyNamespace(**vars(args)), parser=parser)
+    elif args.subparser_name == "delete":
+        command_delete(args=CLIDeleteNamespace(**vars(args)), parser=parser)
+    elif args.subparser_name == "implode":
+        command_implode(args=CLIImplodeNamespace(**vars(args)), parser=parser)
+    elif args.subparser_name == "stop":
+        command_stop(args=CLIStopNamespace(**vars(args)), parser=parser)
     elif args.subparser_name == "ls":
         command_ls(
             args=CLILsNamespace(**vars(args)),

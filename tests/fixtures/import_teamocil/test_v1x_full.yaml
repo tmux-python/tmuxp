@@ -1,0 +1,17 @@
+name: v1x-full
+root: ~/proj
+windows:
+- name: editor
+  root: ~/proj/src
+  layout: main-vertical
+  focus: true
+  options:
+    main-pane-width: '120'
+  panes:
+  - commands:
+    - vim
+    focus: true
+  - top
+- name: shell
+  panes:
+  - bash
