@@ -19,12 +19,32 @@ version differs from the version checked for that command.
 `--help`, `--version`, `debug-info`, and workspace conversion remain available
 without a running server or an installed tmux executable.
 
+## Optional operations
+
+Plugins, custom builders, and `tmuxp shell` receive libtmux objects. Their
+optional operations have individual tmux requirements:
+
+| Operation | Requirement |
+| --- | --- |
+| Acquire a control-mode client | Stable tmux 3.7+ and a natively compatible client |
+| Preserve exact named-buffer identity when deleting, renaming, or aborting cleanup | tmux 3.4+ |
+| Return foreground `run-shell` stdout | tmux 3.5+ |
+| Break a pane on exact tmux 3.7 | Supply a window name; the wrapper repairs the native name handling. Unnamed and raw calls refuse. |
+| Split by percentage | Available on tmux 3.3a+ through the portable `-l N%` spelling |
+| Select a literal layout on tmux 3.3a | Use a unique built-in layout name or a serialized layout. Malformed headers refuse before the native 3.3a error path. |
+
+An unavailable operation refuses before its native command runs. An
+ordinary workspace still builds, splits, captures, and freezes on tmux
+3.3a. Background shell jobs and jobs directed to a pane keep their separate
+execution-only contract.
+
 ## Installing this checkout
 
 This branch requires libtmux 0.63 or newer, the first release that carries
-the daemon version check, and `pyproject.toml` says so (`libtmux~=0.63.0`).
-Until that release exists, `uv.lock` pins an exact development revision.
-Install the checkout with its lockfile:
+the daemon version check and its `require_commands` policy, and
+`pyproject.toml` says so (`libtmux~=0.63.0`). Until that release exists,
+`uv.lock` pins an exact development revision. Install the checkout with its
+lockfile:
 
 ```console
 $ uv sync --locked

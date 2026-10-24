@@ -38,7 +38,7 @@ def _require_backend() -> t.Any:
         raise exc.LibtmuxCompatibilityError(message) from error
     if not all(
         callable(getattr(support, name, None))
-        for name in ("require_version", "server_version")
+        for name in ("require_version", "server_version", "require_commands")
     ) or not isinstance(getattr(support, "MINIMUM", None), str):
         raise exc.LibtmuxCompatibilityError(message)
     support.require_version(support.MINIMUM, minimum="3.3a")

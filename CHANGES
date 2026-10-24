@@ -70,6 +70,21 @@ Picks up libtmux 0.63.0, whose version check covers the
 connected daemon before every command. tmuxp checks a daemon once per workspace
 build, and a libtmux without that module is refused before custom code runs.
 
+### What's new
+
+#### Optional tmux operations
+
+Plugins, custom builders, and `tmuxp shell` require a libtmux backend with
+libtmux's command policy (`libtmux._internal.support.require_commands`). Individual
+operations refuse before effects when the daemon lacks their requirement:
+control clients need tmux 3.7+, exact named-buffer operations need 3.4+, and
+captured shell stdout needs 3.5+. Ordinary workspace operations remain
+available on 3.3a. Percentage splitting uses a portable encoding. Exact tmux
+3.7 pane breaks require a window name and use the wrapper's name repair. See
+{doc}`project/compatibility` for each operation's contract. Malformed literal
+layouts refuse before dispatch on tmux 3.3a, preserving running sessions. Valid
+built-in names and serialized layouts remain available.
+
 ## tmuxp 1.75.0 (2026-10-24)
 
 tmuxp 1.75.0 adds Python 3.15 support.
