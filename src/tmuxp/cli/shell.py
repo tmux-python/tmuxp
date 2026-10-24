@@ -6,15 +6,16 @@ import argparse
 import logging
 import os
 import pathlib
+import sys
 import typing as t
 
 from libtmux.server import Server
 
-from tmuxp import util
+from tmuxp import exc, util
 from tmuxp._compat import PY3, PYMINOR
 
 from ._colors import Colors, build_description, get_color_mode
-from .utils import tmuxp_echo
+from .utils import prompt_yes_no, tmuxp_echo
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,7 @@ class CLIShellNamespace(argparse.Namespace):
     shell: CLIShellLiteral | None
     use_pythonrc: bool
     use_vi_mode: bool
+    answer_yes: bool
 
 
 def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -169,6 +171,14 @@ def create_shell_subparser(parser: argparse.ArgumentParser) -> argparse.Argument
         help="use vi-mode in ptpython/ptipython",
         default=False,
     )
+    parser.add_argument(
+        "-y",
+        "--yes",
+        dest="answer_yes",
+        action="store_true",
+        help="answer yes on attach/create prompts (server, session)",
+        default=False,
+    )
     return parser
 
 
@@ -201,15 +211,49 @@ def command_shell(
 
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
-    server.raise_if_dead()
+    interactive = sys.stdin.isatty()
+
+    try:
+        server.raise_if_dead()
+    except Exception:
+        if not args.answer_yes and not interactive:
+            raise
+        if not (
+            args.answer_yes
+            or prompt_yes_no(
+                "No tmux server running. Start one?",
+                default=True,
+                color_mode=color_mode,
+            )
+        ):
+            return
+        server.new_session(session_name=args.session_name or "tmuxp shell")
 
     current_pane = util.get_current_pane(server=server)
 
-    session = util.get_session(
-        server=server,
-        session_name=args.session_name,
-        current_pane=current_pane,
-    )
+    try:
+        session = util.get_session(
+            server=server,
+            session_name=args.session_name,
+            current_pane=current_pane,
+        )
+    except exc.SessionNotFound:
+        if not args.answer_yes and not interactive:
+            raise
+        target = (
+            f"Session {args.session_name} does not exist. Create?"
+            if args.session_name
+            else "Session does not exist. Create?"
+        )
+        if not (
+            args.answer_yes
+            or prompt_yes_no(target, default=True, color_mode=color_mode)
+        ):
+            return
+        session = server.new_session(session_name=args.session_name)
+
+    if current_pane is not None and current_pane.session_id != session.id:
+        current_pane = None
 
     window = util.get_window(
         session=session,
