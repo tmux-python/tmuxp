@@ -1,0 +1,16 @@
+session_name: test synchronize
+windows:
+  - window_name: synced-before
+    synchronize: before
+    panes:
+      - echo 0
+      - echo 1
+  - window_name: synced-after
+    synchronize: after
+    panes:
+      - echo 0
+      - echo 1
+  - window_name: not-synced
+    panes:
+      - echo 0
+      - echo 1

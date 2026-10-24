@@ -102,6 +102,7 @@ history
 
 about_tmux
 migration
+Comparison <comparison>
 glossary
 MCP <https://libtmux-mcp.git-pull.com>
 GitHub <https://github.com/tmux-python/tmuxp>

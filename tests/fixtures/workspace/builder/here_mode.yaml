@@ -1,0 +1,8 @@
+session_name: here-session
+windows:
+  - window_name: reused
+    panes:
+      - echo reused
+  - window_name: new-win
+    panes:
+      - echo new

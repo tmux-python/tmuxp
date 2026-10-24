@@ -29,6 +29,7 @@ Core keys (stable, scalar, safe at any log level):
 | `tmux_pane`           | `str`         | pane identifier                     |
 | `tmux_config_path`    | `str`         | workspace file path                 |
 | `tmux_layout`         | `str`         | window layout string                |
+| `tmux_hook_cmd`       | `str`         | lifecycle hook shell command line   |
 
 Heavy/optional keys (DEBUG only, potentially large): `tmux_stdout`,
 `tmux_stderr` (`list[str]`; truncate or cap — `%(tmux_stdout)s` produces a
