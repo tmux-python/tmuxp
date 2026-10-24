@@ -2,3 +2,9 @@
 # script, which fetches the headless Chrome used to render diagrams.
 allowBuilds:
   puppeteer: true
+
+# katex below 0.18.2 is GHSA-238p-pmpm-9mq7, and mermaid 11 still asks for
+# ^0.16. Remove once the diagrams move to mermaid-cli 12 (mermaid 12 asks for
+# katex ^0.18).
+overrides:
+  katex: ^0.18.2
