@@ -25,6 +25,17 @@ _Notes on the upcoming release will be added here_
 
 <!-- Maintainers, insert changes / features for the next release here -->
 
+### tmux 3.3a minimum
+
+Upgrade tmux to 3.3a or newer before loading or freezing workspaces or opening
+`tmuxp shell`. The minimum includes its patch letter. Save your sessions
+before restarting an older daemon; updating the client alone does not
+upgrade a running server.
+
+This release requires libtmux 0.63 or newer. Until libtmux 0.63 is released,
+install a checkout with `uv sync --locked`.
+Help, diagnostics, and configuration conversion do not require tmux.
+
 ## tmuxp 1.18.0 (2022-10-30)
 
 **Restructuring** (#840)

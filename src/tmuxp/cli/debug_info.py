@@ -12,7 +12,8 @@ import sys
 import typing as t
 
 from libtmux.__about__ import __version__ as libtmux_version
-from libtmux.common import get_version_str, tmux_cmd
+from libtmux.common import tmux_cmd
+from libtmux.exc import LibTmuxException
 
 from tmuxp.__about__ import __version__
 from tmuxp._internal.private_path import PrivatePath, collapse_home_in_string
@@ -98,6 +99,17 @@ def _private(path: pathlib.Path | str | None) -> str:
     return str(PrivatePath(path))
 
 
+def _executable_version(binary: str) -> str:
+    """Return the tmux executable's version verbatim, keeping letter suffixes."""
+    response = tmux_cmd("-V", tmux_bin=binary)
+    report = response.stdout[0] if response.stdout else ""
+    if response.returncode or not report:
+        detail = "\n".join(response.stderr).strip()
+        msg = detail or "tmux version unavailable"
+        raise LibTmuxException(msg)
+    return report.removeprefix("tmux ").strip()
+
+
 def _collect_debug_info() -> dict[str, t.Any]:
     """Collect debug information as a structured dictionary.
 
@@ -116,12 +128,40 @@ def _collect_debug_info() -> dict[str, t.Any]:
     >>> 'tmux_version' in data
     True
     """
-    # Collect tmux command outputs
-    sessions_resp = tmux_cmd("list-sessions")
-    windows_resp = tmux_cmd("list-windows")
-    panes_resp = tmux_cmd("list-panes")
-    global_opts_resp = tmux_cmd("show-options", "-g")
-    window_opts_resp = tmux_cmd("show-window-options", "-g")
+    binary = shutil.which("tmux")
+    errors: dict[str, str] = {}
+    tmux_version = "not found"
+    if binary is not None:
+        try:
+            tmux_version = _executable_version(binary)
+        except LibTmuxException as error:
+            tmux_version = "unavailable"
+            errors["version"] = collapse_home_in_string(
+                str(error) or "tmux version unavailable"
+            )
+
+    def collect(name: str, *command: str) -> list[str]:
+        if binary is None:
+            errors[name] = "tmux executable not found"
+            return []
+        try:
+            response = tmux_cmd("-N", *command, tmux_bin=binary)
+        except LibTmuxException as error:
+            errors[name] = collapse_home_in_string(
+                str(error) or "tmux executable not found"
+            )
+            return []
+        if response.returncode:
+            errors[name] = collapse_home_in_string("\n".join(response.stderr))
+        return response.stdout
+
+    tmux = {
+        "sessions": collect("sessions", "list-sessions"),
+        "windows": collect("windows", "list-windows"),
+        "panes": collect("panes", "list-panes"),
+        "global_options": collect("global_options", "show-options", "-g"),
+        "window_options": collect("window_options", "show-window-options", "-g"),
+    }
 
     return {
         "environment": {
@@ -132,19 +172,14 @@ def _collect_debug_info() -> dict[str, t.Any]:
         },
         "python_version": " ".join(sys.version.split("\n")),
         "system_path": collapse_home_in_string(os.environ.get("PATH", "")),
-        "tmux_version": get_version_str(),
+        "tmux_version": tmux_version,
         "libtmux_version": libtmux_version,
         "tmuxp_version": __version__,
         "tmux_path": _private(shutil.which("tmux")),
         "tmuxp_path": _private(tmuxp_path),
         "shell": _private(os.environ.get("SHELL", "")),
-        "tmux": {
-            "sessions": sessions_resp.stdout,
-            "windows": windows_resp.stdout,
-            "panes": panes_resp.stdout,
-            "global_options": global_opts_resp.stdout,
-            "window_options": window_opts_resp.stdout,
-        },
+        "tmux": tmux,
+        "tmux_errors": errors,
     }
 
 
@@ -239,6 +274,11 @@ def _format_human_output(data: dict[str, t.Any], colors: Colors) -> str:
         + format_tmux_section(tmux_data["window_options"]),
     ]
 
+    if errors := data.get("tmux_errors"):
+        output.append(
+            f"{colors.format_label('tmux errors')}:\n"
+            + "\n".join(f"\t{name}: {error}" for name, error in errors.items())
+        )
     return "\n".join(output)
 
 

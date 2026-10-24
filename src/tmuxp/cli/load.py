@@ -8,7 +8,6 @@ import importlib
 import logging
 import os
 import pathlib
-import shutil
 import sys
 import typing as t
 
@@ -598,7 +597,7 @@ def load_workspace(
         colors=colors,
     )
 
-    shutil.which("tmux")  # raise exception if tmux not found
+    util._require_tmux(t)
 
     # Builder resolution + creation — outside spinner so plugin prompts are safe.
     # Trusted import roots (absent config -> [] -> a no-op sandbox) stay on

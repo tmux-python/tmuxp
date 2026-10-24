@@ -135,6 +135,8 @@ def command_freeze(
 
     server = Server(socket_name=args.socket_name, socket_path=args.socket_path)
 
+    util._require_tmux(server)
+
     try:
         if args.session_name:
             session = server.sessions.get(session_name=args.session_name, default=None)

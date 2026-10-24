@@ -4,6 +4,9 @@ Session manager for tmux. Save and load your tmux sessions through
 declarative workspace files. Powered by
 [libtmux](https://github.com/tmux-python/libtmux).
 
+Requires tmux **3.3a or newer** and Python **3.10 or newer**. The selected
+daemon must meet the minimum even when a newer tmux client is installed.
+
 [![Python Package](https://img.shields.io/pypi/v/tmuxp.svg)](https://pypi.org/project/tmuxp/)
 [![Docs](https://github.com/tmux-python/tmuxp/workflows/docs/badge.svg)](https://tmuxp.git-pull.com/)
 [![Build status](https://github.com/tmux-python/tmuxp/workflows/tests/badge.svg)](https://github.com/tmux-python/tmuxp/actions?query=workflow%3A%22tests%22)
@@ -310,7 +313,7 @@ See donation options at <https://tony.sh/support.html>.
 
 # Project details
 
-- tmux support: 3.2+
+- tmux support: 3.3a+
 - python support: >= 3.10, pypy, pypy3
 - Source: <https://github.com/tmux-python/tmuxp>
 - Docs: <https://tmuxp.git-pull.com>

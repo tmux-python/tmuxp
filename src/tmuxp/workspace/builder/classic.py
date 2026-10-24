@@ -16,7 +16,7 @@ from libtmux.window import Window
 
 from tmuxp import exc
 from tmuxp.log import TmuxpLoggerAdapter
-from tmuxp.util import get_current_pane, run_before_script
+from tmuxp.util import _require_tmux, get_current_pane, run_before_script
 from tmuxp.workspace.options import (
     PaneReadiness,
     WorkspaceBuilderOptions,
@@ -379,6 +379,8 @@ class ClassicWorkspaceBuilder:
         # validation.validate_schema(session_config)
 
         assert isinstance(server, Server)
+        self._version_checked: Server | None = None
+        self._check_version(server)
         self.server = server
 
         self.session_config = session_config
@@ -415,6 +417,12 @@ class ClassicWorkspaceBuilder:
             raise exc.SessionMissingWorkspaceException
         return self._session
 
+    def _check_version(self, server: Server) -> None:
+        """Check *server* once per builder; a different server is checked again."""
+        if self._version_checked is not server:
+            _require_tmux(server)
+            self._version_checked = server
+
     def session_exists(self, session_name: str) -> bool:
         """Return true if tmux session already exists."""
         assert session_name is not None
@@ -445,6 +453,7 @@ class ClassicWorkspaceBuilder:
         append : bool
             append windows in current active session
         """
+        self._check_version(session.server if session is not None else self.server)
         if not session:
             if not self.server:
                 msg = (
@@ -643,6 +652,7 @@ class ClassicWorkspaceBuilder:
             Newly created window, and the section from the tmuxp configuration
             that was used to create the window.
         """
+        self._check_version(session.server)
         for window_iterator, window_config in enumerate(
             self.session_config["windows"],
             start=1,
@@ -745,6 +755,7 @@ class ClassicWorkspaceBuilder:
             that was used to create the pane.
         """
         assert isinstance(window, Window)
+        self._check_version(window.server)
 
         pane_base_index = window.show_option("pane-base-index", global_=True)
         assert pane_base_index is not None
@@ -882,6 +893,7 @@ class ClassicWorkspaceBuilder:
         window_config : dict
             config section for window
         """
+        self._check_version(window.server)
         if "options_after" in window_config and isinstance(
             window_config["options_after"],
             dict,

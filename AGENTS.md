@@ -51,7 +51,7 @@ live in [src/tmuxp/AGENTS.md](src/tmuxp/AGENTS.md).
 
 ## Domain facts
 
-- tmux 3.2+, Python 3.10+ (`requires-python` in `pyproject.toml`); mypy runs
+- tmux 3.3a+, Python 3.10+ (`requires-python` in `pyproject.toml`); mypy runs
   in strict mode.
 - One console script (`tmuxp`) and one plugin entry-point group
   (`tmuxp.workspace_builders`).

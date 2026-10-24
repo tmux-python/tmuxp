@@ -34,5 +34,6 @@ Release checklist and version policy.
 
 contributing
 code-style
+compatibility
 releasing
 ```

@@ -5,6 +5,8 @@ from __future__ import annotations
 import logging
 import typing as t
 
+from tmuxp import util
+
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
@@ -69,6 +71,7 @@ def freeze(session: Session) -> dict[str, t.Any]:
     dict
         tmuxp compatible workspace
     """
+    util._require_tmux(session.server)
     logger.debug("freezing session", extra={"tmux_session": session.session_name})
 
     session_config: dict[str, t.Any] = {

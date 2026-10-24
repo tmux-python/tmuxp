@@ -19,7 +19,10 @@ Ensure tmux is installed:
 $ tmux -V
 ```
 
-Minimum required version: tmux 3.2.
+Minimum required version: tmux 3.3a, including the patch letter. A running
+daemon keeps its old version after you upgrade the tmux executable. Save
+your work and restart that daemon, or select a new socket with `tmuxp load
+-L new-socket workspace.yaml`. See {doc}`../project/compatibility`.
 
 ## Configuration errors
 
