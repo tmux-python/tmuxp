@@ -377,3 +377,242 @@ def test_validate_schema_logs_debug(
     records = [r for r in caplog.records if r.msg == "validating workspace schema"]
     assert len(records) >= 1
     assert getattr(records[0], "tmux_session", None) == "test_validate"
+
+
+class SynchronizeFixture(t.NamedTuple):
+    """Fixture for synchronize shorthand expansion."""
+
+    test_id: str
+    synchronize: bool | str
+    expected_final_sync: bool | None
+    expect_warning: bool
+
+
+SYNCHRONIZE_FIXTURES: list[SynchronizeFixture] = [
+    SynchronizeFixture(
+        test_id="true-enables-before",
+        synchronize=True,
+        expected_final_sync=True,
+        expect_warning=False,
+    ),
+    SynchronizeFixture(
+        test_id="before-enables-before",
+        synchronize="before",
+        expected_final_sync=True,
+        expect_warning=False,
+    ),
+    SynchronizeFixture(
+        test_id="after-enables-after",
+        synchronize="after",
+        expected_final_sync=True,
+        expect_warning=False,
+    ),
+    SynchronizeFixture(
+        test_id="false-disables-final-sync",
+        synchronize=False,
+        expected_final_sync=False,
+        expect_warning=False,
+    ),
+    SynchronizeFixture(
+        test_id="invalid-warns-and-removes-key",
+        synchronize="during",
+        expected_final_sync=None,
+        expect_warning=True,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(SynchronizeFixture._fields),
+    SYNCHRONIZE_FIXTURES,
+    ids=[fixture.test_id for fixture in SYNCHRONIZE_FIXTURES],
+)
+def test_expand_synchronize(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    synchronize: bool | str,
+    expected_final_sync: bool | None,
+    expect_warning: bool,
+) -> None:
+    """expand() normalizes synchronize without enabling tmux during build."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"sync-{test_id}",
+        "windows": [
+            {
+                "window_name": "main",
+                "synchronize": synchronize,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.loader"):
+        result = loader.expand(workspace)
+    window = result["windows"][0]
+
+    assert "synchronize" not in window
+    assert "synchronize-panes" not in window.get("options", {})
+    assert "synchronize-panes" not in window.get("options_after", {})
+    if expected_final_sync is None:
+        assert "_synchronize_panes" not in window
+    else:
+        assert window["_synchronize_panes"] is expected_final_sync
+
+    synchronize_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_window")
+    ]
+    assert bool(synchronize_warnings) is expect_warning
+    if expect_warning:
+        warning = t.cast("t.Any", synchronize_warnings[0])
+        assert warning.tmux_session == f"sync-{test_id}"
+        assert warning.tmux_window == "main"
+
+
+class ShellCommandAfterFixture(t.NamedTuple):
+    """Fixture for shell_command_after expansion."""
+
+    test_id: str
+    shell_command_after: str | list[str]
+    expected_commands: list[str]
+
+
+SHELL_COMMAND_AFTER_FIXTURES: list[ShellCommandAfterFixture] = [
+    ShellCommandAfterFixture(
+        test_id="string-command",
+        shell_command_after="echo done",
+        expected_commands=["echo done"],
+    ),
+    ShellCommandAfterFixture(
+        test_id="list-commands",
+        shell_command_after=["echo done", "echo bye"],
+        expected_commands=["echo done", "echo bye"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(ShellCommandAfterFixture._fields),
+    SHELL_COMMAND_AFTER_FIXTURES,
+    ids=[fixture.test_id for fixture in SHELL_COMMAND_AFTER_FIXTURES],
+)
+def test_expand_shell_command_after(
+    test_id: str,
+    shell_command_after: str | list[str],
+    expected_commands: list[str],
+) -> None:
+    """expand() normalizes shell_command_after like shell_command_before."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"after-{test_id}",
+        "windows": [
+            {
+                "window_name": "main",
+                "shell_command_after": shell_command_after,
+                "panes": [{"shell_command": ["echo hi"]}],
+            },
+        ],
+    }
+
+    result = loader.expand(workspace)
+    after = result["windows"][0]["shell_command_after"]
+
+    assert [cmd["cmd"] for cmd in after["shell_command"]] == expected_commands
+
+
+class PaneTitleFixture(t.NamedTuple):
+    """Fixture for pane title option expansion."""
+
+    test_id: str
+    enabled: bool
+    position: str | None
+    expected_position: str | None
+    expect_warning: bool
+
+
+PANE_TITLE_FIXTURES: list[PaneTitleFixture] = [
+    PaneTitleFixture(
+        test_id="enabled-defaults",
+        enabled=True,
+        position=None,
+        expected_position="top",
+        expect_warning=False,
+    ),
+    PaneTitleFixture(
+        test_id="enabled-bottom",
+        enabled=True,
+        position="bottom",
+        expected_position="bottom",
+        expect_warning=False,
+    ),
+    PaneTitleFixture(
+        test_id="enabled-invalid-falls-back",
+        enabled=True,
+        position="invalid",
+        expected_position="top",
+        expect_warning=True,
+    ),
+    PaneTitleFixture(
+        test_id="disabled-removes-session-keys",
+        enabled=False,
+        position="bottom",
+        expected_position=None,
+        expect_warning=False,
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    list(PaneTitleFixture._fields),
+    PANE_TITLE_FIXTURES,
+    ids=[fixture.test_id for fixture in PANE_TITLE_FIXTURES],
+)
+def test_expand_pane_titles(
+    caplog: pytest.LogCaptureFixture,
+    test_id: str,
+    enabled: bool,
+    position: str | None,
+    expected_position: str | None,
+    expect_warning: bool,
+) -> None:
+    """expand() turns session pane title keys into tmux window options."""
+    workspace: dict[str, t.Any] = {
+        "session_name": f"title-{test_id}",
+        "enable_pane_titles": enabled,
+        "pane_title_format": " #T ",
+        "windows": [
+            {
+                "window_name": "main",
+                "panes": [
+                    {"title": "editor", "shell_command": ["echo hi"]},
+                    {"shell_command": ["echo bye"]},
+                ],
+            },
+        ],
+    }
+    if position is not None:
+        workspace["pane_title_position"] = position
+
+    with caplog.at_level(logging.WARNING, logger="tmuxp.workspace.loader"):
+        result = loader.expand(workspace)
+
+    window = result["windows"][0]
+    assert "enable_pane_titles" not in result
+    assert "pane_title_position" not in result
+    assert "pane_title_format" not in result
+    assert window["panes"][0]["title"] == "editor"
+
+    if expected_position is None:
+        assert "pane-border-status" not in window.get("options", {})
+    else:
+        assert window["options"]["pane-border-status"] == expected_position
+        assert window["options"]["pane-border-format"] == " #T "
+
+    position_warnings = [
+        record
+        for record in caplog.records
+        if record.levelno == logging.WARNING and hasattr(record, "tmux_session")
+    ]
+    assert bool(position_warnings) is expect_warning
+    if expect_warning:
+        assert position_warnings[0].tmux_session == f"title-{test_id}"
