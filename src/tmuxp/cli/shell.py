@@ -39,7 +39,6 @@ if t.TYPE_CHECKING:
     from typing import TypeAlias
 
     CLIColorModeLiteral: TypeAlias = t.Literal["auto", "always", "never"]
-    CLIColorsLiteral: TypeAlias = t.Literal[56, 88]
     CLIShellLiteral: TypeAlias = t.Literal[
         "best",
         "pdb",
@@ -69,12 +68,6 @@ class CLIShellNamespace(argparse.Namespace):
     socket_path : str | None
         Pass-through for ``tmux -S``. When neither this nor ``socket_name`` is
         given and ``TMUX`` is set, the socket path is read from that variable.
-    colors : CLIColorsLiteral | None
-        Color count forced on tmux. The ``shell`` subparser defines no
-        ``-2``/``-8`` flags, so argparse never sets this.
-    log_file : str | None
-        Destination for the file log. The ``shell`` subparser defines no
-        ``--log-file`` flag, so argparse never sets this.
     window_name : str | None
         Window bound to the shell's ``window`` variable. Unset when the
         positional is omitted, which falls back to the window owning the pane
@@ -99,8 +92,6 @@ class CLIShellNamespace(argparse.Namespace):
     session_name: str
     socket_name: str | None
     socket_path: str | None
-    colors: CLIColorsLiteral | None
-    log_file: str | None
     window_name: str | None
     command: str | None
     shell: CLIShellLiteral | None
