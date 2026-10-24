@@ -32,12 +32,31 @@ def run_before_script(
 ) -> int:
     """Execute shell script, streaming output to callback or terminal (if TTY).
 
-    Output is buffered and optionally forwarded via the ``on_line`` callback.
+    Output is forwarded line-by-line via ``on_line`` when given; otherwise it
+    is inherited by the terminal.
     """
     script_cmd = shlex.split(str(script_file))
 
+    if on_line is None:
+        try:
+            stream_proc: subprocess.Popen[bytes] = subprocess.Popen(script_cmd, cwd=cwd)
+        except FileNotFoundError as e:
+            raise exc.BeforeLoadScriptNotExists(
+                e,
+                os.path.abspath(script_file),  # NOQA: PTH100
+            ) from e
+
+        stream_return_code = stream_proc.wait()
+        if stream_return_code != 0:
+            raise exc.BeforeLoadScriptError(
+                stream_return_code,
+                os.path.abspath(script_file),  # NOQA: PTH100
+                None,
+            )
+        return stream_return_code
+
     try:
-        proc = subprocess.Popen(
+        captured_proc: subprocess.Popen[str] = subprocess.Popen(
             script_cmd,
             cwd=cwd,
             stdout=subprocess.PIPE,
@@ -51,8 +70,8 @@ def run_before_script(
             os.path.abspath(script_file),  # NOQA: PTH100
         ) from e
 
-    out_buffer = []
-    err_buffer = []
+    out_buffer: list[str] = []
+    err_buffer: list[str] = []
 
     # While process is running, read lines from stdout/stderr
     # and write them to this process's stdout/stderr if isatty
@@ -62,13 +81,13 @@ def run_before_script(
     # You can do a simple loop reading in real-time:
     while True:
         # Use .poll() to check if the child has exited
-        return_code = proc.poll()
+        captured_return_code = captured_proc.poll()
 
         # Read one line from stdout, if available
-        line_out = proc.stdout.readline() if proc.stdout else ""
+        line_out = captured_proc.stdout.readline() if captured_proc.stdout else ""
 
         # Read one line from stderr, if available
-        line_err = proc.stderr.readline() if proc.stderr else ""
+        line_err = captured_proc.stderr.readline() if captured_proc.stderr else ""
 
         if line_out and line_out.strip():
             out_buffer.append(line_out)
@@ -87,11 +106,11 @@ def run_before_script(
                 sys.stderr.flush()
 
         # If no more data from pipes and process ended, break
-        if not line_out and not line_err and return_code is not None:
+        if not line_out and not line_err and captured_return_code is not None:
             break
 
     # At this point, the process has finished
-    return_code = proc.wait()
+    return_code = captured_proc.wait()
 
     if return_code != 0:
         # Join captured stderr lines for your exception

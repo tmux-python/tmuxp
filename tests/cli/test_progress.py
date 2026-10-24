@@ -24,6 +24,7 @@ from tmuxp.cli._progress import (
     _truncate_visible,
     _visible_len,
     render_bar,
+    render_build_bar,
     resolve_progress_format,
 )
 
@@ -43,6 +44,89 @@ SPINNER_ENABLEMENT_FIXTURES: list[SpinnerEnablementFixture] = [
     SpinnerEnablementFixture("tty_color_never", True, ColorMode.NEVER, True),
     SpinnerEnablementFixture("non_tty_color_always", False, ColorMode.ALWAYS, False),
     SpinnerEnablementFixture("non_tty_color_never", False, ColorMode.NEVER, False),
+]
+
+
+class TwoPhaseWindowDoneFixture(t.NamedTuple):
+    """Test fixture for non-interleaved window completion events."""
+
+    test_id: str
+    done_events: tuple[dict[str, t.Any], ...]
+    expected_done_names: tuple[str, ...]
+    expected_window: str
+    expected_progress: str
+    expected_session_pane_progress: str
+
+
+TWO_PHASE_WINDOW_DONE_FIXTURES: list[TwoPhaseWindowDoneFixture] = [
+    TwoPhaseWindowDoneFixture(
+        test_id="first_window_done",
+        done_events=({"event": "window_done", "name": "w1"},),
+        expected_done_names=("w1",),
+        expected_window="w1",
+        expected_progress="1/3 win",
+        expected_session_pane_progress="2/6",
+    ),
+    TwoPhaseWindowDoneFixture(
+        test_id="first_two_windows_done",
+        done_events=(
+            {"event": "window_done", "name": "w1"},
+            {"event": "window_done", "name": "w2"},
+        ),
+        expected_done_names=("w1", "w2"),
+        expected_window="w2",
+        expected_progress="2/3 win",
+        expected_session_pane_progress="3/6",
+    ),
+]
+
+
+class BuildBarFixture(t.NamedTuple):
+    """Test fixture for the two-phase build bar renderer."""
+
+    test_id: str
+    windows_done: int
+    windows_created: int
+    total: int
+    expected: str
+
+
+BUILD_BAR_FIXTURES: list[BuildBarFixture] = [
+    BuildBarFixture(
+        test_id="none_created",
+        windows_done=0,
+        windows_created=0,
+        total=11,
+        expected="░░░░░░░░░░",
+    ),
+    BuildBarFixture(
+        test_id="created_before_done",
+        windows_done=0,
+        windows_created=5,
+        total=11,
+        expected="▓▓▓▓▓░░░░░",
+    ),
+    BuildBarFixture(
+        test_id="done_and_created",
+        windows_done=1,
+        windows_created=5,
+        total=11,
+        expected="█▓▓▓▓░░░░░",
+    ),
+    BuildBarFixture(
+        test_id="done_does_not_complete_early",
+        windows_done=10,
+        windows_created=11,
+        total=11,
+        expected="█████████▓",
+    ),
+    BuildBarFixture(
+        test_id="all_done",
+        windows_done=11,
+        windows_created=11,
+        total=11,
+        expected="██████████",
+    ),
 ]
 
 
@@ -245,6 +329,53 @@ def test_build_tree_window_done_shows_checkmark() -> None:
     tree.on_event({"event": "window_done"})
     lines = tree.render(Colors(ColorMode.NEVER), 80)
     assert lines[1] == "- ✓ editor"
+
+
+def _build_two_phase_progress_tree() -> BuildTree:
+    tree = BuildTree()
+    tree.on_event(
+        {
+            "event": "session_created",
+            "name": "my-session",
+            "window_total": 3,
+            "session_pane_total": 6,
+        }
+    )
+    for name, pane_total in (("w1", 2), ("w2", 1), ("w3", 3)):
+        tree.on_event(
+            {
+                "event": "window_started",
+                "name": name,
+                "pane_total": pane_total,
+            }
+        )
+    return tree
+
+
+@pytest.mark.parametrize(
+    list(TwoPhaseWindowDoneFixture._fields),
+    TWO_PHASE_WINDOW_DONE_FIXTURES,
+    ids=[f.test_id for f in TWO_PHASE_WINDOW_DONE_FIXTURES],
+)
+def test_build_tree_named_window_done_updates_completed_window(
+    test_id: str,
+    done_events: tuple[dict[str, t.Any], ...],
+    expected_done_names: tuple[str, ...],
+    expected_window: str,
+    expected_progress: str,
+    expected_session_pane_progress: str,
+) -> None:
+    """Named window_done events update the completed window, not the last one."""
+    tree = _build_two_phase_progress_tree()
+
+    for event in done_events:
+        tree.on_event(event)
+
+    context = tree._context()
+    assert tuple(w.name for w in tree.windows if w.done) == expected_done_names
+    assert context["window"] == expected_window
+    assert context["progress"] == expected_progress
+    assert context["session_pane_progress"] == expected_session_pane_progress
 
 
 def test_build_tree_workspace_built_marks_all_done() -> None:
@@ -543,6 +674,22 @@ def test_render_bar_width_constant() -> None:
     assert len(bar) == BAR_WIDTH
 
 
+@pytest.mark.parametrize(
+    list(BuildBarFixture._fields),
+    BUILD_BAR_FIXTURES,
+    ids=[f.test_id for f in BUILD_BAR_FIXTURES],
+)
+def test_render_build_bar(
+    test_id: str,
+    windows_done: int,
+    windows_created: int,
+    total: int,
+    expected: str,
+) -> None:
+    """render_build_bar shows done, created, and empty segments."""
+    assert render_build_bar(windows_done, windows_created, total) == expected
+
+
 # BuildTree new token tests
 
 
@@ -733,6 +880,90 @@ def test_spinner_pane_bar_preset() -> None:
 
     assert "2/4" in spinner.message
     assert "░" in spinner.message or "█" in spinner.message
+
+
+def test_spinner_default_progress_tracks_started_window_in_phase_one() -> None:
+    """The default preset shows started-window progress while panes are created."""
+    stream = io.StringIO()
+    spinner = Spinner(
+        message="Building...",
+        color_mode=ColorMode.NEVER,
+        stream=stream,
+        progress_format="default",
+    )
+    for event in (
+        {"event": "session_created", "name": "s", "window_total": 3},
+        {"event": "window_started", "name": "w1", "pane_total": 2},
+        {"event": "window_started", "name": "w2", "pane_total": 1},
+    ):
+        spinner.on_build_event(event)
+
+    assert "0/2 win · pane 0/1" in spinner.message
+    assert render_build_bar(0, 2, 3) in spinner.message
+    assert spinner.message.endswith("w2")
+
+
+def test_spinner_default_bar_tracks_created_windows_before_completion() -> None:
+    """The default bar shows created windows before any window_done events."""
+    stream = io.StringIO()
+    spinner = Spinner(
+        message="Building...",
+        color_mode=ColorMode.NEVER,
+        stream=stream,
+        progress_format="default",
+    )
+    spinner.on_build_event(
+        {
+            "event": "session_created",
+            "name": "study",
+            "window_total": 11,
+            "session_pane_total": 44,
+        }
+    )
+    for index in range(1, 6):
+        spinner.on_build_event(
+            {
+                "event": "window_started",
+                "name": f"w{index}",
+                "pane_total": 4,
+            }
+        )
+        spinner.on_build_event(
+            {"event": "pane_creating", "pane_num": 4, "pane_total": 4}
+        )
+
+    assert "0/5 win · pane 4/4" in spinner.message
+    assert "▓" in spinner.message
+    assert render_bar(0, 11) not in spinner.message
+
+
+def test_spinner_default_progress_tracks_completed_window_in_phase_two() -> None:
+    """The default preset changes current window when it completes."""
+    stream = io.StringIO()
+    spinner = Spinner(
+        message="Building...",
+        color_mode=ColorMode.NEVER,
+        stream=stream,
+        progress_format="default",
+    )
+    for event in (
+        {
+            "event": "session_created",
+            "name": "s",
+            "window_total": 3,
+            "session_pane_total": 6,
+        },
+        {"event": "window_started", "name": "w1", "pane_total": 2},
+        {"event": "window_started", "name": "w2", "pane_total": 1},
+        {"event": "window_started", "name": "w3", "pane_total": 3},
+        {"event": "pane_creating", "pane_num": 3, "pane_total": 3},
+        {"event": "window_done", "name": "w1"},
+    ):
+        spinner.on_build_event(event)
+
+    assert "1/3 win" in spinner.message
+    assert render_build_bar(1, 3, 3) in spinner.message
+    assert spinner.message.endswith("w1")
 
 
 def test_spinner_before_script_event_via_events() -> None:
