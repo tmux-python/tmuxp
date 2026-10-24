@@ -44,6 +44,20 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### What's new
+
+#### Experimental chain builder (opt-in) (#1054)
+
+tmuxp now registers an experimental
+{class}`~tmuxp.workspace.builder.chain.ChainWorkspaceBuilder`, selectable with
+`workspace_builder: chain`, that describes the whole window/pane tree in one plan
+and resolves it in the fewest tmux invocations. It depends on libtmux's chain API
+(libtmux#685), which is unreleased and absent from published libtmux builds, so
+the builder is non-functional until that API ships: loading a workspace that
+selects it raises {exc}`~tmuxp.exc.WorkspaceBuilderImportError`. The builder
+module imports cleanly without the API. See {ref}`custom-workspace-builders` for
+details.
+
 ## tmuxp 1.75.0 (2026-10-24)
 
 tmuxp 1.75.0 adds Python 3.15 support.

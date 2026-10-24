@@ -7,10 +7,16 @@ implementation. A workspace may select a different builder with the
 
 ``WorkspaceBuilder`` remains importable here as a backwards-compatible alias of
 :class:`~tmuxp.workspace.builder.classic.ClassicWorkspaceBuilder`.
+
+The experimental
+:class:`~tmuxp.workspace.builder.chain.ChainWorkspaceBuilder` is also exported.
+Its module imports cleanly even when libtmux's unreleased chain API
+(libtmux#685) is absent; the missing API surfaces only when its ``build()`` runs.
 """
 
 from __future__ import annotations
 
+from tmuxp.workspace.builder.chain import ChainWorkspaceBuilder
 from tmuxp.workspace.builder.classic import (
     ClassicWorkspaceBuilder,
     get_default_columns,
@@ -31,6 +37,7 @@ WorkspaceBuilder = ClassicWorkspaceBuilder
 
 __all__ = [
     "WORKSPACE_BUILDERS_GROUP",
+    "ChainWorkspaceBuilder",
     "ClassicWorkspaceBuilder",
     "WorkspaceBuilder",
     "WorkspaceBuilderProtocol",
