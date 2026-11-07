@@ -1540,7 +1540,7 @@ button.status-badge:focus-visible {
  *
  * The top bar is sticky; the documentation bar under it scrolls away, as on
  * libtmux.org. Everything else that sticks or measures from the top of the
- * viewport starts below the top bar. `site-header.js` writes the measured
+ * viewport starts below the top bar. `site-bars.js` writes the measured
  * heights to --site-header-height and --site-context-height, and the bottom
  * of whatever part of both bars is on screen to --site-drawer-top for the
  * drawers Furo fixes to the viewport. The fallbacks are the one-row heights.
