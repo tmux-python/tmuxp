@@ -94,6 +94,11 @@ module layout renders as a highlighted directory tree.
 
 ### Development
 
+#### CI recovers from incompatible tmux caches
+
+CI rebuilds incompatible cached tmux installations before running tests.
+Release downloads use checksum pins in `.github/tmux-releases.toml`.
+
 #### CI actions updated to current majors
 
 Workflow actions moved to their current major releases: `actions/checkout` v7,
