@@ -44,6 +44,15 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Documentation
+
+#### libtmux.org top bar
+
+Every page of this site now opens with the top bar libtmux.org uses: the
+`libtmux` wordmark, the port picker, GitHub and PyPI links, the Packages menu,
+search, and an Auto, Light, or Dark switch. The switch sets the theme this
+site already stores, so one choice covers every control.
+
 ## tmuxp 1.76.0 (2026-10-24)
 
 tmuxp 1.76.0 updates libtmux to 0.62.0.
