@@ -263,9 +263,9 @@ normally hides from users.
 
 The test workflow builds the versions in its existing matrix. Stable
 versions use the official release archives and SHA256 pins in
-`.github/tmux-releases.toml`; `master` resolves once to a commit and
-fetches that exact commit. The build follows tmux's
-[release and source-checkout instructions](https://github.com/tmux/tmux/blob/3.7/README).
+`.github/tmux-releases.toml`, including tmux 3.8; `master` resolves once
+to a commit and fetches that exact commit. The build follows tmux's
+[release and source-checkout instructions](https://github.com/tmux/tmux/blob/3.8/README#L23-L37).
 Only the installed prefix is cached. Each build uses a fresh source tree
 and up to four available processors.
 
