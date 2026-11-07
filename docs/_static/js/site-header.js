@@ -1,11 +1,13 @@
 /*
  * Behaviour for the libtmux.org top bar (site-header.html).
  *
- * Four jobs: the port and package pickers (search, arrow keys, Escape,
+ * Six jobs: the port, package, documentation, version and language pickers (search, arrow keys, Escape,
  * placement over the page), the Auto / Light / Dark control mapped onto
  * Furo's `body[data-theme]` and `localStorage.theme`, and publishing the
- * bar's height so the sticky sidebars start beneath it, and the same
- * external-link hint libtmux.org draws on links that leave it.
+ * bars' heights so the sticky sidebars start beneath them, the same
+ * external-link hint libtmux.org draws on links that leave it, the status
+ * badges' toggletips, and the documentation bar's compact settings and
+ * navigation buttons.
  */
 (function () {
   "use strict";
@@ -17,7 +19,7 @@
   // External links ---------------------------------------------------------
   // The links to libtmux.org itself are internal on the main site, so they
   // carry no hint there; the hint marks the hosts that are external to it.
-  root.querySelectorAll("a[href]").forEach(function (a) {
+  document.querySelectorAll(".site-header a[href], .documentation-context a[href]").forEach(function (a) {
     var url;
     try {
       url = new URL(a.getAttribute("href"), document.baseURI);
@@ -33,14 +35,36 @@
     a.setAttribute("aria-description", "External site: " + url.hostname);
   });
 
-  // Bar height ------------------------------------------------------------
+  // Bar heights -------------------------------------------------------------
+  var context = document.querySelector(".documentation-context");
+  var rootStyle = document.documentElement.style;
+
   function measure() {
     var h = root.getBoundingClientRect().height;
-    if (h) document.documentElement.style.setProperty("--site-header-height", h + "px");
+    if (h) rootStyle.setProperty("--site-header-height", h + "px");
+    if (context) {
+      var c = context.getBoundingClientRect().height;
+      if (c) rootStyle.setProperty("--site-context-height", c + "px");
+    }
+    place();
   }
+
+  // The drawers Furo fixes to the viewport open below whatever of the two bars
+  // is still on screen.
+  function place() {
+    var bottom = root.getBoundingClientRect().bottom;
+    if (context) bottom = Math.max(bottom, context.getBoundingClientRect().bottom);
+    rootStyle.setProperty("--site-drawer-top", Math.max(0, bottom) + "px");
+  }
+
   measure();
-  if (window.ResizeObserver) new ResizeObserver(measure).observe(root);
+  if (window.ResizeObserver) {
+    var observer = new ResizeObserver(measure);
+    observer.observe(root);
+    if (context) observer.observe(context);
+  }
   window.addEventListener("resize", measure);
+  window.addEventListener("scroll", place, { passive: true });
 
   // Colour scheme ---------------------------------------------------------
   var STORAGE_KEY = "theme";
@@ -100,7 +124,7 @@
   sync();
 
   // Pickers ---------------------------------------------------------------
-  root.querySelectorAll("[data-doc-picker]").forEach(function (picker) {
+  document.querySelectorAll("[data-doc-picker]").forEach(function (picker) {
     var panel = picker.querySelector("[data-picker-panel]");
     var summary = picker.querySelector(":scope > summary");
     var search = picker.querySelector("[data-picker-search]");
@@ -109,6 +133,11 @@
     function groups() {
       return Array.prototype.slice.call(picker.querySelectorAll("[data-picker-group]"));
     }
+    var saved = new Map(
+      groups().map(function (group) {
+        return [group, group instanceof HTMLDetailsElement && group.open];
+      }),
+    );
     function options() {
       return Array.prototype.slice.call(picker.querySelectorAll("[data-picker-option]"));
     }
@@ -160,6 +189,9 @@
       });
       groups().forEach(function (group) {
         group.hidden = !group.querySelector("[data-picker-option]:not([hidden])");
+        if (group instanceof HTMLDetailsElement) {
+          group.open = tokens.length ? !group.hidden : saved.get(group) || false;
+        }
       });
       var count = entries.filter(function (o) {
         return !o.hidden;
@@ -194,6 +226,11 @@
       document.querySelectorAll("[data-doc-picker][open]").forEach(function (other) {
         if (other !== picker) other.open = false;
       });
+      saved = new Map(
+        groups().map(function (group) {
+          return [group, group instanceof HTMLDetailsElement && group.open];
+        }),
+      );
       if (search) {
         search.value = "";
         filter();
@@ -267,4 +304,202 @@
       true,
     );
   });
+
+  // Status badges -----------------------------------------------------------
+  // A badge opens a small card on hover or focus and pins it on click.
+  var toggletips = function () {
+    return Array.prototype.slice.call(document.querySelectorAll("[data-status-toggletip]"));
+  };
+  var tipTimers = new WeakMap();
+  var tipSkipFocus = null;
+  var tipParts = function (tip) {
+    return { button: tip.querySelector(":scope > button"), card: tip.querySelector(":scope > [popover]") };
+  };
+  var tipOf = function (node) {
+    return node instanceof Element ? node.closest("[data-status-toggletip]") : null;
+  };
+  var tipOpen = function (tip) {
+    return tipParts(tip).card.matches(":popover-open");
+  };
+  var tipClear = function (tip) {
+    window.clearTimeout(tipTimers.get(tip));
+    tipTimers.delete(tip);
+  };
+  var tipPlace = function (tip) {
+    var p = tipParts(tip);
+    var rect = p.button.getBoundingClientRect();
+    var width = document.documentElement.clientWidth;
+    var below = window.innerHeight - rect.bottom - 6;
+    var upward = p.card.offsetHeight > below && rect.top > below;
+    p.card.style.left = Math.max(8, Math.min(rect.left, width - p.card.offsetWidth - 8)) + "px";
+    p.card.style.top = upward
+      ? Math.max(8, rect.top - 6 - p.card.offsetHeight) + "px"
+      : rect.bottom + 6 + "px";
+  };
+  var tipShow = function (tip) {
+    tipClear(tip);
+    toggletips().forEach(function (other) {
+      if (other !== tip && tipOpen(other)) tipHide(other);
+    });
+    var p = tipParts(tip);
+    if (!tipOpen(tip)) p.card.showPopover();
+    p.button.setAttribute("aria-expanded", "true");
+    tipPlace(tip);
+  };
+  var tipHide = function (tip) {
+    tipClear(tip);
+    delete tip.dataset.pinned;
+    var p = tipParts(tip);
+    if (tipOpen(tip)) p.card.hidePopover();
+    p.button.setAttribute("aria-expanded", "false");
+  };
+  var tipLater = function (tip, ms, fn) {
+    tipClear(tip);
+    tipTimers.set(tip, window.setTimeout(function () { fn(tip); }, ms));
+  };
+  if (typeof HTMLElement.prototype.showPopover === "function" && toggletips().length) {
+    var on = function (type, fn) { document.addEventListener(type, fn, true); };
+    on("pointerover", function (e) {
+      var tip = tipOf(e.target);
+      if (tip && e.pointerType === "mouse") tipLater(tip, 500, tipShow);
+    });
+    on("pointerout", function (e) {
+      var tip = tipOf(e.target);
+      if (tip && e.pointerType === "mouse" && !tip.contains(e.relatedTarget)) {
+        if (tip.dataset.pinned === undefined && !tip.matches(":focus-within")) tipLater(tip, 250, tipHide);
+        else tipClear(tip);
+      }
+    });
+    on("focusin", function (e) {
+      var tip = tipOf(e.target);
+      if (tip && tip !== tipSkipFocus) tipShow(tip);
+    });
+    on("focusout", function (e) {
+      var tip = tipOf(e.target);
+      if (tip && !tip.contains(e.relatedTarget) && tip.dataset.pinned === undefined && !tip.matches(":hover")) {
+        tipLater(tip, 250, tipHide);
+      }
+    });
+    on("click", function (e) {
+      var tip = tipOf(e.target);
+      if (tip && e.target.closest("button")) {
+        e.preventDefault();
+        if (tipOpen(tip) && tip.dataset.pinned !== undefined) tipHide(tip);
+        else {
+          tipShow(tip);
+          tip.dataset.pinned = "";
+        }
+      }
+    });
+    on("pointerdown", function (e) {
+      toggletips().forEach(function (tip) {
+        if (tipOpen(tip) && !tip.contains(e.target)) tipHide(tip);
+      });
+    });
+    on("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      var open = toggletips().filter(tipOpen);
+      if (!open.length) return;
+      e.preventDefault();
+      e.stopPropagation();
+      open.forEach(function (tip) {
+        var focused = tip.contains(document.activeElement);
+        tipHide(tip);
+        if (focused) {
+          tipSkipFocus = tip;
+          tipParts(tip).button.focus({ preventScroll: true });
+          tipSkipFocus = null;
+        }
+      });
+    });
+    on("toggle", function (e) {
+      var t = e.target;
+      if (t instanceof HTMLDetailsElement && !t.open) {
+        t.querySelectorAll("[data-status-toggletip]").forEach(tipHide);
+      }
+      var tip = tipOf(t);
+      if (tip && t === tipParts(tip).card) {
+        tipParts(tip).button.setAttribute("aria-expanded", String(tipOpen(tip)));
+      }
+    });
+    window.addEventListener("resize", function () { toggletips().filter(tipOpen).forEach(tipHide); });
+    window.addEventListener(
+      "scroll",
+      function (e) {
+        var open = toggletips().filter(tipOpen);
+        if (!open.some(function (tip) { return tip.contains(e.target); })) open.forEach(tipHide);
+      },
+      true,
+    );
+  }
+
+  // Documentation bar controls ----------------------------------------------
+  if (context) {
+    var toggle = context.querySelector("[data-context-settings-toggle]");
+    var back = context.querySelector("[data-context-settings-back]");
+    var settings = context.querySelector("[data-context-settings]");
+    if (toggle && back && settings) {
+      var compact = window.matchMedia("(max-width: 24rem)");
+      context.dataset.settingsEnhanced = "";
+      toggle.hidden = back.hidden = false;
+      var closePickers = function () {
+        settings.querySelectorAll("[data-doc-picker][open]").forEach(function (p) { p.open = false; });
+      };
+      var closeSettings = function () {
+        closePickers();
+        delete context.dataset.settingsOpen;
+        toggle.setAttribute("aria-expanded", "false");
+      };
+      toggle.addEventListener("click", function () {
+        if (!compact.matches) return;
+        context.querySelectorAll("[data-doc-picker][open]").forEach(function (p) { p.open = false; });
+        context.dataset.settingsOpen = "";
+        toggle.setAttribute("aria-expanded", "true");
+        back.focus({ preventScroll: true });
+      });
+      back.addEventListener("click", function () {
+        closeSettings();
+        toggle.focus({ preventScroll: true });
+      });
+      context.addEventListener("keydown", function (event) {
+        if (event.key !== "Escape" || !context.hasAttribute("data-settings-open")) return;
+        event.preventDefault();
+        closeSettings();
+        toggle.focus({ preventScroll: true });
+      });
+      compact.addEventListener("change", function () {
+        var focused = document.activeElement;
+        var navigationOpen = context.querySelector(
+          '.documentation-context-navigation > :is(button, [role="button"])[aria-expanded="true"]',
+        );
+        closeSettings();
+        if (compact.matches && navigationOpen) {
+          context.dataset.settingsOpen = "";
+          toggle.setAttribute("aria-expanded", "true");
+        }
+        if (focused instanceof HTMLElement && context.contains(focused) && !focused.getClientRects().length) {
+          var next = compact.matches ? toggle : settings.querySelector("summary");
+          if (next) next.focus({ preventScroll: true });
+        }
+      });
+    }
+
+    // The two buttons open Furo's drawers.
+    [
+      ["#mobile-sidebar-toggle", "__navigation"],
+      ["#mobile-toc-toggle", "__toc"],
+    ].forEach(function (pair) {
+      var button = context.querySelector(pair[0]);
+      var box = document.getElementById(pair[1]);
+      if (!button || !box) return;
+      var sync = function () {
+        button.setAttribute("aria-expanded", String(box.checked));
+      };
+      button.addEventListener("click", function () {
+        box.checked = !box.checked;
+        sync();
+      });
+      box.addEventListener("change", sync);
+    });
+  }
 })();

@@ -46,12 +46,14 @@ _Notes on the upcoming release will go here._
 
 ### Documentation
 
-#### libtmux.org top bar
+#### libtmux.org top and documentation bars
 
-Every page of this site now opens with the top bar libtmux.org uses: the
-`libtmux` wordmark, the port picker, GitHub and PyPI links, the Packages menu,
-search, and an Auto, Light, or Dark switch. The switch sets the theme this
-site already stores, so one choice covers every control.
+Every page of this site now opens with the two bars libtmux.org uses. The top
+bar holds the `libtmux` wordmark, the port picker, GitHub and PyPI links, the
+Packages menu, search, and an Auto, Light, or Dark switch. The documentation bar
+under it holds the documentation picker for this site's product, with the
+version and language selectors. The switch sets the theme this site already
+stores, so one choice covers every control.
 
 ## tmuxp 1.76.0 (2026-10-24)
 
