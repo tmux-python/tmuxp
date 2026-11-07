@@ -19,6 +19,7 @@ with (src_root / "tmuxp" / "__about__.py").open() as fp:
     exec(fp.read(), about)
 
 from gp_sphinx.config import make_linkcode_resolve, merge_sphinx_config  # noqa: E402
+from gp_sphinx.defaults import DEFAULT_SPHINX_FONT_PRELOAD  # noqa: E402
 
 import tmuxp  # noqa: E402
 
@@ -55,6 +56,13 @@ conf = merge_sphinx_config(
     theme_options={"mask_icon": "/_static/img/tmuxp.svg"},
     html_extra_path=["manifest.json"],
     html_favicon="_static/favicon.ico",
+    html_css_files=["css/site-bars.css"],
+    html_js_files=[("js/site-bars.js", {"defer": "defer"})],
+    # The top bar sets its wordmark in IBM Plex Mono 600.
+    sphinx_font_preload=[
+        *DEFAULT_SPHINX_FONT_PRELOAD,
+        ("IBM Plex Mono", 600, "normal"),
+    ],
     aafig_format={"latex": "pdf", "html": "gif"},
     aafig_default_options={"scale": 0.75, "aspect": 0.5, "proportional": True},
     rediraffe_redirects="redirects.txt",
