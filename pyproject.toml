@@ -204,6 +204,9 @@ ignore_missing_imports = true
 [tool.ruff]
 target-version = "py310"
 
+[tool.ruff.per-file-target-version]
+".github/scripts/*.py" = "py311"
+
 [tool.ruff.lint]
 # `select` is deliberately unset: ruff 0.16 enables a curated default rule
 # set, and an explicit `select` would replace it rather than extend it.
