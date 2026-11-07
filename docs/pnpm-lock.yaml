@@ -12,8 +12,8 @@ importers:
   .:
     devDependencies:
       '@mermaid-js/mermaid-cli':
-        specifier: 11.17.0
-        version: 11.17.0(puppeteer@25.15.0)(tailwindcss@4.3.3)
+        specifier: 11.17.1
+        version: 11.17.1(puppeteer@25.15.0)(tailwindcss@4.3.3)
 
 packages:
 
@@ -95,8 +95,8 @@ packages:
     peerDependencies:
       mermaid: ^11.0.2
 
-  '@mermaid-js/mermaid-cli@11.17.0':
-    resolution: {integrity: sha512-pxF8rmheBb1gabIN4GFDCNWzIUsOzcEsSp7H5CQoL7gv7X8U8r6FFKtdMzEmZMeHmziNAq2B7J7LG+CDSfIg9w==}
+  '@mermaid-js/mermaid-cli@11.17.1':
+    resolution: {integrity: sha512-rSQHl68EMYp2SDriuAkPL596qKvHx9WzPw1YSSqvDq/bpsoNX44lKnRqIVxJQUf9BWZazWK5zwutiAhiV2t2dA==}
     engines: {node: ^18.19 || >=20.0}
     hasBin: true
     peerDependencies:
@@ -916,7 +916,7 @@ snapshots:
       mermaid: 11.17.2
     optional: true
 
-  '@mermaid-js/mermaid-cli@11.17.0(puppeteer@25.15.0)(tailwindcss@4.3.3)':
+  '@mermaid-js/mermaid-cli@11.17.1(puppeteer@25.15.0)(tailwindcss@4.3.3)':
     dependencies:
       '@fortawesome/fontawesome-free': 7.3.1
       '@mermaid-js/layout-elk': 0.2.3(mermaid@11.17.2)
