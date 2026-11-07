@@ -1,0 +1,10 @@
+# SHA256 pins for official tmux release archives.
+# https://github.com/tmux/tmux/releases
+
+[releases]
+"3.2a" = "551553a4f82beaa8dadc9256800bcc284d7c000081e47aa6ecbb6ff36eacd05f"
+"3.3a" = "e4fd347843bd0772c4f48d6dde625b0b109b7a380ff15db21e97c11a4dcdf93f"
+"3.4" = "551ab8dea0bf505c0ad6b7bb35ef567cdde0ccb84357df142c254f35a23e19aa"
+"3.5" = "2fe01942e7e7d93f524a22f2c883822c06bc258a4d61dba4b407353d7081950f"
+"3.6" = "136db80cfbfba617a103401f52874e7c64927986b65b1b700350b6058ad69607"
+"3.7" = "2344f191501b8a73eb71dd6c5fd5dcf8c765f5066f34ab46f04b3013dc7bc1a5"
