@@ -282,9 +282,8 @@ current job, but cannot overwrite that entry. A build-script change
 invalidates its key for later jobs. Never add a broad restore-key fallback
 for native binaries.
 
-The CI scripts require Python 3.11+ for the standard-library TOML reader;
-the library keeps its Python 3.10 floor. Run the cache regressions against
-an installed tmux:
+The CI scripts use the standard-library TOML reader, which Python 3.11
+added. Run the cache regressions against an installed tmux:
 
 ```console
 $ uv run pytest .github/scripts/test_tmux_build.py --reruns=0

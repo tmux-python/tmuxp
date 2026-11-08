@@ -82,10 +82,10 @@ LOAD_DESCRIPTION = build_description(
 )
 
 if t.TYPE_CHECKING:
-    from typing import TypeAlias
+    from typing import NotRequired, TypeAlias
 
     from libtmux.session import Session
-    from typing_extensions import NotRequired, TypedDict
+    from typing_extensions import TypedDict
 
     from tmuxp.types import StrPath
 

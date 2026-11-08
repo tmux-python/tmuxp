@@ -14,7 +14,7 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     PrivatePathBase = pathlib.Path
 else:

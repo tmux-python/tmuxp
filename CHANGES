@@ -44,6 +44,13 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Breaking changes
+
+#### Python 3.11+ is now required
+
+tmuxp 1.76.0 was the last release supporting Python 3.10. Python 3.10 reached
+end of life in October 2026.
+
 ### Documentation
 
 #### libtmux.org top and documentation bars
