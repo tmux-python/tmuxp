@@ -9,7 +9,7 @@ takes you from nothing to a running session.
 
 ## Installation
 
-Ensure you have at least tmux **>= 3.2** and python **>= 3.10**.
+Ensure you have at least tmux **>= 3.2** and python **>= 3.11**.
 
 ```console
 $ pip install --user tmuxp
