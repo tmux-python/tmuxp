@@ -24,8 +24,7 @@ logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     import types
-
-    from typing_extensions import Self
+    from typing import Self
 
 
 # ANSI Escape Sequences

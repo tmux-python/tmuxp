@@ -19,12 +19,7 @@ from typing import TypedDict
 logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        from typing import NotRequired
-    else:
-        from typing_extensions import NotRequired
+    from typing import NotRequired
 
 
 class PluginConfigSchema(TypedDict):

@@ -15,11 +15,15 @@ from __future__ import annotations
 import typing as t
 
 if t.TYPE_CHECKING:
-    from typing_extensions import NotRequired, TypedDict
+    from typing import NotRequired
+
+    from typing_extensions import TypedDict
 else:
     # Fallback for runtime, though this module should not be imported at runtime
     try:
-        from typing_extensions import NotRequired, TypedDict
+        from typing import NotRequired
+
+        from typing_extensions import TypedDict
     except ImportError:
         # Create dummy classes for runtime
         NotRequired = t.Any  # type: ignore[misc, assignment]

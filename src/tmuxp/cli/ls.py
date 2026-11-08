@@ -243,7 +243,7 @@ def _get_workspace_info(
         "size": stat.st_size,
         "mtime": datetime.datetime.fromtimestamp(
             stat.st_mtime,
-            tz=datetime.timezone.utc,
+            tz=datetime.UTC,
         ).isoformat(),
         "session_name": session_name,
         "source": source,
