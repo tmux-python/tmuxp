@@ -356,6 +356,115 @@ def test_regression_00132_session_name_with_dots(
         cli.cli(["load", *cli_args])
 
 
+@pytest.mark.usefixtures("tmuxp_configdir_default")
+def test_load_multi_file_append_coalesces_into_first_sessions_name(
+    tmp_path: pathlib.Path,
+    tmuxp_configdir: pathlib.Path,
+    server: Server,
+    session: Session,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``tmuxp load f1 f2 --append`` lands every file in f1's session_name."""
+    assert server.socket_name is not None
+    monkeypatch.chdir(tmp_path)
+
+    (tmuxp_configdir / "first_cfg.yaml").write_text(
+        "session_name: shared_target\n"
+        "windows:\n"
+        "  - window_name: from_first\n"
+        "    panes:\n"
+        "      -\n",
+        encoding="utf-8",
+    )
+    (tmuxp_configdir / "second_cfg.yaml").write_text(
+        "session_name: should_not_appear\n"
+        "windows:\n"
+        "  - window_name: from_second\n"
+        "    panes:\n"
+        "      -\n",
+        encoding="utf-8",
+    )
+
+    with contextlib.suppress(SystemExit):
+        cli.cli(
+            [
+                "load",
+                "first_cfg",
+                "second_cfg",
+                "--append",
+                "-d",
+                "-L",
+                server.socket_name,
+                "-y",
+            ],
+        )
+
+    assert server.has_session("shared_target")
+    assert not server.has_session("should_not_appear")
+    target = server.sessions.get(session_name="shared_target")
+    assert target is not None
+    window_names = {w.name for w in target.windows}
+    assert "from_first" in window_names
+    assert "from_second" in window_names
+
+
+@pytest.mark.usefixtures("tmuxp_configdir_default")
+def test_load_multi_file_append_with_new_session_name_overrides_first_cfg(
+    tmp_path: pathlib.Path,
+    tmuxp_configdir: pathlib.Path,
+    server: Server,
+    session: Session,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``--append --new-session-name=foo`` wins over the first file's name."""
+    assert server.socket_name is not None
+    monkeypatch.chdir(tmp_path)
+
+    (tmuxp_configdir / "first_cfg.yaml").write_text(
+        "session_name: from_first_cfg\n"
+        "windows:\n"
+        "  - window_name: from_first\n"
+        "    panes:\n"
+        "      -\n",
+        encoding="utf-8",
+    )
+    (tmuxp_configdir / "second_cfg.yaml").write_text(
+        "session_name: from_second_cfg\n"
+        "windows:\n"
+        "  - window_name: from_second\n"
+        "    panes:\n"
+        "      -\n",
+        encoding="utf-8",
+    )
+
+    with contextlib.suppress(SystemExit):
+        cli.cli(
+            [
+                "load",
+                "first_cfg",
+                "second_cfg",
+                "--append",
+                "-s",
+                "explicit_target",
+                "-d",
+                "-L",
+                server.socket_name,
+                "-y",
+            ],
+        )
+
+    assert server.has_session("explicit_target")
+    assert not server.has_session("from_first_cfg")
+    assert not server.has_session("from_second_cfg")
+    target = server.sessions.get(session_name="explicit_target")
+    assert target is not None
+    window_names = {w.name for w in target.windows}
+    assert "from_first" in window_names
+    assert "from_second" in window_names
+
+
 class ZshAutotitleTestFixture(t.NamedTuple):
     """Test fixture for zsh auto title warning tests."""
 
