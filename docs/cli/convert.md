@@ -4,6 +4,12 @@
 
 Convert workspace configuration files between YAML and JSON formats.
 
+```{image} ../_static/demos/asciinema/tmuxp-convert.gif
+:alt: tmuxp convert turning a YAML workspace into JSON
+:width: 100%
+:loading: lazy
+```
+
 ## Command
 
 ```{eval-rst}

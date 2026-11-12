@@ -6,6 +6,12 @@
 
 Collect and display system information useful for debugging tmuxp issues and submitting bug reports.
 
+```{image} ../_static/demos/asciinema/tmuxp-debug-info.gif
+:alt: tmuxp debug-info printing environment and version diagnostics
+:width: 100%
+:loading: lazy
+```
+
 ## Command
 
 ```{eval-rst}

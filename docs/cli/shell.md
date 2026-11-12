@@ -9,6 +9,12 @@ Django's `shell` command, it hands you the current tmux server, sessions,
 windows, and panes already wired up, so you can poke at a live session or
 prototype a script without writing boilerplate.
 
+```{image} ../_static/demos/asciinema/tmuxp-shell.gif
+:alt: tmuxp shell introspecting a live session from Python
+:width: 100%
+:loading: lazy
+```
+
 ## Command
 
 ```{eval-rst}
@@ -51,12 +57,6 @@ Pass `-c` to run a snippet and exit, much like `python -c`:
 
 ```console
 $ tmuxp shell -c 'python code'
-```
-
-```{image} ../_static/tmuxp-shell.gif
-:width: 878
-:height: 109
-:loading: lazy
 ```
 
 The same objects are in scope. Name a server, then a window, to narrow what the

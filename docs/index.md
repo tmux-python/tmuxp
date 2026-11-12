@@ -78,9 +78,11 @@ windows:
 $ tmuxp load my-project.yaml
 ```
 
-```{image} _static/tmuxp-demo.gif
-:width: 888
-:height: 589
+## Screenshot
+
+```{image} _static/demos/asciinema/tmuxp-load.gif
+:alt: tmuxp load building a tmux session from a workspace file and attaching to it
+:width: 100%
 :loading: lazy
 ```
 
