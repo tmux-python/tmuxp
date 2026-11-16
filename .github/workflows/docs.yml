@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - screen-recording-2026-07-12
 
 permissions:
   contents: read
