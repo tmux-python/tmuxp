@@ -51,6 +51,16 @@ _Notes on the upcoming release will go here._
 tmuxp 1.76.0 was the last release supporting Python 3.10. Python 3.10 reached
 end of life in October 2026.
 
+### Dependencies
+
+#### Minimum `libtmux~=0.63.0` (was `~=0.62.0`) (#1105)
+
+Picks up libtmux 0.63.0. {meth}`~libtmux.Pane.break_pane` now returns the
+destination window when it moves a window's only pane, and
+{meth}`~libtmux.hooks.HooksMixin.show_hook` reads the hooks tmux 3.8 added.
+libtmux 0.63.0 requires Python 3.11 or later, the floor tmuxp already has. See
+the [libtmux 0.63.0 release notes](https://libtmux.git-pull.com/history.html#libtmux-0-63-0-2026-11-21).
+
 ### Documentation
 
 #### libtmux.org top and documentation bars
