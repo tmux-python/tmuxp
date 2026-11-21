@@ -13,7 +13,7 @@ importers:
     devDependencies:
       '@mermaid-js/mermaid-cli':
         specifier: 11.17.1
-        version: 11.17.1(puppeteer@25.17.0)(tailwindcss@4.3.5)
+        version: 11.17.1(puppeteer@25.18.1)(tailwindcss@4.3.5)
 
 packages:
 
@@ -567,8 +567,8 @@ packages:
   devtools-protocol@0.0.1717327:
     resolution: {integrity: sha512-3RDLDzyvv8XAYf1L+TL1og0EEk0eOW1Jn0yi88uG6Bj8fUKO1ZKfgNtwbJkqf5SWdPDS4VGEPxwdUWz78V6Xcg==}
 
-  dompurify@3.4.17:
-    resolution: {integrity: sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==}
+  dompurify@3.4.18:
+    resolution: {integrity: sha512-ofe3wI/uNm68HInABYFJYqQxRw1EaKAjNdrFVKqjUY+UZurvNd2L/HuQe097s/4RivWiZyP6tT7aoT8atjfhwg==}
 
   elkjs@0.9.3:
     resolution: {integrity: sha512-f/ZeWvW/BCXbhGEf1Ujp29EASo/lk1FDnETgNKwJrsVvGZhUWCZyg3xLJjAsxfOmt8KjswHmI5EwCQcPMpOYhQ==}
@@ -692,12 +692,12 @@ packages:
   points-on-path@0.2.1:
     resolution: {integrity: sha512-25ClnWWuw7JbWZcgqY/gJ4FQWadKxGWk+3kR/7kD0tCaDtPPMj7oHu2ToLaVhfpnHrZzYby2w6tUA0eOIuUg8g==}
 
-  puppeteer-core@25.17.0:
-    resolution: {integrity: sha512-YAgBitkd+K9gxRt+wzBAFTTkGjkC8aC2o4OxofsU8JUy2nnK/RflTCJ9bRCvCMNbq9TPhqFk4Phz98otN9FrGg==}
+  puppeteer-core@25.18.1:
+    resolution: {integrity: sha512-C0wHOJHDfAggGBtN5uUfsJGpeSKtPL5jzhgQYDuz4XKeOG1FUkxeZI2M5yK7AUyrdHO+RgDuiCfjmOpcw3PYTA==}
     engines: {node: '>=22.12.0'}
 
-  puppeteer@25.17.0:
-    resolution: {integrity: sha512-J+OQNlI7I6ZjHhF6Q8M+LgiUGldF7meer5EqMJBZMHgnFN3zcehOhpz/x0bYDEEvbEiXzKzmqSRP3QT+5accjQ==}
+  puppeteer@25.18.1:
+    resolution: {integrity: sha512-fCsfwERKluvC84jsVyhDoBZMNuI8t5FFnWXcTdH1vn3NhMk6clZcrF0Da2se6/Hj6CBJ+2PRPpqeV0qPIETeJA==}
     engines: {node: '>=22.12.0'}
     hasBin: true
 
@@ -754,8 +754,8 @@ packages:
   stylis@4.4.0:
     resolution: {integrity: sha512-5Z9ZpRzfuH6l/UAvCPAPUo3665Nk2wLaZU3x+TLHKVzIz33+sbJqbtrYoC3KD4/uVOr2Zp+L0LySezP9OHV9yA==}
 
-  tabbable@6.5.1:
-    resolution: {integrity: sha512-dMCuwDUY6Noz3zVKLefBC4wq+aJV20yc7vWmM7uTNGwtQSFF5kX7OUIUsxuVajz/bdt5Xqdah3/0NLjth+cM5A==}
+  tabbable@6.5.2:
+    resolution: {integrity: sha512-XgdnB1nGU6KU4VgMnZPaZCx7M1hBrLyEiZYau2G2gq9UT0d7d4FUBlNX7vvPlm/B1vk1PjrzJBx9Lbv4fsqS9g==}
 
   tailwind-merge@3.7.0:
     resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
@@ -774,8 +774,8 @@ packages:
   tslib@2.9.1:
     resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
-  typed-query-selector@2.12.3:
-    resolution: {integrity: sha512-/dtuMZyutHLlrxWhhC1uib00ELUr2dZ8C9B8YzZYsJmeE3V56OxRblrSM2UaF142pcMtak7ehZ6+poWGeehNIg==}
+  typed-query-selector@2.12.4:
+    resolution: {integrity: sha512-lF6/OY655DSWZeuNovde8TZhju6QyC0Xtav57b07oZQ1EQvfSowA3+WfLEhvFJOc9sVfAtW5hie1lGIppOqbpQ==}
 
   use-sync-external-store@1.7.0:
     resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
@@ -856,7 +856,7 @@ snapshots:
       '@floating-ui/utils': 0.2.12
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
-      tabbable: 6.5.1
+      tabbable: 6.5.2
 
   '@floating-ui/react@0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
@@ -864,7 +864,7 @@ snapshots:
       '@floating-ui/utils': 0.2.12
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
-      tabbable: 6.5.1
+      tabbable: 6.5.2
 
   '@floating-ui/utils@0.2.12': {}
 
@@ -916,7 +916,7 @@ snapshots:
       mermaid: 11.17.2
     optional: true
 
-  '@mermaid-js/mermaid-cli@11.17.1(puppeteer@25.17.0)(tailwindcss@4.3.5)':
+  '@mermaid-js/mermaid-cli@11.17.1(puppeteer@25.18.1)(tailwindcss@4.3.5)':
     dependencies:
       '@fortawesome/fontawesome-free': 7.3.1
       '@mermaid-js/layout-elk': 0.2.3(mermaid@11.17.2)
@@ -927,7 +927,7 @@ snapshots:
       katex: 0.18.10
       mermaid: 11.17.2
       p-limit: 6.2.0
-      puppeteer: 25.17.0
+      puppeteer: 25.18.1
     optionalDependencies:
       '@mermaid-js/layout-tidy-tree': 0.2.2(mermaid@11.17.2)
     transitivePeerDependencies:
@@ -1170,7 +1170,7 @@ snapshots:
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       color-string: 2.1.4
-      dompurify: 3.4.17
+      dompurify: 3.4.18
       highlight.js: 11.12.0
       html-to-image: 1.11.13
       jotai: 2.20.3(react@19.3.1)
@@ -1429,7 +1429,7 @@ snapshots:
 
   devtools-protocol@0.0.1717327: {}
 
-  dompurify@3.4.17:
+  dompurify@3.4.18:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -1501,7 +1501,7 @@ snapshots:
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.14
       dayjs: 1.11.23
-      dompurify: 3.4.17
+      dompurify: 3.4.18
       es-toolkit: 1.53.2
       fastdom: 1.0.12
       katex: 0.18.10
@@ -1531,12 +1531,12 @@ snapshots:
       path-data-parser: 0.1.0
       points-on-curve: 0.2.0
 
-  puppeteer-core@25.17.0:
+  puppeteer-core@25.18.1:
     dependencies:
       '@puppeteer/browsers': 3.2.7
       chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1717327)
       devtools-protocol: 0.0.1717327
-      typed-query-selector: 2.12.3
+      typed-query-selector: 2.12.4
       webdriver-bidi-protocol: 1.0.2
       ws: 8.23.0
     transitivePeerDependencies:
@@ -1545,14 +1545,14 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  puppeteer@25.17.0:
+  puppeteer@25.18.1:
     dependencies:
       '@puppeteer/browsers': 3.2.7
       chromium-bidi: 157.0.8090-0(devtools-protocol@0.0.1717327)
       devtools-protocol: 0.0.1717327
       lilconfig: 3.1.5
-      puppeteer-core: 25.17.0
-      typed-query-selector: 2.12.3
+      puppeteer-core: 25.18.1
+      typed-query-selector: 2.12.4
     transitivePeerDependencies:
       - bufferutil
       - proxy-agent
@@ -1624,7 +1624,7 @@ snapshots:
 
   stylis@4.4.0: {}
 
-  tabbable@6.5.1: {}
+  tabbable@6.5.2: {}
 
   tailwind-merge@3.7.0: {}
 
@@ -1636,7 +1636,7 @@ snapshots:
 
   tslib@2.9.1: {}
 
-  typed-query-selector@2.12.3: {}
+  typed-query-selector@2.12.4: {}
 
   use-sync-external-store@1.7.0(react@19.3.1):
     dependencies:
