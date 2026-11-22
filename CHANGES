@@ -44,6 +44,16 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.66.0` (was `~=0.65.0`) (#1110)
+
+Picks up libtmux 0.66.0. Files `save_buffer()` creates are readable by their
+owner only, `send_keys(hex_keys=True)` no longer adds Enter, and a socket path
+too long for tmux raises `SocketPathTooLong`, including one passed to
+`tmuxp load -S` or `tmuxp freeze -S`. See the
+[libtmux 0.66.0 release notes](https://libtmux.git-pull.com/history.html#libtmux-0-66-0-2026-11-22).
+
 ## tmuxp 1.79.0 (2026-11-22)
 
 tmuxp 1.79.0 updates libtmux to 0.65.0 and requires tmux 3.3a, its one
