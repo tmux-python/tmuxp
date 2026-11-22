@@ -152,7 +152,7 @@ For the freshest results on how to get tmux installed on your system,
 "How to install tmux on \<my distro>" will do, as directions change and
 are slightly different between distributions.
 
-tmuxp requires tmux **3.2 or newer**. The latest stable version is
+tmuxp requires tmux **3.3a or newer**. The latest stable version is
 viewable on the [tmux homepage](https://github.com/tmux/tmux).
 
 **Mac OS X** users may install the latest stable version of tmux

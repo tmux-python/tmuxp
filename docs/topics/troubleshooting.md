@@ -19,7 +19,7 @@ Ensure tmux is installed:
 $ tmux -V
 ```
 
-Minimum required version: tmux 3.2.
+Minimum required version: tmux 3.3a.
 
 ## Configuration errors
 

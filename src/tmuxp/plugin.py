@@ -15,7 +15,7 @@ from .exc import TmuxpPluginException
 logger = logging.getLogger(__name__)
 
 #: Minimum version of tmux required to run tmuxp
-TMUX_MIN_VERSION = "3.2"
+TMUX_MIN_VERSION = "3.3a"
 
 #: Most recent version of tmux supported
 TMUX_MAX_VERSION = None
