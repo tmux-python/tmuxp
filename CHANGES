@@ -44,6 +44,29 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Breaking changes
+
+#### tmux 3.3a+ is now required (#1109)
+
+tmux 3.2a is no longer supported, through the libtmux 0.65.0 update; tmuxp
+1.78.0 was the last release that runs on tmux 3.2a. A plugin's default
+`tmux_min_version` is now 3.3a.
+
+### Dependencies
+
+#### Minimum `libtmux~=0.65.0` (was `~=0.64.0`) (#1109)
+
+Picks up libtmux 0.65.0, which publishes a capability matrix of the tmux
+features it gates by release and requires tmux 3.3a. See the
+[libtmux 0.65.0 release notes](https://libtmux.git-pull.com/history.html#libtmux-0-65-0-2026-11-22).
+
+### Fixes
+
+#### A tmux older than libtmux supports prints a message (#1109)
+
+`tmuxp` prints libtmux's version message and exits when tmux is older than
+libtmux supports, instead of ending in a `VersionTooLow` traceback.
+
 ## tmuxp 1.78.0 (2026-11-21)
 
 tmuxp 1.78.0 updates libtmux to 0.64.0, a fixes-only release. It has no

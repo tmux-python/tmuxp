@@ -31,6 +31,24 @@ def test_creates_config_dir_not_exists(tmp_path: pathlib.Path) -> None:
     assert tmp_path.exists()
 
 
+def test_cli_reports_tmux_older_than_libtmux_supports(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """cli() prints libtmux's version message instead of a traceback."""
+    message = "libtmux only supports tmux 3.3a and greater."
+
+    def has_minimum_version() -> bool:
+        raise libtmux.exc.VersionTooLow(message)
+
+    monkeypatch.setattr(cli, "has_minimum_version", has_minimum_version)
+
+    with pytest.raises(SystemExit):
+        cli.cli(["ls"])
+
+    assert message in capsys.readouterr().out
+
+
 class HelpTestFixture(t.NamedTuple):
     """Test fixture for help command tests."""
 
