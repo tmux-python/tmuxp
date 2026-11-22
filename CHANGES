@@ -44,6 +44,15 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Dependencies
+
+#### Minimum `libtmux~=0.64.0` (was `~=0.63.0`) (#1106)
+
+Picks up libtmux 0.64.0, a fixes-only release. Commands act on the session,
+window or pane they were called on, values that start with `-` or end in `;`
+reach tmux as data, and a newline in a pane's path no longer breaks listings.
+See the [libtmux 0.64.0 release notes](https://libtmux.git-pull.com/history.html#libtmux-0-64-0-2026-11-21).
+
 ## tmuxp 1.77.0 (2026-11-21)
 
 tmuxp 1.77.0 raises the minimum Python to 3.11 and updates libtmux to 0.63.0.
