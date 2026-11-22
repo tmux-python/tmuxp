@@ -10,7 +10,7 @@ import typing as t
 
 from libtmux.__about__ import __version__ as libtmux_version
 from libtmux.common import has_minimum_version
-from libtmux.exc import TmuxCommandNotFound
+from libtmux.exc import TmuxCommandNotFound, VersionTooLow
 
 from tmuxp import exc
 from tmuxp.__about__ import __version__
@@ -290,7 +290,7 @@ def cli(_args: list[str] | None = None) -> None:
     except TmuxCommandNotFound:
         tmuxp_echo("tmux not found. tmuxp requires you install tmux first.")
         sys.exit()
-    except exc.TmuxpException as e:
+    except (exc.TmuxpException, VersionTooLow) as e:
         tmuxp_echo(str(e))
         sys.exit()
 
