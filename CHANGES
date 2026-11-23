@@ -55,13 +55,17 @@ so `#S` became the session name. This comes from libtmux 0.67.0.
 
 ### Dependencies
 
-#### Minimum `libtmux~=0.67.0` (was `~=0.66.0`) (#1111)
+#### Minimum `libtmux~=0.67.1` (was `~=0.66.0`) (#1111)
 
-Picks up libtmux 0.67.0. Names, titles, start directories and buffer paths
-passed to libtmux are kept as typed, `libtmux.Format` asks tmux to expand one
-value, and `new_session(kill_session=True)` kills only the exactly named
-session. See the
-[libtmux 0.67.0 release notes](https://libtmux.git-pull.com/history.html#libtmux-0-67-0-2026-11-22).
+Picks up libtmux 0.67.0 and 0.67.1. Names, titles, start directories and
+buffer paths passed to libtmux are kept as typed, `libtmux.Format` asks tmux
+to expand one value, and `new_session(kill_session=True)` kills only the
+exactly named session. 0.67.1 makes `new_window(select_existing=True)` find a
+window by its literal name on every tmux. See the
+[libtmux 0.67.0](https://libtmux.git-pull.com/history.html#libtmux-0-67-0-2026-11-22)
+and
+[0.67.1](https://github.com/tmux-python/libtmux/releases/tag/v0.67.1)
+release notes.
 
 ## tmuxp 1.80.0 (2026-11-22)
 
