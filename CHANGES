@@ -36,13 +36,19 @@ Run the developmental install with:
 $ tmuxp@next load yoursession
 ```
 
-## tmuxp 1.81.0 (Yet to be released)
+## tmuxp 1.82.0 (Yet to be released)
 
 <!-- To maintainers and contributors: Please add notes for the forthcoming version below -->
 
 <!-- KEEP THIS PLACEHOLDER - DO NOT REMOVE OR MODIFY THIS LINE -->
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
+
+## tmuxp 1.81.0 (2026-11-22)
+
+tmuxp 1.81.0 updates libtmux to 0.67.1. A `#` in a workspace's `session_name`,
+a `window_name` or a `start_directory` now reaches tmux as typed, so
+`window_name: "#S"` names the window `#S` instead of the session's name.
 
 ### Breaking changes
 
