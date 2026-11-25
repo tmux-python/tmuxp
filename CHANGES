@@ -44,6 +44,44 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Breaking changes
+
+#### `shell_command` on a closed pane raises `TmuxObjectDoesNotExist` (#1112)
+
+When an earlier entry in a pane's `shell_command` list closes the pane before a
+later entry runs, loading the workspace now raises `TmuxObjectDoesNotExist`
+instead of ignoring the missing pane. Keep `exit` as the last command in the
+pane, or set `remain-on-exit`:
+
+```yaml
+# Before: the second command was dropped once exit closed the pane
+panes:
+  - shell_command:
+      - cmd: exit
+        sleep_after: 0.2
+      - cmd: echo unreachable
+
+# After: exit last, or keep the pane open with remain-on-exit
+panes:
+  - shell_command:
+      - cmd: echo runs first
+      - cmd: exit
+```
+
+This comes from libtmux 0.68.0.
+
+### Dependencies
+
+#### Minimum `libtmux~=0.68.0` (was `~=0.67.1`) (#1112)
+
+Picks up libtmux 0.68.0. Closed panes, windows and sessions raise
+`TmuxObjectDoesNotExist` (including from `Pane.capture_pane()` and
+`Pane.send_keys()`), `Server.run_shell()` raises `VersionTooLow` on tmux 3.3a
+and 3.4 instead of returning `[]`, `Session.new_window(select_existing=True)`
+reuses a window by index or target on every tmux, and `expand_formats` is the
+one parameter name for tmux's `-F`. See the
+[libtmux 0.68.0 release notes](https://libtmux.git-pull.com/history/#libtmux-0-68-0-2026-11-24).
+
 ## tmuxp 1.81.0 (2026-11-22)
 
 tmuxp 1.81.0 updates libtmux to 0.67.1. A `#` in a workspace's `session_name`,
