@@ -1,0 +1,53 @@
+session_name: if conditions test conditions
+environment:
+  foo: 'false'
+  bar: '1'
+  F: '0'
+  MY_VAR: myfoobar
+windows:
+  - window_name: window all false
+    panes:
+      - if: ${foo}
+        shell_command:
+          - echo pane 1
+      - if:
+          shell: '[ 1 -gt 2 ]'
+        shell_command:
+          - echo pane 2
+      - if:
+          shell_var: ${F}
+  - window_name: window 2 of 3 true
+    panes:
+      - if:
+          shell: '[ "foo" = "bar" ]'
+        shell_command:
+          - echo pane 3
+      - if:
+          shell: '[ "hello" != "byte" ]'
+        shell_command:
+          - echo pane 4
+      - if:
+          python: '2**4 == 16'
+        shell_command:
+          - echo pane 5
+  - window_name: window 2 of 4 true
+    panes:
+      - if:
+          shell_var: 'FALSE'
+        shell_command:
+          - echo pane 6
+      - if:
+          shell_var: ${bar}
+        shell_command:
+          - echo pane 7
+      - if:
+          python: import os; not os.path.isdir('/a/very/random/path')
+        shell_command:
+          - echo pane 8
+      - if: ${non_existing_var}
+        shell_command:
+          - echo pane 9
+      - if:
+          shell: echo ${MY_VAR} | grep -q foo
+        shell_command:
+          - echo pane 10
