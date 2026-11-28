@@ -10,7 +10,7 @@ import pytest
 
 from tests.fixtures import utils as test_utils
 from tmuxp._internal.config_reader import ConfigReader
-from tmuxp.workspace import freezer, validation
+from tmuxp.workspace import freezer, loader, validation
 from tmuxp.workspace.builder import WorkspaceBuilder
 
 if typing.TYPE_CHECKING:
@@ -133,3 +133,26 @@ def test_freeze_logs_debug(
     window_records = [r for r in caplog.records if r.msg == "frozen window"]
     assert len(window_records) >= 1
     assert hasattr(window_records[0], "tmux_window")
+
+
+def test_freeze_preserves_window_user_options_and_empty_name(
+    session: Session,
+) -> None:
+    """Freeze window @ user options as strings and empty window names as ''."""
+    window = session.active_window
+    window.set_option("automatic-rename", "off")
+    window.rename_window("")
+    window.set_option("@badge", "007")
+    window.set_option("@enabled", "on")
+
+    frozen = freezer.freeze(session)
+    validation.validate_schema(frozen)
+
+    yaml_text = ConfigReader._dump(fmt="yaml", content=frozen)
+    reloaded = ConfigReader._load(fmt="yaml", content=yaml_text)
+    expanded = loader.expand(reloaded)
+
+    frozen_window = expanded["windows"][0]
+    assert frozen_window["window_name"] == ""
+    assert frozen_window["options"]["@badge"] == "007"
+    assert frozen_window["options"]["@enabled"] == "on"

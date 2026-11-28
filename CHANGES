@@ -44,6 +44,102 @@ $ tmuxp@next load yoursession
 _Notes on the upcoming release will go here._
 <!-- END PLACEHOLDER - ADD NEW CHANGELOG ENTRIES BELOW THIS LINE -->
 
+### Breaking changes
+
+#### `tmuxp freeze` keeps window `@` user options as strings (#1113)
+
+`tmuxp freeze` now writes window `@` user options as strings instead of
+converting numeric and boolean-looking values to integers or booleans, and
+writes an unnamed window (`rename-window ""`) as `window_name: ''` instead of
+`window_name: null`. On `tmuxp load`, string option values pass through `$VAR`
+and `~` expansion, and frozen unnamed windows reload without raising
+`TypeError`.
+
+Given a live window renamed to `""` with `@badge` set to `007` and `@enabled`
+set to `on`:
+
+```console
+$ tmux rename-window "" && \
+    tmux set-option -w @badge 007 && \
+    tmux set-option -w @enabled on
+```
+
+Before, `tmuxp freeze` converted `@badge` to `7` (dropping its leading zeros),
+`@enabled` to `true`, and the unnamed window to `null`:
+
+```yaml
+windows:
+  - window_name: null
+    options:
+      '@badge': 7
+      '@enabled': true
+```
+
+Now, `tmuxp freeze` keeps `@` options as strings and writes the unnamed window
+as `''`:
+
+```yaml
+windows:
+  - window_name: ''
+    options:
+      '@badge': '007'
+      '@enabled': 'on'
+```
+
+This comes from libtmux 0.69.0. Unpatched tmux 3.7 rejects empty window names
+(`""`), `:` and `.` in session and window names; use tmux 3.7a or newer (3.7c
+is the latest 3.7 patch release).
+
+### Dependencies
+
+#### Minimum `libtmux~=0.69.0` (was `~=0.68.0`) (#1113)
+
+Picks up libtmux 0.69.0. `with Server()` leaves a running tmux server alive on
+exit unless `Server(..., kill_on_exit=True)` is set, `@` user options stay
+strings in `show_option()` and `show_options()`, and empty tmux format fields
+hydrate as `""` instead of `None` while unset fields stay `None`. See the
+[libtmux 0.69.0 release notes](https://libtmux.git-pull.com/history/#libtmux-0-69-0-2026-11-27).
+
+### Development
+
+#### CI exercises tmux 3.7c instead of unpatched 3.7 (#1113)
+
+CI replaces the unpatched tmux 3.7 release (2026-06-26) with 3.7c (2026-08-17,
+the latest 3.7 patch release) in `.github/workflows/tests.yml` and
+`.github/tmux-releases.toml`, and sets `fail-fast: false` so every matrix leg
+runs to completion.
+
+Unpatched tmux 3.7 shipped four regressions fixed five days later in 3.7a
+(2026-07-01), followed by additional fixes in 3.7b and 3.7c:
+
+- Empty window and session names (`""`) fail with `invalid window name:` or
+  `invalid session name:` because `check_name()` and `clean_name()` reject
+  `*name == '\0'` in
+  [`tmux.c`](https://github.com/tmux/tmux/blob/3.7/tmux.c#L284-L318), blocking
+  `rename-window ""`
+  ([`cmd-rename-window.c`](https://github.com/tmux/tmux/blob/3.7/cmd-rename-window.c#L53-L58))
+  and `new-window -n ""` when loading `window_name: ''`
+  ([`cmd-new-window.c`](https://github.com/tmux/tmux/blob/3.7/cmd-new-window.c#L73-L83)).
+- `:` and `.` in session, session-group, and window names fail with
+  `invalid session name:` or `invalid window name:` via `WINDOW_NAME_FORBID` and
+  `SESSION_NAME_FORBID` in
+  [`tmux.h`](https://github.com/tmux/tmux/blob/3.7/tmux.h#L99-L103) and
+  [`cmd-new-session.c`](https://github.com/tmux/tmux/blob/3.7/cmd-new-session.c#L102-L121),
+  breaking workspaces named like `my.project` or `v1.0`.
+- `#[` style directives in `automatic-rename-format` and escape-set titles are
+  rewritten to `_` via `WINDOW_NAME_FORBID_EXT` (`":.#"`) in
+  [`tmux.c`](https://github.com/tmux/tmux/blob/3.7/tmux.c#L292-L295);
+  [`tmux 3.7a`](https://github.com/tmux/tmux/blob/3.7a/tmux.c#L284-L307)
+  restricts `#` scrubbing to untrusted `#(` shell commands and restores `:`,
+  `.` and `""`.
+- `break-pane` without `-n` dereferences `NULL` and crashes the tmux server due
+  to an inverted `if (name != NULL)` guard in
+  [`cmd-break-pane.c`](https://github.com/tmux/tmux/blob/3.7/cmd-break-pane.c#L117-L124).
+- [`tmux 3.7b`](https://github.com/tmux/tmux/blob/3.7b/input.c#L1956-L1960)
+  restores `PANE_REDRAW` at the end of a synchronized update (`CSI ? 2026 l`),
+  and `3.7c` fixes unzooming before creating a floating pane and new-window
+  scrollbar initialization.
+
 ## tmuxp 1.82.0 (2026-11-24)
 
 tmuxp 1.82.0 updates libtmux to 0.68.0. When an earlier entry in a pane's
